@@ -503,15 +503,12 @@ template <>
 struct UpdateRelaxZonesOp<W2AWaves>
 {
     // cppcheck-suppress constParameterReference
-    void operator()(W2AWaves::DataType& data)
+    void operator()(W2AWaves::DataType& data, const amrex::Real newtime)
     {
 
 #ifdef AMR_WIND_USE_W2A
         auto& wdata = data.meta();
         auto& sim = data.sim();
-
-        // Nudge the solution toward where it should be
-        const amrex::Real newtime = sim.time().new_time();
 
         // Update ow fields every time
         auto& m_ow_levelset = sim.repo().get_field("ow_levelset");

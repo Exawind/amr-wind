@@ -125,13 +125,12 @@ struct InitDataOp<LinearWaves>
 template <>
 struct UpdateRelaxZonesOp<LinearWaves>
 {
-    void operator()(LinearWaves::DataType& data)
+    void operator()(LinearWaves::DataType& data, const amrex::Real time)
     {
         const auto& wdata = data.meta();
 
         auto& sim = data.sim();
 
-        const auto& time = sim.time().new_time();
         // cppcheck-suppress constVariableReference
         auto& m_ow_levelset = sim.repo().get_field("ow_levelset");
         // cppcheck-suppress constVariableReference

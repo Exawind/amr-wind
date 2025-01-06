@@ -76,14 +76,15 @@ void OceanWaves::pre_advance_work()
 {
     BL_PROFILE("amr-wind::ocean_waves::OceanWaves::pre_advance_work");
     // Update ow values for advection boundaries
-    m_owm->update_relax_zones();
+    m_owm->update_relax_zones(
+        0.5 * (m_sim.time().current_time() + m_sim.time().new_time()));
 }
 
 void OceanWaves::pre_predictor_work()
 {
     BL_PROFILE("amr-wind::ocean_waves::OceanWaves::pre_predictor_work");
     // Update ow values for boundary fills at new time
-    m_owm->update_relax_zones();
+    m_owm->update_relax_zones(m_sim.time().new_time());
 }
 
 void OceanWaves::post_advance_work()
@@ -98,7 +99,7 @@ void OceanWaves::post_advance_work()
 void OceanWaves::relaxation_zones()
 {
     BL_PROFILE("amr-wind::ocean_waves::OceanWaves::update_relaxation_zones");
-    m_owm->update_relax_zones();
+    m_owm->update_relax_zones(m_sim.time().new_time());
     m_owm->apply_relax_zones();
     m_owm->reset_regrid_flag();
 }
