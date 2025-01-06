@@ -95,7 +95,6 @@ void OceanWaves::post_advance_work()
     // Relax zones are up-to-date because of pre-predictor
     m_owm->apply_relax_zones();
     m_owm->reset_regrid_flag();
-
 }
 
 void OceanWaves::prepare_outputs()

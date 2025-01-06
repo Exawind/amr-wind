@@ -55,7 +55,6 @@ protected:
     virtual void prepare_outputs();
 
 private:
-
     CFDSim& m_sim;
 
     //! Unique pointer to the ocean waves model
