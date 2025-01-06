@@ -20,10 +20,7 @@ class OceanWavesBoundary
 public:
     explicit OceanWavesBoundary(CFDSim& /*sim*/);
 
-    //! Execute initialization actions after mesh has been fully generated
     void post_init_actions();
-
-    void initialize_data();
 
     void set_velocity(
         const int lev,
