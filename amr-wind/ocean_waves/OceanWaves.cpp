@@ -64,6 +64,7 @@ void OceanWaves::post_init_actions()
     BL_PROFILE("amr-wind::ocean_waves::OceanWaves::post_init_actions");
     m_ow_bndry->post_init_actions();
     m_owm->update_relax_zones(m_sim.time().current_time());
+    m_ow_bndry->record_boundary_data_time(m_sim.time().current_time());
     m_owm->apply_relax_zones();
     m_owm->reset_regrid_flag();
 }
@@ -78,15 +79,19 @@ void OceanWaves::pre_advance_work()
 {
     BL_PROFILE("amr-wind::ocean_waves::OceanWaves::pre_advance_work");
     // Update ow values for advection boundaries
-    m_owm->update_relax_zones(
-        0.5 * (m_sim.time().current_time() + m_sim.time().new_time()));
+    const amrex::Real adv_bdy_time =
+        0.5 * (m_sim.time().current_time() + m_sim.time().new_time());
+    m_owm->update_relax_zones(adv_bdy_time);
+    m_ow_bndry->record_boundary_data_time(adv_bdy_time);
 }
 
 void OceanWaves::pre_predictor_work()
 {
     BL_PROFILE("amr-wind::ocean_waves::OceanWaves::pre_predictor_work");
     // Update ow values for boundary fills at new time
-    m_owm->update_relax_zones(m_sim.time().new_time());
+    const amrex::Real bdy_fill_time = m_sim.time().new_time();
+    m_owm->update_relax_zones(bdy_fill_time);
+    m_ow_bndry->record_boundary_data_time(bdy_fill_time);
 }
 
 void OceanWaves::post_advance_work()

@@ -42,6 +42,13 @@ public:
         const Field& fld,
         amrex::MultiFab& mfab) const;
 
+    void record_boundary_data_time(const amrex::Real time)
+    {
+        m_bndry_time = time;
+    }
+
+    amrex::Real get_boundary_data_time() const { return m_bndry_time; }
+
 private:
     const amr_wind::SimTime& m_time;
     const FieldRepo& m_repo;
@@ -51,6 +58,9 @@ private:
 
     // Should be active unless boundary planes are used
     bool m_activate_ow_bndry{true};
+
+    // Store time corresponding to current boundary data
+    amrex::Real m_bndry_time{0.0};
 
     // Will only remain negative if not needed
     amrex::Real m_rho1{-1.0};
