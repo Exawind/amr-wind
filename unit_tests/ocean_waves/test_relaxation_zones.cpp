@@ -17,15 +17,15 @@ protected:
 
         {
             amrex::ParmParse pp("amr");
-            amrex::Vector<int> ncell{{32, 4, 16}};
+            amrex::Vector<int> ncell{{64, 4, 16}};
             pp.add("max_level", 0);
             pp.add("max_grid_size", 4);
             pp.addarr("n_cell", ncell);
         }
         {
             amrex::ParmParse pp("geometry");
-            amrex::Vector<amrex::Real> problo{{0.0, 0.0, -1.0}};
-            amrex::Vector<amrex::Real> probhi{{4.0, 1.0, 1.0}};
+            amrex::Vector<amrex::Real> problo{{0.0, -0.25, -1}};
+            amrex::Vector<amrex::Real> probhi{{8.0, 0.25, 1}};
 
             pp.addarr("prob_lo", problo);
             pp.addarr("prob_hi", probhi);
@@ -307,9 +307,9 @@ TEST_F(OceanWavesOpTest, gas_phase)
         pp.add("label", (std::string) "lin_ow");
         amrex::ParmParse ppow("OceanWaves.lin_ow");
         ppow.add("type", (std::string) "LinearWaves");
-        ppow.add("wave_height", 0.02);
+        ppow.add("wave_height", 0.05);
         ppow.add("wave_length", 1.0);
-        ppow.add("water_depth", 0.5);
+        ppow.add("water_depth", 1.0);
         // Wave generation and numerical beach
         ppow.add("relax_zone_gen_length", 2.0);
         ppow.add("numerical_beach_length", 4.0);
@@ -365,9 +365,9 @@ TEST_F(OceanWavesOpTest, boundary_fill)
         pp.add("label", (std::string) "lin_ow");
         amrex::ParmParse ppow("OceanWaves.lin_ow");
         ppow.add("type", (std::string) "LinearWaves");
-        ppow.add("wave_height", 0.02);
+        ppow.add("wave_height", 0.05);
         ppow.add("wave_length", 1.0);
-        ppow.add("water_depth", 0.5);
+        ppow.add("water_depth", 1.0);
         // Wave generation and numerical beach
         ppow.add("relax_zone_gen_length", 2.0);
         ppow.add("numerical_beach_length", 4.0);
