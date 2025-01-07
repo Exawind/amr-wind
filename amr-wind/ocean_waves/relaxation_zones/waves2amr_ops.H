@@ -692,7 +692,7 @@ struct UpdateRelaxZonesOp<W2AWaves>
         }
         amrex::Gpu::synchronize();
 #else
-        amrex::ignore_unused(data);
+        amrex::ignore_unused(data, newtime);
 #endif
     }
 };
