@@ -1,4 +1,4 @@
-#include "aw_test_utils/AmrexTest.H"
+#include "aw_test_utils/MeshTest.H"
 #include "amr-wind/incflo.H"
 
 namespace amr_wind_tests {
@@ -115,7 +115,7 @@ void ptest_kernel(
 
 } // namespace
 
-class ProjPerturb : public AmrexTest
+class ProjPerturb : public MeshTest
 {
 protected:
     void populate_parameters()
@@ -134,6 +134,9 @@ protected:
 
             pp.addarr("prob_lo", problo);
             pp.addarr("prob_hi", probhi);
+
+            amrex::Vector<int> periodic{{0, 0, 0}};
+            pp.addarr("is_periodic", periodic);
         }
         {
             amrex::ParmParse pp("incflo");
@@ -166,6 +169,7 @@ TEST_F(ProjPerturb, dynamic_only)
 {
     // High-level setup
     populate_parameters();
+    initialize_mesh();
     // Test with gravity term omitted
     ptest_kernel(m_rho_0, 0.0, 0.0, (m_nx + 1) * (m_ny + 1));
 }
@@ -174,6 +178,7 @@ TEST_F(ProjPerturb, full_pressure)
 {
     // High-level setup
     populate_parameters();
+    initialize_mesh();
     // Test with gravity term included
     ptest_kernel(m_rho_0, m_Fg, -m_Fg, (m_nx + 1) * (m_ny + 1));
 }
@@ -182,6 +187,7 @@ TEST_F(ProjPerturb, full_p_perturb)
 {
     // High-level setup
     populate_parameters();
+    initialize_mesh();
     {
         amrex::ParmParse pp("ICNS");
         pp.add("reconstruct_true_pressure", true);
