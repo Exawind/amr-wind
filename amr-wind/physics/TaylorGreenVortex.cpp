@@ -32,6 +32,7 @@ void TaylorGreenVortex::initialize_fields(
     const amrex::Real Ly = probhi[1] - problo[1];
     const amrex::Real Lz = probhi[2] - problo[2];
 
+    // this one
     for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
         const auto& dx = geom.CellSizeArray();

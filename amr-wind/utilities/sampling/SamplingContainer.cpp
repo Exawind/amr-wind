@@ -19,6 +19,7 @@ void SamplingContainer::setup_container(
 
     const int nlevels = m_mesh.finestLevel() + 1;
     for (int lev = 0; lev < nlevels; ++lev) {
+        // needs openmp pragma?
         for (amrex::MFIter mfi = MakeMFIter(lev); mfi.isValid(); ++mfi) {
             DefineAndReturnParticleTile(lev, mfi.index(), mfi.LocalTileIndex());
         }

@@ -56,6 +56,7 @@ void CurvatureRefinement::operator()(
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
+    // this one
     for (amrex::MFIter mfi(mfab, amrex::TilingIfNotGPU()); mfi.isValid();
          ++mfi) {
         const auto& bx = mfi.tilebox();

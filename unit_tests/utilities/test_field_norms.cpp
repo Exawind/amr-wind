@@ -21,6 +21,7 @@ void init_velocity(
         // Apply a factor to the base level values
         const amrex::Real fac = (lev == 0) ? lev0_fac : 1.0;
 
+        // this one
         for (amrex::MFIter mfi(vel_fld(lev)); mfi.isValid(); ++mfi) {
             auto bx = mfi.growntilebox();
             const auto& farr = vel_fld(lev).array(mfi);
