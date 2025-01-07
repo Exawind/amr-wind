@@ -171,7 +171,7 @@ void OceanWavesBoundary::set_density(
         return;
     }
 
-    BL_PROFILE("amr-wind::OceanWavesBoundary::set_vof");
+    BL_PROFILE("amr-wind::OceanWavesBoundary::set_density");
 
     const auto& geom = m_mesh.Geom(lev);
     const auto& bctype = fld.bc_type();
