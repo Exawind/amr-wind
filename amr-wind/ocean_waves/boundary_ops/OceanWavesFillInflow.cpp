@@ -72,9 +72,6 @@ void OceanWavesFillInflow::fillphysbc(
     }
 }
 
-/* Need to get this right, not there yet.
-  -- ow fields get updated to n+1, but this needs n+1/2 data
-  -- bc conditional should include wave_generation */
 void OceanWavesFillInflow::fillpatch_sibling_fields(
     int lev,
     amrex::Real time,
