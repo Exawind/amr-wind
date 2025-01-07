@@ -183,6 +183,7 @@ amrex::Real gas_velocity_error(
                 return error;
             });
     }
+    amrex::ParallelDescriptor::ReduceRealSum(error_total);
     return error_total;
 }
 
