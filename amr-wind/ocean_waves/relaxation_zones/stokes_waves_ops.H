@@ -182,7 +182,8 @@ struct UpdateRelaxZonesOp<StokesWaves>
             amrex::ParallelFor(
                 m_ow_velocity(lev), amrex::IntVect(3),
                 [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                    const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                    const amrex::Real x =
+                        amrex::max(problo[0], problo[0] + (i + 0.5) * dx[0]);
                     const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
                     amrex::Real eta{0.0}, u_w{0.0}, v_w{0.0}, w_w{0.0};

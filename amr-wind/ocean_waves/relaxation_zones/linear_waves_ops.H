@@ -156,7 +156,8 @@ struct UpdateRelaxZonesOp<LinearWaves>
             amrex::ParallelFor(
                 m_ow_velocity(lev), amrex::IntVect(3),
                 [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                    const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                    const amrex::Real x =
+                        amrex::max(problo[0], problo[0] + (i + 0.5) * dx[0]);
                     const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
                     const amrex::Real wave_number = 2. * M_PI / wave_length;
