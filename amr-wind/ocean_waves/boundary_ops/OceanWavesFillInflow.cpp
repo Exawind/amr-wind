@@ -96,7 +96,8 @@ void OceanWavesFillInflow::fillpatch_sibling_fields(
         const auto bct = ibctype[ori];
         const int dir = ori.coordDir();
         for (int i = 0; i < m_field.num_comp(); ++i) {
-            if ((bct == BC::mass_inflow) || (bct == BC::mass_inflow_outflow)) {
+            if ((bct == BC::mass_inflow) || (bct == BC::mass_inflow_outflow) ||
+                (bct == BC::wave_generation)) {
                 if (side == amrex::Orientation::low) {
                     ph_bcrec[i].setLo(dir, amrex::BCType::foextrap);
                     fp_bcrec[i].setLo(
