@@ -146,6 +146,7 @@ amrex::Real field_error(amr_wind::Field& comp, amr_wind::Field& targ, int ncomp)
                 return error;
             });
     }
+    amrex::ParallelDescriptor::ReduceRealSum(error_total);
     return error_total;
 }
 
@@ -253,6 +254,7 @@ amrex::Real bdy_error(amr_wind::Field& comp, amr_wind::Field& targ, int ncomp)
                 return error;
             });
     }
+    amrex::ParallelDescriptor::ReduceRealSum(error_total);
     return error_total;
 }
 
