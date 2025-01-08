@@ -60,14 +60,13 @@ void DragForcing::operator()(
     if (!is_terrain) {
         amrex::Abort("Need terrain blanking variable to use this source term");
     }
-    auto* const m_terrain_blank =
-        &this->m_sim.repo().get_int_field("terrain_blank");
-    const auto& blank = (*m_terrain_blank)(lev).const_array(mfi);
     auto* const m_terrain_drag =
         &this->m_sim.repo().get_int_field("terrain_drag");
     const auto& drag = (*m_terrain_drag)(lev).const_array(mfi);
     auto* const m_terrainz0 = &this->m_sim.repo().get_field("terrainz0");
     const auto& terrainz0 = (*m_terrainz0)(lev).const_array(mfi);
+    const auto* m_terrain_vf = &this->m_sim.repo().get_field("terrain_vf");
+    const auto& vf_arr = (*m_terrain_vf)(lev).const_array(mfi);
     const auto& geom = m_mesh.Geom(lev);
     const auto& dx = geom.CellSizeArray();
     const auto& prob_lo = geom.ProbLoArray();
@@ -116,28 +115,28 @@ void DragForcing::operator()(
         yi_end = sponge_north * std::max(yi_end, 0.0);
         ystart_damping = sponge_strength * yi_start * yi_start;
         yend_damping = sponge_strength * yi_end * yi_end;
-
+        const amrex::Real ux1 = vel(i, j, k, 0);
+        const amrex::Real uy1 = vel(i, j, k, 1);
+        const amrex::Real uz1 = vel(i, j, k, 2);
         const auto idx =
             interp::bisection_search(device_vel_ht, device_vel_ht + vsize, z);
         const amrex::Real spongeVelX =
             (vsize > 0) ? interp::linear_impl(
                               device_vel_ht, device_vel_vals, z, idx, 3, 0)
-                        : 0.0;
+                        : ux1;
         const amrex::Real spongeVelY =
             (vsize > 0) ? interp::linear_impl(
                               device_vel_ht, device_vel_vals, z, idx, 3, 1)
-                        : 0.0;
+                        : uy1;
         const amrex::Real spongeVelZ =
             (vsize > 0) ? interp::linear_impl(
                               device_vel_ht, device_vel_vals, z, idx, 3, 2)
-                        : 0.0;
+                        : uz1;
         amrex::Real Dxz = 0.0;
         amrex::Real Dyz = 0.0;
         amrex::Real bc_forcing_x = 0;
         amrex::Real bc_forcing_y = 0;
-        const amrex::Real ux1 = vel(i, j, k, 0);
-        const amrex::Real uy1 = vel(i, j, k, 1);
-        const amrex::Real uz1 = vel(i, j, k, 2);
+
         const amrex::Real m = std::sqrt(ux1 * ux1 + uy1 * uy1 + uz1 * uz1);
         if (drag(i, j, k) == 1 && (!is_laminar)) {
             const amrex::Real ux2 = vel(i, j, k + 1, 0);
@@ -161,17 +160,17 @@ void DragForcing::operator()(
         const amrex::Real CdM =
             std::min(Cd / (m + tiny), cd_max / scale_factor);
         src_term(i, j, k, 0) -=
-            (CdM * m * ux1 * blank(i, j, k) + Dxz * drag(i, j, k) +
+            (CdM * m * ux1 * vf_arr(i, j, k) + Dxz * drag(i, j, k) +
              bc_forcing_x * drag(i, j, k) +
              (xstart_damping + xend_damping + ystart_damping + yend_damping) *
                  (ux1 - sponge_density * spongeVelX));
         src_term(i, j, k, 1) -=
-            (CdM * m * uy1 * blank(i, j, k) + Dyz * drag(i, j, k) +
+            (CdM * m * uy1 * vf_arr(i, j, k) + Dyz * drag(i, j, k) +
              bc_forcing_y * drag(i, j, k) +
              (xstart_damping + xend_damping + ystart_damping + yend_damping) *
                  (uy1 - sponge_density * spongeVelY));
         src_term(i, j, k, 2) -=
-            (CdM * m * uz1 * blank(i, j, k) +
+            (CdM * m * uz1 * vf_arr(i, j, k) +
              (xstart_damping + xend_damping + ystart_damping + yend_damping) *
                  (uz1 - sponge_density * spongeVelZ));
     });
