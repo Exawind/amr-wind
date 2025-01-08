@@ -118,7 +118,7 @@ protected:
 
     SamplingContainer& sampling_container() { return *m_scontainer; }
 
-    amrex::Vector<std::string> int_var_names()
+    static amrex::Vector<std::string> int_var_names()
     {
         return {"uid", "set_id", "probe_id"};
     };
