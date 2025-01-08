@@ -878,6 +878,12 @@ amrex::Vector<amrex::BoxArray> ABLBoundaryPlane::read_bndry_native_boxarrays(
     bool hdr_exists = false;
     for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
         auto ori = oit();
+
+        if ((field.bc_type()[ori] != BC::mass_inflow) &&
+            (field.bc_type()[ori] != BC::mass_inflow_outflow)) {
+            continue;
+        }
+
         const std::string hdr_name(
             chkname + "/Header_" + std::to_string(ori) + "_" + field.name());
         if (amrex::FileSystem::Exists(hdr_name)) {
@@ -898,6 +904,12 @@ amrex::Vector<amrex::BoxArray> ABLBoundaryPlane::read_bndry_native_boxarrays(
     amrex::Vector<amrex::Vector<amrex::Box>> bndry_boxes(max_bndry_levels);
     for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
         auto ori = oit();
+
+        if ((field.bc_type()[ori] != BC::mass_inflow) &&
+            (field.bc_type()[ori] != BC::mass_inflow_outflow)) {
+            continue;
+        }
+
         const std::string hdr_name(
             chkname + "/Header_" + std::to_string(ori) + "_" + field.name());
 
@@ -1020,8 +1032,11 @@ amrex::Vector<amrex::BoxArray> ABLBoundaryPlane::read_bndry_native_boxarrays(
             std::string mf_name = chkname + "/" + relname;
             const auto vismf = std::make_unique<amrex::VisMF>(mf_name);
             auto ba = vismf->boxArray();
-            ba.growLo(normal, -1);
-            ba.growHi(normal, -1);
+            if (ori.isLow()) {
+                ba.growLo(normal, -1);
+            } else {
+                ba.growHi(normal, -1);
+            }
             AMREX_ALWAYS_ASSERT(ba.size() == 1);
             bndry_boxes[ilev].push_back(ba[0]);
         }
