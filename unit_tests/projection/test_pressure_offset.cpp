@@ -118,7 +118,7 @@ void ptest_kernel(
 class ProjPerturb : public MeshTest
 {
 protected:
-    void populate_parameters()
+    void populate_parameters() override
     {
         {
             amrex::ParmParse pp("amr");
