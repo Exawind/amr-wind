@@ -397,7 +397,33 @@ within the ``AMR-Wind`` diffusion framework. The last two terms in :math:`M_{ij}
 Wall models
 -----------
 The wall models described in this section are implemented in ``AMR-Wind`` for
-running wall-bounded flows (non-ABL cases).
+running wall-bounded flows.
+
+Monin-Obukhov Similarity Theory
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Monin-Obukhov similarity theory is used for wall boundary conditions for ABL simulations. The exact
+calculation of :math:`tau_{i3}` in the horizontal directions depends on the SGS model used, but the following calculations for the friction velocity :math:`u_\tau` and surface heat flux `q` are common across the models.
+
+.. math::
+    u_\tau = \frac{\kappa \overline{s}}{\ln \left(\frac{z_b}{z_0}\right) - \psi_m}
+where :math:`s` is the horizontal wind speed :math:`s = \sqrt{u_{1}^2+ u_{2}^2}`, :math:`\theta_w`
+is the wall temperature, :math:`\kappa` is the von Karman constant, and :math:`z_0` is the surface roughness length and :math: `z_b` is the reference height (default is the first cell center). The
+:math:`\overline{\phantom{l}.\phantom{l}}` operator indicates a horizontal plane
+average.  The quantities :math:`\psi_m, \psi_h` are computed using the Monin-Obukhov similarity law
+following the calculations in `ven der Lann et al <https://doi.org/10.1002/we.2017>` and `Dyer (1974)` formulation  for unstable stratification (:math:`z_b/L < 0`):
+.. math::
+    \begin{align}
+        \psi_m &= 2\ln \left(\frac{1+x}{2}\right) + \ln \left(\frac{1+x^2}{2}\right) - 2 \arctan{x} + \frac{\pi}{2}, x = \left(1 - \beta_m\frac{z_b}{L}\right)^{\frac{1}{4}} \\
+        \psi_h &= \ln \left( \frac{1 + y}{2}\right), y = \left(1 - \beta_h \frac{z_b}{L}\right)^{\frac{1}{2}},
+    \end{align}
+and for stable stratification (:math:`z_b/L > 0` ):
+.. math::
+    \begin{align}
+        \psi_m &= -\gamma_m \frac{z_b}{L},\\
+        \psi_h &= -\gamma_h \frac{z_b}{L},
+    \end{align}
+
+where :math:`L = -\frac{u_\tau^3 \theta_0}{\kappa g q}` is the Monin-Obukhov length and :math:`\beta_m, \beta_h, \gamma_m, \gamma_h` are model constants. AMR-Wind uses :math:`\beta_m = \beta_h = 16` and :math:`\gamma_m = \gamma_h = 5`.
 
 Log-law wall model
 ~~~~~~~~~~~~~~~~~~
