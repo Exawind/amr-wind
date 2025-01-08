@@ -21,6 +21,7 @@ void multiphase::split_advection_step(
     Field const& w_mac,
     amrex::GpuArray<BC, AMREX_SPACEDIM * 2> BCs,
     amrex::Vector<amrex::Geometry> geom,
+    amrex::Real time,
     amrex::Real dt,
     bool rm_debris)
 {
@@ -99,7 +100,7 @@ void multiphase::split_advection_step(
     }
 
     // Average down vof and communicate
-    dof_field.fillpatch(0.0);
+    dof_field.fillpatch(time);
 }
 
 void multiphase::split_compute_fluxes(

@@ -3,6 +3,7 @@
 #include "aw_test_utils/test_utils.H"
 #include "amr-wind/ocean_waves/utils/wave_utils_K.H"
 #include "amr-wind/ocean_waves/OceanWaves.H"
+#include "amr-wind/utilities/constants.H"
 #include "amr-wind/physics/multiphase/MultiPhase.H"
 
 namespace amr_wind_tests {
@@ -16,15 +17,15 @@ protected:
 
         {
             amrex::ParmParse pp("amr");
-            amrex::Vector<int> ncell{{32, 4, 4}};
+            amrex::Vector<int> ncell{{64, 4, 16}};
             pp.add("max_level", 0);
             pp.add("max_grid_size", 4);
             pp.addarr("n_cell", ncell);
         }
         {
             amrex::ParmParse pp("geometry");
-            amrex::Vector<amrex::Real> problo{{0.0, 0.0, 0.0}};
-            amrex::Vector<amrex::Real> probhi{{10.0, 1.0, 1.0}};
+            amrex::Vector<amrex::Real> problo{{0.0, -0.25, -1}};
+            amrex::Vector<amrex::Real> probhi{{8.0, 0.25, 1}};
 
             pp.addarr("prob_lo", problo);
             pp.addarr("prob_hi", probhi);
@@ -145,6 +146,7 @@ amrex::Real field_error(amr_wind::Field& comp, amr_wind::Field& targ, int ncomp)
                 return error;
             });
     }
+    amrex::ParallelDescriptor::ReduceRealSum(error_total);
     return error_total;
 }
 
@@ -181,7 +183,85 @@ amrex::Real gas_velocity_error(
                 return error;
             });
     }
+    amrex::ParallelDescriptor::ReduceRealSum(error_total);
     return error_total;
+}
+
+void make_target_velocity(
+    amr_wind::Field& ow_velocity,
+    amr_wind::Field& velocity,
+    amr_wind::Field& ow_vof)
+{
+    for (int lev = 0; lev < ow_vof.repo().num_active_levels(); ++lev) {
+        for (amrex::MFIter mfi(ow_vof(lev)); mfi.isValid(); ++mfi) {
+            const auto& gbx = mfi.growntilebox(2);
+
+            auto ow_vel_arr = ow_velocity(lev).array(mfi);
+            auto vel_arr = velocity(lev).const_array(mfi);
+            auto ow_vof_arr = ow_vof(lev).const_array(mfi);
+
+            amrex::ParallelFor(
+                gbx, velocity.num_comp(),
+                [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                    if (ow_vof_arr(i, j, k) <= amr_wind::constants::LOOSE_TOL) {
+                        ow_vel_arr(i, j, k, n) = vel_arr(i, j, k, n);
+                    }
+                });
+        }
+    }
+}
+
+void make_target_density(
+    amr_wind::Field& ow_vof, const amrex::Real rho1, const amrex::Real rho2)
+{
+    for (int lev = 0; lev < ow_vof.repo().num_active_levels(); ++lev) {
+        for (amrex::MFIter mfi(ow_vof(lev)); mfi.isValid(); ++mfi) {
+            const auto& gbx = mfi.growntilebox(2);
+            auto ow_vof_arr = ow_vof(lev).array(mfi);
+
+            amrex::ParallelFor(
+                gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    ow_vof_arr(i, j, k) = rho1 * ow_vof_arr(i, j, k) +
+                                          rho2 * (1.0 - ow_vof_arr(i, j, k));
+                });
+        }
+    }
+}
+
+amrex::Real bdy_error(amr_wind::Field& comp, amr_wind::Field& targ, int ncomp)
+{
+    amrex::Real error_total = 0.0;
+    int nc = ncomp;
+
+    for (int lev = 0; lev < comp.repo().num_active_levels(); ++lev) {
+        error_total += amrex::ReduceSum(
+            comp(lev), targ(lev), 0,
+            [=] AMREX_GPU_HOST_DEVICE(
+                amrex::Box const& bx,
+                amrex::Array4<amrex::Real const> const& comp_arr,
+                amrex::Array4<amrex::Real const> const& targ_arr)
+                -> amrex::Real {
+                amrex::Real error = 0.0;
+
+                amrex::Loop(
+                    bx, nc, [=, &error](int i, int j, int k, int n) noexcept {
+                        if (i == 0) {
+                            error += std::abs(
+                                comp_arr(i - 1, j, k, n) -
+                                targ_arr(i - 1, j, k, n));
+                        }
+                    });
+
+                return error;
+            });
+    }
+    amrex::ParallelDescriptor::ReduceRealSum(error_total);
+    return error_total;
+}
+
+amrex::Real bdy_error(amr_wind::Field& comp, amr_wind::Field& targ)
+{
+    return bdy_error(comp, targ, 1);
 }
 
 } // namespace
@@ -227,9 +307,9 @@ TEST_F(OceanWavesOpTest, gas_phase)
         pp.add("label", (std::string) "lin_ow");
         amrex::ParmParse ppow("OceanWaves.lin_ow");
         ppow.add("type", (std::string) "LinearWaves");
-        ppow.add("wave_height", 0.02);
+        ppow.add("wave_height", 0.05);
         ppow.add("wave_length", 1.0);
-        ppow.add("water_depth", 0.5);
+        ppow.add("water_depth", 1.0);
         // Wave generation and numerical beach
         ppow.add("relax_zone_gen_length", 2.0);
         ppow.add("numerical_beach_length", 4.0);
@@ -269,6 +349,81 @@ TEST_F(OceanWavesOpTest, gas_phase)
 
     // Check velocity field to confirm not modified
     amrex::Real error_total = gas_velocity_error(velocity, vof, gas_vel);
+    EXPECT_NEAR(error_total, 0.0, tol);
+}
+
+TEST_F(OceanWavesOpTest, boundary_fill)
+{
+
+    constexpr double tol = 1.0e-3;
+    const amrex::Vector<amrex::Real> gas_vel{{1.0, 0.0, 0.0}};
+
+    populate_parameters();
+    {
+        // Ocean Waves details
+        amrex::ParmParse pp("OceanWaves");
+        pp.add("label", (std::string) "lin_ow");
+        amrex::ParmParse ppow("OceanWaves.lin_ow");
+        ppow.add("type", (std::string) "LinearWaves");
+        ppow.add("wave_height", 0.05);
+        ppow.add("wave_length", 1.0);
+        ppow.add("water_depth", 1.0);
+        // Wave generation and numerical beach
+        ppow.add("relax_zone_gen_length", 2.0);
+        ppow.add("numerical_beach_length", 4.0);
+    }
+    {
+        amrex::ParmParse pp("time");
+        pp.add("fixed_dt", 0.1);
+    }
+    {
+        // Boundary conditions
+        amrex::ParmParse ppxlo("xlo");
+        ppxlo.add("type", (std::string) "wave_generation");
+        ppxlo.addarr("velocity", gas_vel);
+        ppxlo.add("vof", 0.0);
+        ppxlo.add("density", 1.0);
+    }
+
+    initialize_mesh();
+
+    // ICNS must be initialized for MultiPhase physics, which is needed for
+    // OceanWaves
+    auto& pde_mgr = sim().pde_manager();
+    pde_mgr.register_icns();
+    // Initialize physics
+    sim().init_physics();
+    auto& oceanwaves =
+        sim().physics_manager().get<amr_wind::ocean_waves::OceanWaves>();
+    // Initialize fields
+    auto& repo = sim().repo();
+    auto& velocity = repo.get_field("velocity");
+    velocity.setVal(gas_vel, 3);
+    oceanwaves.pre_init_actions();
+    for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
+        oceanwaves.initialize_fields(lev, mesh().Geom(lev));
+    }
+    // Do post-init step, which includes fillpatch calls
+    oceanwaves.post_init_actions();
+
+    auto& multiphase = sim().physics_manager().get<amr_wind::MultiPhase>();
+    const amrex::Real rho1 = multiphase.rho1();
+    const amrex::Real rho2 = multiphase.rho2();
+
+    // Get fields for comparison
+    auto& ow_vof = repo.get_field("ow_vof");
+    auto& vof = repo.get_field("vof");
+    auto& ow_velocity = repo.get_field("ow_velocity");
+    auto& density = repo.get_field("density");
+
+    // Check velocity field to confirm not modified
+    amrex::Real error_total = bdy_error(vof, ow_vof);
+    EXPECT_NEAR(error_total, 0.0, tol);
+    make_target_velocity(ow_velocity, velocity, ow_vof);
+    error_total = bdy_error(velocity, ow_velocity);
+    EXPECT_NEAR(error_total, 0.0, tol);
+    make_target_density(ow_vof, rho1, rho2);
+    error_total = bdy_error(density, ow_vof);
     EXPECT_NEAR(error_total, 0.0, tol);
 }
 

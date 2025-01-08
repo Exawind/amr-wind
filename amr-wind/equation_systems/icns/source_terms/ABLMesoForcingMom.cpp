@@ -100,31 +100,17 @@ void ABLMesoForcingMom::mean_velocity_heights(
     amrex::Real currtime;
     currtime = m_time.current_time();
 
-    // First the index in time
-    m_idx_time = utils::closest_index(ncfile->meso_times(), currtime);
-
-    amrex::Array<amrex::Real, 2> coeff_interp{0.0, 0.0};
-
-    amrex::Real denom =
-        ncfile->meso_times()[m_idx_time + 1] - ncfile->meso_times()[m_idx_time];
-
-    coeff_interp[0] = (ncfile->meso_times()[m_idx_time + 1] - currtime) / denom;
-    coeff_interp[1] = 1.0 - coeff_interp[0];
-
-    int num_meso_ht = ncfile->nheights();
+    const int num_meso_ht = ncfile->nheights();
 
     amrex::Vector<amrex::Real> time_interpolated_u(num_meso_ht);
     amrex::Vector<amrex::Real> time_interpolated_v(num_meso_ht);
 
     for (int i = 0; i < num_meso_ht; i++) {
-        const int lt = m_idx_time * num_meso_ht + i;
-        const int rt = (m_idx_time + 1) * num_meso_ht + i;
 
-        time_interpolated_u[i] = coeff_interp[0] * ncfile->meso_u()[lt] +
-                                 coeff_interp[1] * ncfile->meso_u()[rt];
-
-        time_interpolated_v[i] = coeff_interp[0] * ncfile->meso_v()[lt] +
-                                 coeff_interp[1] * ncfile->meso_v()[rt];
+        time_interpolated_u[i] = amr_wind::interp::linear(
+            ncfile->meso_times(), ncfile->meso_u(), currtime, num_meso_ht, i);
+        time_interpolated_v[i] = amr_wind::interp::linear(
+            ncfile->meso_times(), ncfile->meso_v(), currtime, num_meso_ht, i);
     }
 
     for (int ih = 0; ih < num_meso_ht; ih++) {
@@ -153,70 +139,30 @@ void ABLMesoForcingMom::mean_velocity_heights(
     currtime = m_time.current_time();
     const auto& dt = m_time.delta_t();
 
-    // First the index in time
-    m_idx_time = utils::closest_index(ncfile->meso_times(), currtime);
-
-    amrex::Array<amrex::Real, 2> coeff_interp{0.0, 0.0};
-
-    amrex::Real denom =
-        ncfile->meso_times()[m_idx_time + 1] - ncfile->meso_times()[m_idx_time];
-
-    coeff_interp[0] = (ncfile->meso_times()[m_idx_time + 1] - currtime) / denom;
-    coeff_interp[1] = 1.0 - coeff_interp[0];
-
-    const int num_meso_ht = ncfile->nheights();
-
-    amrex::Vector<amrex::Real> time_interpolated_u(num_meso_ht);
-    amrex::Vector<amrex::Real> time_interpolated_v(num_meso_ht);
-
-    for (int i = 0; i < num_meso_ht; i++) {
-        const int lt = m_idx_time * num_meso_ht + i;
-        const int rt = (m_idx_time + 1) * num_meso_ht + i;
-
-        time_interpolated_u[i] = coeff_interp[0] * ncfile->meso_u()[lt] +
-                                 coeff_interp[1] * ncfile->meso_u()[rt];
-
-        time_interpolated_v[i] = coeff_interp[0] * ncfile->meso_v()[lt] +
-                                 coeff_interp[1] * ncfile->meso_v()[rt];
-    }
-
-    amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, time_interpolated_u.begin(),
-        time_interpolated_u.end(), m_meso_u_vals.begin());
-
-    amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, time_interpolated_v.begin(),
-        time_interpolated_v.end(), m_meso_v_vals.begin());
-
-    const int numcomp = vavg.ncomp();
-
     amrex::Vector<amrex::Real> error_U(m_nht);
     amrex::Vector<amrex::Real> error_V(m_nht);
 
+    const int numcomp = vavg.ncomp();
     const auto& vavg_lc = vavg.line_centroids();
-    amrex::Vector<amrex::Real> meso_ht(num_meso_ht);
-    amrex::Gpu::copy(
-        amrex::Gpu::deviceToHost, m_meso_ht.begin(), m_meso_ht.end(),
-        meso_ht.begin());
+    const auto& vavg_lavg = vavg.line_average();
+    const auto& meso_times = ncfile->meso_times();
+    const auto& meso_heights = ncfile->meso_heights();
+
     for (int i = 0; i < m_nht; i++) {
-        const amrex::Real height_interpolated_u =
-            amr_wind::interp::linear(meso_ht, time_interpolated_u, vavg_lc[i]);
-        const amrex::Real height_interpolated_v =
-            amr_wind::interp::linear(meso_ht, time_interpolated_v, vavg_lc[i]);
-        error_U[i] = height_interpolated_u -
-                     vavg.line_average()[static_cast<int>(numcomp * i)];
-        error_V[i] =
-            height_interpolated_v - vavg.line_average()[(numcomp * i + 1)];
+        const amrex::Real interpolated_u = amr_wind::interp::bilinear(
+            meso_times, meso_heights, ncfile->meso_u(), currtime, vavg_lc[i]);
+        const amrex::Real interpolated_v = amr_wind::interp::bilinear(
+            meso_times, meso_heights, ncfile->meso_v(), currtime, vavg_lc[i]);
+        error_U[i] = interpolated_u - vavg_lavg[static_cast<int>(numcomp * i)];
+        error_V[i] = interpolated_v - vavg_lavg[numcomp * i + 1];
     }
 
     if (amrex::toLower(m_forcing_scheme) == "indirect") {
         if (m_update_transition_height) {
             // possible unexpected behaviors, as described in
             // ec5eb95c6ca853ce0fea8488e3f2515a2d6374e7
-            m_transition_height =
-                coeff_interp[0] * ncfile->meso_transition_height()[m_idx_time] +
-                coeff_interp[1] *
-                    ncfile->meso_transition_height()[m_idx_time + 1];
+            m_transition_height = amr_wind::interp::linear(
+                meso_times, ncfile->meso_transition_height(), currtime);
             amrex::Print() << "current transition height = "
                            << m_transition_height << std::endl;
 

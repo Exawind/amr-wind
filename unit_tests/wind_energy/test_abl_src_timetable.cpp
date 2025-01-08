@@ -76,7 +76,6 @@ protected:
             pp.addarr("temperature_heights", theights);
             pp.addarr("temperature_values", tvalues);
             pp.add("perturb_ref_height", 50.0);
-            pp.add("reference_temperature", 300.0);
             pp.add("kappa", 0.41);
             pp.add("surface_roughness_z0", 0.1);
         }
@@ -93,6 +92,12 @@ protected:
         {
             amrex::ParmParse pp("time");
             pp.add("fixed_dt", 0.1);
+        }
+
+        // Transport
+        {
+            amrex::ParmParse pp("transport");
+            pp.add("reference_temperature", 300.0);
         }
     }
     std::string m_tvel_fname = "target_velocities.txt";

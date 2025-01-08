@@ -23,6 +23,7 @@ incflo.density                           = 1.225        # Reference density; mak
 transport.viscosity                      = 1.0e-5       # Dynamic viscosity [N-s/m^2]
 transport.laminar_prandtl                = 0.7
 transport.turbulent_prandtl              = 0.3333
+transport.reference_temperature 		 = 290
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            GEOMETRY & BCs             #
@@ -48,8 +49,6 @@ ABLForcing.forcing_timetable_output_file = abl_forces.txt
 CoriolisForcing.latitude                 = 36.607322                 # Southern Great Plains
 CoriolisForcing.north_vector             = 0.0 1.0 0.0
 CoriolisForcing.east_vector              = 1.0 0.0 0.0
-BoussinesqBuoyancy.reference_temperature = 290.0
-ABL.reference_temperature                = 290.0
 ABL.temperature_heights                  = 0.0 600.0 700.0 1700.0    # Make sure top height >= the domain height
 ABL.temperature_values                   = 290.0 290.0 298.0 301.0
 ABL.perturb_temperature                  = true

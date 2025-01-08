@@ -56,7 +56,10 @@ struct UpdateRelaxZonesOp<
     typename std::enable_if_t<
         std::is_base_of_v<RelaxZonesType, WaveTheoryTrait>>>
 {
-    void operator()(typename WaveTheoryTrait::DataType& /*unused*/) {}
+    void operator()(
+        typename WaveTheoryTrait::DataType& /*unused*/,
+        const amrex::Real /*unused*/)
+    {}
 };
 
 template <typename WaveTheoryTrait>

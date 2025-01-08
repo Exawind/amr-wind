@@ -2,6 +2,7 @@
 #define ABLMEANBOUSSINESQ_H
 
 #include "amr-wind/core/FieldRepo.H"
+#include "amr-wind/transport_models/TransportModel.H"
 #include "amr-wind/equation_systems/icns/MomentumSource.H"
 #include "amr-wind/utilities/FieldPlaneAveraging.H"
 
@@ -42,11 +43,11 @@ private:
     amrex::Gpu::DeviceVector<amrex::Real> m_theta_ht;
     amrex::Gpu::DeviceVector<amrex::Real> m_theta_vals;
 
-    //! Reference temperature (Kelvin)
-    amrex::Real m_ref_theta{300.0};
+    //! Transport model
+    const transport::TransportModel& m_transport;
 
-    //! Thermal expansion coefficient
-    amrex::Real m_beta{0.0};
+    //! Reference temperature
+    std::unique_ptr<ScratchField> m_ref_theta;
 
     int m_axis{2};
 

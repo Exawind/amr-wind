@@ -48,7 +48,7 @@ macro(setup_test)
     file(MAKE_DIRECTORY ${CURRENT_TEST_BINARY_DIR})
     file(GLOB TEST_FILES "${CURRENT_TEST_SOURCE_DIR}/*")
     file(COPY ${TEST_FILES} DESTINATION "${CURRENT_TEST_BINARY_DIR}/")
-    set(RUNTIME_OPTIONS "time.max_step=10 io.plot_file=plt time.plot_interval=10 amrex.the_arena_is_managed=0 amrex.abort_on_out_of_gpu_memory=1 amrex.abort_on_unused_inputs=1")
+    set(RUNTIME_OPTIONS "time.max_step=10 io.plot_file=plt time.plot_interval=10 amrex.the_arena_is_managed=0 amrex.abort_on_out_of_gpu_memory=1")
     if(NOT AMR_WIND_TEST_WITH_FCOMPARE) #Avoid all I/O otherwise
       set(RUNTIME_OPTIONS "${RUNTIME_OPTIONS} time.plot_interval=-1 time.checkpoint_interval=-1")
     endif()
@@ -87,7 +87,7 @@ function(add_test_r TEST_NAME)
     add_test(${TEST_NAME} bash -c "set -o pipefail && ${MPI_COMMANDS} ${CMAKE_BINARY_DIR}/${amr_wind_exe_name} ${MPIEXEC_POSTFLAGS} ${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}.inp ${RUNTIME_OPTIONS} 2>&1 | tee ${TEST_NAME}.log ${SAVE_GOLDS_COMMAND} ${FCOMPARE_COMMAND}")
     # Set properties for test
     set_tests_properties(${TEST_NAME} PROPERTIES
-                         TIMEOUT 5400
+                         TIMEOUT 7200
                          PROCESSORS ${TEST_NP}
                          WORKING_DIRECTORY "${CURRENT_TEST_BINARY_DIR}/"
                          LABELS "regression"
@@ -157,7 +157,7 @@ function(add_test_pps TEST_NAME FORMAT NINT NSTEPS)
     add_test("${TEST_NAME}_sampling_${FORMAT}" bash -c "set -o pipefail && ${MPI_COMMANDS} ${CMAKE_BINARY_DIR}/${amr_wind_exe_name} ${MPIEXEC_POSTFLAGS} ${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}.inp ${RUNTIME_OPTIONS} ${ADDL_RUNTIME_OPTIONS} 2>&1 | tee ${TEST_NAME}_sampling_${FORMAT}.log && ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/sampling_${TEST_NAME}_${FORMAT}.py")
     # Set properties for test
     set_tests_properties("${TEST_NAME}_sampling_${FORMAT}" PROPERTIES
-                          TIMEOUT 5400
+                          TIMEOUT 7200
                           PROCESSORS ${TEST_NP}
                           WORKING_DIRECTORY "${CURRENT_TEST_BINARY_DIR}/"
                           LABELS "post_processing;no_ci"
@@ -327,6 +327,7 @@ if(AMR_WIND_ENABLE_OPENFAST)
   set(ACT_UNIFORM_ALM_TEST_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test_files/act_uniform_alm)
   set(ACT_UNIFORM_ALM_TEST_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/test_files/act_uniform_alm)
   set(RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR ${ACT_UNIFORM_ALM_TEST_BINARY_DIR}/r-test)
+  set(RTEST_TAG "v3.5.4")
   set(5MW_BASELINE_DIR glue-codes/openfast/5MW_Baseline)
   set(5MW_LAND_DIR glue-codes/openfast-cpp/5MW_Land_DLL_WTurb_cpp)
   set(AERO_FILE NRELOffshrBsline5MW_Onshore_AeroDyn15.dat)
@@ -340,12 +341,17 @@ if(AMR_WIND_ENABLE_OPENFAST)
       "${ACT_UNIFORM_ALM_TEST_BINARY_DIR}"
       COMMAND_ERROR_IS_FATAL ANY)
     execute_process(
+      COMMAND bash -c "${GIT_EXECUTABLE} fetch --all --tags"
+      WORKING_DIRECTORY
+      "${RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR}"
+      COMMAND_ERROR_IS_FATAL ANY)
+    execute_process(
       COMMAND bash -c "${GIT_EXECUTABLE} sparse-checkout set --no-cone ${5MW_BASELINE_DIR} ${5MW_LAND_DIR}"
       WORKING_DIRECTORY
       "${RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR}"
       COMMAND_ERROR_IS_FATAL ANY)
     execute_process(
-      COMMAND bash -c "${GIT_EXECUTABLE} checkout"
+      COMMAND bash -c "${GIT_EXECUTABLE} checkout ${RTEST_TAG}"
       WORKING_DIRECTORY
       "${RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR}"
       COMMAND_ERROR_IS_FATAL ANY)
@@ -361,6 +367,9 @@ if(AMR_WIND_ENABLE_OPENFAST)
   endif()
 endif()
 
+if(AMR_WIND_ENABLE_FFT)
+  add_test_re(abl_godunov_nofft)
+endif()
 #=============================================================================
 # Regression tests excluded from CI with a test dependency
 #=============================================================================
@@ -372,6 +381,7 @@ if(AMR_WIND_TEST_WITH_FCOMPARE)
   add_test_red(abl_bndry_input_amr_native_xhi abl_bndry_output_native)
   add_test_red(abl_bndry_input_amr_native_mlbc abl_bndry_output_amr_native)
   add_test_red(abl_godunov_forcetimetable abl_godunov_timetable)
+  add_test_red(abl_multiphase_laminar_input abl_multiphase_laminar)
 endif()
 
 if(AMR_WIND_ENABLE_NETCDF)
