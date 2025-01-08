@@ -11,6 +11,7 @@ Exascale
 Fortran
 Joukowsky
 Jupyter
+Karman
 Liungman
 MPI
 Menter 
@@ -129,6 +130,7 @@ timesteps
 tke
 vel
 vof
+von
 vorticity
 walkthrough
 weno
