@@ -120,6 +120,8 @@ class ProjPerturb : public MeshTest
 protected:
     void populate_parameters() override
     {
+        MeshTest::populate_parameters();
+
         {
             amrex::ParmParse pp("amr");
             amrex::Vector<int> ncell{{m_nx, m_ny, m_nz}};
