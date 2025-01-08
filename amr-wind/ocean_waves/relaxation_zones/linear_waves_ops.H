@@ -125,13 +125,12 @@ struct InitDataOp<LinearWaves>
 template <>
 struct UpdateRelaxZonesOp<LinearWaves>
 {
-    void operator()(LinearWaves::DataType& data)
+    void operator()(LinearWaves::DataType& data, const amrex::Real time)
     {
         const auto& wdata = data.meta();
 
         auto& sim = data.sim();
 
-        const auto& time = sim.time().new_time();
         // cppcheck-suppress constVariableReference
         auto& m_ow_levelset = sim.repo().get_field("ow_levelset");
         // cppcheck-suppress constVariableReference
@@ -157,7 +156,8 @@ struct UpdateRelaxZonesOp<LinearWaves>
             amrex::ParallelFor(
                 m_ow_velocity(lev), amrex::IntVect(3),
                 [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                    const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                    const amrex::Real x =
+                        amrex::max(problo[0], problo[0] + (i + 0.5) * dx[0]);
                     const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
                     const amrex::Real wave_number = 2. * M_PI / wave_length;
