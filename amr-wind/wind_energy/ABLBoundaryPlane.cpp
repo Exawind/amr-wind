@@ -878,6 +878,12 @@ amrex::Vector<amrex::BoxArray> ABLBoundaryPlane::read_bndry_native_boxarrays(
     bool hdr_exists = false;
     for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
         auto ori = oit();
+
+        if ((field.bc_type()[ori] != BC::mass_inflow) &&
+            (field.bc_type()[ori] != BC::mass_inflow_outflow)) {
+            continue;
+        }
+
         const std::string hdr_name(
             chkname + "/Header_" + std::to_string(ori) + "_" + field.name());
         if (amrex::FileSystem::Exists(hdr_name)) {
@@ -898,6 +904,12 @@ amrex::Vector<amrex::BoxArray> ABLBoundaryPlane::read_bndry_native_boxarrays(
     amrex::Vector<amrex::Vector<amrex::Box>> bndry_boxes(max_bndry_levels);
     for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
         auto ori = oit();
+
+        if ((field.bc_type()[ori] != BC::mass_inflow) &&
+            (field.bc_type()[ori] != BC::mass_inflow_outflow)) {
+            continue;
+        }
+
         const std::string hdr_name(
             chkname + "/Header_" + std::to_string(ori) + "_" + field.name());
 
