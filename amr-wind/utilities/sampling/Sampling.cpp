@@ -454,10 +454,6 @@ void Sampling::write_header_file(const std::string& fname)
         return;
     }
 
-    if (amrex::FileSystem::Exists(fname)) {
-        return;
-    }
-
     if ((m_out_fmt != "native")) {
         amrex::Abort(
             "write_header_file is implemented only for native formats");
