@@ -1,0 +1,14 @@
+.. meta::c4cde43ec47ed0594465c73b3a25360d0fa76dfeb0d9421b2e3a989873a762a15797073efd14fa94590051d68762d4aac1ae0aa0aa639c27ae9135a3fdb520dc
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ActSrcLine Struct Reference
+
+ActSrcLine Struct Reference
+===========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1_act_src_line.html
