@@ -405,7 +405,9 @@ Monin-Obukhov similarity theory is used for wall boundary conditions for ABL sim
 calculation of :math:`tau_{i3}` in the horizontal directions depends on the SGS model used, but the following calculations for the friction velocity :math:`u_\tau` and surface heat flux `q` are common across the models.
 
 .. math::
+
     u_\tau = \frac{\kappa \overline{s}}{\ln \left(\frac{z_b}{z_0}\right) - \psi_m}
+    
 where :math:`s` is the horizontal wind speed :math:`s = \sqrt{u_{1}^2+ u_{2}^2}`, :math:`\theta_w`
 is the wall temperature, :math:`\kappa` is the von Karman constant, and :math:`z_0` is the surface roughness length and :math: `z_b` is the reference height (default is the first cell center). The
 :math:`\overline{\phantom{l}.\phantom{l}}` operator indicates a horizontal plane
