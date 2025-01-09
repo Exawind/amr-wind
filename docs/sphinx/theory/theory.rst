@@ -414,7 +414,6 @@ average.  The quantities :math:`\psi_m, \psi_h` are computed using the Monin-Obu
 following the calculations in `ven der Lann et al <https://doi.org/10.1002/we.2017>` and `Dyer (1974)` formulation  for unstable stratification (:math:`z_b/L < 0`):
 
 .. math::
-
     \begin{align}
         \psi_m &= 2\ln \left(\frac{1+x}{2}\right) + \ln \left(\frac{1+x^2}{2}\right) - 2 \arctan{x} + \frac{\pi}{2}, x = \left(1 - \beta_m\frac{z_b}{L}\right)^{\frac{1}{4}} \\
         \psi_h &= \ln \left( \frac{1 + y}{2}\right), y = \left(1 - \beta_h \frac{z_b}{L}\right)^{\frac{1}{2}},
