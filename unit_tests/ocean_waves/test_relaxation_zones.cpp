@@ -5,6 +5,7 @@
 #include "amr-wind/ocean_waves/OceanWaves.H"
 #include "amr-wind/utilities/constants.H"
 #include "amr-wind/physics/multiphase/MultiPhase.H"
+#include "amr-wind/equation_systems/icns/icns_advection.H"
 
 namespace amr_wind_tests {
 
@@ -203,7 +204,7 @@ void make_target_velocity(
             amrex::ParallelFor(
                 gbx, velocity.num_comp(),
                 [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                    if (ow_vof_arr(i, j, k) <= amr_wind::constants::LOOSE_TOL) {
+                    if (ow_vof_arr(i, j, k) <= amr_wind::constants::TIGHT_TOL) {
                         ow_vel_arr(i, j, k, n) = vel_arr(i, j, k, n);
                     }
                 });
@@ -262,6 +263,34 @@ amrex::Real bdy_error(amr_wind::Field& comp, amr_wind::Field& targ, int ncomp)
 amrex::Real bdy_error(amr_wind::Field& comp, amr_wind::Field& targ)
 {
     return bdy_error(comp, targ, 1);
+}
+
+amrex::Real uface_bdy_error(amr_wind::Field& comp, amr_wind::Field& targ)
+{
+    amrex::Real error_total = 0.0;
+
+    for (int lev = 0; lev < comp.repo().num_active_levels(); ++lev) {
+        error_total += amrex::ReduceSum(
+            comp(lev), targ(lev), 0,
+            [=] AMREX_GPU_HOST_DEVICE(
+                amrex::Box const& bx,
+                amrex::Array4<amrex::Real const> const& comp_arr,
+                amrex::Array4<amrex::Real const> const& targ_arr)
+                -> amrex::Real {
+                amrex::Real error = 0.0;
+
+                amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
+                    if (i == 0) {
+                        error += std::abs(
+                            comp_arr(i, j, k, 0) - targ_arr(i - 1, j, k, 0));
+                    }
+                });
+
+                return error;
+            });
+    }
+    amrex::ParallelDescriptor::ReduceRealSum(error_total);
+    return error_total;
 }
 
 } // namespace
@@ -424,6 +453,80 @@ TEST_F(OceanWavesOpTest, boundary_fill)
     EXPECT_NEAR(error_total, 0.0, tol);
     make_target_density(ow_vof, rho1, rho2);
     error_total = bdy_error(density, ow_vof);
+    EXPECT_NEAR(error_total, 0.0, tol);
+}
+
+TEST_F(OceanWavesOpTest, set_inflow_sibling)
+{
+
+    constexpr double tol = 1.0e-3;
+    const amrex::Vector<amrex::Real> gas_vel{{1.0, 0.0, 0.0}};
+
+    populate_parameters();
+    {
+        // Ocean Waves details
+        amrex::ParmParse pp("OceanWaves");
+        pp.add("label", (std::string) "lin_ow");
+        amrex::ParmParse ppow("OceanWaves.lin_ow");
+        ppow.add("type", (std::string) "LinearWaves");
+        ppow.add("wave_height", 0.05);
+        ppow.add("wave_length", 1.0);
+        ppow.add("water_depth", 1.0);
+        // Wave generation and numerical beach
+        ppow.add("relax_zone_gen_length", 2.0);
+        ppow.add("numerical_beach_length", 4.0);
+    }
+    {
+        amrex::ParmParse pp("time");
+        pp.add("fixed_dt", 0.1);
+    }
+    {
+        // Boundary conditions
+        amrex::ParmParse ppxlo("xlo");
+        ppxlo.add("type", (std::string) "wave_generation");
+        ppxlo.addarr("velocity", gas_vel);
+        ppxlo.add("vof", 0.0);
+        ppxlo.add("density", 1.0);
+    }
+
+    initialize_mesh();
+
+    // ICNS must be initialized for MultiPhase physics, which is needed for
+    // OceanWaves
+    auto& pde_mgr = sim().pde_manager();
+    pde_mgr.register_icns();
+    // Initialize physics
+    sim().init_physics();
+    auto& oceanwaves =
+        sim().physics_manager().get<amr_wind::ocean_waves::OceanWaves>();
+    // Initialize fields
+    auto& repo = sim().repo();
+    auto& velocity = repo.get_field("velocity");
+    velocity.setVal(gas_vel, 3);
+    oceanwaves.pre_init_actions();
+    for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
+        oceanwaves.initialize_fields(lev, mesh().Geom(lev));
+    }
+    // Do post-init step, which includes fillpatch calls
+    oceanwaves.post_init_actions();
+
+    // Get MAC velocity in x
+    auto& u_mac = repo.get_field("u_mac");
+    // Set to 0 as a starting point
+    u_mac.setVal(0.0);
+    // Initialize MAC projection operator
+    auto mco = amr_wind::pde::MacProjOp(
+        sim().repo(), sim().physics_manager(), false, false, false, false);
+    // Populate boundary using set inflow
+    mco.set_inflow_velocity(0.0);
+
+    // Get fields for comparison
+    auto& ow_vof = repo.get_field("ow_vof");
+    auto& ow_velocity = repo.get_field("ow_velocity");
+
+    // Check velocity field to confirm not modified
+    make_target_velocity(ow_velocity, velocity, ow_vof);
+    const amrex::Real error_total = uface_bdy_error(u_mac, ow_velocity);
     EXPECT_NEAR(error_total, 0.0, tol);
 }
 

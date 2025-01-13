@@ -177,10 +177,8 @@ void MacProjOp::set_inflow_velocity(amrex::Real time)
         velocity.set_inflow_sibling_fields(lev, time, mac_vec);
         if (m_phy_mgr.contains("OceanWaves")) {
             auto& ow = m_phy_mgr.get<amr_wind::ocean_waves::OceanWaves>();
-            for (int dir = 0; dir < ICNS::ndim; ++dir) {
-                ow.ow_bndry().set_velocity(
-                    lev, time, velocity, *mac_vec[dir], 0, dir);
-            }
+            ow.ow_bndry().set_inflow_sibling_velocity(
+                lev, time, velocity, mac_vec);
         }
     }
 }
