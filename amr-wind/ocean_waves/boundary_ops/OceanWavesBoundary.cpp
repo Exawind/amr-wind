@@ -101,7 +101,7 @@ void OceanWavesBoundary::set_velocity(
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     for (int n = 0; n < numcomp; n++) {
-                        if (targ_vof(i, j, k) > constants::LOOSE_TOL) {
+                        if (targ_vof(i, j, k) > constants::TIGHT_TOL) {
                             arr(i, j, k, dcomp + n) =
                                 targ_arr(i, j, k, orig_comp + n);
                         }
@@ -277,7 +277,7 @@ void OceanWavesBoundary::set_inflow_sibling_velocity(
                         amrex::IntVect cc_iv = {i, j, k};
                         cc_iv += shift_to_cc;
 
-                        if (targ_vof(cc_iv) > constants::LOOSE_TOL) {
+                        if (targ_vof(cc_iv) > constants::TIGHT_TOL) {
                             marr(i, j, k, 0) = targ_arr(cc_iv, fdir);
                         }
                     });

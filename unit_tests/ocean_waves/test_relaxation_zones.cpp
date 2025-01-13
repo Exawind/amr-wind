@@ -203,7 +203,7 @@ void make_target_velocity(
             amrex::ParallelFor(
                 gbx, velocity.num_comp(),
                 [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                    if (ow_vof_arr(i, j, k) <= amr_wind::constants::LOOSE_TOL) {
+                    if (ow_vof_arr(i, j, k) <= amr_wind::constants::TIGHT_TOL) {
                         ow_vel_arr(i, j, k, n) = vel_arr(i, j, k, n);
                     }
                 });
