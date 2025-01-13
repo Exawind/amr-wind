@@ -109,7 +109,7 @@ Dependencies
 
 .. cmakeval:: AMR_WIND_OPENFAST_VERSION
 
-   OpenFAST major version. Default: 3
+   OpenFAST version. Default: 3
 
 Other AMR-Wind specific options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
