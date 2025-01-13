@@ -89,6 +89,14 @@ This section is for setting up wave forcing and relaxation zones.
    is turned on, the wave profile will be initialized over the entire domain. If there is a specified
    relax_zone_out_length, this option is automatically turned on.
 
+.. input_param:: OceanWaves.label.current
+
+   **type:** Real, optional, default = 0.0
+
+   Flow speed of a uniform current in the x-direction to be added to the wave forcing. This option is
+   currently only compatible with the LinearWaves wave type and the numerical beach. If a nonzero current is
+   specified for a case with nonlinear waves and a numerical beach, unphysical results will occur.
+
 The following input arguments are only valid for the LinearWaves and StokesWave wave types:
 
 .. input_param:: OceanWaves.label.wave_length
