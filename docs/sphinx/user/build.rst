@@ -103,6 +103,14 @@ Dependencies
 
    Enable NetCDF outputs. Default: OFF
 
+.. cmakeval:: AMR_WIND_ENABLE_OPENFAST
+
+   Enable OpenFAST coupling. Default: OFF
+
+.. cmakeval:: AMR_WIND_OPENFAST_VERSION
+
+   OpenFAST major version. Default: 3
+
 Other AMR-Wind specific options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
