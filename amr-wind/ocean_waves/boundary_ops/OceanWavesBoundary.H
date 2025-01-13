@@ -42,6 +42,12 @@ public:
         const Field& fld,
         amrex::MultiFab& mfab) const;
 
+    void set_inflow_sibling_velocity(
+        const int lev,
+        const amrex::Real time,
+        const Field& fld,
+        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM> mfabs) const;
+
     void record_boundary_data_time(const amrex::Real time)
     {
         m_bndry_time = time;

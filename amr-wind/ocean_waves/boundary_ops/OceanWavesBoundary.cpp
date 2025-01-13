@@ -212,4 +212,78 @@ void OceanWavesBoundary::set_density(
     }
 }
 
+void OceanWavesBoundary::set_inflow_sibling_velocity(
+    const int lev,
+    const amrex::Real /*time*/,
+    const Field& fld,
+    const amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM> mfabs) const
+{
+
+    if (!m_activate_ow_bndry) {
+        return;
+    }
+
+    BL_PROFILE("amr-wind::OceanWavesBoundary::set_inflow_sibling_velocity");
+
+    const auto& bctype = fld.bc_type();
+    const auto& geom = fld.repo().mesh().Geom(lev);
+
+    for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
+        const auto ori = oit();
+        if ((bctype[ori] != BC::mass_inflow) &&
+            (bctype[ori] != BC::mass_inflow_outflow) &&
+            (bctype[ori] != BC::wave_generation)) {
+            continue;
+        }
+
+        const int idir = ori.coordDir();
+        const auto& domain_box = geom.Domain();
+        for (int fdir = 0; fdir < AMREX_SPACEDIM; ++fdir) {
+
+            // Only face-normal velocities populated here
+            if (idir != fdir) {
+                continue;
+            }
+            const auto& dbx = ori.isLow() ? amrex::bdryLo(domain_box, idir)
+                                          : amrex::bdryHi(domain_box, idir);
+
+            // Shift from valid face index to first cell-centered ghost
+            amrex::IntVect shift_to_cc = {0, 0, 0};
+            if (ori.isLow()) {
+                --shift_to_cc[fdir];
+            }
+
+            auto& mfab = *mfabs[fdir];
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
+            for (amrex::MFIter mfi(mfab); mfi.isValid(); ++mfi) {
+                const auto& vbx = mfi.validbox();
+                const auto& bx = vbx & dbx;
+                if (!bx.ok()) {
+                    continue;
+                }
+
+                const auto& targ_vof = m_ow_vof(lev).const_array(mfi);
+                const auto& targ_arr = m_ow_velocity(lev).const_array(mfi);
+                const auto& marr = mfab[mfi].array();
+                amrex::FArrayBox tmp_fab(
+                    bx, mfab.nComp(), amrex::The_Async_Arena());
+                amrex::Array4<amrex::Real> const& tmp_marr = tmp_fab.array();
+
+                amrex::ParallelFor(
+                    bx, [=] AMREX_GPU_DEVICE(
+                            const int i, const int j, const int k) noexcept {
+                        amrex::IntVect cc_iv = {i, j, k};
+                        cc_iv += shift_to_cc;
+
+                        if (targ_vof(cc_iv) > constants::LOOSE_TOL) {
+                            marr(i, j, k, 0) = targ_arr(cc_iv, fdir);
+                        }
+                    });
+            }
+        }
+    }
+}
+
 } // namespace amr_wind
