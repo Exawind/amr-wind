@@ -175,15 +175,6 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                         // Conserve momentum when density changes
                         amrex::Real rho_ = rho1 * volfrac(i, j, k) +
                                            rho2 * (1.0 - volfrac(i, j, k));
-                        /* // Target solution in liquid is vel = 0, assume
-                        // added liquid already has target velocity
-                        for (int n = 0; n < vel.ncomp; ++n) {
-                            vel(i, j, k, n) =
-                                (rho1 * (volfrac(i, j, k) * Gamma -
-                                         amrex::max(0.0, dvf)) +
-                                 rho2 * (1. - volfrac(i, j, k))) *
-                                vel(i, j, k, n) / rho_;
-                        } */
                         // Target vel is current, 0, 0
                         amrex::Real out_vel{0.0};
                         for (int n = 0; n < vel.ncomp; ++n) {
