@@ -267,9 +267,6 @@ void OceanWavesBoundary::set_inflow_sibling_velocity(
                 const auto& targ_vof = m_ow_vof(lev).const_array(mfi);
                 const auto& targ_arr = m_ow_velocity(lev).const_array(mfi);
                 const auto& marr = mfab[mfi].array();
-                amrex::FArrayBox tmp_fab(
-                    bx, mfab.nComp(), amrex::The_Async_Arena());
-                amrex::Array4<amrex::Real> const& tmp_marr = tmp_fab.array();
 
                 amrex::ParallelFor(
                     bx, [=] AMREX_GPU_DEVICE(
