@@ -95,7 +95,7 @@ This section is for setting up wave forcing and relaxation zones.
 
    Flow speed of a uniform current in the x-direction to be added to the wave forcing. This option is
    currently only compatible with the LinearWaves wave type and the numerical beach. If a nonzero current is
-   specified for a case with nonlinear waves and a numerical beach, unphysical results will occur.
+   specified for a case with nonlinear waves and a numerical beach, nonphysical results will occur.
 
 The following input arguments are only valid for the LinearWaves and StokesWave wave types:
 
