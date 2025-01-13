@@ -168,13 +168,13 @@ inline void FAST_OpFM_Restart(
 #if OPENFAST_VERSION_MAJOR == 4
 static constexpr auto& FAST_Solution0 = FAST_CFD_Solution0;
 static constexpr auto& FAST_Step = FAST_CFD_Step;
-typedef ExtInfw_InputType_t OfInputType;
-typedef ExtInfw_OutputType_t OfOutputType;
+using OfInputType = ExtInfw_InputType_t;
+using OfOutputType = ExtInfw_OutputType_t;
 #else
 static constexpr auto& FAST_Solution0 = FAST_OpFM_Solution0;
 static constexpr auto& FAST_Step = FAST_OpFM_Step;
-typedef OpFM_InputType OfInputType;
-typedef OpFM_OutputType OfOutputType;
+using OfInputType = OpFM_InputType;
+using OfOutputType = OpFM_OutputType;
 #endif
 
 } // namespace exw_fast
