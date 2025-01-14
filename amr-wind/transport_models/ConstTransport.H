@@ -210,10 +210,6 @@ public:
 
     inline amrex::Real reference_temperature() const override
     {
-        if (m_repo.field_exists("reference_temperature")) {
-            auto& temp0 = m_repo.get_field("reference_temperature");
-            return field_ops::global_max_magnitude(temp0);
-        }
         return m_reference_temperature;
     }
 
