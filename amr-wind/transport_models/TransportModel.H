@@ -4,6 +4,8 @@
 #include "amr-wind/core/Factory.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/core/FieldRepo.H"
+#include "amr-wind/utilities/constants.H"
+#include "amr-wind/core/field_ops.H"
 
 namespace amr_wind::transport {
 

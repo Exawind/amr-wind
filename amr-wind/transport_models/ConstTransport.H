@@ -2,7 +2,6 @@
 #define CONSTTRANSPORT_H
 
 #include "amr-wind/transport_models/TransportModel.H"
-#include "amr-wind/utilities/constants.H"
 #include "AMReX_ParmParse.H"
 
 namespace amr_wind::transport {
@@ -212,7 +211,8 @@ public:
     inline amrex::Real reference_temperature() const override
     {
         if (m_repo.field_exists("reference_temperature")) {
-            amrex::Abort();
+            auto& temp0 = m_repo.get_field("reference_temperature");
+            return field_ops::global_max_magnitude(temp0);
         }
         return m_reference_temperature;
     }
