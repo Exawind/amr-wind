@@ -176,14 +176,26 @@ public:
         const amrex::Array4<amrex::Real>& beta) const override
     {
 
-        const amrex::Real beta_val = (m_constant_beta > 0.0)
-                                         ? m_constant_beta
-                                         : 1.0 / m_reference_temperature;
-
-        amrex::ParallelFor(
-            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                beta(i, j, k) = beta_val;
-            });
+        if (m_constant_beta > 0.0) {
+            const amrex::Real beta_val = m_constant_beta;
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    beta(i, j, k) = beta_val;
+                });
+        } else if (m_repo.field_exists("reference_temperature")) {
+            const auto& temp0 = m_repo.get_field("reference_temperature");
+            const auto& temp0_arr = temp0(lev).const_array(mfi);
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    beta(i, j, k) = 1.0 / temp0_arr(i, j, k);
+                });
+        } else {
+            const amrex::Real beta_val = 1.0 / m_reference_temperature;
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    beta(i, j, k) = beta_val;
+                });
+        }
 
         if (m_repo.field_exists("vof")) {
             const auto& vof = m_repo.get_field("vof");
@@ -199,6 +211,9 @@ public:
 
     inline amrex::Real reference_temperature() const override
     {
+        if (m_repo.field_exists("reference_temperature")) {
+            amrex::Abort();
+        }
         return m_reference_temperature;
     }
 
@@ -210,8 +225,18 @@ public:
         }
 
         auto ref_theta = m_repo.create_scratch_field(1, m_ngrow);
-        for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
-            (*ref_theta)(lev).setVal(m_reference_temperature);
+
+        if (m_repo.field_exists("reference_temperature")) {
+            auto& temp0 = m_repo.get_field("reference_temperature");
+            for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
+                amrex::Copy(
+                    (*ref_theta)(lev), temp0(lev), 0, 0, temp0.num_comp(),
+                    ref_theta->num_grow());
+            }
+        } else {
+            for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
+                (*ref_theta)(lev).setVal(m_reference_temperature);
+            }
         }
         return ref_theta;
     }

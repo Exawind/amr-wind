@@ -38,7 +38,7 @@ transport.reference_temperature = 300.0
 turbulence.model = Smagorinsky
 Smagorinsky_coeffs.Cs = 0.135
 
-io.outputs = reference_density reference_pressure
+io.outputs = reference_density reference_pressure reference_temperature
 
 incflo.physics = ABL
 ICNS.source_terms = GravityForcing
