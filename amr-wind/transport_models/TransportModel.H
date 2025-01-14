@@ -57,6 +57,13 @@ public:
     virtual amrex::Real reference_temperature() const = 0;
 
     //! Reference temperature
+    virtual void ref_theta_impl(
+        const int lev,
+        const amrex::MFIter& mfi,
+        const amrex::Box& bx,
+        const amrex::Array4<amrex::Real>& ref_theta) const = 0;
+
+    //! Reference temperature
     virtual std::unique_ptr<ScratchField> ref_theta() const = 0;
 
 protected:

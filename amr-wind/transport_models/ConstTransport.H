@@ -225,20 +225,44 @@ public:
         }
 
         auto ref_theta = m_repo.create_scratch_field(1, m_ngrow);
-
-        if (m_repo.field_exists("reference_temperature")) {
-            auto& temp0 = m_repo.get_field("reference_temperature");
-            for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
-                amrex::Copy(
-                    (*ref_theta)(lev), temp0(lev), 0, 0, temp0.num_comp(),
-                    ref_theta->num_grow());
-            }
-        } else {
-            for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
-                (*ref_theta)(lev).setVal(m_reference_temperature);
+        for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
+            for (amrex::MFIter mfi((*ref_theta)(lev)); mfi.isValid(); ++mfi) {
+                const auto& bx = mfi.tilebox();
+                const auto& ref_theta_arr = (*ref_theta)(lev).array(mfi);
+                ref_theta_impl(lev, mfi, bx, ref_theta_arr);
             }
         }
         return ref_theta;
+    }
+
+    //! Compute the reference temperature
+    inline void ref_theta_impl(
+        const int lev,
+        const amrex::MFIter& mfi,
+        const amrex::Box& bx,
+        const amrex::Array4<amrex::Real>& ref_theta) const override
+    {
+        if (m_reference_temperature < 0.0) {
+            amrex::Abort("Reference temperature was not set");
+        }
+
+        if (m_repo.field_exists("reference_temperature")) {
+            auto& temp0 = m_repo.get_field("reference_temperature");
+            const auto& temp0_arr = temp0(lev).const_array(mfi);
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    ref_theta(i, j, k) = temp0_arr(i, j, k);
+                });
+        } else {
+            const amrex::Real ref_theta_val = m_reference_temperature;
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    ref_theta(i, j, k) = ref_theta_val;
+                });
+        }
     }
 
 private:
