@@ -105,12 +105,12 @@ void KransAxell::operator()(
         m_gravity[0], m_gravity[1], m_gravity[2]};
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         amrex::Real bcforcing = 0;
-        const amrex::Real ux = vel(i, j, k, 0);
-        const amrex::Real uy = vel(i, j, k, 1);
         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
         if (k == 0) {
+            const amrex::Real ux = vel(i, j, k + 1, 0);
+            const amrex::Real uy = vel(i, j, k + 1, 1);
             const amrex::Real m = std::sqrt(ux * ux + uy * uy);
-            const amrex::Real ustar = m * kappa / std::log(z / z0);
+            const amrex::Real ustar = m * kappa / std::log(3 * z / z0);
             const amrex::Real T0 = ref_theta_arr(i, j, k);
             const amrex::Real hf = std::abs(gravity[2]) / T0 * heat_flux;
             const amrex::Real rans_b = std::pow(
@@ -151,11 +151,11 @@ void KransAxell::operator()(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real terrainforcing = 0;
                 amrex::Real dragforcing = 0;
-                const amrex::Real ux = vel(i, j, k, 0);
-                const amrex::Real uy = vel(i, j, k, 1);
+                amrex::Real ux = vel(i, j, k + 1, 0);
+                amrex::Real uy = vel(i, j, k + 1, 1);
                 amrex::Real z = 0.5 * dx[2];
                 amrex::Real m = std::sqrt(ux * ux + uy * uy);
-                const amrex::Real ustar = m * kappa / std::log(z / z0);
+                const amrex::Real ustar = m * kappa / std::log(3.0 * z / z0);
                 const amrex::Real T0 = ref_theta_arr(i, j, k);
                 const amrex::Real hf = std::abs(gravity[2]) / T0 * heat_flux;
                 const amrex::Real rans_b = std::pow(
@@ -164,6 +164,8 @@ void KransAxell::operator()(
                 terrainforcing =
                     (ustar * ustar / (Cmu * Cmu) + rans_b - tke_arr(i, j, k)) /
                     dt;
+                ux = vel(i, j, k, 0);
+                uy = vel(i, j, k, 1);
                 const amrex::Real uz = vel(i, j, k, 2);
                 m = std::sqrt(ux * ux + uy * uy + uz * uz);
                 const amrex::Real Cd =
