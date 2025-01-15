@@ -80,8 +80,9 @@ void SamplingContainer::initialize_particles(
                 continue;
             }
 
-            const auto uid_offset =
-                (iprobe == 0) ? 0 : samplers[iprobe - 1]->num_points();
+            const int uid_offset = std::accumulate(
+                samplers.begin(), samplers.begin() + iprobe, 0,
+                [&](int sum, const auto& s) { return sum + s->num_points(); });
             const auto probe_id = probe->id();
             amrex::Gpu::DeviceVector<amrex::RealVect> dlocs(npts);
             amrex::Gpu::copy(
