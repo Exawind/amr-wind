@@ -100,7 +100,7 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
         const bool has_outprofile = wdata.has_outprofile;
 
         amrex::ParallelFor(
-            velocity(lev), amrex::IntVect(2),
+            velocity(lev), amrex::IntVect(0),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 const amrex::Real x = amrex::min(
                     amrex::max(problo[0] + (i + 0.5) * dx[0], problo[0]),
@@ -224,8 +224,6 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
     }
     amrex::Gpu::synchronize();
 
-    // This helps for having periodic boundaries, but will need to be addressed
-    // for the general case
     vof.fillpatch(time);
     velocity.fillpatch(time);
     density.fillpatch(time);
