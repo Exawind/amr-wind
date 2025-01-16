@@ -44,13 +44,15 @@ private:
     const CFDSim& m_sim;
     const amrex::AmrCore& m_mesh;
     const Field& m_velocity;
+
+    //! Transport model
+    const transport::TransportModel& m_transport;
+
     std::string m_1d_rans;
     amrex::Vector<amrex::Real> m_wind_heights;
     amrex::Vector<amrex::Real> m_tke_values;
     amrex::Gpu::DeviceVector<amrex::Real> m_wind_heights_d;
     amrex::Gpu::DeviceVector<amrex::Real> m_tke_values_d;
-    //! Transport model
-    const transport::TransportModel& m_transport;
 
     //! Reference temperature
     std::unique_ptr<ScratchField> m_ref_theta;
