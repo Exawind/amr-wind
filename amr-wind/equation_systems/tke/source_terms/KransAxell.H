@@ -47,26 +47,6 @@ private:
 
     //! Transport model
     const transport::TransportModel& m_transport;
-
-    std::string m_1d_rans;
-    amrex::Vector<amrex::Real> m_wind_heights;
-    amrex::Vector<amrex::Real> m_tke_values;
-    amrex::Gpu::DeviceVector<amrex::Real> m_wind_heights_d;
-    amrex::Gpu::DeviceVector<amrex::Real> m_tke_values_d;
-
-    //! Reference temperature
-    std::unique_ptr<ScratchField> m_ref_theta;
-    bool m_horizontal_sponge{false};
-    amrex::Real m_sponge_strength{1.0};
-    amrex::Real m_sponge_density{1.0};
-    amrex::Real m_sponge_distance_west{-1000};
-    amrex::Real m_sponge_distance_east{1000};
-    amrex::Real m_sponge_distance_south{-1000};
-    amrex::Real m_sponge_distance_north{1000};
-    int m_sponge_west{0};
-    int m_sponge_east{1};
-    int m_sponge_south{0};
-    int m_sponge_north{1};
 };
 
 } // namespace amr_wind::pde::tke

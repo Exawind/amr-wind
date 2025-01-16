@@ -54,18 +54,7 @@ KransAxell::KransAxell(const CFDSim& sim)
         amrex::ParmParse pp_incflow("incflo");
         pp_incflow.queryarr("gravity", m_gravity);
     }
-    m_ref_theta = m_transport.ref_theta();
-    amrex::ParmParse pp_drag("DragForcing");
-    pp_drag.query("sponge_strength", m_sponge_strength);
-    pp_drag.query("sponge_density", m_sponge_density);
-    pp_drag.query("sponge_distance_west", m_sponge_distance_west);
-    pp_drag.query("sponge_distance_east", m_sponge_distance_east);
-    pp_drag.query("sponge_distance_south", m_sponge_distance_south);
-    pp_drag.query("sponge_distance_north", m_sponge_distance_north);
-    pp_drag.query("sponge_west", m_sponge_west);
-    pp_drag.query("sponge_east", m_sponge_east);
-    pp_drag.query("sponge_south", m_sponge_south);
-    pp_drag.query("sponge_north", m_sponge_north);
+
 }
 
 KransAxell::~KransAxell() = default;
@@ -84,7 +73,9 @@ void KransAxell::operator()(
     const auto& buoy_prod_arr = (this->m_buoy_prod)(lev).array(mfi);
     const auto& dissip_arr = (this->m_dissip)(lev).array(mfi);
     const auto& tke_arr = m_tke(lev).array(mfi);
-    const auto& ref_theta_arr = (*m_ref_theta)(lev).const_array(mfi);
+    amrex::FArrayBox ref_theta_fab(bx, 1, amrex::The_Async_Arena());
+    amrex::Array4<amrex::Real> const& ref_theta_arr = ref_theta_fab.array();
+    m_transport.ref_theta_impl(lev, mfi, bx, ref_theta_arr);
     const auto& geom = m_mesh.Geom(lev);
     const auto& problo = m_mesh.Geom(lev).ProbLoArray();
     const auto& probhi = m_mesh.Geom(lev).ProbHiArray();
