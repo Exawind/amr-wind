@@ -55,6 +55,17 @@ KransAxell::KransAxell(const CFDSim& sim)
         pp_incflow.queryarr("gravity", m_gravity);
     }
 
+    amrex::ParmParse pp_drag("DragForcing");
+    pp_drag.query("sponge_strength", m_sponge_strength);
+    pp_drag.query("sponge_density", m_sponge_density);
+    pp_drag.query("sponge_distance_west", m_sponge_distance_west);
+    pp_drag.query("sponge_distance_east", m_sponge_distance_east);
+    pp_drag.query("sponge_distance_south", m_sponge_distance_south);
+    pp_drag.query("sponge_distance_north", m_sponge_distance_north);
+    pp_drag.query("sponge_west", m_sponge_west);
+    pp_drag.query("sponge_east", m_sponge_east);
+    pp_drag.query("sponge_south", m_sponge_south);
+    pp_drag.query("sponge_north", m_sponge_north);
 }
 
 KransAxell::~KransAxell() = default;
