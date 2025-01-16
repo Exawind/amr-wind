@@ -1,6 +1,7 @@
 #ifndef ABLANELASTIC_H
 #define ABLANELASTIC_H
 #include "amr-wind/CFDSim.H"
+#include "amr-wind/utilities/constants.H"
 #include "amr-wind/utilities/MultiLevelVector.H"
 #include "AMReX_ParmParse.H"
 

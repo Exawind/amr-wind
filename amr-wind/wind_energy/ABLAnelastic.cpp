@@ -35,6 +35,9 @@ ABLAnelastic::ABLAnelastic(CFDSim& sim) : m_sim(sim)
             "reference_density", 1, density.num_grow()[0], 1);
         ref_density.set_default_fillpatch_bc(m_sim.time());
         m_sim.repo().declare_nd_field("reference_pressure", 1, 0, 1);
+        auto& ref_theta = m_sim.repo().declare_field(
+            "reference_temperature", 1, density.num_grow()[0], 1);
+        ref_theta.set_default_fillpatch_bc(m_sim.time());
     }
 }
 
@@ -82,5 +85,22 @@ void ABLAnelastic::initialize_data()
     m_pressure.copy_to_field(p0);
 
     rho0.fillpatch(m_sim.time().current_time());
+
+    auto& temp0 = m_sim.repo().get_field("reference_temperature");
+    const amrex::Real air_molar_mass = 0.02896492; // kg/mol
+    const amrex::Real Rair = constants::UNIVERSAL_GAS_CONSTANT / air_molar_mass;
+    for (int lev = 0; lev < m_sim.repo().num_active_levels(); ++lev) {
+        const auto& rho0_arrs = rho0(lev).const_arrays();
+        const auto& p0_arrs = p0(lev).const_arrays();
+        const auto& temp0_arrs = temp0(lev).arrays();
+        amrex::ParallelFor(
+            temp0(lev), amrex::IntVect(0),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                temp0_arrs[nbx](i, j, k) =
+                    p0_arrs[nbx](i, j, k) / (Rair * rho0_arrs[nbx](i, j, k));
+            });
+    }
+    amrex::Gpu::synchronize();
+    temp0.fillpatch(m_sim.time().current_time());
 }
 } // namespace amr_wind
