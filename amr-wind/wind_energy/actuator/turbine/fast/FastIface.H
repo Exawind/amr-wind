@@ -81,6 +81,10 @@ protected:
     int m_num_sc_inputs{0};
     int m_num_sc_outputs{0};
 
+#if OPENFAST_VERSION_MAJOR == 4
+    int m_inflow_type{2};
+#endif
+
     int m_num_sc_inputs_glob{0};
     float m_init_sc_inputs_glob{0.0};
     float m_init_sc_inputs_turbine{0.0};
