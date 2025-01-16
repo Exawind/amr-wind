@@ -37,9 +37,6 @@ private:
 
     //! Transport model
     const transport::TransportModel& m_transport;
-
-    //! Reference temperature
-    std::unique_ptr<ScratchField> m_ref_theta;
 };
 } // namespace amr_wind::pde::icns
 

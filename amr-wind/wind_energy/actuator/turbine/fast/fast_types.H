@@ -57,6 +57,10 @@ struct FastTurbine
 
     //! Total number of elements along the blade
     int num_blade_elem;
+#if OPENFAST_VERSION_MAJOR == 4
+    //! Total number of elements along the tower
+    int num_tower_elem;
+#endif
 
     //! Node cluster type for the chord
     int chord_cluster_type{0};
@@ -87,8 +91,8 @@ struct FastTurbine
 
     // Data structures that are used to exchange between fast/cfd
 
-    exw_fast::OpFM_InputType to_cfd;
-    exw_fast::OpFM_OutputType from_cfd;
+    exw_fast::OfInputType to_cfd;
+    exw_fast::OfOutputType from_cfd;
 
     exw_fast::SC_DX_InputType to_sc;
     exw_fast::SC_DX_OutputType from_sc;

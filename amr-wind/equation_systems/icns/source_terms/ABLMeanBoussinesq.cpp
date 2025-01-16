@@ -16,8 +16,6 @@ ABLMeanBoussinesq::ABLMeanBoussinesq(const CFDSim& sim)
     const auto& abl = sim.physics_manager().get<amr_wind::ABL>();
     abl.register_mean_boussinesq_term(this);
 
-    m_ref_theta = m_transport.ref_theta();
-
     // gravity in `incflo` namespace
     amrex::ParmParse pp_incflo("incflo");
     pp_incflo.queryarr("gravity", m_gravity);
@@ -96,7 +94,10 @@ void ABLMeanBoussinesq::operator()(
     amrex::Array4<amrex::Real> const& beta_arr = beta_fab.array();
     m_transport.beta_impl(lev, mfi, bx, beta_arr);
 
-    const auto& ref_theta = (*m_ref_theta)(lev).const_array(mfi);
+    amrex::FArrayBox ref_theta_fab(bx, 1, amrex::The_Async_Arena());
+    amrex::Array4<amrex::Real> const& ref_theta_arr = ref_theta_fab.array();
+    m_transport.ref_theta_impl(lev, mfi, bx, ref_theta_arr);
+
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
         m_gravity[0], m_gravity[1], m_gravity[2]};
 
@@ -110,7 +111,7 @@ void ABLMeanBoussinesq::operator()(
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         amrex::IntVect iv(i, j, k);
         const amrex::Real ht = problo[idir] + (iv[idir] + 0.5) * dx[idir];
-        const amrex::Real T0 = ref_theta(i, j, k);
+        const amrex::Real T0 = ref_theta_arr(i, j, k);
         const amrex::Real temp =
             amr_wind::interp::linear(theights, theights_end, tvals, ht);
         const amrex::Real fac = beta_arr(i, j, k) * (temp - T0);
