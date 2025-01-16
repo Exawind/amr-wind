@@ -581,7 +581,7 @@ void ABLBoundaryPlane::write_file()
 
     // Only output data if at the desired timestep
     if ((t_step % m_write_frequency != 0) || ((m_io_mode != io_mode::output)) ||
-        (time < m_out_start_time)) {
+        (time < m_out_start_time - constants::LOOSE_TOL)) {
         return;
     }
 
