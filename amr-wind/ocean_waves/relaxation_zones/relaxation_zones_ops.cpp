@@ -183,11 +183,8 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                             } else {
                                 out_vel = 0.0;
                             }
-                            amrex::Real vel_liq = vel(i, j, k, n);
-                            const amrex::Real dvel_liq =
-                                utils::combine_linear(Gamma, out_vel, vel_liq) -
-                                vel_liq;
-                            vel_liq += dvel_liq;
+                            const amrex::Real vel_liq = utils::combine_linear(
+                                Gamma, out_vel, vel(i, j, k, n));
                             amrex::Real integrated_vel_liq =
                                 volfrac(i, j, k) * vel_liq;
                             integrated_vel_liq += amrex::max(0.0, dvf) *
