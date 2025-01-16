@@ -663,9 +663,9 @@ struct UpdateRelaxZonesOp<W2AWaves>
             } else if (double_data == 2) {
                 // Restarting simulation or taking a big step, new time at ntime
                 // Initialize ow fields to 0 for time interp, will be replaced
-                /*m_ow_levelset.setVal(0.0);
-                  m_ow_velocity.setVal(0.0);*/
-                zero_fields_all_levels(m_ow_levelset, m_ow_velocity);
+                if (wdata.do_interp) {
+                    zero_fields_all_levels(m_ow_levelset, m_ow_velocity);
+                }
                 // No modification needed for t_last, leads to interp factor = 1
             }
 
