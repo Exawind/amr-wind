@@ -36,5 +36,15 @@ is_close(const amrex::Real a, const amrex::Real b)
     return amrex::Math::abs(a - b) < EPS;
 }
 
+//! Boltzmann constant (J/K)
+static constexpr amrex::Real BOLTZMANN_CONSTANT = 1.380649 * 1e-23;
+
+//! Avogadro's constant (mol^-1)
+static constexpr amrex::Real AVOGADRO_CONSTANT = 6.02214076 * 1e23;
+
+//! Universal gas constant (J/K mol)
+static constexpr amrex::Real UNIVERSAL_GAS_CONSTANT =
+    AVOGADRO_CONSTANT * BOLTZMANN_CONSTANT;
+
 } // namespace amr_wind::constants
 #endif
