@@ -22,7 +22,6 @@ OceanWaves.W2A1.HOS_modes_filename = ../ow_w2a/modes_HOS_SWENSE.dat
 OceanWaves.W2A1.relax_zone_gen_length=200
 OceanWaves.W2A1.numerical_beach_length=200
 OceanWaves.W2A1.numerical_beach_length_factor=2.0
-OceanWaves.W2A1.initialize_wave_field=true
 # These variables should change with resolution in z
 OceanWaves.W2A1.number_interp_points_in_z = 35
 OceanWaves.W2A1.interp_spacing_at_surface = 1.
