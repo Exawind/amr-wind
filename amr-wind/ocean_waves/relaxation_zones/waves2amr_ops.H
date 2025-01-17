@@ -182,25 +182,6 @@ void populate_fields_all_levels(
     postprocess_velocity_field_liquid(vel_field, lvs_field, geom_all);
 }
 
-void zero_fields_all_levels(
-    amr_wind::Field& lvs_field, amr_wind::Field& vel_field)
-{
-    int nlevels = vel_field.repo().num_active_levels();
-    for (int lev = 0; lev < nlevels; ++lev) {
-        auto vel = vel_field(lev).arrays();
-        auto phi = lvs_field(lev).arrays();
-        amrex::ParallelFor(
-            vel_field(lev), vel_field.num_grow(),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                phi[nbx](i, j, k) = 0.0;
-                vel[nbx](i, j, k, 0) = 0.0;
-                vel[nbx](i, j, k, 1) = 0.0;
-                vel[nbx](i, j, k, 2) = 0.0;
-            });
-    }
-    amrex::Gpu::synchronize();
-}
-
 } // namespace
 #endif
 
@@ -662,7 +643,8 @@ struct UpdateRelaxZonesOp<W2AWaves>
                 // Restarting simulation or taking a big step, new time at ntime
                 // Initialize ow fields to 0 for time interp, will be replaced
                 if (wdata.do_interp) {
-                    zero_fields_all_levels(m_ow_levelset, m_ow_velocity);
+                    m_ow_levelset.setVal(0.0, m_ow_levelset.num_grow()[0]);
+                    m_ow_velocity.setVal(0.0, m_ow_levelset.num_grow()[0]);
                 }
                 // No modification needed for t_last, leads to interp factor = 1
             }
