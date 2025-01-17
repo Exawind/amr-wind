@@ -321,6 +321,7 @@ endif()
 
 if(AMR_WIND_ENABLE_W2A)
   add_test_re(ow_w2a)
+  add_test_re(ow_w2a_nonperiodic)
   add_test_re(abl_multiphase_w2a)
 endif()
 
