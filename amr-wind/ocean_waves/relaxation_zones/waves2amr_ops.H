@@ -228,6 +228,12 @@ struct ReadInputsOp<W2AWaves>
         auto& info = data.info();
         relaxation_zones::read_inputs(wdata, info, pp);
 
+        if (wdata.current > constants::TIGHT_TOL) {
+            amrex::Abort(
+                "Current is specified as nonzero, but current is not yet "
+                "implemented for W2A Waves.");
+        }
+
         pp.get("HOS_modes_filename", wdata.modes_file);
         pp.query("HOS_init_timestep", wdata.ntime);
         if (!pp.contains("HOS_init_timestep")) {
