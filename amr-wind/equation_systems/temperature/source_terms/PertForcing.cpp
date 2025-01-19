@@ -47,7 +47,7 @@ void PertForcing::operator()(
     const auto& height_arr = has_terrain
                                  ? (*m_terrain_height)(lev).const_array(mfi)
                                  : amrex::Array4<double>();
-    if (index % m_time_index == 0 && index > 0 && lev > m_start_lev) {
+    if (index % m_time_index == 0 && index > 0) {
         const auto& geom = m_mesh.Geom(lev);
         const auto& dx = geom.CellSizeArray();
         const auto& prob_lo = geom.ProbLoArray();
@@ -57,22 +57,26 @@ void PertForcing::operator()(
         const amrex::Real xend = m_xend;
         const amrex::Real yend = m_yend;
         const amrex::Real zend = m_zend;
-        amrex::Real pert_amplitude = static_cast<float>(
-            2.0 * m_pert_amplitude * (amrex::Random() - 0.5));
-        amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-            const amrex::Real height_arr_cell =
-                (has_terrain) ? height_arr(i, j, k, 0) : 0.0;
-            const amrex::Real blank_arr_cell =
-                (has_terrain) ? blank_arr(i, j, k, 0) : 0.0;
-            const amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
-            const amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
-            const amrex::Real z = std::max(
-                prob_lo[2] + (k + 0.5) * dx[2] - height_arr_cell, 0.5 * dx[2]);
-            if (x >= xstart && x <= xend && y >= ystart && y <= yend &&
-                z >= zstart && z <= zend) {
-                src_term(i, j, k, 0) += (1.0 - blank_arr_cell) * pert_amplitude;
-            }
-        });
+        const amrex::Real pert_amplitude = m_pert_amplitude;
+        amrex::ParallelForRNG(
+            bx, [=] AMREX_GPU_DEVICE(
+                    int i, int j, int k, const amrex::RandomEngine& engine) {
+                const amrex::Real height_arr_cell =
+                    (has_terrain) ? height_arr(i, j, k, 0) : 0.0;
+                const amrex::Real blank_arr_cell =
+                    (has_terrain) ? blank_arr(i, j, k, 0) : 0.0;
+                const amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
+                const amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
+                const amrex::Real z = std::max(
+                    prob_lo[2] + (k + 0.5) * dx[2] - height_arr_cell,
+                    0.5 * dx[2]);
+                if (x >= xstart && x <= xend && y >= ystart && y <= yend &&
+                    z >= zstart && z <= zend) {
+                    const amrex::Real pert_cell =
+                        amrex::RandomNormal(0, pert_amplitude, engine);
+                    src_term(i, j, k, 0) += (1.0 - blank_arr_cell) * pert_cell;
+                }
+            });
     }
 }
 
