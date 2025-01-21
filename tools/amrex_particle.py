@@ -36,7 +36,8 @@ class AmrexParticleFile:
             pdir (path): Directory path
         """
         self.pdir = Path(pdir)
-        assert self.pdir.exists()
+        if not self.pdir.exists():
+            raise ValueError(f'Path {self.pdir} does not exist.')
 
     def __call__(self):
         """Parse the header and load all binary files
@@ -84,6 +85,20 @@ class AmrexParticleFile:
         """Parse the sampling info file"""
         self.info = {}
         with open(self.pdir.parent / "sampling_info", 'r') as fh:
+            # Read time and number of groups
+            (key_t, val_t) = fh.readline().split()
+            (key_g, val_g) = fh.readline().split()
+            self.info[key_t] = float(val_t)
+            self.info[key_g] = int(val_g)
+            # Read each group options
+            for i in range(self.info[key_g]):
+                (_, g_index) = fh.readline().split()
+                (_, g_name)  = fh.readline().split()
+                (_, g_stype) = fh.readline().split()
+                self.info[g_name] = {}
+                self.info[g_name]['group_index'] = g_index
+                self.info[g_name]['sampling_type'] = g_stype
+            # Read remaining items if any
             for line in fh:
                 (key, val) = line.split()
                 self.info[key] = float(val)
