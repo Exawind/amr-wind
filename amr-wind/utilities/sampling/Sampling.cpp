@@ -2,7 +2,6 @@
 #include <utility>
 
 #include "amr-wind/utilities/sampling/Sampling.H"
-// #include "amr-wind/utilities/sampling/PlaneSampler.H"
 #include "amr-wind/utilities/io_utils.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
 #include "amr-wind/utilities/IOManager.H"
