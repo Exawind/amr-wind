@@ -2,6 +2,7 @@
 #include <utility>
 
 #include "amr-wind/utilities/sampling/Sampling.H"
+// #include "amr-wind/utilities/sampling/PlaneSampler.H"
 #include "amr-wind/utilities/io_utils.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
 #include "amr-wind/utilities/IOManager.H"
@@ -443,19 +444,15 @@ void Sampling::write_info_file(const std::string& fname)
     }
 
     fh << "time " << m_sim.time().new_time() << std::endl;
-    //fh << "m_label " << m_label << std::endl;
     amrex::ParmParse pp(m_label);
     pp.getarr("labels", labels);
-    int i=0;
-    for (const auto& lbl : labels) {
-        i++;
-    }
-    fh << "ngroups " << i << std::endl;
-    i=0;
-    for (const auto& lbl : labels) {
-        fh << lbl << " " << i << std::endl;
-        i++;
-    }
+    fh << "ngroups " << labels.size() << std::endl;
+	for (int i = 0; i < labels.size(); ++i) {
+		fh << "group_index " << i << std::endl;
+		fh << "  name " << labels[i] << std::endl;
+		fh << "  sampling_type " << m_samplers[i]->sampletype() << std::endl;
+	}
+
     fh.close();
 }
 
