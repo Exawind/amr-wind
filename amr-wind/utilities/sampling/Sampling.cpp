@@ -425,6 +425,7 @@ void Sampling::write_ascii()
 void Sampling::write_info_file(const std::string& fname)
 {
     BL_PROFILE("amr-wind::Sampling::write_info_file");
+    amrex::Vector<std::string> labels;
 
     // Only I/O processor writes the info file
     if (!amrex::ParallelDescriptor::IOProcessor()) {
@@ -442,6 +443,19 @@ void Sampling::write_info_file(const std::string& fname)
     }
 
     fh << "time " << m_sim.time().new_time() << std::endl;
+    //fh << "m_label " << m_label << std::endl;
+    amrex::ParmParse pp(m_label);
+    pp.getarr("labels", labels);
+    int i=0;
+    for (const auto& lbl : labels) {
+        i++;
+    }
+    fh << "ngroups " << i << std::endl;
+    i=0;
+    for (const auto& lbl : labels) {
+        fh << lbl << " " << i << std::endl;
+        i++;
+    }
     fh.close();
 }
 
