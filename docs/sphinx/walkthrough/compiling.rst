@@ -14,7 +14,7 @@ Exawind-Manager is a custom application of the Spack-Manager tool, which uses Sp
 to manage software builds. From the 
 `Spack-Manager documentation <https://sandialabs.github.io/spack-manager/user_profiles/developers/developer_spack_minimum.html>`_,
 "These environments are similar to 
-Conda environments in concept, but they benefit from re-using software that you've built in previous environments. 
+Conda environments in concept, but they benefit from reusing software that you've built in previous environments. 
 As such it is recommended that you maintain a single instance of Spack-Manager to organize and curate your builds, 
 and create new environments when you want to start a new development project." 
 
