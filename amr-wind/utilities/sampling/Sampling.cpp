@@ -445,8 +445,8 @@ void Sampling::write_info_file(const std::string& fname)
     fh << "time: " << m_sim.time().new_time() << std::endl;
     fh << "samplers:" << std::endl;
     for (int i = 0; i < m_samplers.size(); ++i) {
-        fh << " - group_index: " << i << std::endl;
-        fh << "   name: " << m_samplers[i]->label() << std::endl;
+        fh << " - index: " << i << std::endl;
+        fh << "   label: " << m_samplers[i]->label() << std::endl;
         fh << "   sampling_type: " << m_samplers[i]->sampletype() << std::endl;
     }
 
