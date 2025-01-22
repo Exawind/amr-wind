@@ -21,6 +21,12 @@ struct ReadInputsOp<StokesWaves>
         auto& info = data.info();
         relaxation_zones::read_inputs(wdata, info, pp);
 
+        if (wdata.current > constants::TIGHT_TOL) {
+            amrex::Abort(
+                "Current is specified as nonzero, but current is not yet "
+                "implemented for Stokes Waves.");
+        }
+
         // Get gravity from MultiPhase physics, assume negative z
         wdata.g = -data.sim().physics_manager().get<MultiPhase>().gravity()[2];
         // Get wave attributes

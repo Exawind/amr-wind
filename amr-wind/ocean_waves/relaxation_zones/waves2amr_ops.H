@@ -209,6 +209,12 @@ struct ReadInputsOp<W2AWaves>
         auto& info = data.info();
         relaxation_zones::read_inputs(wdata, info, pp);
 
+        if (wdata.current > constants::TIGHT_TOL) {
+            amrex::Abort(
+                "Current is specified as nonzero, but current is not yet "
+                "implemented for W2A Waves.");
+        }
+
         pp.get("HOS_modes_filename", wdata.modes_file);
         pp.query("HOS_init_timestep", wdata.ntime);
         if (!pp.contains("HOS_init_timestep")) {
@@ -333,59 +339,51 @@ struct ReadInputsOp<W2AWaves>
                 std::to_string(flag));
         }
 
-        // If init_wave_field is activated and initialization will be done, get
-        // modes on every processor
-        if (wdata.init_wave_field && data.sim().time().time_index() == 0) {
-            bool no_EOF = wdata.rmodes.get_data(
+        // Always get modes on every processor for initialization
+        bool no_EOF = wdata.rmodes.get_data(
+            wdata.ntime + wdata.n_offset, wdata.mX, wdata.mY, wdata.mZ,
+            wdata.mFS);
+        if (!no_EOF) {
+            // End of file detected, reset reading
+            wdata.n_offset = update_offset_timestep(wdata.ntime, wdata.n_winit);
+            // Print warning to screen
+            amrex::Print()
+                << "WARNING (waves2amr_ops): end of mode data file "
+                   "detected, resetting to beginning of mode data.\n";
+            // Read data again, now from a valid timestep
+            no_EOF = wdata.rmodes.get_data(
                 wdata.ntime + wdata.n_offset, wdata.mX, wdata.mY, wdata.mZ,
                 wdata.mFS);
+            // If no valid data is detected at this point, abort
             if (!no_EOF) {
-                // End of file detected, reset reading
-                wdata.n_offset =
-                    update_offset_timestep(wdata.ntime, wdata.n_winit);
-                // Print warning to screen
-                amrex::Print()
-                    << "WARNING (waves2amr_ops): end of mode data file "
-                       "detected, resetting to beginning of mode data.\n";
-                // Read data again, now from a valid timestep
-                no_EOF = wdata.rmodes.get_data(
-                    wdata.ntime + wdata.n_offset, wdata.mX, wdata.mY, wdata.mZ,
-                    wdata.mFS);
-                // If no valid data is detected at this point, abort
-                if (!no_EOF) {
-                    amrex::Abort(
-                        "waves2amr_ops: end of mode data file detected after "
-                        "resetting to beginning; please evaluate HOS_init_time "
-                        "or HOS_init_timestep and check the length of the mode "
-                        "file.");
-                }
+                amrex::Abort(
+                    "waves2amr_ops: end of mode data file detected after "
+                    "resetting to beginning; please evaluate HOS_init_time "
+                    "or HOS_init_timestep and check the length of the mode "
+                    "file.");
             }
+        }
 
-            // Convert modes to spatial data
-            modes_hosgrid::copy_complex(
-                wdata.n0, wdata.n1, wdata.mFS, wdata.eta_mptr);
-            wdata.sp_eta_vec.resize(
-                static_cast<size_t>(wdata.n0) * static_cast<size_t>(wdata.n1),
-                0.0);
-            modes_hosgrid::populate_hos_eta(
-                wdata.rmodes, wdata.plan, wdata.eta_mptr, wdata.sp_eta_vec);
-            // Mesh is not yet created, so get data at every height
-            const auto n_hts = wdata.hvec.size();
-            wdata.sp_u_vec.resize(
-                static_cast<size_t>(wdata.n0 * wdata.n1) * n_hts);
-            wdata.sp_v_vec.resize(
-                static_cast<size_t>(wdata.n0 * wdata.n1) * n_hts);
-            wdata.sp_w_vec.resize(
-                static_cast<size_t>(wdata.n0 * wdata.n1) * n_hts);
-            for (int iht = 0; iht < static_cast<int>(n_hts); ++iht) {
-                // Get sample height
-                amrex::Real ht = wdata.hvec[iht];
-                // Sample velocity
-                modes_hosgrid::populate_hos_vel(
-                    wdata.rmodes, ht, wdata.mX, wdata.mY, wdata.mZ, wdata.plan,
-                    wdata.u_mptr, wdata.v_mptr, wdata.w_mptr, wdata.sp_u_vec,
-                    wdata.sp_v_vec, wdata.sp_w_vec, iht * wdata.n0 * wdata.n1);
-            }
+        // Convert modes to spatial data
+        modes_hosgrid::copy_complex(
+            wdata.n0, wdata.n1, wdata.mFS, wdata.eta_mptr);
+        wdata.sp_eta_vec.resize(
+            static_cast<size_t>(wdata.n0) * static_cast<size_t>(wdata.n1), 0.0);
+        modes_hosgrid::populate_hos_eta(
+            wdata.rmodes, wdata.plan, wdata.eta_mptr, wdata.sp_eta_vec);
+        // Mesh is not yet created, so get data at every height
+        const auto n_hts = wdata.hvec.size();
+        wdata.sp_u_vec.resize(static_cast<size_t>(wdata.n0 * wdata.n1) * n_hts);
+        wdata.sp_v_vec.resize(static_cast<size_t>(wdata.n0 * wdata.n1) * n_hts);
+        wdata.sp_w_vec.resize(static_cast<size_t>(wdata.n0 * wdata.n1) * n_hts);
+        for (int iht = 0; iht < static_cast<int>(n_hts); ++iht) {
+            // Get sample height
+            amrex::Real ht = wdata.hvec[iht];
+            // Sample velocity
+            modes_hosgrid::populate_hos_vel(
+                wdata.rmodes, ht, wdata.mX, wdata.mY, wdata.mZ, wdata.plan,
+                wdata.u_mptr, wdata.v_mptr, wdata.w_mptr, wdata.sp_u_vec,
+                wdata.sp_v_vec, wdata.sp_w_vec, iht * wdata.n0 * wdata.n1);
         }
 
         // Declare fields for HOS
@@ -420,6 +418,9 @@ struct InitDataOp<W2AWaves>
         auto& ow_velocity = sim.repo().get_field("ow_velocity");
         auto& levelset = sim.repo().get_field("levelset");
         auto& velocity = sim.repo().get_field("velocity");
+        // Set w2a fields to default values to prep for updates
+        auto& w2a_levelset = sim.repo().get_field("w2a_levelset");
+        auto& w2a_velocity = sim.repo().get_field("w2a_velocity");
 
         const auto& problo = geom.ProbLoArray();
         const auto& probhi = geom.ProbHiArray();
@@ -448,6 +449,9 @@ struct InitDataOp<W2AWaves>
         const auto& ow_vel = ow_velocity(level).const_arrays();
         const auto& phi = levelset(level).arrays();
         const auto& vel = velocity(level).arrays();
+
+        const auto& w2a_phi = w2a_levelset(level).arrays();
+        const auto& w2a_vel = w2a_velocity(level).arrays();
 
         const amrex::Real gen_length = wdata.gen_length;
         const amrex::Real beach_length = wdata.beach_length;
@@ -485,14 +489,14 @@ struct InitDataOp<W2AWaves>
                     vel[nbx](i, j, k, 1) = local_profile[1];
                     vel[nbx](i, j, k, 2) = local_profile[2];
                 }
+
+                // Default w2a values matter for where no updates happen
+                w2a_phi[nbx](i, j, k) = quiescent[3] - z;
+                w2a_vel[nbx](i, j, k, 0) = quiescent[0];
+                w2a_vel[nbx](i, j, k, 1) = quiescent[0];
+                w2a_vel[nbx](i, j, k, 2) = quiescent[0];
             });
         amrex::Gpu::synchronize();
-
-        // Start w2a fields at 0, some areas will not be modified
-        auto& w2a_levelset = sim.repo().get_field("w2a_levelset");
-        auto& w2a_velocity = sim.repo().get_field("w2a_velocity");
-        w2a_levelset.setVal(0.0);
-        w2a_velocity.setVal(0.0);
 #else
         amrex::ignore_unused(data, level, geom);
 #endif
@@ -638,8 +642,10 @@ struct UpdateRelaxZonesOp<W2AWaves>
             } else if (double_data == 2) {
                 // Restarting simulation or taking a big step, new time at ntime
                 // Initialize ow fields to 0 for time interp, will be replaced
-                m_ow_levelset.setVal(0.0);
-                m_ow_velocity.setVal(0.0);
+                if (wdata.do_interp) {
+                    m_ow_levelset.setVal(0.0, m_ow_levelset.num_grow()[0]);
+                    m_ow_velocity.setVal(0.0, m_ow_levelset.num_grow()[0]);
+                }
                 // No modification needed for t_last, leads to interp factor = 1
             }
 
