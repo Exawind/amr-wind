@@ -176,7 +176,15 @@ public:
     io_mode mode() const { return m_io_mode; }
 
 #ifdef ERF_AMR_WIND_MULTIBLOCK
-    MultiBlockContainer* mbc() { return *m_mbc; }
+    MultiBlockContainer* mbc() {
+        // Make sure that the double pointer m_mbc
+        // does not point to a nullptr
+        // before passing *m_mbc for use
+        if ((*m_mbc) == nullptr) {
+            amrex::Abort("Passing a null pointer for use!");
+        }
+        return *m_mbc;
+    }
 #endif
 
 private:

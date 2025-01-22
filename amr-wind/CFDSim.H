@@ -185,7 +185,7 @@ private:
     bool m_during_overset_advance{false};
 
 #ifdef ERF_AMR_WIND_MULTIBLOCK
-    MultiBlockContainer* m_mbc = nullptr;
+    MultiBlockContainer* m_mbc{nullptr};
     ReadERFFunction m_read_erf{nullptr};
 #endif
 };
