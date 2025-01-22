@@ -101,7 +101,7 @@ input order), ``probe_id`` is the local probe id to this label,
 ``*co`` are the coordinates of the probe, and the other columns are
 the user requested sampled fields. The same labels are seeing by other
 visualization tools such as ParaView. The directory also contains a
-``sampling_info`` file where additional information (e.g., time) is
+``sampling_info.yaml`` YAML file where additional information (e.g., time) is
 stored. This file is automatically parse by the provided particle
 reader tool and the information is stored in a dictionary that is a
 member variable of the class.
