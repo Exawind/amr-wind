@@ -12,6 +12,7 @@ the sampling data written out by AMR-Wind using the native AMReX binary format.
 from pathlib import Path
 import numpy as np
 import pandas as pd
+import yaml
 
 class AmrexParticleFile:
     """AmrexParticleFile reader
@@ -36,7 +37,8 @@ class AmrexParticleFile:
             pdir (path): Directory path
         """
         self.pdir = Path(pdir)
-        assert self.pdir.exists()
+        if not self.pdir.exists():
+            raise ValueError(f'Path {self.pdir} does not exist.')
 
     def __call__(self):
         """Parse the header and load all binary files
@@ -82,11 +84,11 @@ class AmrexParticleFile:
 
     def parse_info(self):
         """Parse the sampling info file"""
-        self.info = {}
-        with open(self.pdir.parent / "sampling_info", 'r') as fh:
-            for line in fh:
-                (key, val) = line.split()
-                self.info[key] = float(val)
+        with open(self.pdir.parent / "sampling_info.yaml", 'r') as fh:
+            try:
+                self.info = yaml.safe_load(fh)
+            except yaml.YAMLError as exc:
+                print(exc)
 
     def load_binary_data(self):
         """Read binary data into memory"""
