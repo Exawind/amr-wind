@@ -1,5 +1,5 @@
-#ifndef WINDSPONGEFORCING_H
-#define WINDSPONGEFORCING_H
+#ifndef VELOCITYFREEATMOSPHEREFORCING_H
+#define VELOCITYFREEATMOSPHEREFORCING_H
 
 #include "amr-wind/equation_systems/icns/MomentumSource.H"
 #include "amr-wind/core/SimTime.H"
@@ -7,14 +7,15 @@
 
 namespace amr_wind::pde::icns {
 
-class WindSpongeForcing : public MomentumSource::Register<WindSpongeForcing>
+class VelocityFreeAtmosphereForcing
+    : public MomentumSource::Register<VelocityFreeAtmosphereForcing>
 {
 public:
-    static std::string identifier() { return "WindSpongeForcing"; }
+    static std::string identifier() { return "VelocityFreeAtmosphereForcing"; }
 
-    explicit WindSpongeForcing(const CFDSim& sim);
+    explicit VelocityFreeAtmosphereForcing(const CFDSim& sim);
 
-    ~WindSpongeForcing() override;
+    ~VelocityFreeAtmosphereForcing() override;
 
     void operator()(
         const int lev,

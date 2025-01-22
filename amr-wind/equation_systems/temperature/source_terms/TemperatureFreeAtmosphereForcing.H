@@ -1,5 +1,5 @@
-#ifndef TEMPSPONGEFORCING_H
-#define TEMPSPONGEFORCING_H
+#ifndef TEMPERATUREFREEATMOSPHEREFORCING_H
+#define TEMPERATUREFREEATMOSPHEREFORCING_H
 
 #include "amr-wind/equation_systems/temperature/TemperatureSource.H"
 #include "amr-wind/core/SimTime.H"
@@ -7,14 +7,18 @@
 
 namespace amr_wind::pde::temperature {
 
-class TempSpongeForcing : public TemperatureSource::Register<TempSpongeForcing>
+class TemperatureFreeAtmosphereForcing
+    : public TemperatureSource::Register<TemperatureFreeAtmosphereForcing>
 {
 public:
-    static std::string identifier() { return "TempSpongeForcing"; }
+    static std::string identifier()
+    {
+        return "TemperatureFreeAtmosphereForcing";
+    }
 
-    explicit TempSpongeForcing(const CFDSim& sim);
+    explicit TemperatureFreeAtmosphereForcing(const CFDSim& sim);
 
-    ~TempSpongeForcing() override;
+    ~TemperatureFreeAtmosphereForcing() override;
 
     void operator()(
         const int lev,

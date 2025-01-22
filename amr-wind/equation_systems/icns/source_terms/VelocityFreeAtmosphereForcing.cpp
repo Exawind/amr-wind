@@ -1,5 +1,4 @@
-
-#include "amr-wind/equation_systems/icns/source_terms/WindSpongeForcing.H"
+#include "amr-wind/equation_systems/icns/source_terms/VelocityFreeAtmosphereForcing.H"
 #include "amr-wind/utilities/IOManager.H"
 #include "amr-wind/utilities/linear_interpolation.H"
 
@@ -9,7 +8,7 @@
 
 namespace amr_wind::pde::icns {
 
-WindSpongeForcing::WindSpongeForcing(const CFDSim& sim)
+VelocityFreeAtmosphereForcing::VelocityFreeAtmosphereForcing(const CFDSim& sim)
     : m_time(sim.time())
     , m_mesh(sim.mesh())
     , m_velocity(sim.repo().get_field("velocity"))
@@ -53,9 +52,9 @@ WindSpongeForcing::WindSpongeForcing(const CFDSim& sim)
         m_w_values_d.begin());
 }
 
-WindSpongeForcing::~WindSpongeForcing() = default;
+VelocityFreeAtmosphereForcing::~VelocityFreeAtmosphereForcing() = default;
 
-void WindSpongeForcing::operator()(
+void VelocityFreeAtmosphereForcing::operator()(
     const int lev,
     const amrex::MFIter& mfi,
     const amrex::Box& bx,

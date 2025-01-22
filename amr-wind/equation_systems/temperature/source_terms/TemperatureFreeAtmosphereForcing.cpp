@@ -1,5 +1,4 @@
-
-#include "amr-wind/equation_systems/temperature/source_terms/TempSpongeForcing.H"
+#include "amr-wind/equation_systems/temperature/source_terms/TemperatureFreeAtmosphereForcing.H"
 #include "amr-wind/utilities/IOManager.H"
 #include "amr-wind/utilities/linear_interpolation.H"
 
@@ -9,7 +8,8 @@
 
 namespace amr_wind::pde::temperature {
 
-TempSpongeForcing::TempSpongeForcing(const CFDSim& sim)
+TemperatureFreeAtmosphereForcing::TemperatureFreeAtmosphereForcing(
+    const CFDSim& sim)
     : m_mesh(sim.mesh())
     , m_temperature(sim.repo().get_field("temperature"))
     , m_sim(sim)
@@ -44,9 +44,9 @@ TempSpongeForcing::TempSpongeForcing(const CFDSim& sim)
     pp.query("sponge_north", m_sponge_north);
 }
 
-TempSpongeForcing::~TempSpongeForcing() = default;
+TemperatureFreeAtmosphereForcing::~TemperatureFreeAtmosphereForcing() = default;
 
-void TempSpongeForcing::operator()(
+void TemperatureFreeAtmosphereForcing::operator()(
     const int lev,
     const amrex::MFIter& mfi,
     const amrex::Box& bx,
