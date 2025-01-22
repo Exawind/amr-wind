@@ -443,7 +443,7 @@ void Sampling::write_info_file(const std::string& fname)
 
     // YAML formatting
     fh << "time: " << m_sim.time().new_time() << std::endl;
-    fh << "groups:" << std::endl;
+    fh << "samplers:" << std::endl;
     for (int i = 0; i < m_samplers.size(); ++i) {
         fh << " - group_index: " << i << std::endl;
         fh << "   name: " << m_samplers[i]->label() << std::endl;
