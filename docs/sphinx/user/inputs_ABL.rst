@@ -212,7 +212,7 @@ This section is for setting atmospheric boundary layer parameters.
 
    Approximate height of the planetary boundary layer height to enable the forcing 
    in the free atmosphere. Recommended for use with RANS model and optionally to run 
-   LES with non canonical flow conditions, The method is enabled by default for turbulent 
+   LES with non canonical flow conditions. The method is enabled by default for turbulent 
    kinetic energy. To enable this option for temperature and velocity, the following flags
    have to be added to the input file. 
    
