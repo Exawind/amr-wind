@@ -24,7 +24,7 @@ There are several components in the domain setup:
    specified profile above the approximate height of the boundary layer. 
 4. Surface BC: Allows the ability to specify non-uniform roughness, temperature and heat flux at the terrain 
    boundaries. The capability is experimental and will be available soon. 
-5. Met-Mast or Lidar: Allows the ability to digest velocity profiles from met-mast and Lidars. The capability 
+5. Met-Mast or Lidar: Allows the ability to digest velocity profiles from met-mast and Lidar. The capability 
    is under development and documentation will be updated once available. 
 
 
