@@ -18,15 +18,8 @@ public:
     static std::string identifier() { return "TwoPhaseTransport"; }
 
     explicit TwoPhaseTransport(const CFDSim& sim)
-        : m_sim(sim), m_repo(sim.repo())
+        : m_repo(sim.repo()), m_physics_mgr(sim.physics_manager())
     {
-        const auto& physics_mgr = m_sim.physics_manager();
-        if (!physics_mgr.contains("MultiPhase")) {
-            amrex::Abort("TwoPhaseTransport requires MultiPhase physics");
-        }
-        const auto& multiphase = physics_mgr.get<MultiPhase>();
-        m_ifacetype = multiphase.interface_capturing_method();
-
         amrex::ParmParse pp("transport");
         pp.query("viscosity_fluid1", m_mu1);
         pp.query("viscosity_fluid2", m_mu2);
@@ -140,7 +133,8 @@ public:
         // Select the interface capturing method
         auto mu = m_repo.create_scratch_field(1, m_ngrow);
 
-        if (m_ifacetype == InterfaceCapturingMethod::VOF) {
+        auto ifacetype = get_iface_method();
+        if (ifacetype == InterfaceCapturingMethod::VOF) {
 
             const auto& vof = m_repo.get_field("vof");
 
@@ -160,7 +154,7 @@ public:
                 }
             }
 
-        } else if (m_ifacetype == InterfaceCapturingMethod::LS) {
+        } else if (ifacetype == InterfaceCapturingMethod::LS) {
 
             const auto& levelset = m_repo.get_field("levelset");
             const auto& geom = m_repo.mesh().Geom();
@@ -205,7 +199,8 @@ public:
         // Select the interface capturing method
         auto alpha = m_repo.create_scratch_field(1, m_ngrow);
 
-        if (m_ifacetype == InterfaceCapturingMethod::VOF) {
+        auto ifacetype = get_iface_method();
+        if (ifacetype == InterfaceCapturingMethod::VOF) {
 
             const auto& vof = m_repo.get_field("vof");
 
@@ -228,7 +223,7 @@ public:
                 }
             }
 
-        } else if (m_ifacetype == InterfaceCapturingMethod::LS) {
+        } else if (ifacetype == InterfaceCapturingMethod::LS) {
 
             const auto& levelset = m_repo.get_field("levelset");
             const auto& geom = m_repo.mesh().Geom();
@@ -330,7 +325,8 @@ public:
                 });
         }
 
-        if (m_ifacetype == InterfaceCapturingMethod::VOF) {
+        auto ifacetype = get_iface_method();
+        if (ifacetype == InterfaceCapturingMethod::VOF) {
             const auto& vof = m_repo.get_field("vof");
             const auto& vof_arr = vof(lev).const_array(mfi);
             amrex::ParallelFor(
@@ -339,7 +335,7 @@ public:
                         beta(i, j, k) = 0.0;
                     }
                 });
-        } else if (m_ifacetype == InterfaceCapturingMethod::LS) {
+        } else if (ifacetype == InterfaceCapturingMethod::LS) {
             const auto& levelset = m_repo.get_field("levelset");
             const auto& dx = m_repo.mesh().Geom(lev).CellSizeArray();
             const auto& phi_arr = levelset(lev).const_array(mfi);
@@ -416,14 +412,11 @@ public:
     }
 
 private:
-    //! Reference to the CFD sim
-    const CFDSim& m_sim;
-
     //! Reference to the field repository (for creating scratch fields)
     FieldRepo& m_repo;
 
-    //! Interface capturing method variable
-    InterfaceCapturingMethod m_ifacetype;
+    //! Reference to the physics manager
+    const PhysicsMgr& m_physics_mgr;
 
     //! Phase 1 (liquid) dynamic molecular viscosity
     amrex::Real m_mu1{1.0e-3};
@@ -445,6 +438,15 @@ private:
 
     //! Reference temperature
     amrex::Real m_reference_temperature{-1.0};
+
+    InterfaceCapturingMethod get_iface_method() const
+    {
+        if (!m_physics_mgr.contains("MultiPhase")) {
+            amrex::Abort("TwoPhaseTransport requires MultiPhase physics");
+        }
+        const auto& multiphase = m_physics_mgr.get<MultiPhase>();
+        return multiphase.interface_capturing_method();
+    }
 };
 
 } // namespace amr_wind::transport
