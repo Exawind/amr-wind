@@ -16,8 +16,7 @@ public:
 
     static std::string identifier() { return "ConstTransport"; }
 
-    explicit ConstTransport(const CFDSim& sim)
-        : m_repo(sim.repo()), m_phy_mgr(sim.physics_manager())
+    explicit ConstTransport(const CFDSim& sim) : m_repo(sim.repo())
     {
         amrex::ParmParse pp("transport");
         pp.query("viscosity", m_mu);
@@ -264,9 +263,6 @@ public:
 private:
     //! Reference to the field repository (for creating scratch fields)
     FieldRepo& m_repo;
-
-    //! Reference to the physics manager
-    const PhysicsMgr& m_phy_mgr;
 
     //! (Laminar) dynamic viscosity
     amrex::Real m_mu{1.0e-5};
