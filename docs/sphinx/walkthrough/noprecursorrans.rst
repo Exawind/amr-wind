@@ -1,7 +1,3 @@
-.. spelling:word-list::
-
-   xy
-
 .. _noprecursorrans:
 
 External Driven Terrain Simulations 
@@ -93,12 +89,8 @@ profiles. When this approach is used with LES, no flow structures are generated 
 A `cell perturbation forcing method <https://journals.ametsoc.org/view/journals/mwre/146/6/mwr-d-18-0077.1.xml?tab_body=fulltext-display>`_ is 
 introduced for generation of the flow structures and it is enabled as follows: 
 
-``Temperature.source_terms = PertForcing``
+``Temperature.source_terms = PerturbationForcing``
 
 The forcing is specified within a box with an amplitude and a Gaussian distribution with a zero mean and standard deviation equal to the specified 
 amplitude is added to the energy equation. The inputs can be founded in :ref:`inp <inputs_temperature_sources>`.
 
-Additional Resources 
-=====================
-
-- `Python scripts <https://github.com/hgopalan/amrTerrain/>`_ for setting up the simulation 

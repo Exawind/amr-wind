@@ -1,6 +1,4 @@
-
-
-#include "amr-wind/equation_systems/temperature/source_terms/PertForcing.H"
+#include "amr-wind/equation_systems/temperature/source_terms/PerturbationForcing.H"
 #include "amr-wind/utilities/IOManager.H"
 
 #include "AMReX_ParmParse.H"
@@ -9,24 +7,20 @@
 
 namespace amr_wind::pde::temperature {
 
-PertForcing::PertForcing(const CFDSim& sim)
+PerturbationForcing::PerturbationForcing(const CFDSim& sim)
     : m_sim(sim), m_time(sim.time()), m_mesh(sim.mesh())
 {
-    amrex::ParmParse pp("PertForcing");
-    pp.query("xstart", m_xstart);
-    pp.query("xend", m_xend);
-    pp.query("ystart", m_ystart);
-    pp.query("yend", m_yend);
-    pp.query("zstart", m_zstart);
-    pp.query("zend", m_zend);
+    amrex::ParmParse pp("PerturbationForcing");
+    pp.queryarr("start", m_start, 0, AMREX_SPACEDIM);
+    pp.queryarr("end", m_end, 0, AMREX_SPACEDIM);
     pp.query("time_steps", m_time_index);
     pp.query("start_level", m_start_level);
     pp.query("pert_amplitude", m_pert_amplitude);
 }
 
-PertForcing::~PertForcing() = default;
+PerturbationForcing::~PerturbationForcing() = default;
 
-void PertForcing::operator()(
+void PerturbationForcing::operator()(
     const int lev,
     const amrex::MFIter& mfi,
     const amrex::Box& bx,
@@ -34,29 +28,29 @@ void PertForcing::operator()(
     const amrex::Array4<amrex::Real>& src_term) const
 {
     const auto& index = m_time.time_index();
-    const bool has_terrain =
-        this->m_sim.repo().int_field_exists("terrain_blank");
-    const auto* m_terrain_blank =
-        has_terrain ? &this->m_sim.repo().get_int_field("terrain_blank")
-                    : nullptr;
-    const auto& blank_arr = has_terrain
-                                ? (*m_terrain_blank)(lev).const_array(mfi)
-                                : amrex::Array4<int>();
-    const auto* m_terrain_height =
-        has_terrain ? &this->m_sim.repo().get_field("terrain_height") : nullptr;
-    const auto& height_arr = has_terrain
-                                 ? (*m_terrain_height)(lev).const_array(mfi)
-                                 : amrex::Array4<double>();
     if (index % m_time_index == 0 && index > 0) {
+        amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> start{
+            m_start[0], m_start[1], m_start[2]};
+        amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> end{
+            m_end[0], m_end[1], m_end[2]};
+        amrex::RealBox pert_box(start.data(), end.data());
+        const bool has_terrain =
+            this->m_sim.repo().int_field_exists("terrain_blank");
+        const auto* m_terrain_blank =
+            has_terrain ? &this->m_sim.repo().get_int_field("terrain_blank")
+                        : nullptr;
+        const auto& blank_arr = has_terrain
+                                    ? (*m_terrain_blank)(lev).const_array(mfi)
+                                    : amrex::Array4<int>();
+        const auto* m_terrain_height =
+            has_terrain ? &this->m_sim.repo().get_field("terrain_height")
+                        : nullptr;
+        const auto& height_arr = has_terrain
+                                     ? (*m_terrain_height)(lev).const_array(mfi)
+                                     : amrex::Array4<double>();
         const auto& geom = m_mesh.Geom(lev);
         const auto& dx = geom.CellSizeArray();
         const auto& prob_lo = geom.ProbLoArray();
-        const amrex::Real xstart = m_xstart;
-        const amrex::Real ystart = m_ystart;
-        const amrex::Real zstart = m_zstart;
-        const amrex::Real xend = m_xend;
-        const amrex::Real yend = m_yend;
-        const amrex::Real zend = m_zend;
         const amrex::Real pert_amplitude = m_pert_amplitude;
         amrex::ParallelForRNG(
             bx, [=] AMREX_GPU_DEVICE(
@@ -70,8 +64,8 @@ void PertForcing::operator()(
                 const amrex::Real z = std::max(
                     prob_lo[2] + (k + 0.5) * dx[2] - height_arr_cell,
                     0.5 * dx[2]);
-                if (x >= xstart && x <= xend && y >= ystart && y <= yend &&
-                    z >= zstart && z <= zend) {
+                const amrex::RealVect point{x, y, z};
+                if (pert_box.contains(point)) {
                     const amrex::Real pert_cell =
                         amrex::RandomNormal(0, pert_amplitude, engine);
                     src_term(i, j, k, 0) += (1.0 - blank_arr_cell) * pert_cell;

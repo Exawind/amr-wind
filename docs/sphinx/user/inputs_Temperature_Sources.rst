@@ -22,53 +22,29 @@ Section: Temperature Sources
    This value specifies the coefficient for the forcing term in the immersed boundary forcing method. It is currently
    recommended to use the default value to avoid initial numerical stability. 
 
-The following list of inputs are used with the `Temperature.source_terms = PertForcing` option to add perturbation to the 
+The following list of inputs are used with the `Temperature.source_terms = PerturbationForcing` option to add perturbation to the 
 temperature field to generate flow structures for LES when the inflow data is coarse or uniform flow condition. Not 
 recommended for use with RANS models. 
 
-.. input_param:: PertForcing.xstart
+.. input_param:: PerturbationForcing.start
 
    **type:** Real, mandatory
 
-   Start location of the perturbation box in x-direction 
+   Start location of the perturbation box 
 
-.. input_param:: PertForcing.xend
-
-   **type:** Real, mandatory
-
-   End location of the perturbation box in x-direction
-
-.. input_param:: PertForcing.ystart
+.. input_param:: PerturbationForcing.end
 
    **type:** Real, mandatory
 
-   Start location of the perturbation box in y-direction 
+   End location of the perturbation box 
 
-.. input_param:: PertForcing.yend
-
-   **type:** Real, mandatory
-
-   End location of the perturbation box in y-direction
-
-.. input_param:: PertForcing.zstart
-
-   **type:** Real, mandatory
-
-   Start location of the perturbation box in z-direction 
-
-.. input_param:: PertForcing.zend
-
-   **type:** Real, mandatory
-
-   End location of the perturbation box in z-direction
-
-..  input_param:: PertForcing.pert_amplitude
+..  input_param:: PerturbationForcing.pert_amplitude
 
    **type:** Real, optional 
 
    Amplitude of temperature perturbation 
 
-..  input_param:: PertForcing.time_steps 
+..  input_param:: PerturbationForcing.time_steps 
 
    **type:** Real, optional 
 

@@ -1,5 +1,5 @@
-#ifndef PERTFORCING_H
-#define PERTFORCING_H
+#ifndef PERTURBATIONFORCING_H
+#define PERTURBATIONFORCING_H
 
 #include "amr-wind/equation_systems/temperature/TemperatureSource.H"
 #include "amr-wind/core/SimTime.H"
@@ -8,14 +8,15 @@
 
 namespace amr_wind::pde::temperature {
 
-class PertForcing : public TemperatureSource::Register<PertForcing>
+class PerturbationForcing
+    : public TemperatureSource::Register<PerturbationForcing>
 {
 public:
-    static std::string identifier() { return "PertForcing"; }
+    static std::string identifier() { return "PerturbationForcing"; }
 
-    explicit PertForcing(const CFDSim& sim);
+    explicit PerturbationForcing(const CFDSim& sim);
 
-    ~PertForcing() override;
+    ~PerturbationForcing() override;
 
     void operator()(
         const int lev,
@@ -28,12 +29,8 @@ private:
     const CFDSim& m_sim;
     const SimTime& m_time;
     const amrex::AmrCore& m_mesh;
-    amrex::Real m_xstart;
-    amrex::Real m_xend;
-    amrex::Real m_ystart;
-    amrex::Real m_yend;
-    amrex::Real m_zstart;
-    amrex::Real m_zend;
+    amrex::Vector<amrex::Real> m_start;
+    amrex::Vector<amrex::Real> m_end;
     int m_time_index{100};
     int m_start_level{0};
     amrex::Real m_pert_amplitude{1.0};
