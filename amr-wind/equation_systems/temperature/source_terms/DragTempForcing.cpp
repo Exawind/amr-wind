@@ -14,10 +14,15 @@ DragTempForcing::DragTempForcing(const CFDSim& sim)
     , m_mesh(sim.mesh())
     , m_velocity(sim.repo().get_field("velocity"))
     , m_temperature(sim.repo().get_field("temperature"))
+    , m_transport(sim.transport_model())
 {
     amrex::ParmParse pp("DragTempForcing");
     pp.query("drag_coefficient", m_drag_coefficient);
-    pp.query("internal_temperature", m_internal_temperature);
+    if (pp.contains("reference_temperature")) {
+        amrex::Abort(
+            "DragTempForcing.reference_temperature has been deprecated. Please "
+            "replace with transport.reference_temperature.");
+    }
     amrex::ParmParse pp_abl("ABL");
     pp_abl.query("wall_het_model", m_wall_het_model);
     pp_abl.query("mol_length", m_mol_length);
@@ -57,7 +62,9 @@ void DragTempForcing::operator()(
     const auto& geom = m_mesh.Geom(lev);
     const auto& dx = geom.CellSizeArray();
     const amrex::Real drag_coefficient = m_drag_coefficient / dx[2];
-    const amrex::Real internal_temperature = m_internal_temperature;
+    amrex::FArrayBox ref_theta_fab(bx, 1, amrex::The_Async_Arena());
+    amrex::Array4<amrex::Real> const& ref_theta_arr = ref_theta_fab.array();
+    m_transport.ref_theta_impl(lev, mfi, bx, ref_theta_arr);
     const amrex::Real gravity_mod = 9.81;
     amrex::Real psi_m = 0.0;
     amrex::Real psi_h_neighbour = 0.0;
@@ -97,8 +104,9 @@ void DragTempForcing::operator()(
         const amrex::Real m = std::sqrt(ux1 * ux1 + uy1 * uy1 + uz1 * uz1);
         const amrex::Real Cd =
             std::min(drag_coefficient / (m + tiny), cd_max / dx[2]);
+        const amrex::Real T0 = ref_theta_arr(i, j, k);
         src_term(i, j, k, 0) -=
-            (Cd * (theta - internal_temperature) * blank(i, j, k, 0) +
+            (Cd * (theta - T0) * blank(i, j, k, 0) +
              bc_forcing_t * drag(i, j, k));
     });
 }
