@@ -3,7 +3,6 @@
 
 #include "amr-wind/physics/multiphase/MultiPhase.H"
 #include "amr-wind/transport_models/TransportModel.H"
-#include "amr-wind/utilities/constants.H"
 #include "AMReX_ParmParse.H"
 
 namespace amr_wind::transport {
@@ -19,15 +18,8 @@ public:
     static std::string identifier() { return "TwoPhaseTransport"; }
 
     explicit TwoPhaseTransport(const CFDSim& sim)
-        : m_sim(sim), m_repo(sim.repo())
+        : m_repo(sim.repo()), m_physics_mgr(sim.physics_manager())
     {
-        const auto& physics_mgr = m_sim.physics_manager();
-        if (!physics_mgr.contains("MultiPhase")) {
-            amrex::Abort("TwoPhaseTransport requires MultiPhase physics");
-        }
-        const auto& multiphase = physics_mgr.get<MultiPhase>();
-        m_ifacetype = multiphase.interface_capturing_method();
-
         amrex::ParmParse pp("transport");
         pp.query("viscosity_fluid1", m_mu1);
         pp.query("viscosity_fluid2", m_mu2);
@@ -141,7 +133,8 @@ public:
         // Select the interface capturing method
         auto mu = m_repo.create_scratch_field(1, m_ngrow);
 
-        if (m_ifacetype == InterfaceCapturingMethod::VOF) {
+        auto ifacetype = get_iface_method();
+        if (ifacetype == InterfaceCapturingMethod::VOF) {
 
             const auto& vof = m_repo.get_field("vof");
 
@@ -161,7 +154,7 @@ public:
                 }
             }
 
-        } else if (m_ifacetype == InterfaceCapturingMethod::LS) {
+        } else if (ifacetype == InterfaceCapturingMethod::LS) {
 
             const auto& levelset = m_repo.get_field("levelset");
             const auto& geom = m_repo.mesh().Geom();
@@ -206,7 +199,8 @@ public:
         // Select the interface capturing method
         auto alpha = m_repo.create_scratch_field(1, m_ngrow);
 
-        if (m_ifacetype == InterfaceCapturingMethod::VOF) {
+        auto ifacetype = get_iface_method();
+        if (ifacetype == InterfaceCapturingMethod::VOF) {
 
             const auto& vof = m_repo.get_field("vof");
 
@@ -229,7 +223,7 @@ public:
                 }
             }
 
-        } else if (m_ifacetype == InterfaceCapturingMethod::LS) {
+        } else if (ifacetype == InterfaceCapturingMethod::LS) {
 
             const auto& levelset = m_repo.get_field("levelset");
             const auto& geom = m_repo.mesh().Geom();
@@ -309,22 +303,39 @@ public:
         const amrex::Box& bx,
         const amrex::Array4<amrex::Real>& beta) const override
     {
-        const amrex::Real beta_val = (m_constant_beta > 0.0)
-                                         ? m_constant_beta
-                                         : 1.0 / m_reference_temperature;
 
-        if (m_ifacetype == InterfaceCapturingMethod::VOF) {
+        if (m_constant_beta > 0.0) {
+            const amrex::Real beta_val = m_constant_beta;
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    beta(i, j, k) = beta_val;
+                });
+        } else if (m_repo.field_exists("reference_temperature")) {
+            const auto& temp0 = m_repo.get_field("reference_temperature");
+            const auto& temp0_arr = temp0(lev).const_array(mfi);
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    beta(i, j, k) = 1.0 / temp0_arr(i, j, k);
+                });
+        } else {
+            const amrex::Real beta_val = 1.0 / m_reference_temperature;
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    beta(i, j, k) = beta_val;
+                });
+        }
+
+        auto ifacetype = get_iface_method();
+        if (ifacetype == InterfaceCapturingMethod::VOF) {
             const auto& vof = m_repo.get_field("vof");
             const auto& vof_arr = vof(lev).const_array(mfi);
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     if (vof_arr(i, j, k) > constants::TIGHT_TOL) {
                         beta(i, j, k) = 0.0;
-                    } else {
-                        beta(i, j, k) = beta_val;
                     }
                 });
-        } else if (m_ifacetype == InterfaceCapturingMethod::LS) {
+        } else if (ifacetype == InterfaceCapturingMethod::LS) {
             const auto& levelset = m_repo.get_field("levelset");
             const auto& dx = m_repo.mesh().Geom(lev).CellSizeArray();
             const auto& phi_arr = levelset(lev).const_array(mfi);
@@ -342,7 +353,7 @@ public:
                                    1.0 / M_PI *
                                        std::sin(phi_arr(i, j, k) * M_PI / eps));
                     }
-                    beta(i, j, k) = beta_val * (1 - smooth_heaviside);
+                    beta(i, j, k) *= (1 - smooth_heaviside);
                 });
         }
     }
@@ -361,20 +372,51 @@ public:
 
         auto ref_theta = m_repo.create_scratch_field(1, m_ngrow);
         for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
-            (*ref_theta)(lev).setVal(m_reference_temperature);
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
+            for (amrex::MFIter mfi((*ref_theta)(lev)); mfi.isValid(); ++mfi) {
+                const auto& bx = mfi.tilebox();
+                const auto& ref_theta_arr = (*ref_theta)(lev).array(mfi);
+                ref_theta_impl(lev, mfi, bx, ref_theta_arr);
+            }
         }
         return ref_theta;
     }
 
-private:
-    //! Reference to the CFD sim
-    const CFDSim& m_sim;
+    //! Compute the reference temperature
+    inline void ref_theta_impl(
+        const int lev,
+        const amrex::MFIter& mfi,
+        const amrex::Box& bx,
+        const amrex::Array4<amrex::Real>& ref_theta) const override
+    {
+        if (m_reference_temperature < 0.0) {
+            amrex::Abort("Reference temperature was not set");
+        }
 
+        if (m_repo.field_exists("reference_temperature")) {
+            auto& temp0 = m_repo.get_field("reference_temperature");
+            const auto& temp0_arr = temp0(lev).const_array(mfi);
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    ref_theta(i, j, k) = temp0_arr(i, j, k);
+                });
+        } else {
+            const amrex::Real ref_theta_val = m_reference_temperature;
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    ref_theta(i, j, k) = ref_theta_val;
+                });
+        }
+    }
+
+private:
     //! Reference to the field repository (for creating scratch fields)
     FieldRepo& m_repo;
 
-    //! Interface capturing method variable
-    InterfaceCapturingMethod m_ifacetype;
+    //! Reference to the physics manager
+    const PhysicsMgr& m_physics_mgr;
 
     //! Phase 1 (liquid) dynamic molecular viscosity
     amrex::Real m_mu1{1.0e-3};
@@ -396,6 +438,15 @@ private:
 
     //! Reference temperature
     amrex::Real m_reference_temperature{-1.0};
+
+    InterfaceCapturingMethod get_iface_method() const
+    {
+        if (!m_physics_mgr.contains("MultiPhase")) {
+            amrex::Abort("TwoPhaseTransport requires MultiPhase physics");
+        }
+        const auto& multiphase = m_physics_mgr.get<MultiPhase>();
+        return multiphase.interface_capturing_method();
+    }
 };
 
 } // namespace amr_wind::transport

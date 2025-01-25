@@ -69,6 +69,7 @@ struct InitDataOp<LinearWaves>
         const amrex::Real wave_length = wdata.wave_length;
         const amrex::Real phase_offset = wdata.wave_phase_offset;
         const amrex::Real water_depth = wdata.water_depth;
+        const amrex::Real current = wdata.current;
 
         amrex::ParallelFor(
             m_velocity(level), amrex::IntVect(3),
@@ -113,7 +114,7 @@ struct InitDataOp<LinearWaves>
                 const amrex::Real cell_length_2D =
                     std::sqrt(dx[0] * dx[0] + dx[2] * dx[2]);
                 if (phi[nbx](i, j, k) + cell_length_2D >= 0) {
-                    vel[nbx](i, j, k, 0) = local_profile[0];
+                    vel[nbx](i, j, k, 0) = current + local_profile[0];
                     vel[nbx](i, j, k, 1) = local_profile[1];
                     vel[nbx](i, j, k, 2) = local_profile[2];
                 }
@@ -125,13 +126,12 @@ struct InitDataOp<LinearWaves>
 template <>
 struct UpdateRelaxZonesOp<LinearWaves>
 {
-    void operator()(LinearWaves::DataType& data)
+    void operator()(LinearWaves::DataType& data, const amrex::Real time)
     {
         const auto& wdata = data.meta();
 
         auto& sim = data.sim();
 
-        const auto& time = sim.time().new_time();
         // cppcheck-suppress constVariableReference
         auto& m_ow_levelset = sim.repo().get_field("ow_levelset");
         // cppcheck-suppress constVariableReference
@@ -153,11 +153,13 @@ struct UpdateRelaxZonesOp<LinearWaves>
             const amrex::Real water_depth = wdata.water_depth;
             const amrex::Real zero_sea_level = wdata.zsl;
             const amrex::Real g = wdata.g;
+            const amrex::Real current = wdata.current;
 
             amrex::ParallelFor(
                 m_ow_velocity(lev), amrex::IntVect(3),
                 [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                    const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                    const amrex::Real x =
+                        amrex::max(problo[0], problo[0] + (i + 0.5) * dx[0]);
                     const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
                     const amrex::Real wave_number = 2. * M_PI / wave_length;
@@ -165,7 +167,8 @@ struct UpdateRelaxZonesOp<LinearWaves>
                         wave_number * g * std::tanh(wave_number * water_depth),
                         0.5);
                     const amrex::Real phase =
-                        wave_number * x - omega * time - phase_offset;
+                        wave_number * (x - current * time) - omega * time -
+                        phase_offset;
 
                     const amrex::Real eta =
                         wave_height / 2.0 * std::cos(phase) + zero_sea_level;
@@ -177,11 +180,12 @@ struct UpdateRelaxZonesOp<LinearWaves>
                     if (phi[nbx](i, j, k) + cell_length_2D >= 0) {
                         vel[nbx](i, j, k, 0) =
                             omega * wave_height / 2.0 *
-                            std::cosh(
-                                wave_number *
-                                (z - zero_sea_level + water_depth)) /
-                            std::sinh(wave_number * water_depth) *
-                            std::cos(phase);
+                                std::cosh(
+                                    wave_number *
+                                    (z - zero_sea_level + water_depth)) /
+                                std::sinh(wave_number * water_depth) *
+                                std::cos(phase) +
+                            current;
                         vel[nbx](i, j, k, 1) = 0.0;
                         vel[nbx](i, j, k, 2) =
                             omega * wave_height / 2.0 *

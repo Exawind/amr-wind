@@ -21,6 +21,12 @@ struct ReadInputsOp<StokesWaves>
         auto& info = data.info();
         relaxation_zones::read_inputs(wdata, info, pp);
 
+        if (wdata.current > constants::TIGHT_TOL) {
+            amrex::Abort(
+                "Current is specified as nonzero, but current is not yet "
+                "implemented for Stokes Waves.");
+        }
+
         // Get gravity from MultiPhase physics, assume negative z
         wdata.g = -data.sim().physics_manager().get<MultiPhase>().gravity()[2];
         // Get wave attributes
@@ -150,13 +156,12 @@ struct InitDataOp<StokesWaves>
 template <>
 struct UpdateRelaxZonesOp<StokesWaves>
 {
-    void operator()(StokesWaves::DataType& data)
+    void operator()(StokesWaves::DataType& data, const amrex::Real time)
     {
         const auto& wdata = data.meta();
 
         auto& sim = data.sim();
 
-        const auto& time = sim.time().new_time();
         // cppcheck-suppress constVariableReference
         auto& m_ow_levelset = sim.repo().get_field("ow_levelset");
         // cppcheck-suppress constVariableReference
@@ -183,7 +188,8 @@ struct UpdateRelaxZonesOp<StokesWaves>
             amrex::ParallelFor(
                 m_ow_velocity(lev), amrex::IntVect(3),
                 [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                    const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                    const amrex::Real x =
+                        amrex::max(problo[0], problo[0] + (i + 0.5) * dx[0]);
                     const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
                     amrex::Real eta{0.0}, u_w{0.0}, v_w{0.0}, w_w{0.0};

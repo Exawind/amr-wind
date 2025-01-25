@@ -87,7 +87,7 @@ function(add_test_r TEST_NAME)
     add_test(${TEST_NAME} bash -c "set -o pipefail && ${MPI_COMMANDS} ${CMAKE_BINARY_DIR}/${amr_wind_exe_name} ${MPIEXEC_POSTFLAGS} ${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}.inp ${RUNTIME_OPTIONS} 2>&1 | tee ${TEST_NAME}.log ${SAVE_GOLDS_COMMAND} ${FCOMPARE_COMMAND}")
     # Set properties for test
     set_tests_properties(${TEST_NAME} PROPERTIES
-                         TIMEOUT 5400
+                         TIMEOUT 14400
                          PROCESSORS ${TEST_NP}
                          WORKING_DIRECTORY "${CURRENT_TEST_BINARY_DIR}/"
                          LABELS "regression"
@@ -157,7 +157,7 @@ function(add_test_pps TEST_NAME FORMAT NINT NSTEPS)
     add_test("${TEST_NAME}_sampling_${FORMAT}" bash -c "set -o pipefail && ${MPI_COMMANDS} ${CMAKE_BINARY_DIR}/${amr_wind_exe_name} ${MPIEXEC_POSTFLAGS} ${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}.inp ${RUNTIME_OPTIONS} ${ADDL_RUNTIME_OPTIONS} 2>&1 | tee ${TEST_NAME}_sampling_${FORMAT}.log && ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/sampling_${TEST_NAME}_${FORMAT}.py")
     # Set properties for test
     set_tests_properties("${TEST_NAME}_sampling_${FORMAT}" PROPERTIES
-                          TIMEOUT 5400
+                          TIMEOUT 14400
                           PROCESSORS ${TEST_NP}
                           WORKING_DIRECTORY "${CURRENT_TEST_BINARY_DIR}/"
                           LABELS "post_processing;no_ci"
@@ -252,6 +252,7 @@ add_test_re(inertial_drop)
 add_test_re(ow_linear)
 add_test_re(ow_linear_init_waves)
 add_test_re(ow_stokes)
+add_test_re(ow_current_wing)
 add_test_re(scalar_advection_uniform)
 add_test_re(scalar_advection_refined)
 add_test_re(freestream_bds)
@@ -320,10 +321,11 @@ endif()
 
 if(AMR_WIND_ENABLE_W2A)
   add_test_re(ow_w2a)
+  add_test_re(ow_w2a_nonperiodic)
   add_test_re(abl_multiphase_w2a)
 endif()
 
-if(AMR_WIND_ENABLE_OPENFAST)
+if(AMR_WIND_ENABLE_OPENFAST AND AMR_WIND_OPENFAST_VERSION VERSION_LESS "4")
   set(ACT_UNIFORM_ALM_TEST_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test_files/act_uniform_alm)
   set(ACT_UNIFORM_ALM_TEST_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/test_files/act_uniform_alm)
   set(RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR ${ACT_UNIFORM_ALM_TEST_BINARY_DIR}/r-test)

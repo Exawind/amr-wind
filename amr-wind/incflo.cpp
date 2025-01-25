@@ -424,13 +424,13 @@ void incflo::init_physics_and_pde()
         pde_mgr.register_transport_pde("Density");
     }
 
+    m_sim.create_transport_model();
     m_sim.init_physics();
     {
         // Check for if velocity is prescribed
         amrex::ParmParse pp("incflo");
         pp.query("prescribe_velocity", m_prescribe_vel);
     }
-    m_sim.create_transport_model();
     m_sim.create_turbulence_model();
 
     // Initialize the refinement criteria

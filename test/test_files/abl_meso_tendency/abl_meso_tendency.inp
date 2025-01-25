@@ -43,6 +43,7 @@ incflo.velocity = 0 0 0 # dummy values
 
 ABL.kappa = .41
 ABL.surface_roughness_z0 = 0.0002
+ABL.surface_temp_rate = -0.25
 
 ABL.stats_output_frequency = 1
 

@@ -2,7 +2,6 @@
 #define CONSTTRANSPORT_H
 
 #include "amr-wind/transport_models/TransportModel.H"
-#include "amr-wind/utilities/constants.H"
 #include "AMReX_ParmParse.H"
 
 namespace amr_wind::transport {
@@ -17,8 +16,7 @@ public:
 
     static std::string identifier() { return "ConstTransport"; }
 
-    explicit ConstTransport(const CFDSim& sim)
-        : m_repo(sim.repo()), m_phy_mgr(sim.physics_manager())
+    explicit ConstTransport(const CFDSim& sim) : m_repo(sim.repo())
     {
         amrex::ParmParse pp("transport");
         pp.query("viscosity", m_mu);
@@ -176,14 +174,26 @@ public:
         const amrex::Array4<amrex::Real>& beta) const override
     {
 
-        const amrex::Real beta_val = (m_constant_beta > 0.0)
-                                         ? m_constant_beta
-                                         : 1.0 / m_reference_temperature;
-
-        amrex::ParallelFor(
-            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                beta(i, j, k) = beta_val;
-            });
+        if (m_constant_beta > 0.0) {
+            const amrex::Real beta_val = m_constant_beta;
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    beta(i, j, k) = beta_val;
+                });
+        } else if (m_repo.field_exists("reference_temperature")) {
+            const auto& temp0 = m_repo.get_field("reference_temperature");
+            const auto& temp0_arr = temp0(lev).const_array(mfi);
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    beta(i, j, k) = 1.0 / temp0_arr(i, j, k);
+                });
+        } else {
+            const amrex::Real beta_val = 1.0 / m_reference_temperature;
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    beta(i, j, k) = beta_val;
+                });
+        }
 
         if (m_repo.field_exists("vof")) {
             const auto& vof = m_repo.get_field("vof");
@@ -211,17 +221,48 @@ public:
 
         auto ref_theta = m_repo.create_scratch_field(1, m_ngrow);
         for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
-            (*ref_theta)(lev).setVal(m_reference_temperature);
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
+            for (amrex::MFIter mfi((*ref_theta)(lev)); mfi.isValid(); ++mfi) {
+                const auto& bx = mfi.tilebox();
+                const auto& ref_theta_arr = (*ref_theta)(lev).array(mfi);
+                ref_theta_impl(lev, mfi, bx, ref_theta_arr);
+            }
         }
         return ref_theta;
+    }
+
+    //! Compute the reference temperature
+    inline void ref_theta_impl(
+        const int lev,
+        const amrex::MFIter& mfi,
+        const amrex::Box& bx,
+        const amrex::Array4<amrex::Real>& ref_theta) const override
+    {
+        if (m_reference_temperature < 0.0) {
+            amrex::Abort("Reference temperature was not set");
+        }
+
+        if (m_repo.field_exists("reference_temperature")) {
+            auto& temp0 = m_repo.get_field("reference_temperature");
+            const auto& temp0_arr = temp0(lev).const_array(mfi);
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    ref_theta(i, j, k) = temp0_arr(i, j, k);
+                });
+        } else {
+            const amrex::Real ref_theta_val = m_reference_temperature;
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    ref_theta(i, j, k) = ref_theta_val;
+                });
+        }
     }
 
 private:
     //! Reference to the field repository (for creating scratch fields)
     FieldRepo& m_repo;
-
-    //! Reference to the physics manager
-    const PhysicsMgr& m_phy_mgr;
 
     //! (Laminar) dynamic viscosity
     amrex::Real m_mu{1.0e-5};
