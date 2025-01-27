@@ -41,6 +41,11 @@ public:
         return m_wave_velocity_name;
     }
 
+    std::string wave_negative_elevation_name() const
+    {
+        return m_wave_negative_elevation_name;
+    }
+
 private:
     CFDSim& m_sim;
     const FieldRepo& m_repo;

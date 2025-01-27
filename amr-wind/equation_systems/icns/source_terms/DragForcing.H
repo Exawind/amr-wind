@@ -35,6 +35,7 @@ private:
     const amrex::AmrCore& m_mesh;
     const Field& m_velocity;
     const Field* m_target_vel{nullptr};
+    const Field* m_target_levelset{nullptr};
     amrex::Gpu::DeviceVector<amrex::Real> m_device_vel_ht;
     amrex::Gpu::DeviceVector<amrex::Real> m_device_vel_vals;
     amrex::Real m_drag_coefficient{10.0};

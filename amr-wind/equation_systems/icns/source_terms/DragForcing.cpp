@@ -1,4 +1,5 @@
 #include "amr-wind/equation_systems/icns/source_terms/DragForcing.H"
+#include "amr-wind/equation_systems/vof/volume_fractions.H"
 #include "amr-wind/utilities/IOManager.H"
 
 #include "AMReX_Gpu.H"
@@ -6,6 +7,73 @@
 #include "amr-wind/wind_energy/ABL.H"
 #include "amr-wind/physics/TerrainDrag.H"
 #include "amr-wind/utilities/linear_interpolation.H"
+
+namespace {
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real viscous_drag_calculations(
+    amrex::Real& Dxz,
+    amrex::Real& Dyz,
+    const amrex::Real ux1r,
+    const amrex::Real uy1r,
+    const amrex::Real ux2r,
+    const amrex::Real uy2r,
+    const amrex::Real z0,
+    const amrex::Real dz,
+    const amrex::Real kappa,
+    const amrex::Real tiny)
+{
+    const amrex::Real m2 = std::sqrt(ux2r * ux2r + uy2r * uy2r);
+    const amrex::Real ustar = m2 * kappa / std::log(1.5 * dz / z0);
+    Dxz += -ustar * ustar * ux1r /
+           (tiny + std::sqrt(ux1r * ux1r + uy1r * uy1r)) / dz;
+    Dyz += -ustar * ustar * uy1r /
+           (tiny + std::sqrt(ux1r * ux1r + uy1r * uy1r)) / dz;
+    return ustar;
+}
+
+// Implementation comes from MOSD approach in boundary_conditions/wall_models/
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void form_drag_calculations(
+    amrex::Real& Dxz,
+    amrex::Real& Dyz,
+    const int i,
+    const int j,
+    const int k,
+    amrex::Array4<amrex::Real const> const& phi,
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx,
+    const amrex::Real ux1r,
+    const amrex::Real uy1r)
+{
+    // phi = eta - z, so eta derivatives in x and y can be calculate with phi
+    amrex::Real n_x, n_y, n_z;
+    amr_wind::multiphase::youngs_finite_difference_normal(
+        i, j, k, phi, n_x, n_y, n_z);
+    // factor of 32 has to do with finite differences, number of points used
+    // negative to make normals point away from waves into air
+    const amrex::Real dx_eta_wave = -n_x / 32. / dx[0];
+    const amrex::Real dy_eta_wave = -n_y / 32. / dx[1];
+    const amrex::Real grad_eta_wave =
+        std::sqrt(dx_eta_wave * dx_eta_wave + dy_eta_wave * dy_eta_wave);
+    n_x = dx_eta_wave / grad_eta_wave;
+    n_y = dy_eta_wave / grad_eta_wave;
+
+    // Relative velocity while considering interface normal
+    const amrex::Real ur_mag =
+        std::sqrt(ux1r * ux1r * n_x * n_x + uy1r * uy1r * n_y * n_y);
+    // Heaviside function changes behavior for velocity surplus/deficit
+    const amrex::Real Heavi_arg = (ux1r * dx_eta_wave + uy1r * dy_eta_wave);
+    const amrex::Real Heavi =
+        (Heavi_arg + std::abs(Heavi_arg)) / (2 * Heavi_arg);
+
+    // Stress in each direction
+    const amrex::Real tau_xz = (1 / M_PI) * ur_mag * ur_mag * grad_eta_wave *
+                               grad_eta_wave * Heavi * n_x;
+    const amrex::Real tau_yz = (1 / M_PI) * ur_mag * ur_mag * grad_eta_wave *
+                               grad_eta_wave * Heavi * n_y;
+
+    // Drag terms from waves added to log law
+    Dxz += -tau_xz / dx[2];
+    Dyz += -tau_yz / dx[2];
+}
+} // namespace
 
 namespace amr_wind::pde::icns {
 
@@ -48,6 +116,9 @@ DragForcing::DragForcing(const CFDSim& sim)
             m_sim.physics_manager().get<amr_wind::terraindrag::TerrainDrag>();
         const auto target_vel_name = terrain_phys.wave_velocity_field_name();
         m_target_vel = &sim.repo().get_field(target_vel_name);
+        const auto target_levelset_name =
+            terrain_phys.wave_negative_elevation_name();
+        m_target_levelset = &sim.repo().get_field(target_levelset_name);
         m_terrain_is_waves = true;
     }
 }
@@ -81,6 +152,9 @@ void DragForcing::operator()(
     const auto& target_vel_arr = is_waves
                                      ? (*m_target_vel)(lev).const_array(mfi)
                                      : amrex::Array4<amrex::Real>();
+    const auto& target_lvs_arr =
+        is_waves ? (*m_target_levelset)(lev).const_array(mfi)
+                 : amrex::Array4<amrex::Real>();
 
     const auto& geom = m_mesh.Geom(lev);
     const auto& dx = geom.CellSizeArray();
@@ -149,29 +223,41 @@ void DragForcing::operator()(
         amrex::Real Dyz = 0.0;
         amrex::Real bc_forcing_x = 0;
         amrex::Real bc_forcing_y = 0;
+
         const amrex::Real ux1 = vel(i, j, k, 0);
         const amrex::Real uy1 = vel(i, j, k, 1);
         const amrex::Real uz1 = vel(i, j, k, 2);
         const amrex::Real m = std::sqrt(ux1 * ux1 + uy1 * uy1 + uz1 * uz1);
         if (drag(i, j, k) == 1 && (!is_laminar)) {
-            const amrex::Real ux2 = vel(i, j, k + 1, 0);
-            const amrex::Real uy2 = vel(i, j, k + 1, 1);
-            const amrex::Real m2 = std::sqrt(ux2 * ux2 + uy2 * uy2);
+            // Establish wall velocity
+            // - estimate wave velocity using target velocity in cells below
+            const amrex::Real wall_u =
+                !is_waves ? 0.0 : target_vel_arr(i, j, k - 1, 0);
+            const amrex::Real wall_v =
+                !is_waves ? 0.0 : target_vel_arr(i, j, k - 1, 1);
+            // Relative velocities for calculating shear
+            const amrex::Real ux1r = ux1 - wall_u;
+            const amrex::Real uy1r = uy1 - wall_v;
+            const amrex::Real ux2r = vel(i, j, k + 1, 0) - wall_u;
+            const amrex::Real uy2r = vel(i, j, k + 1, 1) - wall_v;
             const amrex::Real z0 = std::max(terrainz0(i, j, k), z0_min);
-            const amrex::Real ustar = m2 * kappa / std::log(1.5 * dx[2] / z0);
+            const amrex::Real ustar = viscous_drag_calculations(
+                Dxz, Dyz, ux1r, uy1r, ux2r, uy2r, z0, dx[2], kappa, tiny);
+            if (is_waves) {
+                form_drag_calculations(
+                    Dxz, Dyz, i, j, k, target_lvs_arr, dx, ux1r, uy1r);
+            }
             const amrex::Real uTarget =
                 ustar / kappa * std::log(0.5 * dx[2] / z0);
             const amrex::Real uxTarget =
-                uTarget * ux2 / (tiny + std::sqrt(ux2 * ux2 + uy2 * uy2));
+                uTarget * ux2r / (tiny + std::sqrt(ux2r * ux2r + uy2r * uy2r));
             const amrex::Real uyTarget =
-                uTarget * uy2 / (tiny + std::sqrt(ux2 * ux2 + uy2 * uy2));
+                uTarget * uy2r / (tiny + std::sqrt(ux2r * ux2r + uy2r * uy2r));
+            // BC forcing pushes nonrelative velocity toward target velocity
             bc_forcing_x = -(uxTarget - ux1) / dt;
             bc_forcing_y = -(uyTarget - uy1) / dt;
-            Dxz = -ustar * ustar * ux1 /
-                  (tiny + std::sqrt(ux1 * ux1 + uy1 * uy1)) / dx[2];
-            Dyz = -ustar * ustar * uy1 /
-                  (tiny + std::sqrt(ux1 * ux1 + uy1 * uy1)) / dx[2];
         }
+        // Target velocity intended for within terrain
         amrex::Real target_u = 0.;
         amrex::Real target_v = 0.;
         amrex::Real target_w = 0.;
