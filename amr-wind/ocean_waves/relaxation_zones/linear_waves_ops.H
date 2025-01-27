@@ -134,7 +134,7 @@ struct InitDataOp<LinearWaves>
             });
         amrex::Gpu::synchronize();
     }
-}; // namespace amr_wind::ocean_waves::ops
+};
 
 template <>
 struct UpdateTargetFieldsOp<LinearWaves>
