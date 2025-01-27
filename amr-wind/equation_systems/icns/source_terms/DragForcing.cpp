@@ -229,12 +229,23 @@ void DragForcing::operator()(
         const amrex::Real uz1 = vel(i, j, k, 2);
         const amrex::Real m = std::sqrt(ux1 * ux1 + uy1 * uy1 + uz1 * uz1);
         if (drag(i, j, k) == 1 && (!is_laminar)) {
+            // Check if close enough to interface to use current cell or below
+            int k_off = -1;
+            if (is_waves) {
+                const amrex::Real cell_length_2D =
+                    std::sqrt(dx[0] * dx[0] + dx[2] * dx[2]);
+                if (target_lvs_arr(i, j, k) + cell_length_2D >= 0) {
+                    // Current cell will be used for wave velocity
+                    k_off = 0;
+                }
+                // Cell below will be used if not (default of -1)
+            }
             // Establish wall velocity
             // - estimate wave velocity using target velocity in cells below
             const amrex::Real wall_u =
-                !is_waves ? 0.0 : target_vel_arr(i, j, k - 1, 0);
+                !is_waves ? 0.0 : target_vel_arr(i, j, k + k_off, 0);
             const amrex::Real wall_v =
-                !is_waves ? 0.0 : target_vel_arr(i, j, k - 1, 1);
+                !is_waves ? 0.0 : target_vel_arr(i, j, k + k_off, 1);
             // Relative velocities for calculating shear
             const amrex::Real ux1r = ux1 - wall_u;
             const amrex::Real uy1r = uy1 - wall_v;
