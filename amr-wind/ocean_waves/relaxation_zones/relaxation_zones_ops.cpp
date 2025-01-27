@@ -48,22 +48,16 @@ void read_inputs(
 
 void init_data_structures(RelaxZonesBaseData& /*unused*/) {}
 
-void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
+void update_target_vof(CFDSim& sim)
 {
     const int nlevels = sim.repo().num_active_levels();
-    auto& m_ow_levelset = sim.repo().get_field("ow_levelset");
+    const auto& m_ow_levelset = sim.repo().get_field("ow_levelset");
     auto& m_ow_vof = sim.repo().get_field("ow_vof");
-    const auto& m_ow_vel = sim.repo().get_field("ow_velocity");
     const auto& geom = sim.mesh().Geom();
-
-    const auto& mphase = sim.physics_manager().get<MultiPhase>();
-    const amrex::Real rho1 = mphase.rho1();
-    const amrex::Real rho2 = mphase.rho2();
-    constexpr amrex::Real vof_tiny = 1e-12;
 
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& dx = geom[lev].CellSizeArray();
-        const auto target_phi = m_ow_levelset(lev).arrays();
+        const auto target_phi = m_ow_levelset(lev).const_arrays();
         auto target_volfrac = m_ow_vof(lev).arrays();
         const amrex::Real eps = 2. * std::cbrt(dx[0] * dx[1] * dx[2]);
         amrex::ParallelFor(
@@ -74,6 +68,19 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
             });
     }
     amrex::Gpu::synchronize();
+}
+
+void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
+{
+    const int nlevels = sim.repo().num_active_levels();
+    const auto& m_ow_vof = sim.repo().get_field("ow_vof");
+    const auto& m_ow_vel = sim.repo().get_field("ow_velocity");
+    const auto& geom = sim.mesh().Geom();
+
+    const auto& mphase = sim.physics_manager().get<MultiPhase>();
+    const amrex::Real rho1 = mphase.rho1();
+    const amrex::Real rho2 = mphase.rho2();
+    constexpr amrex::Real vof_tiny = 1e-12;
 
     // Get time
     const auto& time = sim.time().new_time();
@@ -240,27 +247,6 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
     vof.fillpatch(time);
     velocity.fillpatch(time);
     density.fillpatch(time);
-}
-
-void update_target_vof(CFDSim& sim)
-{
-    const int nlevels = sim.repo().num_active_levels();
-    auto& m_ow_levelset = sim.repo().get_field("ow_levelset");
-    auto& m_ow_vof = sim.repo().get_field("ow_vof");
-    const auto& geom = sim.mesh().Geom();
-
-    for (int lev = 0; lev < nlevels; ++lev) {
-        const auto& dx = geom[lev].CellSizeArray();
-        const auto target_phi = m_ow_levelset(lev).arrays();
-        auto target_volfrac = m_ow_vof(lev).arrays();
-        const amrex::Real eps = 2. * std::cbrt(dx[0] * dx[1] * dx[2]);
-        amrex::ParallelFor(
-            m_ow_vof(lev), amrex::IntVect(2),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                target_volfrac[nbx](i, j, k) =
-                    multiphase::levelset_to_vof(i, j, k, eps, target_phi[nbx]);
-            });
-    }
 }
 
 void prepare_netcdf_file(
