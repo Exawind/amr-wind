@@ -115,13 +115,6 @@ void OceanWaves::post_advance_work()
     m_owm->reset_regrid_flag();
 }
 
-void OceanWaves::update_target_volume_fraction()
-{
-    BL_PROFILE(
-        "amr-wind::ocean_waves::OceanWaves::update_target_volume_fraction");
-    m_owm->update_target_volume_fraction();
-}
-
 void OceanWaves::prepare_outputs()
 {
     const std::string post_dir = m_sim.io_manager().post_processing_directory();
