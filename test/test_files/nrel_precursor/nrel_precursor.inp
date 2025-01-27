@@ -1,10 +1,10 @@
 # Generating the precursor file
 # Geometry
-geometry.prob_lo                         = -10005 -20005 0
-geometry.prob_hi                         = 10005 20005 4000
+geometry.prob_lo                         = -5005 -5005 0
+geometry.prob_hi                         = 5005 5005 4000
 geometry.is_periodic                     = 1 1 0
 # Grid
-amr.n_cell                       = 80 156 64
+amr.n_cell                       = 40 40 64
 amr.max_level                    = 0
 amr.blocking_factor              = 4
 time.stop_time                   = -1
