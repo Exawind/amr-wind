@@ -11,10 +11,10 @@ void SamplingContainer::setup_container(
     BL_PROFILE("amr-wind::SamplingContainer::setup");
     const bool communicate_comp = true;
     for (int i = 0; i < num_real_components; ++i) {
-        AddRealComp(communicate_comp);
+        AddRealComp(static_cast<int>(communicate_comp));
     }
     for (int i = 0; i < num_int_components; ++i) {
-        AddIntComp(communicate_comp);
+        AddIntComp(static_cast<int>(communicate_comp));
     }
 
     const int nlevels = m_mesh.finestLevel() + 1;
@@ -80,8 +80,9 @@ void SamplingContainer::initialize_particles(
                 continue;
             }
 
-            const auto uid_offset =
-                (iprobe == 0) ? 0 : samplers[iprobe - 1]->num_points();
+            const int uid_offset = std::accumulate(
+                samplers.begin(), samplers.begin() + iprobe, 0,
+                [&](int sum, const auto& s) { return sum + s->num_points(); });
             const auto probe_id = probe->id();
             amrex::Gpu::DeviceVector<amrex::RealVect> dlocs(npts);
             amrex::Gpu::copy(

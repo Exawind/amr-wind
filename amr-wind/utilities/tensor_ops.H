@@ -63,7 +63,7 @@ cross_prod(const T* a, const T* b, T* c)
 /** Compute the transformation `{y} = [A] {x}`
  */
 template <typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void transform_vec(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE void transform_vec(
     const amrex::Array2D<T, 0, AMREX_SPACEDIM, 0, AMREX_SPACEDIM>& tmat,
     const T* x,
     T* y)
@@ -78,7 +78,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void transform_vec(
 /** Compute the transformation `{y} = {x}^T [A]`
  */
 template <typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void inv_transform_vec(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE void inv_transform_vec(
     const amrex::Array2D<T, 0, AMREX_SPACEDIM, 0, AMREX_SPACEDIM>& tmat,
     const T* x,
     T* y)

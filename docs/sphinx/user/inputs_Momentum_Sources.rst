@@ -15,21 +15,6 @@ Section: Momentum Sources
    if the corresponding source term (the root name) is listed in 
    :input_param:`ICNS.source_terms`.
 
-.. input_param:: BoussinesqBuoyancy.reference_temperature
-
-   **type:** Real, mandatory
-   
-   Reference temperature :math:`\theta_\mathrm{ref}` in Kelvin.
-   Values of the temperature field that are less than or greater than this value will 
-   cause a buoyancy force in the direction of the gravity vector.
-   
-.. input_param:: BoussinesqBuoyancy.thermal_expansion_coeff
-
-   **type:** Real, optional, default :math:`\beta = 1 / \theta_\mathrm{ref}`
-   
-   Thermal expansion coefficient, if not specified this value is set to the inverse of the
-   :input_param:`BoussinesqBuoyancy.reference_temperature` value.
-   
 .. input_param:: CoriolisForcing.latitude 
 
    **type:** Real, mandatory
@@ -135,7 +120,7 @@ Section: Momentum Sources
    **type:** Real, required for multiphase simulations with ABL
    
    This parameter indicates the vertical distance above the water level and the "off height"
-   that the ABL forcing term should be ramped from zero to full strength. This is not used
+   that the ABL forcing term should ramp up from zero to full strength. This is not used
    when the volume fraction field (vof) is not present in the simulation.
 
 .. input_param:: ABLForcing.abl_forcing_band

@@ -390,14 +390,18 @@ void Sampling::impl_write_native()
     const std::string sampling_name =
         amrex::Concatenate(m_label, m_sim.time().time_index());
     const std::string name(post_dir + "/" + sampling_name);
-    amrex::Vector<std::string> int_var_names{"uid", "set_id", "probe_id"};
 
     m_scontainer->WritePlotFile(
-        name, "particles", m_var_names, int_var_names,
-        [=] AMREX_GPU_HOST_DEVICE(
-            const SamplingContainer::SuperParticleType& p) {
+        name, "particles", m_var_names, int_var_names(),
+        [=] AMREX_GPU_DEVICE(const SamplingContainer::SuperParticleType& p) {
             return p.id() > 0;
         });
+
+    const std::string info_name = name + "/sampling_info.yaml";
+    write_info_file(info_name);
+
+    const std::string header_name = name + "/Header";
+    write_header_file(header_name);
 }
 
 void Sampling::write_ascii()
@@ -413,6 +417,77 @@ void Sampling::write_ascii()
 
     const std::string fname = post_dir + "/" + sname + ".txt";
     m_scontainer->WriteAsciiFile(fname);
+
+    const std::string info_name = post_dir + "/" + sname + "_info.txt";
+    write_info_file(info_name);
+}
+
+void Sampling::write_info_file(const std::string& fname)
+{
+    BL_PROFILE("amr-wind::Sampling::write_info_file");
+
+    // Only I/O processor writes the info file
+    if (!amrex::ParallelDescriptor::IOProcessor()) {
+        return;
+    }
+
+    if ((m_out_fmt != "native") && (m_out_fmt != "ascii")) {
+        amrex::Abort(
+            "write_info_file is implemented only for native and ascii formats");
+    }
+
+    std::ofstream fh(fname.c_str(), std::ios::out);
+    if (!fh.good()) {
+        amrex::FileOpenFailed(fname);
+    }
+
+    // YAML formatting
+    fh << "time: " << m_sim.time().new_time() << std::endl;
+    fh << "samplers:" << std::endl;
+    for (int i = 0; i < m_samplers.size(); ++i) {
+        fh << " - index: " << i << std::endl;
+        fh << "   label: " << m_samplers[i]->label() << std::endl;
+        fh << "   type: " << m_samplers[i]->sampletype() << std::endl;
+    }
+
+    fh.close();
+}
+
+void Sampling::write_header_file(const std::string& fname)
+{
+    BL_PROFILE("amr-wind::Sampling::write_header_file");
+
+    // Only I/O processor writes the info file
+    if (!amrex::ParallelDescriptor::IOProcessor()) {
+        return;
+    }
+
+    if ((m_out_fmt != "native")) {
+        amrex::Abort(
+            "write_header_file is implemented only for native formats");
+    }
+
+    amrex::VisMF::IO_Buffer io_buffer(amrex::VisMF::IO_Buffer_Size);
+    std::ofstream hdr;
+    hdr.rdbuf()->pubsetbuf(io_buffer.dataPtr(), io_buffer.size());
+    hdr.open(
+        fname.c_str(),
+        std::ofstream::out | std::ofstream::trunc | std::ofstream::binary);
+    if (!hdr.good()) {
+        amrex::FileOpenFailed(fname);
+    }
+
+    const int nlevels = m_sim.repo().num_active_levels();
+    const auto& bas = m_sim.mesh().boxArray();
+    const auto& geoms = m_sim.mesh().Geom();
+    const auto& ref_ratio = m_sim.mesh().refRatio();
+    const amrex::Vector<int> level_steps(nlevels, m_sim.time().time_index());
+    auto vnames = m_var_names;
+    const auto inames = int_var_names();
+    vnames.insert(vnames.end(), inames.begin(), inames.end());
+    amrex::WriteGenericPlotfileHeader(
+        hdr, nlevels, bas, vnames, geoms, m_sim.time().new_time(), level_steps,
+        ref_ratio, "HyperCLaw-V1.1", "Level_", "Cell");
 }
 
 void Sampling::prepare_netcdf_file()

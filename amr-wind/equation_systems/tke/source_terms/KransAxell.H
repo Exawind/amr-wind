@@ -1,6 +1,7 @@
 #ifndef KRANSAXELL_H
 #define KRANSAXELL_H
 
+#include "amr-wind/transport_models/TransportModel.H"
 #include "amr-wind/equation_systems/tke/TKESource.H"
 
 namespace amr_wind::pde::tke {
@@ -35,7 +36,6 @@ private:
     Field& m_tke;
     amrex::Real m_Cmu{0.556};
     amrex::Real m_heat_flux{0.0};
-    amrex::Real m_ref_temp{300.0};
     amrex::Real m_z0{0.1};
     amrex::Real m_kappa{0.41};
     amrex::Real m_sponge_start{600};
@@ -45,6 +45,9 @@ private:
     const CFDSim& m_sim;
     const amrex::AmrCore& m_mesh;
     const Field& m_velocity;
+
+    //! Transport model
+    const transport::TransportModel& m_transport;
 };
 
 } // namespace amr_wind::pde::tke

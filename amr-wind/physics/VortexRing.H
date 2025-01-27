@@ -55,7 +55,7 @@ private:
 
 struct FatCore
 {
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
         const amrex::Real /*r*/,
         const amrex::Real /*unused*/,
         const amrex::Real /*z*/,
@@ -72,7 +72,7 @@ struct FatCore
 
 struct CollidingRings
 {
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
         const amrex::Real /*r*/,
         const amrex::Real /*theta*/,
         const amrex::Real /*z*/,

@@ -26,6 +26,10 @@ void amr_wind::nodal_projection::set_inflow_velocity(
         bndry_plane.populate_data(lev, time, vel_fld, vel_mfab);
         abl.abl_mpl().set_velocity(lev, time, vel_fld, vel_mfab);
     }
+    if (phy_mgr.contains("OceanWaves")) {
+        auto& ow = phy_mgr.get<amr_wind::ocean_waves::OceanWaves>();
+        ow.ow_bndry().set_velocity(lev, time, vel_fld, vel_mfab);
+    }
 }
 
 Array<amrex::LinOpBCType, AMREX_SPACEDIM>
@@ -47,7 +51,8 @@ amr_wind::nodal_projection::get_projection_bc(
                 break;
             }
             case BC::mass_inflow_outflow:
-            case BC::mass_inflow: {
+            case BC::mass_inflow:
+            case BC::wave_generation: {
                 r[dir] = LinOpBCType::inflow;
                 break;
             }
@@ -237,40 +242,6 @@ void incflo::ApplyProjection(
         }
     }
 
-    bool add_surface_tension = m_sim.physics_manager().contains("MultiPhase");
-    if (add_surface_tension && !incremental) {
-        // Create the Surface tension forcing term (Cell-centered)
-        for (int lev = 0; lev <= finest_level; ++lev) {
-#ifdef AMREX_USE_OMP
-#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
-#endif
-            {
-                amrex::MultiFab surf_tens_force;
-                surf_tens_force.define(
-                    grids[lev], dmap[lev], AMREX_SPACEDIM, 1, MFInfo(),
-                    Factory(lev));
-                // At the moment set it to zero
-                surf_tens_force.setVal(0.0);
-                for (MFIter mfi(velocity(lev), TilingIfNotGPU()); mfi.isValid();
-                     ++mfi) {
-                    Box const& bx = mfi.tilebox();
-                    Array4<Real> const& force_st = surf_tens_force.array(mfi);
-                    Array4<Real const> const& rho =
-                        density[lev]->const_array(mfi);
-                    Array4<Real> const& u = velocity(lev).array(mfi);
-
-                    amrex::ParallelFor(
-                        bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            Real soverrho = scaling_factor / rho(i, j, k);
-                            u(i, j, k, 0) += force_st(i, j, k, 0) * soverrho;
-                            u(i, j, k, 1) += force_st(i, j, k, 1) * soverrho;
-                            u(i, j, k, 2) += force_st(i, j, k, 2) * soverrho;
-                        });
-                }
-            }
-        }
-    }
-
     // ensure velocity is in stretched mesh space
     if (velocity_old.in_uniform_space() && mesh_mapping) {
         velocity_old.to_stretched_space();
@@ -409,45 +380,14 @@ void incflo::ApplyProjection(
         nodal_projector->setCustomRHS(div_vel_rhs->vec_const_ptrs());
     }
 
-    // Determine if nodal projection should be coupled for overset
-    bool disable_ovst_nodal = false;
-    if (sim().has_overset()) {
-        amrex::ParmParse pp("Overset");
-        pp.query("disable_coupled_nodal_proj", disable_ovst_nodal);
-    }
-
-    if ((sim().has_overset() && disable_ovst_nodal)) {
-        // Similar approach to immersed boundary (ib) above
-        auto& iblank = m_repo.get_int_field("iblank_cell");
-        for (int lev = 0; lev <= finest_level; lev++) {
-            amr_wind::nodal_projection::apply_dirichlet_vel(
-                velocity(lev), iblank(lev));
-        }
-        amrex::Gpu::synchronize();
-        auto div_vel_rhs =
-            sim().repo().create_scratch_field(1, 0, amr_wind::FieldLoc::NODE);
-        nodal_projector->computeRHS(div_vel_rhs->vec_ptrs(), vel, {}, {});
-        // Mask the right-hand side of the Poisson solve for the nodes inside
-        // the body
-        const auto& imask_node = repo().get_int_field("mask_node");
-        for (int lev = 0; lev <= finest_level; ++lev) {
-            amrex::MultiFab::Multiply(
-                *div_vel_rhs->vec_ptrs()[lev],
-                amrex::ToMultiFab(imask_node(lev)), 0, 0, 1, 0);
-        }
-        nodal_projector->setCustomRHS(div_vel_rhs->vec_const_ptrs());
-    }
-
-    // Setup masking for overset simulations
-    if (sim().has_overset() && !disable_ovst_nodal) {
+    if (m_sim.has_overset()) {
+        // Setup masking for overset simulations
         auto& linop = nodal_projector->getLinOp();
         const auto& imask_node = repo().get_int_field("mask_node");
         for (int lev = 0; lev <= finest_level; ++lev) {
             linop.setOversetMask(lev, imask_node(lev));
         }
-    }
 
-    if (m_sim.has_overset() && !disable_ovst_nodal) {
         auto phif = m_repo.create_scratch_field(1, 1, amr_wind::FieldLoc::NODE);
         if (incremental) {
             for (int lev = 0; lev <= finestLevel(); ++lev) {
@@ -541,14 +481,6 @@ void incflo::ApplyProjection(
     for (int lev = finest_level - 1; lev >= 0; --lev) {
         amrex::average_down(
             grad_p(lev + 1), grad_p(lev), 0, AMREX_SPACEDIM, refRatio(lev));
-    }
-
-    if (sim().has_overset() && disable_ovst_nodal) {
-        auto& iblank = m_repo.get_int_field("iblank_cell");
-        for (int lev = 0; lev <= finest_level; lev++) {
-            amr_wind::nodal_projection::apply_dirichlet_vel(
-                velocity(lev), iblank(lev));
-        }
     }
 
     velocity.fillpatch(m_time.new_time());

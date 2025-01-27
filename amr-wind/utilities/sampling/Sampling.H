@@ -8,6 +8,7 @@
 #include "amr-wind/utilities/PostProcessing.H"
 #include "amr-wind/utilities/sampling/SamplerBase.H"
 #include "amr-wind/utilities/sampling/SamplingContainer.H"
+#include <AMReX_PlotFileUtil.H>
 
 /**
  *  \defgroup sampling Data-sampling utilities
@@ -109,7 +110,18 @@ protected:
      */
     virtual void write_ascii();
 
+    //! Output extra information for certain formats
+    void write_header_file(const std::string& fname);
+
+    //! Output extra information for certain formats
+    void write_info_file(const std::string& fname);
+
     SamplingContainer& sampling_container() { return *m_scontainer; }
+
+    static amrex::Vector<std::string> int_var_names()
+    {
+        return {"uid", "set_id", "probe_id"};
+    };
 
 private:
     CFDSim& m_sim;

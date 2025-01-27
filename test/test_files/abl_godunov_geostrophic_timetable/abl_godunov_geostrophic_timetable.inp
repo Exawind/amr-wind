@@ -26,14 +26,13 @@ incflo.use_godunov = 1
 transport.viscosity = 1.0e-5
 transport.laminar_prandtl = 0.7
 transport.turbulent_prandtl = 0.3333
+transport.reference_temperature = 300.0
 turbulence.model = Smagorinsky
 Smagorinsky_coeffs.Cs = 0.135
 
 
 incflo.physics = ABL
 ICNS.source_terms = BoussinesqBuoyancy CoriolisForcing GeostrophicForcing
-BoussinesqBuoyancy.reference_temperature = 300.0
-ABL.reference_temperature = 300.0
 CoriolisForcing.latitude = 41.3
 GeostrophicForcing.geostrophic_wind_timetable = "time_table.txt"
 incflo.velocity = 8.0 0.0 0.0

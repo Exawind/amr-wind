@@ -89,6 +89,14 @@ This section is for setting up wave forcing and relaxation zones.
    is turned on, the wave profile will be initialized over the entire domain. If there is a specified
    relax_zone_out_length, this option is automatically turned on.
 
+.. input_param:: OceanWaves.label.current
+
+   **type:** Real, optional, default = 0.0
+
+   Flow speed of a uniform current in the x-direction to be added to the wave forcing. This option is
+   currently only compatible with the LinearWaves wave type and the numerical beach. If a nonzero current is
+   specified for a case with nonlinear waves, the code will abort.
+
 The following input arguments are only valid for the LinearWaves and StokesWave wave types:
 
 .. input_param:: OceanWaves.label.wave_length
@@ -103,6 +111,25 @@ The following input arguments are only valid for the LinearWaves and StokesWave 
    **type:** Real, mandatory
 
    The amplitude of the wave profile
+
+.. input_param:: OceanWaves.label.wave_phase_offset_radians
+
+   **type** Real, optional, default = 0.
+
+   This specifies a phase offset to the target wave profile.
+   It is in terms of phase (radians) relative to the wave, not
+   in terms of time. Note that this argument should be retained
+   when restarting a simulation so that the phase of the wave forcing
+   is consistent with the preceding simulation.
+
+.. input_param:: OceanWaves.label.wave_phase_offset_degrees
+
+   **type** Real, optional, default = 0.
+
+   This specifies a phase offset to the target wave profile
+   in terms of degrees. If the offset is specified in both radians
+   and degrees, the code will abort; only one of these arguments
+   can be used at a time.
 
 The following input arguments are only valid for the StokesWave wave type:
 

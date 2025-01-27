@@ -7,8 +7,6 @@
 
 namespace amr_wind::terraindrag {
 
-namespace {} // namespace
-
 /** Terraindrag Flow physics
  *  \ingroup physics
  */
@@ -47,22 +45,21 @@ private:
     CFDSim& m_sim;
     const FieldRepo& m_repo;
     const amrex::AmrCore& m_mesh;
-    //! Blanking Field for Terrain or Buildings
+
+    //! Blanking field for terrain or buildings
     IntField& m_terrain_blank;
-    //! Terrain Drag Force Term
+    //! Terrain drag force term
     IntField& m_terrain_drag;
-    //! Reading the Terrain Coordinates from  file
-    amrex::Vector<amrex::Real> m_xterrain;
-    amrex::Vector<amrex::Real> m_yterrain;
-    amrex::Vector<amrex::Real> m_zterrain;
-    //! Roughness Field
+
+    //! Terrain file
+    std::string m_terrain_file{"terrain.amrwind"};
+
+    //! Roughness file
+    std::string m_roughness_file{"terrain.roughness"};
+
+    //! Roughness fields
     Field& m_terrainz0;
     Field& m_terrain_height;
-    //! Reading the Roughness Coordinates from file - Not Fully there yet
-    //! Need updates to ABLWallFunction in future
-    amrex::Vector<amrex::Real> m_xrough;
-    amrex::Vector<amrex::Real> m_yrough;
-    amrex::Vector<amrex::Real> m_z0rough;
 
     //! Terrain Drag for waves
     bool m_terrain_is_waves{false};

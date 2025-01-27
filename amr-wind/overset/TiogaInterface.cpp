@@ -3,62 +3,13 @@
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/equation_systems/PDEBase.H"
 #include "amr-wind/core/field_ops.H"
+#include "amr-wind/overset/overset_ops_routines.H"
 #include "amr-wind/utilities/IOManager.H"
 #include "AMReX_ParmParse.H"
 
 #include <memory>
 #include <numeric>
 namespace amr_wind {
-
-namespace {
-
-/** Convert iblanks to AMReX mask
- *
- *  \f{align}
- *  \mathrm{mask}_{i,j,k} = \begin{cases}
- *  1 & \mathrm{IBLANK}_{i, j, k} = 1 \\
- *  0 & \mathrm{IBLANK}_{i, j, k} \leq 0
- *  \end{cases}
- *  \f}
- */
-void iblank_to_mask(const IntField& iblank, IntField& maskf)
-{
-    const auto& nlevels = iblank.repo().mesh().finestLevel() + 1;
-
-    for (int lev = 0; lev < nlevels; ++lev) {
-        const auto& ibl = iblank(lev);
-        auto& mask = maskf(lev);
-
-        const auto& ibarrs = ibl.const_arrays();
-        const auto& marrs = mask.arrays();
-        amrex::ParallelFor(
-            ibl, ibl.n_grow,
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                marrs[nbx](i, j, k) = amrex::max(ibarrs[nbx](i, j, k), 0);
-            });
-    }
-    amrex::Gpu::synchronize();
-}
-
-void iblank_to_mask_hole(const IntField& iblank, IntField& maskf)
-{
-    const auto& nlevels = iblank.repo().mesh().finestLevel() + 1;
-
-    for (int lev = 0; lev < nlevels; ++lev) {
-        const auto& ibl = iblank(lev);
-        auto& mask = maskf(lev);
-
-        const auto& ibarrs = ibl.const_arrays();
-        const auto& marrs = mask.arrays();
-        amrex::ParallelFor(
-            ibl, ibl.n_grow,
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                marrs[nbx](i, j, k) = std::abs(ibarrs[nbx](i, j, k));
-            });
-    }
-    amrex::Gpu::synchronize();
-}
-} // namespace
 
 AMROversetInfo::AMROversetInfo(const int nglobal, const int nlocal)
     : level(nglobal)
@@ -93,9 +44,6 @@ TiogaInterface::TiogaInterface(CFDSim& sim)
           FieldLoc::NODE))
 {
     m_sim.io_manager().register_output_int_var(m_iblank_cell.name());
-
-    amrex::ParmParse pp("Overset");
-    pp.query("disable_coupled_nodal_proj", m_disable_nodal_proj);
 }
 
 // clang-format on
@@ -151,12 +99,8 @@ void TiogaInterface::post_overset_conn_work()
         m_iblank_node(lev).FillBoundary(m_sim.mesh().Geom()[lev].periodicity());
     }
 
-    iblank_to_mask(m_iblank_cell, m_mask_cell);
-    if (m_disable_nodal_proj) {
-        iblank_to_mask_hole(m_iblank_node, m_mask_node);
-    } else {
-        iblank_to_mask(m_iblank_node, m_mask_node);
-    }
+    overset_ops::iblank_to_mask(m_iblank_cell, m_mask_cell);
+    overset_ops::iblank_to_mask(m_iblank_node, m_mask_node);
 
     // Update equation systems after a connectivity update
     m_sim.pde_manager().icns().post_regrid_actions();
@@ -192,13 +136,17 @@ void TiogaInterface::register_solution(
     m_cell_vars = cell_vars;
     m_node_vars = node_vars;
 
+    const amrex::Real time_fillpatch = m_sim.is_during_overset_advance()
+                                           ? m_sim.time().new_time()
+                                           : m_sim.time().current_time();
+
     // Move cell variables into scratch field
     {
         int icomp = 0;
         for (const auto& cvar : m_cell_vars) {
             auto& fld = repo.get_field(cvar);
             const int ncomp = fld.num_comp();
-            fld.fillpatch(m_sim.time().new_time());
+            fld.fillpatch(time_fillpatch);
             field_ops::copy(*m_qcell, fld, 0, icomp, ncomp, num_ghost);
             icomp += ncomp;
         }
@@ -210,7 +158,7 @@ void TiogaInterface::register_solution(
         for (const auto& cvar : m_cell_vars) {
             auto& fld = repo.get_field(cvar);
             const int ncomp = fld.num_comp();
-            fld.fillpatch(m_sim.time().new_time());
+            fld.fillpatch(time_fillpatch);
             // Device to host copy happens here
             const int nlevels = repo.num_active_levels();
             for (int lev = 0; lev < nlevels; ++lev) {
@@ -227,7 +175,7 @@ void TiogaInterface::register_solution(
             auto& fld = repo.get_field(cvar);
 
             const int ncomp = fld.num_comp();
-            fld.fillpatch(m_sim.time().new_time());
+            fld.fillpatch(time_fillpatch);
             field_ops::copy(*m_qnode, fld, 0, icomp, ncomp, num_ghost);
             icomp += ncomp;
         }
@@ -239,7 +187,7 @@ void TiogaInterface::register_solution(
         for (const auto& cvar : m_node_vars) {
             auto& fld = repo.get_field(cvar);
             const int ncomp = fld.num_comp();
-            fld.fillpatch(m_sim.time().new_time());
+            fld.fillpatch(time_fillpatch);
             // Device to host copy happens here
             const int nlevels = repo.num_active_levels();
             for (int lev = 0; lev < nlevels; ++lev) {
@@ -291,6 +239,10 @@ void TiogaInterface::update_solution()
 {
     auto& repo = m_sim.repo();
 
+    const amrex::Real time_fillpatch = m_sim.is_during_overset_advance()
+                                           ? m_sim.time().new_time()
+                                           : m_sim.time().current_time();
+
     // Update cell variables on device
     {
         int icomp = 0;
@@ -302,7 +254,7 @@ void TiogaInterface::update_solution()
             for (int lev = 0; lev < nlevels; ++lev) {
                 htod_memcpy(fld(lev), (*m_qcell_host)(lev), icomp, 0, ncomp);
             }
-            fld.fillpatch(m_sim.time().new_time());
+            fld.fillpatch(time_fillpatch);
             icomp += ncomp;
         }
     }
@@ -318,7 +270,7 @@ void TiogaInterface::update_solution()
             for (int lev = 0; lev < nlevels; ++lev) {
                 htod_memcpy(fld(lev), (*m_qnode_host)(lev), icomp, 0, ncomp);
             }
-            fld.fillpatch(m_sim.time().new_time());
+            fld.fillpatch(time_fillpatch);
             icomp += ncomp;
         }
     }

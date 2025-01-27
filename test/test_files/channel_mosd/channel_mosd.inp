@@ -1,0 +1,90 @@
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#            SIMULATION STOP            #
+#.......................................#
+time.stop_time               = -1     # Max (simulated) time to evolve
+time.max_step                = 100       # Max number of time steps
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#         TIME STEP COMPUTATION         #
+#.......................................#
+time.fixed_dt         =   -0.01       # Use this constant dt if > 0
+time.cfl              =   0.1        # CFL factor
+
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#            INPUT AND OUTPUT           #
+#.......................................#
+time.plot_interval            =  100       # Steps between plot files
+time.checkpoint_interval      =  100       # Steps between checkpoint files
+io.output_hdf5_plotfile       =  true
+
+incflo.post_processing = averaging ke
+ke.type                    = KineticEnergy
+ke.output_frequency        = 100
+averaging.type = TimeAveraging
+averaging.labels = means stress
+averaging.averaging_window = 10.0              # this is seconds of simulation
+averaging.averaging_start_time = 1600 
+averaging.means.fields = velocity
+averaging.means.averaging_type = ReAveraging
+averaging.stress.fields = velocity
+averaging.stress.averaging_type = ReynoldsStress
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#               PHYSICS                 #
+#.......................................#
+incflo.density        = 1.0             # Reference density
+incflo.use_godunov    = 1
+incflo.diffusion_type = 0
+incflo.godunov_type = "weno_z"
+incflo.do_initial_proj = true
+incflo.initial_iterations = 3
+incflo.physics = ChannelFlow
+
+transport.viscosity = 1.0e-5			# Dyanic viscosity (units) Pa.s
+turbulence.model = Smagorinsky
+Smagorinsky_coeffs.Cs = 0.15
+
+ICNS.source_terms = BodyForce
+BodyForce.magnitude = 0.01 0.0 0.0
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#       CHANNEL FLOW PARAMETERS         #
+#.......................................#
+ChannelFlow.re_tau = 10000.0
+ChannelFlow.normal_direction = 2
+ChannelFlow.flow_direction = 0
+ChannelFlow.perturb_velocity = true
+ChannelFlow.perturb_factor = 0.1
+ChannelFlow.perturb_y_period = 4.0
+ChannelFlow.perturb_z_period = 4.0
+ChannelFlow.half_channel = true
+WallFunction.wall_shear_stress_type = mosd
+WallFunction.log_law_ref_index = 3 		# This is the vertical reference index for loglaw (matching location)
+wave_mosd.amplitude = 0.05  # amplitude of wave in meters
+wave_mosd.wavenumber = 4    # wavenumber of wave in (1/meters)
+wave_mosd.frequency = 0.8   # frequency of wave in (1/sec)
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#        ADAPTIVE MESH REFINEMENT       #
+#.......................................#
+amr.n_cell              = 128 64 32     # Grid cells at coarsest AMRlevel
+amr.blocking_factor     = 4
+amr.max_level           = 0           # Max AMR level in hierarchy
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#              GEOMETRY                 #
+#.......................................#
+geometry.prob_lo        =   0.0 0.0 0.0  # Lo corner coordinates
+geometry.prob_hi        =   6.2831853  3.1415926  1.0  # Hi corner coordinates 8*pi*3pi*1
+geometry.is_periodic    =   1   1  0   # Periodicity x y z (0/1)
+
+# Boundary conditions
+zlo.type =   "wall_model"
+zhi.type =   "symmetric_wall"
+
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#              VERBOSITY                #
+#.......................................#
+incflo.verbose          =   0          # incflo_level

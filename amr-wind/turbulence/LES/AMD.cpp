@@ -23,16 +23,9 @@ AMD<Transport>::AMD(CFDSim& sim)
     , m_rho(sim.repo().get_field("density"))
     , m_pa_temp(m_temperature, sim.time(), m_normal_dir, true)
 {
-    auto& phy_mgr = this->m_sim.physics_manager();
-    if (phy_mgr.contains("ABL")) {
-        {
-            amrex::ParmParse pp("ABL");
-            pp.get("reference_temperature", m_ref_theta);
-        }
-        {
-            amrex::ParmParse pp("incflo");
-            pp.queryarr("gravity", m_gravity);
-        }
+    {
+        amrex::ParmParse pp("incflo");
+        pp.queryarr("gravity", m_gravity);
     }
 }
 
@@ -56,13 +49,9 @@ void AMD<Transport>::update_turbulent_viscosity(
     const auto& vel = m_vel.state(fstate);
     const auto& temp = m_temperature.state(fstate);
     const auto& den = m_rho.state(fstate);
+    const auto beta = (this->m_transport).beta();
     const auto& geom_vec = repo.mesh().Geom();
-    amrex::Real beta = 0.0;
     const int normal_dir = m_normal_dir;
-    auto& phy_mgr = this->m_sim.physics_manager();
-    if (phy_mgr.contains("ABL")) {
-        beta = -m_gravity[normal_dir] / m_ref_theta;
-    }
 
     const amrex::Real C_poincare = m_C;
 
@@ -88,6 +77,8 @@ void AMD<Transport>::update_turbulent_viscosity(
     const amrex::Real* p_tpa_coord_begin = tpa_coord_d.data();
     const amrex::Real* p_tpa_coord_end = tpa_coord_d.end();
     const amrex::Real* p_tpa_deriv = tpa_deriv_d.data();
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
+        m_gravity[0], m_gravity[1], m_gravity[2]};
     const int nlevels = repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = geom_vec[lev];
@@ -98,6 +89,7 @@ void AMD<Transport>::update_turbulent_viscosity(
         const auto& gradVel_arrs = (*gradVel)(lev).const_arrays();
         const auto& gradT_arrs = (*gradT)(lev).const_arrays();
         const auto& rho_arrs = den(lev).const_arrays();
+        const auto& beta_arrs = (*beta)(lev).const_arrays();
         const auto& mu_arrs = mu_turb(lev).arrays();
         const auto& mu_turb_lev = mu_turb(lev);
         amrex::ParallelFor(
@@ -107,14 +99,16 @@ void AMD<Transport>::update_turbulent_viscosity(
                 const auto rho_arr = rho_arrs[nbx];
                 const auto gradVel_arr = gradVel_arrs[nbx];
                 const auto gradT_arr = gradT_arrs[nbx];
+                const auto beta_val = beta_arrs[nbx](i, j, k);
                 mu_arr(i, j, k) =
                     rho_arr(i, j, k) * amd_muvel(
-                                           i, j, k, dx, beta, C_poincare,
-                                           gradVel_arr, gradT_arr,
+                                           i, j, k, dx, beta_val, gravity,
+                                           C_poincare, gradVel_arr, gradT_arr,
                                            p_tpa_coord_begin, p_tpa_coord_end,
                                            p_tpa_deriv, normal_dir, nlo);
             });
     }
+    amrex::Gpu::synchronize();
 
     mu_turb.fillpatch(this->m_sim.time().current_time());
 }

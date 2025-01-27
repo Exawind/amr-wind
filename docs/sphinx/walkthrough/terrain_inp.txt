@@ -30,13 +30,14 @@ transport.model 			 = ConstTransport
 transport.viscosity 			 = 1e-5
 transport.laminar_prandtl 			 = 0.7
 transport.turbulent_prandtl 			 = 0.333
+transport.reference_temperature 		 = 300
+transport.thermal_expansion_coefficient		 = 0.00333333
 # turbulence equation parameters 
 turbulence.model 			 = Kosovic
 Kosovic.refMOL 			 = -1e30
 # Atmospheric boundary layer
 ABL.kappa 			 = .41
 ABL.normal_direction 			 = 2
-ABL.reference_temperature 			 = 300
 ABL.stats_output_format 			 = netcdf
 ABL.surface_roughness_z0 			 = 0.1
 ABL.temperature_heights 			 = 0  800 900 1900
@@ -49,8 +50,6 @@ ABL.bndry_var_names 			 = velocity temperature
 ABL.bndry_output_format 			 = native
 # Source
 ICNS.source_terms 			 = BoussinesqBuoyancy CoriolisForcing GeostrophicForcing RayleighDamping NonLinearSGSTerm DragForcing
-BoussinesqBuoyancy.reference_temperature 			 = 300
-BoussinesqBuoyancy.thermal_expansion_coeff 			 = 0.00333333
 CoriolisForcing.east_vector 			 = 1.0 0.0 0.0 
 CoriolisForcing.north_vector 			 = 0.0 1.0 0.0 
 CoriolisForcing.latitude 			 = 90 

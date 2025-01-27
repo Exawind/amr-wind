@@ -70,6 +70,10 @@ through pull-requests on GitHub. Please refer to the
 [coding guidelines](https://exawind.github.io/amr-wind/developer/coding_guidelines.html) as
 a reference for the best practices currently used to develop AMR-Wind.
 
+Please acknowledge as a publication co-author any developer that has
+significantly contributed to implementing or improving specific
+capability that was used for that publication.
+
 ### User discussion, feedback, and community support
 
 The development team manages a mailing list for AMR-Wind users. Invites for quarterly user meetings,

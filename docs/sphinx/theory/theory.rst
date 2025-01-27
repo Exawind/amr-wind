@@ -397,7 +397,37 @@ within the ``AMR-Wind`` diffusion framework. The last two terms in :math:`M_{ij}
 Wall models
 -----------
 The wall models described in this section are implemented in ``AMR-Wind`` for
-running wall-bounded flows (non-ABL cases).
+running wall-bounded flows.
+
+Monin-Obukhov Similarity Theory
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Monin-Obukhov similarity theory is used for wall boundary conditions for ABL simulations. The exact
+calculation of :math:`\tau_{i3}` in the horizontal directions depends on the SGS model used, but the following calculations for the friction velocity :math:`u_\tau` and surface heat flux `q` are common across the models.
+
+.. math::
+    u_\tau = \frac{\kappa \overline{s}}{\ln \left(\frac{z_b}{z_0}\right) - \psi_m}
+    
+where :math:`s` is the horizontal wind speed :math:`s = \sqrt{u_{1}^2+ u_{2}^2}`, :math:`\theta_w`
+is the wall temperature, :math:`\kappa` is the von Karman constant, and :math:`z_0` is the surface roughness length and :math:`z_b` is the reference height (default is the first cell center). The
+:math:`\overline{\phantom{l}.\phantom{l}}` operator indicates a horizontal plane
+average.  The quantities :math:`\psi_m, \psi_h` are computed using the Monin-Obukhov similarity law
+following the calculations in `ven der Lann et al <https://doi.org/10.1002/we.2017>`_ and `Dyer (1974)` formulation  for unstable stratification (:math:`z_b/L < 0`):
+
+.. math::
+    \begin{align}
+        \psi_m &= 2\ln \left(\frac{1+x}{2}\right) + \ln \left(\frac{1+x^2}{2}\right) - 2 \arctan{x} + \frac{\pi}{2}, x = \left(1 - \beta_m\frac{z_b}{L}\right)^{\frac{1}{4}} \\
+        \psi_h &= \ln \left( \frac{1 + y}{2}\right), y = \left(1 - \beta_h \frac{z_b}{L}\right)^{\frac{1}{2}},
+    \end{align}
+
+and for stable stratification (:math:`z_b/L > 0` ):
+
+.. math::
+    \begin{align}
+        \psi_m &= -\gamma_m \frac{z_b}{L},\\
+        \psi_h &= -\gamma_h \frac{z_b}{L},
+    \end{align}
+
+where :math:`L = -\frac{u_\tau^3 \theta_0}{\kappa g q}` is the Monin-Obukhov length and :math:`\beta_m, \beta_h, \gamma_m, \gamma_h` are model constants. AMR-Wind uses :math:`\beta_m = \beta_h = 16` and :math:`\gamma_m = \gamma_h = 5`.
 
 Log-law wall model
 ~~~~~~~~~~~~~~~~~~
@@ -487,6 +517,21 @@ z direction (example: *half-channel* simulations) at the centerline.
        w &= 0
    \end{aligned}
 
+Dynamic wall model (Wave model)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This wall model is used to calculate the stress due to moving surfaces,
+like ocean waves. It aims to introduce wave phase-resolving physics 
+at a cost similar to using the Log-law wall model, without the need of using
+wave adapting computational grids. The model was developed by `Ayala et al. (2024) <https://doi.org/10.1007/s10546-024-00884-8>`_.
+
+.. math:: \tau_{i3} = \frac{1}{\pi}|(\boldsymbol{u-C}) \cdot \boldsymbol{\hat{n}}|^2|\boldsymbol{\nabla} \eta|^2 \, \hat{n}_i  \, \text{H} \Bigl[ (u_j-C_j)\frac{\partial \eta}{\partial x_j} \Bigr] \, + \, \tau^{visc}_{i3}, \quad i = 1,2.
+
+The first component gives the form drag due to ocean waves, where :math:`\boldsymbol{C}`
+is the wave velocity vector, :math:`\eta` is the surface height distribution and
+:math:`\hat{\boldsymbol n} = \boldsymbol{\nabla} \eta /|\boldsymbol{\nabla} \eta|`. The
+second component (:math:`\tau^{visc}_{i3}`) is the stress due to unresolved effects,
+like viscous effects. For this component, the ``Log-law wall model`` is used.
 
 .. _terrainmodel:
 
@@ -542,6 +587,36 @@ the orange arrow below).
    :align: center
    :width: 30%
 
+
+Forest Model
+--------------
+The forest model provides an option to include the drag from forested regions to be included in the momentum equation. The 
+drag force is calculated as follows: 
+
+.. math::
+
+   F_i= - C_d L(x,y,z) U_i | U_i |
+
+
+Here :math:`C_d` is the coefficient of drag for the forested region and :math:`L(x,y,z)` is the leaf area density (LAD) for the 
+forested region. A three-dimensional model for the LAD is usually unavailable and is also cumbersome to use if there are thousands
+of trees. Two different models are available as an alternative: 
+
+.. math::
+   L=\frac{LAI}{h}
+
+.. math:: 
+   L(z)=L_m \left(\frac{h - z_m}{h - z}\right)^n  exp\left[n \left(1 -\frac{h - z_m}{h - z}\right )\right]
+
+Here :math:`LAI` is the leaf area index and is available from measurements, :math:`h` is the height of the tree, :math:`z_m` is the location 
+of the maximum LAD, :math:`L_m` is the maximum value of LAD at :math:`z_m` and :math:`n` is a model constant with values  6 (below :math:`z_m`) and 0.5 
+(above :math:`z_m`), respectively. :math:`L_m` is computed by integrating the following equation: 
+
+.. math::
+   LAI = \int_{0}^{h} L(z) dz 
+
+The simplified model with uniform LAD is recommended for forested regions with no knowledge of the individual trees. LAI values can be used from 
+climate model look-up tables for different regions around the world if no local remote sensing data is available. 
 
 Navigating source code
 ------------------------

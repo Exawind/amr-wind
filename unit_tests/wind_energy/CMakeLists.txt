@@ -9,6 +9,7 @@ target_sources(${amr_wind_unit_test_exe_name} PRIVATE
   test_abl_bc.cpp
   test_abl_src_timetable.cpp
   test_abl_terrain.cpp
+  test_abl_forest.cpp
   )
 
 if (AMR_WIND_ENABLE_NETCDF)

@@ -34,8 +34,7 @@ and the span. For example, a sponge layer of size 1000 m at the east (+x) bounda
 we need to include ``DragForcing.sponge_east=1`` and ``DragForcing.sponge_distance_east=1000`` in the input file. 
 The sponge layer is not required for periodic boundary boundary conditions. The only input recommended for the 
 energy equation source term is the specification of the internal temperature of the terrain. This is 
-set as ``DragTempForcing.reference_temperature=300``. It is recommended that the reference_temperature be set 
-to the value of the reference temperature used in the Boussinesq term. The current terrain setup can only 
+set as ``transport.reference_temperature=300``. The current terrain setup can only 
 be used for the simulation of neutral ABL. A future release will update this calculation to automatically use 
 the values from a precursor simulation for both neutral and  non-neutral stratification. 
 The terrain can be visualized by including ``io.int_outputs = terrain_blank`` in the input file. 

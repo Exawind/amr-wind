@@ -16,6 +16,7 @@ KransAxell::KransAxell(const CFDSim& sim)
     , m_sim(sim)
     , m_mesh(sim.mesh())
     , m_velocity(sim.repo().get_field("velocity"))
+    , m_transport(sim.transport_model())
 {
     AMREX_ALWAYS_ASSERT(sim.turbulence_model().model_name() == "KLAxell");
     auto coeffs = sim.turbulence_model().model_coeffs();
@@ -23,7 +24,6 @@ KransAxell::KransAxell(const CFDSim& sim)
     pp.query("Cmu", m_Cmu);
     pp.query("kappa", m_kappa);
     pp.query("surface_roughness_z0", m_z0);
-    pp.query("reference_temperature", m_ref_temp);
     pp.query("surface_temp_flux", m_heat_flux);
     pp.query("meso_sponge_start", m_sponge_start);
     {
@@ -48,20 +48,23 @@ void KransAxell::operator()(
     const auto& buoy_prod_arr = (this->m_buoy_prod)(lev).array(mfi);
     const auto& dissip_arr = (this->m_dissip)(lev).array(mfi);
     const auto& tke_arr = m_tke(lev).array(mfi);
+    amrex::FArrayBox ref_theta_fab(bx, 1, amrex::The_Async_Arena());
+    amrex::Array4<amrex::Real> const& ref_theta_arr = ref_theta_fab.array();
+    m_transport.ref_theta_impl(lev, mfi, bx, ref_theta_arr);
     const auto& geom = m_mesh.Geom(lev);
     const auto& problo = m_mesh.Geom(lev).ProbLoArray();
     const auto& probhi = m_mesh.Geom(lev).ProbHiArray();
     const auto& dx = geom.CellSizeArray();
     const auto& dt = m_time.delta_t();
-    const amrex::Real ref_temp = m_ref_temp;
-    const amrex::Real heat_flux =
-        std::abs(m_gravity[2]) / ref_temp * m_heat_flux;
+    const amrex::Real heat_flux = m_heat_flux;
     const amrex::Real Cmu = m_Cmu;
     const amrex::Real sponge_start = m_sponge_start;
     const amrex::Real ref_tke = m_ref_tke;
     const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
     const amrex::Real kappa = m_kappa;
     const amrex::Real z0 = m_z0;
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
+        m_gravity[0], m_gravity[1], m_gravity[2]};
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         amrex::Real bcforcing = 0;
         const amrex::Real ux = vel(i, j, k, 0);
@@ -70,9 +73,10 @@ void KransAxell::operator()(
         if (k == 0) {
             const amrex::Real m = std::sqrt(ux * ux + uy * uy);
             const amrex::Real ustar = m * kappa / std::log(z / z0);
+            const amrex::Real T0 = ref_theta_arr(i, j, k);
+            const amrex::Real hf = std::abs(gravity[2]) / T0 * heat_flux;
             const amrex::Real rans_b = std::pow(
-                std::max(heat_flux, 0.0) * kappa * z / std::pow(Cmu, 3),
-                (2.0 / 3.0));
+                std::max(hf, 0.0) * kappa * z / std::pow(Cmu, 3), (2.0 / 3.0));
             bcforcing =
                 (ustar * ustar / (Cmu * Cmu) + rans_b - tke_arr(i, j, k)) / dt;
         }
@@ -105,8 +109,10 @@ void KransAxell::operator()(
                 const amrex::Real z = 0.5 * dx[2];
                 amrex::Real m = std::sqrt(ux * ux + uy * uy);
                 const amrex::Real ustar = m * kappa / std::log(z / z0);
+                const amrex::Real T0 = ref_theta_arr(i, j, k);
+                const amrex::Real hf = std::abs(gravity[2]) / T0 * heat_flux;
                 const amrex::Real rans_b = std::pow(
-                    std::max(heat_flux, 0.0) * kappa * z / std::pow(Cmu, 3),
+                    std::max(hf, 0.0) * kappa * z / std::pow(Cmu, 3),
                     (2.0 / 3.0));
                 terrainforcing =
                     (ustar * ustar / (Cmu * Cmu) + rans_b - tke_arr(i, j, k)) /

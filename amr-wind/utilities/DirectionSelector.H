@@ -20,8 +20,7 @@ struct DirectionSelector
 template <>
 struct DirectionSelector<0>
 {
-    AMREX_GPU_HOST_DEVICE int
-    operator()(int i, int /*unused*/, int /*unused*/) const
+    AMREX_GPU_DEVICE int operator()(int i, int /*unused*/, int /*unused*/) const
     {
         return i;
     };
@@ -32,8 +31,7 @@ struct DirectionSelector<0>
 template <>
 struct DirectionSelector<1>
 {
-    AMREX_GPU_HOST_DEVICE int
-    operator()(int /*unused*/, int j, int /*unused*/) const
+    AMREX_GPU_DEVICE int operator()(int /*unused*/, int j, int /*unused*/) const
     {
         return j;
     };
@@ -44,8 +42,7 @@ struct DirectionSelector<1>
 template <>
 struct DirectionSelector<2>
 {
-    AMREX_GPU_HOST_DEVICE int
-    operator()(int /*unused*/, int /*unused*/, int k) const
+    AMREX_GPU_DEVICE int operator()(int /*unused*/, int /*unused*/, int k) const
     {
         return k;
     };
@@ -87,7 +84,7 @@ perpendicular_box(const amrex::Box& bx, const amrex::IntVect& iv)
 // The IntVect is used to set the constant indices in the perpendicular
 // direction.
 template <typename IndexSelector>
-AMREX_GPU_HOST_DEVICE amrex::Box
+AMREX_GPU_DEVICE amrex::Box
 parallel_box(const amrex::Box& bx, const amrex::IntVect& iv)
 {
     amrex::IntVect line_lo, line_hi;
@@ -110,7 +107,7 @@ parallel_box(const amrex::Box& bx, const amrex::IntVect& iv)
 
 namespace amr_wind {
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE int
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE int
 direction_selector(const int i, const int j, const int k, const int dir)
 {
     return (dir == 0) ? i : (dir == 1) ? j : k;

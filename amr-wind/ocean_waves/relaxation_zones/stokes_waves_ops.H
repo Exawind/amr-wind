@@ -26,6 +26,12 @@ struct ReadInputsOp<StokesWaves>
         pp_incflo.queryarr("gravity", gravity);
         wdata.g = -gravity[2];
 
+        if (wdata.current > constants::TIGHT_TOL) {
+            amrex::Abort(
+                "Current is specified as nonzero, but current is not yet "
+                "implemented for Stokes Waves.");
+        }
+
         // Get wave attributes
         pp.get("wave_height", wdata.wave_height);
         pp.get("order", wdata.order);
@@ -68,6 +74,15 @@ struct ReadInputsOp<StokesWaves>
                                << wdata.wave_length << " m.\n";
             }
         }
+        pp.query("wave_phase_offset_radians", wdata.wave_phase_offset);
+        if (!pp.contains("wave_phase_offset_radians")) {
+            pp.query("wave_phase_offset_degrees", wdata.wave_phase_offset);
+            wdata.wave_phase_offset *= M_PI / 180.;
+        } else if (pp.contains("wave_phase_offset_degrees")) {
+            amrex::Abort(
+                "ReadInputsOp<StokesWaves> : wave phase offset is specified in "
+                "both radians and degrees. Please use only one.");
+        }
     }
 };
 
@@ -100,6 +115,7 @@ struct InitDataOp<StokesWaves>
 
         const amrex::Real wave_height = wdata.wave_height;
         const amrex::Real wave_length = wdata.wave_length;
+        const amrex::Real phase_offset = wdata.wave_phase_offset;
         const amrex::Real water_depth = wdata.water_depth;
         const amrex::Real zero_sea_level = wdata.zsl;
         const amrex::Real gen_length = wdata.gen_length;
@@ -119,7 +135,8 @@ struct InitDataOp<StokesWaves>
                 amrex::Real eta_w{0.0}, u_w{0.0}, v_w{0.0}, w_w{0.0};
                 relaxation_zones::stokes_waves(
                     order, wave_length, water_depth, wave_height,
-                    zero_sea_level, g, x, z, 0.0, eta_w, u_w, v_w, w_w);
+                    zero_sea_level, g, x, z, 0.0, phase_offset, eta_w, u_w, v_w,
+                    w_w);
                 const utils::WaveVec wave_sol{u_w, v_w, w_w, eta_w};
 
                 // Quiescent profile
@@ -145,23 +162,19 @@ struct InitDataOp<StokesWaves>
                     phi_arrs[nbx](i, j, k) = phi;
                 }
             });
+        amrex::Gpu::synchronize();
     }
 };
 
 template <>
 struct UpdateTargetFieldsOp<StokesWaves>
 {
-    void operator()(StokesWaves::DataType& data, bool for_forcing_term)
+    void operator()(StokesWaves::DataType& data, const amrex::Real time)
     {
         const auto& wdata = data.meta();
 
         auto& sim = data.sim();
 
-        const amrex::Real time =
-            sim.time().new_time() -
-            (for_forcing_term
-                 ? 0.5 * (sim.time().new_time() - sim.time().current_time())
-                 : 0.0);
         // cppcheck-suppress constVariableReference
         auto& ow_levelset = sim.repo().get_field("ow_levelset");
         // cppcheck-suppress constVariableReference
@@ -179,6 +192,7 @@ struct UpdateTargetFieldsOp<StokesWaves>
 
             const amrex::Real wave_height = wdata.wave_height;
             const amrex::Real wave_length = wdata.wave_length;
+            const amrex::Real phase_offset = wdata.wave_phase_offset;
             const amrex::Real water_depth = wdata.water_depth;
             const amrex::Real zero_sea_level = wdata.zsl;
             const amrex::Real g = wdata.g;
@@ -187,14 +201,16 @@ struct UpdateTargetFieldsOp<StokesWaves>
             amrex::ParallelFor(
                 ow_velocity(lev), amrex::IntVect(3),
                 [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                    const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                    const amrex::Real x =
+                        amrex::max(problo[0], problo[0] + (i + 0.5) * dx[0]);
                     const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
                     amrex::Real eta{0.0}, u_w{0.0}, v_w{0.0}, w_w{0.0};
 
                     relaxation_zones::stokes_waves(
                         order, wave_length, water_depth, wave_height,
-                        zero_sea_level, g, x, z, time, eta, u_w, v_w, w_w);
+                        zero_sea_level, g, x, z, time, phase_offset, eta, u_w,
+                        v_w, w_w);
 
                     phi[nbx](i, j, k) = eta - z;
                     const amrex::Real cell_length_2D =
@@ -211,6 +227,7 @@ struct UpdateTargetFieldsOp<StokesWaves>
                     }
                 });
         }
+        amrex::Gpu::synchronize();
     }
 };
 

@@ -26,6 +26,15 @@ struct ReadInputsOp<LinearWaves>
 
         pp.get("wave_length", wdata.wave_length);
         pp.get("wave_height", wdata.wave_height);
+        pp.query("wave_phase_offset_radians", wdata.wave_phase_offset);
+        if (!pp.contains("wave_phase_offset_radians")) {
+            pp.query("wave_phase_offset_degrees", wdata.wave_phase_offset);
+            wdata.wave_phase_offset *= M_PI / 180.;
+        } else if (pp.contains("wave_phase_offset_degrees")) {
+            amrex::Abort(
+                "ReadInputsOp<LinearWaves> : wave phase offset is specified in "
+                "both radians and degrees. Please use only one.");
+        }
     }
 };
 
@@ -67,7 +76,10 @@ struct InitDataOp<LinearWaves>
 
         const amrex::Real wave_height = wdata.wave_height;
         const amrex::Real wave_length = wdata.wave_length;
+        const amrex::Real phase_offset = wdata.wave_phase_offset;
         const amrex::Real water_depth = wdata.water_depth;
+        const amrex::Real current = wdata.current;
+
         amrex::ParallelFor(
             velocity(level), amrex::IntVect(3),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
@@ -78,7 +90,7 @@ struct InitDataOp<LinearWaves>
                 const amrex::Real omega = std::pow(
                     wave_number * g * std::tanh(wave_number * water_depth),
                     0.5);
-                const amrex::Real phase = wave_number * x;
+                const amrex::Real phase = wave_number * x - phase_offset;
 
                 // Wave profile
                 const amrex::Real eta_w =
@@ -110,8 +122,9 @@ struct InitDataOp<LinearWaves>
                 const amrex::Real phi = local_profile[3] - z;
                 const amrex::Real cell_length_2D =
                     std::sqrt(dx[0] * dx[0] + dx[2] * dx[2]);
+
                 if (phi + cell_length_2D >= 0) {
-                    vel[nbx](i, j, k, 0) = local_profile[0];
+                    vel[nbx](i, j, k, 0) = current + local_profile[0];
                     vel[nbx](i, j, k, 1) = local_profile[1];
                     vel[nbx](i, j, k, 2) = local_profile[2];
                 }
@@ -119,23 +132,19 @@ struct InitDataOp<LinearWaves>
                     phi_arrs[nbx](i, j, k) = phi;
                 }
             });
+        amrex::Gpu::synchronize();
     }
 }; // namespace amr_wind::ocean_waves::ops
 
 template <>
 struct UpdateTargetFieldsOp<LinearWaves>
 {
-    void operator()(LinearWaves::DataType& data, bool for_forcing_term)
+    void operator()(LinearWaves::DataType& data, const amrex::Real time)
     {
         const auto& wdata = data.meta();
 
         auto& sim = data.sim();
 
-        const amrex::Real time =
-            sim.time().new_time() -
-            (for_forcing_term
-                 ? 0.5 * (sim.time().new_time() - sim.time().current_time())
-                 : 0.0);
         // cppcheck-suppress constVariableReference
         auto& ow_levelset = sim.repo().get_field("ow_levelset");
         // cppcheck-suppress constVariableReference
@@ -153,21 +162,26 @@ struct UpdateTargetFieldsOp<LinearWaves>
 
             const amrex::Real wave_height = wdata.wave_height;
             const amrex::Real wave_length = wdata.wave_length;
+            const amrex::Real phase_offset = wdata.wave_phase_offset;
             const amrex::Real water_depth = wdata.water_depth;
             const amrex::Real zero_sea_level = wdata.zsl;
             const amrex::Real g = wdata.g;
+            const amrex::Real current = wdata.current;
 
             amrex::ParallelFor(
                 ow_velocity(lev), amrex::IntVect(3),
                 [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                    const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                    const amrex::Real x =
+                        amrex::max(problo[0], problo[0] + (i + 0.5) * dx[0]);
                     const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
                     const amrex::Real wave_number = 2. * M_PI / wave_length;
                     const amrex::Real omega = std::pow(
                         wave_number * g * std::tanh(wave_number * water_depth),
                         0.5);
-                    const amrex::Real phase = wave_number * x - omega * time;
+                    const amrex::Real phase =
+                        wave_number * (x - current * time) - omega * time -
+                        phase_offset;
 
                     const amrex::Real eta =
                         wave_height / 2.0 * std::cos(phase) + zero_sea_level;
@@ -179,11 +193,12 @@ struct UpdateTargetFieldsOp<LinearWaves>
                     if (phi[nbx](i, j, k) + cell_length_2D >= 0) {
                         vel[nbx](i, j, k, 0) =
                             omega * wave_height / 2.0 *
-                            std::cosh(
-                                wave_number *
-                                (z - zero_sea_level + water_depth)) /
-                            std::sinh(wave_number * water_depth) *
-                            std::cos(phase);
+                                std::cosh(
+                                    wave_number *
+                                    (z - zero_sea_level + water_depth)) /
+                                std::sinh(wave_number * water_depth) *
+                                std::cos(phase) +
+                            current;
                         vel[nbx](i, j, k, 1) = 0.0;
                         vel[nbx](i, j, k, 2) =
                             omega * wave_height / 2.0 *
@@ -199,6 +214,7 @@ struct UpdateTargetFieldsOp<LinearWaves>
                     }
                 });
         }
+        amrex::Gpu::synchronize();
     }
 };
 

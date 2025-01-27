@@ -9,7 +9,7 @@
 
 namespace amr_wind {
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real FatCore::operator()(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real FatCore::operator()(
     const amrex::Real r,
     const amrex::Real /*unused*/,
     const amrex::Real z,
@@ -31,7 +31,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real FatCore::operator()(
     return 0.0;
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real CollidingRings::operator()(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real CollidingRings::operator()(
     const amrex::Real r,
     const amrex::Real theta,
     const amrex::Real z,
@@ -203,26 +203,24 @@ void VortexRing::initialize_velocity(const VortexRingType& vorticity_theta)
             bclo[dir] = amrex::LinOpBCType::Periodic;
             bchi[dir] = amrex::LinOpBCType::Periodic;
         } else {
-
-            switch (bctype[amrex::Orientation(dir, amrex::Orientation::low)]) {
-            case BC::pressure_outflow: {
-                bclo[dir] = amrex::LinOpBCType::Dirichlet;
-                break;
+            {
+                auto bc =
+                    bctype[amrex::Orientation(dir, amrex::Orientation::low)];
+                if (bc == BC::pressure_outflow) {
+                    bclo[dir] = amrex::LinOpBCType::Dirichlet;
+                } else {
+                    bclo[dir] = amrex::LinOpBCType::Neumann;
+                }
             }
-            default:
-                bclo[dir] = amrex::LinOpBCType::Neumann;
-                break;
-            };
-
-            switch (bctype[amrex::Orientation(dir, amrex::Orientation::high)]) {
-            case BC::pressure_outflow: {
-                bchi[dir] = amrex::LinOpBCType::Dirichlet;
-                break;
+            {
+                auto bc =
+                    bctype[amrex::Orientation(dir, amrex::Orientation::high)];
+                if (bc == BC::pressure_outflow) {
+                    bchi[dir] = amrex::LinOpBCType::Dirichlet;
+                } else {
+                    bchi[dir] = amrex::LinOpBCType::Neumann;
+                }
             }
-            default:
-                bchi[dir] = amrex::LinOpBCType::Neumann;
-                break;
-            };
         }
     }
 

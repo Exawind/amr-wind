@@ -1,5 +1,5 @@
 .. _inputs_sampling:
-   
+
 Section: Sampling
 ~~~~~~~~~~~~~~~~~
 
@@ -22,8 +22,8 @@ actual keyword is determined by the labels provided to
    **type:** Integer, optional, default = 0
 
    Specify the output delay (in timesteps) when data sampling and output will begin
-   during a simulation. E.g., a delay of 100 will wait until the hundredth timestep to 
-   check if, according to the output frequency, sampling should be performed and 
+   during a simulation. E.g., a delay of 100 will wait until the hundredth timestep to
+   check if, according to the output frequency, sampling should be performed and
    output to disk.
 
 .. input_param:: sampling.output_format
@@ -34,15 +34,14 @@ actual keyword is determined by the labels provided to
    following formats
 
    ``native``
-       AMReX particle binary format
+       AMReX particle binary format. This is the preferred output format for performance.
 
    ``ascii``
        AMReX particle ASCII format. Note, this can have significant impact
        on performance and must be used for debugging only.
-       
+
    ``netcdf``
-       This is the preferred output format and requires linking to the
-       netcdf library. If netcdf is linked to AMR-Wind and output format 
+       This requires linking to the netcdf library. If netcdf is linked to AMR-Wind and output format
        is not specified then netcdf is chosen by default.
 
 .. input_param:: sampling.labels
@@ -79,7 +78,33 @@ actual keyword is determined by the labels provided to
 
    List of CFD simulation derived fields to sample and output (e.g. mag_vorticity)
 
-The individual sampling types are documented below
+AMReX particle binary format
+````````````````````````````
+
+The native format can be read by ParaView or using Python scripts. We
+provide an example in the source code and the :ref:`post processing
+documentation <post_processing>`. A typical data frame might look
+like:
+
+.. code::
+
+          uid  set_id  probe_id          xco     yco    zco  velocityx  velocityy  velocityz
+     0      0       0         0   200.000000   200.0  200.0   6.129077   5.143022        0.0
+     1      1       0         1   244.444444   200.0  200.0   6.129077   5.144596        0.0
+    ..    ...     ...       ...          ...     ...    ...        ...        ...        ...
+   595    595       1       195   555.555556  1000.0  999.0   6.128356   5.142301        0.0
+   596    596       1       196   666.666667  1000.0  999.0   6.128356   5.142301        0.0
+
+where ``uid`` is the global probe id, ``set_id`` is the label id
+(e.g., ``plane_sampling.labels = plane1 plane2``, numbered as the user
+input order), ``probe_id`` is the local probe id to this label,
+``*co`` are the coordinates of the probe, and the other columns are
+the user requested sampled fields. The same labels are seeing by other
+visualization tools such as ParaView. The directory also contains a
+``sampling_info.yaml`` YAML file where additional information (e.g., time) is
+stored. This file is automatically parse by the provided particle
+reader tool and the information is stored in a dictionary that is a
+member variable of the class.
 
 Sampling along a line
 ``````````````````````
@@ -99,11 +124,11 @@ Sampling along a line moving in time (virtual lidar)
 ``````````````````````````````````````````````````````
 
 The ``LidarSampler`` allows the user to sample the flow-field along a line
-defined by ``origin`` and spanning to ``length`` 
+defined by ``origin`` and spanning to ``length``
 with ``num_points`` equidistant nodes.
-Location of the line is given by the time histories 
+Location of the line is given by the time histories
 ``azimuth_table`` and ``elevation_table``.
-Angles are given in degrees with 0 azimuth and 0 elevation being the 
+Angles are given in degrees with 0 azimuth and 0 elevation being the
 x direction. Lidar measurements may also be collected at a constant location
 by specifying only one entry to the tables.
 
@@ -159,7 +184,7 @@ Example::
 The first line of the file contains the total number of probes for this set.
 This is followed by the coordinates (three real numbers), one line per probe.
 This type of sampler also supports the ``offset_vector`` and ``offsets`` options
-implemented with the plane sampler, shown above. For the probe sampler, 
+implemented with the plane sampler, shown above. For the probe sampler,
 these options apply offsets to the positions of all the points provided in the
 probe location file.
 
@@ -180,16 +205,16 @@ Example::
 Sampling on the air-water interface
 ```````````````````````````````````
 
-The ``FreeSurfaceSampler`` samples on the air-water interface, and it requires the 
+The ``FreeSurfaceSampler`` samples on the air-water interface, and it requires the
 vof (volume-of-fluid) field to be present in order to function. The sample locations
 are specified using a grid that starts at ``plane_start`` and
 extends to ``plane_end``. The resolution in each direction is specified by
 ``plane_num_points``. The coordinates of the sampling
 locations are determined by the location of the air-water interface in the search
-direction, specified by ``search_direction``, and the other coordinates are 
+direction, specified by ``search_direction``, and the other coordinates are
 determined by the ``plane_`` parameters. The default search direction parameter
-is 2, indicating the samplers will search for the interface along the z-direction. 
-Due to this design, it is best to specify a plane that is normal to the intended 
+is 2, indicating the samplers will search for the interface along the z-direction.
+Due to this design, it is best to specify a plane that is normal to the intended
 search direction. Another optional parameter is ``num_instances``, which is available
 for cases where the interface location is multi-valued along the search direction,
 such as during wave breaking. This parameter defaults to 1, and the sampler will

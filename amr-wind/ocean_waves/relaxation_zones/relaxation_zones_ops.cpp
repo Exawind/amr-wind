@@ -35,6 +35,8 @@ void read_inputs(
         pp.query("initialize_wave_field", wdata.init_wave_field);
     }
 
+    pp.query("current", wdata.current);
+
     wdata.has_ramp = pp.contains("timeramp_period");
     if (wdata.has_ramp) {
         pp.get("timeramp_period", wdata.ramp_period);
@@ -71,6 +73,7 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                     multiphase::levelset_to_vof(i, j, k, eps, target_phi[nbx]);
             });
     }
+    amrex::Gpu::synchronize();
 
     // Get time
     const auto& time = sim.time().new_time();
@@ -95,11 +98,12 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
         const amrex::Real beach_length = wdata.beach_length;
         const amrex::Real beach_length_factor = wdata.beach_length_factor;
         const amrex::Real zsl = wdata.zsl;
+        const amrex::Real current = wdata.current;
         const bool has_beach = wdata.has_beach;
         const bool has_outprofile = wdata.has_outprofile;
 
         amrex::ParallelFor(
-            velocity(lev), amrex::IntVect(2),
+            velocity(lev), amrex::IntVect(0),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 const amrex::Real x = amrex::min(
                     amrex::max(problo[0] + (i + 0.5) * dx[0], problo[0]),
@@ -171,14 +175,24 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                         // Conserve momentum when density changes
                         amrex::Real rho_ = rho1 * volfrac(i, j, k) +
                                            rho2 * (1.0 - volfrac(i, j, k));
-                        // Target solution in liquid is vel = 0, assume
-                        // added liquid already has target velocity
+                        // Target vel is current, 0, 0
+                        amrex::Real out_vel{0.0};
                         for (int n = 0; n < vel.ncomp; ++n) {
-                            vel(i, j, k, n) =
-                                (rho1 * (volfrac(i, j, k) * Gamma -
-                                         amrex::max(0.0, dvf)) +
-                                 rho2 * (1. - volfrac(i, j, k))) *
-                                vel(i, j, k, n) / rho_;
+                            if (n == 0) {
+                                out_vel = current;
+                            } else {
+                                out_vel = 0.0;
+                            }
+                            const amrex::Real vel_liq = utils::combine_linear(
+                                Gamma, out_vel, vel(i, j, k, n));
+                            amrex::Real integrated_vel_liq =
+                                volfrac(i, j, k) * vel_liq;
+                            integrated_vel_liq += amrex::max(0.0, dvf) *
+                                                  (out_vel - vel(i, j, k, n));
+                            vel(i, j, k, n) = (rho1 * integrated_vel_liq +
+                                               rho2 * (1. - volfrac(i, j, k)) *
+                                                   vel(i, j, k, n)) /
+                                              rho_;
                         }
                     }
                     // Forcing to wave profile instead
@@ -221,8 +235,8 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                     rho1 * volfrac(i, j, k) + rho2 * (1. - volfrac(i, j, k));
             });
     }
-    // This helps for having periodic boundaries, but will need to be addressed
-    // for the general case
+    amrex::Gpu::synchronize();
+
     vof.fillpatch(time);
     velocity.fillpatch(time);
     density.fillpatch(time);

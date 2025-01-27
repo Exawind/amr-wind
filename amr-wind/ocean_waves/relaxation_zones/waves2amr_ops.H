@@ -96,6 +96,7 @@ void postprocess_velocity_mfab_liquid(
                 vel[nbx](i, j, k, 2) = 0.0;
             }
         });
+    amrex::Gpu::synchronize();
 }
 
 void postprocess_velocity_field_liquid(
@@ -207,6 +208,12 @@ struct ReadInputsOp<W2AWaves>
         auto& wdata = data.meta();
         auto& info = data.info();
         relaxation_zones::read_inputs(wdata, info, pp);
+
+        if (wdata.current > constants::TIGHT_TOL) {
+            amrex::Abort(
+                "Current is specified as nonzero, but current is not yet "
+                "implemented for W2A Waves.");
+        }
 
         pp.get("HOS_modes_filename", wdata.modes_file);
         pp.query("HOS_init_timestep", wdata.ntime);
@@ -333,7 +340,7 @@ struct ReadInputsOp<W2AWaves>
                 std::to_string(flag));
         }
 
-        // Get modes on every processor (unless requested to skip?)
+        // Always get modes on every processor for initialization
         bool no_EOF = wdata.rmodes.get_data(
             wdata.ntime + wdata.n_offset, wdata.mX, wdata.mY, wdata.mZ,
             wdata.mFS);
@@ -413,6 +420,9 @@ struct InitDataOp<W2AWaves>
         auto& ow_velocity = sim.repo().get_field("ow_velocity");
 
         auto& velocity = sim.repo().get_field("velocity");
+        // Set w2a fields to default values to prep for updates
+        auto& w2a_levelset = sim.repo().get_field("w2a_levelset");
+        auto& w2a_velocity = sim.repo().get_field("w2a_velocity");
 
         Field* levelset{nullptr};
         if (multiphase_mode) {
@@ -427,11 +437,8 @@ struct InitDataOp<W2AWaves>
         wdata.t_last = 0.0;
 
         // indvec is complete upon initialization (all heights every proc)
-        amrex::Vector<int> indvec;
-        indvec.resize(wdata.hvec.size());
-        for (int n = 0; n < indvec.size(); ++n) {
-            indvec[n] = n;
-        }
+        amrex::Vector<int> indvec(wdata.hvec.size());
+        std::iota(indvec.begin(), indvec.end(), 0);
         // Interpolate to MultiFabs (one level at a time)
         interp_to_mfab::interp_eta_to_levelset_multifab(
             wdata.n0, wdata.n1, wdata.dx0, wdata.dx1, wdata.zsl,
@@ -451,6 +458,9 @@ struct InitDataOp<W2AWaves>
         const auto& phi_arrs = multiphase_mode
                                    ? (*levelset)(level).arrays()
                                    : amrex::MultiArray4<amrex::Real>();
+
+        const auto& w2a_phi = w2a_levelset(level).arrays();
+        const auto& w2a_vel = w2a_velocity(level).arrays();
 
         const amrex::Real gen_length = wdata.gen_length;
         const amrex::Real beach_length = wdata.beach_length;
@@ -488,16 +498,18 @@ struct InitDataOp<W2AWaves>
                     vel[nbx](i, j, k, 1) = local_profile[1];
                     vel[nbx](i, j, k, 2) = local_profile[2];
                 }
+
                 if (multiphase_mode) {
                     phi_arrs[nbx](i, j, k) = phi;
                 }
-            });
 
-        // Start w2a fields at 0, some areas will not be modified
-        auto& w2a_levelset = sim.repo().get_field("w2a_levelset");
-        auto& w2a_velocity = sim.repo().get_field("w2a_velocity");
-        w2a_levelset.setVal(0.0);
-        w2a_velocity.setVal(0.0);
+                // Default w2a values matter for where no updates happen
+                w2a_phi[nbx](i, j, k) = quiescent[3] - z;
+                w2a_vel[nbx](i, j, k, 0) = quiescent[0];
+                w2a_vel[nbx](i, j, k, 1) = quiescent[0];
+                w2a_vel[nbx](i, j, k, 2) = quiescent[0];
+            });
+        amrex::Gpu::synchronize();
 #else
         amrex::ignore_unused(data, level, geom, multiphase_mode);
 #endif
@@ -508,19 +520,12 @@ template <>
 struct UpdateTargetFieldsOp<W2AWaves>
 {
     // cppcheck-suppress constParameterReference
-    void operator()(W2AWaves::DataType& data, bool for_forcing_term)
+    void operator()(W2AWaves::DataType& data, const amrex::Real time)
     {
 
 #ifdef AMR_WIND_USE_W2A
         auto& wdata = data.meta();
         auto& sim = data.sim();
-
-        // Provide target solution based on intended part of the algorithm
-        const amrex::Real time =
-            sim.time().new_time() -
-            (for_forcing_term
-                 ? 0.5 * (sim.time().new_time() - sim.time().current_time())
-                 : 0.0);
 
         // Update ow fields every time
         auto& ow_levelset = sim.repo().get_field("ow_levelset");
@@ -528,6 +533,9 @@ struct UpdateTargetFieldsOp<W2AWaves>
         // Update HOS fields when necessary
         auto& w2a_levelset = sim.repo().get_field("w2a_levelset");
         auto& w2a_velocity = sim.repo().get_field("w2a_velocity");
+
+        // Proxy for multiphase mode of ocean waves
+        bool vof_exists = sim.repo().field_exists("vof");
 
         auto nlevels = sim.repo().num_active_levels();
         auto geom = sim.mesh().Geom();
@@ -596,8 +604,8 @@ struct UpdateTargetFieldsOp<W2AWaves>
                 }
 
                 // Wave generation zones are irrelevant for single-phase mode,
-                // indicated by the use for a forcing term
-                if (for_forcing_term) {
+                // indicated by nonexistence of vof
+                if (!vof_exists) {
                     flag_xlo = true;
                     flag_xhi = true;
                 }
@@ -657,8 +665,10 @@ struct UpdateTargetFieldsOp<W2AWaves>
             } else if (double_data == 2) {
                 // Restarting simulation or taking a big step, new time at ntime
                 // Initialize ow fields to 0 for time interp, will be replaced
-                ow_levelset.setVal(0.0);
-                ow_velocity.setVal(0.0);
+                if (wdata.do_interp) {
+                    ow_levelset.setVal(0.0, ow_levelset.num_grow()[0]);
+                    ow_velocity.setVal(0.0, ow_levelset.num_grow()[0]);
+                }
                 // No modification needed for t_last, leads to interp factor = 1
             }
 
@@ -709,8 +719,9 @@ struct UpdateTargetFieldsOp<W2AWaves>
                         (time - t_last) / (W2A_t - t_last + 1e-16);
                 });
         }
+        amrex::Gpu::synchronize();
 #else
-        amrex::ignore_unused(data, for_forcing_term);
+        amrex::ignore_unused(data, time);
 #endif
     }
 };

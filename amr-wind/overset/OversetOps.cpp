@@ -6,6 +6,8 @@
 #include "amr-wind/core/MLMGOptions.H"
 #include "amr-wind/projection/nodal_projection_ops.H"
 #include <hydro_NodalProjector.H>
+#include "amr-wind/wind_energy/ABL.H"
+#include "amr-wind/wind_energy/ABLBoundaryPlane.H"
 
 namespace amr_wind {
 
@@ -22,12 +24,7 @@ void OversetOps::initialize(CFDSim& sim)
     pp.query("reinit_target_cutoff", m_target_cutoff);
 
     // Queries for coupling options
-    pp.query("use_hydrostatic_gradp", m_use_hydrostatic_gradp);
     pp.query("replace_gradp_postsolve", m_replace_gradp_postsolve);
-    // OversetOps does not control these coupling options, merely reports them
-    pp.query("disable_coupled_nodal_proj", m_disable_nodal_proj);
-    pp.query("disable_coupled_mac_proj", m_disable_mac_proj);
-
     pp.query("verbose", m_verbose);
 
     m_vof_exists = m_sim_ptr->repo().field_exists("vof");
@@ -49,9 +46,9 @@ void OversetOps::initialize(CFDSim& sim)
                    "turned on, but it will remain inactive because "
                    "perturbational pressure is turned off.\n";
         }
-    }
-    if (m_replace_gradp_postsolve) {
-        m_gp_copy = &m_sim_ptr->repo().declare_field("gp_copy", 3);
+        if (m_replace_gradp_postsolve) {
+            m_gp_copy = &m_sim_ptr->repo().declare_field("gp_copy", 3);
+        }
     }
 
     parameter_output();
@@ -59,39 +56,45 @@ void OversetOps::initialize(CFDSim& sim)
 
 void OversetOps::pre_advance_work()
 {
-    if (!(m_vof_exists && m_use_hydrostatic_gradp)) {
-        if (m_mphase != nullptr) {
-            // Avoid modifying pressure upon initialization, assume pressure = 0
-            if (m_mphase->perturb_pressure() &&
-                m_sim_ptr->time().current_time() > 0.0) {
-                // Modify to be consistent with internal source terms
-                form_perturb_pressure();
-            }
+    if (m_mphase != nullptr) {
+        // Avoid modifying pressure upon initialization, assume pressure = 0
+        if (m_mphase->perturb_pressure() &&
+            m_sim_ptr->time().current_time() > 0.0) {
+            // Modify to be consistent with internal source terms
+            form_perturb_pressure();
         }
-        // Update pressure gradient using updated overset pressure field
-        update_gradp();
     }
+    // Update pressure gradient using updated overset pressure field
+    update_gradp();
 
     if (m_vof_exists) {
         // Reinitialize fields
         sharpen_nalu_data();
-        if (m_use_hydrostatic_gradp) {
-            // Use hydrostatic pressure gradient
-            set_hydrostatic_gradp();
-        } else {
-            // Update pressure gradient using sharpened pressure field
-            update_gradp();
+        // Update pressure gradient using sharpened pressure field
+        update_gradp();
+        // Calculate vof-dependent node mask
+        const auto& iblank = m_sim_ptr->repo().get_int_field("iblank_node");
+        const auto& vof = m_sim_ptr->repo().get_field("vof");
+        auto& mask = m_sim_ptr->repo().get_int_field("mask_node");
+        overset_ops::iblank_node_to_mask_vof(iblank, vof, mask);
+
+        // If pressure gradient will be replaced, store current pressure
+        // gradient
+        if (m_replace_gradp_postsolve) {
+            const auto& gp = m_sim_ptr->repo().get_field("gp");
+            for (int lev = 0; lev < m_sim_ptr->repo().num_active_levels();
+                 ++lev) {
+                amrex::MultiFab::Copy(
+                    (*m_gp_copy)(lev), gp(lev), 0, 0, gp(lev).nComp(),
+                    (m_gp_copy)->num_grow());
+            }
         }
     }
 
-    // If pressure gradient will be replaced, store current pressure gradient
-    if (m_replace_gradp_postsolve) {
-        const auto& gp = m_sim_ptr->repo().get_field("gp");
-        for (int lev = 0; lev < m_sim_ptr->repo().num_active_levels(); ++lev) {
-            amrex::MultiFab::Copy(
-                (*m_gp_copy)(lev), gp(lev), 0, 0, gp(lev).nComp(),
-                (m_gp_copy)->num_grow());
-        }
+    // Pre advance work for plane was skipped for overset solver, do it here
+    if (m_sim_ptr->physics_manager().contains("ABL")) {
+        auto& abl = m_sim_ptr->physics_manager().get<ABL>();
+        abl.bndry_plane().pre_advance_work();
     }
 }
 
@@ -155,7 +158,7 @@ void OversetOps::update_gradp()
 void OversetOps::post_advance_work()
 {
     // Replace and reapply pressure gradient if requested
-    if (m_replace_gradp_postsolve) {
+    if (m_vof_exists && m_replace_gradp_postsolve) {
         replace_masked_gradp();
     }
 }
@@ -167,38 +170,30 @@ void OversetOps::post_advance_work()
 void OversetOps::parameter_output() const
 {
     // Print the details
-    if (m_verbose > 0) {
+    if (m_verbose > 0 && m_vof_exists) {
         // Important parameters
         amrex::Print() << "\nOverset Coupling Parameters: \n"
-                       << "---- Coupled nodal projection : "
-                       << !m_disable_nodal_proj << std::endl
-                       << "---- Coupled MAC projection   : "
-                       << !m_disable_mac_proj << std::endl
                        << "---- Replace overset pres grad: "
                        << m_replace_gradp_postsolve << std::endl;
-        if (m_vof_exists) {
-            amrex::Print() << "---- Perturbational pressure  : "
-                           << m_mphase->perturb_pressure() << std::endl
-                           << "---- Reconstruct true pressure: "
-                           << m_mphase->reconstruct_true_pressure()
+        amrex::Print() << "---- Perturbational pressure  : "
+                       << m_mphase->perturb_pressure() << std::endl
+                       << "---- Reconstruct true pressure: "
+                       << m_mphase->reconstruct_true_pressure() << std::endl;
+        amrex::Print() << "Overset Reinitialization Parameters:\n"
+                       << "---- Maximum iterations   : " << m_n_iterations
+                       << std::endl
+                       << "---- Convergence tolerance: " << m_convg_tol
+                       << std::endl
+                       << "---- Relative length scale: "
+                       << m_relative_length_scale << std::endl
+                       << "---- Upwinding VOF margin : " << m_upw_margin
+                       << std::endl;
+        if (m_verbose > 1) {
+            // Less important or less used parameters
+            amrex::Print() << "---- Calc. conv. interval : "
+                           << m_calc_convg_interval << std::endl
+                           << "---- Target field cutoff  : " << m_target_cutoff
                            << std::endl;
-            amrex::Print() << "Overset Reinitialization Parameters:\n"
-                           << "---- Maximum iterations   : " << m_n_iterations
-                           << std::endl
-                           << "---- Convergence tolerance: " << m_convg_tol
-                           << std::endl
-                           << "---- Relative length scale: "
-                           << m_relative_length_scale << std::endl
-                           << "---- Upwinding VOF margin : " << m_upw_margin
-                           << std::endl;
-            if (m_verbose > 1) {
-                // Less important or less used parameters
-                amrex::Print()
-                    << "---- Calc. conv. interval : " << m_calc_convg_interval
-                    << std::endl
-                    << "---- Target field cutoff  : " << m_target_cutoff
-                    << std::endl;
-            }
         }
         amrex::Print() << std::endl;
     }
@@ -349,6 +344,7 @@ void OversetOps::sharpen_nalu_data()
                 m_convg_tol);
             ptfac = amrex::min(ptfac, ptfac_lev);
         }
+        amrex::Gpu::synchronize();
         amrex::ParallelDescriptor::ReduceRealMin(ptfac);
 
         // Conform pseudo dt (dtau) to pseudo CFL
@@ -367,7 +363,6 @@ void OversetOps::sharpen_nalu_data()
             velocity(lev).FillBoundary(geom[lev].periodicity());
             gp(lev).FillBoundary(geom[lev].periodicity());
         }
-
         amrex::Gpu::synchronize();
 
         // Update density (fillpatch built in)
@@ -406,34 +401,6 @@ void OversetOps::form_perturb_pressure()
     }
 }
 
-void OversetOps::set_hydrostatic_gradp()
-{
-    const auto& repo = m_sim_ptr->repo();
-    const auto nlevels = repo.num_active_levels();
-    const auto geom = m_sim_ptr->mesh().Geom();
-
-    // Get blanking for cells
-    const auto& iblank_cell = repo.get_int_field("iblank_cell");
-
-    // Get fields that will be modified or used
-    Field* rho0{nullptr};
-    auto& rho = repo.get_field("density");
-    auto& gp = repo.get_field("gp");
-    if (m_mphase->perturb_pressure()) {
-        rho0 = &(m_sim_ptr->repo().get_field("reference_density"));
-    } else {
-        // Point to existing field, won't be used
-        rho0 = &rho;
-    }
-
-    // Replace initial gp with best guess (hydrostatic)
-    for (int lev = 0; lev < nlevels; ++lev) {
-        overset_ops::replace_gradp_hydrostatic(
-            gp(lev), rho(lev), (*rho0)(lev), iblank_cell(lev),
-            m_mphase->gravity()[2], m_mphase->perturb_pressure());
-    }
-}
-
 void OversetOps::replace_masked_gradp()
 {
     const auto& repo = m_sim_ptr->repo();
@@ -460,6 +427,7 @@ void OversetOps::replace_masked_gradp()
         // Reapply pressure gradient term
         overset_ops::apply_pressure_gradient(vel(lev), rho(lev), gp(lev), dt);
     }
+    amrex::Gpu::synchronize();
 }
 
 } // namespace amr_wind

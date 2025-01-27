@@ -55,7 +55,11 @@ Section                 Description
 ``Averaging``           Time averaging and correlations
 ======================= ============================================================
 
-This section documents the parameters available within each section.
+This section documents the parameters available within each section. Please
+note that the documentation provided here is for the latest major release of
+AMR-Wind. While input file specifications rarely change, major releases of
+AMR-Wind (e.g ``2.x`` to ``3.x``) might have breaking changes and the
+documentation provided here might not work with older releases.
 
 .. note::
 

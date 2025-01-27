@@ -4,6 +4,12 @@
 
 namespace amr_wind::ioutils {
 
+void goto_next_line(std::istream& is)
+{
+    constexpr std::streamsize bl_ignore_max{100000};
+    is.ignore(bl_ignore_max, '\n');
+}
+
 void read_flat_grid_file(
     const std::string& fname,
     amrex::Vector<amrex::Real>& xs,
