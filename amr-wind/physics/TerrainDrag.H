@@ -24,13 +24,27 @@ public:
 
     void pre_init_actions() override {}
 
-    void post_init_actions() override {}
+    void post_init_actions() override;
 
     void post_regrid_actions() override;
 
-    void pre_advance_work() override {}
+    void pre_advance_work() override;
 
     void post_advance_work() override {}
+
+    //! Terrain Drag for waves
+
+    void convert_waves_to_terrain_fields();
+
+    std::string wave_velocity_field_name() const
+    {
+        return m_wave_velocity_name;
+    }
+
+    std::string wave_negative_elevation_name() const
+    {
+        return m_wave_negative_elevation_name;
+    }
 
 private:
     CFDSim& m_sim;
@@ -51,6 +65,14 @@ private:
     //! Roughness fields
     Field& m_terrainz0;
     Field& m_terrain_height;
+
+    //! Terrain Drag for waves
+    bool m_terrain_is_waves{false};
+    Field* m_wave_volume_fraction{nullptr};
+    Field* m_wave_negative_elevation{nullptr};
+    const std::string m_wave_volume_fraction_name{"ow_vof"};
+    const std::string m_wave_negative_elevation_name{"ow_levelset"};
+    const std::string m_wave_velocity_name{"ow_velocity"};
 };
 } // namespace amr_wind::terraindrag
 

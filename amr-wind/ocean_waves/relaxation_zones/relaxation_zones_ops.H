@@ -28,6 +28,8 @@ void init_data_structures(CFDSim&);
  */
 void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata);
 
+void update_target_vof(CFDSim& sim);
+
 void prepare_netcdf_file(
     const std::string& /*ncfile*/,
     const RelaxZonesBaseData& /*meta*/,
@@ -51,7 +53,7 @@ struct UseDefaultOp
 };
 
 template <typename WaveTheoryTrait>
-struct UpdateRelaxZonesOp<
+struct UpdateTargetFieldsOp<
     WaveTheoryTrait,
     typename std::enable_if_t<
         std::is_base_of_v<RelaxZonesType, WaveTheoryTrait>>>
@@ -76,6 +78,22 @@ struct ApplyRelaxZonesOp<
         auto& sim = data.sim();
 
         relaxation_zones::apply_relaxation_zones(sim, wdata);
+    }
+};
+
+template <typename WaveTheoryTrait>
+struct UpdateTargetVolumeFractionOp<
+    WaveTheoryTrait,
+    typename std::enable_if_t<
+        std::is_base_of_v<RelaxZonesType, WaveTheoryTrait>>>
+{
+    void operator()(typename WaveTheoryTrait::DataType& data)
+    {
+        BL_PROFILE("amr-wind::ocean_waves::OceanWaves::update_target_vof");
+
+        auto& sim = data.sim();
+
+        relaxation_zones::update_target_vof(sim);
     }
 };
 

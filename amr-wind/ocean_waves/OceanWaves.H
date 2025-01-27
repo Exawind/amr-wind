@@ -72,8 +72,10 @@ private:
     //! Ocean waves target velocity
     Field& m_ow_velocity;
 
-    //! Ocean waves pressure gradient
-    // Field& m_ow_pressure;
+    //! Multiphase mode forces the velocity and vof in the domain
+    //! When off, single-phase mode simply provides the target variables, and
+    //! forcing is handled in other parts of the code
+    bool m_multiphase_mode{true};
 };
 
 } // namespace ocean_waves
