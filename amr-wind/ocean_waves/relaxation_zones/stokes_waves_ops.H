@@ -1,7 +1,6 @@
 #ifndef STOKES_WAVES_OPS_H
 #define STOKES_WAVES_OPS_H
 
-#include "amr-wind/physics/multiphase/MultiPhase.H"
 #include "amr-wind/ocean_waves/relaxation_zones/StokesWaves.H"
 #include "amr-wind/ocean_waves/relaxation_zones/stokes_waves_K.H"
 #include "amr-wind/ocean_waves/OceanWavesOps.H"
@@ -21,14 +20,18 @@ struct ReadInputsOp<StokesWaves>
         auto& info = data.info();
         relaxation_zones::read_inputs(wdata, info, pp);
 
+        // Get gravity, assume negative z
+        amrex::Vector<amrex::Real> gravity{0.0, 0.0, -9.81};
+        amrex::ParmParse pp_incflo("incflo");
+        pp_incflo.queryarr("gravity", gravity);
+        wdata.g = -gravity[2];
+
         if (wdata.current > constants::TIGHT_TOL) {
             amrex::Abort(
                 "Current is specified as nonzero, but current is not yet "
                 "implemented for Stokes Waves.");
         }
 
-        // Get gravity from MultiPhase physics, assume negative z
-        wdata.g = -data.sim().physics_manager().get<MultiPhase>().gravity()[2];
         // Get wave attributes
         pp.get("wave_height", wdata.wave_height);
         pp.get("order", wdata.order);
@@ -87,21 +90,28 @@ template <>
 struct InitDataOp<StokesWaves>
 {
     void operator()(
-        StokesWaves::DataType& data, int level, const amrex::Geometry& geom)
+        StokesWaves::DataType& data,
+        int level,
+        const amrex::Geometry& geom,
+        bool multiphase_mode)
     {
         const auto& wdata = data.meta();
 
         auto& sim = data.sim();
-        // cppcheck-suppress constVariableReference
-        auto& m_levelset = sim.repo().get_field("levelset");
+        Field* levelset{nullptr};
+        if (multiphase_mode) {
+            levelset = &sim.repo().get_field("levelset");
+        }
         // cppcheck-suppress constVariableReference
         auto& velocity = sim.repo().get_field("velocity");
         const auto& problo = geom.ProbLoArray();
         const auto& probhi = geom.ProbHiArray();
         const auto& dx = geom.CellSizeArray();
 
-        const auto& phi = m_levelset(level).arrays();
         const auto& vel = velocity(level).arrays();
+        const auto& phi_arrs = multiphase_mode
+                                   ? (*levelset)(level).arrays()
+                                   : amrex::MultiArray4<amrex::Real>();
 
         const amrex::Real wave_height = wdata.wave_height;
         const amrex::Real wave_length = wdata.wave_length;
@@ -112,8 +122,8 @@ struct InitDataOp<StokesWaves>
         const amrex::Real beach_length = wdata.beach_length;
         const amrex::Real g = wdata.g;
         const int order = wdata.order;
-        const bool has_beach = wdata.has_beach;
-        const bool init_wave_field = wdata.init_wave_field;
+        const bool has_beach = wdata.has_beach && multiphase_mode;
+        const bool init_wave_field = wdata.init_wave_field || !multiphase_mode;
 
         amrex::ParallelFor(
             velocity(level), amrex::IntVect(3),
@@ -140,13 +150,16 @@ struct InitDataOp<StokesWaves>
                     x, problo[0], gen_length, probhi[0], beach_length, wave_sol,
                     bulk, outlet);
 
-                phi[nbx](i, j, k) = local_profile[3] - z;
+                const amrex::Real phi = local_profile[3] - z;
                 const amrex::Real cell_length_2D =
                     std::sqrt(dx[0] * dx[0] + dx[2] * dx[2]);
-                if (phi[nbx](i, j, k) + cell_length_2D >= 0) {
+                if (phi + cell_length_2D >= 0) {
                     vel[nbx](i, j, k, 0) = local_profile[0];
                     vel[nbx](i, j, k, 1) = local_profile[1];
                     vel[nbx](i, j, k, 2) = local_profile[2];
+                }
+                if (multiphase_mode) {
+                    phi_arrs[nbx](i, j, k) = phi;
                 }
             });
         amrex::Gpu::synchronize();
@@ -154,7 +167,7 @@ struct InitDataOp<StokesWaves>
 };
 
 template <>
-struct UpdateRelaxZonesOp<StokesWaves>
+struct UpdateTargetFieldsOp<StokesWaves>
 {
     void operator()(StokesWaves::DataType& data, const amrex::Real time)
     {
@@ -163,9 +176,9 @@ struct UpdateRelaxZonesOp<StokesWaves>
         auto& sim = data.sim();
 
         // cppcheck-suppress constVariableReference
-        auto& m_ow_levelset = sim.repo().get_field("ow_levelset");
+        auto& ow_levelset = sim.repo().get_field("ow_levelset");
         // cppcheck-suppress constVariableReference
-        auto& m_ow_velocity = sim.repo().get_field("ow_velocity");
+        auto& ow_velocity = sim.repo().get_field("ow_velocity");
 
         auto nlevels = sim.repo().num_active_levels();
         auto geom = sim.mesh().Geom();
@@ -174,8 +187,8 @@ struct UpdateRelaxZonesOp<StokesWaves>
             const auto& problo = geom[lev].ProbLoArray();
             const auto& dx = geom[lev].CellSizeArray();
 
-            const auto& phi = m_ow_levelset(lev).arrays();
-            const auto& vel = m_ow_velocity(lev).arrays();
+            const auto& phi = ow_levelset(lev).arrays();
+            const auto& vel = ow_velocity(lev).arrays();
 
             const amrex::Real wave_height = wdata.wave_height;
             const amrex::Real wave_length = wdata.wave_length;
@@ -186,7 +199,7 @@ struct UpdateRelaxZonesOp<StokesWaves>
             const int order = wdata.order;
 
             amrex::ParallelFor(
-                m_ow_velocity(lev), amrex::IntVect(3),
+                ow_velocity(lev), amrex::IntVect(3),
                 [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                     const amrex::Real x =
                         amrex::max(problo[0], problo[0] + (i + 0.5) * dx[0]);

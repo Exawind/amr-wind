@@ -23,7 +23,7 @@ int evaluate_read_resize(
     const int new_ntime,
     const amrex::Real wtinit,
     const amrex::Real wdt,
-    const amrex::Real newtime)
+    const amrex::Real time)
 {
     // Flag to indicate that data must be read twice for interpolation
     int double_data = 0;
@@ -41,7 +41,7 @@ int evaluate_read_resize(
         // Sim time to go with recorded data
         wtime = new_ntime * wdt + wtinit;
         // If double reading is deemed necessary, check for convenience
-        if (double_data == 1 && std::abs(wtime - newtime) <= 1e-10) {
+        if (double_data == 1 && std::abs(wtime - time) <= 1e-10) {
             // Reading can be done just once, w2a fields replace ow fields
             double_data = 2;
         }
@@ -54,7 +54,7 @@ int evaluate_read_resize(
         resize_flag = true;
 
         // Confirm that new time is not coincident with modes time step
-        if (std::abs(wtime - newtime) > 1e-10) {
+        if (std::abs(wtime - time) > 1e-10) {
             // Data must be read before and after wtime
             double_data = 1;
         } else {
@@ -72,7 +72,7 @@ int evaluate_read_resize(
         // interpolation is ready to go
     }
     // Record latest time as 'last' for next timestep
-    t_last = newtime;
+    t_last = time;
     // Return flag regarding double reading
     return double_data;
 }
@@ -301,7 +301,8 @@ struct ReadInputsOp<W2AWaves>
         if (std::abs(depth - (wdata.zsl - prob_lo_input[2])) > 1e-3 * depth) {
             amrex::Print()
                 << "WARNING: Mismatch between water depths from AMR-Wind "
-                   "domain and HOS data interpreted by Waves2AMR";
+                   "domain and HOS data interpreted by Waves2AMR. \n   ^This "
+                   "warning is not a concern when using waves as terrain.\n";
         }
 
         // Allocate pointers for FFTW
@@ -405,7 +406,8 @@ struct InitDataOp<W2AWaves>
     void
     // cppcheck-suppress constParameterReference
     operator()(
-        W2AWaves::DataType & data, int level, const amrex::Geometry & geom)
+        W2AWaves::DataType &
+            data, int level, const amrex::Geometry & geom, bool multiphase_mode)
     {
 
 #ifdef AMR_WIND_USE_W2A
@@ -416,11 +418,16 @@ struct InitDataOp<W2AWaves>
         // Fill ow fields, then populate flow fields according to setup
         auto& ow_levelset = sim.repo().get_field("ow_levelset");
         auto& ow_velocity = sim.repo().get_field("ow_velocity");
-        auto& levelset = sim.repo().get_field("levelset");
+
         auto& velocity = sim.repo().get_field("velocity");
         // Set w2a fields to default values to prep for updates
         auto& w2a_levelset = sim.repo().get_field("w2a_levelset");
         auto& w2a_velocity = sim.repo().get_field("w2a_velocity");
+
+        Field* levelset{nullptr};
+        if (multiphase_mode) {
+            levelset = &sim.repo().get_field("levelset");
+        }
 
         const auto& problo = geom.ProbLoArray();
         const auto& probhi = geom.ProbHiArray();
@@ -447,8 +454,10 @@ struct InitDataOp<W2AWaves>
         // Populate flow fields according to intended forcing and init setup
         const auto& ow_phi = ow_levelset(level).const_arrays();
         const auto& ow_vel = ow_velocity(level).const_arrays();
-        const auto& phi = levelset(level).arrays();
         const auto& vel = velocity(level).arrays();
+        const auto& phi_arrs = multiphase_mode
+                                   ? (*levelset)(level).arrays()
+                                   : amrex::MultiArray4<amrex::Real>();
 
         const auto& w2a_phi = w2a_levelset(level).arrays();
         const auto& w2a_vel = w2a_velocity(level).arrays();
@@ -457,8 +466,8 @@ struct InitDataOp<W2AWaves>
         const amrex::Real beach_length = wdata.beach_length;
         const amrex::Real zero_sea_level = wdata.zsl;
 
-        const bool has_beach = wdata.has_beach;
-        const bool init_wave_field = wdata.init_wave_field;
+        const bool has_beach = wdata.has_beach && multiphase_mode;
+        const bool init_wave_field = wdata.init_wave_field || !multiphase_mode;
 
         amrex::ParallelFor(
             velocity(level), amrex::IntVect(3),
@@ -481,13 +490,17 @@ struct InitDataOp<W2AWaves>
                     x, problo[0], gen_length, probhi[0], beach_length, wave_sol,
                     bulk, outlet);
 
-                phi[nbx](i, j, k) = local_profile[3] - z;
+                const amrex::Real phi = local_profile[3] - z;
                 const amrex::Real cell_length_2D =
                     std::sqrt(dx[0] * dx[0] + dx[2] * dx[2]);
-                if (phi[nbx](i, j, k) + cell_length_2D >= 0) {
+                if (phi + cell_length_2D >= 0) {
                     vel[nbx](i, j, k, 0) = local_profile[0];
                     vel[nbx](i, j, k, 1) = local_profile[1];
                     vel[nbx](i, j, k, 2) = local_profile[2];
+                }
+
+                if (multiphase_mode) {
+                    phi_arrs[nbx](i, j, k) = phi;
                 }
 
                 // Default w2a values matter for where no updates happen
@@ -498,16 +511,16 @@ struct InitDataOp<W2AWaves>
             });
         amrex::Gpu::synchronize();
 #else
-        amrex::ignore_unused(data, level, geom);
+        amrex::ignore_unused(data, level, geom, multiphase_mode);
 #endif
     }
 }; // namespace ocean_waves
 
 template <>
-struct UpdateRelaxZonesOp<W2AWaves>
+struct UpdateTargetFieldsOp<W2AWaves>
 {
     // cppcheck-suppress constParameterReference
-    void operator()(W2AWaves::DataType& data, const amrex::Real newtime)
+    void operator()(W2AWaves::DataType& data, const amrex::Real time)
     {
 
 #ifdef AMR_WIND_USE_W2A
@@ -515,11 +528,14 @@ struct UpdateRelaxZonesOp<W2AWaves>
         auto& sim = data.sim();
 
         // Update ow fields every time
-        auto& m_ow_levelset = sim.repo().get_field("ow_levelset");
-        auto& m_ow_velocity = sim.repo().get_field("ow_velocity");
+        auto& ow_levelset = sim.repo().get_field("ow_levelset");
+        auto& ow_velocity = sim.repo().get_field("ow_velocity");
         // Update HOS fields when necessary
         auto& w2a_levelset = sim.repo().get_field("w2a_levelset");
         auto& w2a_velocity = sim.repo().get_field("w2a_velocity");
+
+        // Proxy for multiphase mode of ocean waves
+        bool vof_exists = sim.repo().field_exists("vof");
 
         auto nlevels = sim.repo().num_active_levels();
         auto geom = sim.mesh().Geom();
@@ -531,10 +547,10 @@ struct UpdateRelaxZonesOp<W2AWaves>
         bool read_flag = false;
         // Check if time indicates reading must take place
         int new_ntime =
-            wdata.rmodes.time2step(newtime + wdata.t_winit, wdata.ntime);
+            wdata.rmodes.time2step(time + wdata.t_winit, wdata.ntime);
         int double_data = evaluate_read_resize(
             wdata.ntime, read_flag, wdata.resize_flag, wdata.t, wdata.t_last,
-            new_ntime, wdata.t_winit, wdata.dt_modes, newtime);
+            new_ntime, wdata.t_winit, wdata.dt_modes, time);
         // Check if stop time is exceeded, introduce offset to ntime
         if (read_flag) {
             // Need to only check when reading is occurring
@@ -568,7 +584,7 @@ struct UpdateRelaxZonesOp<W2AWaves>
                 // Get heights for this processor, check overlap in z
                 flag_z =
                     (interp_to_mfab::get_local_height_indices(
-                         wdata.indvec, wdata.hvec, m_ow_velocity.vec_ptrs(),
+                         wdata.indvec, wdata.hvec, ow_velocity.vec_ptrs(),
                          geom) == 1);
                 // No overlap from heights definitely means no interp
 
@@ -576,15 +592,22 @@ struct UpdateRelaxZonesOp<W2AWaves>
                 const int dir = 0;
                 flag_xlo =
                     (interp_to_mfab::check_lateral_overlap_lo(
-                         wdata.gen_length, dir, m_ow_velocity.vec_ptrs(),
-                         geom) == 1);
+                         wdata.gen_length, dir, ow_velocity.vec_ptrs(), geom) ==
+                     1);
                 // No overlap with gen region means no interp, unless ...
                 if (wdata.has_outprofile) {
                     // ... if overlap exists here, needing interp
                     flag_xhi =
                         (interp_to_mfab::check_lateral_overlap_hi(
-                             wdata.beach_length, dir, m_ow_velocity.vec_ptrs(),
+                             wdata.beach_length, dir, ow_velocity.vec_ptrs(),
                              geom) == 1);
+                }
+
+                // Wave generation zones are irrelevant for single-phase mode,
+                // indicated by nonexistence of vof
+                if (!vof_exists) {
+                    flag_xlo = true;
+                    flag_xhi = true;
                 }
 
                 if (flag_z && (flag_xlo || flag_xhi)) {
@@ -620,22 +643,22 @@ struct UpdateRelaxZonesOp<W2AWaves>
             if (double_data == 1) {
                 if (wdata.do_interp) {
                     populate_fields_all_levels(
-                        wdata, geom, m_ow_levelset, m_ow_velocity, -1);
+                        wdata, geom, ow_levelset, ow_velocity, -1);
                 }
 
                 // Average down to get fine information on coarse grid where
                 // possible (may be unnecessary)
                 for (int lev = nlevels - 1; lev > 0; --lev) {
                     amrex::average_down(
-                        m_ow_velocity(lev), m_ow_velocity(lev - 1), 0,
+                        ow_velocity(lev), ow_velocity(lev - 1), 0,
                         AMREX_SPACEDIM, sim.mesh().refRatio(lev - 1));
                     amrex::average_down(
-                        m_ow_levelset(lev), m_ow_levelset(lev - 1), 0, 1,
+                        ow_levelset(lev), ow_levelset(lev - 1), 0, 1,
                         sim.mesh().refRatio(lev - 1));
                 }
                 // Fill patch to get correct ghost cells after average down
-                m_ow_velocity.fillpatch(sim.time().new_time());
-                m_ow_levelset.fillpatch(sim.time().new_time());
+                ow_velocity.fillpatch(sim.time().new_time());
+                ow_levelset.fillpatch(sim.time().new_time());
 
                 // Prior t_last (corresponding to ow fields)
                 t_last = (wdata.ntime - 1) * wdata.dt_modes;
@@ -643,8 +666,8 @@ struct UpdateRelaxZonesOp<W2AWaves>
                 // Restarting simulation or taking a big step, new time at ntime
                 // Initialize ow fields to 0 for time interp, will be replaced
                 if (wdata.do_interp) {
-                    m_ow_levelset.setVal(0.0, m_ow_levelset.num_grow()[0]);
-                    m_ow_velocity.setVal(0.0, m_ow_levelset.num_grow()[0]);
+                    ow_levelset.setVal(0.0, ow_levelset.num_grow()[0]);
+                    ow_velocity.setVal(0.0, ow_levelset.num_grow()[0]);
                 }
                 // No modification needed for t_last, leads to interp factor = 1
             }
@@ -672,33 +695,33 @@ struct UpdateRelaxZonesOp<W2AWaves>
 
         // Temporally interpolate at every timestep to get target solution
         for (int lev = 0; lev < nlevels; ++lev) {
-            auto phi = m_ow_levelset(lev).arrays();
-            auto vel = m_ow_velocity(lev).arrays();
-            auto W2A_phi = w2a_levelset(lev).arrays();
-            auto W2A_vel = w2a_velocity(lev).arrays();
+            auto phi = ow_levelset(lev).arrays();
+            auto vel = ow_velocity(lev).arrays();
+            const auto W2A_phi = w2a_levelset(lev).const_arrays();
+            const auto W2A_vel = w2a_velocity(lev).const_arrays();
 
             const amrex::Real W2A_t = wdata.t;
             amrex::ParallelFor(
-                m_ow_levelset(lev), amrex::IntVect(3),
+                ow_levelset(lev), amrex::IntVect(3),
                 [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                     // Interpolate temporally every time
                     phi[nbx](i, j, k) +=
                         (W2A_phi[nbx](i, j, k) - phi[nbx](i, j, k)) *
-                        (newtime - t_last) / (W2A_t - t_last + 1e-16);
+                        (time - t_last) / (W2A_t - t_last + 1e-16);
                     vel[nbx](i, j, k, 0) +=
                         (W2A_vel[nbx](i, j, k, 0) - vel[nbx](i, j, k, 0)) *
-                        (newtime - t_last) / (W2A_t - t_last + 1e-16);
+                        (time - t_last) / (W2A_t - t_last + 1e-16);
                     vel[nbx](i, j, k, 1) +=
                         (W2A_vel[nbx](i, j, k, 1) - vel[nbx](i, j, k, 1)) *
-                        (newtime - t_last) / (W2A_t - t_last + 1e-16);
+                        (time - t_last) / (W2A_t - t_last + 1e-16);
                     vel[nbx](i, j, k, 2) +=
                         (W2A_vel[nbx](i, j, k, 2) - vel[nbx](i, j, k, 2)) *
-                        (newtime - t_last) / (W2A_t - t_last + 1e-16);
+                        (time - t_last) / (W2A_t - t_last + 1e-16);
                 });
         }
         amrex::Gpu::synchronize();
 #else
-        amrex::ignore_unused(data, newtime);
+        amrex::ignore_unused(data, time);
 #endif
     }
 };

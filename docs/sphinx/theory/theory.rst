@@ -402,16 +402,16 @@ running wall-bounded flows.
 Monin-Obukhov Similarity Theory
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Monin-Obukhov similarity theory is used for wall boundary conditions for ABL simulations. The exact
-calculation of :math:`tau_{i3}` in the horizontal directions depends on the SGS model used, but the following calculations for the friction velocity :math:`u_\tau` and surface heat flux `q` are common across the models.
+calculation of :math:`\tau_{i3}` in the horizontal directions depends on the SGS model used, but the following calculations for the friction velocity :math:`u_\tau` and surface heat flux `q` are common across the models.
 
 .. math::
     u_\tau = \frac{\kappa \overline{s}}{\ln \left(\frac{z_b}{z_0}\right) - \psi_m}
     
 where :math:`s` is the horizontal wind speed :math:`s = \sqrt{u_{1}^2+ u_{2}^2}`, :math:`\theta_w`
-is the wall temperature, :math:`\kappa` is the von Karman constant, and :math:`z_0` is the surface roughness length and :math: `z_b` is the reference height (default is the first cell center). The
+is the wall temperature, :math:`\kappa` is the von Karman constant, and :math:`z_0` is the surface roughness length and :math:`z_b` is the reference height (default is the first cell center). The
 :math:`\overline{\phantom{l}.\phantom{l}}` operator indicates a horizontal plane
 average.  The quantities :math:`\psi_m, \psi_h` are computed using the Monin-Obukhov similarity law
-following the calculations in `ven der Lann et al <https://doi.org/10.1002/we.2017>` and `Dyer (1974)` formulation  for unstable stratification (:math:`z_b/L < 0`):
+following the calculations in `ven der Lann et al <https://doi.org/10.1002/we.2017>`_ and `Dyer (1974)` formulation  for unstable stratification (:math:`z_b/L < 0`):
 
 .. math::
     \begin{align}
