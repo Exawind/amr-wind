@@ -54,13 +54,13 @@ OceanWaves.label = Wave1
 OceanWaves.Wave1.type = LinearWaves
 OceanWaves.Wave1.wave_height=2.0
 OceanWaves.Wave1.wave_length=40.0
-OceanWaves.Wave1.water_depth=400
+OceanWaves.Wave1.water_depth=133
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
 amr.n_cell              = 48 48 48 # Grid cells at coarsest AMRlevel
-amr.max_level           = 2           # Max AMR level in hierarchy
+amr.max_level           = 1           # Max AMR level in hierarchy
 tagging.labels = static
 tagging.static.type = CartBoxRefinement
 tagging.static.static_refinement_def = static_box.txt

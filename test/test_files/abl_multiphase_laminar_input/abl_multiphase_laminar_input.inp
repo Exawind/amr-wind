@@ -61,7 +61,7 @@ OceanWaves.label = Wave1
 OceanWaves.Wave1.type = LinearWaves
 OceanWaves.Wave1.wave_height=2.0
 OceanWaves.Wave1.wave_length=40.0
-OceanWaves.Wave1.water_depth=400
+OceanWaves.Wave1.water_depth=133
 OceanWaves.Wave1.relax_zone_gen_length=40.0
 OceanWaves.Wave1.relax_zone_out_length=40.0
 
@@ -75,15 +75,15 @@ ABL.bndry_output_format = native
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
-amr.n_cell              = 48 48 96 # Grid cells at coarsest AMRlevel
-amr.max_level           = 2           # Max AMR level in hierarchy
+amr.n_cell              = 48 48 64 # Grid cells at coarsest AMRlevel
+amr.max_level           = 1           # Max AMR level in hierarchy
 tagging.labels = static
 tagging.static.type = CartBoxRefinement
 tagging.static.static_refinement_def = static_box.txt
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              GEOMETRY                 #
 #.......................................#
-geometry.prob_lo        =   0.       0.  -400.  # Lo corner coordinates
+geometry.prob_lo        =   0.       0.  -133.  # Lo corner coordinates
 geometry.prob_hi        =   400.   400.   400.  # Hi corner coordinates
 geometry.is_periodic    =   0   1   0   # Periodicity x y z (0/1)
 # Boundary conditions
