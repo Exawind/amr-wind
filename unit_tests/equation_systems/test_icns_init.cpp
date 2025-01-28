@@ -54,13 +54,24 @@ protected:
 
 TEST_F(ICNSInitTest, 2level)
 {
-
     populate_parameters();
     initialize_mesh();
     auto& pde_mgr = sim().pde_manager();
     pde_mgr.register_icns();
     // Fillpatch is called at end of initialize; this is trigger of segfault
+    // - this fillpatch is default as the "post_solve_op" called within
+    // - in incflo.cpp, "fillpatch_state_fields" is called next
     pde_mgr.icns().initialize();
+}
+
+TEST_F(ICNSInitTest, generic_2level)
+{
+    populate_parameters();
+    initialize_mesh();
+    auto& repo = sim().repo();
+    auto& generic_field = repo.declare_field("generic", 1, 1, 1);
+    generic_field.set_default_fillpatch_bc(sim().time());
+    generic_field.fillpatch(0.0);
 }
 
 } // namespace amr_wind_tests
