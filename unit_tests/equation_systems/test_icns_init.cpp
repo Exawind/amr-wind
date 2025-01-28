@@ -58,9 +58,6 @@ TEST_F(ICNSInitTest, 2level)
     initialize_mesh();
     auto& pde_mgr = sim().pde_manager();
     pde_mgr.register_icns();
-    // Fillpatch is called at end of initialize; this is trigger of segfault
-    // - this fillpatch is default as the "post_solve_op" called within
-    // - in incflo.cpp, "fillpatch_state_fields" is called next
     pde_mgr.icns().initialize();
 }
 
