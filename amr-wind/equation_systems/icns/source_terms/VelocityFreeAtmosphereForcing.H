@@ -27,7 +27,7 @@ public:
 private:
     const SimTime& m_time;
     const amrex::AmrCore& m_mesh;
-    std::string m_1d_rans;
+    std::string m_1d_rans_filename;
     const Field& m_velocity;
     amrex::Vector<amrex::Real> m_wind_heights;
     amrex::Vector<amrex::Real> m_u_values;

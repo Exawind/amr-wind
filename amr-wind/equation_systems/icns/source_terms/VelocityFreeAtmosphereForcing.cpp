@@ -15,11 +15,12 @@ VelocityFreeAtmosphereForcing::VelocityFreeAtmosphereForcing(const CFDSim& sim)
     , m_sim(sim)
 {
     amrex::ParmParse pp_abl("ABL");
-    pp_abl.query("rans_1dprofile_file", m_1d_rans);
-    if (!m_1d_rans.empty()) {
-        std::ifstream ransfile(m_1d_rans, std::ios::in);
+    pp_abl.query("rans_1dprofile_file", m_1d_rans_filename);
+    if (!m_1d_rans_filename.empty()) {
+        std::ifstream ransfile(m_1d_rans_filename, std::ios::in);
         if (!ransfile.good()) {
-            amrex::Abort("Cannot find 1-D RANS profile file " + m_1d_rans);
+            amrex::Abort(
+                "Cannot find 1-D RANS profile file " + m_1d_rans_filename);
         }
         amrex::Real value1, value2, value3, value4, value5;
         while (ransfile >> value1 >> value2 >> value3 >> value4 >> value5) {
@@ -29,7 +30,7 @@ VelocityFreeAtmosphereForcing::VelocityFreeAtmosphereForcing(const CFDSim& sim)
             m_w_values.push_back(value4);
         }
     } else {
-        amrex::Abort("Cannot find 1-D RANS profile file " + m_1d_rans);
+        amrex::Abort("Cannot find 1-D RANS profile file " + m_1d_rans_filename);
     }
     pp_abl.query("meso_sponge_start", m_meso_start);
     pp_abl.query("meso_timescale", m_meso_timescale);
@@ -75,78 +76,43 @@ void VelocityFreeAtmosphereForcing::operator()(
     const auto* v_values_d = m_v_values_d.data();
     const auto* w_values_d = m_w_values_d.data();
     const bool has_terrain = this->m_sim.repo().field_exists("terrain_height");
-    if (has_terrain) {
-        auto* const m_terrain_height =
-            &this->m_sim.repo().get_field("terrain_height");
-        const auto& terrain_height = (*m_terrain_height)(lev).const_array(mfi);
-        amrex::ParallelFor(
-            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                const amrex::Real z = std::max(
-                    prob_lo[2] + (k + 0.5) * dx[2] - terrain_height(i, j, k),
-                    0.5 * dx[2]);
-                const amrex::Real zi = std::max(
-                    (z - sponge_start) / (prob_hi[2] - sponge_start), 0.0);
-                amrex::Real ref_windx = velocity(i, j, k, 0);
-                amrex::Real ref_windy = velocity(i, j, k, 1);
-                amrex::Real ref_windz = velocity(i, j, k, 2);
-                if (zi > 0) {
-                    ref_windx = (vsize > 0)
-                                    ? interp::linear(
+    auto* const m_terrain_height =
+        (has_terrain) ? &this->m_sim.repo().get_field("terrain_height")
+                      : nullptr;
+    const auto& terrain_height = (has_terrain)
+                                     ? (*m_terrain_height)(lev).const_array(mfi)
+                                     : amrex::Array4<double>();
+    amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+        const amrex::Real cell_terrain_height =
+            (has_terrain) ? terrain_height(i, j, k) : 0.0;
+        const amrex::Real z = std::max(
+            prob_lo[2] + (k + 0.5) * dx[2] - cell_terrain_height, 0.5 * dx[2]);
+        const amrex::Real zi =
+            std::max((z - sponge_start) / (prob_hi[2] - sponge_start), 0.0);
+        amrex::Real ref_windx = velocity(i, j, k, 0);
+        amrex::Real ref_windy = velocity(i, j, k, 1);
+        amrex::Real ref_windz = velocity(i, j, k, 2);
+        if (zi > 0) {
+            ref_windx = (vsize > 0) ? interp::linear(
                                           wind_heights_d,
                                           wind_heights_d + vsize, u_values_d, z)
                                     : velocity(i, j, k, 0);
-                    ref_windy = (vsize > 0)
-                                    ? interp::linear(
+            ref_windy = (vsize > 0) ? interp::linear(
                                           wind_heights_d,
                                           wind_heights_d + vsize, v_values_d, z)
                                     : velocity(i, j, k, 1);
-                    ref_windz = (vsize > 0)
-                                    ? interp::linear(
+            ref_windz = (vsize > 0) ? interp::linear(
                                           wind_heights_d,
                                           wind_heights_d + vsize, w_values_d, z)
                                     : velocity(i, j, k, 2);
-                }
-                src_term(i, j, k, 0) -=
-                    1.0 / meso_timescale * (velocity(i, j, k, 0) - ref_windx);
-                src_term(i, j, k, 1) -=
-                    1.0 / meso_timescale * (velocity(i, j, k, 1) - ref_windy);
-                src_term(i, j, k, 2) -=
-                    1.0 / meso_timescale * (velocity(i, j, k, 2) - ref_windz);
-            });
-    } else {
-        amrex::ParallelFor(
-            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                const amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
-                const amrex::Real zi = std::max(
-                    (z - sponge_start) / (prob_hi[2] - sponge_start), 0.0);
-                amrex::Real ref_windx = velocity(i, j, k, 0);
-                amrex::Real ref_windy = velocity(i, j, k, 1);
-                amrex::Real ref_windz = velocity(i, j, k, 2);
-                if (zi > 0) {
-                    ref_windx = (vsize > 0)
-                                    ? interp::linear(
-                                          wind_heights_d,
-                                          wind_heights_d + vsize, u_values_d, z)
-                                    : velocity(i, j, k, 0);
-                    ref_windy = (vsize > 0)
-                                    ? interp::linear(
-                                          wind_heights_d,
-                                          wind_heights_d + vsize, v_values_d, z)
-                                    : velocity(i, j, k, 1);
-                    ref_windz = (vsize > 0)
-                                    ? interp::linear(
-                                          wind_heights_d,
-                                          wind_heights_d + vsize, w_values_d, z)
-                                    : velocity(i, j, k, 2);
-                }
-                src_term(i, j, k, 0) -=
-                    1.0 / meso_timescale * (velocity(i, j, k, 0) - ref_windx);
-                src_term(i, j, k, 1) -=
-                    1.0 / meso_timescale * (velocity(i, j, k, 1) - ref_windy);
-                src_term(i, j, k, 2) -=
-                    1.0 / meso_timescale * (velocity(i, j, k, 2) - ref_windz);
-            });
-    }
+        }
+        src_term(i, j, k, 0) -=
+            1.0 / meso_timescale * (velocity(i, j, k, 0) - ref_windx);
+        src_term(i, j, k, 1) -=
+            1.0 / meso_timescale * (velocity(i, j, k, 1) - ref_windy);
+        src_term(i, j, k, 2) -=
+            1.0 / meso_timescale * (velocity(i, j, k, 2) - ref_windz);
+    });
 }
 
 } // namespace amr_wind::pde::icns
