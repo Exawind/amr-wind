@@ -111,7 +111,7 @@ TEST_F(ABLMeshTest, abl_init_netcdf_multilevel)
             new amr_wind::CartBoxRefinement(sim()));
         box_refine->read_inputs(mesh(), ss);
 
-        if (mesh<RefineMesh>()) {
+        if (mesh<RefineMesh>() != nullptr) {
             mesh<RefineMesh>()->refine_criteria_vec().push_back(
                 std::move(box_refine));
         }
