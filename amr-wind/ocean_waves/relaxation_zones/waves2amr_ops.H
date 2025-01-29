@@ -679,18 +679,17 @@ struct UpdateTargetFieldsOp<W2AWaves>
             }
 
             // Average down to get fine information on coarse grid where
-            // possible (may be unnecessary)
+            // possible and update ghost cells (may be unnecessary)
             for (int lev = nlevels - 1; lev > 0; --lev) {
                 amrex::average_down(
                     w2a_velocity(lev), w2a_velocity(lev - 1), 0, AMREX_SPACEDIM,
                     sim.mesh().refRatio(lev - 1));
+                w2a_velocity(lev - 1).FillBoundary(geom[lev - 1].periodicity());
                 amrex::average_down(
                     w2a_levelset(lev), w2a_levelset(lev - 1), 0, 1,
                     sim.mesh().refRatio(lev - 1));
+                w2a_levelset(lev - 1).FillBoundary(geom[lev - 1].periodicity());
             }
-            // Fill patch to get correct ghost cells after average down
-            w2a_velocity.fillpatch(sim.time().new_time());
-            w2a_levelset.fillpatch(sim.time().new_time());
         }
 
         // Temporally interpolate at every timestep to get target solution
