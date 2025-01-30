@@ -23,7 +23,8 @@ TerrainDrag::TerrainDrag(CFDSim& sim)
     , m_terrain_height(sim.repo().declare_field("terrain_height", 1, 1, 1))
 {
 
-    m_terrain_is_waves = sim.physics_manager().contains("OceanWaves");
+    m_terrain_is_waves = sim.physics_manager().contains("OceanWaves") &&
+                         !sim.repo().field_exists("vof");
 
     if (!m_terrain_is_waves) {
         amrex::ParmParse pp(identifier());
