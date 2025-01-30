@@ -38,16 +38,33 @@ private:
     amrex::Real m_heat_flux{0.0};
     amrex::Real m_z0{0.1};
     amrex::Real m_kappa{0.41};
-    amrex::Real m_sponge_start{600};
-    amrex::Real m_ref_tke{1e-10};
+    amrex::Real m_meso_start{600};
     amrex::Vector<amrex::Real> m_gravity{0.0, 0.0, -9.81};
     const SimTime& m_time;
     const CFDSim& m_sim;
     const amrex::AmrCore& m_mesh;
     const Field& m_velocity;
-
+    std::string m_1d_rans;
+    amrex::Vector<amrex::Real> m_wind_heights;
+    amrex::Vector<amrex::Real> m_tke_values;
+    amrex::Gpu::DeviceVector<amrex::Real> m_wind_heights_d;
+    amrex::Gpu::DeviceVector<amrex::Real> m_tke_values_d;
     //! Transport model
     const transport::TransportModel& m_transport;
+
+    //! Reference temperature
+    std::unique_ptr<ScratchField> m_ref_theta;
+    bool m_horizontal_sponge{false};
+    amrex::Real m_sponge_strength{1.0};
+    amrex::Real m_sponge_density{1.0};
+    amrex::Real m_sponge_distance_west{-1000};
+    amrex::Real m_sponge_distance_east{1000};
+    amrex::Real m_sponge_distance_south{-1000};
+    amrex::Real m_sponge_distance_north{1000};
+    int m_sponge_west{0};
+    int m_sponge_east{1};
+    int m_sponge_south{0};
+    int m_sponge_north{1};
 };
 
 } // namespace amr_wind::pde::tke

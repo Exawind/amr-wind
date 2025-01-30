@@ -23,7 +23,8 @@ TerrainDrag::TerrainDrag(CFDSim& sim)
     , m_terrain_height(sim.repo().declare_field("terrain_height", 1, 1, 1))
 {
 
-    m_terrain_is_waves = sim.physics_manager().contains("OceanWaves");
+    m_terrain_is_waves = sim.physics_manager().contains("OceanWaves") &&
+                         !sim.repo().field_exists("vof");
 
     if (!m_terrain_is_waves) {
         amrex::ParmParse pp(identifier());
@@ -128,8 +129,7 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
                 yterrain_ptr + yterrain_size, zterrain_ptr, x, y);
             levelBlanking[nbx](i, j, k, 0) =
                 static_cast<int>((z <= terrainHt) && (z > prob_lo[2]));
-            levelheight[nbx](i, j, k, 0) =
-                std::max(std::abs(z - terrainHt), 0.5 * dx[2]);
+            levelheight[nbx](i, j, k, 0) = terrainHt;
 
             amrex::Real roughz0 = 0.1;
             if (xrough_size > 0) {
@@ -140,7 +140,6 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
             levelz0[nbx](i, j, k, 0) = roughz0;
         });
     amrex::Gpu::synchronize();
-
     amrex::ParallelFor(
         blanking, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
             if ((levelBlanking[nbx](i, j, k, 0) == 0) && (k > 0) &&

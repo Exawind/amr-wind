@@ -116,6 +116,8 @@ Flow physics
 
    * Arbitrarily spatially and time varying boundary conditions using Python tools [:ref:`inp <inputs_native_boundary_plane>`]
 
+   * Sponge layer driven ABL simulations 
+
 * Geometry
 
    * Immersed boundary forcing method with stair-case type terrain and wall function [:ref:`doc <terrain>`]
