@@ -25,4 +25,5 @@ through precursor simulations, and then turbines are placed in the flow.
    turbine.rst
    terrain.rst
    rans.rst 
+   noprecursorrans.rst
    calibration.rst
