@@ -69,6 +69,7 @@ struct ComputeRHSOp<Levelset, Scheme>
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
+            // this one
             for (amrex::MFIter mfi(field(lev)); mfi.isValid(); ++mfi) {
                 const auto& bx = mfi.tilebox();
                 auto phi = field(lev).array(mfi);
@@ -101,6 +102,7 @@ struct ComputeRHSOp<Levelset, Scheme>
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
+            // this one
             for (amrex::MFIter mfi(field(lev)); mfi.isValid(); ++mfi) {
                 const auto& bx = mfi.tilebox();
                 auto phi = field(lev).array(mfi);

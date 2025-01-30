@@ -20,6 +20,7 @@ void HybridRANSLESABL::initialize_fields(int level, const amrex::Geometry& geom)
     const amrex::Real dz = geom.CellSize()[2];
     const amrex::Real ds = std::cbrt(dx * dy * dz);
 
+    // this one
     for (amrex::MFIter mfi((*m_tke)(level)); mfi.isValid(); ++mfi) {
         const auto& bx = mfi.growntilebox();
         const auto& tke_arr = (*m_tke)(level).array(mfi);
@@ -88,6 +89,7 @@ void HybridRANSLESABL::compute_sdr_impl()
         const amrex::Real dz = geom.CellSize()[2];
         const amrex::Real ds = std::cbrt(dx * dy * dz);
 
+        // this one
         for (amrex::MFIter mfi((*tke)(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.growntilebox();
             const auto& tke_arr = (*tke)(lev).array(mfi);
