@@ -91,6 +91,16 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
     auto& velocity = sim.repo().get_field("velocity");
     auto& density = sim.repo().get_field("density");
 
+    amr_wind::IntField* terrain_blank_ptr{nullptr};
+    amr_wind::IntField* terrain_drag_ptr{nullptr};
+    bool terrain_present{false};
+    // Get fields to prevent forcing in or near underwater terrain
+    if (sim.repo().field_exists("terrain_blank")) {
+        terrain_blank_ptr = &sim.repo().get_int_field("terrain_blank");
+        terrain_drag_ptr = &sim.repo().get_int_field("terrain_drag");
+        terrain_present = true;
+    }
+
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& dx = geom[lev].CellSizeArray();
         const auto& problo = geom[lev].ProbLoArray();
@@ -100,6 +110,13 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
         auto volfrac_arrs = vof(lev).arrays();
         const auto target_volfrac_arrs = ow_vof(lev).const_arrays();
         const auto target_vel_arrs = ow_vel(lev).const_arrays();
+
+        const auto terrain_blank_flags =
+            terrain_present ? (*terrain_blank_ptr)(lev).const_arrays()
+                            : amrex::MultiArray4<int const>();
+        const auto terrain_drag_flags =
+            terrain_present ? (*terrain_drag_ptr)(lev).const_arrays()
+                            : amrex::MultiArray4<int const>();
 
         const amrex::Real gen_length = wdata.gen_length;
         const amrex::Real beach_length = wdata.beach_length;
@@ -125,8 +142,15 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                 const auto target_volfrac = target_volfrac_arrs[nbx];
                 const auto target_vel = target_vel_arrs[nbx];
 
+                bool in_or_near_terrain{false};
+                if (terrain_present) {
+                    in_or_near_terrain =
+                        (terrain_blank_flags[nbx](i, j, k) == 1 ||
+                         terrain_drag_flags[nbx](i, j, k) == 1);
+                }
+
                 // Generation region
-                if (x <= problo[0] + gen_length) {
+                if (x <= problo[0] + gen_length && !in_or_near_terrain) {
                     const amrex::Real Gamma =
                         utils::gamma_generate(x - problo[0], gen_length);
                     // Get bounded new vof, incorporate with increment
@@ -164,7 +188,7 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                     }
                 }
                 // Outlet region
-                if (x + beach_length >= probhi[0]) {
+                if (x + beach_length >= probhi[0] && !in_or_near_terrain) {
                     const amrex::Real Gamma = utils::gamma_absorb(
                         x - (probhi[0] - beach_length), beach_length,
                         beach_length_factor);
