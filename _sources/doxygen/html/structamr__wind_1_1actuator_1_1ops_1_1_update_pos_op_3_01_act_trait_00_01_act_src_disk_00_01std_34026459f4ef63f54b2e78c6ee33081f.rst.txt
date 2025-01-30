@@ -1,0 +1,14 @@
+.. meta::30b718440b08348cdc1bf1fc10f776fcc3eaca8310a7cf05bf836371338c4914f39e8ba818a2b441a0fb5753db7cbdc25c500d08ae61a35c483b0c6385f76944
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::UpdatePosOp&lt; ActTrait, ActSrcDisk, std::enable_if_t&lt; std::is_base_of_v&lt; DiskType, ActTrait &gt; &gt; &gt; Struct Template Reference
+
+is\_base\_of\_v&lt; DiskType, ActTrait &gt; &gt; &gt; Struct Template Reference
+===============================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1ops_1_1_update_pos_op_3_01_act_trait_00_01_act_src_disk_00_01std_34026459f4ef63f54b2e78c6ee33081f.html

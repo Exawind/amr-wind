@@ -1,0 +1,14 @@
+.. meta::4ed2ba8df82ba520b16eac35fc0fe33d9f369fd30c9acfe0d83b7500ec472bcf39fcc9b09fae8b9cd91c2d6c9d71194ffd32c483f53d407d35028e0997c407e0
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::GeometryRefinement Class Reference
+
+GeometryRefinement Class Reference
+==================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_geometry_refinement.html

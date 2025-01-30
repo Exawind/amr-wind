@@ -1,0 +1,14 @@
+.. meta::72b35c3036637cb55e612ba9daf1f73e784a0c86083ee9f851e24b563a4729185a3c7de8ef409a5eeb826832f1179d93047983f5880d92dc1d165822aaa0fa2a
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::OceanWavesBoundary Class Reference
+
+OceanWavesBoundary Class Reference
+==================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_ocean_waves_boundary.html

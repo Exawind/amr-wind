@@ -1,0 +1,14 @@
+.. meta::2001b2bfd0370b8a3d199ade71b11af0542b55278546e3b5d38242b262f3d0f0f348432328b2f4085b940d6183e776fa1566617318dd100096b5946b4ba4a681
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ocean_waves::ops::UpdateTargetFieldsOp&lt; W2AWaves &gt; Struct Reference
+
+UpdateTargetFieldsOp&lt; W2AWaves &gt; Struct Reference
+=======================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ocean__waves_1_1ops_1_1_update_target_fields_op_3_01_w2_a_waves_01_4.html

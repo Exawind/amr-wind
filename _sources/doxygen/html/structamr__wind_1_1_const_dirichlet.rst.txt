@@ -1,0 +1,14 @@
+.. meta::7f44b123963020024db0f904dd810815d8bac057b1c653b9dfe4f0cfb97c4cc2b928e4d04e8d4cf26bb08ad6e1019c23429d6e7c7d660c5c2816eacb122b3b5e
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ConstDirichlet Struct Reference
+
+ConstDirichlet Struct Reference
+===============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1_const_dirichlet.html

@@ -1,0 +1,600 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::FieldFillPatchOpsBase Class Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::FieldFillPatchOpsBase Class Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/classamr__wind_1_1_field_fill_patch_ops_base.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="fieldfillpatchopsbase-class-reference">
+<h1>FieldFillPatchOpsBase Class Reference<a class="headerlink" href="#fieldfillpatchopsbase-class-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.12.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::FieldFillPatchOpsBase Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.12.0 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() { codefold.init(0); });
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function(){ initResizable(false); });
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a class="el" href="classamr__wind_1_1_field_fill_patch_ops_base.html">FieldFillPatchOpsBase</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="classamr__wind_1_1_field_fill_patch_ops_base-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::FieldFillPatchOpsBase Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span><div class="ingroups"><a class="el" href="group__core.html">AMR-Wind core</a> &raquo; <a class="el" href="group__fields.html">Field management</a> &raquo; <a class="el" href="group__field__fillpatch.html">Fillpatch operators</a></div></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_field_fill_patch_ops_8_h_source.html">FieldFillPatchOps.H</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for amr_wind::FieldFillPatchOpsBase:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classamr__wind_1_1_field_fill_patch_ops_base__inherit__graph.svg" width="100%" height="416"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a079dc0dd184896125971968598f28041" id="r_a079dc0dd184896125971968598f28041"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a079dc0dd184896125971968598f28041">FieldFillPatchOpsBase</a> ()=default</td></tr>
+<tr class="separator:a079dc0dd184896125971968598f28041"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2547a350c6ea41047dfad56901d33f80" id="r_a2547a350c6ea41047dfad56901d33f80"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2547a350c6ea41047dfad56901d33f80">~FieldFillPatchOpsBase</a> ()=default</td></tr>
+<tr class="separator:a2547a350c6ea41047dfad56901d33f80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff8b019e064c9264cae42af224b3cdfb" id="r_aff8b019e064c9264cae42af224b3cdfb"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aff8b019e064c9264cae42af224b3cdfb">fillpatch</a> (const int lev, const amrex::Real time, amrex::MultiFab &amp;mfab, const amrex::IntVect &amp;nghost, const <a class="el" href="group__fields.html#gaba2b7a43f2e9cb10cdb5e2ab8acfcdd8">FieldState</a> fstate=<a class="el" href="group__fields.html#ggaba2b7a43f2e9cb10cdb5e2ab8acfcdd8a03c2e7e41ffc181a4e84080b4710e81e">FieldState::New</a>)=0</td></tr>
+<tr class="separator:aff8b019e064c9264cae42af224b3cdfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19d4a0b61511107b9f77012c79a52040" id="r_a19d4a0b61511107b9f77012c79a52040"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a19d4a0b61511107b9f77012c79a52040">fillpatch_sibling_fields</a> (const int lev, const amrex::Real time, amrex::Array&lt; amrex::MultiFab *, AMREX_SPACEDIM &gt; &amp;mfabs, amrex::Array&lt; amrex::MultiFab *, AMREX_SPACEDIM &gt; &amp;ffabs, amrex::Array&lt; amrex::MultiFab *, AMREX_SPACEDIM &gt; &amp;cfabs, const amrex::IntVect &amp;nghost, const amrex::Vector&lt; amrex::BCRec &gt; &amp;fillpatch_bcrec, const amrex::Vector&lt; amrex::BCRec &gt; &amp;physbc_bcrec, const <a class="el" href="group__fields.html#gaba2b7a43f2e9cb10cdb5e2ab8acfcdd8">FieldState</a> fstate=<a class="el" href="group__fields.html#ggaba2b7a43f2e9cb10cdb5e2ab8acfcdd8a03c2e7e41ffc181a4e84080b4710e81e">FieldState::New</a>)=0</td></tr>
+<tr class="separator:a19d4a0b61511107b9f77012c79a52040"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94e1b5a746f0a8d2c5739a27535b1351" id="r_a94e1b5a746f0a8d2c5739a27535b1351"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a94e1b5a746f0a8d2c5739a27535b1351">fillpatch_from_coarse</a> (const int lev, const amrex::Real time, amrex::MultiFab &amp;mfab, const amrex::IntVect &amp;nghost, const <a class="el" href="group__fields.html#gaba2b7a43f2e9cb10cdb5e2ab8acfcdd8">FieldState</a> fstate=<a class="el" href="group__fields.html#ggaba2b7a43f2e9cb10cdb5e2ab8acfcdd8a03c2e7e41ffc181a4e84080b4710e81e">FieldState::New</a>)=0</td></tr>
+<tr class="memdesc:a94e1b5a746f0a8d2c5739a27535b1351"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implementation that handles filling patches from a coarse to fine level.  <br /></td></tr>
+<tr class="separator:a94e1b5a746f0a8d2c5739a27535b1351"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ed3ab5e53d72430364ffab598f14ad7" id="r_a4ed3ab5e53d72430364ffab598f14ad7"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4ed3ab5e53d72430364ffab598f14ad7">fillphysbc</a> (const int lev, const amrex::Real time, amrex::MultiFab &amp;mfab, const amrex::IntVect &amp;nghost, const <a class="el" href="group__fields.html#gaba2b7a43f2e9cb10cdb5e2ab8acfcdd8">FieldState</a> fstate=<a class="el" href="group__fields.html#ggaba2b7a43f2e9cb10cdb5e2ab8acfcdd8a03c2e7e41ffc181a4e84080b4710e81e">FieldState::New</a>)=0</td></tr>
+<tr class="memdesc:a4ed3ab5e53d72430364ffab598f14ad7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implementation that handles filling physical boundary conditions.  <br /></td></tr>
+<tr class="separator:a4ed3ab5e53d72430364ffab598f14ad7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a933aab104e598686e60683d0df727ebe" id="r_a933aab104e598686e60683d0df727ebe"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a933aab104e598686e60683d0df727ebe">set_inflow</a> (const int lev, const amrex::Real time, amrex::MultiFab &amp;mfab, const amrex::IntVect &amp;nghost, const <a class="el" href="group__fields.html#gaba2b7a43f2e9cb10cdb5e2ab8acfcdd8">FieldState</a> fstate=<a class="el" href="group__fields.html#ggaba2b7a43f2e9cb10cdb5e2ab8acfcdd8a03c2e7e41ffc181a4e84080b4710e81e">FieldState::New</a>)=0</td></tr>
+<tr class="separator:a933aab104e598686e60683d0df727ebe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30f5d05c6bab276c891ea3c3ea839f91" id="r_a30f5d05c6bab276c891ea3c3ea839f91"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a30f5d05c6bab276c891ea3c3ea839f91">set_inflow_sibling_fields</a> (const int lev, const amrex::Real time, amrex::Array&lt; amrex::MultiFab *, AMREX_SPACEDIM &gt; mfabs)=0</td></tr>
+<tr class="separator:a30f5d05c6bab276c891ea3c3ea839f91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Abstract interface for classes that handle fill patch and physical boundary condition operations for multi-level AMR meshes. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a079dc0dd184896125971968598f28041" name="a079dc0dd184896125971968598f28041"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a079dc0dd184896125971968598f28041">&#9670;&#160;</a></span>FieldFillPatchOpsBase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::FieldFillPatchOpsBase::FieldFillPatchOpsBase </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2547a350c6ea41047dfad56901d33f80" name="a2547a350c6ea41047dfad56901d33f80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2547a350c6ea41047dfad56901d33f80">&#9670;&#160;</a></span>~FieldFillPatchOpsBase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual amr_wind::FieldFillPatchOpsBase::~FieldFillPatchOpsBase </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="aff8b019e064c9264cae42af224b3cdfb" name="aff8b019e064c9264cae42af224b3cdfb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff8b019e064c9264cae42af224b3cdfb">&#9670;&#160;</a></span>fillpatch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void amr_wind::FieldFillPatchOpsBase::fillpatch </td>
+          <td>(</td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>lev</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>time</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::MultiFab &amp;</td>          <td class="paramname"><span class="paramname"><em>mfab</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::IntVect &amp;</td>          <td class="paramname"><span class="paramname"><em>nghost</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="group__fields.html#gaba2b7a43f2e9cb10cdb5e2ab8acfcdd8">FieldState</a></td>          <td class="paramname"><span class="paramname"><em>fstate</em></span><span class="paramdefsep"> = </span><span class="paramdefval"><a class="el" href="group__fields.html#ggaba2b7a43f2e9cb10cdb5e2ab8acfcdd8a03c2e7e41ffc181a4e84080b4710e81e">FieldState::New</a></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Implementation that handles filling patches on a single level as well as across a coarse-fine interface. </p>
+
+<p>Implemented in <a class="el" href="classamr__wind_1_1_a_b_l_fill_inflow.html#a0c32dacf2416f977337713e781ca9b76">amr_wind::ABLFillInflow</a>, <a class="el" href="classamr__wind_1_1_a_b_l_fill_m_p_l.html#a56a6eec2ae312d0bd106930d3d62dadc">amr_wind::ABLFillMPL</a>, <a class="el" href="classamr__wind_1_1_field_fill_const_scalar.html#af9b41a89b38c370c74b0ce62a6a8f6a3">amr_wind::FieldFillConstScalar</a>, <a class="el" href="classamr__wind_1_1_field_fill_patch_ops.html#ab9e804b725812caaf47380690161eeba">amr_wind::FieldFillPatchOps&lt; BCOpCreator &gt;</a>, <a class="el" href="classamr__wind_1_1_field_fill_patch_ops.html#ab9e804b725812caaf47380690161eeba">amr_wind::FieldFillPatchOps&lt; FieldBCDirichlet &gt;</a>, and <a class="el" href="classamr__wind_1_1_ocean_waves_fill_inflow.html#aaa03251bba1dc629d0be39fe87fb5c34">amr_wind::OceanWavesFillInflow</a>.</p>
+
+</div>
+</div>
+<a id="a94e1b5a746f0a8d2c5739a27535b1351" name="a94e1b5a746f0a8d2c5739a27535b1351"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94e1b5a746f0a8d2c5739a27535b1351">&#9670;&#160;</a></span>fillpatch_from_coarse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void amr_wind::FieldFillPatchOpsBase::fillpatch_from_coarse </td>
+          <td>(</td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>lev</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>time</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::MultiFab &amp;</td>          <td class="paramname"><span class="paramname"><em>mfab</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::IntVect &amp;</td>          <td class="paramname"><span class="paramname"><em>nghost</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="group__fields.html#gaba2b7a43f2e9cb10cdb5e2ab8acfcdd8">FieldState</a></td>          <td class="paramname"><span class="paramname"><em>fstate</em></span><span class="paramdefsep"> = </span><span class="paramdefval"><a class="el" href="group__fields.html#ggaba2b7a43f2e9cb10cdb5e2ab8acfcdd8a03c2e7e41ffc181a4e84080b4710e81e">FieldState::New</a></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implementation that handles filling patches from a coarse to fine level. </p>
+
+<p>Implemented in <a class="el" href="classamr__wind_1_1_a_b_l_fill_inflow.html#a09ed79321d71f7fc77b560513462e550">amr_wind::ABLFillInflow</a>, <a class="el" href="classamr__wind_1_1_a_b_l_fill_m_p_l.html#a8ea173919a56a4b8c76bb44115c57b2f">amr_wind::ABLFillMPL</a>, <a class="el" href="classamr__wind_1_1_field_fill_const_scalar.html#a1e905bfe75678d79c6e6b57dd29fbfd1">amr_wind::FieldFillConstScalar</a>, <a class="el" href="classamr__wind_1_1_field_fill_patch_ops.html#abc9323c9ed180ceeea65477179c55d80">amr_wind::FieldFillPatchOps&lt; BCOpCreator &gt;</a>, <a class="el" href="classamr__wind_1_1_field_fill_patch_ops.html#abc9323c9ed180ceeea65477179c55d80">amr_wind::FieldFillPatchOps&lt; FieldBCDirichlet &gt;</a>, and <a class="el" href="classamr__wind_1_1_ocean_waves_fill_inflow.html#aa7479fcdb80a65bf99903b5f0df8d78d">amr_wind::OceanWavesFillInflow</a>.</p>
+
+</div>
+</div>
+<a id="a19d4a0b61511107b9f77012c79a52040" name="a19d4a0b61511107b9f77012c79a52040"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19d4a0b61511107b9f77012c79a52040">&#9670;&#160;</a></span>fillpatch_sibling_fields()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void amr_wind::FieldFillPatchOpsBase::fillpatch_sibling_fields </td>
+          <td>(</td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>lev</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>time</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array&lt; amrex::MultiFab *, AMREX_SPACEDIM &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>mfabs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array&lt; amrex::MultiFab *, AMREX_SPACEDIM &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>ffabs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array&lt; amrex::MultiFab *, AMREX_SPACEDIM &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>cfabs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::IntVect &amp;</td>          <td class="paramname"><span class="paramname"><em>nghost</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Vector&lt; amrex::BCRec &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>fillpatch_bcrec</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Vector&lt; amrex::BCRec &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>physbc_bcrec</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="group__fields.html#gaba2b7a43f2e9cb10cdb5e2ab8acfcdd8">FieldState</a></td>          <td class="paramname"><span class="paramname"><em>fstate</em></span><span class="paramdefsep"> = </span><span class="paramdefval"><a class="el" href="group__fields.html#ggaba2b7a43f2e9cb10cdb5e2ab8acfcdd8a03c2e7e41ffc181a4e84080b4710e81e">FieldState::New</a></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Implementation that handles filling patches on a single level as well as across a coarse-fine interface, for an array of different fields </p>
+
+<p>Implemented in <a class="el" href="classamr__wind_1_1_a_b_l_fill_inflow.html#ac5d7b835a5c1d3ae731f90a15469ff93">amr_wind::ABLFillInflow</a>, <a class="el" href="classamr__wind_1_1_a_b_l_fill_m_p_l.html#a64fdb45f7ad16693e685130ee22a3e1c">amr_wind::ABLFillMPL</a>, <a class="el" href="classamr__wind_1_1_field_fill_const_scalar.html#ad40f2fe73cb7b576d491964ac9a6c486">amr_wind::FieldFillConstScalar</a>, <a class="el" href="classamr__wind_1_1_field_fill_patch_ops.html#ae750adf97ddea1fc13b4a6f296b257ed">amr_wind::FieldFillPatchOps&lt; BCOpCreator &gt;</a>, <a class="el" href="classamr__wind_1_1_field_fill_patch_ops.html#ae750adf97ddea1fc13b4a6f296b257ed">amr_wind::FieldFillPatchOps&lt; FieldBCDirichlet &gt;</a>, and <a class="el" href="classamr__wind_1_1_ocean_waves_fill_inflow.html#ad2ba3f270bd7c663c1beb27305adc200">amr_wind::OceanWavesFillInflow</a>.</p>
+
+</div>
+</div>
+<a id="a4ed3ab5e53d72430364ffab598f14ad7" name="a4ed3ab5e53d72430364ffab598f14ad7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ed3ab5e53d72430364ffab598f14ad7">&#9670;&#160;</a></span>fillphysbc()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void amr_wind::FieldFillPatchOpsBase::fillphysbc </td>
+          <td>(</td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>lev</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>time</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::MultiFab &amp;</td>          <td class="paramname"><span class="paramname"><em>mfab</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::IntVect &amp;</td>          <td class="paramname"><span class="paramname"><em>nghost</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="group__fields.html#gaba2b7a43f2e9cb10cdb5e2ab8acfcdd8">FieldState</a></td>          <td class="paramname"><span class="paramname"><em>fstate</em></span><span class="paramdefsep"> = </span><span class="paramdefval"><a class="el" href="group__fields.html#ggaba2b7a43f2e9cb10cdb5e2ab8acfcdd8a03c2e7e41ffc181a4e84080b4710e81e">FieldState::New</a></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implementation that handles filling physical boundary conditions. </p>
+
+<p>Implemented in <a class="el" href="classamr__wind_1_1_a_b_l_fill_inflow.html#afef41a67510fdf2b2d7e733a5b90a98b">amr_wind::ABLFillInflow</a>, <a class="el" href="classamr__wind_1_1_a_b_l_fill_m_p_l.html#afb3f5ac65f8a245a62fee17cbab451bf">amr_wind::ABLFillMPL</a>, <a class="el" href="classamr__wind_1_1_field_fill_const_scalar.html#a91412737fa9103351018d6fc56df624e">amr_wind::FieldFillConstScalar</a>, <a class="el" href="classamr__wind_1_1_field_fill_patch_ops.html#ae13a246589116fd774ac9fe0b05584c6">amr_wind::FieldFillPatchOps&lt; BCOpCreator &gt;</a>, <a class="el" href="classamr__wind_1_1_field_fill_patch_ops.html#ae13a246589116fd774ac9fe0b05584c6">amr_wind::FieldFillPatchOps&lt; FieldBCDirichlet &gt;</a>, and <a class="el" href="classamr__wind_1_1_ocean_waves_fill_inflow.html#a721f82a813ebbae206fd9de0e3b14f21">amr_wind::OceanWavesFillInflow</a>.</p>
+
+</div>
+</div>
+<a id="a933aab104e598686e60683d0df727ebe" name="a933aab104e598686e60683d0df727ebe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a933aab104e598686e60683d0df727ebe">&#9670;&#160;</a></span>set_inflow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void amr_wind::FieldFillPatchOpsBase::set_inflow </td>
+          <td>(</td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>lev</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>time</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::MultiFab &amp;</td>          <td class="paramname"><span class="paramname"><em>mfab</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::IntVect &amp;</td>          <td class="paramname"><span class="paramname"><em>nghost</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="group__fields.html#gaba2b7a43f2e9cb10cdb5e2ab8acfcdd8">FieldState</a></td>          <td class="paramname"><span class="paramname"><em>fstate</em></span><span class="paramdefsep"> = </span><span class="paramdefval"><a class="el" href="group__fields.html#ggaba2b7a43f2e9cb10cdb5e2ab8acfcdd8a03c2e7e41ffc181a4e84080b4710e81e">FieldState::New</a></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implemented in <a class="el" href="classamr__wind_1_1_field_fill_const_scalar.html#a45e26dbd067d8efebd56645791c404cc">amr_wind::FieldFillConstScalar</a>, <a class="el" href="classamr__wind_1_1_field_fill_patch_ops.html#a82d89578ed3dfb34ae62cbe3ee858cb4">amr_wind::FieldFillPatchOps&lt; BCOpCreator &gt;</a>, and <a class="el" href="classamr__wind_1_1_field_fill_patch_ops.html#a82d89578ed3dfb34ae62cbe3ee858cb4">amr_wind::FieldFillPatchOps&lt; FieldBCDirichlet &gt;</a>.</p>
+
+</div>
+</div>
+<a id="a30f5d05c6bab276c891ea3c3ea839f91" name="a30f5d05c6bab276c891ea3c3ea839f91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30f5d05c6bab276c891ea3c3ea839f91">&#9670;&#160;</a></span>set_inflow_sibling_fields()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void amr_wind::FieldFillPatchOpsBase::set_inflow_sibling_fields </td>
+          <td>(</td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>lev</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>time</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array&lt; amrex::MultiFab *, AMREX_SPACEDIM &gt;</td>          <td class="paramname"><span class="paramname"><em>mfabs</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/core/<a class="el" href="_field_fill_patch_ops_8_h_source.html">FieldFillPatchOps.H</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

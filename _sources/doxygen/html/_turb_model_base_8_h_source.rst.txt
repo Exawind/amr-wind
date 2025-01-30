@@ -1,0 +1,14 @@
+.. meta::20df082e17795f0f10c914b5f3c420954412ea485f588e799788064047a592083932bfcb70fddc35abbc9759e1fd26cefff52bfcd1ef54f242983275ea44c565
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/turbulence/TurbModelBase.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/turbulence/TurbModelBase.H Source File
+===================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _turb_model_base_8_h_source.html

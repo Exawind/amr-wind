@@ -1,0 +1,14 @@
+.. meta::0a64993c50f9971fcd2410c19dc2984efb2fae558dd4846698d0277a6fcaf03cb0e678ed07a3f2d4586e6f7f57d832de68fd2ad79c38785bbf306f0567c018f6
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/multiphase/VortexPatch.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/physics/multiphase/VortexPatch.H Source File
+=========================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _vortex_patch_8_h_source.html
