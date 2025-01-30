@@ -111,7 +111,7 @@ DragForcing::DragForcing(const CFDSim& sim)
     } else {
         m_sponge_strength = 0.0;
     }
-    if (phy_mgr.contains("OceanWaves")) {
+    if (phy_mgr.contains("OceanWaves") && !sim.repo().field_exists("vof")) {
         const auto terrain_phys =
             m_sim.physics_manager().get<amr_wind::terraindrag::TerrainDrag>();
         const auto target_vel_name = terrain_phys.wave_velocity_field_name();
