@@ -55,8 +55,10 @@ ABL.bndry_output_format = netcdf
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
-amr.n_cell              = 48 48 48    # Grid cells at coarsest AMRlevel
+amr.n_cell              = 24 24 24    # Grid cells at coarsest AMRlevel
 amr.max_level           = 1           # Max AMR level in hierarchy
+amr.blocking_factor     = 4
+amr.max_grid_size       = 16
 
 tagging.labels = static
 tagging.static.type = "CartBoxRefinement"

@@ -48,8 +48,9 @@ ABL.surface_roughness_z0 = 0.15
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
-amr.n_cell              = 48 48 72    # Grid cells at coarsest AMRlevel
+amr.n_cell              = 24 24 36    # Grid cells at coarsest AMRlevel
 amr.max_level           = 1           # Max AMR level in hierarchy
+amr.blocking_factor     = 4
 tagging.labels = static
 tagging.static.type = "CartBoxRefinement"
 tagging.static.static_refinement_def = "static_box.txt"
