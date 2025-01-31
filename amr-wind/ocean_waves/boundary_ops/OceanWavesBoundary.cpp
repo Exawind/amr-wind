@@ -33,6 +33,11 @@ OceanWavesBoundary::OceanWavesBoundary(CFDSim& sim)
     if (sim.physics_manager().contains("MultiPhase")) {
         m_rho1 = sim.physics_manager().get<amr_wind::MultiPhase>().rho1();
     }
+    m_vof_exists = sim.repo().field_exists("vof");
+    m_terrain_exists = sim.repo().field_exists("terrain_blank");
+    if (m_terrain_exists) {
+        m_terrain_blank_ptr = &sim.repo().get_int_field("terrain_blank");
+    }
 }
 
 void OceanWavesBoundary::post_init_actions()
@@ -73,6 +78,8 @@ void OceanWavesBoundary::set_velocity(
     const int nghost = 1;
     const auto& domain = geom.growPeriodicDomain(nghost);
 
+    const bool terrain_and_vof = m_terrain_exists && m_vof_exists;
+
     for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
         auto ori = oit();
         if ((bctype[ori] != BC::mass_inflow) &&
@@ -98,12 +105,22 @@ void OceanWavesBoundary::set_velocity(
             const auto& arr = mfab[mfi].array();
             const int numcomp = mfab.nComp();
 
+            const auto terrain_blank_flags =
+                terrain_and_vof ? (*m_terrain_blank_ptr)(lev).const_array(mfi)
+                                : amrex::Array4<int const>();
+
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     for (int n = 0; n < numcomp; n++) {
                         if (targ_vof(i, j, k) > constants::TIGHT_TOL) {
                             arr(i, j, k, dcomp + n) =
                                 targ_arr(i, j, k, orig_comp + n);
+                        }
+                        if (terrain_and_vof) {
+                            // Terrain blanked cell means 0 velocity
+                            if (terrain_blank_flags(i, j, k) == 1) {
+                                arr(i, j, k, dcomp + n) = 0.0;
+                            }
                         }
                     }
                 });
@@ -225,6 +242,7 @@ void OceanWavesBoundary::set_inflow_sibling_velocity(
 
     BL_PROFILE("amr-wind::OceanWavesBoundary::set_inflow_sibling_velocity");
 
+    const bool terrain_and_vof = m_terrain_exists && m_vof_exists;
     const auto& bctype = fld.bc_type();
     const auto& geom = fld.repo().mesh().Geom(lev);
 
@@ -268,6 +286,11 @@ void OceanWavesBoundary::set_inflow_sibling_velocity(
                 const auto& targ_arr = m_ow_velocity(lev).const_array(mfi);
                 const auto& marr = mfab[mfi].array();
 
+                const auto terrain_blank_flags =
+                    terrain_and_vof
+                        ? (*m_terrain_blank_ptr)(lev).const_array(mfi)
+                        : amrex::Array4<int const>();
+
                 amrex::ParallelFor(
                     bx, [=] AMREX_GPU_DEVICE(
                             const int i, const int j, const int k) noexcept {
@@ -276,6 +299,12 @@ void OceanWavesBoundary::set_inflow_sibling_velocity(
 
                         if (targ_vof(cc_iv) > constants::TIGHT_TOL) {
                             marr(i, j, k, 0) = targ_arr(cc_iv, fdir);
+                        }
+                        if (terrain_and_vof) {
+                            // Terrain blanked cell means 0 velocity
+                            if (terrain_blank_flags(i, j, k) == 1) {
+                                marr(i, j, k, 0) = 0.0;
+                            }
                         }
                     });
             }
