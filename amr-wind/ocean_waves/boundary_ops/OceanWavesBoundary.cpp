@@ -33,11 +33,6 @@ OceanWavesBoundary::OceanWavesBoundary(CFDSim& sim)
     if (sim.physics_manager().contains("MultiPhase")) {
         m_rho1 = sim.physics_manager().get<amr_wind::MultiPhase>().rho1();
     }
-    m_vof_exists = sim.repo().field_exists("vof");
-    m_terrain_exists = sim.repo().field_exists("terrain_blank");
-    if (m_terrain_exists) {
-        m_terrain_blank_ptr = &sim.repo().get_int_field("terrain_blank");
-    }
 }
 
 void OceanWavesBoundary::post_init_actions()
@@ -47,13 +42,19 @@ void OceanWavesBoundary::post_init_actions()
         m_repo.get_field("velocity")
             .register_fill_patch_op<OceanWavesFillInflow>(
                 m_mesh, m_time, *this);
-        if (m_repo.field_exists("vof")) {
+        m_vof_exists = m_repo.field_exists("vof");
+        if (m_vof_exists) {
             m_repo.get_field("vof")
                 .register_fill_patch_op<OceanWavesFillInflow>(
                     m_mesh, m_time, *this);
             m_repo.get_field("density")
                 .register_fill_patch_op<OceanWavesFillInflow>(
                     m_mesh, m_time, *this);
+        }
+
+        m_terrain_exists = m_repo.int_field_exists("terrain_blank");
+        if (m_terrain_exists) {
+            m_terrain_blank_ptr = &m_repo.get_int_field("terrain_blank");
         }
     }
 }
@@ -118,7 +119,11 @@ void OceanWavesBoundary::set_velocity(
                         }
                         if (terrain_and_vof) {
                             // Terrain blanked cell means 0 velocity
-                            if (terrain_blank_flags(i, j, k) == 1) {
+                            if (terrain_blank_flags(i + 1, j, k) == 1) {
+                                if (i == 0 && j == 0 && k == 0) {
+                                    std::cout
+                                        << "confirm inside set_velocity\n";
+                                }
                                 arr(i, j, k, dcomp + n) = 0.0;
                             }
                         }
@@ -303,6 +308,11 @@ void OceanWavesBoundary::set_inflow_sibling_velocity(
                         if (terrain_and_vof) {
                             // Terrain blanked cell means 0 velocity
                             if (terrain_blank_flags(i, j, k) == 1) {
+                                if (i == 0 && j == 0 && k == 0) {
+                                    std::cout
+                                        << "confirm inside "
+                                           "set_inflow_sibling_velocity\n";
+                                }
                                 marr(i, j, k, 0) = 0.0;
                             }
                         }
