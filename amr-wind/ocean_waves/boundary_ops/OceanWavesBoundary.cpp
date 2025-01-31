@@ -93,10 +93,14 @@ void OceanWavesBoundary::set_velocity(
         const auto& dbx = ori.isLow() ? amrex::adjCellLo(domain, idir, nghost)
                                       : amrex::adjCellHi(domain, idir, nghost);
 
+        amrex::IntVect shift_to_interior = {0, 0, 0};
+        shift_to_interior[idir] = ori.isLow() ? 1 : -1;
+
         for (amrex::MFIter mfi(mfab); mfi.isValid(); ++mfi) {
             auto gbx = amrex::grow(mfi.validbox(), nghost);
-            const auto& bx =
-                utils::face_aware_boundary_box_intersection(gbx, dbx, ori);
+            amrex::IntVect shift_to_cc = {0, 0, 0};
+            const auto& bx = utils::face_aware_boundary_box_intersection(
+                shift_to_cc, gbx, dbx, ori);
             if (!bx.ok()) {
                 continue;
             }
@@ -118,12 +122,11 @@ void OceanWavesBoundary::set_velocity(
                                 targ_arr(i, j, k, orig_comp + n);
                         }
                         if (terrain_and_vof) {
-                            // Terrain blanked cell means 0 velocity
-                            if (terrain_blank_flags(i + 1, j, k) == 1) {
-                                if (i == 0 && j == 0 && k == 0) {
-                                    std::cout
-                                        << "confirm inside set_velocity\n";
-                                }
+                            // Terrain-blanked adjacent cell means 0 velocity
+                            const amrex::IntVect current_iv{i, j, k};
+                            if (terrain_blank_flags(
+                                    current_iv + shift_to_cc +
+                                    shift_to_interior) == 1) {
                                 arr(i, j, k, dcomp + n) = 0.0;
                             }
                         }
@@ -261,6 +264,10 @@ void OceanWavesBoundary::set_inflow_sibling_velocity(
 
         const int idir = ori.coordDir();
         const auto& domain_box = geom.Domain();
+
+        amrex::IntVect shift_to_interior = {0, 0, 0};
+        shift_to_interior[idir] = ori.isLow() ? 1 : -1;
+
         for (int fdir = 0; fdir < AMREX_SPACEDIM; ++fdir) {
 
             // Only face-normal velocities populated here
@@ -306,13 +313,10 @@ void OceanWavesBoundary::set_inflow_sibling_velocity(
                             marr(i, j, k, 0) = targ_arr(cc_iv, fdir);
                         }
                         if (terrain_and_vof) {
-                            // Terrain blanked cell means 0 velocity
-                            if (terrain_blank_flags(i, j, k) == 1) {
-                                if (i == 0 && j == 0 && k == 0) {
-                                    std::cout
-                                        << "confirm inside "
-                                           "set_inflow_sibling_velocity\n";
-                                }
+                            // Terrain-blanked boundary-adjacent cell should set
+                            // boundary velocity to 0
+                            if (terrain_blank_flags(
+                                    cc_iv + shift_to_interior) == 1) {
                                 marr(i, j, k, 0) = 0.0;
                             }
                         }
