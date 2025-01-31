@@ -93,12 +93,12 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
 
     amr_wind::IntField* terrain_blank_ptr{nullptr};
     amr_wind::IntField* terrain_drag_ptr{nullptr};
-    bool terrain_present{false};
+    bool terrain_exists{false};
     // Get fields to prevent forcing in or near underwater terrain
     if (sim.repo().int_field_exists("terrain_blank")) {
         terrain_blank_ptr = &sim.repo().get_int_field("terrain_blank");
         terrain_drag_ptr = &sim.repo().get_int_field("terrain_drag");
-        terrain_present = true;
+        terrain_exists = true;
     }
 
     for (int lev = 0; lev < nlevels; ++lev) {
@@ -112,11 +112,11 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
         const auto target_vel_arrs = ow_vel(lev).const_arrays();
 
         const auto terrain_blank_flags =
-            terrain_present ? (*terrain_blank_ptr)(lev).const_arrays()
-                            : amrex::MultiArray4<int const>();
+            terrain_exists ? (*terrain_blank_ptr)(lev).const_arrays()
+                           : amrex::MultiArray4<int const>();
         const auto terrain_drag_flags =
-            terrain_present ? (*terrain_drag_ptr)(lev).const_arrays()
-                            : amrex::MultiArray4<int const>();
+            terrain_exists ? (*terrain_drag_ptr)(lev).const_arrays()
+                           : amrex::MultiArray4<int const>();
 
         const amrex::Real gen_length = wdata.gen_length;
         const amrex::Real beach_length = wdata.beach_length;
@@ -143,7 +143,7 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                 const auto target_vel = target_vel_arrs[nbx];
 
                 bool in_or_near_terrain{false};
-                if (terrain_present) {
+                if (terrain_exists) {
                     in_or_near_terrain =
                         (terrain_blank_flags[nbx](i, j, k) == 1 ||
                          terrain_drag_flags[nbx](i, j, k) == 1);
