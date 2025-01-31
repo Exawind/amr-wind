@@ -93,12 +93,11 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
 
     amr_wind::IntField* terrain_blank_ptr{nullptr};
     amr_wind::IntField* terrain_drag_ptr{nullptr};
-    bool terrain_exists{false};
+    const bool terrain_exists = sim.repo().int_field_exists("terrain_blank");
     // Get fields to prevent forcing in or near underwater terrain
-    if (sim.repo().int_field_exists("terrain_blank")) {
+    if (terrain_exists) {
         terrain_blank_ptr = &sim.repo().get_int_field("terrain_blank");
         terrain_drag_ptr = &sim.repo().get_int_field("terrain_drag");
-        terrain_exists = true;
     }
 
     for (int lev = 0; lev < nlevels; ++lev) {
