@@ -121,13 +121,13 @@ DragForcing::DragForcing(const CFDSim& sim)
         m_target_levelset = &sim.repo().get_field(target_levelset_name);
         m_terrain_is_waves = true;
     }
-        amrex::ParmParse pp_abl("ABL");
-        pp_abl.query("wall_het_model", m_wall_het_model);
-        pp_abl.query("mol_length", m_mol_length);
-        pp_abl.query("surface_roughness_z0", m_z0);
-        pp_abl.query("kappa", m_kappa);
-        pp_abl.query("mo_gamma_m", m_gamma_m);
-        pp_abl.query("mo_beta_m", m_beta_m);
+    amrex::ParmParse pp_abl("ABL");
+    pp_abl.query("wall_het_model", m_wall_het_model);
+    pp_abl.query("mol_length", m_mol_length);
+    pp_abl.query("surface_roughness_z0", m_z0);
+    pp_abl.query("kappa", m_kappa);
+    pp_abl.query("mo_gamma_m", m_gamma_m);
+    pp_abl.query("mo_beta_m", m_beta_m);
 }
 
 DragForcing::~DragForcing() = default;
@@ -162,7 +162,7 @@ void DragForcing::operator()(
     const auto& target_lvs_arr =
         is_waves ? (*m_target_levelset)(lev).const_array(mfi)
                  : amrex::Array4<amrex::Real>();
-    
+
     const auto& geom = m_mesh.Geom(lev);
     const auto& dx = geom.CellSizeArray();
     const auto& prob_lo = geom.ProbLoArray();

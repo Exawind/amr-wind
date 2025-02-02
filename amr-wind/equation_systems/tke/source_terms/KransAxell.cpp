@@ -58,7 +58,7 @@ KransAxell::KransAxell(const CFDSim& sim)
         amrex::ParmParse pp_incflow("incflo");
         pp_incflow.queryarr("gravity", m_gravity);
     }
-    
+
     amrex::ParmParse pp_drag("DragForcing");
     pp_drag.query("sponge_strength", m_sponge_strength);
     pp_drag.query("sponge_density", m_sponge_density);
@@ -120,7 +120,8 @@ void KransAxell::operator()(
             const amrex::Real ux = vel(i, j, k + 1, 0);
             const amrex::Real uy = vel(i, j, k + 1, 1);
             const amrex::Real m = std::sqrt(ux * ux + uy * uy);
-            const amrex::Real ustar = m * kappa / (std::log(3 * z / z0) - psi_m);
+            const amrex::Real ustar =
+                m * kappa / (std::log(3 * z / z0) - psi_m);
             const amrex::Real T0 = ref_theta_arr(i, j, k);
             const amrex::Real hf = std::abs(gravity[2]) / T0 * heat_flux;
             const amrex::Real rans_b = std::pow(
