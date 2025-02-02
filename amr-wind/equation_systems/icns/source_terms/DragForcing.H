@@ -34,6 +34,8 @@ private:
     const CFDSim& m_sim;
     const amrex::AmrCore& m_mesh;
     const Field& m_velocity;
+    const Field* m_target_vel{nullptr};
+    const Field* m_target_levelset{nullptr};
     amrex::Gpu::DeviceVector<amrex::Real> m_device_vel_ht;
     amrex::Gpu::DeviceVector<amrex::Real> m_device_vel_vals;
     amrex::Real m_drag_coefficient{10.0};
@@ -48,6 +50,7 @@ private:
     int m_sponge_south{0};
     int m_sponge_north{1};
     bool m_is_laminar{false};
+    bool m_terrain_is_waves{false};
     std::string m_wall_het_model{"none"};
     amrex::Real m_mol_length{-1e30};
     amrex::Real m_z0{0.1};
