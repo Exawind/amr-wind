@@ -121,13 +121,6 @@ DragForcing::DragForcing(const CFDSim& sim)
         m_target_levelset = &sim.repo().get_field(target_levelset_name);
         m_terrain_is_waves = true;
     }
-        amrex::ParmParse pp_abl("ABL");
-        pp_abl.query("wall_het_model", m_wall_het_model);
-        pp_abl.query("mol_length", m_mol_length);
-        pp_abl.query("surface_roughness_z0", m_z0);
-        pp_abl.query("kappa", m_kappa);
-        pp_abl.query("mo_gamma_m", m_gamma_m);
-        pp_abl.query("mo_beta_m", m_beta_m);
 }
 
 DragForcing::~DragForcing() = default;
@@ -162,7 +155,7 @@ void DragForcing::operator()(
     const auto& target_lvs_arr =
         is_waves ? (*m_target_levelset)(lev).const_array(mfi)
                  : amrex::Array4<amrex::Real>();
-    
+
     const auto& geom = m_mesh.Geom(lev);
     const auto& dx = geom.CellSizeArray();
     const auto& prob_lo = geom.ProbLoArray();
@@ -191,14 +184,6 @@ void DragForcing::operator()(
     const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
     const amrex::Real kappa = 0.41;
     const amrex::Real cd_max = 1000.0;
-    amrex::Real non_neutral_neighbour = 0.0;
-    amrex::Real non_neutral_cell = 0.0;
-    if (m_wall_het_model == "mol") {
-        non_neutral_neighbour =
-            stability(1.5 * dx[2], m_mol_length, m_gamma_m, m_beta_m);
-        non_neutral_cell =
-            stability(0.5 * dx[2], m_mol_length, m_gamma_m, m_beta_m);
-    }
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
         const amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
@@ -272,7 +257,7 @@ void DragForcing::operator()(
                     Dxz, Dyz, i, j, k, target_lvs_arr, dx, ux1r, uy1r);
             }
             const amrex::Real uTarget =
-                ustar / kappa * (std::log(0.5 * dx[2] / z0) - non_neutral_cell);
+                ustar / kappa * std::log(0.5 * dx[2] / z0);
             const amrex::Real uxTarget =
                 uTarget * ux2r / (tiny + std::sqrt(ux2r * ux2r + uy2r * uy2r));
             const amrex::Real uyTarget =

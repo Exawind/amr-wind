@@ -50,15 +50,11 @@ KransAxell::KransAxell(const CFDSim& sim)
     } else {
         amrex::Abort("Cannot find 1-D RANS profile file " + m_1d_rans);
     }
-    pp.query("wall_het_model", m_wall_het_model);
-    pp.query("mol_length", m_mol_length);
-    pp.query("mo_gamma_m", m_gamma_m);
-    pp.query("mo_beta_m", m_beta_m);
     {
         amrex::ParmParse pp_incflow("incflo");
         pp_incflow.queryarr("gravity", m_gravity);
     }
-    
+
     amrex::ParmParse pp_drag("DragForcing");
     pp_drag.query("sponge_strength", m_sponge_strength);
     pp_drag.query("sponge_density", m_sponge_density);
@@ -109,10 +105,6 @@ void KransAxell::operator()(
     const auto* tke_values_d = m_tke_values_d.data();
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
         m_gravity[0], m_gravity[1], m_gravity[2]};
-    amrex::Real psi_m = 0.0;
-    if (m_wall_het_model == "mol") {
-        psi_m = stability(0.5 * dx[2], m_mol_length, m_gamma_m, m_beta_m);
-    }
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         amrex::Real bcforcing = 0;
         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
@@ -120,7 +112,7 @@ void KransAxell::operator()(
             const amrex::Real ux = vel(i, j, k + 1, 0);
             const amrex::Real uy = vel(i, j, k + 1, 1);
             const amrex::Real m = std::sqrt(ux * ux + uy * uy);
-            const amrex::Real ustar = m * kappa / (std::log(3 * z / z0) - psi_m);
+            const amrex::Real ustar = m * kappa / std::log(3 * z / z0);
             const amrex::Real T0 = ref_theta_arr(i, j, k);
             const amrex::Real hf = std::abs(gravity[2]) / T0 * heat_flux;
             const amrex::Real rans_b = std::pow(
@@ -165,8 +157,7 @@ void KransAxell::operator()(
                 amrex::Real uy = vel(i, j, k + 1, 1);
                 amrex::Real z = 0.5 * dx[2];
                 amrex::Real m = std::sqrt(ux * ux + uy * uy);
-                const amrex::Real ustar =
-                    m * kappa / (std::log(3 * z / z0) - psi_m);
+                const amrex::Real ustar = m * kappa / std::log(3.0 * z / z0);
                 const amrex::Real T0 = ref_theta_arr(i, j, k);
                 const amrex::Real hf = std::abs(gravity[2]) / T0 * heat_flux;
                 const amrex::Real rans_b = std::pow(
