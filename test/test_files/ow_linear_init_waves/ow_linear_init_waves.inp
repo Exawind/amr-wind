@@ -31,7 +31,7 @@ OceanWaves.Wave1.type = LinearWaves
 OceanWaves.Wave1.initialize_wave_field = true
 OceanWaves.Wave1.wave_height=0.03
 OceanWaves.Wave1.wave_length=2.0
-OceanWaves.Wave1.water_depth=1
+OceanWaves.Wave1.water_depth=1.0
 OceanWaves.Wave1.relax_zone_gen_length=1.5
 OceanWaves.Wave1.numerical_beach_length=1.5
 OceanWaves.Wave1.numerical_beach_length_factor=2.0
@@ -43,17 +43,17 @@ ICNS.reconstruct_true_pressure = true
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
-amr.n_cell              = 192 16 32    # Grid cells at coarsest AMRlevel
+amr.n_cell              = 64 8 16    # Grid cells at coarsest AMRlevel
 amr.max_level = 1
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              GEOMETRY                 #
 #.......................................#
-geometry.prob_lo        =     0.0  -0.3  -1   # Lo corner coordinates
-geometry.prob_hi        =     7.2   0.3  0.2  # Hi corner coordinates
+geometry.prob_lo        =     0.0  -0.3125  -1   # Lo corner coordinates
+geometry.prob_hi        =     5.0   0.3125  0.25  # Hi corner coordinates
 geometry.is_periodic    =     0     1     0   # Periodicity x y z (0/1)
 
 xlo.type =     "wave_generation"
-xhi.type =     "slip_wall"
+xhi.type =     "pressure_outflow"
 
 zlo.type =     "slip_wall"
 zhi.type =     "slip_wall"

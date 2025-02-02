@@ -198,7 +198,7 @@ This section is for setting atmospheric boundary layer parameters.
    **type:** Boolean, optional, default= false
 
    Activates the reading of wind speed profile from a file. Recommended for 
-   RANS models. 
+   RANS models and also for wind conditions input from climate model.
 
 .. input_param:: ABL.rans_1dprofile_file 
 
@@ -210,7 +210,13 @@ This section is for setting atmospheric boundary layer parameters.
 
    **type:** Real, optional, default = 650
 
-   Height at which the forcing term is enabled for the RANS model. It is enabled by 
-   default for turbulent kinetic energy and needs to be enabled for temperature
-   as follows: `Temperature.source_terms  = TempSpongeForcing`
+   Approximate height of the planetary boundary layer height to enable the forcing 
+   in the free atmosphere. Recommended for use with RANS model and optionally to run 
+   LES with non canonical flow conditions. The method is enabled by default for turbulent 
+   kinetic energy. To enable this option for temperature and velocity, the following flags
+   have to be added to the input file. 
+   
+   `Temperature.source_terms  = TemperatureFreeAtmosphereForcing`
+
+   `ICNS.source_terms  = VelocityFreeAtmosphereForcing`
 

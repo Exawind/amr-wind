@@ -18,7 +18,7 @@ OceanWaves::OceanWaves(CFDSim& sim)
           sim.repo().declare_field("ow_velocity", AMREX_SPACEDIM, 3, 1))
 {
     if (!sim.physics_manager().contains("MultiPhase")) {
-        amrex::Abort("OceanWaves requires Multiphase physics to be active");
+        m_multiphase_mode = false;
     }
     m_ow_levelset.set_default_fillpatch_bc(sim.time());
     m_ow_vof.set_default_fillpatch_bc(sim.time());
@@ -33,6 +33,13 @@ void OceanWaves::pre_init_actions()
 {
     BL_PROFILE("amr-wind::ocean_waves::OceanWaves::pre_init_actions");
     amrex::ParmParse pp(identifier());
+
+    if (!(m_multiphase_mode ||
+          m_sim.physics_manager().contains("TerrainDrag"))) {
+        amrex::Abort(
+            "OceanWaves requires MultiPhase or TerrainDrag physics to be "
+            "active");
+    }
 
     std::string label;
     pp.query("label", label);
@@ -56,16 +63,19 @@ void OceanWaves::pre_init_actions()
 void OceanWaves::initialize_fields(int level, const amrex::Geometry& geom)
 {
     BL_PROFILE("amr-wind::ocean_waves::OceanWaves::initialize_fields");
-    m_owm->init_waves(level, geom);
+    m_owm->init_waves(level, geom, m_multiphase_mode);
 }
 
 void OceanWaves::post_init_actions()
 {
     BL_PROFILE("amr-wind::ocean_waves::OceanWaves::post_init_actions");
     m_ow_bndry->post_init_actions();
-    m_owm->update_relax_zones(m_sim.time().current_time());
+    m_owm->update_target_fields(m_sim.time().current_time());
+    m_owm->update_target_volume_fraction();
     m_ow_bndry->record_boundary_data_time(m_sim.time().current_time());
-    m_owm->apply_relax_zones();
+    if (m_multiphase_mode) {
+        m_owm->apply_relax_zones();
+    }
     m_owm->reset_regrid_flag();
 }
 
@@ -81,7 +91,8 @@ void OceanWaves::pre_advance_work()
     // Update ow values for advection boundaries
     const amrex::Real adv_bdy_time =
         0.5 * (m_sim.time().current_time() + m_sim.time().new_time());
-    m_owm->update_relax_zones(adv_bdy_time);
+    m_owm->update_target_fields(adv_bdy_time);
+    m_owm->update_target_volume_fraction();
     m_ow_bndry->record_boundary_data_time(adv_bdy_time);
 }
 
@@ -90,15 +101,17 @@ void OceanWaves::pre_predictor_work()
     BL_PROFILE("amr-wind::ocean_waves::OceanWaves::pre_predictor_work");
     // Update ow values for boundary fills at new time
     const amrex::Real bdy_fill_time = m_sim.time().new_time();
-    m_owm->update_relax_zones(bdy_fill_time);
+    m_owm->update_target_fields(bdy_fill_time);
+    m_owm->update_target_volume_fraction();
     m_ow_bndry->record_boundary_data_time(bdy_fill_time);
 }
 
 void OceanWaves::post_advance_work()
 {
     BL_PROFILE("amr-wind::ocean_waves::OceanWaves::post_init_actions");
-    // Relax zones are up-to-date because of pre-predictor
-    m_owm->apply_relax_zones();
+    if (m_multiphase_mode) {
+        m_owm->apply_relax_zones();
+    }
     m_owm->reset_regrid_flag();
 }
 

@@ -175,8 +175,10 @@ protected:
                 new amr_wind::CartBoxRefinement(sim()));
             box_refine->read_inputs(mesh(), ss);
 
-            mesh<RefineMesh>()->refine_criteria_vec().push_back(
-                std::move(box_refine));
+            if (mesh<RefineMesh>() != nullptr) {
+                mesh<RefineMesh>()->refine_criteria_vec().push_back(
+                    std::move(box_refine));
+            }
         }
 
         initialize_mesh();
