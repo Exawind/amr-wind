@@ -108,13 +108,6 @@ DragForcing::DragForcing(const CFDSim& sim)
         amrex::Gpu::copy(
             amrex::Gpu::hostToDevice, fa_velocity.line_average().begin(),
             fa_velocity.line_average().end(), m_device_vel_vals.begin());
-        amrex::ParmParse pp_abl("ABL");
-        pp_abl.query("wall_het_model", m_wall_het_model);
-        pp_abl.query("mol_length", m_mol_length);
-        pp_abl.query("surface_roughness_z0", m_z0);
-        pp_abl.query("kappa", m_kappa);
-        pp_abl.query("mo_gamma_m", m_gamma_m);
-        pp_abl.query("mo_beta_m", m_beta_m);
     } else {
         m_sponge_strength = 0.0;
     }
@@ -128,6 +121,13 @@ DragForcing::DragForcing(const CFDSim& sim)
         m_target_levelset = &sim.repo().get_field(target_levelset_name);
         m_terrain_is_waves = true;
     }
+        amrex::ParmParse pp_abl("ABL");
+        pp_abl.query("wall_het_model", m_wall_het_model);
+        pp_abl.query("mol_length", m_mol_length);
+        pp_abl.query("surface_roughness_z0", m_z0);
+        pp_abl.query("kappa", m_kappa);
+        pp_abl.query("mo_gamma_m", m_gamma_m);
+        pp_abl.query("mo_beta_m", m_beta_m);
 }
 
 DragForcing::~DragForcing() = default;
@@ -242,7 +242,7 @@ void DragForcing::operator()(
         amrex::Real bc_forcing_y = 0;
         const amrex::Real m = std::sqrt(ux1 * ux1 + uy1 * uy1 + uz1 * uz1);
         if (drag(i, j, k) == 1 && (!is_laminar)) {
-           // Check if close enough to interface to use current cell or below
+            // Check if close enough to interface to use current cell or below
             int k_off = -1;
             if (is_waves) {
                 const amrex::Real cell_length_2D =
