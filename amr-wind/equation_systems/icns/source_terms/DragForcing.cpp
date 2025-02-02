@@ -19,10 +19,12 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real viscous_drag_calculations(
     const amrex::Real z0,
     const amrex::Real dz,
     const amrex::Real kappa,
-    const amrex::Real tiny)
+    const amrex::Real tiny,
+    const amrex::Real non_neutral_neighbour)
 {
     const amrex::Real m2 = std::sqrt(ux2r * ux2r + uy2r * uy2r);
-    const amrex::Real ustar = m2 * kappa / std::log(1.5 * dz / z0);
+    const amrex::Real ustar =
+        m2 * kappa / (std::log(1.5 * dz / z0) - non_neutral_neighbour);
     Dxz += -ustar * ustar * ux1r /
            (tiny + std::sqrt(ux1r * ux1r + uy1r * uy1r)) / dz;
     Dyz += -ustar * ustar * uy1r /
@@ -266,7 +268,8 @@ void DragForcing::operator()(
             const amrex::Real uy2r = vel(i, j, k + 1, 1) - wall_v;
             const amrex::Real z0 = std::max(terrainz0(i, j, k), z0_min);
             const amrex::Real ustar = viscous_drag_calculations(
-                Dxz, Dyz, ux1r, uy1r, ux2r, uy2r, z0, dx[2], kappa, tiny);
+                Dxz, Dyz, ux1r, uy1r, ux2r, uy2r, z0, dx[2], kappa, tiny,
+                non_neutral_neighbour);
             if (is_waves) {
                 form_drag_calculations(
                     Dxz, Dyz, i, j, k, target_lvs_arr, dx, ux1r, uy1r);

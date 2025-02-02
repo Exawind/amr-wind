@@ -111,7 +111,7 @@ void KransAxell::operator()(
         m_gravity[0], m_gravity[1], m_gravity[2]};
     amrex::Real psi_m = 0.0;
     if (m_wall_het_model == "mol") {
-        psi_m = stability(0.5 * dx[2], m_mol_length, m_gamma_m, m_beta_m);
+        psi_m = stability(1.5 * dx[2], m_mol_length, m_gamma_m, m_beta_m);
     }
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         amrex::Real bcforcing = 0;
