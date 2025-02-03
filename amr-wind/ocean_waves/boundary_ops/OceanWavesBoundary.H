@@ -2,6 +2,7 @@
 #define OCEANWAVESBOUNDARY_H
 
 #include "amr-wind/core/Field.H"
+#include "amr-wind/core/IntField.H"
 #include "amr-wind/CFDSim.H"
 #include "AMReX_Gpu.H"
 #include <AMReX_BndryRegister.H>
@@ -61,9 +62,16 @@ private:
     const amrex::AmrCore& m_mesh;
     Field& m_ow_velocity;
     Field& m_ow_vof;
+    IntField* m_terrain_blank_ptr{nullptr};
 
     // Should be active unless boundary planes are used
     bool m_activate_ow_bndry{true};
+
+    // Check for single-phase simulation
+    bool m_vof_exists{true};
+
+    // Check for terrain
+    bool m_terrain_exists{false};
 
     // Store time corresponding to current boundary data
     amrex::Real m_bndry_time{0.0};
