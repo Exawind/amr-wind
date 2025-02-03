@@ -79,7 +79,7 @@ void OceanWavesBoundary::set_velocity(
     const int nghost = 1;
     const auto& domain = geom.growPeriodicDomain(nghost);
 
-    const bool terrain_and_vof = m_terrain_exists && m_vof_exists;
+    const bool terrain_and_vof_exist = m_terrain_exists && m_vof_exists;
 
     for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
         auto ori = oit();
@@ -93,8 +93,8 @@ void OceanWavesBoundary::set_velocity(
         const auto& dbx = ori.isLow() ? amrex::adjCellLo(domain, idir, nghost)
                                       : amrex::adjCellHi(domain, idir, nghost);
 
-        amrex::IntVect shift_to_interior = {0, 0, 0};
-        shift_to_interior[idir] = ori.isLow() ? 1 : -1;
+        auto shift_to_interior =
+            amrex::IntVect::TheDimensionVector(idir) * (ori.isLow() ? 1 : -1);
 
         for (amrex::MFIter mfi(mfab); mfi.isValid(); ++mfi) {
             auto gbx = amrex::grow(mfi.validbox(), nghost);
@@ -111,23 +111,23 @@ void OceanWavesBoundary::set_velocity(
             const int numcomp = mfab.nComp();
 
             const auto terrain_blank_flags =
-                terrain_and_vof ? (*m_terrain_blank_ptr)(lev).const_array(mfi)
-                                : amrex::Array4<int const>();
+                terrain_and_vof_exist
+                    ? (*m_terrain_blank_ptr)(lev).const_array(mfi)
+                    : amrex::Array4<int const>();
 
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    const amrex::IntVect iv{i, j, k};
                     for (int n = 0; n < numcomp; n++) {
-                        if (targ_vof(i, j, k) > constants::TIGHT_TOL) {
-                            arr(i, j, k, dcomp + n) =
-                                targ_arr(i, j, k, orig_comp + n);
+                        if (targ_vof(iv) > constants::TIGHT_TOL) {
+                            arr(iv, dcomp + n) = targ_arr(iv, orig_comp + n);
                         }
-                        if (terrain_and_vof) {
+                        if (terrain_and_vof_exist) {
                             // Terrain-blanked adjacent cell means 0 velocity
-                            const amrex::IntVect current_iv{i, j, k};
                             if (terrain_blank_flags(
-                                    current_iv + shift_to_cc +
-                                    shift_to_interior) == 1) {
-                                arr(i, j, k, dcomp + n) = 0.0;
+                                    iv + shift_to_cc + shift_to_interior) ==
+                                1) {
+                                arr(iv, dcomp + n) = 0.0;
                             }
                         }
                     }
@@ -250,7 +250,7 @@ void OceanWavesBoundary::set_inflow_sibling_velocity(
 
     BL_PROFILE("amr-wind::OceanWavesBoundary::set_inflow_sibling_velocity");
 
-    const bool terrain_and_vof = m_terrain_exists && m_vof_exists;
+    const bool terrain_and_vof_exist = m_terrain_exists && m_vof_exists;
     const auto& bctype = fld.bc_type();
     const auto& geom = fld.repo().mesh().Geom(lev);
 
@@ -265,8 +265,8 @@ void OceanWavesBoundary::set_inflow_sibling_velocity(
         const int idir = ori.coordDir();
         const auto& domain_box = geom.Domain();
 
-        amrex::IntVect shift_to_interior = {0, 0, 0};
-        shift_to_interior[idir] = ori.isLow() ? 1 : -1;
+        auto shift_to_interior =
+            amrex::IntVect::TheDimensionVector(idir) * (ori.isLow() ? 1 : -1);
 
         for (int fdir = 0; fdir < AMREX_SPACEDIM; ++fdir) {
 
@@ -299,7 +299,7 @@ void OceanWavesBoundary::set_inflow_sibling_velocity(
                 const auto& marr = mfab[mfi].array();
 
                 const auto terrain_blank_flags =
-                    terrain_and_vof
+                    terrain_and_vof_exist
                         ? (*m_terrain_blank_ptr)(lev).const_array(mfi)
                         : amrex::Array4<int const>();
 
@@ -312,7 +312,7 @@ void OceanWavesBoundary::set_inflow_sibling_velocity(
                         if (targ_vof(cc_iv) > constants::TIGHT_TOL) {
                             marr(i, j, k, 0) = targ_arr(cc_iv, fdir);
                         }
-                        if (terrain_and_vof) {
+                        if (terrain_and_vof_exist) {
                             // Terrain-blanked boundary-adjacent cell should set
                             // boundary velocity to 0
                             if (terrain_blank_flags(
