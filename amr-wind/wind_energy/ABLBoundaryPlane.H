@@ -176,7 +176,8 @@ public:
     io_mode mode() const { return m_io_mode; }
 
 #ifdef ERF_AMR_WIND_MULTIBLOCK
-    MultiBlockContainer* mbc() {
+    MultiBlockContainer* mbc()
+    {
         // Make sure that the double pointer m_mbc
         // does not point to a nullptr
         // before passing *m_mbc for use
