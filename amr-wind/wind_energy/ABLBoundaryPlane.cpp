@@ -879,7 +879,7 @@ void ABLBoundaryPlane::read_header()
             nc += fld->num_comp();
         }
 
-        // FIXME: need to generalize to lev > 0 somehow
+        // FIXME: need to generalize to lev > 0
         const int lev = 0;
         for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
             auto ori = oit();
@@ -1105,7 +1105,6 @@ void ABLBoundaryPlane::read_file(const bool nph_target_time)
 
 #ifdef ERF_AMR_WIND_MULTIBLOCK
     if (m_out_fmt == "erf-multiblock") {
-        // m_read_erf = sim.get_read_erf();
         ReadERFFunction read_erf = *m_read_erf;
         if (read_erf) {
             read_erf(time, m_in_times, m_in_data, m_fields, mbc());
