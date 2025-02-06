@@ -24,6 +24,10 @@ option(AMR_WIND_SAVE_GOLDS "Provide a directory in which to save golds during te
 option(AMR_WIND_ENABLE_FPE_TRAP_FOR_TESTS "Enable FPE trapping in tests" ON)
 option(AMR_WIND_TEST_WITH_PYTHON "Enable testing relying on python, like postprocessing" OFF)
 
+#Use internal AMReX and AMReX-Hydro by default
+option(AMR_WIND_USE_INTERNAL_AMREX "Use the AMReX submodule" ON)
+option(AMR_WIND_USE_INTERNAL_AMREX_HYDRO "Use the AMReX-Hydro submodule" ON)
+
 #Options for the executable
 option(AMR_WIND_ENABLE_MPI "Enable MPI" OFF)
 option(AMR_WIND_ENABLE_OPENMP "Enable OpenMP" OFF)
