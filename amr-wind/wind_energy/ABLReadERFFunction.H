@@ -1,5 +1,5 @@
-#ifndef ABLREADERFFCN_H
-#define ABLREADERFFCN_H
+#ifndef ABLREADERFFUNCTION_H
+#define ABLREADERFFUNCTION_H
 #include <functional>
 
 class MultiBlockContainer;
@@ -14,4 +14,4 @@ using ReadERFFunction = std::function<void(
     const amrex::Vector<amr_wind::Field*>&,
     MultiBlockContainer*)>;
 
-#endif /* ABLREADERFFCN_H */
+#endif /* ABLREADERFFUNCTION_H */

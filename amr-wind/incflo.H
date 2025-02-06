@@ -14,7 +14,7 @@
 #include "amr-wind/overset/OversetOps.H"
 
 #ifdef ERF_AMR_WIND_MULTIBLOCK
-#include "amr-wind/wind_energy/ABLReadERFFcn.H"
+#include "amr-wind/wind_energy/ABLReadERFFunction.H"
 class MultiBlockContainer;
 #endif
 namespace amr_wind {
