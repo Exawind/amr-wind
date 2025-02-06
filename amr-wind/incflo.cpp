@@ -25,7 +25,7 @@ incflo::incflo()
 
 #ifdef ERF_AMR_WIND_MULTIBLOCK
     amrex::Print() << std::endl
-                   << "AMR-Wind is initializing.. " << std::endl
+                   << "Initializing AMR-Wind." << std::endl
                    << std::endl;
 #endif
 

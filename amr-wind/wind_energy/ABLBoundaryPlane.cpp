@@ -1106,7 +1106,7 @@ void ABLBoundaryPlane::read_file(const bool nph_target_time)
 #ifdef ERF_AMR_WIND_MULTIBLOCK
     if (m_out_fmt == "erf-multiblock") {
         ReadERFFunction read_erf = *m_read_erf;
-        if (read_erf) {
+        if (read_erf != nullptr) {
             read_erf(time, m_in_times, m_in_data, m_fields, mbc());
         } else {
             amrex::Abort("read_erf function is undefined.");
