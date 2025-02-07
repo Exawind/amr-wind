@@ -23,11 +23,9 @@ incflo::incflo()
     // constructor. No valid BoxArray and DistributionMapping have been defined.
     // But the arrays for them have been resized.
 
-#ifdef ERF_AMR_WIND_MULTIBLOCK
     amrex::Print() << std::endl
                    << "Initializing AMR-Wind." << std::endl
                    << std::endl;
-#endif
 
     // Check if dry run is requested and set up if so
     CheckAndSetUpDryRun();

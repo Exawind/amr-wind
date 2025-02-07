@@ -253,10 +253,8 @@ ABLBoundaryPlane::ABLBoundaryPlane(CFDSim& sim)
     : m_time(sim.time())
     , m_repo(sim.repo())
     , m_mesh(sim.mesh())
-#ifdef ERF_AMR_WIND_MULTIBLOCK
     , m_mbc(sim.mbc())
     , m_read_erf(sim.get_read_erf())
-#endif
 {
     amrex::ParmParse pp("ABL");
     int pp_io_mode = -1;
@@ -1103,7 +1101,6 @@ void ABLBoundaryPlane::read_file(const bool nph_target_time)
         nph_target_time ? m_time.current_time() + 0.5 * m_time.delta_t()
                         : m_time.new_time();
 
-#ifdef ERF_AMR_WIND_MULTIBLOCK
     if (m_out_fmt == "erf-multiblock") {
         ReadERFFunction read_erf = *m_read_erf;
         if (read_erf != nullptr) {
@@ -1113,7 +1110,6 @@ void ABLBoundaryPlane::read_file(const bool nph_target_time)
         }
         return;
     }
-#endif
 
     AMREX_ALWAYS_ASSERT(
         (m_in_times[0] <= time + constants::LOOSE_TOL) &&
