@@ -88,7 +88,7 @@ void ABLAnelastic::initialize_data()
 
     auto& temp0 = m_sim.repo().get_field("reference_temperature");
     const amrex::Real air_molar_mass = 0.02896492; // kg/mol
-    const amrex::Real pressure_00 = 1.0e5; // Pa
+    const amrex::Real pressure_00 = 1.0e5;         // Pa
     const amrex::Real Rair = constants::UNIVERSAL_GAS_CONSTANT / air_molar_mass;
     for (int lev = 0; lev < m_sim.repo().num_active_levels(); ++lev) {
         const auto& rho0_arrs = rho0(lev).const_arrays();
