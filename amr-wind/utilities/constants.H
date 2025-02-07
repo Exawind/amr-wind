@@ -46,5 +46,8 @@ static constexpr amrex::Real AVOGADRO_CONSTANT = 6.02214076 * 1e23;
 static constexpr amrex::Real UNIVERSAL_GAS_CONSTANT =
     AVOGADRO_CONSTANT * BOLTZMANN_CONSTANT;
 
+//! Heat capacity ratio
+static constexpr amrex::Real HEAT_CAPACITY_RATIO = 1.4;
+
 } // namespace amr_wind::constants
 #endif
