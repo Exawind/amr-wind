@@ -266,6 +266,73 @@ void DragForcing::operator()(
             bc_forcing_x = -(uxTarget - ux1) / dt;
             bc_forcing_y = -(uyTarget - uy1) / dt;
         }
+        // Only for buildings
+        const amrex::Real cell_drag = drag(i, j, k) / (drag(i, j, k) + tiny);
+        if (drag(i, j, k) > 1) {
+            const amrex::Real z0 = std::max(terrainz0(i, j, k), z0_min);
+            const amrex::Real uwest = vel(i - 1, j, k, 0);
+            const amrex::Real ueast = vel(i + 1, j, k, 0);
+            const amrex::Real usouth = vel(i, j - 1, k, 0);
+            const amrex::Real unorth = vel(i, j + 1, k, 0);
+            const amrex::Real vwest = vel(i - 1, j, k, 1);
+            const amrex::Real veast = vel(i + 1, j, k, 1);
+            const amrex::Real vsouth = vel(i, j - 1, k, 1);
+            const amrex::Real vnorth = vel(i, j + 1, k, 1);
+            const amrex::Real mwest = std::sqrt(uwest * uwest + vwest * vwest);
+            const amrex::Real meast = std::sqrt(ueast * ueast + veast * veast);
+            const amrex::Real msouth =
+                std::sqrt(usouth * usouth + vsouth * vsouth);
+            const amrex::Real mnorth =
+                std::sqrt(unorth * unorth + vnorth * vnorth);
+            const amrex::Real ustarwest =
+                mwest * kappa / std::log(1.5 * dx[0] / z0);
+            const amrex::Real ustareast =
+                meast * kappa / std::log(1.5 * dx[0] / z0);
+            const amrex::Real ustarsouth =
+                msouth * kappa / std::log(1.5 * dx[1] / z0);
+            const amrex::Real ustarnorth =
+                mnorth * kappa / std::log(1.5 * dx[1] / z0);
+            const amrex::Real uWestTarget =
+                ustarwest / kappa * std::log(0.5 * dx[0] / z0);
+            const amrex::Real uEastTarget =
+                ustareast / kappa * std::log(0.5 * dx[0] / z0);
+            const amrex::Real uSouthTarget =
+                ustarsouth / kappa * std::log(0.5 * dx[1] / z0);
+            const amrex::Real uNorthTarget =
+                ustarnorth / kappa * std::log(0.5 * dx[1] / z0);
+            const amrex::Real uWestTarget_x =
+                uWestTarget * uwest /
+                (tiny + std::sqrt(uwest * uwest + vwest * vwest));
+            const amrex::Real uWestTarget_y =
+                uWestTarget * vwest /
+                (tiny + std::sqrt(uwest * uwest + vwest * vwest));
+            const amrex::Real uEastTarget_x =
+                uEastTarget * ueast /
+                (tiny + std::sqrt(ueast * ueast + veast * veast));
+            const amrex::Real uEastTarget_y =
+                uEastTarget * veast /
+                (tiny + std::sqrt(ueast * ueast + veast * veast));
+            const amrex::Real uSouthTarget_x =
+                uSouthTarget * usouth /
+                (tiny + std::sqrt(usouth * usouth + vsouth * vsouth));
+            const amrex::Real uSouthTarget_y =
+                uSouthTarget * vsouth /
+                (tiny + std::sqrt(usouth * usouth + vsouth * vsouth));
+            const amrex::Real uNorthTarget_x =
+                uNorthTarget * unorth /
+                (tiny + std::sqrt(unorth * unorth + vnorth * vnorth));
+            const amrex::Real uNorthTarget_y =
+                uNorthTarget * vnorth /
+                (tiny + std::sqrt(unorth * unorth + vnorth * vnorth));
+            bc_forcing_x = -(uWestTarget_x - ux1) / dt * blank(i - 1, j, k);
+            bc_forcing_y = -(uWestTarget_y - uy1) / dt * blank(i - 1, j, k);
+            bc_forcing_x += -(uEastTarget_x - ux1) / dt * blank(i + 1, j, k);
+            bc_forcing_y += -(uEastTarget_y - uy1) / dt * blank(i + 1, j, k);
+            bc_forcing_x += -(uSouthTarget_x - ux1) / dt * blank(i, j - 1, k);
+            bc_forcing_y += -(uSouthTarget_y - uy1) / dt * blank(i, j - 1, k);
+            bc_forcing_x += -(uNorthTarget_x - ux1) / dt * blank(i, j + 1, k);
+            bc_forcing_y += -(uNorthTarget_y - uy1) / dt * blank(i, j + 1, k);
+        }
         // Target velocity intended for within terrain
         amrex::Real target_u = 0.;
         amrex::Real target_v = 0.;
@@ -279,13 +346,13 @@ void DragForcing::operator()(
         const amrex::Real CdM =
             std::min(Cd / (m + tiny), cd_max / scale_factor);
         src_term(i, j, k, 0) -=
-            (CdM * m * (ux1 - target_u) * blank(i, j, k) + Dxz * drag(i, j, k) +
-             bc_forcing_x * drag(i, j, k) +
+            (CdM * m * (ux1 - target_u) * blank(i, j, k) + Dxz * cell_drag +
+             bc_forcing_x * cell_drag +
              (xstart_damping + xend_damping + ystart_damping + yend_damping) *
                  (ux1 - sponge_density * spongeVelX));
         src_term(i, j, k, 1) -=
-            (CdM * m * (uy1 - target_v) * blank(i, j, k) + Dyz * drag(i, j, k) +
-             bc_forcing_y * drag(i, j, k) +
+            (CdM * m * (uy1 - target_v) * blank(i, j, k) + Dyz * cell_drag +
+             bc_forcing_y * cell_drag +
              (xstart_damping + xend_damping + ystart_damping + yend_damping) *
                  (uy1 - sponge_density * spongeVelY));
         src_term(i, j, k, 2) -=
