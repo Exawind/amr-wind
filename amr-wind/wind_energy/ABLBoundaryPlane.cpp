@@ -877,15 +877,25 @@ void ABLBoundaryPlane::read_header()
             nc += fld->num_comp();
         }
 
-        // FIXME: need to generalize to lev > 0
-        const int lev = 0;
         for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
             auto ori = oit();
-            // FIXME: would be safer and less storage to not allocate all of
-            // these but we do not use m_planes for input and need to detect
-            // mass inflow from field bcs same for define level data below
+
+            if (std::all_of(
+                    m_fields.begin(), m_fields.end(), [ori](const auto* fld) {
+                        return (
+                            (fld->bc_type()[ori] != BC::mass_inflow) &&
+                            (fld->bc_type()[ori] != BC::mass_inflow_outflow));
+                    })) {
+                continue;
+            }
+
             m_in_data.define_plane(ori);
+
+            // restrict to level 0 for now for multiblock
+            const int lev = 0;
+
             const amrex::Box& minBox = m_mesh.boxArray(lev).minimalBox();
+
             amrex::IntVect plo(minBox.loVect());
             amrex::IntVect phi(minBox.hiVect());
             const int normal = ori.coordDir();
