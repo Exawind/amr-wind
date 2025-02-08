@@ -68,7 +68,7 @@ public:
     void set_mbc(MultiBlockContainer* mbc) { m_mbc = mbc; }
     MultiBlockContainer** mbc() { return &m_mbc; }
 
-    void set_read_erf(ReadERFFunction fcn) { m_read_erf = fcn; }
+    void set_read_erf(ReadERFFunction fcn) { m_read_erf = std::move(fcn); }
     ReadERFFunction* get_read_erf() { return &m_read_erf; }
 
     //! Return the field repository
