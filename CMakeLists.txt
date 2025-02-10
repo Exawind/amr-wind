@@ -3,7 +3,7 @@
 cmake_minimum_required (VERSION 3.20 FATAL_ERROR)
 project(AMR-Wind CXX C)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 include(amr-wind-utils)
@@ -23,6 +23,10 @@ option(AMR_WIND_TEST_WITH_FCOMPARE "Check test plots against gold files" OFF)
 option(AMR_WIND_SAVE_GOLDS "Provide a directory in which to save golds during testing" OFF)
 option(AMR_WIND_ENABLE_FPE_TRAP_FOR_TESTS "Enable FPE trapping in tests" ON)
 option(AMR_WIND_TEST_WITH_PYTHON "Enable testing relying on python, like postprocessing" OFF)
+
+#Use internal AMReX and AMReX-Hydro by default
+option(AMR_WIND_USE_INTERNAL_AMREX "Use the AMReX submodule" ON)
+option(AMR_WIND_USE_INTERNAL_AMREX_HYDRO "Use the AMReX-Hydro submodule" ON)
 
 #Options for the executable
 option(AMR_WIND_ENABLE_MPI "Enable MPI" OFF)
@@ -200,7 +204,7 @@ if(AMR_WIND_ENABLE_ASCENT)
   target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_USE_ASCENT)
 endif()
 
-# Link with HELICS module 
+# Link with HELICS module
 if(AMR_WIND_ENABLE_HELICS)
   set(CMAKE_PREFIX_PATH ${HELICS_DIR} ${CMAKE_PREFIX_PATH})
   find_package(HELICS 3 REQUIRED)
