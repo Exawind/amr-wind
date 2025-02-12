@@ -62,9 +62,11 @@ void ABLAnelastic::initialize_data()
 
     m_density.resize(m_axis, m_sim.mesh().Geom());
     m_pressure.resize(m_axis, m_sim.mesh().Geom());
+    m_theta.resize(m_axis, m_sim.mesh().Geom());
 
     AMREX_ALWAYS_ASSERT(m_sim.repo().num_active_levels() == m_density.size());
     AMREX_ALWAYS_ASSERT(m_sim.repo().num_active_levels() == m_pressure.size());
+    AMREX_ALWAYS_ASSERT(m_sim.repo().num_active_levels() == m_theta.size());
 
     initialize_isentropic_hse();
 
@@ -76,44 +78,6 @@ void ABLAnelastic::initialize_data()
     m_theta.copy_to_field(temp0);
     rho0.fillpatch(m_sim.time().current_time());
     temp0.fillpatch(m_sim.time().current_time());
-
-    // for (int lev = 0; lev < m_density.size(); lev++) {
-    //     auto& dens = m_density.host_data(lev);
-    //     auto& pres = m_pressure.host_data(lev);
-    //     const auto& dx = m_sim.mesh().Geom(lev).CellSizeArray();
-    //     dens.assign(dens.size(), m_rho0_const);
-    //     pres[0] = m_bottom_reference_pressure;
-    //     for (int k = 0; k < pres.size() - 1; k++) {
-    //         pres[k + 1] = pres[k] - dens[k] * m_gravity[m_axis] * dx[m_axis];
-    //     }
-    // }
-    // m_density.copy_host_to_device();
-    // m_pressure.copy_host_to_device();
-
-    // auto& rho0 = m_sim.repo().get_field("reference_density");
-    // auto& p0 = m_sim.repo().get_field("reference_pressure");
-    // m_density.copy_to_field(rho0);
-    // m_pressure.copy_to_field(p0);
-
-    // rho0.fillpatch(m_sim.time().current_time());
-
-    // auto& temp0 = m_sim.repo().get_field("reference_temperature");
-    //
-    // const amrex::Real Rair = constants::UNIVERSAL_GAS_CONSTANT /
-    // air_molar_mass; for (int lev = 0; lev < m_sim.repo().num_active_levels();
-    // ++lev) {
-    //     const auto& rho0_arrs = rho0(lev).const_arrays();
-    //     const auto& p0_arrs = p0(lev).const_arrays();
-    //     const auto& temp0_arrs = temp0(lev).arrays();
-    //     amrex::ParallelFor(
-    //         temp0(lev), amrex::IntVect(0),
-    //         [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-    //             temp0_arrs[nbx](i, j, k) =
-    //                 p0_arrs[nbx](i, j, k) / (Rair * rho0_arrs[nbx](i, j, k));
-    //         });
-    // }
-    // amrex::Gpu::synchronize();
-    // temp0.fillpatch(m_sim.time().current_time());
 }
 
 void ABLAnelastic::initialize_isentropic_hse()
@@ -134,7 +98,7 @@ void ABLAnelastic::initialize_isentropic_hse()
         // Initial guess
         dens[0] = m_rho0_const;
         pres[0] =
-            m_bottom_reference_pressure - half_dx * dens[0] * m_gravity[m_axis];
+            m_bottom_reference_pressure + half_dx * dens[0] * m_gravity[m_axis];
 
         // We do a Newton iteration to satisfy the EOS & HSE (with constant
         // theta) at the surface
@@ -143,14 +107,14 @@ void ABLAnelastic::initialize_isentropic_hse()
         amrex::Real p_eos = 0.0;
 
         for (int iter = 0; iter < max_iterations && !converged_hse; iter++) {
-            p_hse = m_bottom_reference_pressure -
+            p_hse = m_bottom_reference_pressure +
                     half_dx * dens[0] * m_gravity[m_axis];
             p_eos = eos.p_rth(dens[0], ref_theta);
 
             const amrex::Real p_diff = p_hse - p_eos;
             const amrex::Real dpdr = eos.dp_constanttheta(dens[0], ref_theta);
             const amrex::Real drho =
-                p_diff / (dpdr + half_dx * m_gravity[m_axis]);
+                p_diff / (dpdr - half_dx * m_gravity[m_axis]);
 
             dens[0] = dens[0] + drho;
             pres[0] = eos.p_rth(dens[0], ref_theta);
@@ -163,7 +127,7 @@ void ABLAnelastic::initialize_isentropic_hse()
 
         // To get values at k > 0 we do a Newton iteration to satisfy the EOS
         // (with constant theta)
-        for (int k = 1; k <= dens.size(); k++) {
+        for (int k = 1; k < dens.size(); k++) {
             converged_hse = false;
 
             dens[k] = dens[k - 1];
@@ -173,13 +137,13 @@ void ABLAnelastic::initialize_isentropic_hse()
             for (int iter = 0; iter < max_iterations && !converged_hse;
                  iter++) {
                 const amrex::Real r_avg = 0.5 * (dens[k - 1] + dens[k]);
-                p_hse = pres[k - 1] - dx * r_avg * m_gravity[m_axis];
+                p_hse = pres[k - 1] + dx * r_avg * m_gravity[m_axis];
                 p_eos = eos.p_rth(dens[k], ref_theta);
 
                 const amrex::Real p_diff = p_hse - p_eos;
                 const amrex::Real dpdr = eos.dp_constanttheta(dens[k], ref_theta);
                 const amrex::Real drho =
-                    p_diff / (dpdr + dx * m_gravity[m_axis]);
+                    p_diff / (dpdr - dx * m_gravity[m_axis]);
 
                 dens[k] = dens[k] + drho;
                 pres[k] = eos.p_rth(dens[k], ref_theta);
