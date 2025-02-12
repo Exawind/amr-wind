@@ -266,7 +266,6 @@ void DragForcing::operator()(
             bc_forcing_x = -(uxTarget - ux1) / dt;
             bc_forcing_y = -(uyTarget - uy1) / dt;
         }
-        // Only for buildings
         const amrex::Real cell_drag = drag(i, j, k) / (drag(i, j, k) + tiny);
         if (drag(i, j, k) > 1) {
             const amrex::Real z0 = std::max(terrainz0(i, j, k), z0_min);

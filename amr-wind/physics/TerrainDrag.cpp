@@ -150,7 +150,7 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
             }
         });
     amrex::Gpu::synchronize();
-    // X
+
     amrex::ParallelFor(
         blanking, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
             if ((levelBlanking[nbx](i, j, k, 0) == 0) &&
@@ -158,7 +158,7 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
                 levelDrag[nbx](i, j, k, 0) = 2;
             }
         });
-    // X
+
     amrex::ParallelFor(
         blanking, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
             if ((levelBlanking[nbx](i, j, k, 0) == 0) &&
@@ -167,8 +167,7 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
             }
         });
     amrex::Gpu::synchronize();
-    // Y
-    // X
+
     amrex::ParallelFor(
         blanking, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
             if ((levelBlanking[nbx](i, j, k, 0) == 0) &&
