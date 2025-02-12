@@ -141,7 +141,8 @@ void ABLAnelastic::initialize_isentropic_hse()
                 p_eos = eos.p_rth(dens[k], ref_theta);
 
                 const amrex::Real p_diff = p_hse - p_eos;
-                const amrex::Real dpdr = eos.dp_constanttheta(dens[k], ref_theta);
+                const amrex::Real dpdr =
+                    eos.dp_constanttheta(dens[k], ref_theta);
                 const amrex::Real drho =
                     p_diff / (dpdr - dx * m_gravity[m_axis]);
 
