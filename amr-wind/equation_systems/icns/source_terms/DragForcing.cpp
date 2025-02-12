@@ -19,10 +19,12 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real viscous_drag_calculations(
     const amrex::Real z0,
     const amrex::Real dz,
     const amrex::Real kappa,
-    const amrex::Real tiny)
+    const amrex::Real tiny,
+    const amrex::Real non_neutral_neighbour)
 {
     const amrex::Real m2 = std::sqrt(ux2r * ux2r + uy2r * uy2r);
-    const amrex::Real ustar = m2 * kappa / std::log(1.5 * dz / z0);
+    const amrex::Real ustar =
+        m2 * kappa / (std::log(1.5 * dz / z0) - non_neutral_neighbour);
     Dxz += -ustar * ustar * ux1r /
            (tiny + std::sqrt(ux1r * ux1r + uy1r * uy1r)) / dz;
     Dyz += -ustar * ustar * uy1r /
@@ -121,6 +123,13 @@ DragForcing::DragForcing(const CFDSim& sim)
         m_target_levelset = &sim.repo().get_field(target_levelset_name);
         m_terrain_is_waves = true;
     }
+    amrex::ParmParse pp_abl("ABL");
+    pp_abl.query("wall_het_model", m_wall_het_model);
+    pp_abl.query("mol_length", m_mol_length);
+    pp_abl.query("surface_roughness_z0", m_z0);
+    pp_abl.query("kappa", m_kappa);
+    pp_abl.query("mo_gamma_m", m_gamma_m);
+    pp_abl.query("mo_beta_m", m_beta_m);
 }
 
 DragForcing::~DragForcing() = default;
@@ -184,6 +193,14 @@ void DragForcing::operator()(
     const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
     const amrex::Real kappa = 0.41;
     const amrex::Real cd_max = 1000.0;
+    amrex::Real non_neutral_neighbour = 0.0;
+    amrex::Real non_neutral_cell = 0.0;
+    if (m_wall_het_model == "mol") {
+        non_neutral_neighbour =
+            stability(1.5 * dx[2], m_mol_length, m_gamma_m, m_beta_m);
+        non_neutral_cell =
+            stability(0.5 * dx[2], m_mol_length, m_gamma_m, m_beta_m);
+    }
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
         const amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
@@ -251,13 +268,14 @@ void DragForcing::operator()(
             const amrex::Real uy2r = vel(i, j, k + 1, 1) - wall_v;
             const amrex::Real z0 = std::max(terrainz0(i, j, k), z0_min);
             const amrex::Real ustar = viscous_drag_calculations(
-                Dxz, Dyz, ux1r, uy1r, ux2r, uy2r, z0, dx[2], kappa, tiny);
+                Dxz, Dyz, ux1r, uy1r, ux2r, uy2r, z0, dx[2], kappa, tiny,
+                non_neutral_neighbour);
             if (is_waves) {
                 form_drag_calculations(
                     Dxz, Dyz, i, j, k, target_lvs_arr, dx, ux1r, uy1r);
             }
             const amrex::Real uTarget =
-                ustar / kappa * std::log(0.5 * dx[2] / z0);
+                ustar / kappa * (std::log(0.5 * dx[2] / z0) - non_neutral_cell);
             const amrex::Real uxTarget =
                 uTarget * ux2r / (tiny + std::sqrt(ux2r * ux2r + uy2r * uy2r));
             const amrex::Real uyTarget =
