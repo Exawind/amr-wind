@@ -324,7 +324,7 @@ void DragForcing::operator()(
             const amrex::Real uNorthTarget_y =
                 uNorthTarget * vnorth /
                 (tiny + std::sqrt(unorth * unorth + vnorth * vnorth));
-            const amrex::Real sum_blank=
+            const amrex::Real sum_blank =
                 blank(i - 1, j, k) + blank(i + 1, j, k) + blank(i, j - 1, k) +
                 blank(i, j + 1, k);
             bc_forcing_x = -(uWestTarget_x - ux1) / dt * blank(i - 1, j, k);
