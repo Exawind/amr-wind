@@ -106,7 +106,7 @@ void ABLAnelastic::initialize_isentropic_hse()
         amrex::Real p_hse = 0.0;
         amrex::Real p_eos = 0.0;
 
-        for (int iter = 0; iter < max_iterations && !converged_hse; iter++) {
+        for (int iter = 0; (iter < max_iterations) && (!converged_hse); iter++) {
             p_hse = m_bottom_reference_pressure +
                     half_dx * dens[0] * m_gravity[m_axis];
             p_eos = eos.p_rth(dens[0], ref_theta);
@@ -131,10 +131,7 @@ void ABLAnelastic::initialize_isentropic_hse()
             converged_hse = false;
 
             dens[k] = dens[k - 1];
-            p_eos = eos.p_rth(dens[k], ref_theta);
-            p_hse = 0.0;
-
-            for (int iter = 0; iter < max_iterations && !converged_hse;
+            for (int iter = 0; (iter < max_iterations) && (!converged_hse);
                  iter++) {
                 const amrex::Real r_avg = 0.5 * (dens[k - 1] + dens[k]);
                 p_hse = pres[k - 1] + dx * r_avg * m_gravity[m_axis];

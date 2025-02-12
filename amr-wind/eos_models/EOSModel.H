@@ -75,8 +75,8 @@ struct GammaLaw
     {}
 
     const amrex::Real m_gamma{constants::HEAT_CAPACITY_RATIO};
-    const amrex::Real m_p0{1e-5};
-    const amrex::Real m_ip0{1e5};
+    const amrex::Real m_p0{1e5};
+    const amrex::Real m_ip0{1e-5};
     const amrex::Real m_air_gas_constant{
         constants::UNIVERSAL_GAS_CONSTANT / constants::MOLAR_MASS_AIR};
     const amrex::Real m_water_vapor_gas_constant{
