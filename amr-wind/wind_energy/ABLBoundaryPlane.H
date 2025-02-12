@@ -8,6 +8,8 @@
 #include "amr-wind/utilities/io_utils.H"
 #include <AMReX_BndryRegister.H>
 
+#include "amr-wind/wind_energy/ABLReadERFFunction.H"
+class MultiBlockContainer;
 namespace amr_wind {
 
 enum struct io_mode { output, input, undefined };
@@ -171,10 +173,27 @@ public:
 
     io_mode mode() const { return m_io_mode; }
 
+    MultiBlockContainer* mbc()
+    {
+        // Make sure that the double pointer m_mbc
+        // does not point to a nullptr
+        // before passing *m_mbc for use
+        if ((*m_mbc) == nullptr) {
+            amrex::Abort("Passing a null pointer for use!");
+        }
+        return *m_mbc;
+    }
+
 private:
     const amr_wind::SimTime& m_time;
     const FieldRepo& m_repo;
     const amrex::AmrCore& m_mesh;
+
+    // pointer to pointer : when ABL boundary plane gets initialized, amr-wind
+    // CFDsim does not yet have the up to date pointer to the mbc or the
+    // read_erf function, hence the use of double pointers
+    MultiBlockContainer** m_mbc;
+    ReadERFFunction* m_read_erf{nullptr};
 
 #ifdef AMR_WIND_USE_NETCDF
     void write_data(
