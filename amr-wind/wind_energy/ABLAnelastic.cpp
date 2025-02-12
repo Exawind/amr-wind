@@ -14,7 +14,7 @@ ABLAnelastic::ABLAnelastic(CFDSim& sim) : m_sim(sim)
     {
         amrex::ParmParse pp("incflo");
         pp.queryarr("gravity", m_gravity);
-        pp.query("density", m_rho0_const);
+        pp.query("density", m_reference_density_constant);
         pp.query("godunov_type", godunov_type);
         pp.query("icns_conserv", conserv);
     }
@@ -70,13 +70,13 @@ void ABLAnelastic::initialize_data()
 
     initialize_isentropic_hse();
 
-    auto& rho0 = m_sim.repo().get_field("reference_density");
+    auto& density0_field = m_sim.repo().get_field("reference_density");
     auto& p0 = m_sim.repo().get_field("reference_pressure");
     auto& temp0 = m_sim.repo().get_field("reference_temperature");
-    m_density.copy_to_field(rho0);
+    m_density.copy_to_field(density0_field);
     m_pressure.copy_to_field(p0);
     m_theta.copy_to_field(temp0);
-    rho0.fillpatch(m_sim.time().current_time());
+    density0_field.fillpatch(m_sim.time().current_time());
     temp0.fillpatch(m_sim.time().current_time());
 }
 
@@ -96,7 +96,7 @@ void ABLAnelastic::initialize_isentropic_hse()
         const amrex::Real half_dx = 0.5 * dx;
 
         // Initial guess
-        dens[0] = m_rho0_const;
+        dens[0] = m_reference_density_constant;
         pres[0] =
             m_bottom_reference_pressure + half_dx * dens[0] * m_gravity[m_axis];
 
@@ -114,14 +114,13 @@ void ABLAnelastic::initialize_isentropic_hse()
 
             const amrex::Real p_diff = p_hse - p_eos;
             const amrex::Real dpdr = eos.dp_constanttheta(dens[0], ref_theta);
-            const amrex::Real drho =
+            const amrex::Real ddens =
                 p_diff / (dpdr - half_dx * m_gravity[m_axis]);
 
-            dens[0] = dens[0] + drho;
+            dens[0] = dens[0] + ddens;
             pres[0] = eos.p_rth(dens[0], ref_theta);
 
-            if (std::abs(drho) < constants::LOOSE_TOL) {
-                converged_hse = true;
+            if (std::abs(ddens) < constants::LOOSE_TOL) {
                 break;
             }
         }
@@ -134,21 +133,20 @@ void ABLAnelastic::initialize_isentropic_hse()
             dens[k] = dens[k - 1];
             for (int iter = 0; (iter < max_iterations) && (!converged_hse);
                  iter++) {
-                const amrex::Real r_avg = 0.5 * (dens[k - 1] + dens[k]);
-                p_hse = pres[k - 1] + dx * r_avg * m_gravity[m_axis];
+                const amrex::Real dens_avg = 0.5 * (dens[k - 1] + dens[k]);
+                p_hse = pres[k - 1] + dx * dens_avg * m_gravity[m_axis];
                 p_eos = eos.p_rth(dens[k], ref_theta);
 
                 const amrex::Real p_diff = p_hse - p_eos;
                 const amrex::Real dpdr =
                     eos.dp_constanttheta(dens[k], ref_theta);
-                const amrex::Real drho =
+                const amrex::Real ddens =
                     p_diff / (dpdr - dx * m_gravity[m_axis]);
 
-                dens[k] = dens[k] + drho;
+                dens[k] = dens[k] + ddens;
                 pres[k] = eos.p_rth(dens[k], ref_theta);
 
-                if (std::abs(drho) < constants::LOOSE_TOL * dens[k - 1]) {
-                    converged_hse = true;
+                if (std::abs(ddens) < constants::LOOSE_TOL * dens[k - 1]) {
                     break;
                 }
             }
