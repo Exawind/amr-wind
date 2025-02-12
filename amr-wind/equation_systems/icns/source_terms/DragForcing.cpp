@@ -324,6 +324,9 @@ void DragForcing::operator()(
             const amrex::Real uNorthTarget_y =
                 uNorthTarget * vnorth /
                 (tiny + std::sqrt(unorth * unorth + vnorth * vnorth));
+            const amrex::Real sum_blank=
+                blank(i - 1, j, k) + blank(i + 1, j, k) + blank(i, j - 1, k) +
+                blank(i, j + 1, k);
             bc_forcing_x = -(uWestTarget_x - ux1) / dt * blank(i - 1, j, k);
             bc_forcing_y = -(uWestTarget_y - uy1) / dt * blank(i - 1, j, k);
             bc_forcing_x += -(uEastTarget_x - ux1) / dt * blank(i + 1, j, k);
@@ -332,6 +335,8 @@ void DragForcing::operator()(
             bc_forcing_y += -(uSouthTarget_y - uy1) / dt * blank(i, j - 1, k);
             bc_forcing_x += -(uNorthTarget_x - ux1) / dt * blank(i, j + 1, k);
             bc_forcing_y += -(uNorthTarget_y - uy1) / dt * blank(i, j + 1, k);
+            bc_forcing_x /= (sum_blank + tiny);
+            bc_forcing_y /= (sum_blank + tiny);
         }
         // Target velocity intended for within terrain
         amrex::Real target_u = 0.;
