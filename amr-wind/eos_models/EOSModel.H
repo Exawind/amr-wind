@@ -29,7 +29,7 @@ struct GammaLaw
      * \param [in] rho    density
      * \param [in] theta  potential temperature
      * \param [in] qv     water vapor
-     * \param [out]       pressure
+     * \return            pressure
      */
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real p_rth(
         const amrex::Real rho,
@@ -52,7 +52,7 @@ struct GammaLaw
      * \param [in] rho   density
      * \param [in] theta potential temperature
      * \param [in] qv    water vapor
-     * \param [out] pressure
+     * \return           pressure
      */
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real dp_constanttheta(
         const amrex::Real rho,
