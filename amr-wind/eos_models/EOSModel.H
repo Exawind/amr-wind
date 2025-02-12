@@ -26,10 +26,10 @@ struct GammaLaw
     /**
      * Return pressure given density and potential temperature
      *
-     * \params [in] rho    density
-     * \params [in] theta  potential temperature
-     * \params [in] qv     water vapor
-     * \params [out]       pressure
+     * \param [in] rho    density
+     * \param [in] theta  potential temperature
+     * \param [in] qv     water vapor
+     * \param [out]       pressure
      */
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real p_rth(
         const amrex::Real rho,
@@ -49,10 +49,10 @@ struct GammaLaw
     /**
      * Return dP/drho at constant theta
      *
-     * \params [in] rho   density
-     * \params [in] theta potential temperature
-     * \params [in] qv    water vapor
-     * \params [out] pressure
+     * \param [in] rho   density
+     * \param [in] theta potential temperature
+     * \param [in] qv    water vapor
+     * \param [out] pressure
      */
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real dp_constanttheta(
         const amrex::Real rho,
