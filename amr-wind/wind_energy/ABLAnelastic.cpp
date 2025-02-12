@@ -35,8 +35,8 @@ ABLAnelastic::ABLAnelastic(CFDSim& sim) : m_sim(sim)
             "reference_density", 1, density.num_grow()[0], 1);
         ref_density.set_default_fillpatch_bc(m_sim.time());
         m_sim.repo().declare_nd_field("reference_pressure", 1, 0, 1);
-        auto& ref_theta = m_sim.repo().declare_field(
-            "reference_temperature", 1, density.num_grow()[0], 1);
+        auto& ref_theta =
+            m_sim.repo().declare_field("reference_temperature", 1, 1, 1);
         ref_theta.set_default_fillpatch_bc(m_sim.time());
     }
 }
