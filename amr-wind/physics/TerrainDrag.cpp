@@ -140,46 +140,26 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
             levelz0[nbx](i, j, k, 0) = roughz0;
         });
     amrex::Gpu::synchronize();
-    amrex::ParallelFor(
-        blanking, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-            if ((levelBlanking[nbx](i, j, k, 0) == 0) && (k > 0) &&
-                (levelBlanking[nbx](i, j, k - 1, 0) == 1)) {
-                levelDrag[nbx](i, j, k, 0) = 1;
-            } else {
-                levelDrag[nbx](i, j, k, 0) = 0;
-            }
-        });
-    amrex::Gpu::synchronize();
 
     amrex::ParallelFor(
         blanking, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-            if ((levelBlanking[nbx](i, j, k, 0) == 0) &&
-                (levelBlanking[nbx](i - 1, j, k, 0) == 1)) {
-                levelDrag[nbx](i, j, k, 0) = 2;
-            }
-        });
-
-    amrex::ParallelFor(
-        blanking, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-            if ((levelBlanking[nbx](i, j, k, 0) == 0) &&
-                (levelBlanking[nbx](i + 1, j, k, 0) == 1)) {
-                levelDrag[nbx](i, j, k, 0) = 3;
-            }
-        });
-    amrex::Gpu::synchronize();
-
-    amrex::ParallelFor(
-        blanking, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-            if ((levelBlanking[nbx](i, j, k, 0) == 0) &&
-                (levelBlanking[nbx](i, j - 1, k, 0) == 1)) {
-                levelDrag[nbx](i, j, k, 0) = 4;
-            }
-        });
-    amrex::ParallelFor(
-        blanking, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-            if ((levelBlanking[nbx](i, j, k, 0) == 0) &&
-                (levelBlanking[nbx](i, j + 1, k, 0) == 1)) {
-                levelDrag[nbx](i, j, k, 0) = 5;
+            const amrex::GpuArray<int, 5> cell_blanking{
+                levelBlanking[nbx](i, j, k - 1, 0),
+                levelBlanking[nbx](i - 1, j, k, 0),
+                levelBlanking[nbx](i + 1, j, k, 0),
+                levelBlanking[nbx](i, j - 1, k, 0),
+                levelBlanking[nbx](i, j + 1, k, 0)};
+            for (int index = 0; index <= 4; ++index) {
+                if ((levelBlanking[nbx](i, j, k, 0) == 0) && (k > 0) &&
+                    (cell_blanking[index] == 1) &&
+                    (levelDrag[nbx](i, j, k, 0) == 0) &&
+                    levelDrag[nbx](i, j, k, 0) == 0) {
+                    levelDrag[nbx](i, j, k, 0) = index + 1;
+                }
+                else
+                {
+                    levelDrag[nbx](i, j, k, 0) = 0;
+                }
             }
         });
     amrex::Gpu::synchronize();
