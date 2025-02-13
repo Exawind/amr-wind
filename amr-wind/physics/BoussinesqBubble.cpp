@@ -32,6 +32,7 @@ void BoussinesqBubble::initialize_fields(int level, const amrex::Geometry& geom)
     auto& density = m_density(level);
     auto& scalars = (*m_temperature)(level);
 
+    // needs openmp pragma?
     for (amrex::MFIter mfi(density); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
 
