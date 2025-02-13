@@ -1,0 +1,14 @@
+.. meta::d706482216ae7e42e1e8dff80e0bc1c87a5d7d3a7705e783380f8c1812b1df6b8dbdf82a9a78bffd500891d09fe324c75a568663ba8d6a385f29f9351c451064
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::ProcessOutputsOp&lt; UniformCt, ActSrcDisk &gt; Struct Reference
+
+ProcessOutputsOp&lt; UniformCt, ActSrcDisk &gt; Struct Reference
+================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1ops_1_1_process_outputs_op_3_01_uniform_ct_00_01_act_src_disk_01_4.html

@@ -1,0 +1,14 @@
+.. meta::756c6c1f0e54587068d5246150b5ade1462df3f52bf2f3426c4f5f2e4c791485b6acbd635731a684f228513839c9f6c33b353712db23cdf9c8c826f9ab78ed1e
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/VolumeSampler.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/VolumeSampler.H File Reference
+==============================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _volume_sampler_8_h.html
