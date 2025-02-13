@@ -155,9 +155,7 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
                     (levelDrag[nbx](i, j, k, 0) == 0) &&
                     levelDrag[nbx](i, j, k, 0) == 0) {
                     levelDrag[nbx](i, j, k, 0) = index + 1;
-                }
-                else
-                {
+                } else {
                     levelDrag[nbx](i, j, k, 0) = 0;
                 }
             }
