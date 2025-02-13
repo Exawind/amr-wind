@@ -14,24 +14,6 @@ namespace amr_wind::pde::icns {
  *
  */
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::GpuArray<amrex::Real, 2>
-compute_target_wind(
-    const amrex::Real ux,
-    const amrex::Real uy,
-    const amrex::Real dx,
-    const amrex::Real z0,
-    const amrex::Real tiny,
-    const amrex::Real kappa)
-{
-    const amrex::Real wspd = std::sqrt(ux * ux + uy * uy);
-    const amrex::Real ustar = wspd * kappa / std::log(1.5 * dx / z0);
-    const amrex::Real wspd_target = ustar / kappa * std::log(0.5 * dx / z0);
-    const amrex::Real wspd_target_x =
-        wspd_target * ux / (tiny + std::sqrt(ux * ux + uy * uy));
-    const amrex::Real wspd_target_y =
-        wspd_target * uy / (tiny + std::sqrt(ux * ux + uy * uy));
-    return {wspd_target_x, wspd_target_y};
-}
 class DragForcing : public MomentumSource::Register<DragForcing>
 {
 public:

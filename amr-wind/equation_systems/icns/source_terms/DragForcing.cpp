@@ -7,9 +7,31 @@
 #include "amr-wind/wind_energy/ABL.H"
 #include "amr-wind/physics/TerrainDrag.H"
 #include "amr-wind/utilities/linear_interpolation.H"
+#include "amr-wind/utilities/constants.H"
 
 namespace {
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real viscous_drag_calculations(
+
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::GpuArray<amrex::Real, 2>
+compute_target_wind(
+    const amrex::Real ux,
+    const amrex::Real uy,
+    const amrex::Real dx,
+    const amrex::Real z0,
+    const amrex::Real kappa)
+{
+    const amrex::Real wspd = std::sqrt(ux * ux + uy * uy);
+    const amrex::Real ustar = wspd * kappa / std::log(1.5 * dx / z0);
+    const amrex::Real wspd_target = ustar / kappa * std::log(0.5 * dx / z0);
+    const amrex::Real wspd_target_x =
+        wspd_target * ux /
+        (amr_wind::constants::EPS + std::sqrt(ux * ux + uy * uy));
+    const amrex::Real wspd_target_y =
+        wspd_target * uy /
+        (amr_wind::constants::EPS + std::sqrt(ux * ux + uy * uy));
+    return {wspd_target_x, wspd_target_y};
+}
+
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real viscous_drag_calculations(
     amrex::Real& Dxz,
     amrex::Real& Dyz,
     const amrex::Real ux1r,
@@ -18,20 +40,21 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real viscous_drag_calculations(
     const amrex::Real uy2r,
     const amrex::Real z0,
     const amrex::Real dz,
-    const amrex::Real kappa,
-    const amrex::Real tiny)
+    const amrex::Real kappa)
 {
     const amrex::Real m2 = std::sqrt(ux2r * ux2r + uy2r * uy2r);
     const amrex::Real ustar = m2 * kappa / std::log(1.5 * dz / z0);
     Dxz += -ustar * ustar * ux1r /
-           (tiny + std::sqrt(ux1r * ux1r + uy1r * uy1r)) / dz;
+           (amr_wind::constants::EPS + std::sqrt(ux1r * ux1r + uy1r * uy1r)) /
+           dz;
     Dyz += -ustar * ustar * uy1r /
-           (tiny + std::sqrt(ux1r * ux1r + uy1r * uy1r)) / dz;
+           (amr_wind::constants::EPS + std::sqrt(ux1r * ux1r + uy1r * uy1r)) /
+           dz;
     return ustar;
 }
 
 // Implementation comes from MOSD approach in boundary_conditions/wall_models/
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void form_drag_calculations(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE void form_drag_calculations(
     amrex::Real& Dxz,
     amrex::Real& Dyz,
     const int i,
@@ -181,7 +204,6 @@ void DragForcing::operator()(
     const amrex::Real Cd =
         (is_laminar && dx[2] < 1) ? drag_coefficient : drag_coefficient / dx[2];
     const amrex::Real z0_min = 1e-4;
-    const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
     const amrex::Real kappa = 0.41;
     const amrex::Real cd_max = 1000.0;
     const amrex::GpuArray<amrex::Real, 4> cell_size{dx[0], dx[0], dx[1], dx[1]};
@@ -252,17 +274,19 @@ void DragForcing::operator()(
             const amrex::Real uy2r = vel(i, j, k + 1, 1) - wall_v;
             const amrex::Real z0 = std::max(terrainz0(i, j, k), z0_min);
             const amrex::Real ustar = viscous_drag_calculations(
-                Dxz, Dyz, ux1r, uy1r, ux2r, uy2r, z0, dx[2], kappa, tiny);
+                Dxz, Dyz, ux1r, uy1r, ux2r, uy2r, z0, dx[2], kappa);
             if (is_waves) {
                 form_drag_calculations(
                     Dxz, Dyz, i, j, k, target_lvs_arr, dx, ux1r, uy1r);
             }
             const amrex::Real uTarget =
                 ustar / kappa * std::log(0.5 * dx[2] / z0);
-            const amrex::Real uxTarget =
-                uTarget * ux2r / (tiny + std::sqrt(ux2r * ux2r + uy2r * uy2r));
-            const amrex::Real uyTarget =
-                uTarget * uy2r / (tiny + std::sqrt(ux2r * ux2r + uy2r * uy2r));
+            const amrex::Real uxTarget = uTarget * ux2r /
+                                         (amr_wind::constants::EPS +
+                                          std::sqrt(ux2r * ux2r + uy2r * uy2r));
+            const amrex::Real uyTarget = uTarget * uy2r /
+                                         (amr_wind::constants::EPS +
+                                          std::sqrt(ux2r * ux2r + uy2r * uy2r));
             // BC forcing pushes nonrelative velocity toward target velocity
             bc_forcing_x = -(uxTarget - ux1) / dt;
             bc_forcing_y = -(uyTarget - uy1) / dt;
@@ -283,7 +307,7 @@ void DragForcing::operator()(
                 const amrex::GpuArray<amrex::Real, 2> tmp_wind_target =
                     compute_target_wind(
                         cell_wind_x[index], cell_wind_y[index],
-                        cell_size[index], z0, tiny, kappa);
+                        cell_size[index], z0, kappa);
                 bc_forcing_x +=
                     -(tmp_wind_target[0] - ux1) / dt * cell_blanking[index];
                 bc_forcing_y +=
@@ -292,8 +316,8 @@ void DragForcing::operator()(
             const amrex::Real sum_blank =
                 blank(i - 1, j, k) + blank(i + 1, j, k) + blank(i, j - 1, k) +
                 blank(i, j + 1, k) + blank(i, j, k - 1);
-            bc_forcing_x /= (sum_blank + tiny);
-            bc_forcing_y /= (sum_blank + tiny);
+            bc_forcing_x /= (sum_blank + amr_wind::constants::EPS);
+            bc_forcing_y /= (sum_blank + amr_wind::constants::EPS);
         }
         // Target velocity intended for within terrain
         amrex::Real target_u = 0.;
@@ -305,8 +329,8 @@ void DragForcing::operator()(
             target_w = target_vel_arr(i, j, k, 2);
         }
 
-        const amrex::Real CdM =
-            std::min(Cd / (m + tiny), cd_max / scale_factor);
+        const amrex::Real CdM = std::min(
+            Cd / (m + amr_wind::constants::EPS), cd_max / scale_factor);
         src_term(i, j, k, 0) -=
             (CdM * m * (ux1 - target_u) * blank(i, j, k) + Dxz * cell_drag +
              bc_forcing_x * cell_drag +

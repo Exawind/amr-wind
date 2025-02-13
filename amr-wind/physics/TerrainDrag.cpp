@@ -149,14 +149,12 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
                 levelBlanking[nbx](i + 1, j, k, 0),
                 levelBlanking[nbx](i, j - 1, k, 0),
                 levelBlanking[nbx](i, j + 1, k, 0)};
+            levelDrag[nbx](i, j, k, 0) = 0;
             for (int index = 0; index <= 4; ++index) {
                 if ((levelBlanking[nbx](i, j, k, 0) == 0) && (k > 0) &&
                     (cell_blanking[index] == 1) &&
-                    (levelDrag[nbx](i, j, k, 0) == 0) &&
-                    levelDrag[nbx](i, j, k, 0) == 0) {
+                    (levelDrag[nbx](i, j, k, 0) == 0)) {
                     levelDrag[nbx](i, j, k, 0) = index + 1;
-                } else {
-                    levelDrag[nbx](i, j, k, 0) = 0;
                 }
             }
         });
