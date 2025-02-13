@@ -121,8 +121,12 @@ void ABLAnelastic::initialize_isentropic_hse()
             pres[0] = eos.p_rth(dens[0], ref_theta);
 
             if (std::abs(ddens) < constants::LOOSE_TOL) {
+                converged_hse = true;
                 break;
             }
+        }
+        if (!converged_hse) {
+            amrex::Abort("Initializing with hydrostatic equilibrium failed");
         }
 
         // To get values at k > 0 we do a Newton iteration to satisfy the EOS
@@ -147,8 +151,13 @@ void ABLAnelastic::initialize_isentropic_hse()
                 pres[k] = eos.p_rth(dens[k], ref_theta);
 
                 if (std::abs(ddens) < constants::LOOSE_TOL * dens[k - 1]) {
+                    converged_hse = true;
                     break;
                 }
+            }
+            if (!converged_hse) {
+                amrex::Abort(
+                    "Initializing with hydrostatic equilibrium failed");
             }
         }
     }
