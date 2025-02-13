@@ -184,6 +184,7 @@ void DragForcing::operator()(
     const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
     const amrex::Real kappa = 0.41;
     const amrex::Real cd_max = 1000.0;
+    const amrex::GpuArray<amrex::Real, 4> cell_size{dx[0], dx[0], dx[1], dx[1]};
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
         const amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
@@ -267,73 +268,31 @@ void DragForcing::operator()(
             bc_forcing_y = -(uyTarget - uy1) / dt;
         }
         const amrex::Real cell_drag = drag(i, j, k) / (drag(i, j, k) + tiny);
-        if (drag(i, j, k) > 1) {
+        //! Cannot be used for waves
+        if (drag(i, j, k) > 1 && (!is_laminar) && (!is_waves)) {
             const amrex::Real z0 = std::max(terrainz0(i, j, k), z0_min);
-            const amrex::Real uwest = vel(i - 1, j, k, 0);
-            const amrex::Real ueast = vel(i + 1, j, k, 0);
-            const amrex::Real usouth = vel(i, j - 1, k, 0);
-            const amrex::Real unorth = vel(i, j + 1, k, 0);
-            const amrex::Real vwest = vel(i - 1, j, k, 1);
-            const amrex::Real veast = vel(i + 1, j, k, 1);
-            const amrex::Real vsouth = vel(i, j - 1, k, 1);
-            const amrex::Real vnorth = vel(i, j + 1, k, 1);
-            const amrex::Real mwest = std::sqrt(uwest * uwest + vwest * vwest);
-            const amrex::Real meast = std::sqrt(ueast * ueast + veast * veast);
-            const amrex::Real msouth =
-                std::sqrt(usouth * usouth + vsouth * vsouth);
-            const amrex::Real mnorth =
-                std::sqrt(unorth * unorth + vnorth * vnorth);
-            const amrex::Real ustarwest =
-                mwest * kappa / std::log(1.5 * dx[0] / z0);
-            const amrex::Real ustareast =
-                meast * kappa / std::log(1.5 * dx[0] / z0);
-            const amrex::Real ustarsouth =
-                msouth * kappa / std::log(1.5 * dx[1] / z0);
-            const amrex::Real ustarnorth =
-                mnorth * kappa / std::log(1.5 * dx[1] / z0);
-            const amrex::Real uWestTarget =
-                ustarwest / kappa * std::log(0.5 * dx[0] / z0);
-            const amrex::Real uEastTarget =
-                ustareast / kappa * std::log(0.5 * dx[0] / z0);
-            const amrex::Real uSouthTarget =
-                ustarsouth / kappa * std::log(0.5 * dx[1] / z0);
-            const amrex::Real uNorthTarget =
-                ustarnorth / kappa * std::log(0.5 * dx[1] / z0);
-            const amrex::Real uWestTarget_x =
-                uWestTarget * uwest /
-                (tiny + std::sqrt(uwest * uwest + vwest * vwest));
-            const amrex::Real uWestTarget_y =
-                uWestTarget * vwest /
-                (tiny + std::sqrt(uwest * uwest + vwest * vwest));
-            const amrex::Real uEastTarget_x =
-                uEastTarget * ueast /
-                (tiny + std::sqrt(ueast * ueast + veast * veast));
-            const amrex::Real uEastTarget_y =
-                uEastTarget * veast /
-                (tiny + std::sqrt(ueast * ueast + veast * veast));
-            const amrex::Real uSouthTarget_x =
-                uSouthTarget * usouth /
-                (tiny + std::sqrt(usouth * usouth + vsouth * vsouth));
-            const amrex::Real uSouthTarget_y =
-                uSouthTarget * vsouth /
-                (tiny + std::sqrt(usouth * usouth + vsouth * vsouth));
-            const amrex::Real uNorthTarget_x =
-                uNorthTarget * unorth /
-                (tiny + std::sqrt(unorth * unorth + vnorth * vnorth));
-            const amrex::Real uNorthTarget_y =
-                uNorthTarget * vnorth /
-                (tiny + std::sqrt(unorth * unorth + vnorth * vnorth));
+            const amrex::GpuArray<amrex::Real, 4> cell_wind_x = {
+                vel(i - 1, j, k, 0), vel(i + 1, j, k, 0), vel(i, j - 1, k, 0),
+                vel(i, j + 1, k, 0)};
+            const amrex::GpuArray<amrex::Real, 4> cell_wind_y = {
+                vel(i - 1, j, k, 1), vel(i + 1, j, k, 1), vel(i, j - 1, k, 1),
+                vel(i, j + 1, k, 1)};
+            const amrex::GpuArray<int, 4> cell_blanking = {
+                blank(i - 1, j, k), blank(i + 1, j, k), blank(i, j - 1, k),
+                blank(i, j + 1, k)};
+            for (int index = 0; index <= 3; ++index) {
+                const amrex::GpuArray<amrex::Real, 2> tmp_wind_target =
+                    compute_target_wind(
+                        cell_wind_x[index], cell_wind_y[index],
+                        cell_size[index], z0, tiny, kappa);
+                bc_forcing_x +=
+                    -(tmp_wind_target[0] - ux1) / dt * cell_blanking[index];
+                bc_forcing_y +=
+                    -(tmp_wind_target[1] - uy1) / dt * cell_blanking[index];
+            }
             const amrex::Real sum_blank =
                 blank(i - 1, j, k) + blank(i + 1, j, k) + blank(i, j - 1, k) +
-                blank(i, j + 1, k);
-            bc_forcing_x = -(uWestTarget_x - ux1) / dt * blank(i - 1, j, k);
-            bc_forcing_y = -(uWestTarget_y - uy1) / dt * blank(i - 1, j, k);
-            bc_forcing_x += -(uEastTarget_x - ux1) / dt * blank(i + 1, j, k);
-            bc_forcing_y += -(uEastTarget_y - uy1) / dt * blank(i + 1, j, k);
-            bc_forcing_x += -(uSouthTarget_x - ux1) / dt * blank(i, j - 1, k);
-            bc_forcing_y += -(uSouthTarget_y - uy1) / dt * blank(i, j - 1, k);
-            bc_forcing_x += -(uNorthTarget_x - ux1) / dt * blank(i, j + 1, k);
-            bc_forcing_y += -(uNorthTarget_y - uy1) / dt * blank(i, j + 1, k);
+                blank(i, j + 1, k) + blank(i, j, k - 1);
             bc_forcing_x /= (sum_blank + tiny);
             bc_forcing_y /= (sum_blank + tiny);
         }
