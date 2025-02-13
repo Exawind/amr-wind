@@ -107,6 +107,7 @@ void KransAxell::operator()(
     const auto* tke_values_d = m_tke_values_d.data();
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
         m_gravity[0], m_gravity[1], m_gravity[2]};
+    bool horizontal_drag_model = m_horizontal_drag_model;
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         amrex::Real bcforcing = 0;
         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
