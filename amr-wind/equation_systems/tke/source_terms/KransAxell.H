@@ -65,6 +65,7 @@ private:
     int m_sponge_east{1};
     int m_sponge_south{0};
     int m_sponge_north{1};
+    bool m_horizontal_drag_model{false};
 };
 
 } // namespace amr_wind::pde::tke

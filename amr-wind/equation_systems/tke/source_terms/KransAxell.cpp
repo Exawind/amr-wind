@@ -4,6 +4,8 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/turbulence/TurbulenceModel.H"
 #include "amr-wind/utilities/linear_interpolation.H"
+#include "amr-wind/utilities/constants.H"
+
 namespace amr_wind::pde::tke {
 
 KransAxell::KransAxell(const CFDSim& sim)
@@ -66,6 +68,7 @@ KransAxell::KransAxell(const CFDSim& sim)
     pp_drag.query("sponge_east", m_sponge_east);
     pp_drag.query("sponge_south", m_sponge_south);
     pp_drag.query("sponge_north", m_sponge_north);
+    pp_drag.query("horizontal_drag_model", m_horizontal_drag_model);
 }
 
 KransAxell::~KransAxell() = default;
@@ -94,7 +97,6 @@ void KransAxell::operator()(
     const auto& dt = m_time.delta_t();
     const amrex::Real heat_flux = m_heat_flux;
     const amrex::Real Cmu = m_Cmu;
-    const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
     const amrex::Real kappa = m_kappa;
     const amrex::Real z0 = m_z0;
     const bool has_terrain =
@@ -133,7 +135,7 @@ void KransAxell::operator()(
             1.0 / dt * (tke_arr(i, j, k) - ref_tke);
         dissip_arr(i, j, k) = std::pow(Cmu, 3) *
                               std::pow(tke_arr(i, j, k), 1.5) /
-                              (tlscale_arr(i, j, k) + tiny);
+                              (tlscale_arr(i, j, k) + amr_wind::constants::EPS);
         src_term(i, j, k) +=
             shear_prod_arr(i, j, k) + buoy_prod_arr(i, j, k) -
             dissip_arr(i, j, k) -
@@ -157,7 +159,9 @@ void KransAxell::operator()(
                 amrex::Real uy = vel(i, j, k + 1, 1);
                 amrex::Real z = 0.5 * dx[2];
                 amrex::Real m = std::sqrt(ux * ux + uy * uy);
-                const amrex::Real ustar = m * kappa / std::log(3.0 * z / z0);
+                const amrex::Real cell_drag =
+                    (drag_arr(i, j, k) > 0) ? 1.0 : 0.0;
+                amrex::Real ustar = m * kappa / std::log(3.0 * z / z0);
                 const amrex::Real T0 = ref_theta_arr(i, j, k);
                 const amrex::Real hf = std::abs(gravity[2]) / T0 * heat_flux;
                 const amrex::Real rans_b = std::pow(
@@ -170,8 +174,8 @@ void KransAxell::operator()(
                 uy = vel(i, j, k, 1);
                 const amrex::Real uz = vel(i, j, k, 2);
                 m = std::sqrt(ux * ux + uy * uy + uz * uz);
-                const amrex::Real Cd =
-                    std::min(10 / (dx[2] * m + tiny), 100 / dx[2]);
+                const amrex::Real Cd = std::min(
+                    10 / (dx[2] * m + amr_wind::constants::EPS), 100 / dx[2]);
                 dragforcing = -Cd * m * tke_arr(i, j, k, 0);
                 z = std::max(
                     problo[2] + (k + 0.5) * dx[2] - terrain_height(i, j, k),
@@ -188,8 +192,33 @@ void KransAxell::operator()(
                 }
                 const amrex::Real sponge_forcing =
                     1.0 / dt * (tke_arr(i, j, k) - ref_tke);
+                if (drag_arr(i, j, k) > 1 && horizontal_drag_model) {
+                    const amrex::GpuArray<amrex::Real, 4> cell_wind_x = {
+                        vel(i - 1, j, k, 0), vel(i + 1, j, k, 0),
+                        vel(i, j - 1, k, 0), vel(i, j + 1, k, 0)};
+                    const amrex::GpuArray<amrex::Real, 4> cell_wind_y = {
+                        vel(i - 1, j, k, 1), vel(i + 1, j, k, 1),
+                        vel(i, j - 1, k, 1), vel(i, j + 1, k, 1)};
+                    const amrex::GpuArray<int, 4> cell_blanking = {
+                        blank_arr(i - 1, j, k), blank_arr(i + 1, j, k),
+                        blank_arr(i, j - 1, k), blank_arr(i, j + 1, k)};
+                    for (int index = 0; index <= 3; ++index) {
+                        const amrex::Real wspd = std::sqrt(
+                            cell_wind_x[index] * cell_wind_x[index] +
+                            cell_wind_y[index] * cell_wind_y[index]);
+                        ustar = wspd * kappa / std::log(3 * z / z0);
+                        terrainforcing += (ustar * ustar / (Cmu * Cmu) +
+                                           rans_b - tke_arr(i, j, k)) /
+                                          dt * cell_blanking[index];
+                    }
+                }
+                const amrex::Real sum_blank =
+                    blank_arr(i - 1, j, k) + blank_arr(i + 1, j, k) +
+                    blank_arr(i, j - 1, k) + blank_arr(i, j + 1, k) +
+                    blank_arr(i, j, k - 1);
+                terrainforcing /= (sum_blank + amr_wind::constants::EPS);
                 src_term(i, j, k) +=
-                    drag_arr(i, j, k) * terrainforcing +
+                    cell_drag * terrainforcing +
                     blank_arr(i, j, k) * dragforcing -
                     static_cast<int>(has_terrain) * sponge_forcing;
                 ;

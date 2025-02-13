@@ -119,6 +119,7 @@ DragForcing::DragForcing(const CFDSim& sim)
     pp.query("sponge_south", m_sponge_south);
     pp.query("sponge_north", m_sponge_north);
     pp.query("is_laminar", m_is_laminar);
+    pp.query("horizontal_drag_model", m_horizontal_drag_model);
     const auto& phy_mgr = m_sim.physics_manager();
     if (phy_mgr.contains("ABL")) {
         const auto& abl = m_sim.physics_manager().get<amr_wind::ABL>();
@@ -207,6 +208,7 @@ void DragForcing::operator()(
     const amrex::Real kappa = 0.41;
     const amrex::Real cd_max = 1000.0;
     const amrex::GpuArray<amrex::Real, 4> cell_size{dx[0], dx[0], dx[1], dx[1]};
+    bool horizontal_drag_model = m_horizontal_drag_model;
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
         const amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
@@ -292,7 +294,8 @@ void DragForcing::operator()(
             bc_forcing_y = -(uyTarget - uy1) / dt;
         }
         const amrex::Real cell_drag = (drag(i, j, k) > 0) ? 1.0 : 0.0;
-        if (drag(i, j, k) > 1 && (!is_laminar) && (!is_waves)) {
+        if (drag(i, j, k) > 1 && (!is_laminar) && (!is_waves) &&
+            (horizontal_drag_model)) {
             const amrex::Real z0 = std::max(terrainz0(i, j, k), z0_min);
             const amrex::GpuArray<amrex::Real, 4> cell_wind_x = {
                 vel(i - 1, j, k, 0), vel(i + 1, j, k, 0), vel(i, j - 1, k, 0),
