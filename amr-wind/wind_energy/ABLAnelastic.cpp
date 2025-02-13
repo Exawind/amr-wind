@@ -14,7 +14,7 @@ ABLAnelastic::ABLAnelastic(CFDSim& sim) : m_sim(sim)
     {
         amrex::ParmParse pp("incflo");
         pp.queryarr("gravity", m_gravity);
-        pp.query("density", m_rho0_const);
+        pp.query("density", m_reference_density_constant);
         pp.query("godunov_type", godunov_type);
         pp.query("icns_conserv", conserv);
     }
@@ -35,8 +35,8 @@ ABLAnelastic::ABLAnelastic(CFDSim& sim) : m_sim(sim)
             "reference_density", 1, density.num_grow()[0], 1);
         ref_density.set_default_fillpatch_bc(m_sim.time());
         m_sim.repo().declare_nd_field("reference_pressure", 1, 0, 1);
-        auto& ref_theta = m_sim.repo().declare_field(
-            "reference_temperature", 1, density.num_grow()[0], 1);
+        auto& ref_theta =
+            m_sim.repo().declare_field("reference_temperature", 1, 1, 1);
         ref_theta.set_default_fillpatch_bc(m_sim.time());
     }
 }
@@ -62,45 +62,108 @@ void ABLAnelastic::initialize_data()
 
     m_density.resize(m_axis, m_sim.mesh().Geom());
     m_pressure.resize(m_axis, m_sim.mesh().Geom());
+    m_theta.resize(m_axis, m_sim.mesh().Geom());
 
     AMREX_ALWAYS_ASSERT(m_sim.repo().num_active_levels() == m_density.size());
     AMREX_ALWAYS_ASSERT(m_sim.repo().num_active_levels() == m_pressure.size());
+    AMREX_ALWAYS_ASSERT(m_sim.repo().num_active_levels() == m_theta.size());
+
+    initialize_isentropic_hse();
+
+    auto& density0_field = m_sim.repo().get_field("reference_density");
+    auto& p0 = m_sim.repo().get_field("reference_pressure");
+    auto& temp0 = m_sim.repo().get_field("reference_temperature");
+    m_density.copy_to_field(density0_field);
+    m_pressure.copy_to_field(p0);
+    m_theta.copy_to_field(temp0);
+    density0_field.fillpatch(m_sim.time().current_time());
+    temp0.fillpatch(m_sim.time().current_time());
+}
+
+void ABLAnelastic::initialize_isentropic_hse()
+{
+    const int max_iterations = 10;
+    const auto ref_theta = m_sim.transport_model().reference_temperature();
+    const auto eos = amr_wind::eos::GammaLaw(m_bottom_reference_pressure);
 
     for (int lev = 0; lev < m_density.size(); lev++) {
         auto& dens = m_density.host_data(lev);
         auto& pres = m_pressure.host_data(lev);
-        const auto& dx = m_sim.mesh().Geom(lev).CellSizeArray();
-        dens.assign(dens.size(), m_rho0_const);
-        pres[0] = m_bottom_reference_pressure;
-        for (int k = 0; k < pres.size() - 1; k++) {
-            pres[k + 1] = pres[k] - dens[k] * m_gravity[m_axis] * dx[m_axis];
+        auto& theta = m_theta.host_data(lev);
+        theta.assign(theta.size(), ref_theta);
+
+        const auto& dx = m_sim.mesh().Geom(lev).CellSizeArray()[m_axis];
+        const amrex::Real half_dx = 0.5 * dx;
+
+        // Initial guess
+        dens[0] = m_reference_density_constant;
+        pres[0] =
+            m_bottom_reference_pressure + half_dx * dens[0] * m_gravity[m_axis];
+
+        // We do a Newton iteration to satisfy the EOS & HSE (with constant
+        // theta) at the surface
+        bool converged_hse = false;
+        amrex::Real p_hse = 0.0;
+        amrex::Real p_eos = 0.0;
+
+        for (int iter = 0; (iter < max_iterations) && (!converged_hse);
+             iter++) {
+            p_hse = m_bottom_reference_pressure +
+                    half_dx * dens[0] * m_gravity[m_axis];
+            p_eos = eos.p_rth(dens[0], ref_theta);
+
+            const amrex::Real p_diff = p_hse - p_eos;
+            const amrex::Real dpdr = eos.dp_constanttheta(dens[0], ref_theta);
+            const amrex::Real ddens =
+                p_diff / (dpdr - half_dx * m_gravity[m_axis]);
+
+            dens[0] = dens[0] + ddens;
+            pres[0] = eos.p_rth(dens[0], ref_theta);
+
+            if (std::abs(ddens) < constants::LOOSE_TOL) {
+                converged_hse = true;
+                break;
+            }
+        }
+        if (!converged_hse) {
+            amrex::Abort("Initializing with hydrostatic equilibrium failed");
+        }
+
+        // To get values at k > 0 we do a Newton iteration to satisfy the EOS
+        // (with constant theta)
+        for (int k = 1; k < dens.size(); k++) {
+            converged_hse = false;
+
+            dens[k] = dens[k - 1];
+            for (int iter = 0; (iter < max_iterations) && (!converged_hse);
+                 iter++) {
+                const amrex::Real dens_avg = 0.5 * (dens[k - 1] + dens[k]);
+                p_hse = pres[k - 1] + dx * dens_avg * m_gravity[m_axis];
+                p_eos = eos.p_rth(dens[k], ref_theta);
+
+                const amrex::Real p_diff = p_hse - p_eos;
+                const amrex::Real dpdr =
+                    eos.dp_constanttheta(dens[k], ref_theta);
+                const amrex::Real ddens =
+                    p_diff / (dpdr - dx * m_gravity[m_axis]);
+
+                dens[k] = dens[k] + ddens;
+                pres[k] = eos.p_rth(dens[k], ref_theta);
+
+                if (std::abs(ddens) < constants::LOOSE_TOL * dens[k - 1]) {
+                    converged_hse = true;
+                    break;
+                }
+            }
+            if (!converged_hse) {
+                amrex::Abort(
+                    "Initializing with hydrostatic equilibrium failed");
+            }
         }
     }
     m_density.copy_host_to_device();
     m_pressure.copy_host_to_device();
-
-    auto& rho0 = m_sim.repo().get_field("reference_density");
-    auto& p0 = m_sim.repo().get_field("reference_pressure");
-    m_density.copy_to_field(rho0);
-    m_pressure.copy_to_field(p0);
-
-    rho0.fillpatch(m_sim.time().current_time());
-
-    auto& temp0 = m_sim.repo().get_field("reference_temperature");
-    const amrex::Real air_molar_mass = 0.02896492; // kg/mol
-    const amrex::Real Rair = constants::UNIVERSAL_GAS_CONSTANT / air_molar_mass;
-    for (int lev = 0; lev < m_sim.repo().num_active_levels(); ++lev) {
-        const auto& rho0_arrs = rho0(lev).const_arrays();
-        const auto& p0_arrs = p0(lev).const_arrays();
-        const auto& temp0_arrs = temp0(lev).arrays();
-        amrex::ParallelFor(
-            temp0(lev), amrex::IntVect(0),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                temp0_arrs[nbx](i, j, k) =
-                    p0_arrs[nbx](i, j, k) / (Rair * rho0_arrs[nbx](i, j, k));
-            });
-    }
-    amrex::Gpu::synchronize();
-    temp0.fillpatch(m_sim.time().current_time());
+    m_theta.copy_host_to_device();
 }
+
 } // namespace amr_wind
