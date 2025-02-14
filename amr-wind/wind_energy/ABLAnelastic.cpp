@@ -92,7 +92,7 @@ void ABLAnelastic::initialize_isentropic_hse()
         auto& theta = m_theta.host_data(lev);
         theta.assign(theta.size(), ref_theta);
 
-        const auto& dx = m_sim.mesh().Geom(lev).CellSizeArray()[m_axis];
+        const auto dx = m_sim.mesh().Geom(lev).CellSizeArray()[m_axis];
         const amrex::Real half_dx = 0.5 * dx;
 
         // Initial guess
