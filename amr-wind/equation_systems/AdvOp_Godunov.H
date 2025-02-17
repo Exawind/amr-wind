@@ -161,7 +161,8 @@ struct AdvectionOp<
                     (godunov_scheme == godunov::scheme::WENOZ) ||
                     (godunov_scheme == godunov::scheme::WENO_JS) ||
                     (godunov_scheme == godunov::scheme::BDS)) {
-                    amrex::FArrayBox tmpfab(amrex::grow(bx, 1), 1);
+                    amrex::FArrayBox tmpfab(
+                        amrex::grow(bx, 1), 1, amrex::The_Async_Arena());
                     tmpfab.setVal<amrex::RunOn::Device>(0.0);
                     const auto& divu = tmpfab.array();
                     const bool is_velocity = false;
@@ -204,7 +205,6 @@ struct AdvectionOp<
                 } else {
                     amrex::Abort("Invalid godunov scheme");
                 }
-                amrex::Gpu::streamSynchronize();
             }
         }
 
