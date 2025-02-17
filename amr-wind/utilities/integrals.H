@@ -22,7 +22,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real trapz(
         sum += f(xa + i * dx);
     }
     return dx * sum;
-};
+}
 
 } // namespace amr_wind::utils
 #endif
