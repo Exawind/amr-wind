@@ -129,4 +129,53 @@ void fllc_parse(const utils::ActParser& pp, FLLCData& data)
     }
 }
 
+void fllc_unsteady_init(
+    FLLCUnsteadyData& data,
+    const ComponentView& view,
+    const amrex::Real eps_chord)
+{
+
+    // Do init work here
+
+    // Set up time-related lists
+    data.times.resize(data.n_times_history);
+    data.dt.resize(data.n_times_history - 1);
+    data.times.assign(data.n_times_history, 0.0);
+    data.dt.assign(data.n_times_history - 1, 0.0);
+
+    // Set up velocity lists according to n_times_history, npts
+    data.induced_velocity_eps_LES.resize(data.n_times_history);
+    data.induced_velocity_eps_opt.resize(data.n_times_history);
+    data.delta_velocity.resize(data.n_times_history);
+    data.force_coeff.resize(data.n_times_history);
+
+    const int npts = static_cast<int>(view.pos.size());
+    for (int n = 0; n < npts; ++n) {
+        data.induced_velocity_eps_LES[n].resize(data.n_times_history);
+        data.induced_velocity_eps_opt[n].resize(data.n_times_history);
+        data.delta_velocity[n].resize(data.n_times_history);
+        data.force_coeff[n].resize(data.n_times_history);
+
+        data.induced_velocity_eps_LES[n].assign(npts, vs::Vector::zero());
+        data.induced_velocity_eps_opt[n].assign(npts, vs::Vector::zero());
+        data.delta_velocity[n].assign(npts, vs::Vector::zero());
+        data.force_coeff[n].assign(npts, vs::Vector::zero());
+    }
+
+    data.initialized = true;
+}
+
+void fllc_unsteady_parse(const utils::ActParser& pp, FLLCUnsteadyData& data)
+{
+    pp.query("epsilon", data.epsilon);
+    pp.query("fllc_start_time", data.fllc_start_time);
+    pp.query("fllc_unsteady_number_timesteps", data.n_times_history);
+
+    if (!pp.contains("epsilon") || !pp.contains("epsilon_chord")) {
+        amrex::Abort(
+            "Actuators using the filtered lifting line correction (FLLC) "
+            "require specification 'epsilon' and 'epsilon_chord'");
+    }
+}
+
 } // namespace amr_wind::actuator

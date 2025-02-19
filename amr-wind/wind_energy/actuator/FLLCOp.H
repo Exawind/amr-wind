@@ -293,6 +293,44 @@ struct FLLCOp
     }
 };
 
+struct FLLCUnsteadyOp
+{
+    void operator()(
+        ComponentView& data,
+        FLLCUnsteadyData& fllc,
+        const amrex::Real current_time)
+    {
+        if (!fllc.initialized) {
+            return;
+        }
+        unsteady_correction(data, fllc, current_time);
+    }
+
+    static void unsteady_correction(
+        ComponentView& data,
+        FLLCUnsteadyData& fllc,
+        const amrex::Real current_time)
+    {
+        // Update time list
+        // Shift elements toward back
+        for (int n = fllc.times.size() - 1; n > 0; ++n) {
+            fllc.times[n] = fllc.times[n - 1];
+        }
+        // Replace new first element
+        fllc.times[0] = current_time;
+        // Recalculate dt
+        for (int n = 0; n < fllc.dt.size(); ++n) {
+            fllc.dt[n] = fllc.times[n + 1] - fllc.times[n];
+        }
+
+        // Store current velocities to lists
+
+        // Compute integrals
+
+        // Update velocities with correction
+    }
+};
+
 } // namespace amr_wind::actuator
 
 #endif /* FLLCOP_H */

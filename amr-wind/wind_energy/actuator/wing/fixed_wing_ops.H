@@ -31,6 +31,9 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
         bool use_fllc = false;
         pp.query("fllc", use_fllc);
 
+        bool use_fllc_unsteady = false;
+        pp.query("fllc_unsteady", use_fllc_unsteady);
+
         // If spanwise components of Gaussian should be ignored
         pp.query("disable_spanwise_gaussian", wdata.gauss_2D);
         // If spanwise components of Gaussian and forces should be normalized
@@ -87,6 +90,11 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
         if (use_fllc) {
             wdata.fllc = std::make_unique<FLLCData>();
             fllc_parse(pp, *(wdata.fllc));
+        }
+
+        if (use_fllc_unsteady) {
+            wdata.fllc_unsteady = std::make_unique<FLLCUnsteadyData>();
+            fllc_unsteady_parse(pp, *(wdata.fllc_unsteady));
         }
 
         if (!pp.contains("epsilon") && !pp.contains("epsilon_chord")) {

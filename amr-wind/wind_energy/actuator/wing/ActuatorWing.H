@@ -9,6 +9,7 @@
 namespace amr_wind::actuator {
 
 struct FLLCData;
+struct FLLCUnsteadyData;
 
 /** Base data representation of a fixed-wing.
  *
@@ -73,6 +74,7 @@ struct WingBaseData
 
     //! Filtered Lifting Line Correction data
     std::unique_ptr<FLLCData> fllc;
+    std::unique_ptr<FLLCUnsteadyData> fllc_unsteady;
 
     //! Data structure required for passing data to the FLLC
     ComponentView component_view;
