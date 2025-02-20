@@ -139,9 +139,9 @@ struct AdvectionOp<
                 if (PDE::multiply_rho) {
                     auto rhotrac_box =
                         amrex::grow(bx, fvm::Godunov::nghost_state);
-                    rhotracfab.resize(rhotrac_box, PDE::ndim);
+                    rhotracfab.resize(rhotrac_box, PDE::ndim, amrex::The_Async_Arena());
                     rhotrac = rhotracfab.array();
-                    rhotrac_nph_fab.resize(rhotrac_box, PDE::ndim);
+                    rhotrac_nph_fab.resize(rhotrac_box, PDE::ndim, amrex::The_Async_Arena());
                     rhotrac_nph = rhotrac_nph_fab.array();
 
                     amrex::ParallelFor(
