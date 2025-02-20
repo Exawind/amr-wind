@@ -275,6 +275,12 @@ Example for ``FixedWingLine``::
 TurbineFastLine
 """""""""""""""
 
+This actuator type requires an AMR-Wind build with OpenFAST coupling
+enabled. AMR-Wind provides flow quantities at the actuator point
+locations to OpenFAST and OpenFAST provides the actuator point
+locations and forces at those points. This tight coupling happens at
+every time step.
+
 Example for ``TurbineFastLine``::
 
    incflo.physics = FreeStream Actuator
