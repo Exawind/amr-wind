@@ -21,19 +21,17 @@ public:
         for (int lev = 0; lev < nlevels; ++lev) {
             const auto& dx = geom[lev].CellSizeArray();
             const auto& problo = geom[lev].ProbLoArray();
-            for (amrex::MFIter mfi(field(lev)); mfi.isValid(); ++mfi) {
-                const auto& bx = mfi.tilebox();
-                const auto& field_arr = field(lev).array(mfi);
-
-                amrex::ParallelFor(
-                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-                        const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
-                        const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-                        field_arr(i, j, k) = 1.0 - (x + y + z);
-                    });
-            }
+            const auto& farrs = field(lev).arrays();
+            amrex::ParallelFor(
+                field(lev),
+                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                    const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                    const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
+                    const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+                    farrs[nbx](i, j, k) = 1.0 - (x + y + z);
+                });
         }
+        amrex::Gpu::synchronize();
     }
 };
 
