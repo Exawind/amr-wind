@@ -49,31 +49,30 @@ void init_mac_velocity(
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& dx = mesh.Geom(lev).CellSizeArray();
         const auto& problo = mesh.Geom(lev).ProbLoArray();
+        const auto& uarrs = umac(lev).arrays();
+        const auto& varrs = vmac(lev).arrays();
+        const auto& warrs = wmac(lev).arrays();
 
-        for (amrex::MFIter mfi(cc(lev)); mfi.isValid(); ++mfi) {
-            auto bx = mfi.growntilebox(1);
-            const auto& uarr = umac(lev).array(mfi);
-            const auto& varr = vmac(lev).array(mfi);
-            const auto& warr = wmac(lev).array(mfi);
-
-            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+        amrex::ParallelFor(
+            cc(lev), cc.num_grow(),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 const amrex::Real x = problo[0] + i * dx[0];
                 const amrex::Real yc = problo[1] + (j + 0.5) * dx[1];
                 const amrex::Real zc = problo[2] + (k + 0.5) * dx[2];
 
-                uarr(i, j, k) = 1.0 - std::pow(x, 2.0);
-                varr(i, j, k) = -1.0 + std::pow(zc, 2.0);
-                warr(i, j, k) = -3.0 * std::cos(yc);
+                uarrs[nbx](i, j, k) = 1.0 - std::pow(x, 2.0);
+                varrs[nbx](i, j, k) = -1.0 + std::pow(zc, 2.0);
+                warrs[nbx](i, j, k) = -3.0 * std::cos(yc);
 
                 if (lev == 0 && nlevels > 1) {
                     // Set base level to large values to detect masking errors
-                    uarr(i, j, k) = 1e5;
-                    varr(i, j, k) = -1e5;
-                    warr(i, j, k) = 1e5;
+                    uarrs[nbx](i, j, k) = 1e5;
+                    varrs[nbx](i, j, k) = -1e5;
+                    warrs[nbx](i, j, k) = 1e5;
                 }
             });
-        }
     }
+    amrex::Gpu::synchronize();
 }
 
 } // namespace
