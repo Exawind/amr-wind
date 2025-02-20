@@ -13,29 +13,28 @@ void init_velocity(amr_wind::Field& velocity)
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& dx = mesh.Geom(lev).CellSizeArray();
         const auto& problo = mesh.Geom(lev).ProbLoArray();
+        const auto& farrs = velocity(lev).arrays();
 
-        for (amrex::MFIter mfi(velocity(lev)); mfi.isValid(); ++mfi) {
-            auto bx = mfi.validbox();
-            const auto& farr = velocity(lev).array(mfi);
-
-            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+        amrex::ParallelFor(
+            velocity(lev), velocity.num_grow(),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 const amrex::Real xc = problo[0] + (i + 0.5) * dx[0];
                 const amrex::Real yc = problo[1] + (j + 0.5) * dx[1];
                 const amrex::Real zc = problo[2] + (k + 0.5) * dx[2];
 
-                farr(i, j, k, 0) = 1.0 - std::pow(xc, 2.0);
-                farr(i, j, k, 1) = -1.0 + std::pow(zc, 2.0);
-                farr(i, j, k, 2) = 5.0 * std::cos(yc);
+                farrs[nbx](i, j, k, 0) = 1.0 - std::pow(xc, 2.0);
+                farrs[nbx](i, j, k, 1) = -1.0 + std::pow(zc, 2.0);
+                farrs[nbx](i, j, k, 2) = 5.0 * std::cos(yc);
 
                 if (lev == 0 && nlevels > 1) {
                     // Set base level to large values to detect masking errors
-                    farr(i, j, k, 0) = 1e5;
-                    farr(i, j, k, 1) = -1e5;
-                    farr(i, j, k, 2) = 1e5;
+                    farrs[nbx](i, j, k, 0) = 1e5;
+                    farrs[nbx](i, j, k, 1) = -1e5;
+                    farrs[nbx](i, j, k, 2) = 1e5;
                 }
             });
-        }
     }
+    amrex::Gpu::synchronize();
 }
 
 void init_mac_velocity(

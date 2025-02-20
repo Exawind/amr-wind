@@ -15,7 +15,7 @@ void init_velocity(
     amrex::Real lev0_fac)
 {
     const int nlevels = vel_fld.repo().num_active_levels();
-    const amrex::GpuArray<amrex::Real, 3> vels = {u,v,w};
+    const amrex::GpuArray<amrex::Real, 3> vels = {u, v, w};
     for (int lev = 0; lev < nlevels; ++lev) {
 
         // Apply a factor to the base level values
@@ -23,10 +23,11 @@ void init_velocity(
         const auto& farrs = vel_fld(lev).arrays();
 
         amrex::ParallelFor(
-          vel_fld(lev), vel_fld.num_grow(), vel_fld.num_comp(),
-          [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
+            vel_fld(lev), vel_fld.num_grow(), vel_fld.num_comp(),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
                 // Mix positive and negative as check on L2 norm
-                farrs[nbx](i, j, k, n) = fac * (i % 2 == 0 ? vels[n] : -vels[n]);
+                farrs[nbx](i, j, k, n) =
+                    fac * (i % 2 == 0 ? vels[n] : -vels[n]);
             });
     }
     amrex::Gpu::synchronize();
