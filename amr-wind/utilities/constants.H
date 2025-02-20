@@ -46,5 +46,14 @@ static constexpr amrex::Real AVOGADRO_CONSTANT = 6.02214076 * 1e23;
 static constexpr amrex::Real UNIVERSAL_GAS_CONSTANT =
     AVOGADRO_CONSTANT * BOLTZMANN_CONSTANT;
 
+//! Heat capacity ratio
+static constexpr amrex::Real HEAT_CAPACITY_RATIO = 1.4;
+
+//! Molar mass of air (kg/mol)
+static constexpr amrex::Real MOLAR_MASS_AIR = 0.02896492;
+
+//! Molar mass of water vapor (kg/mol)
+static constexpr amrex::Real MOLAR_MASS_WATER_VAPOR = 0.01801528;
+
 } // namespace amr_wind::constants
 #endif
