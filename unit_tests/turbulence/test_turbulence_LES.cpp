@@ -20,22 +20,17 @@ void init_field3(amr_wind::Field& fld, amrex::Real srate)
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& dx = mesh.Geom(lev).CellSizeArray();
         const auto& problo = mesh.Geom(lev).ProbLoArray();
+        const auto& farrs = fld(lev).arrays();
 
-        for (amrex::MFIter mfi(fld(lev)); mfi.isValid(); ++mfi) {
-            auto bx = mfi.growntilebox();
-            const auto& farr = fld(lev).array(mfi);
-
-            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-                const amrex::Real x = problo[0] + (i + offset) * dx[0];
-                const amrex::Real y = problo[1] + (j + offset) * dx[1];
-                const amrex::Real z = problo[2] + (k + offset) * dx[2];
-
-                farr(i, j, k, 0) = x / sqrt(6.0) * srate;
-                farr(i, j, k, 1) = y / sqrt(6.0) * srate;
-                farr(i, j, k, 2) = z / sqrt(6.0) * srate;
+        amrex::ParallelFor(
+            fld(lev), fld.num_grow(), fld.num_comp(),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
+                const amrex::IntVect iv(i, j, k);
+                const amrex::Real xc = problo[n] + (iv[n] + offset) * dx[n];
+                farrs[nbx](i, j, k, n) = xc / sqrt(6.0) * srate;
             });
-        }
     }
+    amrex::Gpu::synchronize();
 }
 
 void init_field_amd(amr_wind::Field& fld, amrex::Real scale)
@@ -51,22 +46,21 @@ void init_field_amd(amr_wind::Field& fld, amrex::Real scale)
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& dx = mesh.Geom(lev).CellSizeArray();
         const auto& problo = mesh.Geom(lev).ProbLoArray();
+        const auto& farrs = fld(lev).arrays();
 
-        for (amrex::MFIter mfi(fld(lev)); mfi.isValid(); ++mfi) {
-            auto bx = mfi.growntilebox();
-            const auto& farr = fld(lev).array(mfi);
-
-            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+        amrex::ParallelFor(
+            fld(lev), fld.num_grow(),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 const amrex::Real x = problo[0] + (i + offset) * dx[0];
                 const amrex::Real y = problo[1] + (j + offset) * dx[1];
                 const amrex::Real z = problo[2] + (k + offset) * dx[2];
 
-                farr(i, j, k, 0) = 1 * x / sqrt(6.0) * scale;
-                farr(i, j, k, 1) = -2 * y / sqrt(6.0) * scale;
-                farr(i, j, k, 2) = -1 * z / sqrt(6.0) * scale;
+                farrs[nbx](i, j, k, 0) = 1 * x / sqrt(6.0) * scale;
+                farrs[nbx](i, j, k, 1) = -2 * y / sqrt(6.0) * scale;
+                farrs[nbx](i, j, k, 2) = -1 * z / sqrt(6.0) * scale;
             });
-        }
     }
+    amrex::Gpu::synchronize();
 }
 
 void init_field_incomp(amr_wind::Field& fld, amrex::Real scale)
@@ -82,22 +76,21 @@ void init_field_incomp(amr_wind::Field& fld, amrex::Real scale)
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& dx = mesh.Geom(lev).CellSizeArray();
         const auto& problo = mesh.Geom(lev).ProbLoArray();
+        const auto& farrs = fld(lev).arrays();
 
-        for (amrex::MFIter mfi(fld(lev)); mfi.isValid(); ++mfi) {
-            auto bx = mfi.growntilebox();
-            const auto& farr = fld(lev).array(mfi);
-
-            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+        amrex::ParallelFor(
+            fld(lev), fld.num_grow(),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 const amrex::Real x = problo[0] + (i + offset) * dx[0];
                 const amrex::Real y = problo[1] + (j + offset) * dx[1];
                 const amrex::Real z = problo[2] + (k + offset) * dx[2];
 
-                farr(i, j, k, 0) = 1 * x * scale;
-                farr(i, j, k, 1) = -2 * y * scale;
-                farr(i, j, k, 2) = 1 * z * scale;
+                farrs[nbx](i, j, k, 0) = 1 * x * scale;
+                farrs[nbx](i, j, k, 1) = -2 * y * scale;
+                farrs[nbx](i, j, k, 2) = 1 * z * scale;
             });
-        }
     }
+    amrex::Gpu::synchronize();
 }
 
 void init_field1(amr_wind::Field& fld, amrex::Real tgrad)
@@ -113,18 +106,17 @@ void init_field1(amr_wind::Field& fld, amrex::Real tgrad)
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& dx = mesh.Geom(lev).CellSizeArray();
         const auto& problo = mesh.Geom(lev).ProbLoArray();
+        const auto& farrs = fld(lev).arrays();
 
-        for (amrex::MFIter mfi(fld(lev)); mfi.isValid(); ++mfi) {
-            auto bx = mfi.growntilebox();
-            const auto& farr = fld(lev).array(mfi);
-
-            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+        amrex::ParallelFor(
+            fld(lev), fld.num_grow(),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 const amrex::Real z = problo[2] + (k + offset) * dx[2];
 
-                farr(i, j, k, 0) = z * tgrad;
+                farrs[nbx](i, j, k, 0) = z * tgrad;
             });
-        }
     }
+    amrex::Gpu::synchronize();
 }
 
 } // namespace
