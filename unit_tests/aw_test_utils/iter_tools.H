@@ -30,6 +30,8 @@ void run_algorithm_single_lev(
 {
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion() && omp_parallel)
+#else
+    amrex::ignore_unused(omp_parallel);
 #endif
     for (amrex::MFIter mfi(lfab); mfi.isValid(); ++mfi) {
         func(lev, mfi);
@@ -45,6 +47,8 @@ void run_algorithm_single_lev(
 {
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion() && omp_parallel)
+#else
+    amrex::ignore_unused(omp_parallel);
 #endif
     for (amrex::MFIter mfi(lfab); mfi.isValid(); ++mfi) {
         func(lev, mfi);
