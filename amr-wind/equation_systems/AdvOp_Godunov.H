@@ -129,10 +129,6 @@ struct AdvectionOp<
 
         const bool mphase_vof = repo.field_exists("vof");
 
-        amrex::Print() << dof_field.base_name() << std::endl;    
-        amrex::Print() << (PDE::multiply_rho && !mphase_vof) << " "
-                       << PDE::multiply_rho << " " << mphase_vof << std::endl;
-
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
             amrex::MFItInfo mfi_info;
             if (amrex::Gpu::notInLaunchRegion()) {
