@@ -23,10 +23,10 @@ namespace amr_wind_tests {
 
 template <typename Functor>
 void run_algorithm_single_lev(
-    const int lev, amrex::MultiFab& lfab, const Functor& func)
+    const int lev, amrex::MultiFab& lfab, const Functor& func, const bool omp_parallel=false)
 {
 #ifdef AMREX_USE_OMP
-#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion() && omp_parallel)
 #endif
     for (amrex::MFIter mfi(lfab); mfi.isValid(); ++mfi) {
         func(lev, mfi);
@@ -35,10 +35,10 @@ void run_algorithm_single_lev(
 
 template <typename Functor>
 void run_algorithm_single_lev(
-    const int lev, amrex::iMultiFab& lfab, const Functor& func)
+    const int lev, amrex::iMultiFab& lfab, const Functor& func, const bool omp_parallel=false)
 {
 #ifdef AMREX_USE_OMP
-#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion() && omp_parallel)
 #endif
     for (amrex::MFIter mfi(lfab); mfi.isValid(); ++mfi) {
         func(lev, mfi);
@@ -49,21 +49,21 @@ template <typename Functor>
 void run_algorithm(
     const int nlevels,
     amrex::Vector<amrex::MultiFab*>& field,
-    const Functor& func)
+    const Functor& func, const bool omp_parallel=false)
 {
     for (int lev = 0; lev < nlevels; ++lev) {
         auto& lfab = *field[lev];
-        run_algorithm_single_lev(lev, lfab, func);
+        run_algorithm_single_lev(lev, lfab, func, omp_parallel);
     }
 }
 
 template <typename Functor>
-void run_algorithm(amr_wind::Field& field, const Functor& func)
+void run_algorithm(amr_wind::Field& field, const Functor& func, const bool omp_parallel=false)
 {
     const int nlevels = field.repo().num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
         auto& lfab = field(lev);
-        run_algorithm_single_lev(lev, lfab, func);
+        run_algorithm_single_lev(lev, lfab, func, omp_parallel);
     }
 }
 
@@ -71,21 +71,21 @@ template <typename Functor>
 void run_algorithm(
     const int nlevels,
     amrex::Vector<amrex::iMultiFab*>& intfield,
-    const Functor& func)
+    const Functor& func, const bool omp_parallel=false)
 {
     for (int lev = 0; lev < nlevels; ++lev) {
         auto& lfab = *intfield[lev];
-        run_algorithm_single_lev(lev, lfab, func);
+        run_algorithm_single_lev(lev, lfab, func, omp_parallel);
     }
 }
 
 template <typename Functor>
-void run_algorithm(amr_wind::IntField& intfield, const Functor& func)
+void run_algorithm(amr_wind::IntField& intfield, const Functor& func, const bool omp_parallel=false)
 {
     const int nlevels = intfield.repo().num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
         auto& lfab = intfield(lev);
-        run_algorithm_single_lev(lev, lfab, func);
+        run_algorithm_single_lev(lev, lfab, func, omp_parallel);
     }
 }
 
