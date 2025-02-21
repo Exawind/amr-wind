@@ -25,6 +25,9 @@ template <typename Functor>
 void run_algorithm_single_lev(
     const int lev, amrex::MultiFab& lfab, const Functor& func)
 {
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
     for (amrex::MFIter mfi(lfab); mfi.isValid(); ++mfi) {
         func(lev, mfi);
     }
@@ -34,6 +37,9 @@ template <typename Functor>
 void run_algorithm_single_lev(
     const int lev, amrex::iMultiFab& lfab, const Functor& func)
 {
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
     for (amrex::MFIter mfi(lfab); mfi.isValid(); ++mfi) {
         func(lev, mfi);
     }
