@@ -110,8 +110,6 @@ struct AdvectionOp<
         const auto& dof_field = fields.field.state(fstate);
         const auto& dof_nph = fields.field.state(amr_wind::FieldState::NPH);
 
-        const bool mphase_vof = repo.field_exists("vof");
-
         auto flux_x =
             repo.create_scratch_field(PDE::ndim, 0, amr_wind::FieldLoc::XFACE);
         auto flux_y =
@@ -128,6 +126,12 @@ struct AdvectionOp<
         // only needed if multiplying by rho below
         const auto& den = density.state(fstate);
         const auto& den_nph = density.state(amr_wind::FieldState::NPH);
+
+        const bool mphase_vof = repo.field_exists("vof");
+
+        amrex::Print() << dof_field.base_name() << std::endl;    
+        amrex::Print() << (PDE::multiply_rho && !mphase_vof) << " "
+                       << PDE::multiply_rho << " " << mphase_vof << std::endl;
 
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
             amrex::MFItInfo mfi_info;
@@ -204,9 +208,10 @@ struct AdvectionOp<
 
                     HydroUtils::ComputeFluxesOnBoxFromState(
                         bx, PDE::ndim, mfi,
-                        (PDE::multiply_rho && !mphase_vof ? rhotrac : tra_arr),
-                        (PDE::multiply_rho && !mphase_vof ? rhotrac_nph
-                                                          : tra_nph_arr),
+                        ((PDE::multiply_rho && !mphase_vof) ? rhotrac
+                                                            : tra_arr),
+                        ((PDE::multiply_rho && !mphase_vof) ? rhotrac_nph
+                                                            : tra_nph_arr),
                         (*flux_x)(lev).array(mfi), (*flux_y)(lev).array(mfi),
                         (*flux_z)(lev).array(mfi), (*face_x)(lev).array(mfi),
                         (*face_y)(lev).array(mfi), (*face_z)(lev).array(mfi),
@@ -229,10 +234,9 @@ struct AdvectionOp<
         if (mphase_vof) {
             // Loop levels
             multiphase::hybrid_fluxes(
-                repo, dof_field.num_comp(), iconserv, (*flux_x), (*flux_y),
-                (*flux_z), dof_field, dof_nph, src_term, den, den_nph, u_mac,
-                v_mac, w_mac, dof_field.bcrec(),
-                dof_field.bcrec_device().data(), den.bcrec(),
+                repo, PDE::ndim, iconserv, (*flux_x), (*flux_y), (*flux_z),
+                dof_field, dof_nph, src_term, den, den_nph, u_mac, v_mac, w_mac,
+                dof_field.bcrec(), dof_field.bcrec_device().data(), den.bcrec(),
                 den.bcrec_device().data(), dt, mflux_scheme,
                 m_allow_inflow_on_outflow, godunov_use_forces_in_trans);
         }
