@@ -58,7 +58,8 @@ TEST_F(ABLMeshTest, abl_init_netcdf)
 
             const auto& bx = mfi.validbox();
             ablinitfile(bx, mesh().Geom(lev), vel, lev);
-        }, false);
+        },
+        false);
 
     const int nlevels = mesh().num_levels();
     const amrex::Real tol = 1.0e-12;
