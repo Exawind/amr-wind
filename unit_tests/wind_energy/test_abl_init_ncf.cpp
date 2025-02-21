@@ -132,6 +132,9 @@ TEST_F(ABLMeshTest, abl_init_netcdf_multilevel)
     for (int lev = 0; lev < nlevels; ++lev) {
 
         // Fill base level using input file
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
         for (amrex::MFIter mfi(velocityf(lev)); mfi.isValid(); ++mfi) {
             auto vel = velocity[lev]->array(mfi);
             const auto& bx = mfi.validbox();
