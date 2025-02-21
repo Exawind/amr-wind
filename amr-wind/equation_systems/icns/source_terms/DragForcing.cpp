@@ -298,11 +298,11 @@ void DragForcing::operator()(
             (horizontal_drag_model)) {
             const amrex::Real z0 = std::max(terrainz0(i, j, k), z0_min);
             const amrex::GpuArray<amrex::Real, 4> cell_wind_x = {
-                vel(i - 1, j, k, 0), vel(i + 1, j, k, 0), vel(i, j - 1, k, 0),
+                vel(i - 1, j, k, 2), vel(i + 1, j, k, 2), vel(i, j - 1, k, 0),
                 vel(i, j + 1, k, 0)};
             const amrex::GpuArray<amrex::Real, 4> cell_wind_y = {
-                vel(i - 1, j, k, 1), vel(i + 1, j, k, 1), vel(i, j - 1, k, 1),
-                vel(i, j + 1, k, 1)};
+                vel(i - 1, j, k, 1), vel(i + 1, j, k, 1), vel(i, j - 1, k, 2),
+                vel(i, j + 1, k, 2)};
             const amrex::GpuArray<int, 4> cell_blanking = {
                 blank(i - 1, j, k), blank(i + 1, j, k), blank(i, j - 1, k),
                 blank(i, j + 1, k)};
