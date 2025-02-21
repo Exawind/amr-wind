@@ -13,6 +13,8 @@
 #include "AMReX_MultiFabUtil.H"
 #include "hydro_utils.H"
 
+#include "amr-wind/equation_systems/vof/vof_momentum_flux.H"
+
 namespace amr_wind::pde {
 
 /** Godunov advection operator for scalar transport equations
@@ -71,6 +73,16 @@ struct AdvectionOp<
                 "godunov_type is specified, the default weno_z is used.");
         }
 
+        // Flux calculation used in multiphase portions of domain
+        pp.query("mflux_type", mflux_type);
+        if (amrex::toLower(mflux_type) == "minmod") {
+            mflux_scheme = godunov::scheme::MINMOD;
+        } else if (amrex::toLower(mflux_type) == "upwind") {
+            mflux_scheme = godunov::scheme::UPWIND;
+        } else {
+            amrex::Abort("Invalid argument entered for mflux_type.");
+        }
+
         amrex::ParmParse pp_eq{fields_in.field.base_name()};
         pp_eq.query(
             "allow_inflow_at_pressure_outflow", m_allow_inflow_on_outflow);
@@ -97,6 +109,8 @@ struct AdvectionOp<
         auto& conv_term = fields.conv_term;
         const auto& dof_field = fields.field.state(fstate);
         const auto& dof_nph = fields.field.state(amr_wind::FieldState::NPH);
+
+        const bool mphase_vof = repo.field_exists("vof");
 
         auto flux_x =
             repo.create_scratch_field(PDE::ndim, 0, amr_wind::FieldLoc::XFACE);
@@ -190,8 +204,9 @@ struct AdvectionOp<
 
                     HydroUtils::ComputeFluxesOnBoxFromState(
                         bx, PDE::ndim, mfi,
-                        (PDE::multiply_rho ? rhotrac : tra_arr),
-                        (PDE::multiply_rho ? rhotrac_nph : tra_nph_arr),
+                        (PDE::multiply_rho && !mphase_vof ? rhotrac : tra_arr),
+                        (PDE::multiply_rho && !mphase_vof ? rhotrac_nph
+                                                          : tra_nph_arr),
                         (*flux_x)(lev).array(mfi), (*flux_y)(lev).array(mfi),
                         (*flux_z)(lev).array(mfi), (*face_x)(lev).array(mfi),
                         (*face_y)(lev).array(mfi), (*face_z)(lev).array(mfi),
@@ -208,6 +223,18 @@ struct AdvectionOp<
                     amrex::Abort("Invalid godunov scheme");
                 }
             }
+        }
+
+        // Multiphase flux operations
+        if (mphase_vof) {
+            // Loop levels
+            multiphase::hybrid_fluxes(
+                repo, dof_field.num_comp(), iconserv, (*flux_x), (*flux_y),
+                (*flux_z), dof_field, dof_nph, src_term, den, den_nph, u_mac,
+                v_mac, w_mac, dof_field.bcrec(),
+                dof_field.bcrec_device().data(), den.bcrec(),
+                den.bcrec_device().data(), dt, mflux_scheme,
+                m_allow_inflow_on_outflow, godunov_use_forces_in_trans);
         }
 
         amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>> fluxes(
@@ -253,7 +280,9 @@ struct AdvectionOp<
     amrex::Gpu::DeviceVector<int> iconserv;
 
     godunov::scheme godunov_scheme = godunov::scheme::WENOZ;
+    godunov::scheme mflux_scheme = godunov::scheme::UPWIND;
     std::string godunov_type{"weno_z"};
+    std::string mflux_type{"upwind"};
     const bool fluxes_are_area_weighted{false};
     bool godunov_use_forces_in_trans{false};
     bool m_allow_inflow_on_outflow{false};
