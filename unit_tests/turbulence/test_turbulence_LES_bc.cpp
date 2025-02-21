@@ -78,8 +78,8 @@ void init_field1(amr_wind::Field& fld, amrex::Real tgrad)
         const auto& farrs = fld(lev).arrays();
 
         amrex::ParallelFor(
-            fld(lev), fld.num_grow(), fld.num_comp(),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
+            fld(lev), fld.num_grow(),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 const amrex::Real z = problo[2] + (k + offset) * dx[2];
 
                 farrs[nbx](i, j, k, 0) = z * tgrad;
