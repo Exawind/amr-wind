@@ -28,12 +28,12 @@ bool ABLFieldInitFile::operator()(
     const int lev) const
 {
 #ifdef AMR_WIND_USE_NETCDF
-  // Load the netcdf file with data if specified in the inputs
+    // Load the netcdf file with data if specified in the inputs
     if (lev == 0) {
 #ifdef AMREX_USE_OMP
-      if (omp_in_parallel()) {
-        amrex::Abort("ABLFieldInitFile is not OMP thread safe");
-      }
+        if (omp_in_parallel()) {
+            amrex::Abort("ABLFieldInitFile is not OMP thread safe");
+        }
 #endif
 
         // Open the netcdf input file
