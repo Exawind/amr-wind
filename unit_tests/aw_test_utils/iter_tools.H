@@ -23,9 +23,7 @@ namespace amr_wind_tests {
 
 template <typename Functor>
 void run_algorithm_single_lev(
-    const int lev,
-    amrex::MultiFab& lfab,
-    const Functor& func)
+    const int lev, amrex::MultiFab& lfab, const Functor& func)
 {
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
@@ -37,9 +35,7 @@ void run_algorithm_single_lev(
 
 template <typename Functor>
 void run_algorithm_single_lev(
-    const int lev,
-    amrex::iMultiFab& lfab,
-    const Functor& func)
+    const int lev, amrex::iMultiFab& lfab, const Functor& func)
 {
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
@@ -62,9 +58,7 @@ void run_algorithm(
 }
 
 template <typename Functor>
-void run_algorithm(
-    amr_wind::Field& field,
-    const Functor& func)
+void run_algorithm(amr_wind::Field& field, const Functor& func)
 {
     const int nlevels = field.repo().num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
@@ -86,9 +80,7 @@ void run_algorithm(
 }
 
 template <typename Functor>
-void run_algorithm(
-    amr_wind::IntField& intfield,
-    const Functor& func)
+void run_algorithm(amr_wind::IntField& intfield, const Functor& func)
 {
     const int nlevels = intfield.repo().num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
