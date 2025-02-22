@@ -30,16 +30,6 @@ bool ABLFieldInitFile::operator()(
 #ifdef AMR_WIND_USE_NETCDF
     // Load the netcdf file with data if specified in the inputs
     if (lev == 0) {
-#ifdef AMREX_USE_OMP
-        if (omp_in_parallel()) {
-            amrex::Abort("ABLFieldInitFile is not OMP thread safe");
-        }
-#endif
-
-        // Open the netcdf input file
-        // This file should have the same dimensions as the simulation
-        auto ncf = ncutils::NCFile::open(m_ic_input, NC_NOWRITE);
-
         // Ensure that the input dimensions match the coarsest grid size
         const auto& domain = geom.Domain();
 
@@ -55,11 +45,6 @@ bool ABLFieldInitFile::operator()(
         auto k0 = amrex::max(vbx.smallEnd(2), domain.smallEnd(2));
         auto k1 = amrex::min(vbx.bigEnd(2), domain.bigEnd(2));
 
-        // The x, y and z velocity components (u, v, w)
-        auto uvel = ncf.var("uvel");
-        auto vvel = ncf.var("vvel");
-        auto wvel = ncf.var("wvel");
-
         // Loop through all points in the domain and set velocities to values
         // from the input file
         // start is the first index from where to read data
@@ -73,22 +58,42 @@ bool ABLFieldInitFile::operator()(
 
         // Working vector to read data onto host
         const auto dlen = count[0] * count[1] * count[2];
-        amrex::Vector<double> tmp(dlen, 0.0);
         // Vector to store the 3d data into a single array and set size
         amrex::Gpu::DeviceVector<amrex::Real> uvel_d(dlen, 0.0);
         amrex::Gpu::DeviceVector<amrex::Real> vvel_d(dlen, 0.0);
         amrex::Gpu::DeviceVector<amrex::Real> wvel_d(dlen, 0.0);
 
-        // Read the velocity components u, v, w and copy to device
-        uvel.get(tmp.data(), start, count);
-        amrex::Gpu::copy(
-            amrex::Gpu::hostToDevice, tmp.begin(), tmp.end(), uvel_d.begin());
-        vvel.get(tmp.data(), start, count);
-        amrex::Gpu::copy(
-            amrex::Gpu::hostToDevice, tmp.begin(), tmp.end(), vvel_d.begin());
-        wvel.get(tmp.data(), start, count);
-        amrex::Gpu::copy(
-            amrex::Gpu::hostToDevice, tmp.begin(), tmp.end(), wvel_d.begin());
+        // Open the netcdf input file
+        // This file should have the same dimensions as the simulation
+#ifdef AMREX_USE_OMP
+#pragma omp critical (ncf_open_close)
+#endif
+        {
+            auto ncf = ncutils::NCFile::open(m_ic_input, NC_NOWRITE);
+
+            // The x, y and z velocity components (u, v, w)
+            auto uvel = ncf.var("uvel");
+            auto vvel = ncf.var("vvel");
+            auto wvel = ncf.var("wvel");
+
+            // Read the velocity components u, v, w and copy to device
+            amrex::Vector<double> tmp(dlen, 0.0);
+            uvel.get(tmp.data(), start, count);
+            amrex::Gpu::copy(
+                amrex::Gpu::hostToDevice, tmp.begin(), tmp.end(),
+                uvel_d.begin());
+            vvel.get(tmp.data(), start, count);
+            amrex::Gpu::copy(
+                amrex::Gpu::hostToDevice, tmp.begin(), tmp.end(),
+                vvel_d.begin());
+            wvel.get(tmp.data(), start, count);
+            amrex::Gpu::copy(
+                amrex::Gpu::hostToDevice, tmp.begin(), tmp.end(),
+                wvel_d.begin());
+
+            // Close the netcdf file
+            ncf.close();
+        }
 
         // Pointers to velocity objects
         const auto* uvel_dptr = uvel_d.data();
@@ -109,8 +114,6 @@ bool ABLFieldInitFile::operator()(
                 velocity(i, j, k, 1) = vvel_dptr[idx];
                 velocity(i, j, k, 2) = wvel_dptr[idx];
             });
-        // Close the netcdf file
-        ncf.close();
         // Populated directly, do not fill from another level
         return false;
     } // Skip level and interpolate data from already loaded coarse levels
