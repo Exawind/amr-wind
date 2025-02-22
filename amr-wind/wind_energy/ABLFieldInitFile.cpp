@@ -66,7 +66,7 @@ bool ABLFieldInitFile::operator()(
         // Open the netcdf input file
         // This file should have the same dimensions as the simulation
 #ifdef AMREX_USE_OMP
-#pragma omp critical (ncf_open_close)
+#pragma omp critical(ncf_open_close)
 #endif
         {
             auto ncf = ncutils::NCFile::open(m_ic_input, NC_NOWRITE);
