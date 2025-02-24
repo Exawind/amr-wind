@@ -5,7 +5,7 @@
 
 namespace amr_wind::multiphase {
 
-static void hybrid_fluxes(
+static inline void hybrid_fluxes(
     const FieldRepo& repo,
     const int ncomp,
     const amrex::Gpu::DeviceVector<int>& iconserv,
