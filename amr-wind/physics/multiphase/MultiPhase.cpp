@@ -304,33 +304,34 @@ void MultiPhase::set_density_via_levelset()
         auto& density = m_density(lev);
         auto& levelset = (*m_levelset)(lev);
 
-        for (amrex::MFIter mfi(density); mfi.isValid(); ++mfi) {
-            const auto& vbx = mfi.growntilebox();
-            const auto& dx = geom[lev].CellSizeArray();
+        const auto& dx = geom[lev].CellSizeArray();
 
-            const amrex::Array4<amrex::Real>& phi = levelset.array(mfi);
-            const amrex::Array4<amrex::Real>& rho = density.array(mfi);
-            const amrex::Real eps = std::cbrt(2. * dx[0] * dx[1] * dx[2]);
-            const amrex::Real captured_rho1 = m_rho1;
-            const amrex::Real captured_rho2 = m_rho2;
-            amrex::ParallelFor(
-                vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    amrex::Real smooth_heaviside;
-                    if (phi(i, j, k) > eps) {
-                        smooth_heaviside = 1.0;
-                    } else if (phi(i, j, k) < -eps) {
-                        smooth_heaviside = 0.;
-                    } else {
-                        smooth_heaviside =
-                            0.5 *
-                            (1.0 + phi(i, j, k) / eps +
-                             1.0 / M_PI * std::sin(phi(i, j, k) * M_PI / eps));
-                    }
-                    rho(i, j, k) = captured_rho1 * smooth_heaviside +
-                                   captured_rho2 * (1.0 - smooth_heaviside);
-                });
-        }
+        const auto& phi_arrs = levelset.const_arrays();
+        const auto& rho_arrs = density.arrays();
+        const amrex::Real eps = std::cbrt(2. * dx[0] * dx[1] * dx[2]);
+        const amrex::Real captured_rho1 = m_rho1;
+        const amrex::Real captured_rho2 = m_rho2;
+        amrex::ParallelFor(
+            density, m_density.num_grow(),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                amrex::Real smooth_heaviside;
+                if (phi_arrs[nbx](i, j, k) > eps) {
+                    smooth_heaviside = 1.0;
+                } else if (phi_arrs[nbx](i, j, k) < -eps) {
+                    smooth_heaviside = 0.;
+                } else {
+                    smooth_heaviside =
+                        0.5 *
+                        (1.0 + phi_arrs[nbx](i, j, k) / eps +
+                         1.0 / M_PI *
+                             std::sin(phi_arrs[nbx](i, j, k) * M_PI / eps));
+                }
+                rho_arrs[nbx](i, j, k) =
+                    captured_rho1 * smooth_heaviside +
+                    captured_rho2 * (1.0 - smooth_heaviside);
+            });
     }
+    amrex::Gpu::synchronize();
 }
 
 void MultiPhase::set_density_via_vof(amr_wind::FieldState fstate)
@@ -341,19 +342,19 @@ void MultiPhase::set_density_via_vof(amr_wind::FieldState fstate)
         auto& density = m_density.state(fstate)(lev);
         auto& vof = (*m_vof).state(fstate)(lev);
 
-        for (amrex::MFIter mfi(density); mfi.isValid(); ++mfi) {
-            const auto& vbx = mfi.growntilebox();
-            const amrex::Array4<amrex::Real>& F = vof.array(mfi);
-            const amrex::Array4<amrex::Real>& rho = density.array(mfi);
-            const amrex::Real captured_rho1 = m_rho1;
-            const amrex::Real captured_rho2 = m_rho2;
-            amrex::ParallelFor(
-                vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    rho(i, j, k) = captured_rho1 * F(i, j, k) +
-                                   captured_rho2 * (1.0 - F(i, j, k));
-                });
-        }
+        const auto& F_arrs = vof.const_arrays();
+        const auto& rho_arrs = density.arrays();
+        const amrex::Real captured_rho1 = m_rho1;
+        const amrex::Real captured_rho2 = m_rho2;
+        amrex::ParallelFor(
+            density, m_density.num_grow(),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                rho_arrs[nbx](i, j, k) =
+                    captured_rho1 * F_arrs[nbx](i, j, k) +
+                    captured_rho2 * (1.0 - F_arrs[nbx](i, j, k));
+            });
     }
+    amrex::Gpu::synchronize();
 }
 
 void MultiPhase::set_nph_density()
