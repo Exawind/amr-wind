@@ -24,6 +24,9 @@ void auxiliary_fill_boundary(
             phi[normal] = ori.isHigh() ? minBox.hiVect()[normal] + 1 : -1;
             const amrex::Box domain_bdy_bx(plo, phi);
 
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
             for (amrex::MFIter mfi(velocity(lev), amrex::TilingIfNotGPU());
                  mfi.isValid(); ++mfi) {
 

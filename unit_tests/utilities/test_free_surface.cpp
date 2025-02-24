@@ -13,28 +13,24 @@ void init_vof(amr_wind::Field& vof_fld, amrex::Real water_level)
 
     // Since VOF is cell centered
     amrex::Real offset = 0.5;
-    // VOF has only one component
-    int d = 0;
 
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& dx = mesh.Geom(lev).CellSizeArray();
         const auto& problo = mesh.Geom(lev).ProbLoArray();
+        const auto& farrs = vof_fld(lev).arrays();
 
-        for (amrex::MFIter mfi(vof_fld(lev)); mfi.isValid(); ++mfi) {
-            auto bx = mfi.growntilebox();
-            const auto& farr = vof_fld(lev).array(mfi);
-
-            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+        amrex::ParallelFor(
+            vof_fld(lev), vof_fld.num_grow(),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 const amrex::Real z = problo[2] + (k + offset) * dx[2];
-
-                amrex::Real local_vof = amrex::min<amrex::Real>(
+                const amrex::Real local_vof = amrex::min<amrex::Real>(
                     1.0,
                     amrex::max<amrex::Real>(
                         0.0, (water_level - (z - offset * dx[2])) / dx[2]));
-                farr(i, j, k, d) = local_vof;
+                farrs[nbx](i, j, k) = local_vof;
             });
-        }
     }
+    amrex::Gpu::synchronize();
 }
 
 void init_vof_multival(
@@ -49,18 +45,15 @@ void init_vof_multival(
 
     // Since VOF is cell centered
     amrex::Real offset = 0.5;
-    // VOF has only one component
-    int d = 0;
 
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& dx = mesh.Geom(lev).CellSizeArray();
         const auto& problo = mesh.Geom(lev).ProbLoArray();
+        const auto& farrs = vof_fld(lev).arrays();
 
-        for (amrex::MFIter mfi(vof_fld(lev)); mfi.isValid(); ++mfi) {
-            auto bx = mfi.growntilebox();
-            const auto& farr = vof_fld(lev).array(mfi);
-
-            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+        amrex::ParallelFor(
+            vof_fld(lev), vof_fld.num_grow(),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 const amrex::Real z = problo[2] + (k + offset) * dx[2];
                 amrex::Real local_vof;
                 // Above wl1
@@ -83,10 +76,10 @@ void init_vof_multival(
                                 0.0, (wl2 - (z - offset * dx[2])) / dx[2]));
                     }
                 }
-                farr(i, j, k, d) = local_vof;
+                farrs[nbx](i, j, k) = local_vof;
             });
-        }
     }
+    amrex::Gpu::synchronize();
 }
 
 void init_vof_slope(
@@ -101,34 +94,31 @@ void init_vof_slope(
     // The interface has a slope in x and y and intersects the center of the
     // domain at the designated water level Since VOF is cell centered
     amrex::Real offset = 0.5;
-    // VOF has only one component
-    int d = 0;
 
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& dx = mesh.Geom(lev).CellSizeArray();
         const auto& problo = mesh.Geom(lev).ProbLoArray();
+        const auto& farrs = vof_fld(lev).arrays();
 
-        for (amrex::MFIter mfi(vof_fld(lev)); mfi.isValid(); ++mfi) {
-            auto bx = mfi.growntilebox();
-            const auto& farr = vof_fld(lev).array(mfi);
-
-            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+        amrex::ParallelFor(
+            vof_fld(lev), vof_fld.num_grow(),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 const amrex::Real x = problo[0] + (i + offset) * dx[0];
                 const amrex::Real y = problo[1] + (j + offset) * dx[1];
                 const amrex::Real z = problo[2] + (k + offset) * dx[2];
 
                 // Find height of interface at current x, y
-                amrex::Real local_ht = water_level +
-                                       slope * (x - 0.5 * domain_length) +
-                                       slope * (y - 0.5 * domain_length);
+                const amrex::Real local_ht = water_level +
+                                             slope * (x - 0.5 * domain_length) +
+                                             slope * (y - 0.5 * domain_length);
 
-                amrex::Real local_vof = amrex::min<amrex::Real>(
+                const amrex::Real local_vof = amrex::min<amrex::Real>(
                     1.0, amrex::max<amrex::Real>(
                              0.0, (local_ht - (z - offset * dx[2])) / dx[2]));
-                farr(i, j, k, d) = local_vof;
+                farrs[nbx](i, j, k) = local_vof;
             });
-        }
     }
+    amrex::Gpu::synchronize();
 }
 
 //! Custom mesh class to be able to refine like a simulation would

@@ -15,24 +15,22 @@ void init_velocity(
     amrex::Real lev0_fac)
 {
     const int nlevels = vel_fld.repo().num_active_levels();
-
+    const amrex::GpuArray<amrex::Real, 3> vels = {u, v, w};
     for (int lev = 0; lev < nlevels; ++lev) {
 
         // Apply a factor to the base level values
         const amrex::Real fac = (lev == 0) ? lev0_fac : 1.0;
+        const auto& farrs = vel_fld(lev).arrays();
 
-        for (amrex::MFIter mfi(vel_fld(lev)); mfi.isValid(); ++mfi) {
-            auto bx = mfi.growntilebox();
-            const auto& farr = vel_fld(lev).array(mfi);
-
-            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+        amrex::ParallelFor(
+            vel_fld(lev), vel_fld.num_grow(), vel_fld.num_comp(),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
                 // Mix positive and negative as check on L2 norm
-                farr(i, j, k, 0) = fac * (i % 2 == 0 ? u : -u);
-                farr(i, j, k, 1) = fac * (j % 2 == 0 ? v : -v);
-                farr(i, j, k, 2) = fac * (k % 2 == 0 ? w : -w);
+                farrs[nbx](i, j, k, n) =
+                    fac * (i % 2 == 0 ? vels[n] : -vels[n]);
             });
-        }
     }
+    amrex::Gpu::synchronize();
 }
 
 //! Custom mesh class to be able to refine like a simulation would

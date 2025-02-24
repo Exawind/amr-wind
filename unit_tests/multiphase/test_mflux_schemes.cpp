@@ -10,52 +10,49 @@ void init_scalar_increasing(amr_wind::Field& fld, int dir)
 {
     const int nlevels = fld.repo().num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
+        const auto& farrs = fld(lev).arrays();
 
-        for (amrex::MFIter mfi(fld(lev)); mfi.isValid(); ++mfi) {
-            auto bx = mfi.growntilebox(1);
-            const auto& farr = fld(lev).array(mfi);
-
-            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-                farr(i, j, k, 0) = (amrex::Real)(
+        amrex::ParallelFor(
+            fld(lev), amrex::IntVect(1),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
+                farrs[nbx](i, j, k, 0) = (amrex::Real)(
                     dir == 0 ? i * i : (dir == 1 ? j * j : k * k));
             });
-        }
     }
+    amrex::Gpu::synchronize();
 }
 
 void init_scalar_slopechange(amr_wind::Field& fld, int dir, int center)
 {
     const int nlevels = fld.repo().num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
+        const auto& farrs = fld(lev).arrays();
 
-        for (amrex::MFIter mfi(fld(lev)); mfi.isValid(); ++mfi) {
-            auto bx = mfi.growntilebox(1);
-            const auto& farr = fld(lev).array(mfi);
-
-            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-                farr(i, j, k, 0) = (amrex::Real)(
+        amrex::ParallelFor(
+            fld(lev), amrex::IntVect(1),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
+                farrs[nbx](i, j, k, 0) = (amrex::Real)(
                     dir == 0 ? std::abs(i - center)
                              : (dir == 1 ? std::abs(j - center)
                                          : std::abs(k - center)));
             });
-        }
     }
+    amrex::Gpu::synchronize();
 }
 
 void init_scalar_uniform(amr_wind::Field& fld, amrex::Real cst)
 {
     const int nlevels = fld.repo().num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
+        const auto& farrs = fld(lev).arrays();
 
-        for (amrex::MFIter mfi(fld(lev)); mfi.isValid(); ++mfi) {
-            auto bx = mfi.growntilebox(1);
-            const auto& farr = fld(lev).array(mfi);
-
-            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-                farr(i, j, k, 0) = cst;
+        amrex::ParallelFor(
+            fld(lev), amrex::IntVect(1),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
+                farrs[nbx](i, j, k, 0) = cst;
             });
-        }
     }
+    amrex::Gpu::synchronize();
 }
 
 void get_output_upwind(
@@ -80,24 +77,24 @@ void get_output_upwind(
         const auto dhi = amrex::ubound(domain);
 
         auto limiter = PPM::upwind();
+        const auto& farrs = fld(lev).arrays();
+        const auto& vel_mac_arrs = mac_fld(lev).const_arrays();
 
-        for (amrex::MFIter mfi(fld(lev)); mfi.isValid(); ++mfi) {
-            auto bx = mfi.validbox();
-            const auto& farr = fld(lev).const_array(mfi);
-            const auto& vel_mac = mac_fld(lev).const_array(mfi);
-
-            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+        amrex::ParallelFor(
+            fld(lev), amrex::IntVect(0),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 amrex::Real im_tmp, ip_tmp;
                 PPM::PredictStateOnXFace(
-                    i, j, k, 0, dt, dx[0], im_tmp, ip_tmp, farr, vel_mac,
-                    pbc[0], dlo.x, dhi.x, limiter, PPM::UPWIND);
+                    i, j, k, 0, dt, dx[0], im_tmp, ip_tmp, farrs[nbx],
+                    vel_mac_arrs[nbx], pbc[0], dlo.x, dhi.x, limiter,
+                    PPM::UPWIND);
                 if (i == ii && j == jj && k == kk) {
                     dout_ptr[0] = im_tmp;
                     dout_ptr[1] = ip_tmp;
                 }
             });
-        }
     }
+    amrex::Gpu::synchronize();
     amrex::Gpu::copy(
         amrex::Gpu::deviceToHost, dout.begin(), dout.begin() + 1, &Im);
     amrex::Gpu::copy(amrex::Gpu::deviceToHost, dout.end() - 1, dout.end(), &Ip);
@@ -126,35 +123,37 @@ void get_output_minmod(
         amrex::Box const& domain = fld.repo().mesh().Geom(lev).Domain();
         const auto dlo = amrex::lbound(domain);
         const auto dhi = amrex::ubound(domain);
+        const auto& farrs = fld(lev).arrays();
+        const auto& vel_mac_arrs = mac_fld(lev).const_arrays();
 
-        for (amrex::MFIter mfi(fld(lev)); mfi.isValid(); ++mfi) {
-            auto bx = mfi.validbox();
-            const auto& farr = fld(lev).const_array(mfi);
-            const auto& vel_mac = mac_fld(lev).const_array(mfi);
-
-            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+        amrex::ParallelFor(
+            fld(lev), amrex::IntVect(0),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 amrex::Real im_tmp = 0.0;
                 amrex::Real ip_tmp = 0.0;
                 if (dir == 0) {
                     PPM::PredictStateOnXFace(
-                        i, j, k, 0, dt, dx[0], im_tmp, ip_tmp, farr, vel_mac,
-                        pbc[0], dlo.x, dhi.x, limiter, PPM::MINMOD);
+                        i, j, k, 0, dt, dx[0], im_tmp, ip_tmp, farrs[nbx],
+                        vel_mac_arrs[nbx], pbc[0], dlo.x, dhi.x, limiter,
+                        PPM::MINMOD);
                 } else if (dir == 1) {
                     PPM::PredictStateOnYFace(
-                        i, j, k, 0, dt, dx[1], im_tmp, ip_tmp, farr, vel_mac,
-                        pbc[0], dlo.y, dhi.y, limiter, PPM::MINMOD);
+                        i, j, k, 0, dt, dx[1], im_tmp, ip_tmp, farrs[nbx],
+                        vel_mac_arrs[nbx], pbc[0], dlo.y, dhi.y, limiter,
+                        PPM::MINMOD);
                 } else if (dir == 2) {
                     PPM::PredictStateOnZFace(
-                        i, j, k, 0, dt, dx[2], im_tmp, ip_tmp, farr, vel_mac,
-                        pbc[0], dlo.z, dhi.z, limiter, PPM::MINMOD);
+                        i, j, k, 0, dt, dx[2], im_tmp, ip_tmp, farrs[nbx],
+                        vel_mac_arrs[nbx], pbc[0], dlo.z, dhi.z, limiter,
+                        PPM::MINMOD);
                 }
                 if (i == ii && j == jj && k == kk) {
                     dout_ptr[0] = im_tmp;
                     dout_ptr[1] = ip_tmp;
                 }
             });
-        }
     }
+    amrex::Gpu::synchronize();
     amrex::Gpu::copy(
         amrex::Gpu::deviceToHost, dout.begin(), dout.begin() + 1, &Im);
     amrex::Gpu::copy(amrex::Gpu::deviceToHost, dout.end() - 1, dout.end(), &Ip);

@@ -139,9 +139,11 @@ struct AdvectionOp<
                 if (PDE::multiply_rho) {
                     auto rhotrac_box =
                         amrex::grow(bx, fvm::Godunov::nghost_state);
-                    rhotracfab.resize(rhotrac_box, PDE::ndim);
+                    rhotracfab.resize(
+                        rhotrac_box, PDE::ndim, amrex::The_Async_Arena());
                     rhotrac = rhotracfab.array();
-                    rhotrac_nph_fab.resize(rhotrac_box, PDE::ndim);
+                    rhotrac_nph_fab.resize(
+                        rhotrac_box, PDE::ndim, amrex::The_Async_Arena());
                     rhotrac_nph = rhotrac_nph_fab.array();
 
                     amrex::ParallelFor(
@@ -161,7 +163,8 @@ struct AdvectionOp<
                     (godunov_scheme == godunov::scheme::WENOZ) ||
                     (godunov_scheme == godunov::scheme::WENO_JS) ||
                     (godunov_scheme == godunov::scheme::BDS)) {
-                    amrex::FArrayBox tmpfab(amrex::grow(bx, 1), 1);
+                    amrex::FArrayBox tmpfab(
+                        amrex::grow(bx, 1), 1, amrex::The_Async_Arena());
                     tmpfab.setVal<amrex::RunOn::Device>(0.0);
                     const auto& divu = tmpfab.array();
                     const bool is_velocity = false;
@@ -204,7 +207,6 @@ struct AdvectionOp<
                 } else {
                     amrex::Abort("Invalid godunov scheme");
                 }
-                amrex::Gpu::streamSynchronize();
             }
         }
 
