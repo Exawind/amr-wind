@@ -163,7 +163,8 @@ struct AdvectionOp<
                         rhotrac_box, PDE::ndim, amrex::The_Async_Arena());
                     rhotrac_nph = rhotrac_nph_fab.array();
                     if (mphase_vof) {
-                        srctrac_over_rho_fab.resize(rhotrac_box, PDE::ndim);
+                        srctrac_over_rho_fab.resize(
+                            rhotrac_box, PDE::ndim, amrex::The_Async_Arena());
                         srctrac_over_rho = srctrac_over_rho_fab.array();
                     }
 
