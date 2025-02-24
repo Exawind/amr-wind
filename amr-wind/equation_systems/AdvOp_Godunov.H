@@ -149,6 +149,9 @@ struct AdvectionOp<
                 amrex::Array4<amrex::Real> rhotrac;
                 amrex::FArrayBox rhotrac_nph_fab;
                 amrex::Array4<amrex::Real> rhotrac_nph;
+                amrex::FArrayBox srctrac_over_rho_fab;
+                amrex::Array4<amrex::Real> srctrac_over_rho;
+                const auto& src_arr = src_term(lev).const_array(mfi);
 
                 if (PDE::multiply_rho) {
                     auto rhotrac_box =
@@ -159,6 +162,10 @@ struct AdvectionOp<
                     rhotrac_nph_fab.resize(
                         rhotrac_box, PDE::ndim, amrex::The_Async_Arena());
                     rhotrac_nph = rhotrac_nph_fab.array();
+                    if (mphase_vof) {
+                        srctrac_over_rho_fab.resize(rhotrac_box, PDE::ndim);
+                        srctrac_over_rho = srctrac_over_rho_fab.array();
+                    }
 
                     amrex::ParallelFor(
                         rhotrac_box, PDE::ndim,
@@ -168,6 +175,13 @@ struct AdvectionOp<
                                 rho_arr(i, j, k) * tra_arr(i, j, k, n);
                             rhotrac_nph(i, j, k, n) =
                                 rho_nph_arr(i, j, k) * tra_nph_arr(i, j, k, n);
+                            if (mphase_vof) {
+                                // Need to remove the effect of the multiply_rho
+                                // routine -- the setup is different for
+                                // mass-consistent multiphase advection
+                                srctrac_over_rho(i, j, k, n) =
+                                    src_arr(i, j, k, n) / rho_nph_arr(i, j, k);
+                            }
                         });
                 }
 
@@ -214,12 +228,14 @@ struct AdvectionOp<
                         known_edge_state, u_mac(lev).const_array(mfi),
                         v_mac(lev).const_array(mfi),
                         w_mac(lev).const_array(mfi), divu,
-                        src_term(lev).const_array(mfi), geom[lev], dt_extrap,
-                        dof_field.bcrec(), dof_field.bcrec_device().data(),
-                        iconserv.data(), godunov_use_ppm,
-                        godunov_use_forces_in_trans, is_velocity,
-                        fluxes_are_area_weighted, advection_type, limiter_type,
-                        m_allow_inflow_on_outflow);
+                        ((PDE::multiply_rho && mphase_vof)
+                             ? srctrac_over_rho
+                             : src_term(lev).const_array(mfi)),
+                        geom[lev], dt_extrap, dof_field.bcrec(),
+                        dof_field.bcrec_device().data(), iconserv.data(),
+                        godunov_use_ppm, godunov_use_forces_in_trans,
+                        is_velocity, fluxes_are_area_weighted, advection_type,
+                        limiter_type, m_allow_inflow_on_outflow);
                 } else {
                     amrex::Abort("Invalid godunov scheme");
                 }
@@ -227,14 +243,14 @@ struct AdvectionOp<
         }
 
         // Multiphase flux operations
-        if (mphase_vof) {
+        if (mphase_vof && PDE::multiply_rho) {
             // Loop levels
             multiphase::hybrid_fluxes(
                 repo, PDE::ndim, iconserv, (*flux_x), (*flux_y), (*flux_z),
                 dof_field, dof_nph, src_term, den, den_nph, u_mac, v_mac, w_mac,
                 dof_field.bcrec(), dof_field.bcrec_device().data(), den.bcrec(),
                 den.bcrec_device().data(), dt, mflux_scheme,
-                m_allow_inflow_on_outflow, godunov_use_forces_in_trans);
+                m_allow_inflow_on_outflow, godunov_use_forces_in_trans, true);
         }
 
         amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>> fluxes(
