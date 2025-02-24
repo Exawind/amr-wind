@@ -105,7 +105,7 @@ private:
     const ABLWallFunction& m_wall_func;
     std::string m_wall_shear_stress_type{"moeng"};
     std::string m_wall_het_model{"none"};
-    amrex::Real m_mol_length{10000};
+    amrex::Real m_mol_length{-1e30};
     amrex::Real m_z0{0.1};
     amrex::Real m_kappa{0.41};
     amrex::Real m_gamma_m{5.0};

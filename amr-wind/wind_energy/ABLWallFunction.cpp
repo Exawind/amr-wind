@@ -393,8 +393,6 @@ void ABLTempWallFunc::wall_model(
                     const amrex::Real z = 0.5 * dx[2];
                     const amrex::Real zeta = z / m_mol_length;
                     amrex::Real psi_m = 0.0;
-                    amrex::Real psi_h = 0.0;
-                    amrex::Real phi_h = 1.0;
                     if (zeta > 0) {
                         psi_m = -m_gamma_m * zeta;
                     } else {
@@ -403,14 +401,6 @@ void ABLTempWallFunc::wall_model(
                         psi_m = 2.0 * std::log(0.5 * (1.0 + x)) +
                                 log(0.5 * (1 + x * x)) - 2.0 * std::atan(x) +
                                 utils::half_pi();
-                    }
-                    if (zeta > 0) {
-                        psi_h = -m_gamma_h * zeta;
-                        phi_h = 1 + m_gamma_h * zeta;
-                    } else {
-                        amrex::Real x = std::sqrt(1 - m_beta_h * zeta);
-                        psi_h = 2.0 * std::log(0.5 * (1 + x));
-                        phi_h = 1.0 / std::sqrt(1 - m_beta_h * zeta);
                     }
                     const amrex::Real z0 = m_z0;
                     const amrex::Real kappa = m_kappa;
@@ -428,19 +418,14 @@ void ABLTempWallFunc::wall_model(
                             const amrex::Real drag = std::log(z / z0) - psi_m;
                             const amrex::Real ustar = wspd * kappa / drag;
                             const amrex::Real thetastar =
-                                -theta2 * ustar * ustar /
+                                theta2 * ustar * ustar /
                                 (kappa * gravity_mod * mol_length);
                             const amrex::Real surf_temp_flux =
-                                -ustar * thetastar;
-                            const amrex::Real surf_temp =
-                                surf_temp_flux * (std::log(z / z0) - psi_h) /
-                                    (ustar * kappa) +
-                                theta2;
+                                ustar * thetastar;
                             const amrex::Real blankTerrain =
                                 (has_terrain) ? 1 - blank_arr(i, j, k, 0) : 1.0;
                             tarr(i, j, k - 1) = blankTerrain * den(i, j, k) *
-                                                ustar * kappa / phi_h *
-                                                (theta2 - surf_temp) / alphaT;
+                                                surf_temp_flux / alphaT;
                         });
                 } else {
                     amrex::ParallelFor(
