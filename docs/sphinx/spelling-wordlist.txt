@@ -84,6 +84,7 @@ iteratively
 Kosovic
 levelset
 lidar
+mol
 mesoscale
 microscale
 multigrid

@@ -220,3 +220,18 @@ This section is for setting atmospheric boundary layer parameters.
 
    `ICNS.source_terms  = VelocityFreeAtmosphereForcing`
 
+.. input_param:: ABL.wall_het_model
+
+   **type:** String, optional, default = "none"
+
+   Allows the use of different surface model options for the Monin-Obukhov length. Currently supports two options:
+   (i) "none" - original model in the code and (ii) "mol" - Monin-Obukhov length is constant while heat-flux varies 
+
+.. input_param:: ABL.mol_length
+
+   **type:** Real, optional, default = -1e30 
+
+   Used in conjunction with `ABL.wall_het_model`. The default value runs a neutral boundary layer. 
+
+
+
