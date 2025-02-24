@@ -71,8 +71,6 @@ void DragTempForcing::operator()(
     amrex::Array4<amrex::Real> const& ref_theta_arr = ref_theta_fab.array();
     m_transport.ref_theta_impl(lev, mfi, bx, ref_theta_arr);
     const amrex::Real gravity_mod = std::abs(m_gravity[2]);
-    amrex::Real psi_h_neighbour = 0.0;
-    amrex::Real psi_h_cell = 0.0;
     const amrex::Real kappa = m_kappa;
     const amrex::Real z0_min = 1e-4;
     const amrex::Real mol_length = m_mol_length;
