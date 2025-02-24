@@ -139,20 +139,20 @@ public:
             const auto& vof = m_repo.get_field("vof");
 
             for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
-                for (amrex::MFIter mfi((*mu)(lev)); mfi.isValid(); ++mfi) {
-                    const auto& vbx = mfi.growntilebox();
-                    const auto& volfrac = vof(lev).const_array(mfi);
-                    const auto& visc = (*mu)(lev).array(mfi);
-                    const amrex::Real mu1 = m_mu1;
-                    const amrex::Real mu2 = m_mu2;
-                    amrex::ParallelFor(
-                        vbx,
-                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            visc(i, j, k) = mu1 * volfrac(i, j, k) +
-                                            mu2 * (1.0 - volfrac(i, j, k));
-                        });
-                }
+                const auto& volfrac_arrs = vof(lev).const_arrays();
+                const auto& visc_arrs = (*mu)(lev).arrays();
+                const amrex::Real mu1 = m_mu1;
+                const amrex::Real mu2 = m_mu2;
+                amrex::ParallelFor(
+                    (*mu)(lev), mu->num_grow(),
+                    [=] AMREX_GPU_DEVICE(
+                        int nbx, int i, int j, int k) noexcept {
+                        visc_arrs[nbx](i, j, k) =
+                            mu1 * volfrac_arrs[nbx](i, j, k) +
+                            mu2 * (1.0 - volfrac_arrs[nbx](i, j, k));
+                    });
             }
+            amrex::Gpu::synchronize();
 
         } else if (ifacetype == InterfaceCapturingMethod::LS) {
 
@@ -160,35 +160,36 @@ public:
             const auto& geom = m_repo.mesh().Geom();
 
             for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
-                for (amrex::MFIter mfi((*mu)(lev)); mfi.isValid(); ++mfi) {
-                    const auto& vbx = mfi.growntilebox();
-                    const auto& dx = geom[lev].CellSizeArray();
-                    const auto& visc = (*mu)(lev).array(mfi);
-                    const auto& phi = levelset(lev).const_array(mfi);
-                    const amrex::Real eps =
-                        std::cbrt(2. * dx[0] * dx[1] * dx[2]);
-                    const amrex::Real mu1 = m_mu1;
-                    const amrex::Real mu2 = m_mu2;
-                    amrex::ParallelFor(
-                        vbx,
-                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            amrex::Real smooth_heaviside;
-                            if (phi(i, j, k) > eps) {
-                                smooth_heaviside = 1.0;
-                            } else if (phi(i, j, k) < -eps) {
-                                smooth_heaviside = 0.;
-                            } else {
-                                smooth_heaviside =
-                                    0.5 *
-                                    (1.0 + phi(i, j, k) / eps +
-                                     1.0 / M_PI *
-                                         std::sin(phi(i, j, k) * M_PI / eps));
-                            }
-                            visc(i, j, k) = mu1 * smooth_heaviside +
-                                            mu2 * (1.0 - smooth_heaviside);
-                        });
-                }
+                const auto& dx = geom[lev].CellSizeArray();
+                const auto& visc_arrs = (*mu)(lev).arrays();
+                const auto& phi_arrs = levelset(lev).const_arrays();
+                const amrex::Real eps = std::cbrt(2. * dx[0] * dx[1] * dx[2]);
+                const amrex::Real mu1 = m_mu1;
+                const amrex::Real mu2 = m_mu2;
+
+                amrex::ParallelFor(
+                    (*mu)(lev), mu->num_grow(),
+                    [=] AMREX_GPU_DEVICE(
+                        int nbx, int i, int j, int k) noexcept {
+                        amrex::Real smooth_heaviside;
+                        if (phi_arrs[nbx](i, j, k) > eps) {
+                            smooth_heaviside = 1.0;
+                        } else if (phi_arrs[nbx](i, j, k) < -eps) {
+                            smooth_heaviside = 0.;
+                        } else {
+                            smooth_heaviside =
+                                0.5 *
+                                (1.0 + phi_arrs[nbx](i, j, k) / eps +
+                                 1.0 / M_PI *
+                                     std::sin(
+                                         phi_arrs[nbx](i, j, k) * M_PI / eps));
+                        }
+                        visc_arrs[nbx](i, j, k) =
+                            mu1 * smooth_heaviside +
+                            mu2 * (1.0 - smooth_heaviside);
+                    });
             }
+            amrex::Gpu::synchronize();
         }
         return mu;
     }
@@ -205,63 +206,59 @@ public:
             const auto& vof = m_repo.get_field("vof");
 
             for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
-                for (amrex::MFIter mfi((*alpha)(lev)); mfi.isValid(); ++mfi) {
-                    const auto& vbx = mfi.growntilebox();
-                    const auto& volfrac = vof(lev).const_array(mfi);
-                    const auto& thdiff = (*alpha)(lev).array(mfi);
-                    const amrex::Real mu1 = m_mu1;
-                    const amrex::Real mu2 = m_mu2;
-                    const amrex::Real Pr1 = m_Pr1;
-                    const amrex::Real Pr2 = m_Pr2;
-                    amrex::ParallelFor(
-                        vbx,
-                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            thdiff(i, j, k) =
-                                mu1 / Pr1 * volfrac(i, j, k) +
-                                mu2 / Pr2 * (1.0 - volfrac(i, j, k));
-                        });
-                }
+                const auto& volfrac_arrs = vof(lev).const_arrays();
+                const auto& thdiff_arrs = (*alpha)(lev).arrays();
+                const amrex::Real mu1 = m_mu1;
+                const amrex::Real mu2 = m_mu2;
+                const amrex::Real Pr1 = m_Pr1;
+                const amrex::Real Pr2 = m_Pr2;
+                amrex::ParallelFor(
+                    (*alpha)(lev), alpha->num_grow(),
+                    [=] AMREX_GPU_DEVICE(
+                        int nbx, int i, int j, int k) noexcept {
+                        thdiff_arrs[nbx](i, j, k) =
+                            mu1 / Pr1 * volfrac_arrs[nbx](i, j, k) +
+                            mu2 / Pr2 * (1.0 - volfrac_arrs[nbx](i, j, k));
+                    });
             }
 
         } else if (ifacetype == InterfaceCapturingMethod::LS) {
-
             const auto& levelset = m_repo.get_field("levelset");
             const auto& geom = m_repo.mesh().Geom();
 
             for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
-                for (amrex::MFIter mfi((*alpha)(lev)); mfi.isValid(); ++mfi) {
-                    const auto& vbx = mfi.growntilebox();
-                    const auto& dx = geom[lev].CellSizeArray();
-                    const auto& visc = (*alpha)(lev).array(mfi);
-                    const auto& phi = levelset(lev).const_array(mfi);
-                    const amrex::Real eps =
-                        std::cbrt(2. * dx[0] * dx[1] * dx[2]);
-                    const amrex::Real mu1 = m_mu1;
-                    const amrex::Real mu2 = m_mu2;
-                    const amrex::Real Pr1 = m_Pr1;
-                    const amrex::Real Pr2 = m_Pr2;
-                    amrex::ParallelFor(
-                        vbx,
-                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            amrex::Real smooth_heaviside;
-                            if (phi(i, j, k) > eps) {
-                                smooth_heaviside = 1.0;
-                            } else if (phi(i, j, k) < -eps) {
-                                smooth_heaviside = 0.;
-                            } else {
-                                smooth_heaviside =
-                                    0.5 *
-                                    (1.0 + phi(i, j, k) / eps +
-                                     1.0 / M_PI *
-                                         std::sin(phi(i, j, k) * M_PI / eps));
-                            }
-                            visc(i, j, k) =
-                                mu1 / Pr1 * smooth_heaviside +
-                                mu2 / Pr2 * (1.0 - smooth_heaviside);
-                        });
-                }
+                const auto& dx = geom[lev].CellSizeArray();
+                const auto& visc_arrs = (*alpha)(lev).arrays();
+                const auto& phi_arrs = levelset(lev).const_arrays();
+                const amrex::Real eps = std::cbrt(2. * dx[0] * dx[1] * dx[2]);
+                const amrex::Real mu1 = m_mu1;
+                const amrex::Real mu2 = m_mu2;
+                const amrex::Real Pr1 = m_Pr1;
+                const amrex::Real Pr2 = m_Pr2;
+                amrex::ParallelFor(
+                    (*alpha)(lev), alpha->num_grow(),
+                    [=] AMREX_GPU_DEVICE(
+                        int nbx, int i, int j, int k) noexcept {
+                        amrex::Real smooth_heaviside;
+                        if (phi_arrs[nbx](i, j, k) > eps) {
+                            smooth_heaviside = 1.0;
+                        } else if (phi_arrs[nbx](i, j, k) < -eps) {
+                            smooth_heaviside = 0.;
+                        } else {
+                            smooth_heaviside =
+                                0.5 *
+                                (1.0 + phi_arrs[nbx](i, j, k) / eps +
+                                 1.0 / M_PI *
+                                     std::sin(
+                                         phi_arrs[nbx](i, j, k) * M_PI / eps));
+                        }
+                        visc_arrs[nbx](i, j, k) =
+                            mu1 / Pr1 * smooth_heaviside +
+                            mu2 / Pr2 * (1.0 - smooth_heaviside);
+                    });
             }
         }
+        amrex::Gpu::synchronize();
         return alpha;
     }
 
