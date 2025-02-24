@@ -137,7 +137,7 @@ void fixup_eta_on_domain_faces(
         mfi_info.SetDynamic(true);
     }
 #ifdef AMREX_USE_OMP
-#pragma omp parallel if false
+#pragma omp parallel if (false)
 #endif
     for (MFIter mfi(cc, mfi_info); mfi.isValid(); ++mfi) {
         const auto& bx = mfi.validbox();
