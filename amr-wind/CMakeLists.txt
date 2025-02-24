@@ -33,12 +33,13 @@ add_subdirectory(overset)
 add_subdirectory(immersed_boundary)
 add_subdirectory(mesh_mapping_models)
 add_subdirectory(ocean_waves)
+add_subdirectory(eos_models)
 
 include(AMReXBuildInfo)
 generate_buildinfo(${amr_wind_lib_name} ${CMAKE_SOURCE_DIR})
 
 # Generate AMR-Wind version header
-configure_file("${CMAKE_SOURCE_DIR}/cmake/AMRWindVersion.H.in"
+configure_file("${PROJECT_SOURCE_DIR}/cmake/AMRWindVersion.H.in"
   "${CMAKE_CURRENT_BINARY_DIR}/AMRWindVersion.H" @ONLY)
 
 target_link_libraries_system(${amr_wind_lib_name} PUBLIC AMReX::amrex AMReX-Hydro::amrex_hydro_api)

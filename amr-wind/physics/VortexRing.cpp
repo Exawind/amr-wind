@@ -192,7 +192,8 @@ void VortexRing::initialize_velocity(const VortexRingType& vorticity_theta)
 
     amrex::MLNodeLaplacian linop(
         mesh.Geom(0, mesh.finestLevel()), mesh.boxArray(0, mesh.finestLevel()),
-        mesh.DistributionMap(0, mesh.finestLevel()), info, {}, 1.0);
+        mesh.DistributionMap(0, mesh.finestLevel()), info,
+        amrex::Vector<amrex::FabFactory<amrex::FArrayBox> const*>{}, 1.0);
 
     amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM> bclo;
     amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM> bchi;

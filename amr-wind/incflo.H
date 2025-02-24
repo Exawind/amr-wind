@@ -13,6 +13,8 @@
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/overset/OversetOps.H"
 
+#include "amr-wind/wind_energy/ABLReadERFFunction.H"
+class MultiBlockContainer;
 namespace amr_wind {
 namespace pde {
 class PDEBase;
@@ -57,6 +59,9 @@ public:
 
     // Evolve solution to final time through repeated calls to Advance()
     void Evolve();
+
+    // Evolve solution in a multiblock framework by desired number of steps
+    void Evolve_MultiBlock(int multiblock_step, int max_block_step);
 
     // Tag cells for refinement
     void
@@ -150,6 +155,12 @@ public:
     void init_physics_and_pde();
 
     void ReadCheckpointFile();
+
+    void SetMultiBlockPointer(MultiBlockContainer* mbc) { m_sim.set_mbc(mbc); }
+    void set_read_erf(ReadERFFunction fcn)
+    {
+        m_sim.set_read_erf(std::move(fcn));
+    }
 
 private:
     //

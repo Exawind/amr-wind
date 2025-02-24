@@ -1,0 +1,62 @@
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#            SIMULATION STOP            #
+#.......................................#
+time.stop_time               =   20     # Max (simulated) time to evolve
+time.max_step                =   10      # Max number of time steps
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#         TIME STEP COMPUTATION         #
+#.......................................#
+time.fixed_dt         	= 0.1        # Use this constant dt if > 0
+time.cfl              	= 0.95         # CFL factor
+time.use_force_cfl		= false
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#            INPUT AND OUTPUT           #
+#.......................................#
+time.plot_interval            	=  10       # Steps between plot files
+time.checkpoint_interval   		=  -1       # Steps between checkpoint files
+io.outputs 			= ow_velocity ow_vof velocity_src_term
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#               PHYSICS                 #
+#.......................................#
+transport.model = TwoPhaseTransport
+turbulence.model = Laminar 
+
+incflo.physics = MultiPhase OceanWaves TerrainDrag
+TerrainDrag.terrain_file = "channel.amrwind"
+OceanWaves.label = Wave1
+OceanWaves.Wave1.type = LinearWaves
+OceanWaves.Wave1.wave_height=1.0
+OceanWaves.Wave1.wave_length=50.0
+OceanWaves.Wave1.water_depth=25.0
+OceanWaves.Wave1.relax_zone_gen_length=5.0
+OceanWaves.Wave1.numerical_beach_length=5.0
+OceanWaves.Wave1.numerical_beach_length_factor=2.0
+OceanWaves.Wave1.current=2.0
+MultiPhase.density_fluid1=1025.0
+MultiPhase.density_fluid2=1.225
+
+ICNS.source_terms = GravityForcing DragForcing
+ICNS.use_perturb_pressure = 1
+DragForcing.is_laminar    = 1
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#        ADAPTIVE MESH REFINEMENT       #
+#.......................................#
+amr.n_cell              = 64 32 32    # Grid cells at coarsest AMRlevel
+amr.max_level = 0
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#              GEOMETRY                 #
+#.......................................#
+geometry.prob_lo        =     0.0	-25.0 -25.0   # Lo corner coordinates
+geometry.prob_hi        =     100.0	 25.0  25.0   # Hi corner coordinates
+geometry.is_periodic    =     0      0     0   # Periodicity x y z (0/1)
+
+xlo.type =     "wave_generation"
+xhi.type =     "pressure_outflow"
+ylo.type =     "slip_wall"
+yhi.type =     "slip_wall"
+zlo.type =     "slip_wall"
+zhi.type =     "slip_wall"
