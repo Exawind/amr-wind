@@ -10,16 +10,15 @@ void init_density(amr_wind::Field& density, const int k_thresh = -3)
     const int nlevels = density.repo().num_active_levels();
 
     for (int lev = 0; lev < nlevels; ++lev) {
+        const auto& darrs = density(lev).arrays();
 
-        for (amrex::MFIter mfi(density(lev)); mfi.isValid(); ++mfi) {
-            auto gbx = mfi.growntilebox();
-            const auto& darr = density(lev).array(mfi);
-
-            amrex::ParallelFor(gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-                darr(i, j, k) = (k > k_thresh) ? k + 4 : 0.0;
+        amrex::ParallelFor(
+            density(lev), density.num_grow(),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
+                darrs[nbx](i, j, k) = (k > k_thresh) ? k + 4 : 0.0;
             });
-        }
     }
+    amrex::Gpu::synchronize();
 }
 
 amrex::Real get_fgz_sum(amr_wind::Field& src_term)

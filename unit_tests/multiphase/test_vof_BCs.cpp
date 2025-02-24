@@ -24,7 +24,11 @@ void get_accuracy_vofsol(
     const amr_wind::Field& vof)
 {
     /* -- Check VOF boundary values from fillpatch -- */
-    for (amrex::MFIter mfi(vof(lev)); mfi.isValid(); ++mfi) {
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
+    for (amrex::MFIter mfi(vof(lev), amrex::TilingIfNotGPU()); mfi.isValid();
+         ++mfi) {
         auto err_arr = err_fld(lev).array(mfi);
         const auto& vof_arr = vof(lev).array(mfi);
         // Check lo and hi
@@ -81,7 +85,11 @@ void get_accuracy_advalpha(
     const amr_wind::Field& advalpha_f)
 {
     /* -- Check VOF boundary fluxes -- */
-    for (amrex::MFIter mfi(vof(lev)); mfi.isValid(); ++mfi) {
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
+    for (amrex::MFIter mfi(vof(lev), amrex::TilingIfNotGPU()); mfi.isValid();
+         ++mfi) {
 
         auto err_arr = err_fld(lev).array(mfi);
         const auto& af = advalpha_f(lev).array(mfi);

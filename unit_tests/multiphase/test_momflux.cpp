@@ -15,20 +15,17 @@ void init_field3(
     const amrex::Real in2)
 {
     const int nlevels = fld.repo().num_active_levels();
+    const amrex::GpuArray<amrex::Real, 3> ins = {in0, in1, in2};
 
     for (int lev = 0; lev < nlevels; ++lev) {
-
-        for (amrex::MFIter mfi(fld(lev)); mfi.isValid(); ++mfi) {
-            auto bx = mfi.growntilebox();
-            const auto& farr = fld(lev).array(mfi);
-
-            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-                farr(i, j, k, 0) = in0;
-                farr(i, j, k, 1) = in1;
-                farr(i, j, k, 2) = in2;
+        const auto& farrs = fld(lev).arrays();
+        amrex::ParallelFor(
+            fld(lev), fld.num_grow(), fld.num_comp(),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
+                farrs[nbx](i, j, k, n) = ins[n];
             });
-        }
     }
+    amrex::Gpu::synchronize();
 }
 
 void initialize_volume_fractions(
