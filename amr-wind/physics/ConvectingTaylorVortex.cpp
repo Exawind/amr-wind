@@ -156,8 +156,11 @@ void ConvectingTaylorVortex::initialize_fields(
     GpyExact gpy_exact;
     GpzExact gpz_exact;
 
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
     for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
-        const auto& vbx = mfi.validbox();
+        const auto& vbx = mfi.tilebox();
 
         auto vel = velocity.array(mfi);
         auto gp = gradp.array(mfi);
@@ -240,19 +243,17 @@ amrex::Real ConvectingTaylorVortex::compute_error(const Field& field)
         }
 
         if (m_sim.has_overset()) {
-            for (amrex::MFIter mfi(field(lev)); mfi.isValid(); ++mfi) {
-                const auto& vbx = mfi.validbox();
-
-                const auto& iblank_arr =
-                    m_repo.get_int_field("iblank_cell")(lev).array(mfi);
-                const auto& imask_arr = level_mask.array(mfi);
-                amrex::ParallelFor(
-                    vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        if (std::abs(iblank_arr(i, j, k)) < 1) {
-                            imask_arr(i, j, k) = 0;
-                        }
-                    });
-            }
+            const auto& iblank_arrs =
+                m_repo.get_int_field("iblank_cell")(lev).const_arrays();
+            const auto& imask_arrs = level_mask.arrays();
+            amrex::ParallelFor(
+                field(lev),
+                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                    if (std::abs(iblank_arrs[nbx](i, j, k)) < 1) {
+                        imask_arrs[nbx](i, j, k) = 0;
+                    }
+                });
+            amrex::Gpu::synchronize();
         }
 
         const auto& dx = m_mesh.Geom(lev).CellSizeArray();

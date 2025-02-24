@@ -63,48 +63,44 @@ void BurggrafFlow::initialize_fields(int level, const amrex::Geometry& geom)
 
     UExact u_exact;
     VExact v_exact;
-    for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
-        const auto& vbx = mfi.validbox();
+    const auto& vel_arrs = velocity.arrays();
+    const auto& src_arrs = source.arrays();
 
-        auto vel = velocity.array(mfi);
-        auto src = source.array(mfi);
+    amrex::ParallelFor(
+        velocity, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            // compute the source term
+            const amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
+            const amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
 
-        amrex::ParallelFor(
-            vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                // compute the source term
-                const amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
-                const amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
+            vel_arrs[nbx](i, j, k, 0) = u_exact(x, y);
+            vel_arrs[nbx](i, j, k, 1) = v_exact(x, y);
+            vel_arrs[nbx](i, j, k, 2) = 0.0;
 
-                vel(i, j, k, 0) = u_exact(x, y);
-                vel(i, j, k, 1) = v_exact(x, y);
-                vel(i, j, k, 2) = 0.0;
+            const amrex::Real f =
+                std::pow(x, 4) - 2 * std::pow(x, 3) + std::pow(x, 2);
+            const amrex::Real f1 =
+                4 * std::pow(x, 3) - 6 * std::pow(x, 2) + 2 * x;
+            const amrex::Real f3 = 24 * x - 12;
+            const amrex::Real g = std::pow(y, 4) - std::pow(y, 2);
+            const amrex::Real g1 = 4 * std::pow(y, 3) - 2 * y;
+            const amrex::Real g2 = 12 * std::pow(y, 2) - 2;
 
-                const amrex::Real f =
-                    std::pow(x, 4) - 2 * std::pow(x, 3) + std::pow(x, 2);
-                const amrex::Real f1 =
-                    4 * std::pow(x, 3) - 6 * std::pow(x, 2) + 2 * x;
-                const amrex::Real f3 = 24 * x - 12;
-                const amrex::Real g = std::pow(y, 4) - std::pow(y, 2);
-                const amrex::Real g1 = 4 * std::pow(y, 3) - 2 * y;
-                const amrex::Real g2 = 12 * std::pow(y, 2) - 2;
+            const amrex::Real F =
+                std::pow(x, 5) / 5 - std::pow(x, 4) / 2 + std::pow(x, 3) / 3;
+            const amrex::Real F1 = -4 * std::pow(x, 6) + 12 * std::pow(x, 5) -
+                                   14 * std::pow(x, 4) + 8 * std::pow(x, 3) -
+                                   2 * std::pow(x, 2);
+            const amrex::Real F2 = f * f / 2;
+            const amrex::Real G1 =
+                -24 * std::pow(y, 5) + 8 * std::pow(y, 3) - 4 * y;
 
-                const amrex::Real F = std::pow(x, 5) / 5 - std::pow(x, 4) / 2 +
-                                      std::pow(x, 3) / 3;
-                const amrex::Real F1 = -4 * std::pow(x, 6) +
-                                       12 * std::pow(x, 5) -
-                                       14 * std::pow(x, 4) +
-                                       8 * std::pow(x, 3) - 2 * std::pow(x, 2);
-                const amrex::Real F2 = f * f / 2;
-                const amrex::Real G1 =
-                    -24 * std::pow(y, 5) + 8 * std::pow(y, 3) - 4 * y;
-
-                src(i, j, k, 0) = 0.0;
-                src(i, j, k, 1) =
-                    (8 / Re * (24 * F + 2 * f1 * g2 + f3 * g) +
-                     64 * (F2 * G1 - g * g1 * F1));
-                src(i, j, k, 2) = 0.0;
-            });
-    }
+            src_arrs[nbx](i, j, k, 0) = 0.0;
+            src_arrs[nbx](i, j, k, 1) =
+                (8 / Re * (24 * F + 2 * f1 * g2 + f3 * g) +
+                 64 * (F2 * G1 - g * g1 * F1));
+            src_arrs[nbx](i, j, k, 2) = 0.0;
+        });
+    amrex::Gpu::synchronize();
 }
 
 template <typename T>

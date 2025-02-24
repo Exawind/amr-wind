@@ -380,6 +380,9 @@ void MultiPhase::calculate_advected_facedensity()
 
     for (int lev = 0; lev < nlevels; ++lev) {
 
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
         for (amrex::MFIter mfi((*m_vof)(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.tilebox();
             const auto& bxg1 = amrex::grow(bx, 1);
@@ -427,19 +430,18 @@ void MultiPhase::favre_filtering()
         auto& mom = (*momentum)(lev);
         auto& velocity = m_velocity(lev);
         auto& density = m_density(lev);
-
-        for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
-            const auto& bx = mfi.growntilebox(1);
-            const amrex::Array4<amrex::Real>& vel = velocity.array(mfi);
-            const amrex::Array4<amrex::Real>& rho = density.array(mfi);
-            const amrex::Array4<amrex::Real>& rhou = mom.array(mfi);
-            amrex::ParallelFor(
-                bx, AMREX_SPACEDIM,
-                [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                    rhou(i, j, k, n) = vel(i, j, k, n) * rho(i, j, k);
-                });
-        }
+        const auto& vel_arrs = velocity.const_arrays();
+        const auto& rho_arrs = density.const_arrays();
+        const auto& rhou_arrs = mom.arrays();
+        amrex::ParallelFor(
+            velocity, amrex::IntVect(1), AMREX_SPACEDIM,
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
+                rhou_arrs[nbx](i, j, k, n) =
+                    vel_arrs[nbx](i, j, k, n) * rho_arrs[nbx](i, j, k);
+            });
     }
+    amrex::Gpu::synchronize();
+
     // Do the filtering
     fvm::filter((*density_filter), m_density);
     fvm::filter((*momentum_filter), (*momentum));
@@ -449,21 +451,20 @@ void MultiPhase::favre_filtering()
         auto& vof = (*m_vof)(lev);
         auto& mom_fil = (*momentum_filter)(lev);
         auto& rho_fil = (*density_filter)(lev);
-        for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
-            const auto& vbx = mfi.validbox();
-            const amrex::Array4<amrex::Real>& vel = velocity.array(mfi);
-            const amrex::Array4<amrex::Real>& volfrac = vof.array(mfi);
-            const amrex::Array4<amrex::Real>& rho_u_f = mom_fil.array(mfi);
-            const amrex::Array4<amrex::Real>& rho_f = rho_fil.array(mfi);
-            amrex::ParallelFor(
-                vbx, AMREX_SPACEDIM,
-                [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                    if (volfrac(i, j, k) <= 0.5) {
-                        vel(i, j, k, n) = rho_u_f(i, j, k, n) / rho_f(i, j, k);
-                    }
-                });
-        }
+        const auto& vel_arrs = velocity.arrays();
+        const auto& volfrac_arrs = vof.const_arrays();
+        const auto& rho_u_f_arrs = mom_fil.const_arrays();
+        const auto& rho_f_arrs = rho_fil.const_arrays();
+        amrex::ParallelFor(
+            velocity, amrex::IntVect(0), AMREX_SPACEDIM,
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
+                if (volfrac_arrs[nbx](i, j, k) <= 0.5) {
+                    vel_arrs[nbx](i, j, k, n) = rho_u_f_arrs[nbx](i, j, k, n) /
+                                                rho_f_arrs[nbx](i, j, k);
+                }
+            });
     }
+    amrex::Gpu::synchronize();
     m_velocity.fillpatch(m_sim.time().current_time());
 }
 
@@ -479,40 +480,40 @@ void MultiPhase::levelset2vof()
         auto& vof = (*m_vof)(lev);
         const auto& dx = geom[lev].CellSizeArray();
 
-        for (amrex::MFIter mfi(levelset); mfi.isValid(); ++mfi) {
-            const auto& vbx = mfi.validbox();
-            const amrex::Array4<amrex::Real>& phi = levelset.array(mfi);
-            const amrex::Array4<amrex::Real>& volfrac = vof.array(mfi);
-            const amrex::Real eps = 2. * std::cbrt(dx[0] * dx[1] * dx[2]);
-            amrex::ParallelFor(
-                vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    amrex::Real mx, my, mz;
-                    multiphase::youngs_finite_difference_normal(
-                        i, j, k, phi, mx, my, mz);
-                    mx = std::abs(mx / 32.);
-                    my = std::abs(my / 32.);
-                    mz = std::abs(mz / 32.);
-                    amrex::Real normL1 = (mx + my + mz);
-                    mx = mx / normL1;
-                    my = my / normL1;
-                    mz = mz / normL1;
-                    // Make sure that alpha is negative far away from the
-                    // interface
-                    const amrex::Real alpha = (phi(i, j, k) < -eps)
-                                                  ? -1.0
-                                                  : phi(i, j, k) / normL1 + 0.5;
-                    if (alpha >= 1.0) {
-                        volfrac(i, j, k) = 1.0;
-                    } else if (alpha <= 0.0) {
-                        volfrac(i, j, k) = 0.0;
-                    } else {
-                        volfrac(i, j, k) =
-                            multiphase::cut_volume(mx, my, mz, alpha, 0.0, 1.0);
-                    }
-                });
-        }
+        const auto& phi_arrs = levelset.const_arrays();
+        const auto& volfrac_arrs = vof.arrays();
+        const amrex::Real eps = 2. * std::cbrt(dx[0] * dx[1] * dx[2]);
+        amrex::ParallelFor(
+            levelset,
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                amrex::Real mx, my, mz;
+                multiphase::youngs_finite_difference_normal(
+                    i, j, k, phi_arrs[nbx], mx, my, mz);
+                mx = std::abs(mx / 32.);
+                my = std::abs(my / 32.);
+                mz = std::abs(mz / 32.);
+                const amrex::Real normL1 = (mx + my + mz);
+                mx = mx / normL1;
+                my = my / normL1;
+                mz = mz / normL1;
+                // Make sure that alpha is negative far away from the
+                // interface
+                const amrex::Real alpha =
+                    (phi_arrs[nbx](i, j, k) < -eps)
+                        ? -1.0
+                        : phi_arrs[nbx](i, j, k) / normL1 + 0.5;
+                if (alpha >= 1.0) {
+                    volfrac_arrs[nbx](i, j, k) = 1.0;
+                } else if (alpha <= 0.0) {
+                    volfrac_arrs[nbx](i, j, k) = 0.0;
+                } else {
+                    volfrac_arrs[nbx](i, j, k) =
+                        multiphase::cut_volume(mx, my, mz, alpha, 0.0, 1.0);
+                }
+            });
     }
-    // Fill ghost and boundary cells
+    amrex::Gpu::synchronize();
+
     (*m_vof).fillpatch(m_sim.time().current_time());
 }
 
@@ -529,54 +530,68 @@ void MultiPhase::levelset2vof(
         auto& vof = vof_scr(lev);
         const auto& dx = geom[lev].CellSizeArray();
 
-        for (amrex::MFIter mfi(levelset); mfi.isValid(); ++mfi) {
-            const auto& vbx = mfi.validbox();
-            const amrex::Array4<amrex::Real>& phi = levelset.array(mfi);
-            const amrex::Array4<amrex::Real>& volfrac = vof.array(mfi);
-            const amrex::Array4<const int>& iblank =
-                iblank_cell(lev).const_array(mfi);
-            const amrex::Real eps = 2. * std::cbrt(dx[0] * dx[1] * dx[2]);
-            amrex::ParallelFor(
-                vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    // Neumann of levelset across iblank boundaries
-                    int ibdy =
-                        (iblank(i, j, k) != iblank(i - 1, j, k)) ? -1 : 0;
-                    int jbdy =
-                        (iblank(i, j, k) != iblank(i, j - 1, k)) ? -1 : 0;
-                    int kbdy =
-                        (iblank(i, j, k) != iblank(i, j, k - 1)) ? -1 : 0;
-                    // no cell should be isolated such that -1 and 1 are
-                    // needed
-                    ibdy = (iblank(i, j, k) != iblank(i + 1, j, k)) ? +1 : ibdy;
-                    jbdy = (iblank(i, j, k) != iblank(i, j + 1, k)) ? +1 : jbdy;
-                    kbdy = (iblank(i, j, k) != iblank(i, j, k + 1)) ? +1 : kbdy;
-                    amrex::Real mx, my, mz;
-                    multiphase::youngs_finite_difference_normal_neumann(
-                        i, j, k, ibdy, jbdy, kbdy, phi, mx, my, mz);
-                    mx = std::abs(mx / 32.);
-                    my = std::abs(my / 32.);
-                    mz = std::abs(mz / 32.);
-                    amrex::Real normL1 = (mx + my + mz);
-                    mx = mx / normL1;
-                    my = my / normL1;
-                    mz = mz / normL1;
-                    // Make sure that alpha is negative far away from the
-                    // interface
-                    const amrex::Real alpha = (phi(i, j, k) < -eps)
-                                                  ? -1.0
-                                                  : phi(i, j, k) / normL1 + 0.5;
-                    if (alpha >= 1.0) {
-                        volfrac(i, j, k) = 1.0;
-                    } else if (alpha <= 0.0) {
-                        volfrac(i, j, k) = 0.0;
-                    } else {
-                        volfrac(i, j, k) =
-                            multiphase::cut_volume(mx, my, mz, alpha, 0.0, 1.0);
-                    }
-                });
-        }
+        const auto& phi_arrs = levelset.const_arrays();
+        const auto& volfrac_arrs = vof.arrays();
+        const auto& iblank_arrs = iblank_cell(lev).const_arrays();
+        const amrex::Real eps = 2. * std::cbrt(dx[0] * dx[1] * dx[2]);
+        amrex::ParallelFor(
+            levelset,
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                // Neumann of levelset across iblank boundaries
+                int ibdy =
+                    (iblank_arrs[nbx](i, j, k) != iblank_arrs[nbx](i - 1, j, k))
+                        ? -1
+                        : 0;
+                int jbdy =
+                    (iblank_arrs[nbx](i, j, k) != iblank_arrs[nbx](i, j - 1, k))
+                        ? -1
+                        : 0;
+                int kbdy =
+                    (iblank_arrs[nbx](i, j, k) != iblank_arrs[nbx](i, j, k - 1))
+                        ? -1
+                        : 0;
+                // no cell should be isolated such that -1 and 1 are
+                // needed
+                ibdy =
+                    (iblank_arrs[nbx](i, j, k) != iblank_arrs[nbx](i + 1, j, k))
+                        ? +1
+                        : ibdy;
+                jbdy =
+                    (iblank_arrs[nbx](i, j, k) != iblank_arrs[nbx](i, j + 1, k))
+                        ? +1
+                        : jbdy;
+                kbdy =
+                    (iblank_arrs[nbx](i, j, k) != iblank_arrs[nbx](i, j, k + 1))
+                        ? +1
+                        : kbdy;
+                amrex::Real mx, my, mz;
+                multiphase::youngs_finite_difference_normal_neumann(
+                    i, j, k, ibdy, jbdy, kbdy, phi_arrs[nbx], mx, my, mz);
+                mx = std::abs(mx / 32.);
+                my = std::abs(my / 32.);
+                mz = std::abs(mz / 32.);
+                const amrex::Real normL1 = (mx + my + mz);
+                mx = mx / normL1;
+                my = my / normL1;
+                mz = mz / normL1;
+                // Make sure that alpha is negative far away from the
+                // interface
+                const amrex::Real alpha =
+                    (phi_arrs[nbx](i, j, k) < -eps)
+                        ? -1.0
+                        : phi_arrs[nbx](i, j, k) / normL1 + 0.5;
+                if (alpha >= 1.0) {
+                    volfrac_arrs[nbx](i, j, k) = 1.0;
+                } else if (alpha <= 0.0) {
+                    volfrac_arrs[nbx](i, j, k) = 0.0;
+                } else {
+                    volfrac_arrs[nbx](i, j, k) =
+                        multiphase::cut_volume(mx, my, mz, alpha, 0.0, 1.0);
+                }
+            });
     }
-    // Fill ghost and boundary cells before simulation begins
+    amrex::Gpu::synchronize();
+
     vof_scr.fillpatch(m_sim.time().current_time());
 }
 

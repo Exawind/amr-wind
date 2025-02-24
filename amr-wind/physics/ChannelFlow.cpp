@@ -148,28 +148,26 @@ void ChannelFlow::initialize_fields(
             const auto C0 = m_C0;
             const auto C1 = m_C1;
             const auto dpdx = m_dpdx;
-            for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
-                const auto& vbx = mfi.validbox();
-                auto vel = velocity.array(mfi);
+            const auto& vel_arrs = velocity.arrays();
 
-                amrex::ParallelFor(
-                    vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        const int n_ind = idxOp(i, j, k);
-                        amrex::Real h =
-                            problo[n_idx] + (n_ind + 0.5) * dx[n_idx];
-                        if (h > 1.0) {
-                            h = 2.0 - h;
-                        }
-                        const amrex::Real ux = analytical_smagorinsky_profile(
-                            h, Cs, dx[n_idx], rho, mu, dpdx, C0, C1);
-                        vel(i, j, k, 0) =
-                            ux + (perturb_vel
-                                      ? perturb_fac * std::sin(z_perturb * h)
-                                      : 0.0);
-                        vel(i, j, k, 1) = 0.0;
-                        vel(i, j, k, 2) = 0.0;
-                    });
-            }
+            amrex::ParallelFor(
+                velocity,
+                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                    const int n_ind = idxOp(i, j, k);
+                    amrex::Real h = problo[n_idx] + (n_ind + 0.5) * dx[n_idx];
+                    if (h > 1.0) {
+                        h = 2.0 - h;
+                    }
+                    const amrex::Real ux = analytical_smagorinsky_profile(
+                        h, Cs, dx[n_idx], rho, mu, dpdx, C0, C1);
+                    vel_arrs[nbx](i, j, k, 0) =
+                        ux + (perturb_vel
+                                  ? perturb_fac * std::sin(z_perturb * h)
+                                  : 0.0);
+                    vel_arrs[nbx](i, j, k, 1) = 0.0;
+                    vel_arrs[nbx](i, j, k, 2) = 0.0;
+                });
+            amrex::Gpu::synchronize();
         } else {
             if (m_repo.field_exists("tke")) {
                 auto& tke = m_repo.get_field("tke")(level);
@@ -181,38 +179,38 @@ void ChannelFlow::initialize_fields(
             }
             auto& walldist = m_repo.get_field("wall_dist")(level);
 
-            for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
-                const auto& vbx = mfi.validbox();
-                auto vel = velocity.array(mfi);
-                auto wd = walldist.array(mfi);
+            const auto& vel_arrs = velocity.arrays();
+            const auto& wd_arrs = walldist.arrays();
 
-                amrex::ParallelFor(
-                    vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        const int n_ind = idxOp(i, j, k);
-                        amrex::Real h =
-                            problo[n_idx] + (n_ind + 0.5) * dx[n_idx];
-                        if (h > 1.0) {
-                            h = 2.0 - h;
-                        }
-                        wd(i, j, k) = h;
-                        const amrex::Real hp = h / y_tau;
-                        vel(i, j, k, 0) =
-                            utau * (1. / kappa * std::log1p(kappa * hp) +
-                                    7.8 * (1.0 - std::exp(-hp / 11.0) -
-                                           (hp / 11.0) * std::exp(-hp / 3.0)));
+            amrex::ParallelFor(
+                velocity,
+                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                    const int n_ind = idxOp(i, j, k);
+                    amrex::Real h = problo[n_idx] + (n_ind + 0.5) * dx[n_idx];
+                    if (h > 1.0) {
+                        h = 2.0 - h;
+                    }
+                    wd_arrs[nbx](i, j, k) = h;
+                    const amrex::Real hp = h / y_tau;
+                    vel_arrs[nbx](i, j, k, 0) =
+                        utau * (1. / kappa * std::log1p(kappa * hp) +
+                                7.8 * (1.0 - std::exp(-hp / 11.0) -
+                                       (hp / 11.0) * std::exp(-hp / 3.0)));
 
-                        const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
-                        const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-                        const amrex::Real perty = z_perturb * perturb_amp *
-                                                  std::sin(y_perturb * y) *
-                                                  std::cos(z_perturb * z);
-                        const amrex::Real pertz = -y_perturb * perturb_amp *
-                                                  std::cos(y_perturb * y) *
-                                                  std::sin(z_perturb * z);
-                        vel(i, j, k, 1) = 0.0 + (perturb_vel ? perty : 0.0);
-                        vel(i, j, k, 2) = 0.0 + (perturb_vel ? pertz : 0.0);
-                    });
-            }
+                    const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
+                    const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+                    const amrex::Real perty = z_perturb * perturb_amp *
+                                              std::sin(y_perturb * y) *
+                                              std::cos(z_perturb * z);
+                    const amrex::Real pertz = -y_perturb * perturb_amp *
+                                              std::cos(y_perturb * y) *
+                                              std::sin(z_perturb * z);
+                    vel_arrs[nbx](i, j, k, 1) =
+                        0.0 + (perturb_vel ? perty : 0.0);
+                    vel_arrs[nbx](i, j, k, 2) =
+                        0.0 + (perturb_vel ? pertz : 0.0);
+                });
+            amrex::Gpu::synchronize();
         }
     } else {
         velocity.setVal(0.0);
