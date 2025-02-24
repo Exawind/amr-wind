@@ -27,7 +27,8 @@ static void hybrid_fluxes(
     const amrex::Real dt,
     godunov::scheme mflux_scheme,
     bool allow_inflow_on_outflow,
-    bool use_forces_in_trans)
+    bool use_forces_in_trans,
+    bool pre_multiplied_src_term = false)
 {
     // Get geometry
     const auto& geom = repo.mesh().Geom();
@@ -75,8 +76,10 @@ static void hybrid_fluxes(
         for (int idim = 0; idim < dof_field.num_comp(); ++idim) {
             amrex::MultiFab::Multiply(
                 q, rho_o(lev), 0, idim, 1, fvm::Godunov::nghost_state);
-            amrex::MultiFab::Multiply(
-                fq, rho_o(lev), 0, idim, 1, fvm::Godunov::nghost_src);
+            if (!pre_multiplied_src_term) {
+                amrex::MultiFab::Multiply(
+                    fq, rho_o(lev), 0, idim, 1, fvm::Godunov::nghost_src);
+            }
         }
 
         amrex::MultiFab frho(
