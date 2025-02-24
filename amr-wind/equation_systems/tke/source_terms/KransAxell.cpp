@@ -100,7 +100,7 @@ void KransAxell::operator()(
     const amrex::Real Cmu = m_Cmu;
     const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
     const amrex::Real kappa = m_kappa;
-    const amrex::Real z0 = m_z0;
+    amrex::Real z0 = m_z0;
     const bool has_terrain =
         this->m_sim.repo().int_field_exists("terrain_blank");
     const amrex::Real sponge_start = m_meso_start;
@@ -149,17 +149,22 @@ void KransAxell::operator()(
             (1 - static_cast<int>(has_terrain)) * (sponge_forcing - bcforcing);
     });
     if (has_terrain) {
+        const amrex::Real z0_min = 1e-4;
         const auto* const m_terrain_blank =
             &this->m_sim.repo().get_int_field("terrain_blank");
         const auto* const m_terrain_drag =
             &this->m_sim.repo().get_int_field("terrain_drag");
         auto* const m_terrain_height =
             &this->m_sim.repo().get_field("terrain_height");
+        auto* const m_terrainz0 = &this->m_sim.repo().get_field("terrainz0");
         const auto& blank_arr = (*m_terrain_blank)(lev).const_array(mfi);
         const auto& drag_arr = (*m_terrain_drag)(lev).const_array(mfi);
         const auto& terrain_height = (*m_terrain_height)(lev).const_array(mfi);
+        const auto& terrainz0 = (*m_terrainz0)(lev).const_array(mfi);
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                z0 = drag_arr(i, j, k) * std::max(terrainz0(i, j, k), z0_min) +
+                     (1 - drag_arr(i, j, k)) * z0;
                 amrex::Real terrainforcing = 0;
                 amrex::Real dragforcing = 0;
                 amrex::Real ux = vel(i, j, k + 1, 0);
