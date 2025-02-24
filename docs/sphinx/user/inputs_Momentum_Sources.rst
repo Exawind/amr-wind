@@ -252,6 +252,13 @@ Section: Momentum Sources
    This term turns off the sponge layer. This term is required for terrain simulations with periodic 
    boundary conditions. The default value is 0. 
 
+.. input_param:: DragForcing.horizontal_drag_model
+
+   **type:** Boolean, optional
+
+   This term turns on the MOST calculation for the immersed forcing in horizontal direction. Recommended to be turned on for land-sea interaction,
+   buildings, and cases where the terrain drops to zero and rises again. The default option is false.
+
 
 The following arguments are influential when ``GravityForcing`` is included in :input_param:`ICNS.source_terms`.
 

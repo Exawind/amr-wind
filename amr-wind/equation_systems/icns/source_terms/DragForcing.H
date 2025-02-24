@@ -13,6 +13,7 @@ namespace amr_wind::pde::icns {
  *
  *
  */
+
 class DragForcing : public MomentumSource::Register<DragForcing>
 {
 public:
@@ -51,6 +52,7 @@ private:
     int m_sponge_north{1};
     bool m_is_laminar{false};
     bool m_terrain_is_waves{false};
+    bool m_horizontal_drag_model{false};
 };
 
 } // namespace amr_wind::pde::icns
