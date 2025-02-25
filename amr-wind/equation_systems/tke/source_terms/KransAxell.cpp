@@ -50,6 +50,10 @@ KransAxell::KransAxell(const CFDSim& sim)
     } else {
         amrex::Abort("Cannot find 1-D RANS profile file " + m_1d_rans);
     }
+    pp.query("wall_het_model", m_wall_het_model);
+    pp.query("mol_length", m_mol_length);
+    pp.query("mo_gamma_m", m_gamma_m);
+    pp.query("mo_beta_m", m_beta_m);
     {
         amrex::ParmParse pp_incflow("incflo");
         pp_incflow.queryarr("gravity", m_gravity);
@@ -96,7 +100,7 @@ void KransAxell::operator()(
     const amrex::Real Cmu = m_Cmu;
     const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
     const amrex::Real kappa = m_kappa;
-    const amrex::Real z0 = m_z0;
+    amrex::Real z0 = m_z0;
     const bool has_terrain =
         this->m_sim.repo().int_field_exists("terrain_blank");
     const amrex::Real sponge_start = m_meso_start;
@@ -105,6 +109,10 @@ void KransAxell::operator()(
     const auto* tke_values_d = m_tke_values_d.data();
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
         m_gravity[0], m_gravity[1], m_gravity[2]};
+    amrex::Real psi_m = 0.0;
+    if (m_wall_het_model == "mol") {
+        psi_m = stability(1.5 * dx[2], m_mol_length, m_gamma_m, m_beta_m);
+    }
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         amrex::Real bcforcing = 0;
         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
@@ -112,7 +120,8 @@ void KransAxell::operator()(
             const amrex::Real ux = vel(i, j, k + 1, 0);
             const amrex::Real uy = vel(i, j, k + 1, 1);
             const amrex::Real m = std::sqrt(ux * ux + uy * uy);
-            const amrex::Real ustar = m * kappa / std::log(3 * z / z0);
+            const amrex::Real ustar =
+                m * kappa / (std::log(3 * z / z0) - psi_m);
             const amrex::Real T0 = ref_theta_arr(i, j, k);
             const amrex::Real hf = std::abs(gravity[2]) / T0 * heat_flux;
             const amrex::Real rans_b = std::pow(
@@ -140,24 +149,31 @@ void KransAxell::operator()(
             (1 - static_cast<int>(has_terrain)) * (sponge_forcing - bcforcing);
     });
     if (has_terrain) {
+        const amrex::Real z0_min = 1e-4;
         const auto* const m_terrain_blank =
             &this->m_sim.repo().get_int_field("terrain_blank");
         const auto* const m_terrain_drag =
             &this->m_sim.repo().get_int_field("terrain_drag");
         auto* const m_terrain_height =
             &this->m_sim.repo().get_field("terrain_height");
+        auto* const m_terrainz0 = &this->m_sim.repo().get_field("terrainz0");
         const auto& blank_arr = (*m_terrain_blank)(lev).const_array(mfi);
         const auto& drag_arr = (*m_terrain_drag)(lev).const_array(mfi);
         const auto& terrain_height = (*m_terrain_height)(lev).const_array(mfi);
+        const auto& terrainz0 = (*m_terrainz0)(lev).const_array(mfi);
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                const amrex::Real cell_z0 =
+                    drag_arr(i, j, k) * std::max(terrainz0(i, j, k), z0_min) +
+                    (1 - drag_arr(i, j, k)) * z0;
                 amrex::Real terrainforcing = 0;
                 amrex::Real dragforcing = 0;
                 amrex::Real ux = vel(i, j, k + 1, 0);
                 amrex::Real uy = vel(i, j, k + 1, 1);
                 amrex::Real z = 0.5 * dx[2];
                 amrex::Real m = std::sqrt(ux * ux + uy * uy);
-                const amrex::Real ustar = m * kappa / std::log(3.0 * z / z0);
+                const amrex::Real ustar =
+                    m * kappa / (std::log(3 * z / cell_z0) - psi_m);
                 const amrex::Real T0 = ref_theta_arr(i, j, k);
                 const amrex::Real hf = std::abs(gravity[2]) / T0 * heat_flux;
                 const amrex::Real rans_b = std::pow(
