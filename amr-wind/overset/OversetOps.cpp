@@ -136,21 +136,15 @@ void OversetOps::update_gradp()
 
     // Transfer pressure gradient to gp field
     for (int lev = 0; lev <= finest_level; lev++) {
-
-#ifdef AMREX_USE_OMP
-#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
-#endif
-        for (MFIter mfi(grad_p(lev), TilingIfNotGPU()); mfi.isValid(); ++mfi) {
-            Box const& tbx = mfi.tilebox();
-            Array4<Real> const& gp_lev = grad_p(lev).array(mfi);
-            Array4<Real const> const& gp_proj = gradphi[lev]->const_array(mfi);
-            amrex::ParallelFor(
-                tbx, AMREX_SPACEDIM,
-                [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                    gp_lev(i, j, k, n) = gp_proj(i, j, k, n);
-                });
-        }
+        const auto& gp_lev_arrs = grad_p(lev).arrays();
+        const auto& gp_proj_arrs = gradphi[lev]->const_arrays();
+        amrex::ParallelFor(
+            grad_p(lev), amrex::IntVect(0), AMREX_SPACEDIM,
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
+                gp_lev_arrs[nbx](i, j, k, n) = gp_proj_arrs[nbx](i, j, k, n);
+            });
     }
+    amrex::Gpu::synchronize();
 
     // Averaging down here would be unnecessary; it is built into calcGradPhi
 }

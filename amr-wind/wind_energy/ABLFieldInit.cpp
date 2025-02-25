@@ -336,7 +336,7 @@ void ABLFieldInit::perturb_temperature(
 
     const auto& dx = geom.CellSizeArray();
     const auto& problo = geom.ProbLoArray();
-    auto& theta_fab = temperature(lev);
+    auto& theta_mf = temperature(lev);
     const auto theta_cutoff_height = m_theta_cutoff_height;
     const auto theta_gauss_mean = m_theta_gauss_mean;
     const auto theta_gauss_var = m_theta_gauss_var;
@@ -345,10 +345,10 @@ void ABLFieldInit::perturb_temperature(
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
-    for (amrex::MFIter mfi(theta_fab, amrex::TilingIfNotGPU()); mfi.isValid();
+    for (amrex::MFIter mfi(theta_mf, amrex::TilingIfNotGPU()); mfi.isValid();
          ++mfi) {
         const auto& bx = mfi.tilebox();
-        const auto& theta = theta_fab.array(mfi);
+        const auto& theta = theta_mf.array(mfi);
 
         amrex::ParallelForRNG(
             bx, [=] AMREX_GPU_DEVICE(
@@ -366,9 +366,9 @@ void ABLFieldInit::perturb_temperature(
 
 //! Initialize sfs tke field at the beginning of the simulation
 void ABLFieldInit::init_tke(
-    const amrex::Geometry& geom, amrex::MultiFab& tke_fab) const
+    const amrex::Geometry& geom, amrex::MultiFab& tke_mf) const
 {
-    tke_fab.setVal(m_tke_init);
+    tke_mf.setVal(m_tke_init);
 
     if (!m_tke_init_profile && !m_initial_wind_profile) {
         return;
@@ -379,43 +379,40 @@ void ABLFieldInit::init_tke(
     const auto tke_cutoff_height = m_tke_cutoff_height;
     const auto tke_init_factor = m_tke_init_factor;
 
-#ifdef AMREX_USE_OMP
-#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
-#endif
-    for (amrex::MFIter mfi(tke_fab, amrex::TilingIfNotGPU()); mfi.isValid();
-         ++mfi) {
-        const auto& bx = mfi.tilebox();
-        const auto& tke = tke_fab.array(mfi);
-        const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
-        if (m_initial_wind_profile) {
-            const int nwvals = static_cast<int>(m_wind_heights.size());
-            const amrex::Real* windh = m_windht_d.data();
-            const amrex::Real* tke_data = m_prof_tke_d.data();
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-                    const amrex::Real tke_prof =
-                        (nwvals > 0)
-                            ? interp::linear(windh, windh + nwvals, tke_data, z)
-                            : tiny;
+    const auto& tke_arrs = tke_mf.arrays();
+    const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
+    if (m_initial_wind_profile) {
+        const int nwvals = static_cast<int>(m_wind_heights.size());
+        const amrex::Real* windh = m_windht_d.data();
+        const amrex::Real* tke_data = m_prof_tke_d.data();
+        amrex::ParallelFor(
+            tke_mf,
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+                const amrex::Real tke_prof =
+                    (nwvals > 0)
+                        ? interp::linear(windh, windh + nwvals, tke_data, z)
+                        : tiny;
 
-                    tke(i, j, k) = tke_prof;
-                });
-        } else {
-            // Profile definition from Beare et al. (2006)
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+                tke_arrs[nbx](i, j, k) = tke_prof;
+            });
+    } else {
+        // Profile definition from Beare et al. (2006)
+        amrex::ParallelFor(
+            tke_mf,
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-                    if (z < tke_cutoff_height) {
-                        tke(i, j, k) = tke_init_factor *
-                                       std::pow(1. - z / tke_cutoff_height, 3);
-                    } else {
-                        tke(i, j, k) = tiny;
-                    }
-                });
-        }
+                if (z < tke_cutoff_height) {
+                    tke_arrs[nbx](i, j, k) =
+                        tke_init_factor *
+                        std::pow(1. - z / tke_cutoff_height, 3);
+                } else {
+                    tke_arrs[nbx](i, j, k) = tiny;
+                }
+            });
     }
+    amrex::Gpu::synchronize();
 }
 
 } // namespace amr_wind

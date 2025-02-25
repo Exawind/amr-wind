@@ -129,193 +129,197 @@ void KOmegaSSTIDDES<Transport>::update_turbulent_viscosity(
         const amrex::Real dz = geom.CellSize()[2];
         const amrex::Real hmax =
             amrex::max<amrex::Real>(amrex::max<amrex::Real>(dx, dy), dz);
+        const auto& lam_mu_arrs = (*lam_mu)(lev).const_arrays();
+        const auto& mu_arrs = mu_turb(lev).arrays();
+        const auto& rho_arrs = den(lev).const_arrays();
+        const auto& gradK_arrs = (*gradK)(lev).const_arrays();
+        const auto& gradOmega_arrs = (*gradOmega)(lev).const_arrays();
+        const auto& tke_arrs = tke(lev).const_arrays();
+        const auto& sdr_arrs = sdr(lev).const_arrays();
+        const auto& wd_arrs = (this->m_walldist)(lev).const_arrays();
+        const auto& shear_prod_arrs = (this->m_shear_prod)(lev).arrays();
+        const auto& vortmag_arrs = (*vortmag)(lev).const_arrays();
+        const auto& rans_ind_arrs = (this->m_rans_ind)(lev).arrays();
+        const auto& diss_arrs = (this->m_diss)(lev).arrays();
+        const auto& sdr_src_arrs = (this->m_sdr_src)(lev).arrays();
+        const auto& sdr_diss_arrs = (this->m_sdr_diss)(lev).arrays();
+        const auto& f1_arrs = (this->m_f1)(lev).arrays();
+        const auto& tke_lhs_arrs = tke_lhs(lev).arrays();
+        const auto& sdr_lhs_arrs = sdr_lhs(lev).arrays();
 
-        for (amrex::MFIter mfi(mu_turb(lev)); mfi.isValid(); ++mfi) {
-            const auto& bx = mfi.tilebox();
-            const auto& lam_mu_arr = (*lam_mu)(lev).array(mfi);
-            const auto& mu_arr = mu_turb(lev).array(mfi);
-            const auto& rho_arr = den(lev).const_array(mfi);
-            const auto& gradK_arr = (*gradK)(lev).array(mfi);
-            const auto& gradOmega_arr = (*gradOmega)(lev).array(mfi);
-            const auto& tke_arr = tke(lev).array(mfi);
-            const auto& sdr_arr = sdr(lev).array(mfi);
-            const auto& wd_arr = (this->m_walldist)(lev).array(mfi);
-            const auto& shear_prod_arr = (this->m_shear_prod)(lev).array(mfi);
-            const auto& vortmag_arr = (*vortmag)(lev).const_array(mfi);
-            const auto& rans_ind_arr = (this->m_rans_ind)(lev).array(mfi);
-            const auto& diss_arr = (this->m_diss)(lev).array(mfi);
-            const auto& sdr_src_arr = (this->m_sdr_src)(lev).array(mfi);
-            const auto& sdr_diss_arr = (this->m_sdr_diss)(lev).array(mfi);
-            const auto& f1_arr = (this->m_f1)(lev).array(mfi);
-            const auto& tke_lhs_arr = tke_lhs(lev).array(mfi);
-            const auto& sdr_lhs_arr = sdr_lhs(lev).array(mfi);
+        amrex::ParallelFor(
+            mu_turb(lev),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                amrex::Real gko =
+                    (gradK_arrs[nbx](i, j, k, 0) *
+                         gradOmega_arrs[nbx](i, j, k, 0) +
+                     gradK_arrs[nbx](i, j, k, 1) *
+                         gradOmega_arrs[nbx](i, j, k, 1) +
+                     gradK_arrs[nbx](i, j, k, 2) *
+                         gradOmega_arrs[nbx](i, j, k, 2));
 
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    amrex::Real gko =
-                        (gradK_arr(i, j, k, 0) * gradOmega_arr(i, j, k, 0) +
-                         gradK_arr(i, j, k, 1) * gradOmega_arr(i, j, k, 1) +
-                         gradK_arr(i, j, k, 2) * gradOmega_arr(i, j, k, 2));
+                amrex::Real cdkomega = amrex::max<amrex::Real>(
+                    1e-10, 2.0 * rho_arrs[nbx](i, j, k) * sigma_omega2 * gko /
+                               (sdr_arrs[nbx](i, j, k) + 1e-15));
 
-                    amrex::Real cdkomega = amrex::max<amrex::Real>(
-                        1e-10, 2.0 * rho_arr(i, j, k) * sigma_omega2 * gko /
-                                   (sdr_arr(i, j, k) + 1e-15));
+                amrex::Real tmp1 =
+                    4.0 * rho_arrs[nbx](i, j, k) * sigma_omega2 *
+                    tke_arrs[nbx](i, j, k) /
+                    (cdkomega * wd_arrs[nbx](i, j, k) * wd_arrs[nbx](i, j, k));
+                amrex::Real tmp2 = std::sqrt(tke_arrs[nbx](i, j, k)) /
+                                   (beta_star * sdr_arrs[nbx](i, j, k) *
+                                        wd_arrs[nbx](i, j, k) +
+                                    1e-15);
+                amrex::Real tmp3 =
+                    500.0 * lam_mu_arrs[nbx](i, j, k) /
+                    (wd_arrs[nbx](i, j, k) * wd_arrs[nbx](i, j, k) *
+                         sdr_arrs[nbx](i, j, k) * rho_arrs[nbx](i, j, k) +
+                     1e-15);
+                amrex::Real tmp4 = shear_prod_arrs[nbx](i, j, k);
+                amrex::Real tmp5 = vortmag_arrs[nbx](i, j, k);
 
-                    amrex::Real tmp1 =
-                        4.0 * rho_arr(i, j, k) * sigma_omega2 *
-                        tke_arr(i, j, k) /
-                        (cdkomega * wd_arr(i, j, k) * wd_arr(i, j, k));
-                    amrex::Real tmp2 =
-                        std::sqrt(tke_arr(i, j, k)) /
-                        (beta_star * sdr_arr(i, j, k) * wd_arr(i, j, k) +
-                         1e-15);
-                    amrex::Real tmp3 =
-                        500.0 * lam_mu_arr(i, j, k) /
-                        (wd_arr(i, j, k) * wd_arr(i, j, k) * sdr_arr(i, j, k) *
-                             rho_arr(i, j, k) +
-                         1e-15);
-                    amrex::Real tmp4 = shear_prod_arr(i, j, k);
-                    amrex::Real tmp5 = vortmag_arr(i, j, k);
+                amrex::Real arg1 = amrex::min<amrex::Real>(
+                    amrex::max<amrex::Real>(tmp2, tmp3), tmp1);
+                amrex::Real tmp_f1 = std::tanh(arg1 * arg1 * arg1 * arg1);
 
-                    amrex::Real arg1 = amrex::min<amrex::Real>(
-                        amrex::max<amrex::Real>(tmp2, tmp3), tmp1);
-                    amrex::Real tmp_f1 = std::tanh(arg1 * arg1 * arg1 * arg1);
+                amrex::Real alpha = tmp_f1 * (alpha1 - alpha2) + alpha2;
+                amrex::Real beta = tmp_f1 * (beta1 - beta2) + beta2;
 
-                    amrex::Real alpha = tmp_f1 * (alpha1 - alpha2) + alpha2;
-                    amrex::Real beta = tmp_f1 * (beta1 - beta2) + beta2;
+                amrex::Real arg2 = amrex::max<amrex::Real>(2.0 * tmp2, tmp3);
+                amrex::Real f2 = std::tanh(arg2 * arg2);
 
-                    amrex::Real arg2 =
-                        amrex::max<amrex::Real>(2.0 * tmp2, tmp3);
-                    amrex::Real f2 = std::tanh(arg2 * arg2);
+                mu_arrs[nbx](i, j, k) =
+                    rho_arrs[nbx](i, j, k) * a1 * tke_arrs[nbx](i, j, k) /
+                    amrex::max<amrex::Real>(
+                        a1 * sdr_arrs[nbx](i, j, k), tmp4 * f2);
 
-                    mu_arr(i, j, k) = rho_arr(i, j, k) * a1 * tke_arr(i, j, k) /
-                                      amrex::max<amrex::Real>(
-                                          a1 * sdr_arr(i, j, k), tmp4 * f2);
+                f1_arrs[nbx](i, j, k) = tmp_f1;
 
-                    f1_arr(i, j, k) = tmp_f1;
+                const amrex::Real alpha_des =
+                    0.25 - wd_arrs[nbx](i, j, k) / hmax;
+                const amrex::Real denom =
+                    (rho_arrs[nbx](i, j, k) * kappa * kappa *
+                     wd_arrs[nbx](i, j, k) * wd_arrs[nbx](i, j, k) *
+                     std::sqrt(0.5 * (tmp4 * tmp4 + tmp5 * tmp5)));
+                const amrex::Real rdl = lam_mu_arrs[nbx](i, j, k) / denom;
+                const amrex::Real rdt = mu_arrs[nbx](i, j, k) / denom;
+                const amrex::Real fl = std::tanh(std::pow(Cl * Cl * rdl, 10));
+                const amrex::Real ft = std::tanh(std::pow(Ct * Ct * rdt, 3));
+                const amrex::Real fe1 =
+                    (alpha < 0) ? 2.0 * std::exp(-9.0 * alpha * alpha)
+                                : 2.0 * std::exp(-11.09 * alpha * alpha);
+                const amrex::Real fe2 = 1.0 - amrex::max<amrex::Real>(ft, fl);
+                const amrex::Real fe =
+                    fe2 * amrex::max<amrex::Real>((fe1 - 1.0), 0.0);
+                const amrex::Real fb = amrex::min<amrex::Real>(
+                    2.0 * std::exp(-9.0 * alpha_des * alpha_des), 1.0);
+                const amrex::Real fdt =
+                    1.0 - std::tanh(std::pow(Cdt1 * rdt, Cdt2));
+                const amrex::Real fdtilde =
+                    amrex::max<amrex::Real>((1.0 - fdt), fb);
+                const amrex::Real cdes = tmp_f1 * (Cdes1 - Cdes2) + Cdes2;
+                const amrex::Real l_les =
+                    cdes * amrex::min<amrex::Real>(
+                               Cw * amrex::max<amrex::Real>(
+                                        wd_arrs[nbx](i, j, k), hmax),
+                               hmax);
+                const amrex::Real l_rans = std::sqrt(tke_arrs[nbx](i, j, k)) /
+                                           (beta_star * sdr_arrs[nbx](i, j, k));
+                const amrex::Real rans_ind = fdtilde * (1.0 + fe);
+                rans_ind_arrs[nbx](i, j, k) = rans_ind;
+                const amrex::Real l_iddes = amrex::max<amrex::Real>(
+                    1.0e-16, rans_ind * l_rans + (1.0 - fdtilde) * l_les);
 
-                    const amrex::Real alpha_des = 0.25 - wd_arr(i, j, k) / hmax;
-                    const amrex::Real denom =
-                        (rho_arr(i, j, k) * kappa * kappa * wd_arr(i, j, k) *
-                         wd_arr(i, j, k) *
-                         std::sqrt(0.5 * (tmp4 * tmp4 + tmp5 * tmp5)));
-                    const amrex::Real rdl = lam_mu_arr(i, j, k) / denom;
-                    const amrex::Real rdt = mu_arr(i, j, k) / denom;
-                    const amrex::Real fl =
-                        std::tanh(std::pow(Cl * Cl * rdl, 10));
-                    const amrex::Real ft =
-                        std::tanh(std::pow(Ct * Ct * rdt, 3));
-                    const amrex::Real fe1 =
-                        (alpha < 0) ? 2.0 * std::exp(-9.0 * alpha * alpha)
-                                    : 2.0 * std::exp(-11.09 * alpha * alpha);
-                    const amrex::Real fe2 =
-                        1.0 - amrex::max<amrex::Real>(ft, fl);
-                    const amrex::Real fe =
-                        fe2 * amrex::max<amrex::Real>((fe1 - 1.0), 0.0);
-                    const amrex::Real fb = amrex::min<amrex::Real>(
-                        2.0 * std::exp(-9.0 * alpha_des * alpha_des), 1.0);
-                    const amrex::Real fdt =
-                        1.0 - std::tanh(std::pow(Cdt1 * rdt, Cdt2));
-                    const amrex::Real fdtilde =
-                        amrex::max<amrex::Real>((1.0 - fdt), fb);
-                    const amrex::Real cdes = tmp_f1 * (Cdes1 - Cdes2) + Cdes2;
-                    const amrex::Real l_les =
-                        cdes *
-                        amrex::min<amrex::Real>(
-                            Cw * amrex::max<amrex::Real>(wd_arr(i, j, k), hmax),
-                            hmax);
-                    const amrex::Real l_rans = std::sqrt(tke_arr(i, j, k)) /
-                                               (beta_star * sdr_arr(i, j, k));
-                    const amrex::Real rans_ind = fdtilde * (1.0 + fe);
-                    rans_ind_arr(i, j, k) = rans_ind;
-                    const amrex::Real l_iddes = amrex::max<amrex::Real>(
-                        1.0e-16, rans_ind * l_rans + (1.0 - fdtilde) * l_les);
+                const amrex::Real sqrt_tke_amb = std::sqrt(tke_amb);
+                const amrex::Real l_sst_amb =
+                    sqrt_tke_amb /
+                    (beta_star * amrex::max<amrex::Real>(1.0e-16, sdr_amb));
+                const amrex::Real l_iddes_amb = amrex::max<amrex::Real>(
+                    1.0e-16, rans_ind * l_sst_amb + (1.0 - fdtilde) * l_les);
+                const amrex::Real diss_amb = rho_arrs[nbx](i, j, k) * tke_amb *
+                                             sqrt_tke_amb / l_iddes_amb;
 
-                    const amrex::Real sqrt_tke_amb = std::sqrt(tke_amb);
-                    const amrex::Real l_sst_amb =
-                        sqrt_tke_amb /
-                        (beta_star * amrex::max<amrex::Real>(1.0e-16, sdr_amb));
-                    const amrex::Real l_iddes_amb = amrex::max<amrex::Real>(
-                        1.0e-16,
-                        rans_ind * l_sst_amb + (1.0 - fdtilde) * l_les);
-                    const amrex::Real diss_amb =
-                        rho_arr(i, j, k) * tke_amb * sqrt_tke_amb / l_iddes_amb;
+                // For TKE equation:
+                shear_prod_arrs[nbx](i, j, k) = amrex::min<amrex::Real>(
+                    amrex::max<amrex::Real>(
+                        mu_arrs[nbx](i, j, k) * tmp4 * tmp4, 0.0),
+                    10.0 * rho_arrs[nbx](i, j, k) * tke_arrs[nbx](i, j, k) *
+                        std::sqrt(tke_arrs[nbx](i, j, k)) / l_iddes);
 
-                    // For TKE equation:
-                    shear_prod_arr(i, j, k) = amrex::min<amrex::Real>(
-                        amrex::max<amrex::Real>(
-                            mu_arr(i, j, k) * tmp4 * tmp4, 0.0),
-                        10.0 * rho_arr(i, j, k) * tke_arr(i, j, k) *
-                            std::sqrt(tke_arr(i, j, k)) / l_iddes);
+                diss_arrs[nbx](i, j, k) =
+                    -rho_arrs[nbx](i, j, k) *
+                        std::sqrt(tke_arrs[nbx](i, j, k)) *
+                        tke_arrs[nbx](i, j, k) / l_iddes +
+                    diss_amb;
 
-                    diss_arr(i, j, k) = -rho_arr(i, j, k) *
-                                            std::sqrt(tke_arr(i, j, k)) *
-                                            tke_arr(i, j, k) / l_iddes +
-                                        diss_amb;
+                tke_lhs_arrs[nbx](i, j, k) = rho_arrs[nbx](i, j, k) *
+                                             std::sqrt(tke_arrs[nbx](i, j, k)) /
+                                             l_iddes * delta_t;
 
-                    tke_lhs_arr(i, j, k) = rho_arr(i, j, k) *
-                                           std::sqrt(tke_arr(i, j, k)) /
-                                           l_iddes * delta_t;
+                // For SDR equation:
+                amrex::Real production_omega =
+                    rho_arrs[nbx](i, j, k) * alpha *
+                    amrex::min<amrex::Real>(
+                        tmp4 * tmp4, sdr_prod_clip_factor *
+                                         amrex::max<amrex::Real>(
+                                             sdr_arrs[nbx](i, j, k), 0.0) *
+                                         std::sqrt(tke_arrs[nbx](i, j, k)) /
+                                         l_iddes);
 
-                    // For SDR equation:
-                    amrex::Real production_omega =
-                        rho_arr(i, j, k) * alpha *
-                        amrex::min<amrex::Real>(
-                            tmp4 * tmp4,
-                            sdr_prod_clip_factor *
-                                amrex::max<amrex::Real>(sdr_arr(i, j, k), 0.0) *
-                                std::sqrt(tke_arr(i, j, k)) / l_iddes);
+                amrex::Real cross_diffusion =
+                    (1.0 - tmp_f1) * 2.0 * rho_arrs[nbx](i, j, k) *
+                    sigma_omega2 * gko / (sdr_arrs[nbx](i, j, k) + 1e-15);
 
-                    amrex::Real cross_diffusion =
-                        (1.0 - tmp_f1) * 2.0 * rho_arr(i, j, k) * sigma_omega2 *
-                        gko / (sdr_arr(i, j, k) + 1e-15);
+                const amrex::Real sdr_diss_amb =
+                    beta * rho_arrs[nbx](i, j, k) * sdr_amb * sdr_amb;
 
-                    const amrex::Real sdr_diss_amb =
-                        beta * rho_arr(i, j, k) * sdr_amb * sdr_amb;
+                if (diff_type == DiffusionType::Crank_Nicolson) {
 
-                    if (diff_type == DiffusionType::Crank_Nicolson) {
+                    tke_lhs_arrs[nbx](i, j, k) =
+                        0.5 * tke_lhs_arrs[nbx](i, j, k);
 
-                        tke_lhs_arr(i, j, k) = 0.5 * tke_lhs_arr(i, j, k);
+                    sdr_src_arrs[nbx](i, j, k) = production_omega;
 
-                        sdr_src_arr(i, j, k) = production_omega;
+                    sdr_diss_arrs[nbx](i, j, k) = cross_diffusion;
 
-                        sdr_diss_arr(i, j, k) = cross_diffusion;
+                    sdr_lhs_arrs[nbx](i, j, k) =
+                        (rho_arrs[nbx](i, j, k) * beta *
+                             sdr_arrs[nbx](i, j, k) +
+                         0.5 * std::abs(cross_diffusion) /
+                             (sdr_arrs[nbx](i, j, k) + 1e-15)) *
+                        delta_t;
 
-                        sdr_lhs_arr(i, j, k) =
-                            (rho_arr(i, j, k) * beta * sdr_arr(i, j, k) +
-                             0.5 * std::abs(cross_diffusion) /
-                                 (sdr_arr(i, j, k) + 1e-15)) *
-                            delta_t;
+                } else if (diff_type == DiffusionType::Implicit) {
+                    /* Source term linearization is based on Florian
+                       Menter's (1993) AIAA paper */
+                    diss_arrs[nbx](i, j, k) = 0.0;
 
-                    } else if (diff_type == DiffusionType::Implicit) {
-                        /* Source term linearization is based on Florian
-                           Menter's (1993) AIAA paper */
-                        diss_arr(i, j, k) = 0.0;
+                    sdr_src_arrs[nbx](i, j, k) = production_omega;
 
-                        sdr_src_arr(i, j, k) = production_omega;
+                    sdr_diss_arrs[nbx](i, j, k) = 0.0;
 
-                        sdr_diss_arr(i, j, k) = 0.0;
+                    sdr_lhs_arrs[nbx](i, j, k) =
+                        (2.0 * rho_arrs[nbx](i, j, k) * beta *
+                             sdr_arrs[nbx](i, j, k) +
+                         std::abs(cross_diffusion) /
+                             (sdr_arrs[nbx](i, j, k) + 1e-15)) *
+                        delta_t;
+                } else {
+                    sdr_src_arrs[nbx](i, j, k) =
+                        production_omega + cross_diffusion;
 
-                        sdr_lhs_arr(i, j, k) =
-                            (2.0 * rho_arr(i, j, k) * beta * sdr_arr(i, j, k) +
-                             std::abs(cross_diffusion) /
-                                 (sdr_arr(i, j, k) + 1e-15)) *
-                            delta_t;
-                    } else {
-                        sdr_src_arr(i, j, k) =
-                            production_omega + cross_diffusion;
+                    sdr_diss_arrs[nbx](i, j, k) =
+                        -rho_arrs[nbx](i, j, k) * beta *
+                            sdr_arrs[nbx](i, j, k) * sdr_arrs[nbx](i, j, k) +
+                        sdr_diss_amb;
 
-                        sdr_diss_arr(i, j, k) = -rho_arr(i, j, k) * beta *
-                                                    sdr_arr(i, j, k) *
-                                                    sdr_arr(i, j, k) +
-                                                sdr_diss_amb;
-
-                        sdr_lhs_arr(i, j, k) = 0.5 * rho_arr(i, j, k) * beta *
-                                               sdr_arr(i, j, k) * delta_t;
-                    }
-                });
-        }
+                    sdr_lhs_arrs[nbx](i, j, k) = 0.5 * rho_arrs[nbx](i, j, k) *
+                                                 beta * sdr_arrs[nbx](i, j, k) *
+                                                 delta_t;
+                }
+            });
     }
+    amrex::Gpu::synchronize();
 
     mu_turb.fillpatch(this->m_sim.time().current_time());
 }

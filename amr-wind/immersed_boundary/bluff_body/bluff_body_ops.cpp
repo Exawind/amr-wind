@@ -47,29 +47,28 @@ void apply_mms_vel(CFDSim& sim)
         const auto& dx = geom[lev].CellSizeArray();
         const auto& problo = geom[lev].ProbLoArray();
 
-        for (amrex::MFIter mfi(levelset(lev)); mfi.isValid(); ++mfi) {
-            const auto& bx = mfi.growntilebox();
-            const auto& phi = levelset(lev).const_array(mfi);
-            const auto& varr = velocity(lev).array(mfi);
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-                    const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
+        const auto& phi_arrs = levelset(lev).const_arrays();
+        const auto& varrs = velocity(lev).arrays();
+        amrex::ParallelFor(
+            levelset(lev), levelset.num_grow(),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
 
-                    if (phi(i, j, k) <= 0) {
-                        varr(i, j, k, 0) =
-                            u0 - std::cos(utils::pi() * (x - u0 * t)) *
-                                     std::sin(utils::pi() * (y - v0 * t)) *
-                                     std::exp(-2.0 * omega * t);
-                        varr(i, j, k, 1) =
-                            v0 + std::sin(utils::pi() * (x - u0 * t)) *
-                                     std::cos(utils::pi() * (y - v0 * t)) *
-                                     std::exp(-2.0 * omega * t);
-                        varr(i, j, k, 2) = 0.0;
-                    }
-                });
-        }
+                if (phi_arrs[nbx](i, j, k) <= 0) {
+                    varrs[nbx](i, j, k, 0) =
+                        u0 - std::cos(utils::pi() * (x - u0 * t)) *
+                                 std::sin(utils::pi() * (y - v0 * t)) *
+                                 std::exp(-2.0 * omega * t);
+                    varrs[nbx](i, j, k, 1) =
+                        v0 + std::sin(utils::pi() * (x - u0 * t)) *
+                                 std::cos(utils::pi() * (y - v0 * t)) *
+                                 std::exp(-2.0 * omega * t);
+                    varrs[nbx](i, j, k, 2) = 0.0;
+                }
+            });
     }
+    amrex::Gpu::synchronize();
 }
 
 void apply_dirichlet_vel(CFDSim& sim, const amrex::Vector<amrex::Real>& vel_bc)
@@ -90,47 +89,47 @@ void apply_dirichlet_vel(CFDSim& sim, const amrex::Vector<amrex::Real>& vel_bc)
         // Defining the "ghost-cell" band distance
         amrex::Real phi_b = std::cbrt(dx[0] * dx[1] * dx[2]);
 
-        for (amrex::MFIter mfi(levelset(lev)); mfi.isValid(); ++mfi) {
-            const auto& bx = mfi.tilebox();
-            const auto& varr = velocity(lev).array(mfi);
-            const auto& phi_arr = levelset(lev).const_array(mfi);
-            auto norm_arr = normal(lev).array(mfi);
+        const auto& varrs = velocity(lev).arrays();
+        const auto& phi_arrs = levelset(lev).const_arrays();
+        const auto& norm_arrs = normal(lev).arrays();
 
-            const amrex::Real velx = vel_bc[0];
-            const amrex::Real vely = vel_bc[1];
-            const amrex::Real velz = vel_bc[2];
+        const amrex::Real velx = vel_bc[0];
+        const amrex::Real vely = vel_bc[1];
+        const amrex::Real velz = vel_bc[2];
 
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    // Pure solid-body points
-                    if (phi_arr(i, j, k) < -phi_b) {
-                        varr(i, j, k, 0) = velx;
-                        varr(i, j, k, 1) = vely;
-                        varr(i, j, k, 2) = velz;
-                        norm_arr(i, j, k, 0) = 0.;
-                        norm_arr(i, j, k, 1) = 0.;
-                        norm_arr(i, j, k, 2) = 0.;
-                        // This determines the ghost-cells
-                    } else if (
-                        phi_arr(i, j, k) < 0 && phi_arr(i, j, k) >= -phi_b) {
-                        // For this particular ghost-cell find the
-                        // body-intercept (BI) point and image-point (IP)
-                        // First define the ghost cell point
-                        // amrex::Real x_GC = problo[0] + (i + 0.5) * dx[0];
-                        // amrex::Real y_GC = problo[1] + (j + 0.5) * dx[1];
-                        // amrex::Real z_GC = problo[2] + (k + 0.5) * dx[2];
-                        // Find the "image-points"
-                        varr(i, j, k, 0) = velx;
-                        varr(i, j, k, 1) = vely;
-                        varr(i, j, k, 2) = velz;
-                    } else {
-                        norm_arr(i, j, k, 0) = 0.;
-                        norm_arr(i, j, k, 1) = 0.;
-                        norm_arr(i, j, k, 2) = 0.;
-                    }
-                });
-        }
+        amrex::ParallelFor(
+            levelset(lev),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                // Pure solid-body points
+                if (phi_arrs[nbx](i, j, k) < -phi_b) {
+                    varrs[nbx](i, j, k, 0) = velx;
+                    varrs[nbx](i, j, k, 1) = vely;
+                    varrs[nbx](i, j, k, 2) = velz;
+                    norm_arrs[nbx](i, j, k, 0) = 0.;
+                    norm_arrs[nbx](i, j, k, 1) = 0.;
+                    norm_arrs[nbx](i, j, k, 2) = 0.;
+                    // This determines the ghost-cells
+                } else if (
+                    phi_arrs[nbx](i, j, k) < 0 &&
+                    phi_arrs[nbx](i, j, k) >= -phi_b) {
+                    // For this particular ghost-cell find the
+                    // body-intercept (BI) point and image-point (IP)
+                    // First define the ghost cell point
+                    // amrex::Real x_GC = problo[0] + (i + 0.5) * dx[0];
+                    // amrex::Real y_GC = problo[1] + (j + 0.5) * dx[1];
+                    // amrex::Real z_GC = problo[2] + (k + 0.5) * dx[2];
+                    // Find the "image-points"
+                    varrs[nbx](i, j, k, 0) = velx;
+                    varrs[nbx](i, j, k, 1) = vely;
+                    varrs[nbx](i, j, k, 2) = velz;
+                } else {
+                    norm_arrs[nbx](i, j, k, 0) = 0.;
+                    norm_arrs[nbx](i, j, k, 1) = 0.;
+                    norm_arrs[nbx](i, j, k, 2) = 0.;
+                }
+            });
     }
+    amrex::Gpu::synchronize();
 }
 
 void prepare_netcdf_file(

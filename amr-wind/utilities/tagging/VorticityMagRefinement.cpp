@@ -57,43 +57,48 @@ void VorticityMagRefinement::operator()(
     const auto& mfab = (*m_vel)(level);
     const auto& idx = m_sim.repo().mesh().Geom(level).InvCellSizeArray();
 
-#ifdef AMREX_USE_OMP
-#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
-#endif
-    for (amrex::MFIter mfi(mfab, amrex::TilingIfNotGPU()); mfi.isValid();
-         ++mfi) {
-        const auto& bx = mfi.tilebox();
-        const auto& tag = tags.array(mfi);
-        const auto& vel = mfab.const_array(mfi);
-        const auto vort_val = m_vort_value[level];
+    const auto& tag_arrs = tags.arrays();
+    const auto& vel_arrs = mfab.const_arrays();
+    const auto vort_val = m_vort_value[level];
 
-        amrex::ParallelFor(
-            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                // TODO: ignoring wall stencils for now
-                const auto vx =
-                    0.5 * (vel(i + 1, j, k, 1) - vel(i - 1, j, k, 1)) * idx[0];
-                const auto wx =
-                    0.5 * (vel(i + 1, j, k, 2) - vel(i - 1, j, k, 2)) * idx[0];
+    amrex::ParallelFor(
+        mfab, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            // TODO: ignoring wall stencils for now
+            const auto vx = 0.5 *
+                            (vel_arrs[nbx](i + 1, j, k, 1) -
+                             vel_arrs[nbx](i - 1, j, k, 1)) *
+                            idx[0];
+            const auto wx = 0.5 *
+                            (vel_arrs[nbx](i + 1, j, k, 2) -
+                             vel_arrs[nbx](i - 1, j, k, 2)) *
+                            idx[0];
 
-                const auto uy =
-                    0.5 * (vel(i, j + 1, k, 0) - vel(i, j - 1, k, 0)) * idx[1];
-                const auto wy =
-                    0.5 * (vel(i, j + 1, k, 2) - vel(i, j - 1, k, 2)) * idx[1];
+            const auto uy = 0.5 *
+                            (vel_arrs[nbx](i, j + 1, k, 0) -
+                             vel_arrs[nbx](i, j - 1, k, 0)) *
+                            idx[1];
+            const auto wy = 0.5 *
+                            (vel_arrs[nbx](i, j + 1, k, 2) -
+                             vel_arrs[nbx](i, j - 1, k, 2)) *
+                            idx[1];
 
-                const auto uz =
-                    0.5 * (vel(i, j, k + 1, 0) - vel(i, j, k - 1, 0)) * idx[2];
-                const auto vz =
-                    0.5 * (vel(i, j, k + 1, 1) - vel(i, j, k - 1, 1)) * idx[2];
+            const auto uz = 0.5 *
+                            (vel_arrs[nbx](i, j, k + 1, 0) -
+                             vel_arrs[nbx](i, j, k - 1, 0)) *
+                            idx[2];
+            const auto vz = 0.5 *
+                            (vel_arrs[nbx](i, j, k + 1, 1) -
+                             vel_arrs[nbx](i, j, k - 1, 1)) *
+                            idx[2];
 
-                const auto vort = sqrt(
-                    std::pow(uy - vx, 2) + std::pow(vz - wy, 2) +
-                    std::pow(wx - uz, 2));
+            const auto vort = sqrt(
+                std::pow(uy - vx, 2) + std::pow(vz - wy, 2) +
+                std::pow(wx - uz, 2));
 
-                if (vort > vort_val) {
-                    tag(i, j, k) = amrex::TagBox::SET;
-                }
-            });
-    }
+            if (vort > vort_val) {
+                tag_arrs[nbx](i, j, k) = amrex::TagBox::SET;
+            }
+        });
 }
 
 } // namespace amr_wind

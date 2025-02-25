@@ -111,21 +111,18 @@ void EkmanSpiral::initialize_fields(int level, const amrex::Geometry& geom)
     UExact u_exact;
     VExact v_exact;
 
-    for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
-        const auto& vbx = mfi.validbox();
+    const auto& dx = geom.CellSizeArray();
+    const auto& problo = geom.ProbLoArray();
+    const auto& vel_arrs = velocity.arrays();
 
-        const auto& dx = geom.CellSizeArray();
-        const auto& problo = geom.ProbLoArray();
-        auto vel = velocity.array(mfi);
-
-        amrex::ParallelFor(
-            vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-                vel(i, j, k, 0) = u_exact(v0, a, z);
-                vel(i, j, k, 1) = v_exact(v0, a, z);
-                vel(i, j, k, 2) = 0.0;
-            });
-    }
+    amrex::ParallelFor(
+        velocity, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+            vel_arrs[nbx](i, j, k, 0) = u_exact(v0, a, z);
+            vel_arrs[nbx](i, j, k, 1) = v_exact(v0, a, z);
+            vel_arrs[nbx](i, j, k, 2) = 0.0;
+        });
+    amrex::Gpu::synchronize();
 }
 
 template <typename T>

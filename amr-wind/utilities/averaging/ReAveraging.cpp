@@ -46,27 +46,22 @@ void ReAveraging::operator()(
         const auto& ffab = m_field(lev);
         auto& afab = m_average(lev);
 
-#ifdef AMREX_USE_OMP
-#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
-#endif
-        for (amrex::MFIter mfi(ffab, amrex::TilingIfNotGPU()); mfi.isValid();
-             ++mfi) {
-            const auto& bx = mfi.tilebox();
-            const auto& fldarr = ffab.const_array(mfi);
-            const auto& avgarr = afab.array(mfi);
+        const auto& fldarrs = ffab.const_arrays();
+        const auto& avgarrs = afab.arrays();
 
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    for (int n = 0; n < ncomp; ++n) {
-                        const amrex::Real fval = fldarr(i, j, k, n);
-                        const amrex::Real aval = avgarr(i, j, k, n);
+        amrex::ParallelFor(
+            ffab, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                for (int n = 0; n < ncomp; ++n) {
+                    const amrex::Real fval = fldarrs[nbx](i, j, k, n);
+                    const amrex::Real aval = avgarrs[nbx](i, j, k, n);
 
-                        avgarr(i, j, k, n) =
-                            (aval * factor + fval * dt) / filter;
-                    }
-                });
-        }
+                    avgarrs[nbx](i, j, k, n) =
+                        (aval * factor + fval * dt) / filter;
+                }
+            });
     }
+    amrex::Gpu::synchronize();
+
     m_average.fillpatch(time.new_time());
 }
 

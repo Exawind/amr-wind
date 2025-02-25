@@ -47,18 +47,17 @@ void Smagorinsky<Transport>::update_turbulent_viscosity(
         const amrex::Real ds_sqr = ds * ds;
         const amrex::Real smag_factor = Cs_sqr * ds_sqr;
 
-        for (amrex::MFIter mfi(mu_turb(lev)); mfi.isValid(); ++mfi) {
-            const auto& bx = mfi.tilebox();
-            const auto& mu_arr = mu_turb(lev).array(mfi);
-            const auto& rho_arr = den(lev).const_array(mfi);
+        const auto& mu_arrs = mu_turb(lev).arrays();
+        const auto& rho_arrs = den(lev).const_arrays();
 
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real rho = rho_arr(i, j, k);
-                    mu_arr(i, j, k) *= rho * smag_factor;
-                });
-        }
+        amrex::ParallelFor(
+            mu_turb(lev),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                const amrex::Real rho = rho_arrs[nbx](i, j, k);
+                mu_arrs[nbx](i, j, k) *= rho * smag_factor;
+            });
     }
+    amrex::Gpu::synchronize();
 
     mu_turb.fillpatch(this->m_sim.time().current_time());
 }

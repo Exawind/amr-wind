@@ -399,53 +399,62 @@ void MacProjOp::mac_proj_to_uniform_space(
     // scale U^mac to accommodate for mesh mapping -> U^bar = J/fac *
     // U^mac beta accounted for mesh mapping = J/fac^2 * 1/rho construct
     // rho and mesh map u_mac on x-face
-    for (amrex::MFIter mfi(*(rho_face[0])); mfi.isValid(); ++mfi) {
-        amrex::Array4<amrex::Real> const& u = u_mac(lev).array(mfi);
-        amrex::Array4<amrex::Real> const& rho = rho_face[0]->array(mfi);
-        amrex::Array4<amrex::Real const> const& fac =
-            mesh_fac_xf(lev).array(mfi);
-        amrex::Array4<amrex::Real const> const& detJ =
-            mesh_detJ_xf(lev).const_array(mfi);
+    {
+        const auto& u_arrs = u_mac(lev).arrays();
+        const auto& rho_arrs = rho_face[0]->arrays();
+        const auto& fac_arrs = mesh_fac_xf(lev).arrays();
+        const auto& detJ_arrs = mesh_detJ_xf(lev).const_arrays();
 
         amrex::ParallelFor(
-            mfi.tilebox(), [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                u(i, j, k) *= detJ(i, j, k) / fac(i, j, k, 0);
-                rho(i, j, k) = ovst_fac * detJ(i, j, k) /
-                               std::pow(fac(i, j, k, 0), 2) / rho(i, j, k);
+            *(rho_face[0]),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                u_arrs[nbx](i, j, k) *=
+                    detJ_arrs[nbx](i, j, k) / fac_arrs[nbx](i, j, k, 0);
+                rho_arrs[nbx](i, j, k) =
+                    ovst_fac * detJ_arrs[nbx](i, j, k) /
+                    std::pow(fac_arrs[nbx](i, j, k, 0), 2) /
+                    rho_arrs[nbx](i, j, k);
             });
     }
+
     // construct rho on y-face
-    for (amrex::MFIter mfi(*(rho_face[1])); mfi.isValid(); ++mfi) {
-        amrex::Array4<amrex::Real> const& v = v_mac(lev).array(mfi);
-        amrex::Array4<amrex::Real> const& rho = rho_face[1]->array(mfi);
-        amrex::Array4<amrex::Real const> const& fac =
-            mesh_fac_yf(lev).array(mfi);
-        amrex::Array4<amrex::Real const> const& detJ =
-            mesh_detJ_yf(lev).const_array(mfi);
+    {
+        const auto& v_arrs = v_mac(lev).arrays();
+        const auto& rho_arrs = rho_face[1]->arrays();
+        const auto& fac_arrs = mesh_fac_yf(lev).arrays();
+        const auto& detJ_arrs = mesh_detJ_yf(lev).const_arrays();
 
         amrex::ParallelFor(
-            mfi.tilebox(), [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                v(i, j, k) *= detJ(i, j, k) / fac(i, j, k, 1);
-                rho(i, j, k) = ovst_fac * detJ(i, j, k) /
-                               std::pow(fac(i, j, k, 1), 2) / rho(i, j, k);
+            *(rho_face[1]),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                v_arrs[nbx](i, j, k) *=
+                    detJ_arrs[nbx](i, j, k) / fac_arrs[nbx](i, j, k, 1);
+                rho_arrs[nbx](i, j, k) =
+                    ovst_fac * detJ_arrs[nbx](i, j, k) /
+                    std::pow(fac_arrs[nbx](i, j, k, 1), 2) /
+                    rho_arrs[nbx](i, j, k);
             });
     }
+
     // construct rho on z-face
-    for (amrex::MFIter mfi(*(rho_face[2])); mfi.isValid(); ++mfi) {
-        amrex::Array4<amrex::Real> const& w = w_mac(lev).array(mfi);
-        amrex::Array4<amrex::Real> const& rho = rho_face[2]->array(mfi);
-        amrex::Array4<amrex::Real const> const& fac =
-            mesh_fac_zf(lev).array(mfi);
-        amrex::Array4<amrex::Real const> const& detJ =
-            mesh_detJ_zf(lev).const_array(mfi);
+    {
+        const auto& w_arrs = w_mac(lev).arrays();
+        const auto& rho_arrs = rho_face[2]->arrays();
+        const auto& fac_arrs = mesh_fac_zf(lev).arrays();
+        const auto& detJ_arrs = mesh_detJ_zf(lev).const_arrays();
 
         amrex::ParallelFor(
-            mfi.tilebox(), [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                w(i, j, k) *= detJ(i, j, k) / fac(i, j, k, 2);
-                rho(i, j, k) = ovst_fac * detJ(i, j, k) /
-                               std::pow(fac(i, j, k, 2), 2) / rho(i, j, k);
+            *(rho_face[2]),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                w_arrs[nbx](i, j, k) *=
+                    detJ_arrs[nbx](i, j, k) / fac_arrs[nbx](i, j, k, 2);
+                rho_arrs[nbx](i, j, k) =
+                    ovst_fac * detJ_arrs[nbx](i, j, k) /
+                    std::pow(fac_arrs[nbx](i, j, k, 2), 2) /
+                    rho_arrs[nbx](i, j, k);
             });
     }
+    amrex::Gpu::synchronize();
 }
 
 } // namespace amr_wind::pde

@@ -116,47 +116,46 @@ void OneEqKsgsM84<Transport>::update_turbulent_viscosity(
         const amrex::Real dy = geom.CellSize()[1];
         const amrex::Real dz = geom.CellSize()[2];
         const amrex::Real ds = std::cbrt(dx * dy * dz);
+        const auto& mu_arrs = mu_turb(lev).arrays();
+        const auto& rho_arrs = den(lev).const_arrays();
+        const auto& gradT_arrs = (*gradT)(lev).const_arrays();
+        const auto& tlscale_arrs = (this->m_turb_lscale)(lev).arrays();
+        const auto& tke_arrs = (*this->m_tke)(lev).const_arrays();
+        const auto& buoy_prod_arrs = (this->m_buoy_prod)(lev).arrays();
+        const auto& shear_prod_arrs = (this->m_shear_prod)(lev).arrays();
+        const auto& beta_arrs = (*beta)(lev).const_arrays();
 
-        for (amrex::MFIter mfi(mu_turb(lev)); mfi.isValid(); ++mfi) {
-            const auto& bx = mfi.tilebox();
-            const auto& mu_arr = mu_turb(lev).array(mfi);
-            const auto& rho_arr = den(lev).const_array(mfi);
-            const auto& gradT_arr = (*gradT)(lev).array(mfi);
-            const auto& tlscale_arr = (this->m_turb_lscale)(lev).array(mfi);
-            const auto& tke_arr = (*this->m_tke)(lev).array(mfi);
-            const auto& buoy_prod_arr = (this->m_buoy_prod)(lev).array(mfi);
-            const auto& shear_prod_arr = (this->m_shear_prod)(lev).array(mfi);
-            const auto& beta_arr = (*beta)(lev).const_array(mfi);
+        amrex::ParallelFor(
+            mu_turb(lev),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                amrex::Real stratification =
+                    -(gradT_arrs[nbx](i, j, k, 0) * gravity[0] +
+                      gradT_arrs[nbx](i, j, k, 1) * gravity[1] +
+                      gradT_arrs[nbx](i, j, k, 2) * gravity[2]) *
+                    beta_arrs[nbx](i, j, k);
+                if (stratification > 1e-10) {
+                    tlscale_arrs[nbx](i, j, k) = amrex::min<amrex::Real>(
+                        ds,
+                        0.76 *
+                            std::sqrt(tke_arrs[nbx](i, j, k) / stratification));
+                } else {
+                    tlscale_arrs[nbx](i, j, k) = ds;
+                }
 
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    amrex::Real stratification =
-                        -(gradT_arr(i, j, k, 0) * gravity[0] +
-                          gradT_arr(i, j, k, 1) * gravity[1] +
-                          gradT_arr(i, j, k, 2) * gravity[2]) *
-                        beta_arr(i, j, k);
-                    if (stratification > 1e-10) {
-                        tlscale_arr(i, j, k) = amrex::min<amrex::Real>(
-                            ds, 0.76 * std::sqrt(
-                                           tke_arr(i, j, k) / stratification));
-                    } else {
-                        tlscale_arr(i, j, k) = ds;
-                    }
+                mu_arrs[nbx](i, j, k) = rho_arrs[nbx](i, j, k) * Ce *
+                                        tlscale_arrs[nbx](i, j, k) *
+                                        std::sqrt(tke_arrs[nbx](i, j, k));
 
-                    mu_arr(i, j, k) = rho_arr(i, j, k) * Ce *
-                                      tlscale_arr(i, j, k) *
-                                      std::sqrt(tke_arr(i, j, k));
+                buoy_prod_arrs[nbx](i, j, k) =
+                    -mu_arrs[nbx](i, j, k) *
+                    (1.0 + 2.0 * tlscale_arrs[nbx](i, j, k) / ds) *
+                    stratification;
 
-                    buoy_prod_arr(i, j, k) =
-                        -mu_arr(i, j, k) *
-                        (1.0 + 2.0 * tlscale_arr(i, j, k) / ds) *
-                        stratification;
-
-                    shear_prod_arr(i, j, k) *=
-                        shear_prod_arr(i, j, k) * mu_arr(i, j, k);
-                });
-        }
+                shear_prod_arrs[nbx](i, j, k) *=
+                    shear_prod_arrs[nbx](i, j, k) * mu_arrs[nbx](i, j, k);
+            });
     }
+    amrex::Gpu::synchronize();
 
     mu_turb.fillpatch(this->m_sim.time().current_time());
 }
@@ -181,22 +180,21 @@ void OneEqKsgsM84<Transport>::update_alphaeff(Field& alphaeff)
         const amrex::Real dz = geom.CellSize()[2];
         const amrex::Real ds = std::cbrt(dx * dy * dz);
 
-        for (amrex::MFIter mfi(mu_turb(lev)); mfi.isValid(); ++mfi) {
-            const auto& bx = mfi.tilebox();
-            const auto& muturb_arr = mu_turb(lev).array(mfi);
-            const auto& alphaeff_arr = alphaeff(lev).array(mfi);
-            const auto& tlscale_arr = this->m_turb_lscale(lev).array(mfi);
-            const auto& lam_diff_arr = (*lam_alpha)(lev).array(mfi);
+        const auto& muturb_arrs = mu_turb(lev).const_arrays();
+        const auto& alphaeff_arrs = alphaeff(lev).arrays();
+        const auto& tlscale_arrs = this->m_turb_lscale(lev).const_arrays();
+        const auto& lam_diff_arrs = (*lam_alpha)(lev).const_arrays();
 
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    alphaeff_arr(i, j, k) =
-                        lam_diff_arr(i, j, k) +
-                        muturb_arr(i, j, k) *
-                            (1.0 + 2.0 * tlscale_arr(i, j, k) / ds);
-                });
-        }
+        amrex::ParallelFor(
+            mu_turb(lev),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                alphaeff_arrs[nbx](i, j, k) =
+                    lam_diff_arrs[nbx](i, j, k) +
+                    muturb_arrs[nbx](i, j, k) *
+                        (1.0 + 2.0 * tlscale_arrs[nbx](i, j, k) / ds);
+            });
     }
+    amrex::Gpu::synchronize();
 
     alphaeff.fillpatch(this->m_sim.time().current_time());
 }
@@ -247,17 +245,17 @@ void OneEqKsgsM84<Transport>::post_advance_work()
         const amrex::Real dz = geom.CellSize()[2];
         const amrex::Real ds = std::cbrt(dx * dy * dz);
 
-        for (amrex::MFIter mfi(tke(lev)); mfi.isValid(); ++mfi) {
-            const auto& bx = mfi.growntilebox();
-            const auto& tke_arr = tke(lev).array(mfi);
-            const auto& sdr_arr = sdr(lev).array(mfi);
+        const auto& tke_arrs = tke(lev).const_arrays();
+        const auto& sdr_arrs = sdr(lev).arrays();
 
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    sdr_arr(i, j, k) = std::sqrt(tke_arr(i, j, k)) / (Ce * ds);
-                });
-        }
+        amrex::ParallelFor(
+            tke(lev),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                sdr_arrs[nbx](i, j, k) =
+                    std::sqrt(tke_arrs[nbx](i, j, k)) / (Ce * ds);
+            });
     }
+    amrex::Gpu::synchronize();
 }
 
 template <typename Transport>
