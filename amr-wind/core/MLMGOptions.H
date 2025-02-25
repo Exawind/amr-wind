@@ -77,7 +77,7 @@ private:
     amrex::Real m_bottom_rel_tol{1.0e-4};
 
     //! Absolute tolerance for convergence checks
-    amrex::Real m_bottom_abs_tol{-1.0};
+    amrex::Real m_bottom_abs_tol{1e-12};
 
     /** Verbosity of the MLMG and Projector interfaces
      */
