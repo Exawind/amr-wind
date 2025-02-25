@@ -86,11 +86,47 @@ The input file options are copied here::
 The most applicable use case for this boundary condition is with the
 :ref:`amrwind-abl-bndry-io` for flows that change directions
 across the vertical coordinate or with time.
-The work to integrate this condition with the ABL class is under progress.
+See the ``abl_bndry_input_native_inout`` test for an example,
+the relevant inputs are included below.
+
+.. code-block:: none
+
+  ABL.bndry_file = "../abl_bndry_output_native/bndry_files"
+  ABL.bndry_io_mode = 1
+  ABL.bndry_var_names = velocity temperature
+  ABL.bndry_output_format = native
+
+  xlo.type = "mass_inflow_outflow"
+  xlo.density = 1.0
+  xlo.temperature = 0.0   # dummy
+
+  xhi.type = "mass_inflow_outflow"
+  xhi.density = 1.0
+  xhi.temperature = 0.0
+
+  ylo.type = "mass_inflow_outflow"
+  ylo.density = 1.0
+  ylo.temperature = 0.0
+
+  yhi.type = "mass_inflow_outflow"
+  yhi.density = 1.0
+  yhi.temperature = 0.0
+
+If the inflow files do not include a specific field or plane,
+then the relevant BC can be specified in the input file.
+Note that if unspecified, the velocities at a boundary would default to zero,
+which implements a Dirichlet type behavior.
+If an outflow is expected at that boundary, any non-zero outflow velocity may be specified,
+which would implement a Neumann type behavior as the
+boundary cell velocity will be overwritten by the inner cell velocity.
+
+There is currently an unresolved issue of non-convergence of the nodal projection
+for inflow-outflow boundaries.
+
 
 Dynamic wall model (Wave model)
 ```````````````````````````````
-The Moving Surface Drag (MOSD) model developed by `Ayala et al (2024) <https://doi.org/10.1007/s10546-024-00884-8>`_ is used as the dynamic wall model. The model calculates the stress (form drag) imparted by a moving wave. The model enables wave phase-resolving physics without the use of wave-phase adapting computational grids. 
+The Moving Surface Drag (MOSD) model developed by `Ayala et al (2024) <https://doi.org/10.1007/s10546-024-00884-8>`_ is used as the dynamic wall model. The model calculates the stress (form drag) imparted by a moving wave. The model enables wave phase-resolving physics without the use of wave-phase adapting computational grids.
 
 .. input_param:: wave_mosd.amplitude
    **type:** Real, required, default = 0.05
@@ -115,7 +151,7 @@ Example::
   wave_mosd.wavenumber = 4
   wave_mosd.frequency = 0.8
 
-.. note:: This wall model is only applicable for the lower boundary ``zlo.type``. Also, it is set for only monochromatic waves. 
+.. note:: This wall model is only applicable for the lower boundary ``zlo.type``. Also, it is set for only monochromatic waves.
 
 Currently, the dynamic wall model is only available for ``incflo.physics = ChannelFlow``. The work to integrate this condition with the ABL class is under progress. See the ``channel_mosd`` test for an example that uses the dynamic wall model.
 
@@ -133,7 +169,7 @@ flows of interest, such as stratified ABLs and ocean waves. However, instead of 
 the target pressure of the boundary condition, it is typically more useful to change the
 formulation of the source terms, transforming the pressure variable into the difference
 between the true pressure and some constant, non-uniform reference pressure profile.
-In the context of stratified ABLs, which typically apply gravity through the 
+In the context of stratified ABLs, which typically apply gravity through the
 BoussinesqBuoyancy source term, this pressure modification is realized with the
 additional source term ABLMeanBoussinesq. In the context of ocean waves, which typically
 apply gravity through the GravityForcing source term, this pressure modification is
