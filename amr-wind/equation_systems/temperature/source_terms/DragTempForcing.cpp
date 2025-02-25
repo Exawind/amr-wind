@@ -18,11 +18,7 @@ DragTempForcing::DragTempForcing(const CFDSim& sim)
 {
     amrex::ParmParse pp("DragTempForcing");
     pp.query("drag_coefficient", m_drag_coefficient);
-    if (pp.contains("reference_temperature")) {
-        amrex::Abort(
-            "DragTempForcing.reference_temperature has been deprecated. Please "
-            "replace with transport.reference_temperature.");
-    }
+    pp.query("soil_temperature", m_soil_temperature);
     amrex::ParmParse pp_abl("ABL");
     pp_abl.query("wall_het_model", m_wall_het_model);
     pp_abl.query("mol_length", m_mol_length);
@@ -67,9 +63,6 @@ void DragTempForcing::operator()(
     const auto& geom = m_mesh.Geom(lev);
     const auto& dx = geom.CellSizeArray();
     const amrex::Real drag_coefficient = m_drag_coefficient / dx[2];
-    amrex::FArrayBox ref_theta_fab(bx, 1, amrex::The_Async_Arena());
-    amrex::Array4<amrex::Real> const& ref_theta_arr = ref_theta_fab.array();
-    m_transport.ref_theta_impl(lev, mfi, bx, ref_theta_arr);
     const amrex::Real gravity_mod = std::abs(m_gravity[2]);
     const amrex::Real kappa = m_kappa;
     const amrex::Real z0_min = 1e-4;
@@ -89,6 +82,7 @@ void DragTempForcing::operator()(
             : 0.0;
     const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
     const amrex::Real cd_max = 10.0;
+    const amrex::Real T0 = m_soil_temperature;
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const amrex::Real z0 = std::max(terrainz0(i, j, k), z0_min);
         const amrex::Real ux1 = vel(i, j, k, 0);
@@ -112,7 +106,6 @@ void DragTempForcing::operator()(
         const amrex::Real m = std::sqrt(ux1 * ux1 + uy1 * uy1 + uz1 * uz1);
         const amrex::Real Cd =
             std::min(drag_coefficient / (m + tiny), cd_max / dx[2]);
-        const amrex::Real T0 = ref_theta_arr(i, j, k);
         src_term(i, j, k, 0) -=
             (Cd * (theta - T0) * blank(i, j, k, 0) +
              bc_forcing_t * drag(i, j, k));
