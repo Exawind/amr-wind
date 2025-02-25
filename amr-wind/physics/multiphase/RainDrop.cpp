@@ -32,26 +32,24 @@ void RainDrop::initialize_fields(int level, const amrex::Geometry& geom)
     const amrex::Real yc = m_loc[1];
     const amrex::Real zc = m_loc[2];
     const amrex::Real radius = m_radius;
-    for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
-        const auto& vbx = mfi.validbox();
-        auto phi = levelset.array(mfi);
-        amrex::ParallelFor(
-            vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-                const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
-                const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+    const auto& phi_arrs = levelset.arrays();
+    amrex::ParallelFor(
+        velocity, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+            const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
+            const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-                // Calculate level-set
-                phi(i, j, k) =
-                    radius - std::sqrt(
-                                 (x - xc) * (x - xc) + (y - yc) * (y - yc) +
-                                 (z - zc) * (z - zc));
-            });
-    }
+            // Calculate level-set
+            phi_arrs[nbx](i, j, k) =
+                radius - std::sqrt(
+                             (x - xc) * (x - xc) + (y - yc) * (y - yc) +
+                             (z - zc) * (z - zc));
+        });
+    amrex::Gpu::synchronize();
 
     auto& mphase = m_sim.physics_manager().get<MultiPhase>();
     // Get VOF array if it is valid
-    bool yes_vof = m_sim.repo().field_exists("vof");
+    const bool yes_vof = m_sim.repo().field_exists("vof");
     amrex::MultiFab* work_ptr;
     if (yes_vof) {
         auto& volfrac = m_sim.repo().get_field("vof")(level);
@@ -62,43 +60,42 @@ void RainDrop::initialize_fields(int level, const amrex::Geometry& geom)
     }
 
     // Use density to calculate mixed velocity in multiphase cells
-    amrex::Real rhol = mphase.rho1();
-    amrex::Real rhog = mphase.rho2();
+    const amrex::Real rhol = mphase.rho1();
+    const amrex::Real rhog = mphase.rho2();
     const amrex::Real eps = std::cbrt(2. * dx[0] * dx[1] * dx[2]);
     amrex::Gpu::DeviceVector<amrex::Real> dvel(AMREX_SPACEDIM);
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, m_vel.begin(), m_vel.end(), dvel.begin());
     const auto* vptr = dvel.data();
-    for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
-        const auto& vbx = mfi.validbox();
-        auto vel = velocity.array(mfi);
-        auto work_arr = work_ptr->array(mfi);
-        amrex::ParallelFor(
-            vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                // Calculate mass-weighted velocity (gas vel is 0)
-                amrex::Real vof;
-                if (yes_vof) {
-                    // Work array here is vof
-                    vof = work_arr(i, j, k);
+    const auto& vel_arrs = velocity.arrays();
+    const auto& work_arrs = work_ptr->arrays();
+    amrex::ParallelFor(
+        velocity, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            // Calculate mass-weighted velocity (gas vel is 0)
+            amrex::Real vof;
+            if (yes_vof) {
+                // Work array here is vof
+                vof = work_arrs[nbx](i, j, k);
+            } else {
+                // Work array here is phi
+                if (work_arrs[nbx](i, j, k) > eps) {
+                    vof = 1.0;
+                } else if (work_arrs[nbx](i, j, k) < -eps) {
+                    vof = 0.;
                 } else {
-                    // Work array here is phi
-                    if (work_arr(i, j, k) > eps) {
-                        vof = 1.0;
-                    } else if (work_arr(i, j, k) < -eps) {
-                        vof = 0.;
-                    } else {
-                        vof = 0.5 *
-                              (1.0 + work_arr(i, j, k) / eps +
-                               1.0 / M_PI *
-                                   std::sin(work_arr(i, j, k) * M_PI / eps));
-                    }
+                    vof = 0.5 *
+                          (1.0 + work_arrs[nbx](i, j, k) / eps +
+                           1.0 / M_PI *
+                               std::sin(work_arrs[nbx](i, j, k) * M_PI / eps));
                 }
-                amrex::Real dens = (1.0 - vof) * rhog + vof * rhol;
-                vel(i, j, k, 0) = vof * rhol * vptr[0] / dens;
-                vel(i, j, k, 1) = vof * rhol * vptr[1] / dens;
-                vel(i, j, k, 2) = vof * rhol * vptr[2] / dens;
-            });
-    }
+            }
+            const amrex::Real dens = (1.0 - vof) * rhog + vof * rhol;
+            vel_arrs[nbx](i, j, k, 0) = vof * rhol * vptr[0] / dens;
+            vel_arrs[nbx](i, j, k, 1) = vof * rhol * vptr[1] / dens;
+            vel_arrs[nbx](i, j, k, 2) = vof * rhol * vptr[2] / dens;
+        });
+
+    amrex::Gpu::synchronize();
 }
 
 } // namespace amr_wind

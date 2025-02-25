@@ -210,36 +210,34 @@ void incflo::ApplyProjection(
     // dt/rho
     if (!incremental) {
         for (int lev = 0; lev <= finest_level; lev++) {
+            const auto& u_arrs = velocity(lev).arrays();
+            const auto& rho_arrs = density[lev]->const_arrays();
+            const auto& gp_arrs = grad_p(lev).const_arrays();
+            const auto& fac_arrs =
+                mesh_mapping ? ((*mesh_fac)(lev).const_arrays())
+                             : amrex::MultiArray4<amrex::Real const>();
 
-#ifdef AMREX_USE_OMP
-#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
-#endif
-            for (MFIter mfi(velocity(lev), TilingIfNotGPU()); mfi.isValid();
-                 ++mfi) {
-                Box const& bx = mfi.tilebox();
-                Array4<Real> const& u = velocity(lev).array(mfi);
-                Array4<Real const> const& rho = density[lev]->const_array(mfi);
-                Array4<Real const> const& gp = grad_p(lev).const_array(mfi);
-                amrex::Array4<amrex::Real const> fac =
-                    mesh_mapping ? ((*mesh_fac)(lev).const_array(mfi))
-                                 : amrex::Array4<amrex::Real const>();
+            amrex::ParallelFor(
+                velocity(lev),
+                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                    const amrex::Real soverrho =
+                        scaling_factor / rho_arrs[nbx](i, j, k);
+                    amrex::Real fac_x =
+                        mesh_mapping ? (fac_arrs[nbx](i, j, k, 0)) : 1.0;
+                    amrex::Real fac_y =
+                        mesh_mapping ? (fac_arrs[nbx](i, j, k, 1)) : 1.0;
+                    amrex::Real fac_z =
+                        mesh_mapping ? (fac_arrs[nbx](i, j, k, 2)) : 1.0;
 
-                amrex::ParallelFor(
-                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        Real soverrho = scaling_factor / rho(i, j, k);
-                        amrex::Real fac_x =
-                            mesh_mapping ? (fac(i, j, k, 0)) : 1.0;
-                        amrex::Real fac_y =
-                            mesh_mapping ? (fac(i, j, k, 1)) : 1.0;
-                        amrex::Real fac_z =
-                            mesh_mapping ? (fac(i, j, k, 2)) : 1.0;
-
-                        u(i, j, k, 0) += 1 / fac_x * gp(i, j, k, 0) * soverrho;
-                        u(i, j, k, 1) += 1 / fac_y * gp(i, j, k, 1) * soverrho;
-                        u(i, j, k, 2) += 1 / fac_z * gp(i, j, k, 2) * soverrho;
-                    });
-            }
+                    u_arrs[nbx](i, j, k, 0) +=
+                        1 / fac_x * gp_arrs[nbx](i, j, k, 0) * soverrho;
+                    u_arrs[nbx](i, j, k, 1) +=
+                        1 / fac_y * gp_arrs[nbx](i, j, k, 1) * soverrho;
+                    u_arrs[nbx](i, j, k, 2) +=
+                        1 / fac_z * gp_arrs[nbx](i, j, k, 2) * soverrho;
+                });
         }
+        amrex::Gpu::synchronize();
     }
 
     // ensure velocity is in stretched mesh space
@@ -268,39 +266,35 @@ void incflo::ApplyProjection(
         for (int lev = 0; lev <= finest_level; ++lev) {
             sigma[lev].define(
                 grids[lev], dmap[lev], ncomp, 0, MFInfo(), Factory(lev));
-#ifdef AMREX_USE_OMP
-#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
-#endif
-            for (MFIter mfi(sigma[lev], TilingIfNotGPU()); mfi.isValid();
-                 ++mfi) {
-                Box const& bx = mfi.tilebox();
-                Array4<Real> const& sig = sigma[lev].array(mfi);
-                Array4<Real const> const& rho = density[lev]->const_array(mfi);
-                amrex::Array4<amrex::Real const> fac =
-                    mesh_mapping ? ((*mesh_fac)(lev).const_array(mfi))
-                                 : amrex::Array4<amrex::Real const>();
-                amrex::Array4<amrex::Real const> detJ =
-                    mesh_mapping ? ((*mesh_detJ)(lev).const_array(mfi))
-                                 : amrex::Array4<amrex::Real const>();
-                const auto& ref_rho = is_anelastic
-                                          ? (*ref_density)(lev).const_array(mfi)
-                                          : amrex::Array4<amrex::Real>();
+            const auto& sig_arrs = sigma[lev].arrays();
+            const auto& rho_arrs = density[lev]->const_arrays();
+            const auto& fac_arrs =
+                mesh_mapping ? ((*mesh_fac)(lev).const_arrays())
+                             : amrex::MultiArray4<amrex::Real const>();
+            const auto& detJ_arrs =
+                mesh_mapping ? ((*mesh_detJ)(lev).const_arrays())
+                             : amrex::MultiArray4<amrex::Real const>();
+            const auto& ref_rho_arrs =
+                is_anelastic ? (*ref_density)(lev).const_arrays()
+                             : amrex::MultiArray4<amrex::Real const>();
 
-                amrex::ParallelFor(
-                    bx, ncomp,
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                        amrex::Real fac_cc =
-                            mesh_mapping ? (fac(i, j, k, n)) : 1.0;
-                        amrex::Real det_j =
-                            mesh_mapping ? (detJ(i, j, k)) : 1.0;
-                        sig(i, j, k, n) = std::pow(fac_cc, -2.) * det_j *
-                                          scaling_factor / rho(i, j, k);
-                        if (is_anelastic) {
-                            sig(i, j, k, n) *= ref_rho(i, j, k);
-                        }
-                    });
-            }
+            amrex::ParallelFor(
+                sigma[lev], amrex::IntVect(0), ncomp,
+                [=] AMREX_GPU_DEVICE(
+                    int nbx, int i, int j, int k, int n) noexcept {
+                    amrex::Real fac_cc =
+                        mesh_mapping ? (fac_arrs[nbx](i, j, k, n)) : 1.0;
+                    amrex::Real det_j =
+                        mesh_mapping ? (detJ_arrs[nbx](i, j, k)) : 1.0;
+                    sig_arrs[nbx](i, j, k, n) = std::pow(fac_cc, -2.) * det_j *
+                                                scaling_factor /
+                                                rho_arrs[nbx](i, j, k);
+                    if (is_anelastic) {
+                        sig_arrs[nbx](i, j, k, n) *= ref_rho_arrs[nbx](i, j, k);
+                    }
+                });
         }
+        amrex::Gpu::synchronize();
     }
 
     // Perform projection

@@ -53,33 +53,29 @@ void GradientMagRefinement::operator()(
     const auto& mfab = (*m_field)(level);
     const auto& idx = m_sim.repo().mesh().Geom(level).InvCellSizeArray();
 
-#ifdef AMREX_USE_OMP
-#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
-#endif
-    for (amrex::MFIter mfi(mfab, amrex::TilingIfNotGPU()); mfi.isValid();
-         ++mfi) {
-        const auto& bx = mfi.tilebox();
-        const auto& tag = tags.array(mfi);
-        const auto& farr = mfab.const_array(mfi);
-        const auto gradmag_val = m_gradmag_value[level];
+    const auto& tag_arrs = tags.arrays();
+    const auto& farrs = mfab.const_arrays();
+    const auto gradmag_val = m_gradmag_value[level];
 
-        amrex::ParallelFor(
-            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                // TODO: ignoring wall stencils for now
+    amrex::ParallelFor(
+        mfab, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            // TODO: ignoring wall stencils for now
 
-                const auto gx =
-                    0.5 * (farr(i + 1, j, k) - farr(i - 1, j, k)) * idx[0];
-                const auto gy =
-                    0.5 * (farr(i, j + 1, k) - farr(i, j - 1, k)) * idx[1];
-                const auto gz =
-                    0.5 * (farr(i, j, k + 1) - farr(i, j, k - 1)) * idx[2];
+            const auto gx =
+                0.5 * (farrs[nbx](i + 1, j, k) - farrs[nbx](i - 1, j, k)) *
+                idx[0];
+            const auto gy =
+                0.5 * (farrs[nbx](i, j + 1, k) - farrs[nbx](i, j - 1, k)) *
+                idx[1];
+            const auto gz =
+                0.5 * (farrs[nbx](i, j, k + 1) - farrs[nbx](i, j, k - 1)) *
+                idx[2];
 
-                const auto grad_mag = sqrt(gx * gx + gy * gy + gz * gz);
-                if (grad_mag > gradmag_val) {
-                    tag(i, j, k) = amrex::TagBox::SET;
-                }
-            });
-    }
+            const auto grad_mag = sqrt(gx * gx + gy * gy + gz * gz);
+            if (grad_mag > gradmag_val) {
+                tag_arrs[nbx](i, j, k) = amrex::TagBox::SET;
+            }
+        });
 }
 
 } // namespace amr_wind

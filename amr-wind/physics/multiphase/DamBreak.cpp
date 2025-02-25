@@ -42,42 +42,40 @@ void DamBreak::initialize_fields(int level, const amrex::Geometry& geom)
     const amrex::Real rho1 = mphase.rho1();
     const amrex::Real rho2 = mphase.rho2();
 
-    for (amrex::MFIter mfi(levelset); mfi.isValid(); ++mfi) {
-        const auto& vbx = mfi.validbox();
-        auto phi = levelset.array(mfi);
-        auto rho = density.array(mfi);
-        const amrex::Real eps = std::cbrt(2. * dx[0] * dx[1] * dx[2]);
+    const auto& phi_arrs = levelset.arrays();
+    const auto& rho_arrs = density.arrays();
+    const amrex::Real eps = std::cbrt(2. * dx[0] * dx[1] * dx[2]);
 
-        amrex::ParallelFor(
-            vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-                const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+    amrex::ParallelFor(
+        levelset, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+            const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-                if (x - xc < width && z - zc < height) {
-                    phi(i, j, k) = amrex::min(width - x, height - z);
-                } else if (x - xc < width && z - zc > height) {
-                    phi(i, j, k) = height - (z - zc);
-                } else if (x - xc > width && z - zc < height) {
-                    phi(i, j, k) = width - (x - xc);
-                } else {
-                    phi(i, j, k) =
-                        amrex::min(width - (x - xc), height - (z - zc));
-                }
-                amrex::Real smooth_heaviside;
-                if (phi(i, j, k) > eps) {
-                    smooth_heaviside = 1.0;
-                } else if (phi(i, j, k) < -eps) {
-                    smooth_heaviside = 0.;
-                } else {
-                    smooth_heaviside =
-                        0.5 *
-                        (1.0 + phi(i, j, k) / eps +
-                         1.0 / M_PI * std::sin(phi(i, j, k) * M_PI / eps));
-                }
-                rho(i, j, k) =
-                    rho1 * smooth_heaviside + rho2 * (1.0 - smooth_heaviside);
-            });
-    }
+            if (x - xc < width && z - zc < height) {
+                phi_arrs[nbx](i, j, k) = amrex::min(width - x, height - z);
+            } else if (x - xc < width && z - zc > height) {
+                phi_arrs[nbx](i, j, k) = height - (z - zc);
+            } else if (x - xc > width && z - zc < height) {
+                phi_arrs[nbx](i, j, k) = width - (x - xc);
+            } else {
+                phi_arrs[nbx](i, j, k) =
+                    amrex::min(width - (x - xc), height - (z - zc));
+            }
+            amrex::Real smooth_heaviside;
+            if (phi_arrs[nbx](i, j, k) > eps) {
+                smooth_heaviside = 1.0;
+            } else if (phi_arrs[nbx](i, j, k) < -eps) {
+                smooth_heaviside = 0.;
+            } else {
+                smooth_heaviside =
+                    0.5 * (1.0 + phi_arrs[nbx](i, j, k) / eps +
+                           1.0 / M_PI *
+                               std::sin(phi_arrs[nbx](i, j, k) * M_PI / eps));
+            }
+            rho_arrs[nbx](i, j, k) =
+                rho1 * smooth_heaviside + rho2 * (1.0 - smooth_heaviside);
+        });
+    amrex::Gpu::synchronize();
 }
 
 } // namespace amr_wind

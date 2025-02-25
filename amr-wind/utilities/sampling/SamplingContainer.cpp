@@ -19,6 +19,9 @@ void SamplingContainer::setup_container(
 
     const int nlevels = m_mesh.finestLevel() + 1;
     for (int lev = 0; lev < nlevels; ++lev) {
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (false)
+#endif
         for (amrex::MFIter mfi = MakeMFIter(lev); mfi.isValid(); ++mfi) {
             DefineAndReturnParticleTile(lev, mfi.index(), mfi.LocalTileIndex());
         }
@@ -44,7 +47,9 @@ void SamplingContainer::initialize_particles(
     const auto& plo = m_mesh.Geom(lev).ProbLoArray();
 #endif
 
-    // don't use openmp
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (false)
+#endif
     for (amrex::MFIter mfi = MakeMFIter(lev); mfi.isValid(); ++mfi) {
         const amrex::Box& box = mfi.tilebox();
 
