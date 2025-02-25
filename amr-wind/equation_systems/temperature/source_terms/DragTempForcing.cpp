@@ -14,7 +14,6 @@ DragTempForcing::DragTempForcing(const CFDSim& sim)
     , m_mesh(sim.mesh())
     , m_velocity(sim.repo().get_field("velocity"))
     , m_temperature(sim.repo().get_field("temperature"))
-    , m_transport(sim.transport_model())
 {
     amrex::ParmParse pp("DragTempForcing");
     pp.query("drag_coefficient", m_drag_coefficient);
