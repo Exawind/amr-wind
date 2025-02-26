@@ -319,7 +319,7 @@ void KOmegaSSTIDDES<Transport>::update_turbulent_viscosity(
                 }
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 
     mu_turb.fillpatch(this->m_sim.time().current_time());
 }

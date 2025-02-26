@@ -454,7 +454,7 @@ void MacProjOp::mac_proj_to_uniform_space(
                     rho_arrs[nbx](i, j, k);
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 } // namespace amr_wind::pde

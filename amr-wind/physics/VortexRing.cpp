@@ -320,7 +320,7 @@ void VortexRing::initialize_velocity(const VortexRingType& vorticity_theta)
                 vel_arrs[nbx](i, j, k, 2) = -(dpsiy_dx - dpsix_dy);
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 } // namespace amr_wind

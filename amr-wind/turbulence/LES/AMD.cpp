@@ -108,7 +108,7 @@ void AMD<Transport>::update_turbulent_viscosity(
                                            p_tpa_deriv, normal_dir, nlo);
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 
     mu_turb.fillpatch(this->m_sim.time().current_time());
 }
@@ -147,7 +147,7 @@ void AMD<Transport>::update_alphaeff(Field& alphaeff)
                               gradT_arrs[nbx]);
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 template <typename Transport>

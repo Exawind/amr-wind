@@ -267,7 +267,7 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(
                 }
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 
     mu_turb.fillpatch(this->m_sim.time().current_time());
 }
@@ -302,7 +302,7 @@ void KOmegaSST<Transport>::update_scalar_diff(
                             mu_arrs[nbx](i, j, k);
                 });
         }
-        amrex::Gpu::synchronize();
+        amrex::Gpu::streamSynchronize();
     } else if (name == pde::SDR::var_name()) {
         const amrex::Real sigma_omega1 = this->m_sigma_omega1;
         const amrex::Real sigma_omega2 = this->m_sigma_omega2;
@@ -323,7 +323,7 @@ void KOmegaSST<Transport>::update_scalar_diff(
                             mu_arrs[nbx](i, j, k);
                 });
         }
-        amrex::Gpu::synchronize();
+        amrex::Gpu::streamSynchronize();
     } else {
         amrex::Abort(
             "KOmegaSST:update_scalar_diff not implemented for field " + name);

@@ -155,7 +155,7 @@ void OneEqKsgsM84<Transport>::update_turbulent_viscosity(
                     shear_prod_arrs[nbx](i, j, k) * mu_arrs[nbx](i, j, k);
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 
     mu_turb.fillpatch(this->m_sim.time().current_time());
 }
@@ -194,7 +194,7 @@ void OneEqKsgsM84<Transport>::update_alphaeff(Field& alphaeff)
                         (1.0 + 2.0 * tlscale_arrs[nbx](i, j, k) / ds);
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 
     alphaeff.fillpatch(this->m_sim.time().current_time());
 }
@@ -255,7 +255,7 @@ void OneEqKsgsM84<Transport>::post_advance_work()
                     std::sqrt(tke_arrs[nbx](i, j, k)) / (Ce * ds);
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 template <typename Transport>

@@ -152,7 +152,7 @@ public:
                             mu2 * (1.0 - volfrac_arrs[nbx](i, j, k));
                     });
             }
-            amrex::Gpu::synchronize();
+            amrex::Gpu::streamSynchronize();
 
         } else if (ifacetype == InterfaceCapturingMethod::LS) {
 
@@ -189,7 +189,7 @@ public:
                             mu2 * (1.0 - smooth_heaviside);
                     });
             }
-            amrex::Gpu::synchronize();
+            amrex::Gpu::streamSynchronize();
         }
         return mu;
     }
@@ -258,7 +258,7 @@ public:
                     });
             }
         }
-        amrex::Gpu::synchronize();
+        amrex::Gpu::streamSynchronize();
         return alpha;
     }
 

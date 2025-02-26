@@ -49,7 +49,7 @@ void TaylorGreenVortex::initialize_fields(
                                         cos(two_pi() * z / Lz);
             vel_arrs[nbx](i, j, k, 2) = 0.0;
         });
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 } // namespace amr_wind

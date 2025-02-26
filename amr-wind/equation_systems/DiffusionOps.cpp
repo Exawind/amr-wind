@@ -135,7 +135,7 @@ void DiffSolverIface<LinOp>::linsys_solve_impl()
                     rho_arrs[nbx](i, j, k) * fld_arrs[nbx](i, j, k, n);
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 
     amrex::MLMG mlmg(*this->m_solver);
     this->setup_solver(mlmg);

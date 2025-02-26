@@ -253,7 +253,7 @@ amrex::Real ConvectingTaylorVortex::compute_error(const Field& field)
                         imask_arrs[nbx](i, j, k) = 0;
                     }
                 });
-            amrex::Gpu::synchronize();
+            amrex::Gpu::streamSynchronize();
         }
 
         const auto& dx = m_mesh.Geom(lev).CellSizeArray();

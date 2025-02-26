@@ -28,7 +28,7 @@ static void replace_masked_vof(
                         : vfmasked_arrs[nbx](i, j, k);
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 } // namespace amr_wind::multiphase

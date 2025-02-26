@@ -29,7 +29,7 @@ void HybridRANSLESABL::initialize_fields(int level, const amrex::Geometry& geom)
             sdr_arrs[nbx](i, j, k) =
                 std::sqrt(tke_arrs[nbx](i, j, k)) / (Ce * ds);
         });
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 void HybridRANSLESABL::pre_init_actions()
@@ -98,7 +98,7 @@ void HybridRANSLESABL::compute_sdr_impl()
                     std::sqrt(tke_arrs[nbx](i, j, k)) / (Ce * ds);
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 } // namespace amr_wind::hybrid_rans_les_abl

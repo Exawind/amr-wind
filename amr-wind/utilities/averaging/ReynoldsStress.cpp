@@ -93,7 +93,7 @@ void ReynoldsStress::operator()(
                 }
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 
     m_stress.fillpatch(time.new_time());
     m_re_stress.fillpatch(time.new_time());

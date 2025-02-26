@@ -62,7 +62,7 @@ void AMDNoTherm<Transport>::update_turbulent_viscosity(
                     amd_base_muvel(i, j, k, dx, C_poincare, gradVel_arrs[nbx]);
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 
     mu_turb.fillpatch(this->m_sim.time().current_time());
 }

@@ -135,7 +135,7 @@ struct ComputeRHSOp
                     });
             }
         }
-        amrex::Gpu::synchronize();
+        amrex::Gpu::streamSynchronize();
     }
 
     /** Compute right-hand side for corrector steps
@@ -259,7 +259,7 @@ struct ComputeRHSOp
                     });
             }
         }
-        amrex::Gpu::synchronize();
+        amrex::Gpu::streamSynchronize();
     }
 
     // data members

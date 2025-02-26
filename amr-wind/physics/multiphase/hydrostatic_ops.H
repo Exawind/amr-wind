@@ -25,7 +25,7 @@ static void define_rho0(
                 rho0_arrs[nbx](i, j, k) = vof * rho1 + (1.0 - vof) * rho2;
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 static void define_p0(
@@ -57,7 +57,7 @@ static void define_p0(
                 p0_arrs[nbx](i, j, k) = -irho * grav_z;
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 } // namespace amr_wind::hydrostatic

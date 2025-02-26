@@ -107,7 +107,7 @@ struct SrcTermOpBase
                     vf_arrs[nbx](i, j, k, n) *= rho_arrs[nbx](i, j, k);
                 });
         }
-        amrex::Gpu::synchronize();
+        amrex::Gpu::streamSynchronize();
     }
 
     //! Update source terms during time-integration procedure

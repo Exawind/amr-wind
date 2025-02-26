@@ -390,7 +390,7 @@ lower_bound(FType& field, const amrex::Real min_value, const int icomp = 0)
                     amrex::max(min_value, farrs[nbx](i, j, k, icomp));
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 /** Computes the global maximum of a field from all levels
@@ -465,7 +465,7 @@ inline void normalize(FType& field)
                 }
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 } // namespace amr_wind::field_ops

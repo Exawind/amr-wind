@@ -126,7 +126,7 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
             rho_arrs[nbx](i, j, k) =
                 rho1 * smooth_heaviside + rho2 * (1.0 - smooth_heaviside);
         });
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 
     m_levelset.fillpatch(m_sim.time().current_time());
     m_velocity.fillpatch(m_sim.time().current_time());
@@ -160,7 +160,7 @@ void ZalesakDisk::pre_advance_work()
                 vf_arrs[nbx](i, j, k) = 2.0 * M_PI / TT * (x - 0.5);
                 wf_arrs[nbx](i, j, k) = 0.0;
             });
-        amrex::Gpu::synchronize();
+        amrex::Gpu::streamSynchronize();
         u_mac.FillBoundary(geom[lev].periodicity());
         v_mac.FillBoundary(geom[lev].periodicity());
         w_mac.FillBoundary(geom[lev].periodicity());
@@ -190,7 +190,7 @@ void ZalesakDisk::post_advance_work()
                 vel_arrs[nbx](i, j, k, 2) = 0.0;
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 
     m_velocity.fillpatch(m_sim.time().current_time());
 }

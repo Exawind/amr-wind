@@ -122,7 +122,7 @@ void Kosovic<Transport>::update_turbulent_viscosity(
                     rho * stressScale * turnOff * blankTerrain;
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 
     mu_turb.fillpatch(this->m_sim.time().current_time());
 }
@@ -149,7 +149,7 @@ void Kosovic<Transport>::update_alphaeff(Field& alphaeff)
                     muCoeff * muturb_arrs[nbx](i, j, k);
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 
     alphaeff.fillpatch(this->m_sim.time().current_time());
 }

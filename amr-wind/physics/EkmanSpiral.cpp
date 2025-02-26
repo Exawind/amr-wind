@@ -122,7 +122,7 @@ void EkmanSpiral::initialize_fields(int level, const amrex::Geometry& geom)
             vel_arrs[nbx](i, j, k, 1) = v_exact(v0, a, z);
             vel_arrs[nbx](i, j, k, 2) = 0.0;
         });
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 template <typename T>

@@ -36,7 +36,7 @@ void RefineCriteriaManager::tag_cells(
     for (const auto& rc : m_refiners) {
         (*rc)(lev, tags, time, ngrow);
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 } // namespace amr_wind

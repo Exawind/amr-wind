@@ -264,7 +264,7 @@ void KLAxell<Transport>::update_turbulent_viscosity(
                 });
         }
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 
     mu_turb.fillpatch(this->m_sim.time().current_time());
 }
@@ -318,7 +318,7 @@ void KLAxell<Transport>::update_alphaeff(Field& alphaeff)
                     muturb_arrs[nbx](i, j, k) / prandtlRt;
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 
     alphaeff.fillpatch(this->m_sim.time().current_time());
 }

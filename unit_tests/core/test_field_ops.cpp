@@ -31,7 +31,7 @@ public:
                     farrs[nbx](i, j, k) = 1.0 - (x + y + z);
                 });
         }
-        amrex::Gpu::synchronize();
+        amrex::Gpu::streamSynchronize();
     }
 };
 

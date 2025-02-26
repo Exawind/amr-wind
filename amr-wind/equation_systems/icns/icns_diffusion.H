@@ -178,7 +178,7 @@ public:
                         divtau_arrs[nbx](i, j, k, 2) *= rhoinv;
                     });
             }
-            amrex::Gpu::synchronize();
+            amrex::Gpu::streamSynchronize();
         }
     }
 
@@ -244,7 +244,7 @@ public:
                         rho_arrs[nbx](i, j, k) * fld_arrs[nbx](i, j, k, n);
                 });
         }
-        amrex::Gpu::synchronize();
+        amrex::Gpu::streamSynchronize();
 
         amrex::MLMG mlmg(*m_solver_scalar);
         m_options(mlmg);
@@ -401,7 +401,7 @@ public:
                         divtau_arrs[nbx](i, j, k, 2) *= rhoinv;
                     });
             }
-            amrex::Gpu::synchronize();
+            amrex::Gpu::streamSynchronize();
         }
     }
 
@@ -478,7 +478,7 @@ public:
                         rho_arrs[nbx](i, j, k) * fld_arrs[nbx](i, j, k, n);
                 });
         }
-        amrex::Gpu::synchronize();
+        amrex::Gpu::streamSynchronize();
 
         for (int i = 0; i < AMREX_SPACEDIM; ++i) {
             auto vel_comp = m_pdefields.field.subview(i);

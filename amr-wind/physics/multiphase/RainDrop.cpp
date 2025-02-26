@@ -45,7 +45,7 @@ void RainDrop::initialize_fields(int level, const amrex::Geometry& geom)
                              (x - xc) * (x - xc) + (y - yc) * (y - yc) +
                              (z - zc) * (z - zc));
         });
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 
     auto& mphase = m_sim.physics_manager().get<MultiPhase>();
     // Get VOF array if it is valid
@@ -95,7 +95,7 @@ void RainDrop::initialize_fields(int level, const amrex::Geometry& geom)
             vel_arrs[nbx](i, j, k, 2) = vof * rhol * vptr[2] / dens;
         });
 
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 } // namespace amr_wind
