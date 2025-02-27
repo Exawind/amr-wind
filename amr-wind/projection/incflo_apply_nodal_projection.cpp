@@ -333,7 +333,7 @@ void incflo::ApplyProjection(
             for (int idim = 0; idim < velocity.num_comp(); ++idim) {
                 amrex::Multiply(
                     velocity(lev), (*ref_density)(lev), 0, idim,
-                    density[lev]->nComp(), 0);
+                    density[lev]->nComp(), 1);
             }
         }
     }
@@ -405,7 +405,7 @@ void incflo::ApplyProjection(
             for (int idim = 0; idim < velocity.num_comp(); ++idim) {
                 amrex::Divide(
                     velocity(lev), (*ref_density)(lev), 0, idim,
-                    density[lev]->nComp(), 0);
+                    density[lev]->nComp(), 1);
             }
         }
     }
