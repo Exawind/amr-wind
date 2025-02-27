@@ -144,7 +144,7 @@ void OversetOps::update_gradp()
                 gp_lev_arrs[nbx](i, j, k, n) = gp_proj_arrs[nbx](i, j, k, n);
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 
     // Averaging down here would be unnecessary; it is built into calcGradPhi
 }
@@ -249,7 +249,7 @@ void OversetOps::sharpen_nalu_data()
                 iblank_cell(lev), dx, max_pvscale);
         pvscale = std::min(pvscale, pvscale_lev);
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
     amrex::ParallelDescriptor::ReduceRealMin(pvscale);
 
     // Convert levelset to vof to get target_vof
@@ -260,14 +260,14 @@ void OversetOps::sharpen_nalu_data()
         // A tolerance of 0 should do nothing
         overset_ops::process_vof((*target_vof)(lev), m_target_cutoff);
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 
     // Replace vof with original values in amr domain
     for (int lev = 0; lev < nlevels; ++lev) {
         overset_ops::harmonize_vof(
             (*target_vof)(lev), vof(lev), iblank_cell(lev));
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 
     // Put fluxes in vector for averaging down during iterations
     amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>> fluxes(
@@ -319,7 +319,7 @@ void OversetOps::sharpen_nalu_data()
                 err = amrex::max(err, err_lev);
             }
         }
-        amrex::Gpu::synchronize();
+        amrex::Gpu::streamSynchronize();
 
         // Average down fluxes across levels for consistency
         for (int lev = nlevels - 1; lev > 0; --lev) {
@@ -338,7 +338,7 @@ void OversetOps::sharpen_nalu_data()
                 m_convg_tol);
             ptfac = amrex::min(ptfac, ptfac_lev);
         }
-        amrex::Gpu::synchronize();
+        amrex::Gpu::streamSynchronize();
         amrex::ParallelDescriptor::ReduceRealMin(ptfac);
 
         // Conform pseudo dt (dtau) to pseudo CFL
@@ -357,7 +357,7 @@ void OversetOps::sharpen_nalu_data()
             velocity(lev).FillBoundary(geom[lev].periodicity());
             gp(lev).FillBoundary(geom[lev].periodicity());
         }
-        amrex::Gpu::synchronize();
+        amrex::Gpu::streamSynchronize();
 
         // Update density (fillpatch built in)
         m_mphase->set_density_via_vof();
@@ -382,7 +382,7 @@ void OversetOps::sharpen_nalu_data()
     for (int lev = 0; lev < nlevels; ++lev) {
         overset_ops::equate_field(levelset(lev), velocity(lev));
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 void OversetOps::form_perturb_pressure()
@@ -421,7 +421,7 @@ void OversetOps::replace_masked_gradp()
         // Reapply pressure gradient term
         overset_ops::apply_pressure_gradient(vel(lev), rho(lev), gp(lev), dt);
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 } // namespace amr_wind

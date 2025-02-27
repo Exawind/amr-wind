@@ -637,7 +637,7 @@ void SyntheticTurbulence::update_impl(
                 }
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 } // namespace amr_wind

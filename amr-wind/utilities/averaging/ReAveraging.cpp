@@ -60,7 +60,7 @@ void ReAveraging::operator()(
                 }
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 
     m_average.fillpatch(time.new_time());
 }

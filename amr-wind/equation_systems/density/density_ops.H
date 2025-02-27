@@ -41,7 +41,7 @@ struct ComputeRHSOp<Density, Scheme>
                     // k));
                 });
         }
-        amrex::Gpu::synchronize();
+        amrex::Gpu::streamSynchronize();
     }
 
     void corrector_rhs(
@@ -73,7 +73,7 @@ struct ComputeRHSOp<Density, Scheme>
                     //     0.5 * (rho(i, j, k) + rho_o(i, j, k));
                 });
         }
-        amrex::Gpu::synchronize();
+        amrex::Gpu::streamSynchronize();
     }
 
     // data members

@@ -168,7 +168,7 @@ void ZalesakDiskScalarVel::initialize_fields(
             vel_arrs[nbx](i, j, k, 0) =
                 amrex::min(1.0, amrex::max(0.0, 1.5 - dnorm));
         });
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
     m_levelset.fillpatch(m_sim.time().current_time());
     m_velocity.fillpatch(m_sim.time().current_time());
     m_density.fillpatch(m_sim.time().current_time());
@@ -202,7 +202,7 @@ void ZalesakDiskScalarVel::pre_advance_work()
                 vf_arrs[nbx](i, j, k) = 2.0 * M_PI / TT * (x - 0.5);
                 wf_arrs[nbx](i, j, k) = 0.0;
             });
-        amrex::Gpu::synchronize();
+        amrex::Gpu::streamSynchronize();
         u_mac.FillBoundary(geom[lev].periodicity());
         v_mac.FillBoundary(geom[lev].periodicity());
         w_mac.FillBoundary(geom[lev].periodicity());
@@ -260,7 +260,7 @@ amrex::Real ZalesakDiskScalarVel::compute_error(const Field& field)
                         imask_arrs[nbx](i, j, k) = 0;
                     }
                 });
-            amrex::Gpu::synchronize();
+            amrex::Gpu::streamSynchronize();
         }
 
         const auto& dx = m_sim.mesh().Geom(lev).CellSizeArray();

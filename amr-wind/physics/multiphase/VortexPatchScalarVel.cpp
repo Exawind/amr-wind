@@ -110,7 +110,7 @@ void VortexPatchScalarVel::initialize_fields(
                          std::sin(phi_arrs[nbx](i, j, k) * M_PI / eps_vel));
             }
         });
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
     m_velocity.fillpatch(m_sim.time().current_time());
 }
 
@@ -155,7 +155,7 @@ void VortexPatchScalarVel::pre_advance_work()
                     std::sin(2.0 * M_PI * x) * std::sin(2.0 * M_PI * y) *
                     std::cos(M_PI * time / TT);
             });
-        amrex::Gpu::synchronize();
+        amrex::Gpu::streamSynchronize();
         u_mac.FillBoundary(geom[lev].periodicity());
         v_mac.FillBoundary(geom[lev].periodicity());
         w_mac.FillBoundary(geom[lev].periodicity());

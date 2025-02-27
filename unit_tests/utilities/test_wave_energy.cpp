@@ -23,7 +23,7 @@ void init_velocity(amr_wind::Field& fld)
                 farrs[nbx](i, j, k, 2) = i;
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 void init_vof(amr_wind::Field& fld)
@@ -52,7 +52,7 @@ void init_vof(amr_wind::Field& fld)
                 }
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 class WaveEnergyImpl : public amr_wind::wave_energy::WaveEnergy

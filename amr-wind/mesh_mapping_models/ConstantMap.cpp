@@ -114,7 +114,7 @@ void ConstantMap::create_face_map(int lev)
                 scale_fac_zf_arrs[nbx](i, j, k, 2);
         });
 
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 /** Construct the non-uniform mesh field

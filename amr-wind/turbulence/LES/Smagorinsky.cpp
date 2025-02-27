@@ -57,7 +57,7 @@ void Smagorinsky<Transport>::update_turbulent_viscosity(
                 mu_arrs[nbx](i, j, k) *= rho * smag_factor;
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 
     mu_turb.fillpatch(this->m_sim.time().current_time());
 }

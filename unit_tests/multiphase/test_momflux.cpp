@@ -25,7 +25,7 @@ void init_field3(
                 farrs[nbx](i, j, k, n) = ins[n];
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 void initialize_volume_fractions(

@@ -167,7 +167,7 @@ void ChannelFlow::initialize_fields(
                     vel_arrs[nbx](i, j, k, 1) = 0.0;
                     vel_arrs[nbx](i, j, k, 2) = 0.0;
                 });
-            amrex::Gpu::synchronize();
+            amrex::Gpu::streamSynchronize();
         } else {
             if (m_repo.field_exists("tke")) {
                 auto& tke = m_repo.get_field("tke")(level);
@@ -210,7 +210,7 @@ void ChannelFlow::initialize_fields(
                     vel_arrs[nbx](i, j, k, 2) =
                         0.0 + (perturb_vel ? pertz : 0.0);
                 });
-            amrex::Gpu::synchronize();
+            amrex::Gpu::streamSynchronize();
         }
     } else {
         velocity.setVal(0.0);

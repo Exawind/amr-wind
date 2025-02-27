@@ -143,7 +143,7 @@ void ABLStats::calc_sfs_stress_avgs(
                 }
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 //! Calculate sfs stress averages
@@ -201,7 +201,7 @@ void ABLStats::calc_tke_diffusion(
                     dissipation_arrs[nbx](i, j, k);
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 void ABLStats::post_advance_work()

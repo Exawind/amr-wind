@@ -99,7 +99,7 @@ void VortexPatch::initialize_fields(int level, const amrex::Geometry& geom)
             rho_arrs[nbx](i, j, k) =
                 rho1 * smooth_heaviside + rho2 * (1.0 - smooth_heaviside);
         });
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 void VortexPatch::pre_advance_work()
@@ -143,7 +143,7 @@ void VortexPatch::pre_advance_work()
                     std::sin(2.0 * M_PI * x) * std::sin(2.0 * M_PI * y) *
                     std::cos(M_PI * time / TT);
             });
-        amrex::Gpu::synchronize();
+        amrex::Gpu::streamSynchronize();
         u_mac.FillBoundary(geom[lev].periodicity());
         v_mac.FillBoundary(geom[lev].periodicity());
         w_mac.FillBoundary(geom[lev].periodicity());
@@ -183,7 +183,7 @@ void VortexPatch::post_advance_work()
                     std::cos(M_PI * time / TT);
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 
     m_velocity.fillpatch(time);
 }

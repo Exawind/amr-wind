@@ -54,7 +54,7 @@ void UDFImpl<T>::operator()(int level, const amrex::Geometry& geom)
                 dop({i, j, k}, marrs[nbx], geomData, time, {}, n, 0, 0);
             }
         });
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 template class UDFImpl<LinearProfile>;

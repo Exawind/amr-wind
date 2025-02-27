@@ -259,7 +259,7 @@ void viscosity_to_uniform_space(
                                         std::pow(fac_arrs[nbx](i, j, k, 2), 2);
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 } // namespace diffusion

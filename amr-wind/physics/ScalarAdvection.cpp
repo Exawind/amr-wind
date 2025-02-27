@@ -168,7 +168,7 @@ void ScalarAdvection::initialize_fields(
             vel_arrs[nbx](i, j, k, 1) = v;
             vel_arrs[nbx](i, j, k, 2) = 0.0;
         });
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 void ScalarAdvection::post_init_actions()

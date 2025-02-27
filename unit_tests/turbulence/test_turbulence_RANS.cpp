@@ -30,7 +30,7 @@ void init_strain_field(amr_wind::Field& fld, amrex::Real srate)
                 farrs[nbx](i, j, k, 2) = z / sqrt(6.0) * srate;
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 void init_temperature_field(amr_wind::Field& fld, amrex::Real tgrad)
@@ -54,7 +54,7 @@ void init_temperature_field(amr_wind::Field& fld, amrex::Real tgrad)
                 farrs[nbx](i, j, k, 0) = z * tgrad;
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 } // namespace

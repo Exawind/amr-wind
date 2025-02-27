@@ -96,7 +96,7 @@ void postprocess_velocity_mfab_liquid(
                 vel[nbx](i, j, k, 2) = 0.0;
             }
         });
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 void postprocess_velocity_field_liquid(
@@ -509,7 +509,7 @@ struct InitDataOp<W2AWaves>
                 w2a_vel[nbx](i, j, k, 1) = quiescent[0];
                 w2a_vel[nbx](i, j, k, 2) = quiescent[0];
             });
-        amrex::Gpu::synchronize();
+        amrex::Gpu::streamSynchronize();
 #else
         amrex::ignore_unused(data, level, geom, multiphase_mode);
 #endif
@@ -718,7 +718,7 @@ struct UpdateTargetFieldsOp<W2AWaves>
                         (time - t_last) / (W2A_t - t_last + 1e-16);
                 });
         }
-        amrex::Gpu::synchronize();
+        amrex::Gpu::streamSynchronize();
 #else
         amrex::ignore_unused(data, time);
 #endif

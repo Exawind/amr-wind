@@ -51,7 +51,7 @@ struct PostSolveOp<TKE>
                                                    : field_arrs[nbx](i, j, k);
                 });
         }
-        amrex::Gpu::synchronize();
+        amrex::Gpu::streamSynchronize();
         m_fields.field.fillpatch(time);
     }
 

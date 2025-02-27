@@ -34,7 +34,7 @@ void init_velocity(amr_wind::Field& velocity)
                 }
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 void init_mac_velocity(
@@ -72,7 +72,7 @@ void init_mac_velocity(
                 }
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 } // namespace

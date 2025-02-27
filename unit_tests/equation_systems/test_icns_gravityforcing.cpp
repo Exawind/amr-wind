@@ -18,7 +18,7 @@ void init_density(amr_wind::Field& density, const int k_thresh = -3)
                 darrs[nbx](i, j, k) = (k > k_thresh) ? k + 4 : 0.0;
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 amrex::Real get_fgz_sum(amr_wind::Field& src_term)

@@ -237,7 +237,7 @@ void incflo::ApplyProjection(
                         1 / fac_z * gp_arrs[nbx](i, j, k, 2) * soverrho;
                 });
         }
-        amrex::Gpu::synchronize();
+        amrex::Gpu::streamSynchronize();
     }
 
     // ensure velocity is in stretched mesh space
@@ -294,7 +294,7 @@ void incflo::ApplyProjection(
                     }
                 });
         }
-        amrex::Gpu::synchronize();
+        amrex::Gpu::streamSynchronize();
     }
 
     // Perform projection

@@ -331,7 +331,7 @@ void MultiPhase::set_density_via_levelset()
                     captured_rho2 * (1.0 - smooth_heaviside);
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 void MultiPhase::set_density_via_vof(amr_wind::FieldState fstate)
@@ -354,7 +354,7 @@ void MultiPhase::set_density_via_vof(amr_wind::FieldState fstate)
                     captured_rho2 * (1.0 - F_arrs[nbx](i, j, k));
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 void MultiPhase::set_nph_density()
@@ -440,7 +440,7 @@ void MultiPhase::favre_filtering()
                     vel_arrs[nbx](i, j, k, n) * rho_arrs[nbx](i, j, k);
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 
     // Do the filtering
     fvm::filter((*density_filter), m_density);
@@ -464,7 +464,7 @@ void MultiPhase::favre_filtering()
                 }
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
     m_velocity.fillpatch(m_sim.time().current_time());
 }
 
@@ -512,7 +512,7 @@ void MultiPhase::levelset2vof()
                 }
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 
     (*m_vof).fillpatch(m_sim.time().current_time());
 }
@@ -590,7 +590,7 @@ void MultiPhase::levelset2vof(
                 }
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 
     vof_scr.fillpatch(m_sim.time().current_time());
 }

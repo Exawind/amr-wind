@@ -75,7 +75,7 @@ void DamBreak::initialize_fields(int level, const amrex::Geometry& geom)
             rho_arrs[nbx](i, j, k) =
                 rho1 * smooth_heaviside + rho2 * (1.0 - smooth_heaviside);
         });
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 } // namespace amr_wind

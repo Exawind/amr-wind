@@ -238,7 +238,7 @@ void ChannelFlowMap::create_face_map(int lev, const amrex::Geometry& geom)
                 scale_fac_zf_arrs[nbx](i, j, k, 1) *
                 scale_fac_zf_arrs[nbx](i, j, k, 2);
         });
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
     // TODO: Call fill patch operators ?
 }
 

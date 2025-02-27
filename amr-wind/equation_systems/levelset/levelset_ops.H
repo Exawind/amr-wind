@@ -80,7 +80,7 @@ struct ComputeRHSOp<Levelset, Scheme>
                     // k));
                 });
         }
-        amrex::Gpu::synchronize();
+        amrex::Gpu::streamSynchronize();
     }
 
     void corrector_rhs(
@@ -112,7 +112,7 @@ struct ComputeRHSOp<Levelset, Scheme>
                     //     0.5 * (phi(i, j, k) + phi_o(i, j, k));
                 });
         }
-        amrex::Gpu::synchronize();
+        amrex::Gpu::streamSynchronize();
     }
 
     // data members

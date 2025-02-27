@@ -67,7 +67,7 @@ void VortexDipole::initialize_fields(int level, const amrex::Geometry& geom)
                 0.5 * omegaEmag * (x - x1) * std::exp(-(r1 / r0) * (r1 / r0)) +
                 -0.5 * omegaEmag * (x - x2) * std::exp(-(r2 / r0) * (r2 / r0));
         });
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 } // namespace amr_wind

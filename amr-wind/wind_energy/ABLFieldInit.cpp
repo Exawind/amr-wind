@@ -412,7 +412,7 @@ void ABLFieldInit::init_tke(
                 }
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 } // namespace amr_wind

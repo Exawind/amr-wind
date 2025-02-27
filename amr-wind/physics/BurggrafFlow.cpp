@@ -100,7 +100,7 @@ void BurggrafFlow::initialize_fields(int level, const amrex::Geometry& geom)
                  64 * (F2 * G1 - g * g1 * F1));
             src_arrs[nbx](i, j, k, 2) = 0.0;
         });
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 template <typename T>

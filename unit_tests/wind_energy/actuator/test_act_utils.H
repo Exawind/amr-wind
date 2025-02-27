@@ -51,7 +51,7 @@ inline void init_field(amr_wind::Field& fld)
                 }
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 } // namespace amr_wind_tests

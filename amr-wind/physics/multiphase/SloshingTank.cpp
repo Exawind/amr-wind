@@ -47,7 +47,7 @@ void SloshingTank::initialize_fields(int level, const amrex::Geometry& geom)
                                     std::pow(y - problo[1] - 0.5 * Ly, 2)));
             phi_arrs[nbx](i, j, k) = z0 - z;
         });
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 } // namespace amr_wind
