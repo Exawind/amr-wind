@@ -1,0 +1,14 @@
+.. meta::c792061641587854e3b06c149d4baab917376c26d56d4d1a6566d6297ad74cf27aa9c41b41efd91a6d2d2f5feab76a17ecbdfda1b81e92934b541c6426af90a6
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::ReadInputsOp&lt; FlatPlate, ActSrcLine &gt; Struct Reference
+
+ReadInputsOp&lt; FlatPlate, ActSrcLine &gt; Struct Reference
+============================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1ops_1_1_read_inputs_op_3_01_flat_plate_00_01_act_src_line_01_4.html

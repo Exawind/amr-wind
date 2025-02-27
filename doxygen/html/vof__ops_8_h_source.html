@@ -1,0 +1,355 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/vof/vof_ops.H Source File &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/vof/vof_ops.H Source File</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/vof__ops_8_h_source.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="home-runner-work-amr-wind-amr-wind-amr-wind-equation-systems-vof-vof-ops-h-source-file">
+<h1>/home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/vof/vof_ops.H Source File<a class="headerlink" href="#home-runner-work-amr-wind-amr-wind-amr-wind-equation-systems-vof-vof-ops-h-source-file" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.12.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/vof/vof_ops.H Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.12.0 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() { codefold.init(0); });
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function(){ initResizable(false); });
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_d85575251dd712327fe3cf057fa568b4.html">amr-wind</a></li><li class="navelem"><a class="el" href="dir_212148f97b8bb53ebaebb3bf8a8b5de4.html">amr-wind</a></li><li class="navelem"><a class="el" href="dir_25ba3af7252fba93a50e7ef611ff43dd.html">equation_systems</a></li><li class="navelem"><a class="el" href="dir_12791b19f0b305ea05c4a6bbc6348144.html">vof</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="headertitle"><div class="title">vof_ops.H</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="vof__ops_8_h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef VOF_OPS_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define VOF_OPS_H</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="vof_8_h.html">amr-wind/equation_systems/vof/vof.H</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="_multi_phase_8_h.html">amr-wind/physics/multiphase/MultiPhase.H</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceamr__wind_1_1pde.html">amr_wind::pde</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Scheme&gt;</div>
+<div class="foldopen" id="foldopen00013" data-start="{" data-end="};">
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structamr__wind_1_1pde_1_1_field_reg_op_3_01_v_o_f_00_01_scheme_01_4.html">   13</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structamr__wind_1_1pde_1_1_field_reg_op.html">FieldRegOp</a>&lt;<a class="code hl_struct" href="structamr__wind_1_1pde_1_1_v_o_f.html">VOF</a>, Scheme&gt;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>{</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structamr__wind_1_1pde_1_1_field_reg_op_3_01_v_o_f_00_01_scheme_01_4.html#af43d6b5e03aebb11ec7cd50a41d407e2">   15</a></span>    <span class="keyword">explicit</span> <a class="code hl_function" href="structamr__wind_1_1pde_1_1_field_reg_op_3_01_v_o_f_00_01_scheme_01_4.html#af43d6b5e03aebb11ec7cd50a41d407e2">FieldRegOp</a>(<a class="code hl_class" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; sim_in) : <a class="code hl_variable" href="structamr__wind_1_1pde_1_1_field_reg_op.html#a0d78b16e9c63315ec150da03ce29bc1a">sim</a>(sim_in) {}</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="foldopen" id="foldopen00017" data-start="{" data-end="}">
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structamr__wind_1_1pde_1_1_field_reg_op_3_01_v_o_f_00_01_scheme_01_4.html#a92a013cb38a4e8fb86f24f864402b82a">   17</a></span>    <a class="code hl_struct" href="structamr__wind_1_1pde_1_1_p_d_e_fields.html">PDEFields</a> <a class="code hl_function" href="structamr__wind_1_1pde_1_1_field_reg_op_3_01_v_o_f_00_01_scheme_01_4.html#a92a013cb38a4e8fb86f24f864402b82a">operator()</a>(<span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_sim_time.html">SimTime</a>&amp; time)</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        <span class="keyword">auto</span>&amp; repo = <a class="code hl_variable" href="structamr__wind_1_1pde_1_1_field_reg_op.html#a0d78b16e9c63315ec150da03ce29bc1a">sim</a>.<a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#a1dacbace38d17434b65a58eb16b57b0f">repo</a>();</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        <span class="keyword">auto</span> fields = <a class="code hl_function" href="namespaceamr__wind_1_1pde.html#ae36fbb15cada9faf20086426d10e16fe">create_fields_instance&lt;VOF, Scheme&gt;</a>(time, repo);</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        <span class="keyword">auto</span>&amp; levelset = repo.declare_cc_field(<span class="stringliteral">&quot;levelset&quot;</span>, 1, 3, 1);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        <span class="keyword">auto</span>&amp; curvature = repo.declare_cc_field(<span class="stringliteral">&quot;interface_curvature&quot;</span>, 1, 1, 1);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        levelset.set_default_fillpatch_bc(<a class="code hl_variable" href="structamr__wind_1_1pde_1_1_field_reg_op.html#a0d78b16e9c63315ec150da03ce29bc1a">sim</a>.<a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#acc9a7c3dd126cd2cc0c9909a2ba99964">time</a>());</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        curvature.set_default_fillpatch_bc(<a class="code hl_variable" href="structamr__wind_1_1pde_1_1_field_reg_op.html#a0d78b16e9c63315ec150da03ce29bc1a">sim</a>.<a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#acc9a7c3dd126cd2cc0c9909a2ba99964">time</a>());</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        <span class="comment">// Register fields for output/restart</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keyword">auto</span>&amp; iomgr = <a class="code hl_variable" href="structamr__wind_1_1pde_1_1_field_reg_op.html#a0d78b16e9c63315ec150da03ce29bc1a">sim</a>.<a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#afd5a79a98ac6931e65955e829c89811b">io_manager</a>();</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        iomgr.<a class="code hl_function" href="classamr__wind_1_1_i_o_manager.html#ac31999a428baec6d606849a78dedb551">register_io_var</a>(fields.field.name());</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keywordflow">return</span> fields;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    }</div>
+</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structamr__wind_1_1pde_1_1_field_reg_op_3_01_v_o_f_00_01_scheme_01_4.html#aa0ab2c752554198c917e2adec4fa08c9">   35</a></span>    <a class="code hl_class" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; <a class="code hl_variable" href="structamr__wind_1_1pde_1_1_field_reg_op_3_01_v_o_f_00_01_scheme_01_4.html#aa0ab2c752554198c917e2adec4fa08c9">sim</a>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>};</div>
+</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Scheme&gt;</div>
+<div class="foldopen" id="foldopen00041" data-start="{" data-end="};">
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structamr__wind_1_1pde_1_1_compute_r_h_s_op_3_01_v_o_f_00_01_scheme_01_4.html">   41</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structamr__wind_1_1pde_1_1_compute_r_h_s_op.html">ComputeRHSOp</a>&lt;<a class="code hl_struct" href="structamr__wind_1_1pde_1_1_v_o_f.html">VOF</a>, Scheme&gt;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>{</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structamr__wind_1_1pde_1_1_compute_r_h_s_op_3_01_v_o_f_00_01_scheme_01_4.html#a9d60a6e4ca6695fee9221e5f58196c5c">   43</a></span>    <span class="keyword">explicit</span> <a class="code hl_function" href="structamr__wind_1_1pde_1_1_compute_r_h_s_op_3_01_v_o_f_00_01_scheme_01_4.html#a9d60a6e4ca6695fee9221e5f58196c5c">ComputeRHSOp</a>(<a class="code hl_struct" href="structamr__wind_1_1pde_1_1_p_d_e_fields.html">PDEFields</a>&amp; fields_in) : <a class="code hl_variable" href="structamr__wind_1_1pde_1_1_compute_r_h_s_op.html#ad4f40c161981d4d3f85a5dc311cebec3">fields</a>(fields_in) {}</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="foldopen" id="foldopen00045" data-start="{" data-end="}">
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structamr__wind_1_1pde_1_1_compute_r_h_s_op_3_01_v_o_f_00_01_scheme_01_4.html#a1beb1a402ce4c854378a7c8ffe282837">   45</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="structamr__wind_1_1pde_1_1_compute_r_h_s_op_3_01_v_o_f_00_01_scheme_01_4.html#a1beb1a402ce4c854378a7c8ffe282837">predictor_rhs</a>(</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keyword">const</span> <a class="code hl_enumeration" href="incflo__enums_8_h.html#a1af7f3d9f2dff8d85c271b9c6f814251">DiffusionType</a> <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keyword">const</span> amrex::Real <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keywordtype">bool</span> <span class="comment">/*unused*/</span>)</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    {}</div>
+</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="foldopen" id="foldopen00051" data-start="{" data-end="}">
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structamr__wind_1_1pde_1_1_compute_r_h_s_op_3_01_v_o_f_00_01_scheme_01_4.html#a01b30f63f67206291edba09339862fed">   51</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="structamr__wind_1_1pde_1_1_compute_r_h_s_op_3_01_v_o_f_00_01_scheme_01_4.html#a01b30f63f67206291edba09339862fed">corrector_rhs</a>(</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keyword">const</span> <a class="code hl_enumeration" href="incflo__enums_8_h.html#a1af7f3d9f2dff8d85c271b9c6f814251">DiffusionType</a> <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keyword">const</span> amrex::Real <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="keywordtype">bool</span> <span class="comment">/*unused*/</span>)</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    {}</div>
+</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="comment">// data members</span></div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="structamr__wind_1_1pde_1_1_compute_r_h_s_op_3_01_v_o_f_00_01_scheme_01_4.html#a9e9115816d32ea8e0bd21492d59acf24">   58</a></span>    <a class="code hl_struct" href="structamr__wind_1_1pde_1_1_p_d_e_fields.html">PDEFields</a>&amp; <a class="code hl_variable" href="structamr__wind_1_1pde_1_1_compute_r_h_s_op_3_01_v_o_f_00_01_scheme_01_4.html#a9e9115816d32ea8e0bd21492d59acf24">fields</a>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>};</div>
+</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span><span class="keyword">template</span> &lt;&gt;</div>
+<div class="foldopen" id="foldopen00066" data-start="{" data-end="};">
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="structamr__wind_1_1pde_1_1_post_solve_op_3_01_v_o_f_01_4.html">   66</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structamr__wind_1_1pde_1_1_post_solve_op.html">PostSolveOp</a>&lt;<a class="code hl_struct" href="structamr__wind_1_1pde_1_1_v_o_f.html">VOF</a>&gt;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>{</div>
+<div class="foldopen" id="foldopen00068" data-start="{" data-end="}">
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="structamr__wind_1_1pde_1_1_post_solve_op_3_01_v_o_f_01_4.html#ac8df95424a9dbfa2ed726c273e8eb476">   68</a></span>    <a class="code hl_function" href="structamr__wind_1_1pde_1_1_post_solve_op_3_01_v_o_f_01_4.html#ac8df95424a9dbfa2ed726c273e8eb476">PostSolveOp</a>(<a class="code hl_class" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; sim, <a class="code hl_struct" href="structamr__wind_1_1pde_1_1_p_d_e_fields.html">PDEFields</a>&amp; fields) : <a class="code hl_variable" href="structamr__wind_1_1pde_1_1_post_solve_op.html#a33c02ea3d0f0d6f856d6c6959fa16a14">m_sim</a>(sim), <a class="code hl_variable" href="structamr__wind_1_1pde_1_1_post_solve_op.html#a7343a516f1d2b20dfe3ba9f582edbe86">m_fields</a>(fields)</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    {}</div>
+</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="foldopen" id="foldopen00071" data-start="{" data-end="}">
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="structamr__wind_1_1pde_1_1_post_solve_op_3_01_v_o_f_01_4.html#a33a3879bb2c3c7e7b5d343c1a253f84b">   71</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="structamr__wind_1_1pde_1_1_post_solve_op_3_01_v_o_f_01_4.html#a33a3879bb2c3c7e7b5d343c1a253f84b">operator()</a>(<span class="keyword">const</span> amrex::Real <span class="comment">/*unused*/</span>)</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    {</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        <a class="code hl_variable" href="structamr__wind_1_1pde_1_1_post_solve_op.html#a7343a516f1d2b20dfe3ba9f582edbe86">m_fields</a>.<a class="code hl_variable" href="structamr__wind_1_1pde_1_1_p_d_e_fields.html#afec61410552be37eb0b41177362fade4">field</a>.<a class="code hl_function" href="classamr__wind_1_1_field.html#ae7ce4cb9912412b15bdabe19f50473a6">fillpatch</a>(<a class="code hl_variable" href="structamr__wind_1_1pde_1_1_post_solve_op.html#a33c02ea3d0f0d6f856d6c6959fa16a14">m_sim</a>.<a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#acc9a7c3dd126cd2cc0c9909a2ba99964">time</a>().<a class="code hl_function" href="classamr__wind_1_1_sim_time.html#a41dbe1da02ae4d42df486c64f9014eaf">new_time</a>());</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <span class="keyword">auto</span>&amp; multiphase = <a class="code hl_variable" href="structamr__wind_1_1pde_1_1_post_solve_op.html#a33c02ea3d0f0d6f856d6c6959fa16a14">m_sim</a>.<a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#a2a74b9369a4e62c306f04aae40b3dcde">physics_manager</a>().<a class="code hl_function" href="classamr__wind_1_1_physics_mgr.html#a1757b71ac8be7d2809d531299af7550f">get</a>&lt;<a class="code hl_class" href="classamr__wind_1_1_multi_phase.html">MultiPhase</a>&gt;();</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        multiphase.<a class="code hl_function" href="classamr__wind_1_1_multi_phase.html#ac277f119060e61894c2d08a387a190db">set_density_via_vof</a>();</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <span class="comment">// Calculate n+1/2 density</span></div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        multiphase.set_nph_density();</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        <span class="comment">// Convert advalpha to advrho</span></div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        multiphase.calculate_advected_facedensity();</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    }</div>
+</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="structamr__wind_1_1pde_1_1_post_solve_op_3_01_v_o_f_01_4.html#ac60605588502e4fb988e5a44904b171d">   83</a></span>    <a class="code hl_class" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; <a class="code hl_variable" href="structamr__wind_1_1pde_1_1_post_solve_op_3_01_v_o_f_01_4.html#ac60605588502e4fb988e5a44904b171d">m_sim</a>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="structamr__wind_1_1pde_1_1_post_solve_op_3_01_v_o_f_01_4.html#ab926957196b402ca4294d80e156f798b">   84</a></span>    <a class="code hl_struct" href="structamr__wind_1_1pde_1_1_p_d_e_fields.html">PDEFields</a>&amp; <a class="code hl_variable" href="structamr__wind_1_1pde_1_1_post_solve_op_3_01_v_o_f_01_4.html#ab926957196b402ca4294d80e156f798b">m_fields</a>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>};</div>
+</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>} <span class="comment">// namespace amr_wind::pde</span></div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span><span class="preprocessor">#endif </span><span class="comment">/* VOF_OPS_H */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="a_multi_phase_8_h_html"><div class="ttname"><a href="_multi_phase_8_h.html">MultiPhase.H</a></div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html">amr_wind::CFDSim</a></div><div class="ttdef"><b>Definition</b> CFDSim.H:54</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a1dacbace38d17434b65a58eb16b57b0f"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a1dacbace38d17434b65a58eb16b57b0f">amr_wind::CFDSim::repo</a></div><div class="ttdeci">FieldRepo &amp; repo()</div><div class="ttdoc">Return the field repository.</div><div class="ttdef"><b>Definition</b> CFDSim.H:75</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a2a74b9369a4e62c306f04aae40b3dcde"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a2a74b9369a4e62c306f04aae40b3dcde">amr_wind::CFDSim::physics_manager</a></div><div class="ttdeci">PhysicsMgr &amp; physics_manager()</div><div class="ttdef"><b>Definition</b> CFDSim.H:81</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_acc9a7c3dd126cd2cc0c9909a2ba99964"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#acc9a7c3dd126cd2cc0c9909a2ba99964">amr_wind::CFDSim::time</a></div><div class="ttdeci">SimTime &amp; time()</div><div class="ttdoc">Return simulation time control.</div><div class="ttdef"><b>Definition</b> CFDSim.H:65</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_afd5a79a98ac6931e65955e829c89811b"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#afd5a79a98ac6931e65955e829c89811b">amr_wind::CFDSim::io_manager</a></div><div class="ttdeci">IOManager &amp; io_manager()</div><div class="ttdef"><b>Definition</b> CFDSim.H:102</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_html_ae7ce4cb9912412b15bdabe19f50473a6"><div class="ttname"><a href="classamr__wind_1_1_field.html#ae7ce4cb9912412b15bdabe19f50473a6">amr_wind::Field::fillpatch</a></div><div class="ttdeci">void fillpatch(const amrex::Real time) noexcept</div><div class="ttdef"><b>Definition</b> Field.cpp:206</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_i_o_manager_html_ac31999a428baec6d606849a78dedb551"><div class="ttname"><a href="classamr__wind_1_1_i_o_manager.html#ac31999a428baec6d606849a78dedb551">amr_wind::IOManager::register_io_var</a></div><div class="ttdeci">void register_io_var(const std::string &amp;fname)</div><div class="ttdoc">Convenience function to register a variable for both output and restart.</div><div class="ttdef"><b>Definition</b> IOManager.H:76</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_multi_phase_html"><div class="ttname"><a href="classamr__wind_1_1_multi_phase.html">amr_wind::MultiPhase</a></div><div class="ttdef"><b>Definition</b> MultiPhase.H:27</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_multi_phase_html_ac277f119060e61894c2d08a387a190db"><div class="ttname"><a href="classamr__wind_1_1_multi_phase.html#ac277f119060e61894c2d08a387a190db">amr_wind::MultiPhase::set_density_via_vof</a></div><div class="ttdeci">void set_density_via_vof(amr_wind::FieldState fstate=amr_wind::FieldState::New)</div><div class="ttdef"><b>Definition</b> MultiPhase.cpp:337</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_physics_mgr_html_a1757b71ac8be7d2809d531299af7550f"><div class="ttname"><a href="classamr__wind_1_1_physics_mgr.html#a1757b71ac8be7d2809d531299af7550f">amr_wind::PhysicsMgr::get</a></div><div class="ttdeci">T &amp; get()</div><div class="ttdoc">Return a concrete physics instance.</div><div class="ttdef"><b>Definition</b> Physics.H:104</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_sim_time_html"><div class="ttname"><a href="classamr__wind_1_1_sim_time.html">amr_wind::SimTime</a></div><div class="ttdef"><b>Definition</b> SimTime.H:30</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_sim_time_html_a41dbe1da02ae4d42df486c64f9014eaf"><div class="ttname"><a href="classamr__wind_1_1_sim_time.html#a41dbe1da02ae4d42df486c64f9014eaf">amr_wind::SimTime::new_time</a></div><div class="ttdeci">AMREX_FORCE_INLINE amrex::Real new_time() const</div><div class="ttdef"><b>Definition</b> SimTime.H:108</div></div>
+<div class="ttc" id="aincflo__enums_8_h_html_a1af7f3d9f2dff8d85c271b9c6f814251"><div class="ttname"><a href="incflo__enums_8_h.html#a1af7f3d9f2dff8d85c271b9c6f814251">DiffusionType</a></div><div class="ttdeci">DiffusionType</div><div class="ttdef"><b>Definition</b> incflo_enums.H:4</div></div>
+<div class="ttc" id="anamespaceamr__wind_1_1pde_html"><div class="ttname"><a href="namespaceamr__wind_1_1pde.html">amr_wind::pde</a></div><div class="ttdef"><b>Definition</b> AdvOp_Godunov.H:16</div></div>
+<div class="ttc" id="anamespaceamr__wind_1_1pde_html_ae36fbb15cada9faf20086426d10e16fe"><div class="ttname"><a href="namespaceamr__wind_1_1pde.html#ae36fbb15cada9faf20086426d10e16fe">amr_wind::pde::create_fields_instance</a></div><div class="ttdeci">PDEFields create_fields_instance(const SimTime &amp;time, FieldRepo &amp;repo, const FieldInterpolator itype=FieldInterpolator::CellConsLinear)</div><div class="ttdef"><b>Definition</b> PDEHelpers.H:49</div></div>
+<div class="ttc" id="astructamr__wind_1_1pde_1_1_compute_r_h_s_op_3_01_v_o_f_00_01_scheme_01_4_html_a01b30f63f67206291edba09339862fed"><div class="ttname"><a href="structamr__wind_1_1pde_1_1_compute_r_h_s_op_3_01_v_o_f_00_01_scheme_01_4.html#a01b30f63f67206291edba09339862fed">amr_wind::pde::ComputeRHSOp&lt; VOF, Scheme &gt;::corrector_rhs</a></div><div class="ttdeci">void corrector_rhs(const DiffusionType, const amrex::Real, bool)</div><div class="ttdef"><b>Definition</b> vof_ops.H:51</div></div>
+<div class="ttc" id="astructamr__wind_1_1pde_1_1_compute_r_h_s_op_3_01_v_o_f_00_01_scheme_01_4_html_a1beb1a402ce4c854378a7c8ffe282837"><div class="ttname"><a href="structamr__wind_1_1pde_1_1_compute_r_h_s_op_3_01_v_o_f_00_01_scheme_01_4.html#a1beb1a402ce4c854378a7c8ffe282837">amr_wind::pde::ComputeRHSOp&lt; VOF, Scheme &gt;::predictor_rhs</a></div><div class="ttdeci">void predictor_rhs(const DiffusionType, const amrex::Real, bool)</div><div class="ttdef"><b>Definition</b> vof_ops.H:45</div></div>
+<div class="ttc" id="astructamr__wind_1_1pde_1_1_compute_r_h_s_op_3_01_v_o_f_00_01_scheme_01_4_html_a9d60a6e4ca6695fee9221e5f58196c5c"><div class="ttname"><a href="structamr__wind_1_1pde_1_1_compute_r_h_s_op_3_01_v_o_f_00_01_scheme_01_4.html#a9d60a6e4ca6695fee9221e5f58196c5c">amr_wind::pde::ComputeRHSOp&lt; VOF, Scheme &gt;::ComputeRHSOp</a></div><div class="ttdeci">ComputeRHSOp(PDEFields &amp;fields_in)</div><div class="ttdef"><b>Definition</b> vof_ops.H:43</div></div>
+<div class="ttc" id="astructamr__wind_1_1pde_1_1_compute_r_h_s_op_3_01_v_o_f_00_01_scheme_01_4_html_a9e9115816d32ea8e0bd21492d59acf24"><div class="ttname"><a href="structamr__wind_1_1pde_1_1_compute_r_h_s_op_3_01_v_o_f_00_01_scheme_01_4.html#a9e9115816d32ea8e0bd21492d59acf24">amr_wind::pde::ComputeRHSOp&lt; VOF, Scheme &gt;::fields</a></div><div class="ttdeci">PDEFields &amp; fields</div><div class="ttdef"><b>Definition</b> vof_ops.H:58</div></div>
+<div class="ttc" id="astructamr__wind_1_1pde_1_1_compute_r_h_s_op_html"><div class="ttname"><a href="structamr__wind_1_1pde_1_1_compute_r_h_s_op.html">amr_wind::pde::ComputeRHSOp</a></div><div class="ttdef"><b>Definition</b> CompRHSOps.H:18</div></div>
+<div class="ttc" id="astructamr__wind_1_1pde_1_1_compute_r_h_s_op_html_ad4f40c161981d4d3f85a5dc311cebec3"><div class="ttname"><a href="structamr__wind_1_1pde_1_1_compute_r_h_s_op.html#ad4f40c161981d4d3f85a5dc311cebec3">amr_wind::pde::ComputeRHSOp::fields</a></div><div class="ttdeci">PDEFields &amp; fields</div><div class="ttdef"><b>Definition</b> CompRHSOps.H:266</div></div>
+<div class="ttc" id="astructamr__wind_1_1pde_1_1_field_reg_op_3_01_v_o_f_00_01_scheme_01_4_html_a92a013cb38a4e8fb86f24f864402b82a"><div class="ttname"><a href="structamr__wind_1_1pde_1_1_field_reg_op_3_01_v_o_f_00_01_scheme_01_4.html#a92a013cb38a4e8fb86f24f864402b82a">amr_wind::pde::FieldRegOp&lt; VOF, Scheme &gt;::operator()</a></div><div class="ttdeci">PDEFields operator()(const SimTime &amp;time)</div><div class="ttdef"><b>Definition</b> vof_ops.H:17</div></div>
+<div class="ttc" id="astructamr__wind_1_1pde_1_1_field_reg_op_3_01_v_o_f_00_01_scheme_01_4_html_aa0ab2c752554198c917e2adec4fa08c9"><div class="ttname"><a href="structamr__wind_1_1pde_1_1_field_reg_op_3_01_v_o_f_00_01_scheme_01_4.html#aa0ab2c752554198c917e2adec4fa08c9">amr_wind::pde::FieldRegOp&lt; VOF, Scheme &gt;::sim</a></div><div class="ttdeci">CFDSim &amp; sim</div><div class="ttdef"><b>Definition</b> vof_ops.H:35</div></div>
+<div class="ttc" id="astructamr__wind_1_1pde_1_1_field_reg_op_3_01_v_o_f_00_01_scheme_01_4_html_af43d6b5e03aebb11ec7cd50a41d407e2"><div class="ttname"><a href="structamr__wind_1_1pde_1_1_field_reg_op_3_01_v_o_f_00_01_scheme_01_4.html#af43d6b5e03aebb11ec7cd50a41d407e2">amr_wind::pde::FieldRegOp&lt; VOF, Scheme &gt;::FieldRegOp</a></div><div class="ttdeci">FieldRegOp(CFDSim &amp;sim_in)</div><div class="ttdef"><b>Definition</b> vof_ops.H:15</div></div>
+<div class="ttc" id="astructamr__wind_1_1pde_1_1_field_reg_op_html"><div class="ttname"><a href="structamr__wind_1_1pde_1_1_field_reg_op.html">amr_wind::pde::FieldRegOp</a></div><div class="ttdef"><b>Definition</b> PDEOps.H:35</div></div>
+<div class="ttc" id="astructamr__wind_1_1pde_1_1_field_reg_op_html_a0d78b16e9c63315ec150da03ce29bc1a"><div class="ttname"><a href="structamr__wind_1_1pde_1_1_field_reg_op.html#a0d78b16e9c63315ec150da03ce29bc1a">amr_wind::pde::FieldRegOp::sim</a></div><div class="ttdeci">CFDSim &amp; sim</div><div class="ttdef"><b>Definition</b> PDEOps.H:53</div></div>
+<div class="ttc" id="astructamr__wind_1_1pde_1_1_p_d_e_fields_html"><div class="ttname"><a href="structamr__wind_1_1pde_1_1_p_d_e_fields.html">amr_wind::pde::PDEFields</a></div><div class="ttdef"><b>Definition</b> PDEFields.H:27</div></div>
+<div class="ttc" id="astructamr__wind_1_1pde_1_1_p_d_e_fields_html_afec61410552be37eb0b41177362fade4"><div class="ttname"><a href="structamr__wind_1_1pde_1_1_p_d_e_fields.html#afec61410552be37eb0b41177362fade4">amr_wind::pde::PDEFields::field</a></div><div class="ttdeci">Field &amp; field</div><div class="ttdoc">Solution variable (e.g., velocity, temperature)</div><div class="ttdef"><b>Definition</b> PDEFields.H:34</div></div>
+<div class="ttc" id="astructamr__wind_1_1pde_1_1_post_solve_op_3_01_v_o_f_01_4_html_a33a3879bb2c3c7e7b5d343c1a253f84b"><div class="ttname"><a href="structamr__wind_1_1pde_1_1_post_solve_op_3_01_v_o_f_01_4.html#a33a3879bb2c3c7e7b5d343c1a253f84b">amr_wind::pde::PostSolveOp&lt; VOF &gt;::operator()</a></div><div class="ttdeci">void operator()(const amrex::Real)</div><div class="ttdef"><b>Definition</b> vof_ops.H:71</div></div>
+<div class="ttc" id="astructamr__wind_1_1pde_1_1_post_solve_op_3_01_v_o_f_01_4_html_ab926957196b402ca4294d80e156f798b"><div class="ttname"><a href="structamr__wind_1_1pde_1_1_post_solve_op_3_01_v_o_f_01_4.html#ab926957196b402ca4294d80e156f798b">amr_wind::pde::PostSolveOp&lt; VOF &gt;::m_fields</a></div><div class="ttdeci">PDEFields &amp; m_fields</div><div class="ttdef"><b>Definition</b> vof_ops.H:84</div></div>
+<div class="ttc" id="astructamr__wind_1_1pde_1_1_post_solve_op_3_01_v_o_f_01_4_html_ac60605588502e4fb988e5a44904b171d"><div class="ttname"><a href="structamr__wind_1_1pde_1_1_post_solve_op_3_01_v_o_f_01_4.html#ac60605588502e4fb988e5a44904b171d">amr_wind::pde::PostSolveOp&lt; VOF &gt;::m_sim</a></div><div class="ttdeci">CFDSim &amp; m_sim</div><div class="ttdef"><b>Definition</b> vof_ops.H:83</div></div>
+<div class="ttc" id="astructamr__wind_1_1pde_1_1_post_solve_op_3_01_v_o_f_01_4_html_ac8df95424a9dbfa2ed726c273e8eb476"><div class="ttname"><a href="structamr__wind_1_1pde_1_1_post_solve_op_3_01_v_o_f_01_4.html#ac8df95424a9dbfa2ed726c273e8eb476">amr_wind::pde::PostSolveOp&lt; VOF &gt;::PostSolveOp</a></div><div class="ttdeci">PostSolveOp(CFDSim &amp;sim, PDEFields &amp;fields)</div><div class="ttdef"><b>Definition</b> vof_ops.H:68</div></div>
+<div class="ttc" id="astructamr__wind_1_1pde_1_1_post_solve_op_html"><div class="ttname"><a href="structamr__wind_1_1pde_1_1_post_solve_op.html">amr_wind::pde::PostSolveOp</a></div><div class="ttdef"><b>Definition</b> PDEOps.H:200</div></div>
+<div class="ttc" id="astructamr__wind_1_1pde_1_1_post_solve_op_html_a33c02ea3d0f0d6f856d6c6959fa16a14"><div class="ttname"><a href="structamr__wind_1_1pde_1_1_post_solve_op.html#a33c02ea3d0f0d6f856d6c6959fa16a14">amr_wind::pde::PostSolveOp::m_sim</a></div><div class="ttdeci">CFDSim &amp; m_sim</div><div class="ttdef"><b>Definition</b> PDEOps.H:207</div></div>
+<div class="ttc" id="astructamr__wind_1_1pde_1_1_post_solve_op_html_a7343a516f1d2b20dfe3ba9f582edbe86"><div class="ttname"><a href="structamr__wind_1_1pde_1_1_post_solve_op.html#a7343a516f1d2b20dfe3ba9f582edbe86">amr_wind::pde::PostSolveOp::m_fields</a></div><div class="ttdeci">PDEFields &amp; m_fields</div><div class="ttdef"><b>Definition</b> PDEOps.H:208</div></div>
+<div class="ttc" id="astructamr__wind_1_1pde_1_1_v_o_f_html"><div class="ttname"><a href="structamr__wind_1_1pde_1_1_v_o_f.html">amr_wind::pde::VOF</a></div><div class="ttdef"><b>Definition</b> vof.H:17</div></div>
+<div class="ttc" id="avof_8_h_html"><div class="ttname"><a href="vof_8_h.html">vof.H</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

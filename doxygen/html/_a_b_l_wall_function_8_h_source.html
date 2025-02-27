@@ -1,0 +1,363 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/ABLWallFunction.H Source File &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/ABLWallFunction.H Source File</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/_a_b_l_wall_function_8_h_source.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="home-runner-work-amr-wind-amr-wind-amr-wind-wind-energy-ablwallfunction-h-source-file">
+<h1>/home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/ABLWallFunction.H Source File<a class="headerlink" href="#home-runner-work-amr-wind-amr-wind-amr-wind-wind-energy-ablwallfunction-h-source-file" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.12.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/ABLWallFunction.H Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.12.0 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() { codefold.init(0); });
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function(){ initResizable(false); });
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_d85575251dd712327fe3cf057fa568b4.html">amr-wind</a></li><li class="navelem"><a class="el" href="dir_212148f97b8bb53ebaebb3bf8a8b5de4.html">amr-wind</a></li><li class="navelem"><a class="el" href="dir_b33158d99c61436f71711cd504567082.html">wind_energy</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="headertitle"><div class="title">ABLWallFunction.H</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="_a_b_l_wall_function_8_h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef ABLWALLFUNCTION_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define ABLWALLFUNCTION_H</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="_c_f_d_sim_8_h.html">amr-wind/CFDSim.H</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="_field_plane_averaging_8_h.html">amr-wind/utilities/FieldPlaneAveraging.H</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="_field_plane_averaging_fine_8_h.html">amr-wind/utilities/FieldPlaneAveragingFine.H</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="_field_b_c_ops_8_h.html">amr-wind/core/FieldBCOps.H</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="_m_o_data_8_h.html">amr-wind/wind_energy/MOData.H</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceamr__wind.html">amr_wind</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="foldopen" id="foldopen00019" data-start="{" data-end="};">
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_wall_function.html">   19</a></span><span class="keyword">class </span><a class="code hl_class" href="classamr__wind_1_1_a_b_l_wall_function.html">ABLWallFunction</a></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>{</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_wall_function.html#a5359b083772cdfec95d68f65aa10ba04">ABLWallFunction</a>(<span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; sim);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_wall_function.html#ae94dfb6e4e1cad156e6503f8c4a2fb0e">   24</a></span>    <a class="code hl_function" href="classamr__wind_1_1_a_b_l_wall_function.html#ae94dfb6e4e1cad156e6503f8c4a2fb0e">~ABLWallFunction</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_wall_function.html#a24b37b6edd04d70eea51aa1fac24e65e">   26</a></span>    <a class="code hl_struct" href="structamr__wind_1_1_m_o_data.html">MOData</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_a_b_l_wall_function.html#a24b37b6edd04d70eea51aa1fac24e65e">mo</a>() { <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_wall_function.html#ab77c5f7702bd40b1a8c9f3a28c00fde2">m_mo</a>; }</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_wall_function.html#abd03fa5083e8d177de40b170ed9549e2">   27</a></span>    <span class="keyword">const</span> <a class="code hl_struct" href="structamr__wind_1_1_m_o_data.html">MOData</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_a_b_l_wall_function.html#abd03fa5083e8d177de40b170ed9549e2">mo</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_wall_function.html#ab77c5f7702bd40b1a8c9f3a28c00fde2">m_mo</a>; }</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_wall_function.html#a71c88980416d2f88d4ab337a4e280168">   31</a></span>    amrex::Real <a class="code hl_function" href="classamr__wind_1_1_a_b_l_wall_function.html#a71c88980416d2f88d4ab337a4e280168">utau</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_wall_function.html#ab77c5f7702bd40b1a8c9f3a28c00fde2">m_mo</a>.<a class="code hl_variable" href="structamr__wind_1_1_m_o_data.html#a80ec33ada6b5f70cbb7ebfe62f928057">utau</a>; }</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_wall_function.html#ad07b80be8a9805212613fa845affc2ab">init_log_law_height</a>();</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_wall_function.html#aa4dbf09c694cc85ddd2a41ca26ae1d22">update_umean</a>(</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_vel_plane_averaging_fine.html">VelPlaneAveragingFine</a>&amp; vpa, <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_f_plane_averaging_fine.html">FieldPlaneAveragingFine</a>&amp; tpa);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_wall_function.html#afb2ad49d9a026146c13db789bbf1ba6c">update_tflux</a>(<span class="keyword">const</span> amrex::Real tflux);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_wall_function.html#a61aa8e26dab18433cf3ead4e118d426f">   43</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_wall_function.html#a61aa8e26dab18433cf3ead4e118d426f">m_sim</a>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_wall_function.html#a64c5525cae721c07df45136d9ac6e6ff">   45</a></span>    <span class="keyword">const</span> amrex::AmrCore&amp; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_wall_function.html#a64c5525cae721c07df45136d9ac6e6ff">m_mesh</a>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_wall_function.html#ab77c5f7702bd40b1a8c9f3a28c00fde2">   48</a></span>    <a class="code hl_struct" href="structamr__wind_1_1_m_o_data.html">MOData</a> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_wall_function.html#ab77c5f7702bd40b1a8c9f3a28c00fde2">m_mo</a>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_wall_function.html#a60ef62d3a0ba87d0b268bdac971c900f">   50</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_wall_function.html#a60ef62d3a0ba87d0b268bdac971c900f">m_direction</a>{2};   </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_wall_function.html#a8de937897eb05ec34fc59ffeebe7b641">   51</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_wall_function.html#a8de937897eb05ec34fc59ffeebe7b641">m_use_fch</a>{<span class="keyword">true</span>}; </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_wall_function.html#a7f7c2b4d9ef76c7f21dd549534b5e534">   53</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_wall_function.html#a7f7c2b4d9ef76c7f21dd549534b5e534">m_gravity</a>{0.0, 0.0, -9.81};</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_wall_function.html#a2a1d023b9a482a8680874c092bc7a307">   55</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_wall_function.html#a2a1d023b9a482a8680874c092bc7a307">m_tempflux</a>{<span class="keyword">true</span>};</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_wall_function.html#a55642795ca41ba4072d3cae090f2c576">   56</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_wall_function.html#a55642795ca41ba4072d3cae090f2c576">m_surf_temp_rate</a>{0.0};</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_wall_function.html#a5351766ae8a5c40605f9a0fa20b239a5">   57</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_wall_function.html#a5351766ae8a5c40605f9a0fa20b239a5">m_surf_temp_rate_tstart</a>{0.0};</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_wall_function.html#a964f37b01fb5482d0e0a1215ae1521aa">   58</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_wall_function.html#a964f37b01fb5482d0e0a1215ae1521aa">m_surf_temp_init</a>{300.0};</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_wall_function.html#a6c2fced441234943238140000e8b366e">   60</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_wall_function.html#a6c2fced441234943238140000e8b366e">m_inflow_outflow</a>{<span class="keyword">false</span>};</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_wall_function.html#a1ef0f45518836d9073b636e9b4b419c9">   61</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_wall_function.html#a1ef0f45518836d9073b636e9b4b419c9">m_wf_vmag</a>{0.0};</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_wall_function.html#a147b7c08f1d2f1aea8ceeef300b70427">   62</a></span>    amrex::Array&lt;amrex::Real, 2&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_wall_function.html#a147b7c08f1d2f1aea8ceeef300b70427">m_wf_vel</a>{0.0, 0.0};</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_wall_function.html#afb28402e43b7d837b0e2ae35b3103ff0">   63</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_wall_function.html#afb28402e43b7d837b0e2ae35b3103ff0">m_wf_theta</a>{300.0};</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>};</div>
+</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="foldopen" id="foldopen00071" data-start="{" data-end="};">
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_vel_wall_func.html">   71</a></span><span class="keyword">class </span><a class="code hl_class" href="classamr__wind_1_1_a_b_l_vel_wall_func.html">ABLVelWallFunc</a> : <span class="keyword">public</span> <a class="code hl_class" href="classamr__wind_1_1_field_b_c_iface.html">FieldBCIface</a></div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>{</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <a class="code hl_function" href="classamr__wind_1_1_a_b_l_vel_wall_func.html#a40c19f4665bb2d9ca78134f61f61492f">ABLVelWallFunc</a>(<a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; velocity, <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_a_b_l_wall_function.html">ABLWallFunction</a>&amp; wall_func);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_vel_wall_func.html#a5a3b011ef0df69b1e3e6e82e8969ca61">operator()</a>(<a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; velocity, <span class="keyword">const</span> <a class="code hl_enumeration" href="group__fields.html#gaba2b7a43f2e9cb10cdb5e2ab8acfcdd8">FieldState</a> rho_state) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ShearStress&gt;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordtype">void</span> <a class="code hl_enumvalue" href="incflo__enums_8_h.html#a6e1412fca31cbd35d0f50f12fcc70b0fa6e55e2ee14d93d50c4bc849a21816201">wall_model</a>(</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; velocity, <span class="keyword">const</span> <a class="code hl_enumeration" href="group__fields.html#gaba2b7a43f2e9cb10cdb5e2ab8acfcdd8">FieldState</a> rho_state, <span class="keyword">const</span> ShearStress&amp; tau);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_vel_wall_func.html#a57f27a1c47bae0984ac3dd27519fd4d8">   83</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_a_b_l_wall_function.html">ABLWallFunction</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_vel_wall_func.html#a57f27a1c47bae0984ac3dd27519fd4d8">m_wall_func</a>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_vel_wall_func.html#a22ab8395ca08e94d401febba02906a93">   84</a></span>    std::string <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_vel_wall_func.html#a22ab8395ca08e94d401febba02906a93">m_wall_shear_stress_type</a>{<span class="stringliteral">&quot;moeng&quot;</span>};</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>};</div>
+</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="foldopen" id="foldopen00087" data-start="{" data-end="};">
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_temp_wall_func.html">   87</a></span><span class="keyword">class </span><a class="code hl_class" href="classamr__wind_1_1_a_b_l_temp_wall_func.html">ABLTempWallFunc</a> : <span class="keyword">public</span> <a class="code hl_class" href="classamr__wind_1_1_field_b_c_iface.html">FieldBCIface</a></div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>{</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <a class="code hl_function" href="classamr__wind_1_1_a_b_l_temp_wall_func.html#a2ecaaf6d474d77d001d1958d94aaa85b">ABLTempWallFunc</a>(<a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; temperature, <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_a_b_l_wall_function.html">ABLWallFunction</a>&amp; wall_fuc);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_temp_wall_func.html#adc9ec022942ad297200c76904be150aa">operator()</a>(<a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; temperature, <span class="keyword">const</span> <a class="code hl_enumeration" href="group__fields.html#gaba2b7a43f2e9cb10cdb5e2ab8acfcdd8">FieldState</a> rho_state) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> HeatFlux&gt;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordtype">void</span> <a class="code hl_enumvalue" href="incflo__enums_8_h.html#a6e1412fca31cbd35d0f50f12fcc70b0fa6e55e2ee14d93d50c4bc849a21816201">wall_model</a>(</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; temperature, <span class="keyword">const</span> <a class="code hl_enumeration" href="group__fields.html#gaba2b7a43f2e9cb10cdb5e2ab8acfcdd8">FieldState</a> rho_state, <span class="keyword">const</span> HeatFlux&amp; tau);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_temp_wall_func.html#a510d9cb8b15762034efc0ab194365a48">   99</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_a_b_l_wall_function.html">ABLWallFunction</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_temp_wall_func.html#a510d9cb8b15762034efc0ab194365a48">m_wall_func</a>;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_temp_wall_func.html#a5d269a01d8e529bc29dc9cd63bdd2cac">  100</a></span>    std::string <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_temp_wall_func.html#a5d269a01d8e529bc29dc9cd63bdd2cac">m_wall_shear_stress_type</a>{<span class="stringliteral">&quot;moeng&quot;</span>};</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>};</div>
+</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>} <span class="comment">// namespace amr_wind</span></div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span><span class="preprocessor">#endif </span><span class="comment">/* ABLWALLFUNCTION_H */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="a_c_f_d_sim_8_h_html"><div class="ttname"><a href="_c_f_d_sim_8_h.html">CFDSim.H</a></div></div>
+<div class="ttc" id="a_field_b_c_ops_8_h_html"><div class="ttname"><a href="_field_b_c_ops_8_h.html">FieldBCOps.H</a></div></div>
+<div class="ttc" id="a_field_plane_averaging_8_h_html"><div class="ttname"><a href="_field_plane_averaging_8_h.html">FieldPlaneAveraging.H</a></div></div>
+<div class="ttc" id="a_field_plane_averaging_fine_8_h_html"><div class="ttname"><a href="_field_plane_averaging_fine_8_h.html">FieldPlaneAveragingFine.H</a></div></div>
+<div class="ttc" id="a_m_o_data_8_h_html"><div class="ttname"><a href="_m_o_data_8_h.html">MOData.H</a></div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_temp_wall_func_html"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_temp_wall_func.html">amr_wind::ABLTempWallFunc</a></div><div class="ttdef"><b>Definition</b> ABLWallFunction.H:88</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_temp_wall_func_html_a2ecaaf6d474d77d001d1958d94aaa85b"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_temp_wall_func.html#a2ecaaf6d474d77d001d1958d94aaa85b">amr_wind::ABLTempWallFunc::ABLTempWallFunc</a></div><div class="ttdeci">ABLTempWallFunc(Field &amp;temperature, const ABLWallFunction &amp;wall_fuc)</div><div class="ttdef"><b>Definition</b> ABLWallFunction.cpp:268</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_temp_wall_func_html_a510d9cb8b15762034efc0ab194365a48"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_temp_wall_func.html#a510d9cb8b15762034efc0ab194365a48">amr_wind::ABLTempWallFunc::m_wall_func</a></div><div class="ttdeci">const ABLWallFunction &amp; m_wall_func</div><div class="ttdef"><b>Definition</b> ABLWallFunction.H:99</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_temp_wall_func_html_a5d269a01d8e529bc29dc9cd63bdd2cac"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_temp_wall_func.html#a5d269a01d8e529bc29dc9cd63bdd2cac">amr_wind::ABLTempWallFunc::m_wall_shear_stress_type</a></div><div class="ttdeci">std::string m_wall_shear_stress_type</div><div class="ttdef"><b>Definition</b> ABLWallFunction.H:100</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_temp_wall_func_html_adc9ec022942ad297200c76904be150aa"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_temp_wall_func.html#adc9ec022942ad297200c76904be150aa">amr_wind::ABLTempWallFunc::operator()</a></div><div class="ttdeci">void operator()(Field &amp;temperature, const FieldState rho_state) override</div><div class="ttdef"><b>Definition</b> ABLWallFunction.cpp:353</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_vel_wall_func_html"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_vel_wall_func.html">amr_wind::ABLVelWallFunc</a></div><div class="ttdef"><b>Definition</b> ABLWallFunction.H:72</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_vel_wall_func_html_a22ab8395ca08e94d401febba02906a93"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_vel_wall_func.html#a22ab8395ca08e94d401febba02906a93">amr_wind::ABLVelWallFunc::m_wall_shear_stress_type</a></div><div class="ttdeci">std::string m_wall_shear_stress_type</div><div class="ttdef"><b>Definition</b> ABLWallFunction.H:84</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_vel_wall_func_html_a40c19f4665bb2d9ca78134f61f61492f"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_vel_wall_func.html#a40c19f4665bb2d9ca78134f61f61492f">amr_wind::ABLVelWallFunc::ABLVelWallFunc</a></div><div class="ttdeci">ABLVelWallFunc(Field &amp;velocity, const ABLWallFunction &amp;wall_func)</div><div class="ttdef"><b>Definition</b> ABLWallFunction.cpp:141</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_vel_wall_func_html_a57f27a1c47bae0984ac3dd27519fd4d8"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_vel_wall_func.html#a57f27a1c47bae0984ac3dd27519fd4d8">amr_wind::ABLVelWallFunc::m_wall_func</a></div><div class="ttdeci">const ABLWallFunction &amp; m_wall_func</div><div class="ttdef"><b>Definition</b> ABLWallFunction.H:83</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_vel_wall_func_html_a5a3b011ef0df69b1e3e6e82e8969ca61"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_vel_wall_func.html#a5a3b011ef0df69b1e3e6e82e8969ca61">amr_wind::ABLVelWallFunc::operator()</a></div><div class="ttdeci">void operator()(Field &amp;velocity, const FieldState rho_state) override</div><div class="ttdef"><b>Definition</b> ABLWallFunction.cpp:237</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_wall_function_html"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_wall_function.html">amr_wind::ABLWallFunction</a></div><div class="ttdef"><b>Definition</b> ABLWallFunction.H:20</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_wall_function_html_a147b7c08f1d2f1aea8ceeef300b70427"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_wall_function.html#a147b7c08f1d2f1aea8ceeef300b70427">amr_wind::ABLWallFunction::m_wf_vel</a></div><div class="ttdeci">amrex::Array&lt; amrex::Real, 2 &gt; m_wf_vel</div><div class="ttdef"><b>Definition</b> ABLWallFunction.H:62</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_wall_function_html_a1ef0f45518836d9073b636e9b4b419c9"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_wall_function.html#a1ef0f45518836d9073b636e9b4b419c9">amr_wind::ABLWallFunction::m_wf_vmag</a></div><div class="ttdeci">amrex::Real m_wf_vmag</div><div class="ttdef"><b>Definition</b> ABLWallFunction.H:61</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_wall_function_html_a24b37b6edd04d70eea51aa1fac24e65e"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_wall_function.html#a24b37b6edd04d70eea51aa1fac24e65e">amr_wind::ABLWallFunction::mo</a></div><div class="ttdeci">MOData &amp; mo()</div><div class="ttdef"><b>Definition</b> ABLWallFunction.H:26</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_wall_function_html_a2a1d023b9a482a8680874c092bc7a307"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_wall_function.html#a2a1d023b9a482a8680874c092bc7a307">amr_wind::ABLWallFunction::m_tempflux</a></div><div class="ttdeci">bool m_tempflux</div><div class="ttdef"><b>Definition</b> ABLWallFunction.H:55</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_wall_function_html_a5351766ae8a5c40605f9a0fa20b239a5"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_wall_function.html#a5351766ae8a5c40605f9a0fa20b239a5">amr_wind::ABLWallFunction::m_surf_temp_rate_tstart</a></div><div class="ttdeci">amrex::Real m_surf_temp_rate_tstart</div><div class="ttdef"><b>Definition</b> ABLWallFunction.H:57</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_wall_function_html_a5359b083772cdfec95d68f65aa10ba04"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_wall_function.html#a5359b083772cdfec95d68f65aa10ba04">amr_wind::ABLWallFunction::ABLWallFunction</a></div><div class="ttdeci">ABLWallFunction(const CFDSim &amp;sim)</div><div class="ttdef"><b>Definition</b> ABLWallFunction.cpp:17</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_wall_function_html_a55642795ca41ba4072d3cae090f2c576"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_wall_function.html#a55642795ca41ba4072d3cae090f2c576">amr_wind::ABLWallFunction::m_surf_temp_rate</a></div><div class="ttdeci">amrex::Real m_surf_temp_rate</div><div class="ttdef"><b>Definition</b> ABLWallFunction.H:56</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_wall_function_html_a60ef62d3a0ba87d0b268bdac971c900f"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_wall_function.html#a60ef62d3a0ba87d0b268bdac971c900f">amr_wind::ABLWallFunction::m_direction</a></div><div class="ttdeci">int m_direction</div><div class="ttdoc">Direction normal to wall.</div><div class="ttdef"><b>Definition</b> ABLWallFunction.H:50</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_wall_function_html_a61aa8e26dab18433cf3ead4e118d426f"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_wall_function.html#a61aa8e26dab18433cf3ead4e118d426f">amr_wind::ABLWallFunction::m_sim</a></div><div class="ttdeci">const CFDSim &amp; m_sim</div><div class="ttdef"><b>Definition</b> ABLWallFunction.H:43</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_wall_function_html_a64c5525cae721c07df45136d9ac6e6ff"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_wall_function.html#a64c5525cae721c07df45136d9ac6e6ff">amr_wind::ABLWallFunction::m_mesh</a></div><div class="ttdeci">const amrex::AmrCore &amp; m_mesh</div><div class="ttdef"><b>Definition</b> ABLWallFunction.H:45</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_wall_function_html_a6c2fced441234943238140000e8b366e"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_wall_function.html#a6c2fced441234943238140000e8b366e">amr_wind::ABLWallFunction::m_inflow_outflow</a></div><div class="ttdeci">bool m_inflow_outflow</div><div class="ttdef"><b>Definition</b> ABLWallFunction.H:60</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_wall_function_html_a71c88980416d2f88d4ab337a4e280168"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_wall_function.html#a71c88980416d2f88d4ab337a4e280168">amr_wind::ABLWallFunction::utau</a></div><div class="ttdeci">amrex::Real utau() const</div><div class="ttdef"><b>Definition</b> ABLWallFunction.H:31</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_wall_function_html_a7f7c2b4d9ef76c7f21dd549534b5e534"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_wall_function.html#a7f7c2b4d9ef76c7f21dd549534b5e534">amr_wind::ABLWallFunction::m_gravity</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_gravity</div><div class="ttdef"><b>Definition</b> ABLWallFunction.H:53</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_wall_function_html_a8de937897eb05ec34fc59ffeebe7b641"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_wall_function.html#a8de937897eb05ec34fc59ffeebe7b641">amr_wind::ABLWallFunction::m_use_fch</a></div><div class="ttdeci">bool m_use_fch</div><div class="ttdoc">Use first cell height?</div><div class="ttdef"><b>Definition</b> ABLWallFunction.H:51</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_wall_function_html_a964f37b01fb5482d0e0a1215ae1521aa"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_wall_function.html#a964f37b01fb5482d0e0a1215ae1521aa">amr_wind::ABLWallFunction::m_surf_temp_init</a></div><div class="ttdeci">amrex::Real m_surf_temp_init</div><div class="ttdef"><b>Definition</b> ABLWallFunction.H:58</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_wall_function_html_aa4dbf09c694cc85ddd2a41ca26ae1d22"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_wall_function.html#aa4dbf09c694cc85ddd2a41ca26ae1d22">amr_wind::ABLWallFunction::update_umean</a></div><div class="ttdeci">void update_umean(const VelPlaneAveragingFine &amp;vpa, const FieldPlaneAveragingFine &amp;tpa)</div><div class="ttdoc">Update the mean velocity at a given timestep.</div><div class="ttdef"><b>Definition</b> ABLWallFunction.cpp:103</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_wall_function_html_ab77c5f7702bd40b1a8c9f3a28c00fde2"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_wall_function.html#ab77c5f7702bd40b1a8c9f3a28c00fde2">amr_wind::ABLWallFunction::m_mo</a></div><div class="ttdeci">MOData m_mo</div><div class="ttdoc">Monin-Obukhov instance.</div><div class="ttdef"><b>Definition</b> ABLWallFunction.H:48</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_wall_function_html_abd03fa5083e8d177de40b170ed9549e2"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_wall_function.html#abd03fa5083e8d177de40b170ed9549e2">amr_wind::ABLWallFunction::mo</a></div><div class="ttdeci">const MOData &amp; mo() const</div><div class="ttdef"><b>Definition</b> ABLWallFunction.H:27</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_wall_function_html_ad07b80be8a9805212613fa845affc2ab"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_wall_function.html#ad07b80be8a9805212613fa845affc2ab">amr_wind::ABLWallFunction::init_log_law_height</a></div><div class="ttdeci">void init_log_law_height()</div><div class="ttdoc">Initialize the log-law height based on user inputs.</div><div class="ttdef"><b>Definition</b> ABLWallFunction.cpp:95</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_wall_function_html_ae94dfb6e4e1cad156e6503f8c4a2fb0e"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_wall_function.html#ae94dfb6e4e1cad156e6503f8c4a2fb0e">amr_wind::ABLWallFunction::~ABLWallFunction</a></div><div class="ttdeci">~ABLWallFunction()=default</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_wall_function_html_afb28402e43b7d837b0e2ae35b3103ff0"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_wall_function.html#afb28402e43b7d837b0e2ae35b3103ff0">amr_wind::ABLWallFunction::m_wf_theta</a></div><div class="ttdeci">amrex::Real m_wf_theta</div><div class="ttdef"><b>Definition</b> ABLWallFunction.H:63</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_wall_function_html_afb2ad49d9a026146c13db789bbf1ba6c"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_wall_function.html#afb2ad49d9a026146c13db789bbf1ba6c">amr_wind::ABLWallFunction::update_tflux</a></div><div class="ttdeci">void update_tflux(const amrex::Real tflux)</div><div class="ttdef"><b>Definition</b> ABLWallFunction.cpp:136</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html">amr_wind::CFDSim</a></div><div class="ttdef"><b>Definition</b> CFDSim.H:54</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_fine_html"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine&lt; Field &gt;</a></div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_b_c_iface_html"><div class="ttname"><a href="classamr__wind_1_1_field_b_c_iface.html">amr_wind::FieldBCIface</a></div><div class="ttdef"><b>Definition</b> FieldBCOps.H:32</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_html"><div class="ttname"><a href="classamr__wind_1_1_field.html">amr_wind::Field</a></div><div class="ttdef"><b>Definition</b> Field.H:116</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_vel_plane_averaging_fine_html"><div class="ttname"><a href="classamr__wind_1_1_vel_plane_averaging_fine.html">amr_wind::VelPlaneAveragingFine</a></div><div class="ttdef"><b>Definition</b> FieldPlaneAveragingFine.H:114</div></div>
+<div class="ttc" id="agroup__fields_html_gaba2b7a43f2e9cb10cdb5e2ab8acfcdd8"><div class="ttname"><a href="group__fields.html#gaba2b7a43f2e9cb10cdb5e2ab8acfcdd8">amr_wind::FieldState</a></div><div class="ttdeci">FieldState</div><div class="ttdef"><b>Definition</b> FieldDescTypes.H:14</div></div>
+<div class="ttc" id="aincflo__enums_8_h_html_a6e1412fca31cbd35d0f50f12fcc70b0fa6e55e2ee14d93d50c4bc849a21816201"><div class="ttname"><a href="incflo__enums_8_h.html#a6e1412fca31cbd35d0f50f12fcc70b0fa6e55e2ee14d93d50c4bc849a21816201">BC::wall_model</a></div><div class="ttdeci">@ wall_model</div></div>
+<div class="ttc" id="anamespaceamr__wind_html"><div class="ttname"><a href="namespaceamr__wind.html">amr_wind</a></div><div class="ttdef"><b>Definition</b> BCInterface.cpp:7</div></div>
+<div class="ttc" id="astructamr__wind_1_1_m_o_data_html"><div class="ttname"><a href="structamr__wind_1_1_m_o_data.html">amr_wind::MOData</a></div><div class="ttdef"><b>Definition</b> MOData.H:21</div></div>
+<div class="ttc" id="astructamr__wind_1_1_m_o_data_html_a80ec33ada6b5f70cbb7ebfe62f928057"><div class="ttname"><a href="structamr__wind_1_1_m_o_data.html#a80ec33ada6b5f70cbb7ebfe62f928057">amr_wind::MOData::utau</a></div><div class="ttdeci">amrex::Real utau</div><div class="ttdoc">Friction velocity (m/s)</div><div class="ttdef"><b>Definition</b> MOData.H:29</div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

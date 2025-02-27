@@ -1,0 +1,14 @@
+.. meta::d139b373827b4daf73391d157ba2ae6406aa13057caf4f67131db18ff54cfcfaed87d76304ad788ac7b9d3e9e4b9dbca29c64c8944ef5f8badb966663394e23c
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::SyntheticTurbulence Class Reference
+
+SyntheticTurbulence Class Reference
+===================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_synthetic_turbulence.html

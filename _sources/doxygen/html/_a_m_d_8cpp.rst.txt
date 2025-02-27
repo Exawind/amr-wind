@@ -1,0 +1,14 @@
+.. meta::6a9a1d254329f0835a8d7a37044a583b808108d1801101e407f59ea7a585ee1a28b021ed3e5cb40d2e6b45b72553359741b6c1cbcf06d98bb90cb91208087cc6
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/turbulence/LES/AMD.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/turbulence/LES/AMD.cpp File Reference
+==================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _a_m_d_8cpp.html

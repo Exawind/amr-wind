@@ -1,0 +1,14 @@
+.. meta::cb4b1eed39964fb4cc6d2d4c1a9729e11fad491d3636b0e28ea5d034019b41c639d8b4eabd49c2e220c2057ad959d7a494f5c3e022bb271cd575ca85e3069e0a
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/FreeSurfaceSampler.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/FreeSurfaceSampler.H Source File
+================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _free_surface_sampler_8_h_source.html

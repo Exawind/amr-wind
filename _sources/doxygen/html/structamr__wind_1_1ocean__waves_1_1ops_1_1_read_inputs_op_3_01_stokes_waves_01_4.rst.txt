@@ -1,0 +1,14 @@
+.. meta::4581e27c5d80fe209a7b2a188fa0aefa0c596c3ee5f8b4c0367be2dc44b4cb7cbd5b5f5467cb1de66dafc3eb210218545fbc29a0d3535fffa792767d032aa822
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ocean_waves::ops::ReadInputsOp&lt; StokesWaves &gt; Struct Reference
+
+ReadInputsOp&lt; StokesWaves &gt; Struct Reference
+==================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ocean__waves_1_1ops_1_1_read_inputs_op_3_01_stokes_waves_01_4.html

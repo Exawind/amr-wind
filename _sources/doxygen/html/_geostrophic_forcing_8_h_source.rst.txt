@@ -1,0 +1,14 @@
+.. meta::7f9169e4d91a002f3d254f22b0292ff7813b7677c87c021dd41ee6640d3ec6f59d24e5322b471a12dd5c78b96b4ce9d461974fe135d372fcd3a427c074f7292e
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/icns/source_terms/GeostrophicForcing.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/equation\_systems/icns/source\_terms/GeostrophicForcing.H Source File
+==================================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _geostrophic_forcing_8_h_source.html

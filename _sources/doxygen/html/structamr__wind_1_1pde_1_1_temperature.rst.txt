@@ -1,0 +1,14 @@
+.. meta::b83bf0af36b4d56642ee5d95222c7bb78339a1b5a9f979d0deec21399503906ab3f31ec9c2905df5d62f37313990b0ceb6fe4a2c6caf29b455d081140065928f
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::Temperature Struct Reference
+
+Temperature Struct Reference
+============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1pde_1_1_temperature.html

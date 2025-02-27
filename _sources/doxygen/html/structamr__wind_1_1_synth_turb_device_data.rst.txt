@@ -1,0 +1,14 @@
+.. meta::86578137e65af822385c2bbc008d1d3d8bccd7d760a3400c8caa71ba99e2a25896c4ff0318c7bf5f742e559bd4abec3dbece32b87c8d438287048c9022be1de1
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::SynthTurbDeviceData Struct Reference
+
+SynthTurbDeviceData Struct Reference
+====================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1_synth_turb_device_data.html

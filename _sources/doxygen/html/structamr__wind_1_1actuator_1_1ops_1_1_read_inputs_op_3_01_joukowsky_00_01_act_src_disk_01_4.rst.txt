@@ -1,0 +1,14 @@
+.. meta::50609f2d6ede6e64ffbdbed82c93d4d0088cf7597c1b854b5455dfd14fa3e137447300d9b63bb115ad614e2ea58eae05cf0dc1a8a531e8c6f5615be248fe4aff
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::ReadInputsOp&lt; Joukowsky, ActSrcDisk &gt; Struct Reference
+
+ReadInputsOp&lt; Joukowsky, ActSrcDisk &gt; Struct Reference
+============================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1ops_1_1_read_inputs_op_3_01_joukowsky_00_01_act_src_disk_01_4.html
