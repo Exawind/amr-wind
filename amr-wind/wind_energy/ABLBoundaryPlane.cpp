@@ -176,6 +176,9 @@ void InletData::read_data_native(
         bndry_n[ori].boxArray(), bndry_n[ori].DistributionMap(),
         bndry_n[ori].nComp(), 0, amrex::MFInfo());
 
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (false)
+#endif
     for (amrex::MFIter mfi(bndry); mfi.isValid(); ++mfi) {
 
         const auto& vbx = mfi.validbox();
@@ -199,6 +202,9 @@ void InletData::read_data_native(
 
     bndry.copyTo((*m_data_n[ori])[lev], 0, nstart, static_cast<int>(nc));
 
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (false)
+#endif
     for (amrex::MFIter mfi(bndry); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
         const auto& bndry_np1_arr = bndry_np1[ori].array(mfi);

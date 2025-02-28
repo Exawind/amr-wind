@@ -174,6 +174,9 @@ void ABLModulatedPowerLaw::set_velocity(
         const auto& dbx = ori.isLow() ? amrex::adjCellLo(domain, idir, nghost)
                                       : amrex::adjCellHi(domain, idir, nghost);
 
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (false)
+#endif
         for (amrex::MFIter mfi(mfab); mfi.isValid(); ++mfi) {
             auto gbx = amrex::grow(mfi.validbox(), nghost);
             const auto& bx =
@@ -250,6 +253,9 @@ void ABLModulatedPowerLaw::set_temperature(
         const auto& dbx = ori.isLow() ? amrex::adjCellLo(domain, idir, nghost)
                                       : amrex::adjCellHi(domain, idir, nghost);
 
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (false)
+#endif
         for (amrex::MFIter mfi(mfab); mfi.isValid(); ++mfi) {
             auto gbx = amrex::grow(mfi.validbox(), nghost);
             const auto& bx =

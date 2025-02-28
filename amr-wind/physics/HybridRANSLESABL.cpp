@@ -20,16 +20,16 @@ void HybridRANSLESABL::initialize_fields(int level, const amrex::Geometry& geom)
     const amrex::Real dz = geom.CellSize()[2];
     const amrex::Real ds = std::cbrt(dx * dy * dz);
 
-    for (amrex::MFIter mfi((*m_tke)(level)); mfi.isValid(); ++mfi) {
-        const auto& bx = mfi.growntilebox();
-        const auto& tke_arr = (*m_tke)(level).array(mfi);
-        const auto& sdr_arr = (*m_sdr)(level).array(mfi);
+    const auto& tke_arrs = (*m_tke)(level).const_arrays();
+    const auto& sdr_arrs = (*m_sdr)(level).arrays();
 
-        amrex::ParallelFor(
-            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                sdr_arr(i, j, k) = std::sqrt(tke_arr(i, j, k)) / (Ce * ds);
-            });
-    }
+    amrex::ParallelFor(
+        (*m_tke)(level), m_tke->num_grow(),
+        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            sdr_arrs[nbx](i, j, k) =
+                std::sqrt(tke_arrs[nbx](i, j, k)) / (Ce * ds);
+        });
+    amrex::Gpu::streamSynchronize();
 }
 
 void HybridRANSLESABL::pre_init_actions()
@@ -88,17 +88,17 @@ void HybridRANSLESABL::compute_sdr_impl()
         const amrex::Real dz = geom.CellSize()[2];
         const amrex::Real ds = std::cbrt(dx * dy * dz);
 
-        for (amrex::MFIter mfi((*tke)(lev)); mfi.isValid(); ++mfi) {
-            const auto& bx = mfi.growntilebox();
-            const auto& tke_arr = (*tke)(lev).array(mfi);
-            const auto& sdr_arr = (*sdr)(lev).array(mfi);
+        const auto& tke_arrs = (*tke)(lev).const_arrays();
+        const auto& sdr_arrs = (*sdr)(lev).arrays();
 
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    sdr_arr(i, j, k) = std::sqrt(tke_arr(i, j, k)) / (Ce * ds);
-                });
-        }
+        amrex::ParallelFor(
+            (*tke)(lev), tke->num_grow(),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                sdr_arrs[nbx](i, j, k) =
+                    std::sqrt(tke_arrs[nbx](i, j, k)) / (Ce * ds);
+            });
     }
+    amrex::Gpu::streamSynchronize();
 }
 
 } // namespace amr_wind::hybrid_rans_les_abl

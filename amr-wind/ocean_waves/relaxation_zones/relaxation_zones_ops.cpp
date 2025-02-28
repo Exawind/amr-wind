@@ -67,7 +67,7 @@ void update_target_vof(CFDSim& sim)
                     multiphase::levelset_to_vof(i, j, k, eps, target_phi[nbx]);
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
@@ -265,7 +265,7 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                     rho1 * volfrac(i, j, k) + rho2 * (1. - volfrac(i, j, k));
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 
     vof.fillpatch(time);
     velocity.fillpatch(time);

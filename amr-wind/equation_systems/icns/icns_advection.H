@@ -349,7 +349,8 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                 for (amrex::MFIter mfi(dof_field(lev), mfi_info); mfi.isValid();
                      ++mfi) {
                     const auto& bx = mfi.tilebox();
-                    amrex::FArrayBox tmpfab(amrex::grow(bx, 1), 1);
+                    amrex::FArrayBox tmpfab(
+                        amrex::grow(bx, 1), 1, amrex::The_Async_Arena());
                     tmpfab.setVal<amrex::RunOn::Device>(0.0);
                     const auto& divu = tmpfab.array();
                     HydroUtils::ComputeFluxesOnBoxFromState(
@@ -368,7 +369,6 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                         postmac_advection_type, limiter_type,
                         m_allow_inflow_on_outflow);
                 }
-                amrex::Gpu::streamSynchronize();
             } else {
                 amrex::Abort("Invalid godunov scheme");
             }

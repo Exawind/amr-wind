@@ -63,43 +63,37 @@ void ReynoldsStress::operator()(
         auto& sfab = m_stress(lev);
         auto& rfab = m_re_stress(lev);
 
-#ifdef AMREX_USE_OMP
-#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
-#endif
-        for (amrex::MFIter mfi(ffab, amrex::TilingIfNotGPU()); mfi.isValid();
-             ++mfi) {
-            const auto& bx = mfi.tilebox();
-            const auto& fldarr = ffab.const_array(mfi);
-            const auto& avgarr = afab.array(mfi);
-            const auto& stressarr = sfab.array(mfi);
-            const auto& restressarr = rfab.array(mfi);
+        const auto& fldarrs = ffab.const_arrays();
+        const auto& avgarrs = afab.arrays();
+        const auto& stressarrs = sfab.arrays();
+        const auto& restressarrs = rfab.arrays();
 
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    // The tensor index
-                    int mn = 0;
-                    for (int n = 0; n < ncomp; ++n) {
-                        for (int m = n; m < ncomp; ++m) {
-                            // AB
-                            const amrex::Real fval2 =
-                                fldarr(i, j, k, m) * fldarr(i, j, k, n);
-                            // <A><B>
-                            const amrex::Real aval2 =
-                                avgarr(i, j, k, m) * avgarr(i, j, k, n);
-                            // The current value
-                            const amrex::Real avg = stressarr(i, j, k, mn);
-                            // The stress <AB>
-                            stressarr(i, j, k, mn) =
-                                (avg * factor + fval2 * dt) / filter;
-                            // The Reynolds stress <ab>
-                            restressarr(i, j, k, mn) =
-                                stressarr(i, j, k, mn) - aval2;
-                            ++mn;
-                        }
+        amrex::ParallelFor(
+            ffab, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                // The tensor index
+                int mn = 0;
+                for (int n = 0; n < ncomp; ++n) {
+                    for (int m = n; m < ncomp; ++m) {
+                        // AB
+                        const amrex::Real fval2 =
+                            fldarrs[nbx](i, j, k, m) * fldarrs[nbx](i, j, k, n);
+                        // <A><B>
+                        const amrex::Real aval2 =
+                            avgarrs[nbx](i, j, k, m) * avgarrs[nbx](i, j, k, n);
+                        // The current value
+                        const amrex::Real avg = stressarrs[nbx](i, j, k, mn);
+                        // The stress <AB>
+                        stressarrs[nbx](i, j, k, mn) =
+                            (avg * factor + fval2 * dt) / filter;
+                        // The Reynolds stress <ab>
+                        restressarrs[nbx](i, j, k, mn) =
+                            stressarrs[nbx](i, j, k, mn) - aval2;
+                        ++mn;
                     }
-                });
-        }
+                }
+            });
     }
+    amrex::Gpu::streamSynchronize();
 
     m_stress.fillpatch(time.new_time());
     m_re_stress.fillpatch(time.new_time());

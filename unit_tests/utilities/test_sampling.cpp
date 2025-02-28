@@ -42,7 +42,7 @@ void init_field(amr_wind::Field& fld)
                 farrs[nbx](i, j, k, n) = x + y + z;
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 void init_int_field(amr_wind::IntField& fld)
@@ -59,7 +59,7 @@ void init_int_field(amr_wind::IntField& fld)
                 farrs[nbx](i, j, k, n) = i + j + k;
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 void write_probe_sampler_file(const std::string& fname)

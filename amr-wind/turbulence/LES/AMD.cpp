@@ -108,7 +108,7 @@ void AMD<Transport>::update_turbulent_viscosity(
                                            p_tpa_deriv, normal_dir, nlo);
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 
     mu_turb.fillpatch(this->m_sim.time().current_time());
 }
@@ -133,21 +133,21 @@ void AMD<Transport>::update_alphaeff(Field& alphaeff)
         const auto& geom = geom_vec[lev];
 
         const auto& dx = geom.CellSizeArray();
-        for (amrex::MFIter mfi(alphaeff(lev)); mfi.isValid(); ++mfi) {
-            const auto& bx = mfi.tilebox();
-            const auto& gradVel_arr = (*gradVel)(lev).const_array(mfi);
-            const auto& gradT_arr = (*gradT)(lev).const_array(mfi);
-            const auto& rho_arr = m_rho(lev).const_array(mfi);
-            const auto& alpha_arr = alphaeff(lev).array(mfi);
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real rho = rho_arr(i, j, k);
-                    alpha_arr(i, j, k) = rho * amd_thermal_diff(
-                                                   i, j, k, dx, C_poincare,
-                                                   gradVel_arr, gradT_arr);
-                });
-        }
+        const auto& gradVel_arrs = (*gradVel)(lev).const_arrays();
+        const auto& gradT_arrs = (*gradT)(lev).const_arrays();
+        const auto& rho_arrs = m_rho(lev).const_arrays();
+        const auto& alpha_arrs = alphaeff(lev).arrays();
+        amrex::ParallelFor(
+            alphaeff(lev),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                const amrex::Real rho = rho_arrs[nbx](i, j, k);
+                alpha_arrs[nbx](i, j, k) =
+                    rho * amd_thermal_diff(
+                              i, j, k, dx, C_poincare, gradVel_arrs[nbx],
+                              gradT_arrs[nbx]);
+            });
     }
+    amrex::Gpu::streamSynchronize();
 }
 
 template <typename Transport>

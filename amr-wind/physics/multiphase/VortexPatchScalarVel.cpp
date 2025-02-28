@@ -47,71 +47,70 @@ void VortexPatchScalarVel::initialize_fields(
     auto& v_mac = m_sim.repo().get_field("v_mac")(level);
     auto& w_mac = m_sim.repo().get_field("w_mac")(level);
 
-    for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
-        const auto& vbx = mfi.validbox();
-        auto uf = u_mac.array(mfi);
-        auto vf = v_mac.array(mfi);
-        auto wf = w_mac.array(mfi);
-        auto vel = velocity.array(mfi);
-        auto phi = levelset.array(mfi);
-        auto rho = density.array(mfi);
-        const amrex::Real eps = std::cbrt(2. * dx[0] * dx[1] * dx[2]);
-        const amrex::Real eps_vel = radius * m_sfactor;
+    const auto& uf_arrs = u_mac.arrays();
+    const auto& vf_arrs = v_mac.arrays();
+    const auto& wf_arrs = w_mac.arrays();
+    const auto& vel_arrs = velocity.arrays();
+    const auto& phi_arrs = levelset.arrays();
+    const auto& rho_arrs = density.arrays();
+    const amrex::Real eps = std::cbrt(2. * dx[0] * dx[1] * dx[2]);
+    const amrex::Real eps_vel = radius * m_sfactor;
 
-        amrex::ParallelFor(
-            vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-                const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
-                const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-                const amrex::Real xf = problo[0] + i * dx[0];
-                const amrex::Real yf = problo[1] + j * dx[1];
-                const amrex::Real zf = problo[2] + k * dx[2];
-                uf(i, j, k) = 2.0 * std::sin(M_PI * xf) * std::sin(M_PI * xf) *
-                              std::sin(2.0 * M_PI * y) *
-                              std::sin(2.0 * M_PI * z);
-                vf(i, j, k) = -std::sin(M_PI * yf) * std::sin(M_PI * yf) *
-                              std::sin(2.0 * M_PI * x) *
-                              std::sin(2.0 * M_PI * z);
-                wf(i, j, k) = -std::sin(M_PI * zf) * std::sin(M_PI * zf) *
-                              std::sin(2.0 * M_PI * x) *
-                              std::sin(2.0 * M_PI * y);
-                // Only the x component is nonzero
-                vel(i, j, k, 1) = 0.0;
-                vel(i, j, k, 2) = 0.0;
+    amrex::ParallelFor(
+        velocity, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+            const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
+            const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+            const amrex::Real xf = problo[0] + i * dx[0];
+            const amrex::Real yf = problo[1] + j * dx[1];
+            const amrex::Real zf = problo[2] + k * dx[2];
+            uf_arrs[nbx](i, j, k) =
+                2.0 * std::sin(M_PI * xf) * std::sin(M_PI * xf) *
+                std::sin(2.0 * M_PI * y) * std::sin(2.0 * M_PI * z);
+            vf_arrs[nbx](i, j, k) = -std::sin(M_PI * yf) * std::sin(M_PI * yf) *
+                                    std::sin(2.0 * M_PI * x) *
+                                    std::sin(2.0 * M_PI * z);
+            wf_arrs[nbx](i, j, k) = -std::sin(M_PI * zf) * std::sin(M_PI * zf) *
+                                    std::sin(2.0 * M_PI * x) *
+                                    std::sin(2.0 * M_PI * y);
+            // Only the x component is nonzero
+            vel_arrs[nbx](i, j, k, 1) = 0.0;
+            vel_arrs[nbx](i, j, k, 2) = 0.0;
 
-                phi(i, j, k) =
-                    radius - std::sqrt(
-                                 (x - xc) * (x - xc) + (y - yc) * (y - yc) +
-                                 (z - zc) * (z - zc));
-                amrex::Real smooth_heaviside;
-                if (phi(i, j, k) > eps) {
-                    smooth_heaviside = 1.0;
-                } else if (phi(i, j, k) < -eps) {
-                    smooth_heaviside = 0.;
-                } else {
-                    smooth_heaviside =
-                        0.5 *
-                        (1.0 + phi(i, j, k) / eps +
-                         1.0 / M_PI * std::sin(phi(i, j, k) * M_PI / eps));
-                }
-                rho(i, j, k) =
-                    rho1 * smooth_heaviside + rho2 * (1.0 - smooth_heaviside);
+            phi_arrs[nbx](i, j, k) =
+                radius - std::sqrt(
+                             (x - xc) * (x - xc) + (y - yc) * (y - yc) +
+                             (z - zc) * (z - zc));
+            amrex::Real smooth_heaviside;
+            if (phi_arrs[nbx](i, j, k) > eps) {
+                smooth_heaviside = 1.0;
+            } else if (phi_arrs[nbx](i, j, k) < -eps) {
+                smooth_heaviside = 0.;
+            } else {
+                smooth_heaviside =
+                    0.5 * (1.0 + phi_arrs[nbx](i, j, k) / eps +
+                           1.0 / M_PI *
+                               std::sin(phi_arrs[nbx](i, j, k) * M_PI / eps));
+            }
+            rho_arrs[nbx](i, j, k) =
+                rho1 * smooth_heaviside + rho2 * (1.0 - smooth_heaviside);
 
-                // Smoothed step function for u velocity, which is treated as a
-                // scalar, much more smoothed than levelset and not based on the
-                // mesh size
-                if (phi(i, j, k) > eps_vel) {
-                    vel(i, j, k, 0) = 1.0;
-                } else if (phi(i, j, k) < -eps_vel) {
-                    vel(i, j, k, 0) = 0.;
-                } else {
-                    vel(i, j, k, 0) =
-                        0.5 *
-                        (1.0 + phi(i, j, k) / eps_vel +
-                         1.0 / M_PI * std::sin(phi(i, j, k) * M_PI / eps_vel));
-                }
-            });
-    }
+            // Smoothed step function for u velocity, which is treated as a
+            // scalar, much more smoothed than levelset and not based on the
+            // mesh size
+            if (phi_arrs[nbx](i, j, k) > eps_vel) {
+                vel_arrs[nbx](i, j, k, 0) = 1.0;
+            } else if (phi_arrs[nbx](i, j, k) < -eps_vel) {
+                vel_arrs[nbx](i, j, k, 0) = 0.;
+            } else {
+                vel_arrs[nbx](i, j, k, 0) =
+                    0.5 *
+                    (1.0 + phi_arrs[nbx](i, j, k) / eps_vel +
+                     1.0 / M_PI *
+                         std::sin(phi_arrs[nbx](i, j, k) * M_PI / eps_vel));
+            }
+        });
+    amrex::Gpu::streamSynchronize();
     m_velocity.fillpatch(m_sim.time().current_time());
 }
 
@@ -128,36 +127,35 @@ void VortexPatchScalarVel::pre_advance_work()
         auto& u_mac = m_sim.repo().get_field("u_mac")(lev);
         auto& v_mac = m_sim.repo().get_field("v_mac")(lev);
         auto& w_mac = m_sim.repo().get_field("w_mac")(lev);
-        for (amrex::MFIter mfi(m_velocity(lev)); mfi.isValid(); ++mfi) {
-            const auto& vbx = mfi.growntilebox(1);
-            const auto& dx = geom[lev].CellSizeArray();
-            const auto& problo = geom[lev].ProbLoArray();
-            const amrex::Real TT = m_TT;
-            auto uf = u_mac.array(mfi);
-            auto vf = v_mac.array(mfi);
-            auto wf = w_mac.array(mfi);
-            amrex::ParallelFor(
-                vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-                    const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
-                    const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-                    const amrex::Real xf = problo[0] + i * dx[0];
-                    const amrex::Real yf = problo[1] + j * dx[1];
-                    const amrex::Real zf = problo[2] + k * dx[2];
-                    uf(i, j, k) =
-                        2.0 * std::sin(M_PI * xf) * std::sin(M_PI * xf) *
-                        std::sin(2.0 * M_PI * y) * std::sin(2.0 * M_PI * z) *
-                        std::cos(M_PI * time / TT);
-                    vf(i, j, k) = -std::sin(M_PI * yf) * std::sin(M_PI * yf) *
-                                  std::sin(2.0 * M_PI * x) *
-                                  std::sin(2.0 * M_PI * z) *
-                                  std::cos(M_PI * time / TT);
-                    wf(i, j, k) = -std::sin(M_PI * zf) * std::sin(M_PI * zf) *
-                                  std::sin(2.0 * M_PI * x) *
-                                  std::sin(2.0 * M_PI * y) *
-                                  std::cos(M_PI * time / TT);
-                });
-        }
+        const auto& dx = geom[lev].CellSizeArray();
+        const auto& problo = geom[lev].ProbLoArray();
+        const amrex::Real TT = m_TT;
+        const auto& uf_arrs = u_mac.arrays();
+        const auto& vf_arrs = v_mac.arrays();
+        const auto& wf_arrs = w_mac.arrays();
+        amrex::ParallelFor(
+            m_velocity(lev), amrex::IntVect(1),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
+                const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+                const amrex::Real xf = problo[0] + i * dx[0];
+                const amrex::Real yf = problo[1] + j * dx[1];
+                const amrex::Real zf = problo[2] + k * dx[2];
+                uf_arrs[nbx](i, j, k) =
+                    2.0 * std::sin(M_PI * xf) * std::sin(M_PI * xf) *
+                    std::sin(2.0 * M_PI * y) * std::sin(2.0 * M_PI * z) *
+                    std::cos(M_PI * time / TT);
+                vf_arrs[nbx](i, j, k) =
+                    -std::sin(M_PI * yf) * std::sin(M_PI * yf) *
+                    std::sin(2.0 * M_PI * x) * std::sin(2.0 * M_PI * z) *
+                    std::cos(M_PI * time / TT);
+                wf_arrs[nbx](i, j, k) =
+                    -std::sin(M_PI * zf) * std::sin(M_PI * zf) *
+                    std::sin(2.0 * M_PI * x) * std::sin(2.0 * M_PI * y) *
+                    std::cos(M_PI * time / TT);
+            });
+        amrex::Gpu::streamSynchronize();
         u_mac.FillBoundary(geom[lev].periodicity());
         v_mac.FillBoundary(geom[lev].periodicity());
         w_mac.FillBoundary(geom[lev].periodicity());

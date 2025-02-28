@@ -78,6 +78,10 @@ void ABLAnelastic::initialize_data()
     m_theta.copy_to_field(temp0);
     density0_field.fillpatch(m_sim.time().current_time());
     temp0.fillpatch(m_sim.time().current_time());
+    auto& density_field = m_sim.repo().get_field("density");
+    field_ops::copy(
+        density_field, density0_field, 0, 0, density0_field.num_comp(),
+        density0_field.num_grow());
 }
 
 void ABLAnelastic::initialize_isentropic_hse()

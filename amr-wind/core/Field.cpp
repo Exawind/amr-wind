@@ -414,7 +414,7 @@ void Field::to_uniform_space() noexcept
                     detJ[nbx](i, j, k) / fac[nbx](i, j, k, n);
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
     m_mesh_mapped = true;
 }
 
@@ -445,7 +445,7 @@ void Field::to_stretched_space() noexcept
                     fac[nbx](i, j, k, n) / detJ[nbx](i, j, k);
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
     m_mesh_mapped = false;
 }
 

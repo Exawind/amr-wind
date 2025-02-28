@@ -17,7 +17,7 @@ void init_vel_z(amr_wind::Field& vel, const amrex::Real w_const)
                 varrs[nbx](i, j, k, 2) = w_const;
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 void init_ref_p(
@@ -45,7 +45,7 @@ void init_ref_p(
                 p0_arrs[nbx](i, j, k) = -irho * F_g;
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 amrex::Real get_pbottom(amr_wind::Field& pressure)

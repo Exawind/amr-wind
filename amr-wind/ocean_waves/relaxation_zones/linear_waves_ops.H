@@ -132,7 +132,7 @@ struct InitDataOp<LinearWaves>
                     phi_arrs[nbx](i, j, k) = phi;
                 }
             });
-        amrex::Gpu::synchronize();
+        amrex::Gpu::streamSynchronize();
     }
 };
 
@@ -214,7 +214,7 @@ struct UpdateTargetFieldsOp<LinearWaves>
                     }
                 });
         }
-        amrex::Gpu::synchronize();
+        amrex::Gpu::streamSynchronize();
     }
 };
 

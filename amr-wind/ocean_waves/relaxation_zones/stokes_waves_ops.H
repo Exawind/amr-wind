@@ -162,7 +162,7 @@ struct InitDataOp<StokesWaves>
                     phi_arrs[nbx](i, j, k) = phi;
                 }
             });
-        amrex::Gpu::synchronize();
+        amrex::Gpu::streamSynchronize();
     }
 };
 
@@ -227,7 +227,7 @@ struct UpdateTargetFieldsOp<StokesWaves>
                     }
                 });
         }
-        amrex::Gpu::synchronize();
+        amrex::Gpu::streamSynchronize();
     }
 };
 

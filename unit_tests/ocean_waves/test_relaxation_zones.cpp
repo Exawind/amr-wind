@@ -97,30 +97,29 @@ void apply_relaxation_zone_field(
     const auto& geom = comp.repo().mesh().Geom();
 
     for (int lev = 0; lev < comp.repo().num_active_levels(); ++lev) {
-        for (amrex::MFIter mfi(comp(lev)); mfi.isValid(); ++mfi) {
-            const auto& gbx = mfi.growntilebox(2);
-            const auto& dx = geom[lev].CellSizeArray();
-            const auto& problo = geom[lev].ProbLoArray();
-            const auto& probhi = geom[lev].ProbHiArray();
+        const auto& dx = geom[lev].CellSizeArray();
+        const auto& problo = geom[lev].ProbLoArray();
+        const auto& probhi = geom[lev].ProbHiArray();
+        const auto& comp_arrs = comp(lev).arrays();
+        const auto& targ_arrs = targ(lev).const_arrays();
 
-            auto comp_arr = comp(lev).array(mfi);
-            auto targ_arr = targ(lev).array(mfi);
-
-            amrex::ParallelFor(
-                gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real x = amrex::min(
-                        amrex::max(problo[0] + (i + 0.5) * dx[0], problo[0]),
-                        probhi[0]);
-                    if (x <= problo[0] + gen_length) {
-                        const amrex::Real Gamma =
-                            amr_wind::ocean_waves::utils::gamma_generate(
-                                x - problo[0], gen_length);
-                        comp_arr(i, j, k) = targ_arr(i, j, k) * (1. - Gamma) +
-                                            comp_arr(i, j, k) * Gamma;
-                    }
-                });
-        }
+        amrex::ParallelFor(
+            comp(lev), amrex::IntVect(2),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                const amrex::Real x = amrex::min(
+                    amrex::max(problo[0] + (i + 0.5) * dx[0], problo[0]),
+                    probhi[0]);
+                if (x <= problo[0] + gen_length) {
+                    const amrex::Real Gamma =
+                        amr_wind::ocean_waves::utils::gamma_generate(
+                            x - problo[0], gen_length);
+                    comp_arrs[nbx](i, j, k) =
+                        targ_arrs[nbx](i, j, k) * (1. - Gamma) +
+                        comp_arrs[nbx](i, j, k) * Gamma;
+                }
+            });
     }
+    amrex::Gpu::streamSynchronize();
 }
 
 amrex::Real field_error(amr_wind::Field& comp, amr_wind::Field& targ, int ncomp)
@@ -194,39 +193,35 @@ void make_target_velocity(
     amr_wind::Field& ow_vof)
 {
     for (int lev = 0; lev < ow_vof.repo().num_active_levels(); ++lev) {
-        for (amrex::MFIter mfi(ow_vof(lev)); mfi.isValid(); ++mfi) {
-            const auto& gbx = mfi.growntilebox(2);
-
-            auto ow_vel_arr = ow_velocity(lev).array(mfi);
-            auto vel_arr = velocity(lev).const_array(mfi);
-            auto ow_vof_arr = ow_vof(lev).const_array(mfi);
-
-            amrex::ParallelFor(
-                gbx, velocity.num_comp(),
-                [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                    if (ow_vof_arr(i, j, k) <= amr_wind::constants::TIGHT_TOL) {
-                        ow_vel_arr(i, j, k, n) = vel_arr(i, j, k, n);
-                    }
-                });
-        }
+        const auto& ow_vel_arrs = ow_velocity(lev).arrays();
+        const auto& vel_arrs = velocity(lev).const_arrays();
+        const auto& ow_vof_arrs = ow_vof(lev).const_arrays();
+        amrex::ParallelFor(
+            ow_vof(lev), amrex::IntVect(2), velocity.num_comp(),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
+                if (ow_vof_arrs[nbx](i, j, k) <=
+                    amr_wind::constants::TIGHT_TOL) {
+                    ow_vel_arrs[nbx](i, j, k, n) = vel_arrs[nbx](i, j, k, n);
+                }
+            });
     }
+    amrex::Gpu::streamSynchronize();
 }
 
 void make_target_density(
     amr_wind::Field& ow_vof, const amrex::Real rho1, const amrex::Real rho2)
 {
     for (int lev = 0; lev < ow_vof.repo().num_active_levels(); ++lev) {
-        for (amrex::MFIter mfi(ow_vof(lev)); mfi.isValid(); ++mfi) {
-            const auto& gbx = mfi.growntilebox(2);
-            auto ow_vof_arr = ow_vof(lev).array(mfi);
-
-            amrex::ParallelFor(
-                gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    ow_vof_arr(i, j, k) = rho1 * ow_vof_arr(i, j, k) +
-                                          rho2 * (1.0 - ow_vof_arr(i, j, k));
-                });
-        }
+        const auto& ow_vof_arrs = ow_vof(lev).arrays();
+        amrex::ParallelFor(
+            ow_vof(lev), amrex::IntVect(2),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                ow_vof_arrs[nbx](i, j, k) =
+                    rho1 * ow_vof_arrs[nbx](i, j, k) +
+                    rho2 * (1.0 - ow_vof_arrs[nbx](i, j, k));
+            });
     }
+    amrex::Gpu::streamSynchronize();
 }
 
 amrex::Real bdy_error(amr_wind::Field& comp, amr_wind::Field& targ, int ncomp)

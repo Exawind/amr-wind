@@ -130,7 +130,8 @@ static void hybrid_fluxes(
             auto Fw_z = (*ftmp_z)(lev).array(mfi);
 
             // Temporary divu
-            amrex::FArrayBox divufab(amrex::grow(bx, 1), 1);
+            amrex::FArrayBox divufab(
+                amrex::grow(bx, 1), 1, amrex::The_Async_Arena());
             divufab.setVal<amrex::RunOn::Device>(0.0);
             const auto& divu = divufab.array();
 
@@ -241,8 +242,6 @@ static void hybrid_fluxes(
                         }
                     }
                 });
-
-            amrex::Gpu::streamSynchronize();
         }
     }
 }

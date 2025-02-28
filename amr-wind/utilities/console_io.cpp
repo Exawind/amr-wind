@@ -257,7 +257,7 @@ void print_nonlinear_residual(
                 }
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 
     amrex::Array<amrex::Real, AMREX_SPACEDIM> rms_vel = {0.0};
 

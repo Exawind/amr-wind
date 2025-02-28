@@ -160,17 +160,15 @@ void ScalarAdvection::initialize_fields(
     auto& density = m_density(level);
     density.setVal(m_rho);
 
-    for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
-        const auto& vbx = mfi.validbox();
-        auto vel = velocity.array(mfi);
+    const auto& vel_arrs = velocity.arrays();
 
-        amrex::ParallelFor(
-            vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                vel(i, j, k, 0) = u;
-                vel(i, j, k, 1) = v;
-                vel(i, j, k, 2) = 0.0;
-            });
-    }
+    amrex::ParallelFor(
+        velocity, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            vel_arrs[nbx](i, j, k, 0) = u;
+            vel_arrs[nbx](i, j, k, 1) = v;
+            vel_arrs[nbx](i, j, k, 2) = 0.0;
+        });
+    amrex::Gpu::streamSynchronize();
 }
 
 void ScalarAdvection::post_init_actions()
@@ -213,6 +211,9 @@ void ScalarAdvection::initialize_scalar(const Shape& scalar_function)
         const auto& problo = m_repo.mesh().Geom(level).ProbLoArray();
         auto& scalar = (*m_scalar)(level);
 
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
         for (amrex::MFIter mfi(scalar); mfi.isValid(); ++mfi) {
             const auto& dx = m_repo.mesh().Geom(level).CellSizeArray();
             const auto& nbx = mfi.nodaltilebox();
