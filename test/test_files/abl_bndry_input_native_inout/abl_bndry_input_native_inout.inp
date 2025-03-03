@@ -51,6 +51,13 @@ ABL.bndry_file = "../abl_bndry_output_native/bndry_files"
 ABL.bndry_io_mode = 1
 ABL.bndry_var_names = velocity temperature
 ABL.bndry_output_format = native
+
+# Anelastic
+ABL.anelastic = 1
+ICNS.reconstruct_true_pressure = true
+io.outputs = reference_density reference_pressure reference_temperature
+incflo.constant_density = false
+
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
@@ -64,22 +71,24 @@ geometry.prob_hi        =   1000.  1000.  1000.  # Hi corner coordinates
 geometry.is_periodic    =   0   0   0   # Periodicity x y z (0/1)
 # Boundary conditions
 xlo.type = "mass_inflow_outflow"
-xlo.density = 1.0
+xlo.density_type = "zero_gradient"
 xlo.temperature = 0.0
 
 xhi.type = "mass_inflow_outflow"
-xhi.density = 1.0
+xhi.density_type = "zero_gradient"
 xhi.temperature = 0.0
 
 ylo.type = "mass_inflow_outflow"
-ylo.density = 1.0
+ylo.density_type = "zero_gradient"
 ylo.temperature = 0.0
 
 yhi.type = "mass_inflow_outflow"
-yhi.density = 1.0
+yhi.density_type = "zero_gradient"
 yhi.temperature = 0.0
 
 zlo.type =   "wall_model"
+zlo.density_type = "zero_gradient"
+
 zhi.type =   "slip_wall"
 zhi.temperature_type = "fixed_gradient"
 zhi.temperature = 0.0
