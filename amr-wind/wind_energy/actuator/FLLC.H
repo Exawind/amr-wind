@@ -52,16 +52,18 @@ struct FLLCUnsteadyData
     amrex::Real epsilon;
     amrex::Real fllc_start_time{0.0};
     int n_times_history{100};
+    amrex::Real prescribed_uinf;
 
     bool initialized{false};
+    RealList optimal_epsilon;
     RealList times;
     RealList dt;
 
     // computed values
     // a vector of a vector of a vector:
-    //  - listed in time (n_times_history)
-    //  - listed in space (npts)
-    //  - coordinate directions
+    //  - most outer vector: listed in space (npts)
+    //  - middle vector:     listed in time (n_times_history)
+    //  - inner vector:      coordinate directions
     amrex::Vector<VecList> induced_velocity_eps_LES;
     amrex::Vector<VecList> induced_velocity_eps_opt;
     amrex::Vector<VecList> delta_velocity;

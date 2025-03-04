@@ -143,23 +143,41 @@ void fllc_unsteady_init(
     data.times.assign(data.n_times_history, 0.0);
     data.dt.assign(data.n_times_history - 1, 0.0);
 
-    // Set up velocity lists according to n_times_history, npts
-    data.induced_velocity_eps_LES.resize(data.n_times_history);
-    data.induced_velocity_eps_opt.resize(data.n_times_history);
-    data.delta_velocity.resize(data.n_times_history);
-    data.force_coeff.resize(data.n_times_history);
-
+    // Set up velocity lists according to npts and n_times_history
     const int npts = static_cast<int>(view.pos.size());
+
+    // List for the optimal epsilon values
+    data.optimal_epsilon.resize(npts);
+
+    // The most outer VecList should be of length npts!
+    // Resize works only for the type VecList, but I get segmentation
+    // faults for type amrex::Vector<VecList>
+    // The following resize causes a 
+    // "Caught signal 11 (Segmentation fault: address not mapped to object at address (nil))"
+    // during runtime
+    data.induced_velocity_eps_LES.resize(npts);
+    data.induced_velocity_eps_opt.resize(npts);
+    data.delta_velocity.resize(npts);
+    data.force_coeff.resize(npts);
+    // data.induced_velocity_eps_LES.resize(data.n_times_history);
+    // data.induced_velocity_eps_opt.resize(data.n_times_history);
+    // data.delta_velocity.resize(data.n_times_history);
+    // data.force_coeff.resize(data.n_times_history);
+
+    // Loop through points to resize the middle vector
     for (int n = 0; n < npts; ++n) {
         data.induced_velocity_eps_LES[n].resize(data.n_times_history);
         data.induced_velocity_eps_opt[n].resize(data.n_times_history);
         data.delta_velocity[n].resize(data.n_times_history);
         data.force_coeff[n].resize(data.n_times_history);
 
-        data.induced_velocity_eps_LES[n].assign(npts, vs::Vector::zero());
-        data.induced_velocity_eps_opt[n].assign(npts, vs::Vector::zero());
-        data.delta_velocity[n].assign(npts, vs::Vector::zero());
-        data.force_coeff[n].assign(npts, vs::Vector::zero());
+        data.induced_velocity_eps_LES[n].assign(data.n_times_history, vs::Vector::zero());
+        data.induced_velocity_eps_opt[n].assign(data.n_times_history, vs::Vector::zero());
+        data.delta_velocity[n].assign(data.n_times_history, vs::Vector::zero());
+        data.force_coeff[n].assign(data.n_times_history, vs::Vector::zero());
+
+        // Compute optimal epsilon for each actuator point
+        data.optimal_epsilon[n] = view.chord[n] * eps_chord;
     }
 
     data.initialized = true;
@@ -170,6 +188,7 @@ void fllc_unsteady_parse(const utils::ActParser& pp, FLLCUnsteadyData& data)
     pp.query("epsilon", data.epsilon);
     pp.query("fllc_start_time", data.fllc_start_time);
     pp.query("fllc_unsteady_number_timesteps", data.n_times_history);
+    pp.query("prescribed_uinf", data.prescribed_uinf);
 
     if (!pp.contains("epsilon") || !pp.contains("epsilon_chord")) {
         amrex::Abort(

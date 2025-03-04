@@ -311,6 +311,16 @@ struct FLLCUnsteadyOp
         FLLCUnsteadyData& fllc,
         const amrex::Real current_time)
     {
+        // Get number of actuator points
+        const int npts = static_cast<int>(data.pos.size());
+        // std::cout << "npts " << npts << std::endl;
+        
+        // The actuator velocity which needs to be corrected
+        vs::Vector* vel_ptr = data.vel.data();
+
+        // Define eps_les**2 for later
+        auto eps_les2 = fllc.epsilon * fllc.epsilon;
+
         // Update time list
         // Shift elements toward back
         for (int n = fllc.times.size() - 1; n > 0; ++n) {
@@ -322,14 +332,72 @@ struct FLLCUnsteadyOp
         for (int n = 0; n < fllc.dt.size(); ++n) {
             fllc.dt[n] = fllc.times[n + 1] - fllc.times[n];
         }
-
-        // TEST COMMENT
         
-        // Store current velocities to lists
+        // Update velocity and force coefficient lists
+        // Loop through all actuator points
+        for (int i = 0; i < npts; ++i) {
+            // Shift elements toward back in time
+            for (int n = fllc.times.size() - 1; n > 0; ++n) {
+                fllc.induced_velocity_eps_LES[i][n] = fllc.induced_velocity_eps_LES[i][n-1];
+                fllc.induced_velocity_eps_opt[i][n] = fllc.induced_velocity_eps_opt[i][n-1];
+                fllc.delta_velocity[i][n]           = fllc.delta_velocity[i][n-1];
+                fllc.force_coeff[i][n]              = fllc.force_coeff[i][n-1];
+            }
+            // Replace new first element of force coefficient
+            const auto force = data.force[i];
+            // This still misses the density and the chord I think!
+            // Further at the moment it only works for prescribed_uinf
+            // e.g. the velocity magnitude is user specified
+            fllc.force_coeff[i][0] = data.force[i] / (0.5 * fllc.prescribed_uinf * fllc.prescribed_uinf);
+        }
 
         // Compute integrals
+        // Loop through actuator points
+        for (int i = 0; i < npts; ++i) {
+            auto eps_opt2 = fllc.optimal_epsilon[i] * fllc.optimal_epsilon[i];
 
-        // Update velocities with correction
+            // Loop through time (numerical integration)
+            for (int n = 0; n < fllc.dt.size(); ++n) {
+
+                // We need to determine the streamwise and normal direction to select the correct
+                // force components (the force vector is expressed in the global coordinate system)
+                // At the moment this only works if the streamwise direction is x
+                // and the normal direction is z!!!
+                auto fac_u = fllc.prescribed_uinf * fllc.force_coeff[i][n][0] / (4 * amr_wind::utils::pi());
+                auto fac_v = fllc.prescribed_uinf * fllc.force_coeff[i][n][2] / (4 * amr_wind::utils::pi());
+
+                // Compute time lag tau
+                auto tau  = fllc.times[n] - fllc.times[0];
+                auto tau2 = tau * tau; 
+
+                // Streamwise indicial response function
+                auto indres_u_les = (std::exp(-tau2 / eps_les2) - 1) / tau2;
+                auto indres_u_opt = (std::exp(-tau2 / eps_opt2) - 1) / tau2;
+
+                // Normal indicial response function
+                auto indres_v_les = std::exp(-tau2 / eps_les2) / eps_les2 + 
+                                    (std::exp(-tau2 / eps_les2) - 1) / (2 * tau2);
+                auto indres_v_opt = std::exp(-tau2 / eps_opt2) / eps_opt2 + 
+                                    (std::exp(-tau2 / eps_opt2) - 1) / (2 * tau2);
+
+                // Integration
+                fllc.induced_velocity_eps_LES[i][0][0] = fllc.induced_velocity_eps_LES[i][0][0] +
+                                                            fac_u * indres_u_les * fllc.dt[n];
+                fllc.induced_velocity_eps_opt[i][0][0] = fllc.induced_velocity_eps_opt[i][0][0] +
+                                                            fac_u * indres_u_opt * fllc.dt[n];
+                fllc.induced_velocity_eps_LES[i][0][2] = fllc.induced_velocity_eps_LES[i][0][2] +
+                                                            fac_v * indres_v_les * fllc.dt[n];
+                fllc.induced_velocity_eps_opt[i][0][2] = fllc.induced_velocity_eps_opt[i][0][2] +
+                                                            fac_v * indres_v_opt * fllc.dt[n];
+
+            }
+        }
+
+        // Update velocities with correction (loop through points)
+        for (int i = 0; i < npts; ++i) {
+            vel_ptr[i] = vel_ptr[i] + fllc.induced_velocity_eps_opt[i][0] - fllc.induced_velocity_eps_LES[i][0];
+        }
+
     }
 };
 
