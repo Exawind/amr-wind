@@ -320,12 +320,8 @@ void incflo::ApplyProjection(
 
     // Need to apply custom Neumann funcs for inflow-outflow BC
     // after setting the inflow vels above
-    // and then enforce solvability by matching outflow to inflow.
     if (!proj_for_small_dt and !incremental and velocity.has_inout_bndry()) {
         velocity.apply_bc_funcs(amr_wind::FieldState::New);
-
-        amr_wind::nodal_projection::enforce_inout_solvability(
-            velocity, m_repo.mesh().Geom(), m_repo.num_active_levels());
     }
 
     if (is_anelastic) {
@@ -336,6 +332,12 @@ void incflo::ApplyProjection(
                     density[lev]->nComp(), 1);
             }
         }
+    }
+
+    // enforce solvability by matching outflow to inflow
+    if (!proj_for_small_dt and !incremental and velocity.has_inout_bndry()) {
+        amr_wind::nodal_projection::enforce_inout_solvability(
+            velocity, m_repo.mesh().Geom(), m_repo.num_active_levels());
     }
 
     amr_wind::MLMGOptions options("nodal_proj");
