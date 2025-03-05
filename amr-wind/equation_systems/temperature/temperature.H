@@ -38,7 +38,7 @@ struct Temperature : ScalarTransport
     static constexpr amrex::Real default_bc_value = 0.0;
 
     static constexpr int ndim = 1;
-    static constexpr bool multiply_rho = false;
+    static constexpr bool multiply_rho = true;
     static constexpr bool has_diffusion = true;
     static constexpr bool need_nph_state = true;
 };
