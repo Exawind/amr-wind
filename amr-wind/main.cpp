@@ -15,6 +15,7 @@ int main(int argc, char* argv[])
         amr_wind::io::print_error(
             MPI_COMM_WORLD, "No input file provided. Exiting!!");
         return 1;
+        ;
     }
 
     // Look for "-h" or "--help" flag and print usage
