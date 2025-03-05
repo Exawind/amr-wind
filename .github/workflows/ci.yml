@@ -107,6 +107,10 @@ jobs:
         ccache -s
         ls ${{matrix.ccache_cache}}
         du -hs ${{matrix.ccache_cache}}
+    - name: Build Log
+      working-directory: ${{runner.workspace}}/build-ci-${{matrix.build_type}}-${{matrix.openmp_flag}}
+      run: |
+        cat build-output.txt
     - name: Report
       working-directory: ${{runner.workspace}}/build-ci-${{matrix.build_type}}-${{matrix.openmp_flag}}
       run: |
@@ -229,7 +233,6 @@ jobs:
             -DAMR_WIND_ENABLE_ROCM:BOOL=ON \
             -DCMAKE_CXX_COMPILER:STRING=$(which clang++) \
             -DCMAKE_C_COMPILER:STRING=$(which clang) \
-            -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
             -DAMReX_AMD_ARCH:STRING=gfx90a \
             -DCMAKE_HIP_ARCHITECTURES:STRING=gfx90a \
             -DAMDGPU_TARGETS:STRING=gfx90a \
