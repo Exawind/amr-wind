@@ -88,6 +88,7 @@ jobs:
         cmake -B ${{runner.workspace}}/build-ci-${{matrix.build_type}}-${{matrix.openmp_flag}} \
           -DCMAKE_INSTALL_PREFIX:PATH=${{runner.workspace}}/install-${{matrix.build_type}}-${{matrix.openmp_flag}} \
           -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} \
+          -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
           -DAMR_WIND_ENABLE_MPI:BOOL=ON \
           -DAMR_WIND_ENABLE_OPENMP:BOOL=${{ matrix.openmp_flag == 'OpenMP' && 'ON' || 'OFF' }} \
           -DAMR_WIND_ENABLE_TESTS:BOOL=ON \
@@ -160,6 +161,7 @@ jobs:
           export LD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/cuda-12.6/lib:${LD_LIBRARY_PATH}
           cmake -B build-cuda \
             -DCMAKE_BUILD_TYPE:STRING=Release \
+            -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
             -DAMR_WIND_ENABLE_MPI:BOOL=OFF \
             -DAMR_WIND_ENABLE_CUDA:BOOL=ON \
             -DAMReX_CUDA_ERROR_CAPTURE_THIS:BOOL=ON \
@@ -222,6 +224,7 @@ jobs:
           which clang++
           cmake -B build \
             -DCMAKE_BUILD_TYPE:STRING=Release \
+            -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
             -DAMR_WIND_ENABLE_MPI:BOOL=OFF \
             -DAMR_WIND_ENABLE_ROCM:BOOL=ON \
             -DCMAKE_CXX_COMPILER:STRING=$(which clang++) \
@@ -285,6 +288,7 @@ jobs:
           set -e
           cmake -B build-SYCL \
             -DCMAKE_BUILD_TYPE:STRING=Release \
+            -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
             -DCMAKE_CXX_COMPILER:STRING=$(which icpx) \
             -DCMAKE_C_COMPILER:STRING=$(which icx) \
             -DAMR_WIND_ENABLE_MPI:BOOL=OFF \
@@ -368,6 +372,7 @@ jobs:
           cmake \
           -B ${{runner.workspace}}/build-clang-tidy \
           -DCMAKE_BUILD_TYPE:STRING=Release \
+          -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
           -DCMAKE_CXX_COMPILER:STRING=clang++ \
           -DCMAKE_C_COMPILER:STRING=clang \
           -DAMR_WIND_ENABLE_MPI:BOOL=OFF \
