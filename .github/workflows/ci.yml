@@ -229,7 +229,6 @@ jobs:
             -DAMR_WIND_ENABLE_ROCM:BOOL=ON \
             -DCMAKE_CXX_COMPILER:STRING=$(which clang++) \
             -DCMAKE_C_COMPILER:STRING=$(which clang) \
-            -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
             -DAMReX_AMD_ARCH:STRING=gfx90a \
             -DCMAKE_HIP_ARCHITECTURES:STRING=gfx90a \
             -DAMDGPU_TARGETS:STRING=gfx90a \
