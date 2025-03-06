@@ -96,7 +96,7 @@ macro(init_code_checks)
       if(CLANG_TIDY_CACHE_EXE)
         message(STATUS "clang-tidy-cache found: ${CLANG_TIDY_CACHE_EXE}")
         set(CLANG_TIDY_EXE "${CLANG_TIDY_CACHE_EXE};${CLANG_TIDY_EXE}"
-            CACHE STRING "A combined command to run clang-tidy with caching wrapper")
+            STRING "A combined command to run clang-tidy with caching wrapper")
       endif()
     else()
       message(WARNING "${CLANG_TIDY_EXEC_NAME} not found.")
