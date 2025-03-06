@@ -81,8 +81,8 @@ macro(init_amrex_hydro)
 endmacro(init_amrex_hydro)
 
 macro(init_waves2amr)
-  set(WAVES2AMR_SUBMOD_LOCATION "${CMAKE_SOURCE_DIR}/submods/Waves2AMR")
-  include(${CMAKE_SOURCE_DIR}/cmake/set_waves2amr_options.cmake)
+  set(WAVES2AMR_SUBMOD_LOCATION "${PROJECT_SOURCE_DIR}/submods/Waves2AMR")
+  include(${PROJECT_SOURCE_DIR}/cmake/set_waves2amr_options.cmake)
   add_subdirectory(${WAVES2AMR_SUBMOD_LOCATION})
 endmacro(init_waves2amr)
 
