@@ -28,7 +28,7 @@ jobs:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        os: [ubuntu-22.04, macos-latest]
+        os: [ubuntu-24.04, macos-latest]
         build_type: [Release, Debug]
         openmp_flag: [OpenMP, NoOpenMP]
         include:
@@ -37,7 +37,7 @@ jobs:
             comp: llvm
             procs: $(sysctl -n hw.ncpu)
             ccache_cache: /Users/runner/Library/Caches/ccache
-          - os: ubuntu-22.04
+          - os: ubuntu-24.04
             install_deps: sudo apt-get install -y mpich libmpich-dev
             comp: gnu
             procs: $(nproc)
