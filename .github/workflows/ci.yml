@@ -33,13 +33,13 @@ jobs:
         openmp_flag: [OpenMP, NoOpenMP]
         include:
           - os: macos-latest
-            install_deps: brew install mpich ccache
+            install_deps: brew install open-mpi ccache
             comp: llvm
             procs: $(sysctl -n hw.ncpu)
             ccache_cache: /Users/runner/Library/Caches/ccache
           - os: ubuntu-24.04
             #Note mpich on ubuntu-24.04 does not run mpiexec correctly so we are using openmpi
-            install_deps: sudo apt-get remove --auto-remove openmpi-bin mpich; sudo apt-get install -y libmpich-dev mpich
+            install_deps: sudo apt-get install -y libopenmpi-dev openmpi-bin
             comp: gnu
             procs: $(nproc)
             ccache_cache: ~/.cache/ccache
@@ -89,6 +89,7 @@ jobs:
         cmake -B ${{runner.workspace}}/build-ci-${{matrix.build_type}}-${{matrix.openmp_flag}} \
           -DCMAKE_INSTALL_PREFIX:PATH=${{runner.workspace}}/install-${{matrix.build_type}}-${{matrix.openmp_flag}} \
           -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} \
+          -DMPIEXEC_PREFLAGS:STRING=--oversubscribe \
           -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
           -DAMR_WIND_ENABLE_MPI:BOOL=ON \
           -DAMR_WIND_ENABLE_OPENMP:BOOL=${{ matrix.openmp_flag == 'OpenMP' && 'ON' || 'OFF' }} \
