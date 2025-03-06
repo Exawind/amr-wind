@@ -46,6 +46,30 @@ struct FLLCData
     VecList nonuniform_lift;             // non-uniform lift
 };
 
+struct FLLCUnsteadyData
+{
+    // constants
+    amrex::Real epsilon;
+    amrex::Real fllc_start_time{0.0};
+    int n_times_history{100};
+    amrex::Real prescribed_uinf;
+
+    bool initialized{false};
+    RealList optimal_epsilon;
+    RealList times;
+    RealList dt;
+
+    // computed values
+    // a vector of a vector of a vector:
+    //  - most outer vector: listed in space (npts)
+    //  - middle vector:     listed in time (n_times_history)
+    //  - inner vector:      coordinate directions
+    amrex::Vector<VecList> induced_velocity_eps_LES;
+    amrex::Vector<VecList> induced_velocity_eps_opt;
+    amrex::Vector<VecList> delta_velocity;
+    amrex::Vector<VecList> force_coeff;
+};
+
 /**
  * \brief Function to capture common parsing requirements for the filtered
  * lifting line correction
@@ -54,6 +78,8 @@ struct FLLCData
  * \param data Data to be populated from parser
  */
 void fllc_parse(const utils::ActParser& pp, FLLCData& data);
+
+void fllc_unsteady_parse(const utils::ActParser& pp, FLLCUnsteadyData& data);
 
 /**
  * \brief Initialize FLLC data structure. This should be called at the end of
@@ -65,6 +91,11 @@ void fllc_parse(const utils::ActParser& pp, FLLCData& data);
  */
 void fllc_init(
     FLLCData& data, const ComponentView& view, const amrex::Real eps_chord);
+
+void fllc_unsteady_init(
+    FLLCUnsteadyData& data,
+    const ComponentView& view,
+    const amrex::Real eps_chord);
 
 } // namespace amr_wind::actuator
 
