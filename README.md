@@ -49,7 +49,7 @@ To cite AMR-Wind and to learn more about the methodology, use the following [jou
     volume = {-},
     number = {-},
     pages = {-},
-    doi = {https://doi.org/10.1002/we.70010},
+    doi = {10.1002/we.70010},
     url = {},
     eprint = {},
     year = {2025}
