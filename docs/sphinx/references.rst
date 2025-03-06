@@ -10,7 +10,7 @@ The following journal articles (`AMR-Wind reference <https://doi.org/10.1002/we.
         volume = {-},
         number = {-},
         pages = {-},
-        doi = {https://doi.org/10.1002/we.70010},
+        doi = {10.1002/we.70010},
         url = {},
         eprint = {},
         year = {2025}
