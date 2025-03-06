@@ -23,7 +23,7 @@ The following journal articles (`AMR-Wind reference <https://doi.org/10.1002/we.
         volume = {27},
         number = {3},
         pages = {225-257},
-        doi = {https://doi.org/10.1002/we.2886},
+        doi = {10.1002/we.2886},
         url = {https://onlinelibrary.wiley.com/doi/abs/10.1002/we.2886},
         eprint = {https://onlinelibrary.wiley.com/doi/pdf/10.1002/we.2886},
         year = {2024}
