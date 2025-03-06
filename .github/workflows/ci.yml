@@ -38,7 +38,7 @@ jobs:
             procs: $(sysctl -n hw.ncpu)
             ccache_cache: /Users/runner/Library/Caches/ccache
           - os: ubuntu-24.04
-            install_deps: sudo apt-get install -y mpich libmpich-dev
+            install_deps: sudo apt-get install -y libopenmpi-dev openmpi-bin
             comp: gnu
             procs: $(nproc)
             ccache_cache: ~/.cache/ccache
