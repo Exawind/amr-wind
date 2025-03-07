@@ -360,7 +360,6 @@ jobs:
           tar xvf ccache-4.8-linux-x86_64.tar.xz
           sudo cp -f ccache-4.8-linux-x86_64/ccache /usr/local/bin/
           sudo chmod +x /usr/bin/clang-tidy-cache
-          mkdir -p ~/.cache/ctcache
       - name: Set Up Ccache
         uses: actions/cache@v4
         with:
@@ -381,6 +380,7 @@ jobs:
           -DAMR_WIND_TEST_WITH_FCOMPARE:BOOL=OFF \
           -DAMR_WIND_ENABLE_MASA:BOOL=OFF \
           -DAMR_WIND_ENABLE_CLANG_TIDY:BOOL=ON \
+          -DCMAKE_CXX_COMPILER_LAUNCHER:STRING=ccache \
           ${{github.workspace}}
       - name: Check
         working-directory: ${{runner.workspace}}/build-clang-tidy
