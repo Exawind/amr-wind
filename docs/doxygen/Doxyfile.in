@@ -949,7 +949,7 @@ WARN_LOGFILE           =
 # spaces. See also FILE_PATTERNS and EXTENSION_MAPPING
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = @CMAKE_SOURCE_DIR@/docs/doxygen/main_page.md \
+INPUT                  = @PROJECT_SOURCE_DIR@/docs/doxygen/main_page.md \
                          "@DOXYGEN_INPUT_DIR@"
 
 # This tag can be used to specify the character encoding of the source files

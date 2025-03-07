@@ -28,26 +28,27 @@ jobs:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        os: [ubuntu-22.04, macos-latest]
+        os: [ubuntu-24.04, macos-latest]
         build_type: [Release, Debug]
         openmp_flag: [OpenMP, NoOpenMP]
         include:
           - os: macos-latest
-            install_deps: brew install mpich ccache
+            install_deps: brew install open-mpi ccache
             comp: llvm
             procs: $(sysctl -n hw.ncpu)
             ccache_cache: /Users/runner/Library/Caches/ccache
-          - os: ubuntu-22.04
-            install_deps: sudo apt-get install -y mpich libmpich-dev
+          - os: ubuntu-24.04
+            #Note mpich on ubuntu-24.04 does not run mpiexec correctly so we are using openmpi
+            install_deps: sudo apt-get install -y libopenmpi-dev openmpi-bin
             comp: gnu
             procs: $(nproc)
             ccache_cache: ~/.cache/ccache
           - build_type: Release
             ctest_args: -LE no_ci
-            ccache_size: 150M
+            ccache_size: 100M
           - build_type: Debug
             ctest_args: -L unit
-            ccache_size: 500M
+            ccache_size: 250M
         exclude:
           - os: macos-latest
             build_type: Debug
@@ -66,7 +67,7 @@ jobs:
       run: |
         echo "NPROCS=${{matrix.procs}}" >> $GITHUB_ENV
         echo "CCACHE_COMPRESS=1" >> $GITHUB_ENV
-        echo "CCACHE_COMPRESSLEVEL=1" >> $GITHUB_ENV
+        echo "CCACHE_COMPRESSLEVEL=10" >> $GITHUB_ENV
         echo "CCACHE_LOGFILE=${{github.workspace}}/ccache.log.txt" >> $GITHUB_ENV
         echo "CCACHE_MAXSIZE=${{matrix.ccache_size}}" >> $GITHUB_ENV
     - name: Install Ccache
@@ -88,6 +89,7 @@ jobs:
         cmake -B ${{runner.workspace}}/build-ci-${{matrix.build_type}}-${{matrix.openmp_flag}} \
           -DCMAKE_INSTALL_PREFIX:PATH=${{runner.workspace}}/install-${{matrix.build_type}}-${{matrix.openmp_flag}} \
           -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} \
+          -DMPIEXEC_PREFLAGS:STRING=--oversubscribe \
           -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
           -DAMR_WIND_ENABLE_MPI:BOOL=ON \
           -DAMR_WIND_ENABLE_OPENMP:BOOL=${{ matrix.openmp_flag == 'OpenMP' && 'ON' || 'OFF' }} \
@@ -119,7 +121,7 @@ jobs:
     - name: Test
       working-directory: ${{runner.workspace}}/build-ci-${{matrix.build_type}}-${{matrix.openmp_flag}}
       run: |
-        ctest ${{matrix.ctest_args}} --output-on-failure
+        ctest ${{matrix.ctest_args}} -VV --output-on-failure
   GPU-Nvidia:
     name: GPU-CUDA
     needs: Formatting
@@ -133,9 +135,9 @@ jobs:
         run: |
           echo "NPROCS=$(nproc)" >> $GITHUB_ENV
           echo "CCACHE_COMPRESS=1" >> $GITHUB_ENV
-          echo "CCACHE_COMPRESSLEVEL=1" >> $GITHUB_ENV
+          echo "CCACHE_COMPRESSLEVEL=10" >> $GITHUB_ENV
           echo "CCACHE_LOGFILE=${{github.workspace}}/ccache.log.txt" >> $GITHUB_ENV
-          echo "CCACHE_MAXSIZE=200M" >> $GITHUB_ENV
+          echo "CCACHE_MAXSIZE=300M" >> $GITHUB_ENV
       - name: Install Ccache
         run: |
           wget https://github.com/ccache/ccache/releases/download/v4.8/ccache-4.8-linux-x86_64.tar.xz
@@ -190,9 +192,9 @@ jobs:
         run: |
           echo "NPROCS=$(nproc)" >> $GITHUB_ENV
           echo "CCACHE_COMPRESS=1" >> $GITHUB_ENV
-          echo "CCACHE_COMPRESSLEVEL=1" >> $GITHUB_ENV
+          echo "CCACHE_COMPRESSLEVEL=10" >> $GITHUB_ENV
           echo "CCACHE_LOGFILE=${{github.workspace}}/ccache.log.txt" >> $GITHUB_ENV
-          echo "CCACHE_MAXSIZE=50M" >> $GITHUB_ENV
+          echo "CCACHE_MAXSIZE=100M" >> $GITHUB_ENV
       - name: Install Ccache
         run: |
           wget https://github.com/ccache/ccache/releases/download/v4.8/ccache-4.8-linux-x86_64.tar.xz
@@ -210,7 +212,7 @@ jobs:
           ${{github.workspace}}/submods/amrex/.github/workflows/dependencies/ubuntu_free_disk_space.sh
           sudo mkdir --parents --mode=0755 /etc/apt/keyrings
           wget https://repo.radeon.com/rocm/rocm.gpg.key -O - | gpg --dearmor | sudo tee /etc/apt/keyrings/rocm.gpg > /dev/null
-          echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/rocm.gpg] https://repo.radeon.com/rocm/apt/6.2.1 noble main" | sudo tee --append /etc/apt/sources.list.d/rocm.list
+          echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/rocm.gpg] https://repo.radeon.com/rocm/apt/6.3.3 noble main" | sudo tee --append /etc/apt/sources.list.d/rocm.list
           echo -e 'Package: *\nPin: release o=repo.radeon.com\nPin-Priority: 600' | sudo tee /etc/apt/preferences.d/rocm-pin-600
           echo 'export PATH=/opt/rocm/llvm/bin:/opt/rocm/bin:/opt/rocm/profiler/bin:/opt/rocm/opencl/bin:$PATH' | sudo tee -a /etc/profile.d/rocm.sh
           sudo apt-get update
@@ -255,9 +257,9 @@ jobs:
         run: |
           echo "NPROCS=$(nproc)" >> $GITHUB_ENV
           echo "CCACHE_COMPRESS=1" >> $GITHUB_ENV
-          echo "CCACHE_COMPRESSLEVEL=1" >> $GITHUB_ENV
+          echo "CCACHE_COMPRESSLEVEL=10" >> $GITHUB_ENV
           echo "CCACHE_LOGFILE=${{github.workspace}}/ccache.log.txt" >> $GITHUB_ENV
-          echo "CCACHE_MAXSIZE=50M" >> $GITHUB_ENV
+          echo "CCACHE_MAXSIZE=100M" >> $GITHUB_ENV
           echo "CCACHE_DEPEND=1" >> $GITHUB_ENV
       - name: Install Ccache
         run: |
@@ -346,10 +348,10 @@ jobs:
         run: |
           echo "NPROCS=$(nproc)" >> $GITHUB_ENV
           echo "CCACHE_COMPRESS=1" >> $GITHUB_ENV
-          echo "CCACHE_COMPRESSLEVEL=1" >> $GITHUB_ENV
+          echo "CCACHE_COMPRESSLEVEL=10" >> $GITHUB_ENV
           echo "CCACHE_LOGFILE=${{github.workspace}}/ccache.log.txt" >> $GITHUB_ENV
           echo "CCACHE_EXTRAFILES=${{github.workspace}}/.clang-tidy" >> $GITHUB_ENV
-          echo "CCACHE_MAXSIZE=50M" >> $GITHUB_ENV
+          echo "CCACHE_MAXSIZE=100M" >> $GITHUB_ENV
           echo "CTCACHE_DIR=~/.cache/ctcache" >> $GITHUB_ENV
       - name: Install Ccache
         run: |
@@ -379,7 +381,6 @@ jobs:
           -DAMR_WIND_TEST_WITH_FCOMPARE:BOOL=OFF \
           -DAMR_WIND_ENABLE_MASA:BOOL=OFF \
           -DAMR_WIND_ENABLE_CLANG_TIDY:BOOL=ON \
-          -DCMAKE_CXX_COMPILER_LAUNCHER:STRING=ccache \
           ${{github.workspace}}
       - name: Check
         working-directory: ${{runner.workspace}}/build-clang-tidy
