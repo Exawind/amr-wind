@@ -66,24 +66,21 @@ struct ComputeRHSOp<Levelset, Scheme>
         const auto& conv_term = fields.conv_term.state(fstate);
 
         for (int lev = 0; lev < nlevels; ++lev) {
-#ifdef AMREX_USE_OMP
-#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
-#endif
-            for (amrex::MFIter mfi(field(lev)); mfi.isValid(); ++mfi) {
-                const auto& bx = mfi.tilebox();
-                auto phi = field(lev).array(mfi);
-                const auto phi_o = field_old(lev).const_array(mfi);
-                const auto ddt_o = conv_term(lev).const_array(mfi);
+            const auto& phi_arrs = field(lev).arrays();
+            const auto& phi_o_arrs = field_old(lev).const_arrays();
+            const auto& ddt_o_arrs = conv_term(lev).const_arrays();
 
-                amrex::ParallelFor(
-                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        phi(i, j, k) = phi_o(i, j, k) + dt * ddt_o(i, j, k);
-                        // Defer n+1/2 update to the time-stepping algorithm
-                        // phi_nph(i, j, k) = 0.5 * (phi(i, j, k) + phi_o(i, j,
-                        // k));
-                    });
-            }
+            amrex::ParallelFor(
+                field(lev),
+                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                    phi_arrs[nbx](i, j, k) = phi_o_arrs[nbx](i, j, k) +
+                                             dt * ddt_o_arrs[nbx](i, j, k);
+                    // Defer n+1/2 update to the time-stepping algorithm
+                    // phi_nph(i, j, k) = 0.5 * (phi(i, j, k) + phi_o(i, j,
+                    // k));
+                });
         }
+        amrex::Gpu::streamSynchronize();
     }
 
     void corrector_rhs(
@@ -98,27 +95,24 @@ struct ComputeRHSOp<Levelset, Scheme>
         const auto& conv_term_old = fields.conv_term.state(FieldState::Old);
 
         for (int lev = 0; lev < nlevels; ++lev) {
-#ifdef AMREX_USE_OMP
-#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
-#endif
-            for (amrex::MFIter mfi(field(lev)); mfi.isValid(); ++mfi) {
-                const auto& bx = mfi.tilebox();
-                auto phi = field(lev).array(mfi);
-                const auto phi_o = field_old(lev).const_array(mfi);
-                const auto ddt = conv_term(lev).const_array(mfi);
-                const auto ddt_o = conv_term_old(lev).const_array(mfi);
+            auto phi_arrs = field(lev).arrays();
+            const auto phi_o_arrs = field_old(lev).const_arrays();
+            const auto ddt_arrs = conv_term(lev).const_arrays();
+            const auto ddt_o_arrs = conv_term_old(lev).const_arrays();
 
-                amrex::ParallelFor(
-                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        phi(i, j, k) =
-                            phi_o(i, j, k) +
-                            dt * 0.5 * (ddt_o(i, j, k) + ddt(i, j, k));
-                        // Defer n+1/2 update to time-stepping algorithm
-                        // phi_nph(i, j, k) =
-                        //     0.5 * (phi(i, j, k) + phi_o(i, j, k));
-                    });
-            }
+            amrex::ParallelFor(
+                field(lev),
+                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                    phi_arrs[nbx](i, j, k) =
+                        phi_o_arrs[nbx](i, j, k) +
+                        dt * 0.5 *
+                            (ddt_o_arrs[nbx](i, j, k) + ddt_arrs[nbx](i, j, k));
+                    // Defer n+1/2 update to time-stepping algorithm
+                    // phi_nph(i, j, k) =
+                    //     0.5 * (phi(i, j, k) + phi_o(i, j, k));
+                });
         }
+        amrex::Gpu::streamSynchronize();
     }
 
     // data members

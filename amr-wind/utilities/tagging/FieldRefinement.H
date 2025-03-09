@@ -51,60 +51,54 @@ public:
         const auto& dx = geom.CellSizeArray();
         const auto tagging_box = m_tagging_box;
 
-#ifdef AMREX_USE_OMP
-#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
-#endif
-        for (amrex::MFIter mfi(mfab, amrex::TilingIfNotGPU()); mfi.isValid();
-             ++mfi) {
-            const auto& bx = mfi.tilebox();
-            const auto& tag = tags.array(mfi);
-            const auto& farr = mfab.const_array(mfi);
+        const auto& tag_arrs = tags.arrays();
+        const auto& farrs = mfab.const_arrays();
+        if (tag_field) {
+            const auto fld_err = m_field_error[level];
+            amrex::ParallelFor(
+                mfab,
+                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                    const amrex::RealVect coord = {AMREX_D_DECL(
+                        prob_lo[0] + (i + 0.5) * dx[0],
+                        prob_lo[1] + (j + 0.5) * dx[1],
+                        prob_lo[2] + (k + 0.5) * dx[2])};
 
-            if (tag_field) {
-                const auto fld_err = m_field_error[level];
-                amrex::ParallelFor(
-                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        const amrex::RealVect coord = {AMREX_D_DECL(
-                            prob_lo[0] + (i + 0.5) * dx[0],
-                            prob_lo[1] + (j + 0.5) * dx[1],
-                            prob_lo[2] + (k + 0.5) * dx[2])};
+                    if ((farrs[nbx](i, j, k) > fld_err) &&
+                        (tagging_box.contains(coord))) {
+                        tag_arrs[nbx](i, j, k) = amrex::TagBox::SET;
+                    }
+                });
+        }
 
-                        if ((farr(i, j, k) > fld_err) &&
-                            (tagging_box.contains(coord))) {
-                            tag(i, j, k) = amrex::TagBox::SET;
-                        }
-                    });
-            }
-
-            if (tag_grad) {
-                const auto gerr = m_grad_error[level];
-                amrex::ParallelFor(
-                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        const amrex::RealVect coord = {AMREX_D_DECL(
-                            prob_lo[0] + (i + 0.5) * dx[0],
-                            prob_lo[1] + (j + 0.5) * dx[1],
-                            prob_lo[2] + (k + 0.5) * dx[2])};
-                        const auto axp =
-                            std::abs(farr(i + 1, j, k) - farr(i, j, k));
-                        const auto ayp =
-                            std::abs(farr(i, j + 1, k) - farr(i, j, k));
-                        const auto azp =
-                            std::abs(farr(i, j, k + 1) - farr(i, j, k));
-                        const auto axm =
-                            std::abs(farr(i - 1, j, k) - farr(i, j, k));
-                        const auto aym =
-                            std::abs(farr(i, j - 1, k) - farr(i, j, k));
-                        const auto azm =
-                            std::abs(farr(i, j, k - 1) - farr(i, j, k));
-                        const auto ax = amrex::max(axp, axm);
-                        const auto ay = amrex::max(ayp, aym);
-                        const auto az = amrex::max(azp, azm);
-                        if ((amrex::max(ax, ay, az) >= gerr) &&
-                            (tagging_box.contains(coord))) {
-                            tag(i, j, k) = amrex::TagBox::SET;
-                        }
-                    });
-            }
+        if (tag_grad) {
+            const auto gerr = m_grad_error[level];
+            amrex::ParallelFor(
+                mfab,
+                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                    const amrex::RealVect coord = {AMREX_D_DECL(
+                        prob_lo[0] + (i + 0.5) * dx[0],
+                        prob_lo[1] + (j + 0.5) * dx[1],
+                        prob_lo[2] + (k + 0.5) * dx[2])};
+                    const auto axp =
+                        std::abs(farrs[nbx](i + 1, j, k) - farrs[nbx](i, j, k));
+                    const auto ayp =
+                        std::abs(farrs[nbx](i, j + 1, k) - farrs[nbx](i, j, k));
+                    const auto azp =
+                        std::abs(farrs[nbx](i, j, k + 1) - farrs[nbx](i, j, k));
+                    const auto axm =
+                        std::abs(farrs[nbx](i - 1, j, k) - farrs[nbx](i, j, k));
+                    const auto aym =
+                        std::abs(farrs[nbx](i, j - 1, k) - farrs[nbx](i, j, k));
+                    const auto azm =
+                        std::abs(farrs[nbx](i, j, k - 1) - farrs[nbx](i, j, k));
+                    const auto ax = amrex::max(axp, axm);
+                    const auto ay = amrex::max(ayp, aym);
+                    const auto az = amrex::max(azp, azm);
+                    if ((amrex::max(ax, ay, az) >= gerr) &&
+                        (tagging_box.contains(coord))) {
+                        tag_arrs[nbx](i, j, k) = amrex::TagBox::SET;
+                    }
+                });
         }
     }
 

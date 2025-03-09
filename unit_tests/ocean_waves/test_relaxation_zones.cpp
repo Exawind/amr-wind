@@ -119,7 +119,7 @@ void apply_relaxation_zone_field(
                 }
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 amrex::Real field_error(amr_wind::Field& comp, amr_wind::Field& targ, int ncomp)
@@ -205,7 +205,7 @@ void make_target_velocity(
                 }
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 void make_target_density(
@@ -221,7 +221,7 @@ void make_target_density(
                     rho2 * (1.0 - ow_vof_arrs[nbx](i, j, k));
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 amrex::Real bdy_error(amr_wind::Field& comp, amr_wind::Field& targ, int ncomp)

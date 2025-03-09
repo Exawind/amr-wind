@@ -117,34 +117,33 @@ void ABLStats::calc_sfs_stress_avgs(
 
     const int nlevels = repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
-        for (amrex::MFIter mfi(m_mueff(lev)); mfi.isValid(); ++mfi) {
-            const auto& bx = mfi.tilebox();
-            const auto& mueff_arr = m_mueff(lev).array(mfi);
-            const auto& alphaeff_arr = alphaeff(lev).array(mfi);
-            const auto& gradVel_arr = (*gradVel)(lev).array(mfi);
-            const auto& gradT_arr = (*gradT)(lev).array(mfi);
-            const auto& sfs_arr = sfs_stress(lev).array(mfi);
-            const auto& t_sfs_arr = t_sfs_stress(lev).array(mfi);
+        const auto& mueff_arrs = m_mueff(lev).const_arrays();
+        const auto& alphaeff_arrs = alphaeff(lev).const_arrays();
+        const auto& gradVel_arrs = (*gradVel)(lev).const_arrays();
+        const auto& gradT_arrs = (*gradT)(lev).const_arrays();
+        const auto& sfs_arrs = sfs_stress(lev).arrays();
+        const auto& t_sfs_arrs = t_sfs_stress(lev).arrays();
+        amrex::ParallelFor(
+            m_mueff(lev),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                sfs_arrs[nbx](i, j, k, 0) =
+                    -mueff_arrs[nbx](i, j, k) * (gradVel_arrs[nbx](i, j, k, 1) +
+                                                 gradVel_arrs[nbx](i, j, k, 3));
+                sfs_arrs[nbx](i, j, k, 1) =
+                    -mueff_arrs[nbx](i, j, k) * (gradVel_arrs[nbx](i, j, k, 2) +
+                                                 gradVel_arrs[nbx](i, j, k, 6));
+                sfs_arrs[nbx](i, j, k, 2) =
+                    -mueff_arrs[nbx](i, j, k) * (gradVel_arrs[nbx](i, j, k, 5) +
+                                                 gradVel_arrs[nbx](i, j, k, 7));
 
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    sfs_arr(i, j, k, 0) =
-                        -mueff_arr(i, j, k) *
-                        (gradVel_arr(i, j, k, 1) + gradVel_arr(i, j, k, 3));
-                    sfs_arr(i, j, k, 1) =
-                        -mueff_arr(i, j, k) *
-                        (gradVel_arr(i, j, k, 2) + gradVel_arr(i, j, k, 6));
-                    sfs_arr(i, j, k, 2) =
-                        -mueff_arr(i, j, k) *
-                        (gradVel_arr(i, j, k, 5) + gradVel_arr(i, j, k, 7));
-
-                    for (int icomp = 0; icomp < AMREX_SPACEDIM; icomp++) {
-                        t_sfs_arr(i, j, k, icomp) =
-                            -alphaeff_arr(i, j, k) * gradT_arr(i, j, k, icomp);
-                    }
-                });
-        }
+                for (int icomp = 0; icomp < AMREX_SPACEDIM; icomp++) {
+                    t_sfs_arrs[nbx](i, j, k, icomp) =
+                        -alphaeff_arrs[nbx](i, j, k) *
+                        gradT_arrs[nbx](i, j, k, icomp);
+                }
+            });
     }
+    amrex::Gpu::streamSynchronize();
 }
 
 //! Calculate sfs stress averages
@@ -184,25 +183,25 @@ void ABLStats::calc_tke_diffusion(
 
     const int nlevels = m_sim.repo().num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
-        for (amrex::MFIter mfi(diffusion(lev)); mfi.isValid(); ++mfi) {
-            const auto& bx = mfi.tilebox();
-            const auto& diffusion_arr = diffusion(lev).array(mfi);
-            const auto& buoy_prod_arr = buoy_prod(lev).const_array(mfi);
-            const auto& shear_prod_arr = shear_prod(lev).const_array(mfi);
-            const auto& dissipation_arr = dissipation(lev).const_array(mfi);
-            const auto& tke_arr = tke(lev).const_array(mfi);
-            const auto& tke_old_arr = tke_old(lev).const_array(mfi);
-            const auto& conv_arr = conv_term(lev).const_array(mfi);
+        const auto& diffusion_arrs = diffusion(lev).arrays();
+        const auto& buoy_prod_arrs = buoy_prod(lev).const_arrays();
+        const auto& shear_prod_arrs = shear_prod(lev).const_arrays();
+        const auto& dissipation_arrs = dissipation(lev).const_arrays();
+        const auto& tke_arrs = tke(lev).const_arrays();
+        const auto& tke_old_arrs = tke_old(lev).const_arrays();
+        const auto& conv_arrs = conv_term(lev).const_arrays();
 
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    diffusion_arr(i, j, k) =
-                        (tke_arr(i, j, k) - tke_old_arr(i, j, k)) / dt -
-                        conv_arr(i, j, k) - shear_prod_arr(i, j, k) -
-                        buoy_prod_arr(i, j, k) + dissipation_arr(i, j, k);
-                });
-        }
+        amrex::ParallelFor(
+            diffusion(lev),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                diffusion_arrs[nbx](i, j, k) =
+                    (tke_arrs[nbx](i, j, k) - tke_old_arrs[nbx](i, j, k)) / dt -
+                    conv_arrs[nbx](i, j, k) - shear_prod_arrs[nbx](i, j, k) -
+                    buoy_prod_arrs[nbx](i, j, k) +
+                    dissipation_arrs[nbx](i, j, k);
+            });
     }
+    amrex::Gpu::streamSynchronize();
 }
 
 void ABLStats::post_advance_work()

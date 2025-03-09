@@ -30,7 +30,7 @@ void init_vof(amr_wind::Field& vof_fld, amrex::Real water_level)
                 farrs[nbx](i, j, k) = local_vof;
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 void init_vof_multival(
@@ -79,7 +79,7 @@ void init_vof_multival(
                 farrs[nbx](i, j, k) = local_vof;
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 void init_vof_slope(
@@ -118,7 +118,7 @@ void init_vof_slope(
                 farrs[nbx](i, j, k) = local_vof;
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 //! Custom mesh class to be able to refine like a simulation would

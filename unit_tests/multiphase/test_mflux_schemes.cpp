@@ -19,7 +19,7 @@ void init_scalar_increasing(amr_wind::Field& fld, int dir)
                     dir == 0 ? i * i : (dir == 1 ? j * j : k * k));
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 void init_scalar_slopechange(amr_wind::Field& fld, int dir, int center)
@@ -37,7 +37,7 @@ void init_scalar_slopechange(amr_wind::Field& fld, int dir, int center)
                                          : std::abs(k - center)));
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 void init_scalar_uniform(amr_wind::Field& fld, amrex::Real cst)
@@ -52,7 +52,7 @@ void init_scalar_uniform(amr_wind::Field& fld, amrex::Real cst)
                 farrs[nbx](i, j, k, 0) = cst;
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 void get_output_upwind(
@@ -94,7 +94,7 @@ void get_output_upwind(
                 }
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
     amrex::Gpu::copy(
         amrex::Gpu::deviceToHost, dout.begin(), dout.begin() + 1, &Im);
     amrex::Gpu::copy(amrex::Gpu::deviceToHost, dout.end() - 1, dout.end(), &Ip);
@@ -153,7 +153,7 @@ void get_output_minmod(
                 }
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
     amrex::Gpu::copy(
         amrex::Gpu::deviceToHost, dout.begin(), dout.begin() + 1, &Im);
     amrex::Gpu::copy(amrex::Gpu::deviceToHost, dout.end() - 1, dout.end(), &Ip);

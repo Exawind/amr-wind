@@ -76,68 +76,66 @@ struct ComputeRHSOp
                          : nullptr;
 
         for (int lev = 0; lev < nlevels; ++lev) {
-#ifdef AMREX_USE_OMP
-#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
-#endif
-            for (amrex::MFIter mfi(field(lev)); mfi.isValid(); ++mfi) {
-                const auto& bx = mfi.tilebox();
-                auto fld = field(lev).array(mfi);
-                const auto fld_o = field_old(lev).const_array(mfi);
-                const auto rho_o = den_old(lev).const_array(mfi);
-                const auto rho = den_new(lev).const_array(mfi);
-                const auto src = src_term(lev).const_array(mfi);
-                const auto diff = diff_term(lev).const_array(mfi);
-                const auto ddt_o = conv_term(lev).const_array(mfi);
-                const auto imask = mask_cell(lev).const_array(mfi);
-                amrex::Array4<amrex::Real const> detJ =
-                    mesh_mapping ? ((*mesh_detJ)(lev).const_array(mfi))
-                                 : amrex::Array4<amrex::Real const>();
+            const auto& fld_arrs = field(lev).arrays();
+            const auto& fld_o_arrs = field_old(lev).const_arrays();
+            const auto& rho_o_arrs = den_old(lev).const_arrays();
+            const auto& rho_arrs = den_new(lev).const_arrays();
+            const auto& src_arrs = src_term(lev).const_arrays();
+            const auto& diff_arrs = diff_term(lev).const_arrays();
+            const auto& ddt_o_arrs = conv_term(lev).const_arrays();
+            const auto& imask_arrs = mask_cell(lev).const_arrays();
+            const auto& detJ_arrs =
+                mesh_mapping ? ((*mesh_detJ)(lev).const_arrays())
+                             : amrex::MultiArray4<amrex::Real const>();
 
-                if (PDE::multiply_rho) {
-                    // Remove multiplication by density as it will be added back
-                    // in solver
-                    amrex::ParallelFor(
-                        bx, PDE::ndim,
-                        [=] AMREX_GPU_DEVICE(
-                            int i, int j, int k, int n) noexcept {
-                            amrex::Real det_j =
-                                mesh_mapping ? (detJ(i, j, k)) : 1.0;
+            if (PDE::multiply_rho) {
+                // Remove multiplication by density as it will be added back
+                // in solver
+                amrex::ParallelFor(
+                    field(lev), amrex::IntVect(0), PDE::ndim,
+                    [=] AMREX_GPU_DEVICE(
+                        int nbx, int i, int j, int k, int n) noexcept {
+                        amrex::Real det_j =
+                            mesh_mapping ? (detJ_arrs[nbx](i, j, k)) : 1.0;
 
-                            fld(i, j, k, n) =
-                                rho_o(i, j, k) * det_j * fld_o(i, j, k, n) +
-                                static_cast<amrex::Real>(imask(i, j, k)) * dt *
-                                    (ddt_o(i, j, k, n) +
-                                     det_j * src(i, j, k, n) +
-                                     factor * diff(i, j, k, n));
+                        fld_arrs[nbx](i, j, k, n) =
+                            rho_o_arrs[nbx](i, j, k) * det_j *
+                                fld_o_arrs[nbx](i, j, k, n) +
+                            static_cast<amrex::Real>(imask_arrs[nbx](i, j, k)) *
+                                dt *
+                                (ddt_o_arrs[nbx](i, j, k, n) +
+                                 det_j * src_arrs[nbx](i, j, k, n) +
+                                 factor * diff_arrs[nbx](i, j, k, n));
 
-                            fld(i, j, k, n) /= rho(i, j, k);
+                        fld_arrs[nbx](i, j, k, n) /= rho_arrs[nbx](i, j, k);
 
-                            if (difftype == DiffusionType::Explicit) {
-                                fld(i, j, k, n) /= det_j;
-                            }
-                        });
-                } else {
-                    amrex::ParallelFor(
-                        bx, PDE::ndim,
-                        [=] AMREX_GPU_DEVICE(
-                            int i, int j, int k, int n) noexcept {
-                            amrex::Real det_j =
-                                mesh_mapping ? (detJ(i, j, k)) : 1.0;
+                        if (difftype == DiffusionType::Explicit) {
+                            fld_arrs[nbx](i, j, k, n) /= det_j;
+                        }
+                    });
+            } else {
+                amrex::ParallelFor(
+                    field(lev), amrex::IntVect(0), PDE::ndim,
+                    [=] AMREX_GPU_DEVICE(
+                        int nbx, int i, int j, int k, int n) noexcept {
+                        amrex::Real det_j =
+                            mesh_mapping ? (detJ_arrs[nbx](i, j, k)) : 1.0;
 
-                            fld(i, j, k, n) =
-                                det_j * fld_o(i, j, k, n) +
-                                static_cast<amrex::Real>(imask(i, j, k)) * dt *
-                                    (ddt_o(i, j, k, n) +
-                                     det_j * src(i, j, k, n) +
-                                     factor * diff(i, j, k, n));
+                        fld_arrs[nbx](i, j, k, n) =
+                            det_j * fld_o_arrs[nbx](i, j, k, n) +
+                            static_cast<amrex::Real>(imask_arrs[nbx](i, j, k)) *
+                                dt *
+                                (ddt_o_arrs[nbx](i, j, k, n) +
+                                 det_j * src_arrs[nbx](i, j, k, n) +
+                                 factor * diff_arrs[nbx](i, j, k, n));
 
-                            if (difftype == DiffusionType::Explicit) {
-                                fld(i, j, k, n) /= det_j;
-                            }
-                        });
-                }
+                        if (difftype == DiffusionType::Explicit) {
+                            fld_arrs[nbx](i, j, k, n) /= det_j;
+                        }
+                    });
             }
         }
+        amrex::Gpu::streamSynchronize();
     }
 
     /** Compute right-hand side for corrector steps
@@ -196,74 +194,72 @@ struct ComputeRHSOp
                          : nullptr;
 
         for (int lev = 0; lev < nlevels; ++lev) {
-#ifdef AMREX_USE_OMP
-#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
-#endif
-            for (amrex::MFIter mfi(field(lev)); mfi.isValid(); ++mfi) {
-                const auto& bx = mfi.tilebox();
-                auto fld = field(lev).array(mfi);
-                const auto fld_o = field_old(lev).const_array(mfi);
-                const auto rho_o = den_old(lev).const_array(mfi);
-                const auto rho = den_new(lev).const_array(mfi);
-                const auto src = src_term(lev).const_array(mfi);
-                const auto diff = diff_term(lev).const_array(mfi);
-                const auto ddt = conv_term(lev).const_array(mfi);
-                const auto diff_o = diff_term_old(lev).const_array(mfi);
-                const auto ddt_o = conv_term_old(lev).const_array(mfi);
-                const auto imask = mask_cell(lev).const_array(mfi);
-                amrex::Array4<amrex::Real const> detJ =
-                    mesh_mapping ? ((*mesh_detJ)(lev).const_array(mfi))
-                                 : amrex::Array4<amrex::Real const>();
+            const auto& fld_arrs = field(lev).arrays();
+            const auto& fld_o_arrs = field_old(lev).const_arrays();
+            const auto& rho_o_arrs = den_old(lev).const_arrays();
+            const auto& rho_arrs = den_new(lev).const_arrays();
+            const auto& src_arrs = src_term(lev).const_arrays();
+            const auto& diff_arrs = diff_term(lev).const_arrays();
+            const auto& ddt_arrs = conv_term(lev).const_arrays();
+            const auto& diff_o_arrs = diff_term_old(lev).const_arrays();
+            const auto& ddt_o_arrs = conv_term_old(lev).const_arrays();
+            const auto& imask_arrs = mask_cell(lev).const_arrays();
+            const auto& detJ_arrs =
+                mesh_mapping ? ((*mesh_detJ)(lev).const_arrays())
+                             : amrex::MultiArray4<amrex::Real const>();
 
-                if (PDE::multiply_rho) {
-                    // Remove multiplication by density as it will be added back
-                    // in solver
-                    amrex::ParallelFor(
-                        bx, PDE::ndim,
-                        [=] AMREX_GPU_DEVICE(
-                            int i, int j, int k, int n) noexcept {
-                            amrex::Real det_j =
-                                mesh_mapping ? (detJ(i, j, k)) : 1.0;
+            if (PDE::multiply_rho) {
+                // Remove multiplication by density as it will be added back
+                // in solver
+                amrex::ParallelFor(
+                    field(lev), amrex::IntVect(0), PDE::ndim,
+                    [=] AMREX_GPU_DEVICE(
+                        int nbx, int i, int j, int k, int n) noexcept {
+                        amrex::Real det_j =
+                            mesh_mapping ? (detJ_arrs[nbx](i, j, k)) : 1.0;
 
-                            fld(i, j, k, n) =
-                                rho_o(i, j, k) * det_j * fld_o(i, j, k, n) +
-                                static_cast<amrex::Real>(imask(i, j, k)) * dt *
-                                    (0.5 *
-                                         (ddt_o(i, j, k, n) + ddt(i, j, k, n)) +
-                                     ofac * diff_o(i, j, k, n) +
-                                     nfac * diff(i, j, k, n) +
-                                     det_j * src(i, j, k, n));
+                        fld_arrs[nbx](i, j, k, n) =
+                            rho_o_arrs[nbx](i, j, k) * det_j *
+                                fld_o_arrs[nbx](i, j, k, n) +
+                            static_cast<amrex::Real>(imask_arrs[nbx](i, j, k)) *
+                                dt *
+                                (0.5 * (ddt_o_arrs[nbx](i, j, k, n) +
+                                        ddt_arrs[nbx](i, j, k, n)) +
+                                 ofac * diff_o_arrs[nbx](i, j, k, n) +
+                                 nfac * diff_arrs[nbx](i, j, k, n) +
+                                 det_j * src_arrs[nbx](i, j, k, n));
 
-                            fld(i, j, k, n) /= rho(i, j, k);
+                        fld_arrs[nbx](i, j, k, n) /= rho_arrs[nbx](i, j, k);
 
-                            if (difftype == DiffusionType::Explicit) {
-                                fld(i, j, k, n) /= det_j;
-                            }
-                        });
-                } else {
-                    amrex::ParallelFor(
-                        bx, PDE::ndim,
-                        [=] AMREX_GPU_DEVICE(
-                            int i, int j, int k, int n) noexcept {
-                            amrex::Real det_j =
-                                mesh_mapping ? (detJ(i, j, k)) : 1.0;
+                        if (difftype == DiffusionType::Explicit) {
+                            fld_arrs[nbx](i, j, k, n) /= det_j;
+                        }
+                    });
+            } else {
+                amrex::ParallelFor(
+                    field(lev), amrex::IntVect(0), PDE::ndim,
+                    [=] AMREX_GPU_DEVICE(
+                        int nbx, int i, int j, int k, int n) noexcept {
+                        amrex::Real det_j =
+                            mesh_mapping ? (detJ_arrs[nbx](i, j, k)) : 1.0;
 
-                            fld(i, j, k, n) =
-                                det_j * fld_o(i, j, k, n) +
-                                static_cast<amrex::Real>(imask(i, j, k)) * dt *
-                                    (0.5 *
-                                         (ddt_o(i, j, k, n) + ddt(i, j, k, n)) +
-                                     ofac * diff_o(i, j, k, n) +
-                                     nfac * diff(i, j, k, n) +
-                                     det_j * src(i, j, k, n));
+                        fld_arrs[nbx](i, j, k, n) =
+                            det_j * fld_o_arrs[nbx](i, j, k, n) +
+                            static_cast<amrex::Real>(imask_arrs[nbx](i, j, k)) *
+                                dt *
+                                (0.5 * (ddt_o_arrs[nbx](i, j, k, n) +
+                                        ddt_arrs[nbx](i, j, k, n)) +
+                                 ofac * diff_o_arrs[nbx](i, j, k, n) +
+                                 nfac * diff_arrs[nbx](i, j, k, n) +
+                                 det_j * src_arrs[nbx](i, j, k, n));
 
-                            if (difftype == DiffusionType::Explicit) {
-                                fld(i, j, k, n) /= det_j;
-                            }
-                        });
-                }
+                        if (difftype == DiffusionType::Explicit) {
+                            fld_arrs[nbx](i, j, k, n) /= det_j;
+                        }
+                    });
             }
         }
+        amrex::Gpu::streamSynchronize();
     }
 
     // data members

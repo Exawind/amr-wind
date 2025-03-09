@@ -57,8 +57,11 @@ void MMS::initialize_fields(int level, const amrex::Geometry& geom)
         velocity.boxArray(), velocity.distributionMap, velocity.nComp(),
         velocity.nGrow(), amrex::MFInfo().SetArena(amrex::The_Pinned_Arena()));
 
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
     for (amrex::MFIter mfi(h_density); mfi.isValid(); ++mfi) {
-        const auto& vbx = mfi.validbox();
+        const auto& vbx = mfi.tilebox();
         const auto& vel = h_velocity.array(mfi);
         const auto& den = h_density.array(mfi);
 

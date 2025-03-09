@@ -35,6 +35,7 @@ void RefineCriteriaManager::tag_cells(
     BL_PROFILE("amr-wind::RefineCriteriaManager::tag_cells");
     for (const auto& rc : m_refiners) {
         (*rc)(lev, tags, time, ngrow);
+        amrex::Gpu::streamSynchronize();
     }
 }
 

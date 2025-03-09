@@ -30,7 +30,7 @@ void init_velocity(
                     fac * (i % 2 == 0 ? vels[n] : -vels[n]);
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 //! Custom mesh class to be able to refine like a simulation would

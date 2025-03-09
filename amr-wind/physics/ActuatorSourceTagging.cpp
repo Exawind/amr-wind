@@ -80,7 +80,7 @@ void ActuatorSourceTagging::post_advance_work()
                 });
         }
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 } // namespace amr_wind

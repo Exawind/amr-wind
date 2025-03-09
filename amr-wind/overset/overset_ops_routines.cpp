@@ -27,7 +27,7 @@ void iblank_to_mask(const IntField& iblank, IntField& maskf)
                 marrs[nbx](i, j, k) = amrex::max(ibarrs[nbx](i, j, k), 0);
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 /** VOF-sensitive conversion of iblank to mask at nodes
@@ -85,7 +85,7 @@ void iblank_node_to_mask_vof(
             });
         mask.FillBoundary(maskf.repo().mesh().Geom(lev).periodicity());
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 /** VOF-sensitive conversion of iblank to mask at cells
@@ -138,7 +138,7 @@ void prepare_mask_cell_for_mac(FieldRepo& repo)
                 });
             mask.FillBoundary(mask_field.repo().mesh().Geom(lev).periodicity());
         }
-        amrex::Gpu::synchronize();
+        amrex::Gpu::streamSynchronize();
     }
 }
 

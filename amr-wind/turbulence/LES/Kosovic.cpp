@@ -81,50 +81,48 @@ void Kosovic<Transport>::update_turbulent_viscosity(
         const amrex::Real locSurfaceRANSExp = m_surfaceRANSExp;
         const amrex::Real locSurfaceFactor = m_surfaceFactor;
         const amrex::Real locC1 = m_C1;
-        for (amrex::MFIter mfi(mu_turb(lev)); mfi.isValid(); ++mfi) {
-            const auto& bx = mfi.tilebox();
-            const auto& mu_arr = mu_turb(lev).array(mfi);
-            const auto& rho_arr = den(lev).const_array(mfi);
-            const auto& divNijLevel = (this->m_divNij)(lev).array(mfi);
-            const auto& blank_arr =
-                has_terrain ? (*m_terrain_blank)(lev).const_array(mfi)
-                            : amrex::Array4<int>();
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real rho = rho_arr(i, j, k);
-                    const amrex::Real x3 = problo[2] + (k + 0.5) * dz;
-                    const amrex::Real fmu = std::exp(-x3 / locSwitchLoc);
-                    const amrex::Real phiM =
-                        (locMOL < 0) ? std::pow(1 - 16 * x3 / locMOL, -0.25)
-                                     : 1 + 5 * x3 / locMOL;
-                    const amrex::Real ransL =
-                        std::pow(0.41 * (k + 1) * dz / phiM, 2);
-                    amrex::Real turnOff = std::exp(-x3 / locLESTurnOff);
-                    amrex::Real viscosityScale =
-                        locSurfaceFactor *
-                            (std::pow(1 - fmu, locSurfaceRANSExp) *
-                                 smag_factor +
-                             std::pow(fmu, locSurfaceRANSExp) * ransL) +
-                        (1 - locSurfaceFactor) * smag_factor;
-                    const amrex::Real blankTerrain =
-                        (has_terrain) ? 1 - blank_arr(i, j, k, 0) : 1.0;
-                    mu_arr(i, j, k) *=
-                        rho * viscosityScale * turnOff * blankTerrain;
-                    amrex::Real stressScale =
-                        locSurfaceFactor *
-                            (std::pow(1 - fmu, locSurfaceRANSExp) *
-                                 smag_factor * 0.25 * locC1 +
-                             std::pow(fmu, locSurfaceRANSExp) * ransL) +
-                        (1 - locSurfaceFactor) * smag_factor * 0.25 * locC1;
-                    divNijLevel(i, j, k, 0) *=
-                        rho * stressScale * turnOff * blankTerrain;
-                    divNijLevel(i, j, k, 1) *=
-                        rho * stressScale * turnOff * blankTerrain;
-                    divNijLevel(i, j, k, 2) *=
-                        rho * stressScale * turnOff * blankTerrain;
-                });
-        }
+        const auto& mu_arrs = mu_turb(lev).arrays();
+        const auto& rho_arrs = den(lev).const_arrays();
+        const auto& divNij_arrs = (this->m_divNij)(lev).arrays();
+        const auto& blank_arrs = has_terrain
+                                     ? (*m_terrain_blank)(lev).const_arrays()
+                                     : amrex::MultiArray4<const int>();
+        amrex::ParallelFor(
+            mu_turb(lev),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                const amrex::Real rho = rho_arrs[nbx](i, j, k);
+                const amrex::Real x3 = problo[2] + (k + 0.5) * dz;
+                const amrex::Real fmu = std::exp(-x3 / locSwitchLoc);
+                const amrex::Real phiM =
+                    (locMOL < 0) ? std::pow(1 - 16 * x3 / locMOL, -0.25)
+                                 : 1 + 5 * x3 / locMOL;
+                const amrex::Real ransL =
+                    std::pow(0.41 * (k + 1) * dz / phiM, 2);
+                amrex::Real turnOff = std::exp(-x3 / locLESTurnOff);
+                amrex::Real viscosityScale =
+                    locSurfaceFactor *
+                        (std::pow(1 - fmu, locSurfaceRANSExp) * smag_factor +
+                         std::pow(fmu, locSurfaceRANSExp) * ransL) +
+                    (1 - locSurfaceFactor) * smag_factor;
+                const amrex::Real blankTerrain =
+                    (has_terrain) ? 1 - blank_arrs[nbx](i, j, k, 0) : 1.0;
+                mu_arrs[nbx](i, j, k) *=
+                    rho * viscosityScale * turnOff * blankTerrain;
+                amrex::Real stressScale =
+                    locSurfaceFactor *
+                        (std::pow(1 - fmu, locSurfaceRANSExp) * smag_factor *
+                             0.25 * locC1 +
+                         std::pow(fmu, locSurfaceRANSExp) * ransL) +
+                    (1 - locSurfaceFactor) * smag_factor * 0.25 * locC1;
+                divNij_arrs[nbx](i, j, k, 0) *=
+                    rho * stressScale * turnOff * blankTerrain;
+                divNij_arrs[nbx](i, j, k, 1) *=
+                    rho * stressScale * turnOff * blankTerrain;
+                divNij_arrs[nbx](i, j, k, 2) *=
+                    rho * stressScale * turnOff * blankTerrain;
+            });
     }
+    amrex::Gpu::streamSynchronize();
 
     mu_turb.fillpatch(this->m_sim.time().current_time());
 }
@@ -140,18 +138,19 @@ void Kosovic<Transport>::update_alphaeff(Field& alphaeff)
     const amrex::Real muCoeff = (m_refMOL < 0) ? 3 : 1;
     const int nlevels = repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
-        for (amrex::MFIter mfi(mu_turb(lev)); mfi.isValid(); ++mfi) {
-            const auto& bx = mfi.tilebox();
-            const auto& muturb_arr = mu_turb(lev).array(mfi);
-            const auto& alphaeff_arr = alphaeff(lev).array(mfi);
-            const auto& lam_diff_arr = (*lam_alpha)(lev).array(mfi);
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    alphaeff_arr(i, j, k) =
-                        lam_diff_arr(i, j, k) + muCoeff * muturb_arr(i, j, k);
-                });
-        }
+        const auto& muturb_arrs = mu_turb(lev).const_arrays();
+        const auto& alphaeff_arrs = alphaeff(lev).arrays();
+        const auto& lam_diff_arrs = (*lam_alpha)(lev).const_arrays();
+        amrex::ParallelFor(
+            mu_turb(lev),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                alphaeff_arrs[nbx](i, j, k) =
+                    lam_diff_arrs[nbx](i, j, k) +
+                    muCoeff * muturb_arrs[nbx](i, j, k);
+            });
     }
+    amrex::Gpu::streamSynchronize();
+
     alphaeff.fillpatch(this->m_sim.time().current_time());
 }
 template <typename Transport>

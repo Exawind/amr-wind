@@ -106,6 +106,9 @@ void ABL::initialize_fields(int level, const amrex::Geometry& geom)
     }
 
     bool interp_fine_levels = false;
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (false)
+#endif
     for (amrex::MFIter mfi(density); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
 

@@ -59,7 +59,7 @@ void init_field3(amr_wind::Field& fld, amrex::Real srate)
                 farrs[nbx](i, j, k, n) = z / 2.0 * srate + 2.0;
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 void init_field1(amr_wind::Field& fld, amrex::Real tgrad)
@@ -85,7 +85,7 @@ void init_field1(amr_wind::Field& fld, amrex::Real tgrad)
                 farrs[nbx](i, j, k, 0) = z * tgrad;
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 } // namespace
