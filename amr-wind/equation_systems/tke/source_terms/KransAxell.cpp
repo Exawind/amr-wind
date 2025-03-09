@@ -4,6 +4,7 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/turbulence/TurbulenceModel.H"
 #include "amr-wind/utilities/linear_interpolation.H"
+#include "amr-wind/utilities/constants.H"
 namespace amr_wind::pde::tke {
 
 KransAxell::KransAxell(const CFDSim& sim)
@@ -98,7 +99,6 @@ void KransAxell::operator()(
     const auto& dt = m_time.delta_t();
     const amrex::Real heat_flux = m_heat_flux;
     const amrex::Real Cmu = m_Cmu;
-    const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
     const amrex::Real kappa = m_kappa;
     amrex::Real z0 = m_z0;
     const bool has_terrain =
@@ -142,7 +142,7 @@ void KransAxell::operator()(
             1.0 / dt * (tke_arr(i, j, k) - ref_tke);
         dissip_arr(i, j, k) = std::pow(Cmu, 3) *
                               std::pow(tke_arr(i, j, k), 1.5) /
-                              (tlscale_arr(i, j, k) + tiny);
+                              (tlscale_arr(i, j, k) + amr_wind::constants::EPS);
         src_term(i, j, k) +=
             shear_prod_arr(i, j, k) + buoy_prod_arr(i, j, k) -
             dissip_arr(i, j, k) -
@@ -182,12 +182,16 @@ void KransAxell::operator()(
                 terrainforcing =
                     (ustar * ustar / (Cmu * Cmu) + rans_b - tke_arr(i, j, k)) /
                     dt;
+                amrex::Real bcforcing = 0;
+                if (k == 0) {
+                    bcforcing = (1 - blank_arr(i, j, k)) * terrainforcing;
+                }
                 ux = vel(i, j, k, 0);
                 uy = vel(i, j, k, 1);
                 const amrex::Real uz = vel(i, j, k, 2);
                 m = std::sqrt(ux * ux + uy * uy + uz * uz);
-                const amrex::Real Cd =
-                    std::min(10 / (dx[2] * m + tiny), 100 / dx[2]);
+                const amrex::Real Cd = std::min(
+                    10 / (dx[2] * m + amr_wind::constants::EPS), 100 / dx[2]);
                 dragforcing = -Cd * m * tke_arr(i, j, k, 0);
                 z = std::max(
                     problo[2] + (k + 0.5) * dx[2] - terrain_height(i, j, k),
@@ -204,11 +208,12 @@ void KransAxell::operator()(
                 }
                 const amrex::Real sponge_forcing =
                     1.0 / dt * (tke_arr(i, j, k) - ref_tke);
-                src_term(i, j, k) +=
+                src_term(i, j, k) =
+                    (1 - blank_arr(i, j, k)) * src_term(i, j, k) +
                     drag_arr(i, j, k) * terrainforcing +
                     blank_arr(i, j, k) * dragforcing -
-                    static_cast<int>(has_terrain) * sponge_forcing;
-                ;
+                    static_cast<int>(has_terrain) *
+                        (sponge_forcing - bcforcing);
             });
         if (m_horizontal_sponge) {
             const amrex::Real sponge_strength = m_sponge_strength;
@@ -236,6 +241,8 @@ void KransAxell::operator()(
                         (start_west - x) / (start_west - problo[0]);
                     xi_start = sponge_west * std::max(xi_start, 0.0);
                     xi_end = sponge_east * std::max(xi_end, 0.0);
+                    xi_start /= (xi_start + amr_wind::constants::EPS);
+                    xi_end /= (xi_end + amr_wind::constants::EPS);
                     xstart_damping =
                         sponge_west * sponge_strength * xi_start * xi_start;
                     xend_damping =
@@ -246,6 +253,8 @@ void KransAxell::operator()(
                         (start_south - y) / (start_south - problo[1]);
                     yi_start = sponge_south * std::max(yi_start, 0.0);
                     yi_end = sponge_north * std::max(yi_end, 0.0);
+                    yi_start /= (yi_start + amr_wind::constants::EPS);
+                    yi_end /= (yi_end + amr_wind::constants::EPS);
                     ystart_damping = sponge_strength * yi_start * yi_start;
                     yend_damping = sponge_strength * yi_end * yi_end;
                     const amrex::Real ref_tke =
@@ -254,10 +263,14 @@ void KransAxell::operator()(
                                   wind_heights_d, wind_heights_d + vsize,
                                   tke_values_d, z)
                             : tke_arr(i, j, k, 0);
-                    src_term(i, j, k, 0) -=
+                    const amrex::Real damping_sum =
                         (xstart_damping + xend_damping + ystart_damping +
-                         yend_damping) *
-                        (tke_arr(i, j, k) - sponge_density * ref_tke);
+                         yend_damping + amr_wind::constants::EPS);
+                    const amrex::Real sponge_forcing =
+                        (xstart_damping + xend_damping + ystart_damping +
+                         yend_damping) /
+                        (damping_sum * dt) * (tke_arr(i, j, k) - ref_tke);
+                    src_term(i, j, k, 0) -= sponge_forcing;
                 });
         }
     }
