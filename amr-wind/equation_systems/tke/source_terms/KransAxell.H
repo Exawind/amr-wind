@@ -56,7 +56,6 @@ private:
     std::unique_ptr<ScratchField> m_ref_theta;
     bool m_horizontal_sponge{false};
     amrex::Real m_sponge_strength{1.0};
-    amrex::Real m_sponge_density{1.0};
     amrex::Real m_sponge_distance_west{-1000};
     amrex::Real m_sponge_distance_east{1000};
     amrex::Real m_sponge_distance_south{-1000};

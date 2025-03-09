@@ -217,7 +217,6 @@ void KransAxell::operator()(
             });
         if (m_horizontal_sponge) {
             const amrex::Real sponge_strength = m_sponge_strength;
-            const amrex::Real sponge_density = m_sponge_density;
             const amrex::Real start_east = probhi[0] - m_sponge_distance_east;
             const amrex::Real start_west = problo[0] - m_sponge_distance_west;
             const amrex::Real start_north = probhi[1] - m_sponge_distance_north;
