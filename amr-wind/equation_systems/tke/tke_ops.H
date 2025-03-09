@@ -54,13 +54,14 @@ struct PostSolveOp<TKE>
             if (has_terrain) {
                 const IntField& m_terrain_blank =
                     repo.get_int_field("terrain_blank");
-                const auto& blank_arr = m_terrain_blank(lev).arrays();
+                const auto& blank_arrs = m_terrain_blank(lev).arrays();
                 amrex::ParallelFor(
-                    field(lev),
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        field_arr[nbx](i, j, k) = (blank_arr[nbx](i, j, k) == 1)
-                                                      ? clip_value
-                                                      : field_arr(i, j, k);
+                    field(lev), [=] AMREX_GPU_DEVICE(
+                                    int nbx, int i, int j, int k) noexcept {
+                        field_arrs[nbx](i, j, k) =
+                            (blank_arrs[nbx](i, j, k) == 1)
+                                ? clip_value
+                                : field_arrs[nbx](i, j, k);
                     });
             }
         }

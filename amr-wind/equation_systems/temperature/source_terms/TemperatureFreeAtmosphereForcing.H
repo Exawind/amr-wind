@@ -37,7 +37,6 @@ private:
     amrex::Real m_meso_start{600};
     amrex::Real m_meso_timescale{30};
     bool m_horizontal_sponge{false};
-    bool m_vertical_sponge{false};
     amrex::Real m_sponge_strength{1.0};
     amrex::Real m_sponge_density{1.0};
     amrex::Real m_sponge_distance_west{-1000};
