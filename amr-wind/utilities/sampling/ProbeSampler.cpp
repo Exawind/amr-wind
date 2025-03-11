@@ -73,7 +73,8 @@ void ProbeSampler::check_bounds()
             if (probe_locs[i][d] < (prob_lo[d] + bounds_tol)) {
                 all_ok = false;
                 probe_locs[i][d] = prob_lo[d] + 10 * bounds_tol;
-            } else if (probe_locs[i][d] > (prob_hi[d] - bounds_tol)) {
+            }
+            if (probe_locs[i][d] > (prob_hi[d] - bounds_tol)) {
                 all_ok = false;
                 probe_locs[i][d] = prob_hi[d] - 10 * bounds_tol;
             }

@@ -42,21 +42,21 @@ void VolumeSampler::check_bounds()
 
     bool all_ok = true;
     for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-        if (m_lo[d] <= prob_lo[d]) {
+        if (m_lo[d] < (prob_lo[d] + bounds_tol)) {
             all_ok = false;
-            m_lo[d] = prob_lo[d] + bounds_tol;
+            m_lo[d] = prob_lo[d] + 10 * bounds_tol;
         }
-        if (m_lo[d] >= prob_hi[d]) {
+        if (m_lo[d] > (prob_hi[d] - bounds_tol)) {
             all_ok = false;
-            m_lo[d] = prob_hi[d] - bounds_tol;
+            m_lo[d] = prob_hi[d] - 10 * bounds_tol;
         }
-        if (m_hi[d] <= prob_lo[d]) {
+        if (m_hi[d] < (prob_lo[d] + bounds_tol)) {
             all_ok = false;
-            m_hi[d] = prob_lo[d] + bounds_tol;
+            m_hi[d] = prob_lo[d] + 10 * bounds_tol;
         }
-        if (m_hi[d] >= prob_hi[d]) {
+        if (m_hi[d] > (prob_hi[d] - bounds_tol)) {
             all_ok = false;
-            m_hi[d] = prob_hi[d] - bounds_tol;
+            m_hi[d] = prob_hi[d] - 10 * bounds_tol;
         }
     }
     if (!all_ok) {
