@@ -132,6 +132,7 @@ void SamplingContainer::initialize_particles(
             offset += npts;
         }
     }
+    AMREX_ALWAYS_ASSERT(m_total_particles == TotalNumberOfParticles(false));
 }
 
 void SamplingContainer::interpolate_derived_fields(
