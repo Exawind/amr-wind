@@ -1,0 +1,14 @@
+.. meta::9fb117f8c122626e5ae39edc7057d01bab21e5f4be85691a553997ada9654c671b9e7c49fa639e3d5def96b6a7a53c0409d16e2df352ae57d3a6083672d0f1bf
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::icns Namespace Reference
+
+icns Namespace Reference
+========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: namespaceamr__wind_1_1pde_1_1icns.html

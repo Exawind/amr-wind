@@ -1,0 +1,18 @@
+<map id="amr_wind::IntScratchField" name="amr_wind::IntScratchField">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,416,196,441"/>
+<area shape="rect" id="Node000002" href="$classamr__wind_1_1_field_repo.html" title=" " alt="" coords="117,328,276,353"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="175,364,116,417,112,413,172,360"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="117,211,279,251"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="200,264,199,328,194,327,195,264"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="36,115,123,141"/>
+<area shape="poly" id="edge8_Node000001_Node000004" title=" " alt="" coords="84,154,102,415,97,416,78,155"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="105,148,177,208,174,213,102,152"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="10,5,149,45"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="82,59,82,115,77,115,77,59"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="147,108,299,148"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="218,162,205,211,200,210,213,161"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="188,13,227,38"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="209,51,211,84,218,107,213,109,206,84,204,52"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="253,13,292,38"/>
+<area shape="poly" id="edge7_Node000006_Node000008" title=" " alt="" coords="263,51,235,109,230,107,259,49"/>
+</map>

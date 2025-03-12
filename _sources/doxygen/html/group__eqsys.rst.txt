@@ -1,0 +1,14 @@
+.. meta::fa409787a4e824dc5bb7ee8d6194d397a62314a49b4ce30c42bd6ecd88a9ea119b6df1eb3dbc2261518bea86fd8b39484bffd4bc0643f4f13631d402d0f9a100
+
+:orphan:
+
+.. title:: AMR-Wind API: Equation Systems
+
+Equation Systems
+================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: group__eqsys.html

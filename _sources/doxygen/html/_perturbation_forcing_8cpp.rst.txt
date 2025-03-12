@@ -1,0 +1,14 @@
+.. meta::c03b14fffa29a229013b47281132eb25e034fd61d9cfed66344494c3139ebd9a1c82cfb4a59a3bbd5d8889760e9524c07b1ec6b628fa625415b4f094ad07cb02
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/temperature/source_terms/PerturbationForcing.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/equation\_systems/temperature/source\_terms/PerturbationForcing.cpp File Reference
+===============================================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _perturbation_forcing_8cpp.html

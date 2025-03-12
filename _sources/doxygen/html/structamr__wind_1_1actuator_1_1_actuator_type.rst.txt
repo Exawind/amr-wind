@@ -1,0 +1,14 @@
+.. meta::c993bb255df7c257c994bc6a666f28c60f50eba75b593ac8f2cc8f51ae7678b394fb868ab105597d55d5b4bbb3d5a34827f7dd83c9180fd72f465c79d3c5e59a
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ActuatorType Struct Reference
+
+ActuatorType Struct Reference
+=============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1_actuator_type.html

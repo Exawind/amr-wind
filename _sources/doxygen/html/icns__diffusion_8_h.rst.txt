@@ -1,0 +1,14 @@
+.. meta::13db3131e3e20224bea8fa7f21b9136e5156012dddbbbbec3bb1962d0ce6ad42a77981551d374261f6378b7365cc1f51cc236f2c121b3dcf2b2c87673289475c
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/icns/icns_diffusion.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/equation\_systems/icns/icns\_diffusion.H File Reference
+====================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: icns__diffusion_8_h.html

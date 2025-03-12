@@ -1,0 +1,14 @@
+.. meta::b841f35241d53cbae7a08f42c3a50bbaaeba407859c2d0672c3cc59695f5e6a112c85854a0e0798031e32346824b9f0f8021e7585027ebe755b762503b6cc3f0
+
+:orphan:
+
+.. title:: AMR-Wind API: Member List
+
+Member List
+===========
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1actuator_1_1ops_1_1_spreading_function-members.html

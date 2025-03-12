@@ -1,0 +1,14 @@
+.. meta::03660409f1dce5d51bf8ccbfe3fb02924dee7db25bc5ceb4518262633f0d799e96631fe091f121b3a2d85734d5b393eb73d1a621e748504835b674bd1a179007
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::turbulence::Laminar&lt; Transport &gt; Class Template Reference
+
+Laminar&lt; Transport &gt; Class Template Reference
+===================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1turbulence_1_1_laminar.html

@@ -1,0 +1,14 @@
+.. meta::3fd2bd7aa448c93a8beca57cac6639071d845f8add0ea5b1320812921df2e5609039077f0c32eb2b2edcae376efeb948851a7e39084752703d6b4aa4c0705e08
+
+:orphan:
+
+.. title:: AMR-Wind API: Temperature Source terms
+
+Temperature Source terms
+========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: group__temp__src.html
