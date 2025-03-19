@@ -200,11 +200,11 @@ void populate_fields_all_levels(
 
     // Interpolate to fields (vector of MultiFabs)
     interp_to_mfab::interp_eta_to_levelset_field(
-        wdata.n0, wdata.n1, wdata.dx0, wdata.dx1, wdata.xlo0, wdata.xlo1,
+        wdata.n0_sp, wdata.n1_sp, wdata.dx0, wdata.dx1, wdata.xlo0, wdata.xlo1,
         wdata.zsl, wdata.is_ocean, wdata.sp_eta_vec, lvs_field.vec_ptrs(),
         geom_all);
     interp_to_mfab::interp_velocity_to_field(
-        wdata.n0, wdata.n1, wdata.dx0, wdata.dx1, wdata.xlo0, wdata.xlo1,
+        wdata.n0_sp, wdata.n1_sp, wdata.dx0, wdata.dx1, wdata.xlo0, wdata.xlo1,
         wdata.is_ocean, wdata.indvec, wdata.hvec, wdata.sp_u_vec,
         wdata.sp_v_vec, wdata.sp_w_vec, vel_field.vec_ptrs(), geom_all);
 
@@ -322,11 +322,13 @@ struct ReadInputsOp<W2AWaves>
             wdata.c_mFS.resize(vsize, initval);
 
             // Get dimensions of data
-            wdata.n0 = wdata.c_rmodes.get_first_dimension();
-            wdata.n1 = wdata.c_rmodes.get_second_dimension();
+            wdata.n0 = wdata.c_rmodes.get_first_fft_dimension();
+            wdata.n1 = wdata.c_rmodes.get_second_fft_dimension();
+            wdata.n0_sp = wdata.c_rmodes.get_first_spatial_dimension();
+            wdata.n1_sp = wdata.c_rmodes.get_second_spatial_dimension();
             // Get resolution
-            wdata.dx0 = wdata.c_rmodes.get_xlen() / wdata.n0;
-            wdata.dx1 = wdata.c_rmodes.get_ylen() / wdata.n1;
+            wdata.dx0 = wdata.c_rmodes.get_xlen() / wdata.n0_sp;
+            wdata.dx1 = wdata.c_rmodes.get_ylen() / wdata.n1_sp;
             // Get depth
             depth = wdata.c_rmodes.get_depth();
             // Get dimensional length
@@ -345,12 +347,14 @@ struct ReadInputsOp<W2AWaves>
             wdata.r_mAdd.resize(vasize, initval);
 
             // Get dimensions of data
-            wdata.n0 = wdata.r_rmodes.get_first_dimension();
-            wdata.n1 = wdata.r_rmodes.get_second_dimension();
+            wdata.n0 = wdata.r_rmodes.get_first_fft_dimension();
+            wdata.n1 = wdata.r_rmodes.get_second_fft_dimension();
             wdata.n2 = wdata.r_rmodes.get_third_dimension();
+            wdata.n0_sp = wdata.r_rmodes.get_first_spatial_dimension();
+            wdata.n1_sp = wdata.r_rmodes.get_second_spatial_dimension();
             // Get resolution
-            wdata.dx0 = wdata.r_rmodes.get_xlen() / wdata.n0;
-            wdata.dx1 = wdata.r_rmodes.get_ylen() / wdata.n1;
+            wdata.dx0 = wdata.r_rmodes.get_xlen() / wdata.n0_sp;
+            wdata.dx1 = wdata.r_rmodes.get_ylen() / wdata.n1_sp;
             // Get depth
             depth = wdata.r_rmodes.get_depth();
             // Get dimensional length
@@ -583,11 +587,11 @@ struct InitDataOp<W2AWaves>
         std::iota(indvec.begin(), indvec.end(), 0);
         // Interpolate to MultiFabs (one level at a time)
         interp_to_mfab::interp_eta_to_levelset_multifab(
-            wdata.n0, wdata.n1, wdata.dx0, wdata.dx1, wdata.xlo0, wdata.xlo1,
+            wdata.n0_sp, wdata.n1_sp, wdata.dx0, wdata.dx1, wdata.xlo0, wdata.xlo1,
             wdata.zsl, wdata.is_ocean, wdata.sp_eta_vec, ow_levelset(level),
             problo, dx);
         interp_to_mfab::interp_velocity_to_multifab(
-            wdata.n0, wdata.n1, wdata.dx0, wdata.dx1, wdata.xlo0, wdata.xlo1,
+            wdata.n0_sp, wdata.n1_sp, wdata.dx0, wdata.dx1, wdata.xlo0, wdata.xlo1,
             wdata.is_ocean, indvec, wdata.hvec, wdata.sp_u_vec, wdata.sp_v_vec,
             wdata.sp_w_vec, ow_velocity(level), problo, dx);
         // Zero velocity in pure air cells

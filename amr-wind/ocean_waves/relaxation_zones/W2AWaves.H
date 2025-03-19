@@ -14,10 +14,13 @@ struct W2AWavesData : public RelaxZonesBaseData
 {
     // Prefix for HOS files
     std::string modes_file{"modes_HOS_SWENSE.dat"};
-    // Number of modes in each direction
+    // Number of modes in each direction (related to FFT)
     int n0{0};
     int n1{0};
     int n2{0};
+    // Number of points in each direction (spatial output)
+    int n0_sp{0};
+    int n1_sp{0};
     // Spatial resolution in each direction
     amrex::Real dx0{0.};
     amrex::Real dx1{0.};
