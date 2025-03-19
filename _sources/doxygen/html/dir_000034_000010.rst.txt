@@ -1,0 +1,14 @@
+.. meta::dc30138a0fdb47624d6314f22a1e954e7a7dab2a77a9f34c8f80508a58630f872d9e4548e4a150d5f3b0f2abf170c3131bd52d799b54eeb6886462f7bccdc3a3
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/ocean_waves/relaxation_zones -&gt; core Relation
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/ocean\_waves/relaxation\_zones -&gt; core Relation
+===============================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: dir_000034_000010.html

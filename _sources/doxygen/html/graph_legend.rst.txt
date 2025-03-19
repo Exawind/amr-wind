@@ -1,0 +1,14 @@
+.. meta::e59c80f03d98b779b3c4cff13fafc5304343309a76e02b51ea89561e47d1ec8aa5b6964eb82cdf0b40b2160d8fe2c8254cc92121aef106e2d7f4792f568463d0
+
+:orphan:
+
+.. title:: AMR-Wind API: Graph Legend
+
+Graph Legend
+============
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: graph_legend.html

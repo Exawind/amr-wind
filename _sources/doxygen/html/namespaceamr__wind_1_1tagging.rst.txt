@@ -1,0 +1,14 @@
+.. meta::c91c58a8d62e0b95b66797db4997628f464522e6e4703b6961114a740336c67773e044486923d5c5803f9a97425960662e0564c81d7a5658566201812c3c36e2
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::tagging Namespace Reference
+
+tagging Namespace Reference
+===========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: namespaceamr__wind_1_1tagging.html

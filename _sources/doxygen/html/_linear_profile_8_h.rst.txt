@@ -1,0 +1,14 @@
+.. meta::aea47e55f8a1b8c32664618274351f7076e019250d5dc04463d7653c1331cabb9d2956ea8e291750baa7e2d4e83067b86fb87680113faa3daf677b1beeccc897
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/udfs/LinearProfile.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/physics/udfs/LinearProfile.H File Reference
+========================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _linear_profile_8_h.html

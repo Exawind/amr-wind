@@ -1,0 +1,14 @@
+.. meta::259773232194e01f850f1fa6786767a773db7c6e37066136a60cabba32d385cd9f71bf8a5df820dcd8c8bfb98fa66279337cfccbf1d2c13e3fca3200429bd226
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ib::ImmersedBoundaryModel Class Reference
+
+ImmersedBoundaryModel Class Reference
+=====================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1ib_1_1_immersed_boundary_model.html

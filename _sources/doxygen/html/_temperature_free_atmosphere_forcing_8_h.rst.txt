@@ -1,0 +1,14 @@
+.. meta::a829b537350d663a9330e7ef871a93f0f6280f51a5941b3a957a460ec90267b74a51f737b4da777d179bdf30bdedc16c8a1d4b3a8f3a9e8f2f96ac4e37faba60
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/temperature/source_terms/TemperatureFreeAtmosphereForcing.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/equation\_systems/temperature/source\_terms/TemperatureFreeAtmosphereForcing.H File Reference
+==========================================================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _temperature_free_atmosphere_forcing_8_h.html
