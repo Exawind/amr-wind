@@ -274,9 +274,9 @@ struct ReadInputsOp<W2AWaves>
         // Initialize mode reader
         bool file_exists{false};
         if (wdata.is_ocean) {
-            file_exists = wdata.c_rmodes.initialize(wdata.modes_file);
+            file_exists = wdata.c_rmodes.initialize(wdata.modes_file, true);
         } else {
-            file_exists = wdata.r_rmodes.initialize(wdata.modes_file);
+            file_exists = wdata.r_rmodes.initialize(wdata.modes_file, false);
         }
 
         // Abort if file does not exist
@@ -336,7 +336,7 @@ struct ReadInputsOp<W2AWaves>
                 (int)((wdata.c_rmodes.get_Tstop() + 1e-8) / wdata.dt_modes);
         } else {
             int vsize = wdata.r_rmodes.get_vector_size();
-            int vasize = wdata.r_rmodes.get_vector_size();
+            int vasize = wdata.r_rmodes.get_addl_vector_size();
             double initval = 0.0;
             wdata.r_mX.resize(vsize, initval);
             wdata.r_mY.resize(vsize, initval);
