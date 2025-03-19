@@ -420,12 +420,8 @@ struct ReadInputsOp<W2AWaves>
             wdata.plan_vector.emplace_back(modes_hosgrid::plan_ifftw(
                 wdata.n0, wdata.n1, wdata.c_eta_mptr, plan_f));
         } else {
-            double* a_ptr = new double[wdata.n0 * wdata.n1];
-            double* a_sin_ptr = new double[wdata.n0 * (wdata.n1 - 2)];
-            double* a_y_ptr = new double[wdata.n0 * 1];
             modes_hosgrid::plan_ifftw_nwt(
-                wdata.n0, wdata.n1, wdata.plan_vector, a_ptr, a_sin_ptr,
-                a_y_ptr, plan_f);
+                wdata.n0, wdata.n1, wdata.plan_vector, wdata.r_eta_mptr, plan_f);
         }
 
         // Create height vector for velocity mode conversion before
