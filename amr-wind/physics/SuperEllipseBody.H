@@ -29,10 +29,11 @@ class SuperEllipseBody : public Physics::Register<SuperEllipseBody>
 
   private:
     CFDSim& m_sim;
-    FieldRepo& m_repo;
-    Mesh& m_mesh;
+    const FieldRepo& m_repo;
+    const amrex::AmrCore& m_mesh;
 
-    amrex::IntMultiFab m_body_blank;
+    //! Blanking field for SuperEllipseBody
+    IntField&  m_body_blank;
 
     vs::Vector m_loc{0.0, 0.0, 0.0};
 
