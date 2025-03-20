@@ -3,6 +3,7 @@
 
 #include "amr-wind/physics/PhysicsBase.H"
 #include "amr-wind/core/FieldRepo.H"
+#include "amr-wind/core/vs/vector_space.H"
 
 namespace amr_wind::superellipsebody {
 
@@ -27,7 +28,12 @@ class SuperEllipseBody : public PhysicsBase
     Mesh& m_mesh;
 
     amrex::IntMultiFab m_body_blank;
-    amrex::IntMultiFab m_body_drag;
+
+    vs::Vector m_loc{0.0, 0.0, 0.0};
+
+    vs::Vector m_dim{1.0, 1.0, 1.0};
+    
+    vs::Tensor m_orient = vs::Tensor::identity();
 
     std::string m_body_file;
 
