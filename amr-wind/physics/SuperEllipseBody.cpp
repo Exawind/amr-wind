@@ -30,7 +30,7 @@ SuperEllipseBody::SuperEllipseBody(CFDSim& sim)
     : m_sim(sim)
     , m_repo(sim.repo())
     , m_mesh(sim.mesh())
-    , m_body_blank(sim.repo().declare_int_field("body_blank", 1, 1, 1))
+    , m_body_blank(sim.repo().declare_int_field("terrain_blank", 1, 1, 1))
 {
 
         amrex::ParmParse pp(identifier());
