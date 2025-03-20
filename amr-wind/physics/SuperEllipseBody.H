@@ -10,8 +10,6 @@ namespace amr_wind::superellipsebody {
 class SuperEllipseBody : public Physics::Register<SuperEllipseBody>
 {
   public:
-    SuperEllipseBody(CFDSim& sim);
-    ~SuperEllipseBody() override = default;
 
     std::string identifier() { return "SuperEllipseBody"; }
 
