@@ -20,6 +20,7 @@ target_sources(${amr_wind_lib_name}
   ActuatorSourceTagging.cpp
   Intermittency.cpp
   ForestDrag.cpp
+  SuperEllipseBody.cpp
   )
 
 add_subdirectory(multiphase)
