@@ -1,7 +1,7 @@
 #ifndef AMREX_SUPER_ELLIPSE_BODY_H
 #define AMREX_SUPER_ELLIPSE_BODY_H
 
-#include "amr-wind/physics/PhysicsBase.H"
+#include "amr-wind/physics/Physics.H"
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/core/vs/vector_space.H"
 
