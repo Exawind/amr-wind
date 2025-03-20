@@ -28,17 +28,9 @@ class SuperEllipseBody : public PhysicsBase
 
     amrex::IntMultiFab m_body_blank;
     amrex::IntMultiFab m_body_drag;
-    Field m_bodyz0;
-    Field m_body_height;
 
     std::string m_body_file;
-    std::string m_roughness_file;
 
-    bool m_body_is_waves{false};
-    Field const* m_wave_volume_fraction{nullptr};
-    Field const* m_wave_negative_elevation{nullptr};
-    std::string m_wave_volume_fraction_name{"vof"};
-    std::string m_wave_negative_elevation_name{"wave_neg_elev"};
 };
 
 } // namespace amr_wind::superellipsebody
