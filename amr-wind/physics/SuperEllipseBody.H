@@ -7,7 +7,7 @@
 
 namespace amr_wind::superellipsebody {
 
-class SuperEllipseBody : public PhysicsBase
+class SuperEllipseBody : public Physics::Register<SuperEllipseBody>
 {
   public:
     SuperEllipseBody(CFDSim& sim);
@@ -21,8 +21,6 @@ class SuperEllipseBody : public PhysicsBase
     void post_regrid_actions() override;
 
   private:
-    void convert_waves_to_body_fields();
-
     CFDSim& m_sim;
     FieldRepo& m_repo;
     Mesh& m_mesh;
