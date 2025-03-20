@@ -13,11 +13,20 @@ class SuperEllipseBody : public Physics::Register<SuperEllipseBody>
     SuperEllipseBody(CFDSim& sim);
     ~SuperEllipseBody() override = default;
 
-    std::string identifier() const override { return "SuperEllipseBody"; }
+    std::string identifier() { return "SuperEllipseBody"; }
+
+    explicit SuperEllipseBody(CFDSim& sim);
+
+    ~SuperEllipseBody() override = default;
 
     void initialize_fields(int level, const amrex::Geometry& geom) override;
-    void post_init_actions() override;
-    void pre_advance_work() override;
+
+    void pre_init_actions() override {}
+    
+    void post_init_actions() override {};
+
+    void pre_advance_work() override {};
+
     void post_regrid_actions() override;
 
   private:

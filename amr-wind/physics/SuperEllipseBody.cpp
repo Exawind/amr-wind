@@ -83,16 +83,6 @@ void SuperEllipseBody::initialize_fields(int level, const amrex::Geometry& geom)
     amrex::Gpu::streamSynchronize();
 }
 
-void SuperEllipseBody::post_init_actions()
-{
-    BL_PROFILE("amr-wind::" + this->identifier() + "::post_init_actions");
-}
-
-void SuperEllipseBody::pre_advance_work()
-{
-    BL_PROFILE("amr-wind::" + this->identifier() + "::pre_advance_work");
-}
-
 void SuperEllipseBody::post_regrid_actions()
 {
 
