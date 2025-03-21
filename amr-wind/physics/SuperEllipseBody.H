@@ -1,5 +1,5 @@
-#ifndef AMREX_SUPER_ELLIPSE_BODY_H
-#define AMREX_SUPER_ELLIPSE_BODY_H
+#ifndef SuperEllipseBody_H
+#define SuperEllipseBody_H
 
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/core/Field.H"
@@ -11,8 +11,7 @@ namespace amr_wind::superellipsebody {
 class SuperEllipseBody : public Physics::Register<SuperEllipseBody>
 {
   public:
-
-    std::string identifier() { return "SuperEllipseBody"; }
+    static std::string identifier() { return "SuperEllipseBody"; }
 
     explicit SuperEllipseBody(CFDSim& sim);
 
@@ -29,7 +28,6 @@ class SuperEllipseBody : public Physics::Register<SuperEllipseBody>
     void pre_advance_work() override {};
 
     void post_advance_work() override {}
-
 
   private:
     CFDSim& m_sim;
