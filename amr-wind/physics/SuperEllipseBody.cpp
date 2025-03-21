@@ -33,12 +33,11 @@ SuperEllipseBody::SuperEllipseBody(CFDSim& sim)
     , m_body_blank(sim.repo().declare_int_field("terrain_blank", 1, 1, 1))
 {
 
-        amrex::ParmParse pp(identifier());
-        pp.query("body_file", m_body_file);
-        m_dim = parse_vector(pp, "dimensions");
+    amrex::ParmParse pp(identifier());
+    pp.query("body_file", m_body_file);
+    m_dim = parse_vector(pp, "dimensions");
 
-    m_sim.io_manager().register_output_int_var("body_drag");
-
+    m_sim.io_manager().register_output_int_var("terrain_blank");
     m_body_blank.setVal(0.0);
 }
 
