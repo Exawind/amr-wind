@@ -73,11 +73,11 @@ void SuperEllipseBody::initialize_fields(int level, const amrex::Geometry& geom)
             const amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
             const amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
 
-            // Transform to orientation inside 
+            // Transform to orientation of box
             vs::Vector xtransform = orient & (vs::Vector(x, y, z) - loc);
 
             // Determine whether point in body
-            levelBlanking[nbx](i, j, k, 0) = static_cast<int>( ((xtransform.x()/dim.x())^6 + (xtransform.y()/dim.y())^6 + (xtransform.z()/dim.z())^6 - 1.0) < 0 );
+            levelBlanking[nbx](i, j, k, 0) = static_cast<int>( ( std::pow( xtransform.x() / dim.x(), 6 ) + std::pow( xtransform.y() / dim.y(), 6 ) + std::pow( xtransform.z() / dim.z(), 6) - 1.0) < 0.0 );
         });
     amrex::Gpu::streamSynchronize();
 }
