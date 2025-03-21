@@ -2,7 +2,8 @@
 #define AMREX_SUPER_ELLIPSE_BODY_H
 
 #include "amr-wind/core/Physics.H"
-#include "amr-wind/core/FieldRepo.H"
+#include "amr-wind/core/Field.H"
+#include "amr-wind/CFDSim.H"
 #include "amr-wind/core/vs/vector_space.H"
 
 namespace amr_wind::superellipsebody {
@@ -23,9 +24,12 @@ class SuperEllipseBody : public Physics::Register<SuperEllipseBody>
     
     void post_init_actions() override {};
 
+    void post_regrid_actions() override;
+
     void pre_advance_work() override {};
 
-    void post_regrid_actions() override;
+    void post_advance_work() override {}
+
 
   private:
     CFDSim& m_sim;
