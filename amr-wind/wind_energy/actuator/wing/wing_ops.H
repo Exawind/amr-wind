@@ -109,6 +109,11 @@ struct UpdateVelOp<
         if (meta.fllc) {
             FLLCOp()(meta.component_view, *(meta.fllc));
         }
+        if (meta.fllc_unsteady) {
+            FLLCUnsteadyOp()(
+                meta.component_view, *(meta.fllc_unsteady),
+                data.sim().time().current_time());
+        }
     }
 };
 
@@ -246,6 +251,17 @@ struct ComputeForceOp<
                         data);
                 fllc_init(
                     *(wdata.fllc.get()), wdata.component_view,
+                    wdata.epsilon_chord[0]);
+            }
+        }
+        if (wdata.fllc_unsteady) {
+            if (!(wdata.fllc_unsteady->initialized) &&
+                (time.current_time() > wdata.fllc_unsteady->fllc_start_time)) {
+                wdata.component_view =
+                    amr_wind::actuator::wing::make_component_view<ActTrait>(
+                        data);
+                fllc_unsteady_init(
+                    *(wdata.fllc_unsteady.get()), wdata.component_view,
                     wdata.epsilon_chord[0]);
             }
         }
