@@ -184,13 +184,13 @@ void populate_fields_all_levels(
         // Sample velocity
         if (wdata.is_ocean) {
             modes_hosgrid::populate_hos_vel(
-                wdata.c_rmodes, ht, wdata.c_mX, wdata.c_mY, wdata.c_mZ,
+                wdata.c_rmodes, ht, wdata.zsl, wdata.c_mX, wdata.c_mY, wdata.c_mZ,
                 wdata.plan_vector, wdata.c_u_mptr, wdata.c_v_mptr,
                 wdata.c_w_mptr, wdata.sp_u_vec, wdata.sp_v_vec, wdata.sp_w_vec,
                 iht * wdata.n0 * wdata.n1);
         } else {
             modes_hosgrid::populate_hos_vel(
-                wdata.r_rmodes, ht, wdata.r_mX, wdata.r_mY, wdata.r_mZ,
+                wdata.r_rmodes, ht, wdata.zsl, wdata.r_mX, wdata.r_mY, wdata.r_mZ,
                 wdata.r_mAdd, wdata.plan_vector, wdata.r_u_mptr, wdata.r_v_mptr,
                 wdata.r_w_mptr, wdata.au_mptr, wdata.av_mptr, wdata.aw_mptr,
                 wdata.sp_u_vec, wdata.sp_v_vec, wdata.sp_w_vec,
@@ -494,7 +494,7 @@ struct ReadInputsOp<W2AWaves>
                 amrex::Real ht = wdata.hvec[iht];
                 // Sample velocity
                 modes_hosgrid::populate_hos_vel(
-                    wdata.c_rmodes, ht, wdata.c_mX, wdata.c_mY, wdata.c_mZ,
+                    wdata.c_rmodes, ht, wdata.zsl, wdata.c_mX, wdata.c_mY, wdata.c_mZ,
                     wdata.plan_vector, wdata.c_u_mptr, wdata.c_v_mptr,
                     wdata.c_w_mptr, wdata.sp_u_vec, wdata.sp_v_vec,
                     wdata.sp_w_vec, iht * wdata.n0 * wdata.n1);
@@ -521,7 +521,7 @@ struct ReadInputsOp<W2AWaves>
                 amrex::Real ht = wdata.hvec[iht];
                 // Sample velocity
                 modes_hosgrid::populate_hos_vel(
-                    wdata.r_rmodes, ht, wdata.r_mX, wdata.r_mY, wdata.r_mZ,
+                    wdata.r_rmodes, ht, wdata.zsl, wdata.r_mX, wdata.r_mY, wdata.r_mZ,
                     wdata.r_mAdd, wdata.plan_vector, wdata.r_u_mptr,
                     wdata.r_v_mptr, wdata.r_w_mptr, wdata.au_mptr,
                     wdata.av_mptr, wdata.aw_mptr, wdata.sp_u_vec,
