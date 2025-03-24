@@ -252,8 +252,8 @@ struct ReadInputsOp<W2AWaves>
             pp.query("HOS_init_time", wdata.t_winit);
         }
         // Check effect !!!
-        pp.query("HOS_domain_offset_x", wdata.xlo1);
-        pp.query("HOS_domain_offset_y", wdata.xlo0);
+        pp.query("HOS_domain_offset_x", wdata.xlo0);
+        pp.query("HOS_domain_offset_y", wdata.xlo1);
 
         // Default fftw_plan is deterministic
         std::string fftw_planner_flag{"estimate"};
