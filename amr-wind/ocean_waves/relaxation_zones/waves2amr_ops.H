@@ -397,9 +397,9 @@ struct ReadInputsOp<W2AWaves>
             wdata.r_u_mptr = modes_hosgrid::allocate_real(wdata.n0, wdata.n1);
             wdata.r_v_mptr = modes_hosgrid::allocate_real(wdata.n0, wdata.n1);
             wdata.r_w_mptr = modes_hosgrid::allocate_real(wdata.n0, wdata.n1);
-            wdata.au_mptr = modes_hosgrid::allocate_real(wdata.n0, wdata.n2);
-            wdata.av_mptr = modes_hosgrid::allocate_real(wdata.n0, wdata.n2);
-            wdata.aw_mptr = modes_hosgrid::allocate_real(wdata.n0, wdata.n2);
+            wdata.au_mptr = modes_hosgrid::allocate_real(wdata.n0, 1);
+            wdata.av_mptr = modes_hosgrid::allocate_real(wdata.n0, 1);
+            wdata.aw_mptr = modes_hosgrid::allocate_real(wdata.n0, 1);
         }
 
         // Set up planner flag based on input
