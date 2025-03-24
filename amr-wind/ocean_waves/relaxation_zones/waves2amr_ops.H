@@ -174,7 +174,7 @@ void populate_fields_all_levels(
         modes_hosgrid::copy_real(
             wdata.n0, wdata.n1, wdata.r_mFS, wdata.r_eta_mptr);
         modes_hosgrid::populate_hos_eta(
-            wdata.c_rmodes, wdata.plan_vector, wdata.r_eta_mptr,
+            wdata.r_rmodes, wdata.plan_vector, wdata.r_eta_mptr,
             wdata.sp_eta_vec);
     }
 
