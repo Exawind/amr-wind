@@ -184,16 +184,16 @@ void populate_fields_all_levels(
         // Sample velocity
         if (wdata.is_ocean) {
             modes_hosgrid::populate_hos_vel(
-                wdata.c_rmodes, ht, wdata.zsl, wdata.c_mX, wdata.c_mY, wdata.c_mZ,
-                wdata.plan_vector, wdata.c_u_mptr, wdata.c_v_mptr,
+                wdata.c_rmodes, ht, wdata.zsl, wdata.c_mX, wdata.c_mY,
+                wdata.c_mZ, wdata.plan_vector, wdata.c_u_mptr, wdata.c_v_mptr,
                 wdata.c_w_mptr, wdata.sp_u_vec, wdata.sp_v_vec, wdata.sp_w_vec,
                 iht * wdata.n0 * wdata.n1);
         } else {
             modes_hosgrid::populate_hos_vel(
-                wdata.r_rmodes, ht, wdata.zsl, wdata.r_mX, wdata.r_mY, wdata.r_mZ,
-                wdata.r_mAdd, wdata.plan_vector, wdata.r_u_mptr, wdata.r_v_mptr,
-                wdata.r_w_mptr, wdata.au_mptr, wdata.av_mptr, wdata.aw_mptr,
-                wdata.sp_u_vec, wdata.sp_v_vec, wdata.sp_w_vec,
+                wdata.r_rmodes, ht, wdata.zsl, wdata.r_mX, wdata.r_mY,
+                wdata.r_mZ, wdata.r_mAdd, wdata.plan_vector, wdata.r_u_mptr,
+                wdata.r_v_mptr, wdata.r_w_mptr, wdata.au_mptr, wdata.av_mptr,
+                wdata.aw_mptr, wdata.sp_u_vec, wdata.sp_v_vec, wdata.sp_w_vec,
                 iht * wdata.n0 * wdata.n1);
         }
     }
@@ -421,7 +421,8 @@ struct ReadInputsOp<W2AWaves>
                 wdata.n0, wdata.n1, wdata.c_eta_mptr, plan_f));
         } else {
             modes_hosgrid::plan_ifftw_nwt(
-                wdata.n0, wdata.n1, wdata.plan_vector, wdata.r_eta_mptr, plan_f);
+                wdata.n0, wdata.n1, wdata.plan_vector, wdata.r_eta_mptr,
+                plan_f);
         }
 
         // Create height vector for velocity mode conversion before
@@ -494,10 +495,10 @@ struct ReadInputsOp<W2AWaves>
                 amrex::Real ht = wdata.hvec[iht];
                 // Sample velocity
                 modes_hosgrid::populate_hos_vel(
-                    wdata.c_rmodes, ht, wdata.zsl, wdata.c_mX, wdata.c_mY, wdata.c_mZ,
-                    wdata.plan_vector, wdata.c_u_mptr, wdata.c_v_mptr,
-                    wdata.c_w_mptr, wdata.sp_u_vec, wdata.sp_v_vec,
-                    wdata.sp_w_vec, iht * wdata.n0 * wdata.n1);
+                    wdata.c_rmodes, ht, wdata.zsl, wdata.c_mX, wdata.c_mY,
+                    wdata.c_mZ, wdata.plan_vector, wdata.c_u_mptr,
+                    wdata.c_v_mptr, wdata.c_w_mptr, wdata.sp_u_vec,
+                    wdata.sp_v_vec, wdata.sp_w_vec, iht * wdata.n0 * wdata.n1);
             }
         } else {
             modes_hosgrid::copy_real(
@@ -521,8 +522,8 @@ struct ReadInputsOp<W2AWaves>
                 amrex::Real ht = wdata.hvec[iht];
                 // Sample velocity
                 modes_hosgrid::populate_hos_vel(
-                    wdata.r_rmodes, ht, wdata.zsl, wdata.r_mX, wdata.r_mY, wdata.r_mZ,
-                    wdata.r_mAdd, wdata.plan_vector, wdata.r_u_mptr,
+                    wdata.r_rmodes, ht, wdata.zsl, wdata.r_mX, wdata.r_mY,
+                    wdata.r_mZ, wdata.r_mAdd, wdata.plan_vector, wdata.r_u_mptr,
                     wdata.r_v_mptr, wdata.r_w_mptr, wdata.au_mptr,
                     wdata.av_mptr, wdata.aw_mptr, wdata.sp_u_vec,
                     wdata.sp_v_vec, wdata.sp_w_vec, iht * wdata.n0 * wdata.n1);
@@ -583,13 +584,13 @@ struct InitDataOp<W2AWaves>
         std::iota(indvec.begin(), indvec.end(), 0);
         // Interpolate to MultiFabs (one level at a time)
         interp_to_mfab::interp_eta_to_levelset_multifab(
-            wdata.n0_sp, wdata.n1_sp, wdata.dx0, wdata.dx1, wdata.xlo0, wdata.xlo1,
-            wdata.zsl, wdata.is_ocean, wdata.sp_eta_vec, ow_levelset(level),
-            problo, dx);
+            wdata.n0_sp, wdata.n1_sp, wdata.dx0, wdata.dx1, wdata.xlo0,
+            wdata.xlo1, wdata.zsl, wdata.is_ocean, wdata.sp_eta_vec,
+            ow_levelset(level), problo, dx);
         interp_to_mfab::interp_velocity_to_multifab(
-            wdata.n0_sp, wdata.n1_sp, wdata.dx0, wdata.dx1, wdata.xlo0, wdata.xlo1,
-            wdata.is_ocean, indvec, wdata.hvec, wdata.sp_u_vec, wdata.sp_v_vec,
-            wdata.sp_w_vec, ow_velocity(level), problo, dx);
+            wdata.n0_sp, wdata.n1_sp, wdata.dx0, wdata.dx1, wdata.xlo0,
+            wdata.xlo1, wdata.is_ocean, indvec, wdata.hvec, wdata.sp_u_vec,
+            wdata.sp_v_vec, wdata.sp_w_vec, ow_velocity(level), problo, dx);
         // Zero velocity in pure air cells
         postprocess_velocity_mfab_liquid(
             ow_velocity(level), ow_levelset(level), dx);
