@@ -4,6 +4,7 @@
 #include <AMReX_RealVect.H>
 #include "amr-wind/core/Factory.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
+#include "amr-wind/utilities/constants.H"
 
 namespace amr_wind {
 
@@ -56,8 +57,7 @@ class SamplerBase : public Factory<SamplerBase, CFDSim&>
 public:
     static std::string base_identifier() { return "SamplerBase"; }
 
-    static constexpr amrex::Real bounds_tol =
-        std::numeric_limits<amrex::Real>::epsilon();
+    static constexpr amrex::Real bounds_tol = constants::TIGHT_TOL;
 
     ~SamplerBase() override = default;
 
