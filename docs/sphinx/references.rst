@@ -7,11 +7,11 @@ The following journal articles (`AMR-Wind reference <https://doi.org/10.1002/we.
         author = {Kuhn, Michael B. and {Henry de Frahan}, Marc T. and Mohan, Prakash and Deskos, Georgios and Churchfield, Matthew and Cheung, Lawrence and Sharma, Ashesh and Almgren, Ann and Ananthan, Shreyas and Brazell, Michael J. and {Martinez-Tossas} Luis A. and Thedin, Regis and Rood, Jon and Sakievich, Philip and Vijayakumar, Ganesh and Zhang, Weiqun and Sprague, Michael A.},
         title = {AMR-Wind: A performance-portable, high-fidelity flow solver for wind farm simulations},
         journal = {Wind Energy},
-        volume = {-},
-        number = {-},
+        volume = {28},
+        number = {5},
         pages = {-},
         doi = {10.1002/we.70010},
-        url = {},
+        url = {https://onlinelibrary.wiley.com/doi/full/10.1002/we.70010},
         eprint = {},
         year = {2025}
     }
