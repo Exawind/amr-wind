@@ -77,6 +77,9 @@ public:
         return (m_beam_points * m_ntotal);
     }
 
+    //! Type of this sampling object
+    std::string sampletype() const override { return identifier(); }
+
     void
     define_netcdf_metadata(const ncutils::NCGroup& /*unused*/) const override;
     void

@@ -132,7 +132,13 @@ void SamplingContainer::initialize_particles(
             offset += npts;
         }
     }
-    AMREX_ALWAYS_ASSERT(m_total_particles == TotalNumberOfParticles(false));
+    // Skip this check if there is a DTUSpinnerSampler (may have out of domain
+    // particles)
+    if (std::all_of(samplers.cbegin(), samplers.cend(), [](const auto& probe) {
+            return probe->sampletype() != "DTUSpinnerSampler";
+        })) {
+        AMREX_ALWAYS_ASSERT(m_total_particles == TotalNumberOfParticles(false));
+    }
 }
 
 void SamplingContainer::interpolate_derived_fields(
