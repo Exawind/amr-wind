@@ -82,9 +82,23 @@ void InletData::read_data(
     const int idxp1 = idx + 1;
     m_tn = times[idx];
     m_tnp1 = times[idxp1];
-    AMREX_ALWAYS_ASSERT(
-        ((m_tn <= time + constants::LOOSE_TOL) &&
-         (time <= m_tnp1 + constants::LOOSE_TOL)));
+    if (!((m_tn <= time + constants::LOOSE_TOL) &&
+          (time <= m_tnp1 + constants::LOOSE_TOL))) {
+        amrex::Abort(
+            "ABLBoundaryPlane.cpp InletData::read_data() check failed\n"
+            "Left time quantities should be <= right time quantities. Indices "
+            "supplied for debugging.\n"
+            "m_tn = " +
+            std::to_string(m_tn) + ", time + LOOSE_TOL = " +
+            std::to_string(time + constants::LOOSE_TOL) +
+            "\n"
+            "time = " +
+            std::to_string(time) + ", m_tnp1 + LOOSE_TOL = " +
+            std::to_string(m_tnp1 + constants::LOOSE_TOL) +
+            "\n"
+            "idx = " +
+            std::to_string(idx) + ", idxp1 = " + std::to_string(idxp1));
+    }
 
     const int normal = ori.coordDir();
     const amrex::GpuArray<int, 2> perp = utils::perpendicular_idx(normal);
@@ -162,9 +176,24 @@ void InletData::read_data_native(
 
     auto ori = oit();
 
-    AMREX_ALWAYS_ASSERT(
-        ((m_tn <= time + constants::LOOSE_TOL) &&
-         (time <= m_tnp1 + constants::LOOSE_TOL)));
+    if (!((m_tn <= time + constants::LOOSE_TOL) &&
+          (time <= m_tnp1 + constants::LOOSE_TOL))) {
+        amrex::Abort(
+            "ABLBoundaryPlane.cpp InletData::read_data_native() check "
+            "failed\n"
+            "Left time quantities should be <= right time quantities. Indices "
+            "supplied for debugging.\n"
+            "m_tn = " +
+            std::to_string(m_tn) + ", time + LOOSE_TOL = " +
+            std::to_string(time + constants::LOOSE_TOL) +
+            "\n"
+            "time = " +
+            std::to_string(time) + ", m_tnp1 + LOOSE_TOL = " +
+            std::to_string(m_tnp1 + constants::LOOSE_TOL) +
+            "\n"
+            "idx = " +
+            std::to_string(idx) + ", idxp1 = " + std::to_string(idxp1));
+    }
     AMREX_ALWAYS_ASSERT(fld->num_comp() == bndry_n[ori].nComp());
     AMREX_ASSERT(bndry_n[ori].boxArray() == bndry_np1[ori].boxArray());
 
@@ -730,8 +759,16 @@ void ABLBoundaryPlane::read_header()
         ncf.var("time").get(m_in_times.data());
 
         // Sanity check the input file time
-        AMREX_ALWAYS_ASSERT(
-            m_in_times[0] <= m_time.current_time() + constants::LOOSE_TOL);
+        if (!(m_in_times[0] <= m_time.current_time() + constants::LOOSE_TOL)) {
+            amrex::Abort(
+                "ABLBoundaryPlane.cpp ABLBoundaryPlane::read_header() check "
+                "failed\n"
+                "Left time quantities should be <= right time quantities.\n"
+                "m_in_times[0] = " +
+                std::to_string(m_in_times[0]) +
+                ", current_time + LOOSE_TOL = " +
+                std::to_string(m_time.current_time() + constants::LOOSE_TOL));
+        }
 
         for (auto& plane_grp : ncf.all_groups()) {
             int normal, face_dir;
@@ -1127,9 +1164,20 @@ void ABLBoundaryPlane::read_file(const bool nph_target_time)
         return;
     }
 
-    AMREX_ALWAYS_ASSERT(
-        (m_in_times[0] <= time + constants::LOOSE_TOL) &&
-        (time < m_in_times.back() + constants::LOOSE_TOL));
+    if (!((m_in_times[0] <= time + constants::LOOSE_TOL) &&
+          (time < m_in_times.back() + constants::LOOSE_TOL))) {
+        amrex::Abort(
+            "ABLBoundaryPlane.cpp ABLBoundaryPlane::read_file() check 1"
+            "failed\n"
+            "Left time quantities should be <= or < right time quantities.\n"
+            "m_in_times[0] = " +
+            std::to_string(m_in_times[0]) + ", time + LOOSE_TOL = " +
+            std::to_string(time + constants::LOOSE_TOL) +
+            "\n"
+            "time = " +
+            std::to_string(time) + ", m_in_times.back() + LOOSE_TOL = " +
+            std::to_string(m_in_times.back() + constants::LOOSE_TOL));
+    }
 
     // return early if current data files can still be interpolated in time
     if ((m_in_data.tn() <= time) && (time < m_in_data.tnp1())) {
@@ -1170,9 +1218,26 @@ void ABLBoundaryPlane::read_file(const bool nph_target_time)
         const int t_step1 = m_in_timesteps[index];
         const int t_step2 = m_in_timesteps[index + 1];
 
-        AMREX_ALWAYS_ASSERT(
-            (m_in_times[index] <= time + constants::LOOSE_TOL) &&
-            (time <= m_in_times[index + 1] + constants::LOOSE_TOL));
+        if (!((m_in_times[index] <= time + constants::LOOSE_TOL) &&
+              (time <= m_in_times[index + 1] + constants::LOOSE_TOL))) {
+            amrex::Abort(
+                "ABLBoundaryPlane.cpp ABLBoundaryPlane::read_file() check 2"
+                "failed\n"
+                "Left time quantities should be <= right time quantities. "
+                "Indices supplied for debugging.\n"
+                "m_in_times[index] = " +
+                std::to_string(m_in_times[index]) + ", time + LOOSE_TOL = " +
+                std::to_string(time + constants::LOOSE_TOL) +
+                "\n"
+                "time = " +
+                std::to_string(time) +
+                ", m_in_times[index + 1] + LOOSE_TOL = " +
+                std::to_string(m_in_times[index + 1] + constants::LOOSE_TOL) +
+                "\n"
+                "index = " +
+                std::to_string(index) +
+                ", index + 1 = " + std::to_string(index + 1));
+        }
 
         const std::string chkname1 =
             m_filename + amrex::Concatenate("/bndry_output", t_step1);
@@ -1249,11 +1314,34 @@ void ABLBoundaryPlane::populate_data(
         return;
     }
 
-    AMREX_ALWAYS_ASSERT(
-        ((m_in_data.tn() <= time - constants::LOOSE_TOL) ||
-         (time <= m_in_data.tnp1() - constants::LOOSE_TOL)));
-    AMREX_ALWAYS_ASSERT(
-        std::abs(time - m_in_data.tinterp()) < constants::LOOSE_TOL);
+    if (!((m_in_data.tn() <= time + constants::LOOSE_TOL) ||
+          (time <= m_in_data.tnp1() + constants::LOOSE_TOL))) {
+        amrex::Abort(
+            "ABLBoundaryPlane.cpp ABLBoundaryPlane::populate_data() check 1"
+            "failed\n"
+            "Left time quantities should be <= right time quantities\n"
+            "m_in_data.tn() = " +
+            std::to_string(m_in_data.tn()) + ", time + LOOSE_TOL = " +
+            std::to_string(time + constants::LOOSE_TOL) +
+            "\n"
+            "time = " +
+            std::to_string(time) + ", m_in_data.tnp1() + LOOSE_TOL = " +
+            std::to_string(m_in_data.tnp1() + constants::LOOSE_TOL));
+    }
+    if (!(std::abs(time - m_in_data.tinterp()) < constants::LOOSE_TOL)) {
+        amrex::Abort(
+            "ABLBoundaryPlane.cpp ABLBoundaryPlane::populate_data() check 2"
+            "failed\n"
+            "Left time quantities should be < right time quantities. "
+            "Additional quantities supplied on second line for debugging.\n"
+            "std::abs(time - m_in_data.tinterp()) = " +
+            std::to_string(std::abs(time - m_in_data.tinterp())) +
+            ", LOOSE_TOL = " + std::to_string(constants::LOOSE_TOL) +
+            "\n"
+            "time = " +
+            std::to_string(time) +
+            ", m_in_data.tinterp() = " + std::to_string(m_in_data.tinterp()));
+    }
 
     for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
         auto ori = oit();
