@@ -5,6 +5,8 @@
 #include "amr-wind/equation_systems/PDEHelpers.H"
 #include "amr-wind/incflo_enums.H"
 #include "amr-wind/core/field_ops.H"
+#include "amr-wind/utilities/constants.H"
+#include "amr-wind/utilities/diagnostics.H"
 
 #include "AMReX_ParmParse.H"
 
@@ -139,6 +141,48 @@ void PDEMgr::prepare_boundaries()
             AMREX_D_DECL(&u_mac, &v_mac, &w_mac)};
         icns().fields().field.fillpatch_sibling_fields(
             nph_time, u_mac.num_grow(), mac_vel);
+    }
+}
+
+void PDEMgr::density_check()
+{
+    if (m_sim.repo().field_exists("vof")) {
+        amrex::Real rho_l_max{1.0}, rho_l_min{1.0};
+        amrex::Real rho_g_max{1.0}, rho_g_min{1.0};
+        diagnostics::get_field_extrema(
+            rho_l_max, rho_l_min, m_sim.repo().get_field("density"),
+            m_sim.repo().get_field("vof"), 1.0);
+        diagnostics::get_field_extrema(
+            rho_g_max, rho_g_min, m_sim.repo().get_field("density"),
+            m_sim.repo().get_field("vof"), 0.0);
+        if (std::abs(rho_l_max - rho_l_min) > constants::LOOSE_TOL) {
+            amrex::Abort(
+                "Density check failed. Liquid density maximum is too different "
+                "from liquid density minimum.\n"
+                "rho_l_max = " +
+                std::to_string(rho_l_max) +
+                ", rho_l_min = " + std::to_string(rho_l_min));
+        }
+        if (std::abs(rho_g_max - rho_g_min) > constants::LOOSE_TOL) {
+            amrex::Abort(
+                "Density check failed. Gas density maximum is too different "
+                "from gas density minimum.\n"
+                "rho_g_max = " +
+                std::to_string(rho_g_max) +
+                ", rho_g_min = " + std::to_string(rho_g_min));
+        }
+    } else if (m_constant_density) {
+        amrex::Real rho_max{1.0}, rho_min{1.0};
+        diagnostics::get_field_extrema(
+            rho_max, rho_min, m_sim.repo().get_field("density"));
+        if (std::abs(rho_max - rho_min) > constants::LOOSE_TOL) {
+            amrex::Abort(
+                "Density check failed. Density maximum is too different "
+                "from minimum for a constant density simulation.\n"
+                "rho_max = " +
+                std::to_string(rho_max) +
+                ", rho_min = " + std::to_string(rho_min));
+        }
     }
 }
 
