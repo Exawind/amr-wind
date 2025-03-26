@@ -176,8 +176,8 @@ void InletData::read_data_native(
 
     auto ori = oit();
 
-    if (!((m_tn <= time + constants::LOOSE_TOL) &&
-          (time <= m_tnp1 + constants::LOOSE_TOL))) {
+    if (!(m_tn <= time + constants::LOOSE_TOL) ||
+        !(time <= m_tnp1 + constants::LOOSE_TOL)) {
         amrex::Abort(
             "ABLBoundaryPlane.cpp InletData::read_data_native() check "
             "failed\n"
@@ -1164,8 +1164,8 @@ void ABLBoundaryPlane::read_file(const bool nph_target_time)
         return;
     }
 
-    if (!((m_in_times[0] <= time + constants::LOOSE_TOL) &&
-          (time < m_in_times.back() + constants::LOOSE_TOL))) {
+    if (!(m_in_times[0] <= time + constants::LOOSE_TOL) ||
+        !(time < m_in_times.back() + constants::LOOSE_TOL)) {
         amrex::Abort(
             "ABLBoundaryPlane.cpp ABLBoundaryPlane::read_file() check 1"
             "failed\n"
@@ -1218,8 +1218,8 @@ void ABLBoundaryPlane::read_file(const bool nph_target_time)
         const int t_step1 = m_in_timesteps[index];
         const int t_step2 = m_in_timesteps[index + 1];
 
-        if (!((m_in_times[index] <= time + constants::LOOSE_TOL) &&
-              (time <= m_in_times[index + 1] + constants::LOOSE_TOL))) {
+        if (!(m_in_times[index] <= time + constants::LOOSE_TOL) ||
+            !(time <= m_in_times[index + 1] + constants::LOOSE_TOL)) {
             amrex::Abort(
                 "ABLBoundaryPlane.cpp ABLBoundaryPlane::read_file() check 2"
                 "failed\n"
@@ -1314,8 +1314,8 @@ void ABLBoundaryPlane::populate_data(
         return;
     }
 
-    if (!((m_in_data.tn() <= time + constants::LOOSE_TOL) ||
-          (time <= m_in_data.tnp1() + constants::LOOSE_TOL))) {
+    if (!(m_in_data.tn() <= time + constants::LOOSE_TOL) &&
+        !(time <= m_in_data.tnp1() + constants::LOOSE_TOL)) {
         amrex::Abort(
             "ABLBoundaryPlane.cpp ABLBoundaryPlane::populate_data() check 1"
             "failed\n"
