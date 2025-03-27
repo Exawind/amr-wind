@@ -158,20 +158,19 @@ struct DiffusionOp<
         const auto& repo = this->m_pdefields.repo;
         const int nlevels = repo.num_active_levels();
         auto& divtau = this->m_pdefields.diff_term.state(tau_state);
-        auto& m_density = this->m_pdefields.repo.get_field("density");
-        const auto& density = m_density.state(FieldState::NPH);
+        const auto& density =
+            this->m_pdefields.repo.get_field("density").state(FieldState::NPH);
         if (!PDE::multiply_rho) {
             for (int lev = 0; lev < nlevels; ++lev) {
                 const auto& divtau_arrs = divtau(lev).arrays();
                 const auto& rho_arrs = density(lev).const_arrays();
 
                 amrex::ParallelFor(
-                    divtau(lev), [=] AMREX_GPU_DEVICE(
-                                     int nbx, int i, int j, int k) noexcept {
+                    divtau(lev), amrex::IntVect(0), divtau.num_comp(),
+                    [=] AMREX_GPU_DEVICE(
+                        int nbx, int i, int j, int k, int n) noexcept {
                         amrex::Real rhoinv = 1.0 / rho_arrs[nbx](i, j, k);
-                        divtau_arrs[nbx](i, j, k, 0) *= rhoinv;
-                        divtau_arrs[nbx](i, j, k, 1) *= rhoinv;
-                        divtau_arrs[nbx](i, j, k, 2) *= rhoinv;
+                        divtau_arrs[nbx](i, j, k, n) *= rhoinv;
                     });
             }
             amrex::Gpu::streamSynchronize();
