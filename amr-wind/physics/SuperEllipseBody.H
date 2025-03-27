@@ -37,6 +37,7 @@ class SuperEllipseBody : public Physics::Register<SuperEllipseBody>
     //! Blanking field for SuperEllipseBody
     IntField&  m_body_blank;
     IntField&  m_terrain_drag;
+    Field& m_terrainz0;    
 
     vs::Vector m_loc{0.0, 0.0, 0.0};
 
