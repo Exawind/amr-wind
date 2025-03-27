@@ -86,26 +86,50 @@ void amr_wind::diagnostics::get_mfab_extrema(
         });
 }
 
+void amr_wind::diagnostics::make_mask_multiplier(
+    amrex::MultiFab& mfab,
+    const amrex::MultiFab& mfab_mask,
+    const amrex::Real mask_val,
+    const amrex::Real set_val)
+{
+    const auto& arr = mfab.arrays();
+    const auto& arr_mask = mfab_mask.const_arrays();
+    amrex::ParallelFor(
+        mfab, mfab.n_grow, mfab.n_comp,
+        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
+            arr[nbx](i, j, k, n) = std::abs(arr_mask[nbx](i, j, k) - mask_val) <
+                                           constants::TIGHT_TOL
+                                       ? 1.0
+                                       : set_val;
+        });
+}
+
 void amr_wind::diagnostics::get_field_extrema(
     amrex::Real& field_max_val,
     amrex::Real& field_min_val,
     const amr_wind::Field& field,
+    const int icomp,
     const bool include_ghosts)
 {
     const int finest_level = field.repo().num_active_levels() - 1;
 
     // Initial values
-    amrex::Real max_val_lev{-1e8};
-    amrex::Real min_val_lev{1e8};
+    amrex::Real max_val_lev{constants::LOW_NUM};
+    amrex::Real min_val_lev{constants::LARGE_NUM};
     field_max_val = max_val_lev;
     field_min_val = min_val_lev;
+    // Handle component logic, negative icomp means all components
+    const int comp_start = (icomp < 0) ? 0 : icomp;
+    const int comp_end = (icomp < 0) ? field.num_comp() : icomp + 1;
     for (int lev = 0; lev <= finest_level; lev++) {
-        amr_wind::diagnostics::get_mfab_extrema(
-            max_val_lev, min_val_lev, field(lev),
-            include_ghosts ? field.num_grow()[0] : 0);
-
-        field_max_val = amrex::max(field_max_val, max_val_lev);
-        field_min_val = amrex::min(field_min_val, min_val_lev);
+        for (int n = comp_start; n < comp_end; ++n) {
+            max_val_lev =
+                field(lev).max(n, include_ghosts ? field.num_grow()[n] : 0);
+            min_val_lev =
+                field(lev).min(n, include_ghosts ? field.num_grow()[n] : 0);
+            field_min_val = amrex::min(field_min_val, min_val_lev);
+            field_max_val = amrex::max(field_max_val, max_val_lev);
+        }
     }
 
     // Do additional parallelism stuff
@@ -119,23 +143,47 @@ void amr_wind::diagnostics::get_field_extrema(
     const amr_wind::Field& field,
     const amr_wind::Field& field_mask,
     const amrex::Real mask_val,
+    const int icomp,
     const bool include_ghosts)
 
 {
     const int finest_level = field.repo().num_active_levels() - 1;
 
     // Initial values
-    amrex::Real max_val_lev{-1e8};
-    amrex::Real min_val_lev{1e8};
+    amrex::Real max_val_lev{constants::LOW_NUM};
+    amrex::Real min_val_lev{constants::LARGE_NUM};
     field_max_val = max_val_lev;
     field_min_val = min_val_lev;
+    // Handle component logic, negative icomp means all components
+    const int comp_start = (icomp < 0) ? 0 : icomp;
+    const int comp_end = (icomp < 0) ? field.num_comp() : icomp + 1;
+    const int ncomp = comp_end - comp_start;
     for (int lev = 0; lev <= finest_level; lev++) {
-        amr_wind::diagnostics::get_mfab_extrema(
-            max_val_lev, min_val_lev, field(lev), field_mask(lev), mask_val,
-            include_ghosts ? field.num_grow()[0] : 0);
-
-        field_max_val = amrex::max(field_max_val, max_val_lev);
-        field_min_val = amrex::min(field_min_val, min_val_lev);
+        amrex::MultiFab mask_multiplier_max(
+            field_mask(lev).boxArray(), field_mask(lev).DistributionMap(),
+            ncomp, include_ghosts ? field_mask.num_grow()[0] : 0);
+        amrex::MultiFab mask_multiplier_min(
+            field_mask(lev).boxArray(), field_mask(lev).DistributionMap(),
+            ncomp, include_ghosts ? field_mask.num_grow()[0] : 0);
+        amr_wind::diagnostics::make_mask_multiplier(
+            mask_multiplier_max, field_mask(lev), mask_val, constants::LOW_NUM);
+        amr_wind::diagnostics::make_mask_multiplier(
+            mask_multiplier_min, field_mask(lev), mask_val,
+            constants::LARGE_NUM);
+        amrex::MultiFab::Multiply(
+            mask_multiplier_max, field(lev), comp_start, 0, ncomp,
+            include_ghosts ? field.num_grow() : amrex::IntVect(0));
+        amrex::MultiFab::Multiply(
+            mask_multiplier_min, field(lev), comp_start, 0, ncomp,
+            include_ghosts ? field.num_grow() : amrex::IntVect(0));
+        for (int n = 0; n < ncomp; ++n) {
+            max_val_lev = mask_multiplier_max.max(
+                n, include_ghosts ? field.num_grow()[n] : 0);
+            min_val_lev = mask_multiplier_min.min(
+                n, include_ghosts ? field.num_grow()[n] : 0);
+            field_min_val = amrex::min(field_min_val, min_val_lev);
+            field_max_val = amrex::max(field_max_val, max_val_lev);
+        }
     }
 
     // Do additional parallelism stuff
