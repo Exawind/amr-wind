@@ -228,6 +228,7 @@ amrex::Real ConvectingTaylorVortex::compute_error(const Field& field)
             : nullptr;
 
     const int nlevels = m_repo.num_active_levels();
+    amrex::Real vol;
     for (int lev = 0; lev < nlevels; ++lev) {
 
         amrex::iMultiFab level_mask;
@@ -296,12 +297,31 @@ amrex::Real ConvectingTaylorVortex::compute_error(const Field& field)
                 return cell_vol * mask_bx(i, j, k) * (u - u_exact) *
                        (u - u_exact);
             });
+
+        amrex::Real error_vol;
+        error_vol += amrex::ParReduce(
+            amrex::TypeList<amrex::ReduceOpSum>{},
+            amrex::TypeList<amrex::Real>{}, fld, amrex::IntVect(0),
+            [=] AMREX_GPU_DEVICE(int box_no, int i, int j, int k)
+                -> amrex::GpuTuple<amrex::Real> {
+                auto const& mask_bx = mask_arr[box_no];
+                amrex::Real fac_x =
+                    mesh_mapping ? (fac_arr[box_no](i, j, k, 0)) : 1.0;
+                amrex::Real fac_y =
+                    mesh_mapping ? (fac_arr[box_no](i, j, k, 1)) : 1.0;
+                amrex::Real fac_z =
+                    mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0;
+                const amrex::Real cell_vol =
+                    dx[0] * fac_x * dx[1] * fac_y * dx[2] * fac_z;
+
+                return cell_vol * mask_bx(i, j, k);
+            });
+        vol = error_vol;
     }
 
     amrex::ParallelDescriptor::ReduceRealSum(error);
 
-    const amrex::Real total_vol = m_mesh.Geom(0).ProbDomain().volume();
-    return std::sqrt(error / total_vol);
+    return std::sqrt(error / vol);
 }
 
 void ConvectingTaylorVortex::output_error()
