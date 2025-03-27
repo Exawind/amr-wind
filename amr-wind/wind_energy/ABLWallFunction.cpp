@@ -5,6 +5,7 @@
 #include "amr-wind/utilities/trig_ops.H"
 #include "amr-wind/diffusion/diffusion.H"
 #include "amr-wind/wind_energy/ShearStress.H"
+#include "amr-wind/wind_energy/MOData.H"
 
 #include <cmath>
 
@@ -146,10 +147,10 @@ ABLVelWallFunc::ABLVelWallFunc(
     pp.query("wall_shear_stress_type", m_wall_shear_stress_type);
     pp.query("wall_het_model", m_wall_het_model);
     pp.query("mol_length", m_mol_length);
-    pp.query("surface_roughness_z0", m_z0);
-    pp.query("kappa", m_kappa);
-    pp.query("mo_gamma_m", m_gamma_m);
-    pp.query("mo_beta_m", m_beta_m);
+    // pp.query("surface_roughness_z0", m_z0);
+    // pp.query("kappa", m_kappa);
+    // pp.query("mo_gamma_m", m_gamma_m);
+    // pp.query("mo_beta_m", m_beta_m);
     m_wall_shear_stress_type = amrex::toLower(m_wall_shear_stress_type);
 
     if (m_wall_shear_stress_type == "constant" ||
@@ -183,6 +184,7 @@ void ABLVelWallFunc::wall_model(
     if (velocity.bc_type()[zlo] != BC::wall_model) {
         return;
     }
+    const auto& mo = m_wall_func.mo();
     const bool has_terrain = repo.int_field_exists("terrain_blank");
     const auto* m_terrain_blank =
         has_terrain ? &repo.get_int_field("terrain_blank") : nullptr;
@@ -216,18 +218,9 @@ void ABLVelWallFunc::wall_model(
                 if (m_wall_het_model == "mol") {
                     const amrex::Real z = 0.5 * dx[2];
                     const amrex::Real zeta = z / m_mol_length;
-                    amrex::Real psi_m = 0;
-                    if (zeta > 0) {
-                        psi_m = -m_gamma_m * zeta;
-                    } else {
-                        amrex::Real x =
-                            std::sqrt(std::sqrt(1 - m_beta_m * zeta));
-                        psi_m = 2.0 * std::log(0.5 * (1.0 + x)) +
-                                log(0.5 * (1 + x * x)) - 2.0 * std::atan(x) +
-                                utils::half_pi();
-                    }
-                    const amrex::Real z0 = m_z0;
-                    const amrex::Real kappa = m_kappa;
+                    const amrex::Real psi_m = mo.calc_psi_m(zeta);
+                    const amrex::Real z0 = mo.z0;
+                    const amrex::Real kappa = mo.kappa;
                     amrex::ParallelFor(
                         amrex::bdryLo(bx, idim),
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -323,12 +316,12 @@ ABLTempWallFunc::ABLTempWallFunc(
     pp.query("wall_shear_stress_type", m_wall_shear_stress_type);
     pp.query("wall_het_model", m_wall_het_model);
     pp.query("mol_length", m_mol_length);
-    pp.query("surface_roughness_z0", m_z0);
-    pp.query("kappa", m_kappa);
-    pp.query("mo_gamma_m", m_gamma_m);
-    pp.query("mo_beta_m", m_beta_m);
-    pp.query("mo_gamma_h", m_gamma_h);
-    pp.query("mo_beta_h", m_beta_h);
+    // pp.query("surface_roughness_z0", m_z0);
+    // pp.query("kappa", m_kappa);
+    // pp.query("mo_gamma_m", m_gamma_m);
+    // pp.query("mo_beta_m", m_beta_m);
+    // pp.query("mo_gamma_h", m_gamma_h);
+    // pp.query("mo_beta_h", m_beta_h);
     m_wall_shear_stress_type = amrex::toLower(m_wall_shear_stress_type);
     amrex::Print() << "Heat Flux model: " << m_wall_shear_stress_type
                    << std::endl;
@@ -340,6 +333,7 @@ void ABLTempWallFunc::wall_model(
 {
     constexpr int idim = 2;
     auto& repo = temperature.repo();
+    const auto& mo = m_wall_func.mo();
 
     // Return early if the user hasn't requested a wall model BC for temperature
     amrex::Orientation zlo(amrex::Direction::z, amrex::Orientation::low);
@@ -392,18 +386,9 @@ void ABLTempWallFunc::wall_model(
                 if (m_wall_het_model == "mol") {
                     const amrex::Real z = 0.5 * dx[2];
                     const amrex::Real zeta = z / m_mol_length;
-                    amrex::Real psi_m = 0.0;
-                    if (zeta > 0) {
-                        psi_m = -m_gamma_m * zeta;
-                    } else {
-                        amrex::Real x =
-                            std::sqrt(std::sqrt(1 - m_beta_m * zeta));
-                        psi_m = 2.0 * std::log(0.5 * (1.0 + x)) +
-                                log(0.5 * (1 + x * x)) - 2.0 * std::atan(x) +
-                                utils::half_pi();
-                    }
-                    const amrex::Real z0 = m_z0;
-                    const amrex::Real kappa = m_kappa;
+                    const amrex::Real psi_m = mo.calc_psi_m(zeta);
+                    const amrex::Real z0 = mo.z0;
+                    const amrex::Real kappa = mo.kappa;
                     const amrex::Real gravity_mod = 9.81;
                     const amrex::Real mol_length = m_mol_length;
                     amrex::ParallelFor(
