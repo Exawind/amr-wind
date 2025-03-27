@@ -146,6 +146,13 @@ void PDEMgr::prepare_boundaries()
 
 void PDEMgr::density_check()
 {
+    std::string advice(
+        "\nCheck the initial bulk density and the inflow BC density values in "
+        "the input file. When not specified, the default density is 1.0.");
+    std::string advice2(
+        "\nIf this simulation begins from a restart file, confirm that the "
+        "previous density is compatible with the parameters in the input "
+        "file.");
     if (m_sim.repo().field_exists("vof")) {
         amrex::Real rho_l_max{1.0}, rho_l_min{1.0};
         amrex::Real rho_g_max{1.0}, rho_g_min{1.0};
@@ -161,15 +168,15 @@ void PDEMgr::density_check()
                 "from liquid density minimum.\n"
                 "rho_l_max = " +
                 std::to_string(rho_l_max) +
-                ", rho_l_min = " + std::to_string(rho_l_min));
+                ", rho_l_min = " + std::to_string(rho_l_min) + advice2);
         }
         if (std::abs(rho_g_max - rho_g_min) > constants::LOOSE_TOL) {
             amrex::Abort(
                 "Density check failed. Gas density maximum is too different "
                 "from gas density minimum.\n"
                 "rho_g_max = " +
-                std::to_string(rho_g_max) +
-                ", rho_g_min = " + std::to_string(rho_g_min));
+                std::to_string(rho_g_max) + ", rho_g_min = " +
+                std::to_string(rho_g_min) + advice + advice2);
         }
     } else if (m_constant_density) {
         amrex::Real rho_max{1.0}, rho_min{1.0};
@@ -181,7 +188,7 @@ void PDEMgr::density_check()
                 "from minimum for a constant density simulation.\n"
                 "rho_max = " +
                 std::to_string(rho_max) +
-                ", rho_min = " + std::to_string(rho_min));
+                ", rho_min = " + std::to_string(rho_min) + advice + advice2);
         }
     }
 }
