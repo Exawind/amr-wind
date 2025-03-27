@@ -65,7 +65,6 @@ void amr_wind::diagnostics::get_field_extrema(
 {
     const int finest_level = field.repo().num_active_levels() - 1;
 
-    // Initial values
     amrex::Real max_val_lev{constants::LOW_NUM};
     amrex::Real min_val_lev{constants::LARGE_NUM};
     field_max_val = max_val_lev;
