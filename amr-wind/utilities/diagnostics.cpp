@@ -4,88 +4,6 @@
 
 using namespace amrex;
 
-void amr_wind::diagnostics::get_mfab_extrema(
-    amrex::Real& mfab_max_val,
-    amrex::Real& mfab_min_val,
-    const amrex::MultiFab& mfab,
-    const int nghost)
-{
-    int ncomp = mfab.n_comp;
-    mfab_max_val = amrex::ReduceMax(
-        mfab, nghost,
-        [=] AMREX_GPU_HOST_DEVICE(
-            amrex::Box const& bx,
-            amrex::Array4<amrex::Real const> const& f_arr) -> amrex::Real {
-            amrex::Real max_fab = -1e8;
-            amrex::Loop(bx, [=, &max_fab](int i, int j, int k) noexcept {
-                for (int n = 0; n < ncomp; ++n) {
-                    max_fab = amrex::max(max_fab, f_arr(i, j, k, n));
-                }
-            });
-            return max_fab;
-        });
-
-    mfab_min_val = amrex::ReduceMin(
-        mfab, nghost,
-        [=] AMREX_GPU_HOST_DEVICE(
-            amrex::Box const& bx,
-            amrex::Array4<amrex::Real const> const& f_arr) -> amrex::Real {
-            amrex::Real min_fab = 1e8;
-            amrex::Loop(bx, [=, &min_fab](int i, int j, int k) noexcept {
-                for (int n = 0; n < ncomp; ++n) {
-                    min_fab = amrex::min(min_fab, f_arr(i, j, k, n));
-                }
-            });
-            return min_fab;
-        });
-}
-
-void amr_wind::diagnostics::get_mfab_extrema(
-    amrex::Real& mfab_max_val,
-    amrex::Real& mfab_min_val,
-    const amrex::MultiFab& mfab,
-    const amrex::MultiFab& mfab_mask,
-    const amrex::Real mask_val,
-    const int nghost)
-{
-    int ncomp = mfab.n_comp;
-    mfab_max_val = amrex::ReduceMax(
-        mfab, mfab_mask, nghost,
-        [=] AMREX_GPU_HOST_DEVICE(
-            amrex::Box const& bx, amrex::Array4<amrex::Real const> const& f_arr,
-            amrex::Array4<amrex::Real const> const& mask_arr) -> amrex::Real {
-            amrex::Real max_fab = -1e8;
-            amrex::Loop(bx, [=, &max_fab](int i, int j, int k) noexcept {
-                for (int n = 0; n < ncomp; ++n) {
-                    max_fab = amrex::max(
-                        max_fab, std::abs(mask_arr(i, j, k) - mask_val) <
-                                         constants::TIGHT_TOL
-                                     ? f_arr(i, j, k, n)
-                                     : max_fab);
-                }
-            });
-            return max_fab;
-        });
-
-    mfab_min_val = amrex::ReduceMin(
-        mfab, mfab_mask, nghost,
-        [=] AMREX_GPU_HOST_DEVICE(
-            amrex::Box const& bx, amrex::Array4<amrex::Real const> const& f_arr,
-            amrex::Array4<amrex::Real const> const& mask_arr) -> amrex::Real {
-            amrex::Real min_fab = 1e8;
-            amrex::Loop(bx, [=, &min_fab](int i, int j, int k) noexcept {
-                for (int n = 0; n < ncomp; ++n) {
-                    min_fab = amrex::min(
-                        min_fab, std::abs(mask_arr(i, j, k) - mask_val) <
-                                         constants::TIGHT_TOL
-                                     ? f_arr(i, j, k, n)
-                                     : min_fab);
-                }
-            });
-            return min_fab;
-        });
-}
-
 void amr_wind::diagnostics::make_mask_multiplier(
     amrex::MultiFab& mfab,
     const amrex::MultiFab& mfab_mask,
@@ -108,7 +26,8 @@ void amr_wind::diagnostics::get_field_extrema(
     amrex::Real& field_max_val,
     amrex::Real& field_min_val,
     const amr_wind::Field& field,
-    const int icomp,
+    const int comp,
+    const int ncomp,
     const bool include_ghosts)
 {
     const int finest_level = field.repo().num_active_levels() - 1;
@@ -118,11 +37,8 @@ void amr_wind::diagnostics::get_field_extrema(
     amrex::Real min_val_lev{constants::LARGE_NUM};
     field_max_val = max_val_lev;
     field_min_val = min_val_lev;
-    // Handle component logic, negative icomp means all components
-    const int comp_start = (icomp < 0) ? 0 : icomp;
-    const int comp_end = (icomp < 0) ? field.num_comp() : icomp + 1;
     for (int lev = 0; lev <= finest_level; lev++) {
-        for (int n = comp_start; n < comp_end; ++n) {
+        for (int n = comp; n < comp + ncomp; ++n) {
             max_val_lev =
                 field(lev).max(n, include_ghosts ? field.num_grow()[n] : 0);
             min_val_lev =
@@ -143,7 +59,8 @@ void amr_wind::diagnostics::get_field_extrema(
     const amr_wind::Field& field,
     const amr_wind::Field& field_mask,
     const amrex::Real mask_val,
-    const int icomp,
+    const int comp,
+    const int ncomp,
     const bool include_ghosts)
 
 {
@@ -154,10 +71,6 @@ void amr_wind::diagnostics::get_field_extrema(
     amrex::Real min_val_lev{constants::LARGE_NUM};
     field_max_val = max_val_lev;
     field_min_val = min_val_lev;
-    // Handle component logic, negative icomp means all components
-    const int comp_start = (icomp < 0) ? 0 : icomp;
-    const int comp_end = (icomp < 0) ? field.num_comp() : icomp + 1;
-    const int ncomp = comp_end - comp_start;
     for (int lev = 0; lev <= finest_level; lev++) {
         amrex::MultiFab mask_multiplier_max(
             field_mask(lev).boxArray(), field_mask(lev).DistributionMap(),
@@ -171,10 +84,10 @@ void amr_wind::diagnostics::get_field_extrema(
             mask_multiplier_min, field_mask(lev), mask_val,
             constants::LARGE_NUM);
         amrex::MultiFab::Multiply(
-            mask_multiplier_max, field(lev), comp_start, 0, ncomp,
+            mask_multiplier_max, field(lev), comp, 0, ncomp,
             include_ghosts ? field.num_grow() : amrex::IntVect(0));
         amrex::MultiFab::Multiply(
-            mask_multiplier_min, field(lev), comp_start, 0, ncomp,
+            mask_multiplier_min, field(lev), comp, 0, ncomp,
             include_ghosts ? field.num_grow() : amrex::IntVect(0));
         for (int n = 0; n < ncomp; ++n) {
             max_val_lev = mask_multiplier_max.max(

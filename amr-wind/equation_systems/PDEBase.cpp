@@ -158,10 +158,10 @@ void PDEMgr::density_check()
         amrex::Real rho_g_max{1.0}, rho_g_min{1.0};
         diagnostics::get_field_extrema(
             rho_l_max, rho_l_min, m_sim.repo().get_field("density"),
-            m_sim.repo().get_field("vof"), 1.0);
+            m_sim.repo().get_field("vof"), 1.0, 0, 1);
         diagnostics::get_field_extrema(
             rho_g_max, rho_g_min, m_sim.repo().get_field("density"),
-            m_sim.repo().get_field("vof"), 0.0);
+            m_sim.repo().get_field("vof"), 0.0, 0, 1);
         if (std::abs(rho_l_max - rho_l_min) > constants::LOOSE_TOL) {
             amrex::Abort(
                 "Density check failed. Liquid density maximum is too different "
@@ -181,7 +181,7 @@ void PDEMgr::density_check()
     } else if (m_constant_density) {
         amrex::Real rho_max{1.0}, rho_min{1.0};
         diagnostics::get_field_extrema(
-            rho_max, rho_min, m_sim.repo().get_field("density"));
+            rho_max, rho_min, m_sim.repo().get_field("density"), 0, 1);
         if (std::abs(rho_max - rho_min) > constants::LOOSE_TOL) {
             amrex::Abort(
                 "Density check failed. Density maximum is too different "
