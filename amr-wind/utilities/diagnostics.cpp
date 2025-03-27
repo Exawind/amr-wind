@@ -99,7 +99,6 @@ void amr_wind::diagnostics::get_field_extrema(
         }
     }
 
-    // Do additional parallelism stuff
     amrex::ParallelDescriptor::ReduceRealMax(field_max_val);
     amrex::ParallelDescriptor::ReduceRealMin(field_min_val);
 }
