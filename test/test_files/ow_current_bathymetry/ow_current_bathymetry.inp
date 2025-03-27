@@ -60,3 +60,6 @@ ylo.type =     "slip_wall"
 yhi.type =     "slip_wall"
 zlo.type =     "slip_wall"
 zhi.type =     "slip_wall"
+
+# density at inflow condition must match the gas density specified above
+xlo.density = 1.25
