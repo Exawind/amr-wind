@@ -31,6 +31,7 @@ SuperEllipseBody::SuperEllipseBody(CFDSim& sim)
     , m_repo(sim.repo())
     , m_mesh(sim.mesh())
     , m_body_blank(sim.repo().declare_int_field("terrain_blank", 1, 1, 1))
+    , m_terrain_drag(sim.repo().declare_int_field("terrain_drag", 1, 1, 1))
 {
 
     amrex::ParmParse pp(identifier());
@@ -38,7 +39,10 @@ SuperEllipseBody::SuperEllipseBody(CFDSim& sim)
     m_dim = parse_vector(pp, "dimensions");
 
     m_sim.io_manager().register_output_int_var("terrain_blank");
+    m_sim.io_manager().register_output_int_var("terrain_drag");
     m_body_blank.setVal(0.0);
+    m_terrain_drag.setVal(0.0);
+
 }
 
 void SuperEllipseBody::initialize_fields(int level, const amrex::Geometry& geom)
