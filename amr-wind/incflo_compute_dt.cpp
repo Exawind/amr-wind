@@ -8,9 +8,6 @@ using namespace amrex;
 
 /** Estimate the new timestep for adaptive timestepping algorithm
  *
- *  \param explicit_diffusion Flag indicating whether user has selected explicit
- *  treatment of diffusion term.
- *
  * Compute new \f$\Delta t\f$ by using the formula derived in "A Boundary
  * Condition Capturing Method for Multiphase Incompressible Flow" by Kang et al.
  * (JCP).
@@ -307,6 +304,4 @@ void incflo::ComputePrescribeDt()
     m_time.set_current_cfl(conv_cfl, 0.0, 0.0);
 }
 
-void incflo::AdvanceTime() {
-    m_time.advance_time();
-}
+void incflo::AdvanceTime() { m_time.advance_time(); }
