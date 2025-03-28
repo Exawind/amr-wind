@@ -29,9 +29,9 @@ using namespace amrex;
  *  is `true`).
  *
  */
-void incflo::ComputeDt()
+void incflo::compute_dt()
 {
-    BL_PROFILE("amr-wind::incflo::ComputeDt");
+    BL_PROFILE("amr-wind::incflo::compute_dt");
 
     bool explicit_diffusion = (m_diff_type == DiffusionType::Explicit);
 
@@ -196,9 +196,9 @@ void incflo::ComputeDt()
     m_time.set_current_cfl(conv_cfl, diff_cfl, force_cfl);
 }
 
-void incflo::ComputePrescribeDt()
+void incflo::compute_prescribe_dt()
 {
-    BL_PROFILE("amr-wind::incflo::ComputePrescribeDt");
+    BL_PROFILE("amr-wind::incflo::compute_prescribe_dt");
 
     Real conv_cfl = 0.0;
     const bool mesh_mapping = m_sim.has_mesh_mapping();
@@ -303,5 +303,3 @@ void incflo::ComputePrescribeDt()
 
     m_time.set_current_cfl(conv_cfl, 0.0, 0.0);
 }
-
-void incflo::AdvanceTime() { m_time.advance_time(); }

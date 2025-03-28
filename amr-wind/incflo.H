@@ -132,9 +132,9 @@ public:
     amr_wind::Field& pressure() const { return m_repo.get_field("p"); }
     amr_wind::Field& grad_p() const { return m_repo.get_field("gp"); }
 
-    void ComputeDt();
-    void ComputePrescribeDt();
-    void AdvanceTime();
+    void compute_dt();
+    void compute_prescribe_dt();
+    void advance_time() { m_time.advance_time(); }
 
     void ApplyPredictor(
         const bool incremental_projection = false,

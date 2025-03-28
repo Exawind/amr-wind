@@ -105,7 +105,7 @@ void incflo::InitialIterations()
     amrex::Print() << "Begin initial pressure iterations. Num. iters = "
                    << m_initial_iterations << std::endl;
 
-    ComputeDt();
+    compute_dt();
 
     {
         auto& vel = icns().fields().field;

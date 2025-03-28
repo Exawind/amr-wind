@@ -14,7 +14,7 @@ using namespace amrex;
 void incflo::pre_advance_stage1()
 {
     BL_PROFILE("amr-wind::incflo::pre_advance_stage1");
-    AdvanceTime();
+    advance_time();
 }
 
 void incflo::pre_advance_stage2()
