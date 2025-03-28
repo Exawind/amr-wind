@@ -183,8 +183,6 @@ void incflo::ApplyPredictor(
     // We use the new time value for things computed on the "*" state
     Real new_time = m_time.new_time();
 
-    std::cout << "in ApplyPredictor " << m_time.delta_t() << std::endl;
-
     if (m_verbose > 2) {
         PrintMaxValues("before predictor step");
     }
