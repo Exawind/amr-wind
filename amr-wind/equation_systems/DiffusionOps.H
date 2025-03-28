@@ -166,7 +166,7 @@ struct DiffusionOp<
                 const auto& rho_arrs = density(lev).const_arrays();
 
                 amrex::ParallelFor(
-                    divtau(lev), amrex::IntVect(0), divtau.num_comp(),
+                    divtau(lev), divtau.num_grow(), divtau.num_comp(),
                     [=] AMREX_GPU_DEVICE(
                         int nbx, int i, int j, int k, int n) noexcept {
                         const amrex::Real rhoinv = 1.0 / rho_arrs[nbx](i, j, k);
