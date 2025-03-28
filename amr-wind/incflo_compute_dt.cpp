@@ -8,9 +8,6 @@ using namespace amrex;
 
 /** Estimate the new timestep for adaptive timestepping algorithm
  *
- *  \param explicit_diffusion Flag indicating whether user has selected explicit
- *  treatment of diffusion term.
- *
  * Compute new \f$\Delta t\f$ by using the formula derived in "A Boundary
  * Condition Capturing Method for Multiphase Incompressible Flow" by Kang et al.
  * (JCP).
@@ -32,9 +29,11 @@ using namespace amrex;
  *  is `true`).
  *
  */
-void incflo::ComputeDt(bool explicit_diffusion)
+void incflo::compute_dt()
 {
-    BL_PROFILE("amr-wind::incflo::ComputeDt");
+    BL_PROFILE("amr-wind::incflo::compute_dt");
+
+    bool explicit_diffusion = (m_diff_type == DiffusionType::Explicit);
 
     Real conv_cfl = 0.0;
     Real diff_cfl = 0.0;
@@ -197,9 +196,9 @@ void incflo::ComputeDt(bool explicit_diffusion)
     m_time.set_current_cfl(conv_cfl, diff_cfl, force_cfl);
 }
 
-void incflo::ComputePrescribeDt()
+void incflo::compute_prescribe_dt()
 {
-    BL_PROFILE("amr-wind::incflo::ComputePrescribeDt");
+    BL_PROFILE("amr-wind::incflo::compute_prescribe_dt");
 
     Real conv_cfl = 0.0;
     const bool mesh_mapping = m_sim.has_mesh_mapping();

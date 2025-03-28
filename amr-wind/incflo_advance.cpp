@@ -14,10 +14,7 @@ using namespace amrex;
 void incflo::pre_advance_stage1()
 {
     BL_PROFILE("amr-wind::incflo::pre_advance_stage1");
-
-    // Compute time step size
-    bool explicit_diffusion = (m_diff_type == DiffusionType::Explicit);
-    ComputeDt(explicit_diffusion);
+    advance_time();
 }
 
 void incflo::pre_advance_stage2()
