@@ -19,6 +19,7 @@ io.outputs = density velocity p vof ow_levelset ow_velocity
 OceanWaves.label = W2A1
 OceanWaves.W2A1.type = W2AWaves
 OceanWaves.W2A1.HOS_modes_filename = modes_HOS_SWENSE.dat
+OceanWaves.W2A1.zero_sea_level=1000
 OceanWaves.W2A1.relax_zone_gen_length=900
 OceanWaves.W2A1.relax_zone_out_length=900
 # These variables should change with resolution in z
@@ -51,8 +52,8 @@ tagging.sr.static_refinement_def = static_box.refine
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              GEOMETRY                 #
 #.......................................#
-geometry.prob_lo        =     0.0  0.0  -1000   # Lo corner coordinates
-geometry.prob_hi        =     9.3717632253682877E+03 9.3717632253682877E+03 200  # Hi corner coordinates
+geometry.prob_lo        =     0.0  0.0  0.0   # Lo corner coordinates
+geometry.prob_hi        =     9.3717632253682877E+03 9.3717632253682877E+03 1200  # Hi corner coordinates
 geometry.is_periodic    =     1     1     0   # Periodicity x y z (0/1)
 
 zlo.type =   slip_wall

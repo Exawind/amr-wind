@@ -1,0 +1,66 @@
+time.stop_time               =   10     # Max (simulated) time to evolve
+time.max_step                =   10    # Max number of time steps
+
+time.fixed_dt         =   0.03
+time.cfl              =   0.95         # CFL factor
+time.plot_interval    =   10       # Steps between plot files
+time.use_force_cfl    = false
+
+io.outputs = ow_velocity ow_vof
+
+transport.model = TwoPhaseTransport
+turbulence.model = Laminar
+
+incflo.physics = MultiPhase OceanWaves 
+OceanWaves.label = Wave1
+OceanWaves.Wave1.type = W2AWaves
+OceanWaves.Wave1.HOS_modes_filename = nwt_2D_modes_HOS_SWENSE.dat
+OceanWaves.Wave1.HOS_simulation_is_ocean = false
+OceanWaves.Wave1.HOS_init_timestep = 16
+OceanWaves.Wave1.number_interp_points_in_z = 20
+OceanWaves.Wave1.interp_spacing_at_surface = 0.03
+OceanWaves.Wave1.number_interp_above_surface = 2
+
+# HOS domain starts at 0, 0 --> offset for CFD domain
+OceanWaves.Wave1.HOS_domain_offset_x = -8
+OceanWaves.Wave1.HOS_domain_offset_y = -2
+
+# Depth comes from model basin dimensions (MARIN, OC6)
+OceanWaves.Wave1.water_depth=3.6
+OceanWaves.Wave1.relax_zone_gen_length=4
+OceanWaves.Wave1.numerical_beach_length=4
+OceanWaves.Wave1.numerical_beach_length_factor=2.0
+OceanWaves.Wave1.zero_sea_level=0.0
+OceanWaves.Wave1.initialize_wave_field=true
+MultiPhase.density_fluid1=1000.
+MultiPhase.density_fluid2=1.
+ICNS.source_terms = GravityForcing
+
+ICNS.use_perturb_pressure = true
+
+amr.n_cell              = 64 16 24
+amr.max_level = 1
+
+geometry.prob_lo        = -8.0 -2.0 -3.6   # Lo corner coordinates
+geometry.prob_hi        =  8.0  2.0  2.4   # Hi corner coordinates
+geometry.is_periodic    =  0    0    0   # Periodicity x y z (0/1)
+
+tagging.labels = refine0
+tagging.refine0.type = GeometryRefinement
+tagging.refine0.shapes = b0
+tagging.refine0.level  = 0
+
+tagging.refine0.b0.type = box                 
+tagging.refine0.b0.origin = -8.0 -2.0 -0.25
+tagging.refine0.b0.xaxis = 16.0 0.0 0.0
+tagging.refine0.b0.yaxis = 0.0 4.0 0.0
+tagging.refine0.b0.zaxis = 0.0 0.0 0.5
+
+xlo.type =   "wave_generation"
+xhi.type =   "pressure_outflow"
+ylo.type =   "slip_wall"
+yhi.type =   "slip_wall"
+zlo.type =   "slip_wall"
+zhi.type =   "slip_wall"
+
+incflo.verbose          =   0          # incflo_level
