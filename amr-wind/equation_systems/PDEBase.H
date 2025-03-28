@@ -136,6 +136,11 @@ public:
     //! -- intended for when boundaries rely on intermediate time states (nph)
     void prepare_boundaries();
 
+    //! Check that the bounds of density correspond to the expected values
+    //! -- only applies to two-phase and constant-density single-phase
+    //! -- performed once in post_init, will abort if density is unexpected
+    void density_check();
+
     //! Call fillpatch operator on state variables for all registered PDEs
     void fillpatch_state_fields(
         const amrex::Real time, const FieldState fstate = FieldState::New);
