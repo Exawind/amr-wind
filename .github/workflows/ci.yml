@@ -489,11 +489,12 @@ jobs:
         run: |
           /bin/bash -c " \
             source ${EXAWIND_MANAGER}/start.sh && spack-start && \
-            mkdir -p ${EXAWIND_MANAGER}/environments/exawind && \
-            cd ${EXAWIND_MANAGER}/environments/exawind && \
-            ln -s ${GITHUB_WORKSPACE} amr-wind && \
             quick-create-dev -s amr-wind+hypre+netcdf@main && \
+            cd ${EXAWIND_MANAGER}/environments/exawind/my-env && \
+            rm -rf amr-wind && \
+            ln -s ${GITHUB_WORKSPACE} amr-wind && \
             spack manager external ${EXAWIND_MANAGER}/environments/e4s-build --exclude amr-wind && \
+            spack concretize -f && \
             spack install && \
             spack cd -b amr-wind && \
             spack build-env amr-wind ctest -j $(nproc) -L unit --output-on-failure \
