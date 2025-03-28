@@ -105,8 +105,7 @@ void incflo::InitialIterations()
     amrex::Print() << "Begin initial pressure iterations. Num. iters = "
                    << m_initial_iterations << std::endl;
 
-    bool explicit_diffusion = (m_diff_type == DiffusionType::Explicit);
-    ComputeDt(explicit_diffusion);
+    ComputeDt();
 
     {
         auto& vel = icns().fields().field;

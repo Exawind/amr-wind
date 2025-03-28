@@ -14,10 +14,7 @@ using namespace amrex;
 void incflo::pre_advance_stage1()
 {
     BL_PROFILE("amr-wind::incflo::pre_advance_stage1");
-
-    // Compute time step size
-    bool explicit_diffusion = (m_diff_type == DiffusionType::Explicit);
-    ComputeDt(explicit_diffusion);
+    AdvanceTime();
 }
 
 void incflo::pre_advance_stage2()
@@ -185,6 +182,8 @@ void incflo::ApplyPredictor(
     BL_PROFILE("amr-wind::incflo::ApplyPredictor");
     // We use the new time value for things computed on the "*" state
     Real new_time = m_time.new_time();
+
+    std::cout << "in ApplyPredictor " << m_time.delta_t() << std::endl;
 
     if (m_verbose > 2) {
         PrintMaxValues("before predictor step");

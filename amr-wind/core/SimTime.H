@@ -73,6 +73,11 @@ public:
         const amrex::Real diff_cfl,
         const amrex::Real src_cfl);
 
+    /** Use results of CFL and timestepping parameters to advance time to new,
+     * output time information
+     */
+    void advance_time();
+
     /** Set start time and index based on checkpoint/restart file
      *
      *  \param tidx Time index from checkpoint file
@@ -171,6 +176,14 @@ private:
 
     //! Current CFL
     amrex::Real m_current_cfl{0.0};
+
+    //! Current CFL categories
+    amrex::Real m_conv_cfl{0.0};
+    amrex::Real m_diff_cfl{0.0};
+    amrex::Real m_src_cfl{0.0};
+
+    //! delta_t calculated using CFL constraint
+    amrex::Real m_dt_calc{0.0};
 
     //! Initial reduction in timestep size for startup
     amrex::Real m_init_shrink{0.1};

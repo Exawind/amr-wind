@@ -32,9 +32,11 @@ using namespace amrex;
  *  is `true`).
  *
  */
-void incflo::ComputeDt(bool explicit_diffusion)
+void incflo::ComputeDt()
 {
     BL_PROFILE("amr-wind::incflo::ComputeDt");
+
+    bool explicit_diffusion = (m_diff_type == DiffusionType::Explicit);
 
     Real conv_cfl = 0.0;
     Real diff_cfl = 0.0;
@@ -303,4 +305,8 @@ void incflo::ComputePrescribeDt()
     ParallelAllReduce::Max<Real>(conv_cfl, ParallelContext::CommunicatorSub());
 
     m_time.set_current_cfl(conv_cfl, 0.0, 0.0);
+}
+
+void incflo::AdvanceTime() {
+    m_time.advance_time();
 }

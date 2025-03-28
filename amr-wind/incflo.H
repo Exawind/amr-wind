@@ -135,9 +135,9 @@ public:
     amr_wind::Field& pressure() const { return m_repo.get_field("p"); }
     amr_wind::Field& grad_p() const { return m_repo.get_field("gp"); }
 
-    // for cuda
-    void ComputeDt(bool explicit_diffusion);
+    void ComputeDt();
     void ComputePrescribeDt();
+    void AdvanceTime();
 
     void ApplyPredictor(
         const bool incremental_projection = false,
