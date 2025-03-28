@@ -1,0 +1,14 @@
+.. meta::b5ad2d1618f796626b722124df731f772e5075248b5e8466811684ba2c9f2a52cb5fc6856d8a40425b78af1207a8cc240acd5d42efc7f2df3da0e27c41c77b3c
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ocean_waves::ops::UpdateTargetFieldsOp&lt; StokesWaves &gt; Struct Reference
+
+UpdateTargetFieldsOp&lt; StokesWaves &gt; Struct Reference
+==========================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ocean__waves_1_1ops_1_1_update_target_fields_op_3_01_stokes_waves_01_4.html

@@ -1,0 +1,14 @@
+.. meta::07cf3874f507e97e3966f5dadd48aa730d24c6a65af10f030faee5641d39f9afe1ce295034e525d3621f345802f7a8526b76aee1b31c96d711f052a879fde32b
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/tagging/BoxRefiner.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/tagging/BoxRefiner.cpp File Reference
+============================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _box_refiner_8cpp.html

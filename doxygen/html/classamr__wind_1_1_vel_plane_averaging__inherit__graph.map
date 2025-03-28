@@ -1,0 +1,7 @@
+<map id="amr_wind::VelPlaneAveraging" name="amr_wind::VelPlaneAveraging">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,183,220,208"/>
+<area shape="rect" id="Node000002" href="$classamr__wind_1_1_f_plane_averaging.html" title=" " alt="" coords="35,108,190,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="115,148,115,182,110,182,110,148"/>
+<area shape="rect" id="Node000003" href="$classamr__wind_1_1_f_plane_averaging.html" title=" " alt="" coords="11,5,214,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="115,59,115,108,110,108,110,59"/>
+</map>
