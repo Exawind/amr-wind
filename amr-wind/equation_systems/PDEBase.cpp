@@ -153,6 +153,10 @@ void PDEMgr::density_check()
         "\nIf this simulation begins from a restart file, confirm that the "
         "previous density is compatible with the parameters in the input "
         "file.");
+    std::string advice3(
+        "\nIf specific scalar boundary conditions are specified, make sure "
+        "that vof and density BCs are the same (if Neumann type) or compatible "
+        "(if Dirichlet type).");
     if (m_sim.repo().field_exists("vof")) {
         amrex::Real rho_l_max{1.0}, rho_l_min{1.0};
         amrex::Real rho_g_max{1.0}, rho_g_min{1.0};
@@ -167,8 +171,8 @@ void PDEMgr::density_check()
                 "Density check failed. Liquid density maximum is too different "
                 "from liquid density minimum.\n"
                 "rho_l_max = " +
-                std::to_string(rho_l_max) +
-                ", rho_l_min = " + std::to_string(rho_l_min) + advice2);
+                std::to_string(rho_l_max) + ", rho_l_min = " +
+                std::to_string(rho_l_min) + advice2 + advice3);
         }
         if (std::abs(rho_g_max - rho_g_min) > constants::LOOSE_TOL) {
             amrex::Abort(
@@ -176,7 +180,7 @@ void PDEMgr::density_check()
                 "from gas density minimum.\n"
                 "rho_g_max = " +
                 std::to_string(rho_g_max) + ", rho_g_min = " +
-                std::to_string(rho_g_min) + advice + advice2);
+                std::to_string(rho_g_min) + advice + advice2 + advice3);
         }
     } else if (m_constant_density) {
         amrex::Real rho_max{1.0}, rho_min{1.0};
