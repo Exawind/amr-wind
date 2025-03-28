@@ -244,8 +244,6 @@ void SimTime::set_current_cfl(
                        << " src: " << std::setprecision(6) << m_src_cfl << " )"
                        << std::endl;
     }
-    // Delete later !!
-    std::cout << "in set_current_cfl " << m_dt[0] << " " << dt_new << std::endl;
 }
 
 void SimTime::advance_time()
