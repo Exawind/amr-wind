@@ -41,9 +41,18 @@ This section also addresses the time-dependent nature of checkpoint files, plot 
 
    Initial timestep size (in seconds) used to initialize the simulation. 
    Only activated if :input_param:`time.fixed_dt` is negative 
-   (signaling CFL controlled time stepping) and if ``time.initial_dt`` is positive.
+   (signaling CFL controlled time stepping) and if :input_param:`time.initial_dt` is positive.
    This parameter can be useful for starting CFL-controlled simulations like 
    Rayleigh-Taylor flow that initialize with zero velocity.
+
+.. input_param:: time.max_dt
+
+   **type:** Real number
+
+   Maximum timestep size (in seconds) used to limit CFL-controlled time stepping. 
+   Only activated if :input_param:`time.max_dt` is positive and fixed time stepping is disabled. 
+   This parameter can be useful if CFL-controlled timestepping is desired but there
+   are additional constraints to the timestep size considerations.
 
 .. input_param:: time.cfl
 

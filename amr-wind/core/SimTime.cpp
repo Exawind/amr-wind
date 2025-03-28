@@ -18,6 +18,7 @@ void SimTime::parse_parameters()
     pp.query("max_step", m_stop_time_index);
     pp.query("fixed_dt", m_fixed_dt);
     pp.query("initial_dt", m_initial_dt);
+    pp.query("max_dt", m_max_dt);
     pp.query("init_shrink", m_init_shrink);
     pp.query("max_dt_growth", m_dt_growth);
     pp.query("cfl", m_max_cfl);
@@ -189,6 +190,10 @@ void SimTime::set_current_cfl(
     }
 
     if (m_adaptive) {
+        if (m_max_dt > 0.) {
+            dt_new = amrex::min(dt_new, m_max_dt);
+        }
+
         // Don't overshoot stop time
         if ((m_stop_time > 0.0) && ((m_cur_time + dt_new) > m_stop_time)) {
             dt_new = m_stop_time - m_cur_time;

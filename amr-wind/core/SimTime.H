@@ -174,6 +174,9 @@ private:
     //! Initial delta_t indicated by user
     amrex::Real m_initial_dt{-1.0};
 
+    //! Maximum delta_t indicated by user
+    amrex::Real m_max_dt{-1.0};
+
     //! Current CFL
     amrex::Real m_current_cfl{0.0};
 
