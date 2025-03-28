@@ -489,7 +489,7 @@ jobs:
         run: |
           /bin/bash -c " \
             source ${EXAWIND_MANAGER}/start.sh && spack-start && \
-            quick-create-dev -s amr-wind+hypre+netcdf@main && \
+            quick-create-dev -n my-env -s amr-wind+hypre+netcdf@main && \
             cd ${EXAWIND_MANAGER}/environments/exawind/my-env && \
             rm -rf amr-wind && \
             ln -s ${GITHUB_WORKSPACE} amr-wind && \
