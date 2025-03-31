@@ -10,10 +10,11 @@ target_sources(${amr_wind_lib_name}
   DTUSpinnerSampler.cpp
   PlaneSampler.cpp
   ProbeSampler.cpp
+  FreeSurfaceSampler.cpp
+  VolumeSampler.cpp
+  # The ones below should probably be moved
   FieldNorms.cpp
   KineticEnergy.cpp
   Enstrophy.cpp
-  FreeSurfaceSampler.cpp
-  VolumeSampler.cpp
   WaveEnergy.cpp
   )
