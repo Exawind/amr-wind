@@ -38,8 +38,10 @@ void RectangularSubvolume::evaluate_inputs()
                 std::abs(m_dx_vec[2] - geom[i].CellSize(2)) <
                     constants::LOOSE_TOL) {
 
-                amrex::Print() << "Resolution specified matches that of level "
-                               << i << std::endl;
+                amrex::Print()
+                    << "RectangularSubvolume " + m_label +
+                           ": Resolution specified matches that of level "
+                    << i << std::endl;
                 found = true;
                 m_lev_for_sub = i;
             }
@@ -48,7 +50,9 @@ void RectangularSubvolume::evaluate_inputs()
 
     if (!found) {
         amrex::Abort(
-            "Resolution specified for subvolume does not match the resolution "
+            "RectangularSubvolume " + m_label +
+            ": Resolution specified for subvolume does not match the "
+            "resolution "
             "of any of the mesh levels.");
     }
 
@@ -65,20 +69,26 @@ void RectangularSubvolume::evaluate_inputs()
         (m_origin[2] - geom[m_lev_for_sub].ProbLo(2)) * 1.0001 / m_dx_vec[2]);
 
     found = false;
-    if (std::abs(geom[lev_for_sub].ProbLo(0) + i0 * m_dx_vec[0] - m_origin[0]) <
+    if (std::abs(
+            geom[m_lev_for_sub].ProbLo(0) + i0 * m_dx_vec[0] - m_origin[0]) <
             constants::LOOSE_TOL &&
-        std::abs(geom[lev_for_sub].ProbLo(1) + i0 * m_dx_vec[1] - m_origin[1]) <
+        std::abs(
+            geom[m_lev_for_sub].ProbLo(1) + i0 * m_dx_vec[1] - m_origin[1]) <
             constants::LOOSE_TOL &&
-        std::abs(geom[lev_for_sub].ProbLo(2) + i0 * m_dx_vec[2] - m_origin[2]) <
+        std::abs(
+            geom[m_lev_for_sub].ProbLo(2) + i0 * m_dx_vec[2] - m_origin[2]) <
             constants::LOOSE_TOL) {
-        amrex::Print() << "Specified origin is the lower left corner of cell "
-                       << amrex::IntVect(i0, j0, k0) << std::endl;
+        amrex::Print()
+            << "RectangularSubvolume " + m_label +
+                   ": Specified origin is the lower left corner of cell "
+            << amrex::IntVect(i0, j0, k0) << std::endl;
         found = true;
     }
 
     if (!found) {
         amrex::Abort(
-            "Origin specified does not correspond to a node at this level.");
+            "RectangularSubvolume " + m_label +
+            ": Origin specified does not correspond to a node at this level.");
     }
 
     amrex::Box domain(geom[m_lev_for_sub].Domain());
@@ -88,10 +98,13 @@ void RectangularSubvolume::evaluate_inputs()
         amrex::IntVect(
             i0 + m_npts_vec[0] - 1, j0 + m_npts_vec[1] - 1,
             k0 + m_npts_vec[2] - 1));
-    amrex::Print() << "Box requested is " << bx << std::endl;
+    amrex::Print() << "RectangularSubvolume " + m_label + ": Box requested is "
+                   << bx << std::endl;
 
     if (!domain.contains(bx)) {
-        amrex::Abort("Box requested is larger than the existing domain");
+        amrex::Abort(
+            "RectangularSubvolume " + m_label +
+            ": Box requested is larger than the existing domain");
     }
 
     amrex::IntVect chunk_size(
@@ -100,7 +113,8 @@ void RectangularSubvolume::evaluate_inputs()
     amrex::BoxArray ba(bx);
     ba.maxSize(chunk_size);
 
-    amrex::Print() << "BoxArray is " << ba << std::endl;
+    amrex::Print() << "RectangularSubvolume " + m_label + ": BoxArray is " << ba
+                   << std::endl;
 
     m_ba = ba;
 }

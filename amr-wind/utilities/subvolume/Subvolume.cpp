@@ -99,10 +99,7 @@ void Subvolume::initialize()
         m_derived_mgr->var_names(m_var_names);
     }
 
-    // Load different probe types, default probe type is line
-    // Should have a Subvolume base that receives the parameters for each
-    // int idx = 0;
-    // m_total_particles = 0;
+    // Load Subvolumes, only type is Rectangular right now
     for (const auto& lbl : labels) {
         const std::string key = m_label + "." + lbl;
         amrex::ParmParse pp1(key);
@@ -112,10 +109,8 @@ void Subvolume::initialize()
         auto obj = SubvolumeBase::create(stype, m_sim);
         obj->label() = lbl;
         obj->subvolumetype() = stype;
-        // obj->id() = idx++;
         obj->initialize(key);
 
-        // m_total_particles += obj->num_points();
         m_subvolumes.emplace_back(std::move(obj));
     }
 }
@@ -168,6 +163,21 @@ void Subvolume::write_subvolume()
     if (m_ndcomp > 0) {
         (*m_derived_mgr)(*scr_ptr, 0);
     }
+
+    // Current approach
+    // - Populate scratch field only for sake of derived quantities
+    // - Loop through subvolumes
+    // -- Copy fields of interest to mf of entire level
+    // -- Then copy from this mf to output mf_sv
+
+    // Alternative way of doing this:
+    // - Loop through subvolumes to get levels of all subvolumes
+    // - Loop through these valid levels
+    // -- Copy fields of interest to scratch field, now used for all outputs
+    // - Loop through subvolumes again
+    // -- Copy from scratch field to output mf_sv
+    // ** would prevent a lot of redundant copies if many subvolumes are on the
+    //    same level
 
     for (const auto& sv : m_subvolumes) {
 

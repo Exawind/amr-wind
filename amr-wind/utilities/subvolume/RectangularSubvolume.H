@@ -8,9 +8,9 @@ namespace amr_wind::subvolume {
 /** Get subvolume defined by 3D rectangle
  *  \ingroup subvolume
  *
- *  Defines probes along a line defined by `start` and `end` coordinates and
- *  divides it into equal segments as determined by `num_points`. The length of
- *  each segment is given by \f[ (end - start) / (num_points - 1) \f]
+ *  Defines volume region with origin, number of points in each direction, and
+ * target mesh resolution in each direction. Also has an optional parameter
+ * regarding the data organization, which is the chunk size.
  */
 class RectangularSubvolume
     : public SubvolumeBase::Register<RectangularSubvolume>
