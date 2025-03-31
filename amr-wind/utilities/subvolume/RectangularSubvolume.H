@@ -32,8 +32,6 @@ public:
     //! quantities for output steps
     void evaluate_inputs() override;
 
-    void post_regrid_actions() override { evaluate_inputs(); }
-
     //! Name of this subvolume object
     std::string label() const override { return m_label; }
     std::string& label() override { return m_label; }

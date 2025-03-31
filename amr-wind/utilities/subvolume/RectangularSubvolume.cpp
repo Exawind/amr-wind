@@ -27,9 +27,6 @@ void RectangularSubvolume::initialize(const std::string& key)
 
 void RectangularSubvolume::evaluate_inputs()
 {
-
-    int lev_for_sub = 0;
-
     bool found = false;
     const auto& geom = m_sim.mesh().Geom();
     for (int i = 0; i < m_sim.repo().num_active_levels(); i++) {
@@ -41,9 +38,8 @@ void RectangularSubvolume::evaluate_inputs()
                 std::abs(m_dx_vec[2] - geom[i].CellSize(2)) <
                     constants::LOOSE_TOL) {
 
-                /* amrex::Print() << "Resolution specified matches that of level
-                   "
-                               << i << std::endl; */
+                amrex::Print() << "Resolution specified matches that of level "
+                               << i << std::endl;
                 found = true;
                 m_lev_for_sub = i;
             }
@@ -98,7 +94,8 @@ void RectangularSubvolume::evaluate_inputs()
         amrex::Abort("Box requested is larger than the existing domain");
     }
 
-    amrex::IntVect chunk_size(m_chunk_size_vec[0], m_chunk_size_vec[1], m_chunk_size_vec[2]);
+    amrex::IntVect chunk_size(
+        m_chunk_size_vec[0], m_chunk_size_vec[1], m_chunk_size_vec[2]);
 
     amrex::BoxArray ba(bx);
     ba.maxSize(chunk_size);

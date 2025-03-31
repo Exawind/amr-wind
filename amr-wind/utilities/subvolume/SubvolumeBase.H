@@ -38,7 +38,7 @@ public:
     virtual void evaluate_inputs() = 0;
 
     //! Run actions after regrid
-    virtual void post_regrid_actions() {}
+    virtual void post_regrid_actions() { evaluate_inputs(); }
 
     //! Level that the subvolume corresponds to
     virtual int lev() const { return 0; }
