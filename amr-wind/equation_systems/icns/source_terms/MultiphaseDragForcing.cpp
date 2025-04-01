@@ -90,8 +90,7 @@ MultiphaseDragForcing::MultiphaseDragForcing(const CFDSim& sim)
     const auto target_levelset_name =
         terrain_phys.wave_negative_elevation_name();
     m_target_levelset = &sim.repo().get_field(target_levelset_name);
-    const bool has_vof =
-        &sim.repo().field_exists("vof");
+    const bool has_vof = sim.repo().field_exists("vof");
     if (!has_vof) {
         amrex::Abort("Works only when vof field is available");
     }

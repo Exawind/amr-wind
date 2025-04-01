@@ -7,7 +7,8 @@
 
 namespace amr_wind::pde::icns {
 
-/** Adds the forcing term to include the presence of immersed boundary for multiphase flows
+/** Adds the forcing term to include the presence of immersed boundary for
+ * multiphase flows
  *
  *  \ingroup icns_src
  *
