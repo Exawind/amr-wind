@@ -25,9 +25,9 @@ TerrainDrag::TerrainDrag(CFDSim& sim)
 
     m_terrain_is_waves = sim.physics_manager().contains("OceanWaves") &&
                          !sim.repo().field_exists("vof");
-
-    if (!m_terrain_is_waves) {
-        amrex::ParmParse pp(identifier());
+    amrex::ParmParse pp(identifier());
+    pp.query("vof_drag", m_vof_drag);
+    if (!m_terrain_is_waves && !m_vof_drag) {
         pp.query("terrain_file", m_terrain_file);
         pp.query("roughness_file", m_roughness_file);
     } else {
@@ -49,7 +49,7 @@ TerrainDrag::TerrainDrag(CFDSim& sim)
 
 void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
 {
-    if (m_terrain_is_waves) {
+    if (m_terrain_is_waves || m_vof_drag) {
         return;
     }
 
@@ -163,7 +163,7 @@ void TerrainDrag::post_init_actions()
 
 void TerrainDrag::pre_advance_work()
 {
-    if (!m_terrain_is_waves) {
+    if (!m_terrain_is_waves && !m_vof_drag) {
         return;
     }
     BL_PROFILE("amr-wind::" + this->identifier() + "::pre_advance_work");
@@ -172,7 +172,7 @@ void TerrainDrag::pre_advance_work()
 
 void TerrainDrag::post_regrid_actions()
 {
-    if (m_terrain_is_waves) {
+    if (m_terrain_is_waves || m_vof_drag) {
         convert_waves_to_terrain_fields();
     } else {
         const int nlevels = m_sim.repo().num_active_levels();
