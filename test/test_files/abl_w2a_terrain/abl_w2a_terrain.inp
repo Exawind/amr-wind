@@ -21,7 +21,7 @@ io.outputs = density velocity p ow_levelset ow_velocity
 #               PHYSICS                 #
 #.......................................#
 incflo.gravity        =  0.0  0.0 -9.81  # Gravitational force (3D)
-incflo.density                   = 1.225
+incflo.density                   = 1.0
 transport.model                          = ConstTransport
 transport.viscosity                      = 1e-5
 transport.laminar_prandtl                        = 0.7
