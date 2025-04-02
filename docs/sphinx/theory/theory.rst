@@ -392,6 +392,29 @@ is the atmospheric stability function. Currently, the implementation for the sta
 The implementation of the non-linear model is split into two parts. The subgrid-scale viscosity term is directly used 
 within the ``AMR-Wind`` diffusion framework. The last two terms in :math:`M_{ij}` are added as source-terms in the momentum equation. 
 
+Multiphase Non-linear Sub-grid Scale Model 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The multiphase version of the non-linear sub-grid scale model has been implemented for two reasons: (i) reduce the excessive turbulent
+viscosity generation observed at air-sea interface and (ii) handle the turbulence in the sea using a simplified model. The sub-grid scale 
+stress tensor is calculated as follows: 
+
+ .. math::
+    M_{ij}=  - max \left[(C_s \Delta)^2-Fh(\rho)/\rho g,0 \right] Fv(\rho) N_{ij}
+
+Where :math:`N_{ij}` is defined as
+
+.. math::
+   N_{ij}=
+    [
+      2(2S_{mn}S_{mn})^{1/2}S_{ij}+  W(\rho) C_1(S_{ik}S_{kj}-\frac{1}{3}S_{mn}S_{mn} \delta_{ij})
+      +  W(\rho) C_2(S_{ik}R_{kj}-R_{ik}S_{kj})
+    ]
+
+The model terms are similar to the single-phase models except for the new terms added. These terms are defined here:
+:math:`Fh(\rho)=\partial \rho / \partial z`,  :math:`Fv(\rho)=max(0,1-\sqrt{h_\rho})`, :math:`h_\rho=\left[\partial\rho/\partial x \right]^2+\left[\partial\rho/\partial y \right]^2`
+and :math:`W(\rho)` is 
+a Heaviside function which is 1 in air and 0 in water. 
+
 .. _wall_models:
 
 Wall models
