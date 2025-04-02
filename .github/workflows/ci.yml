@@ -493,8 +493,6 @@ jobs:
             cd ${EXAWIND_MANAGER}/environments/my-env && \
             rm -rf amr-wind && \
             ln -s ${GITHUB_WORKSPACE} amr-wind && \
-            spack -e e4s-build add cmake && \
-            spack -e e4s-build concretize -f && \
             spack manager external ${EXAWIND_MANAGER}/environments/e4s-build --exclude amr-wind && \
             spack concretize -f && \
             spack install && \
