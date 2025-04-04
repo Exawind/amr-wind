@@ -176,7 +176,14 @@ The following input arguments are only valid for the W2AWaves wave type:
 
    **type:** String, mandatory
 
-   The name of the modes file, output by HOS-Ocean, in the SWENSE format.
+   The name of the modes file, output by HOS-Ocean or HOS-NWT, in the SWENSE format.
+
+.. input_param:: OceanWaves.label.HOS_simulation_is_ocean
+
+   **type:** Boolean, optional, default = true
+
+   Specify whether the modes file is from HOS-Ocean or HOS-NWT. If this is specified incorrectly,
+   the code will abort by detecting mismatched parameters in the modes file.
 
 .. input_param:: OceanWaves.label.HOS_init_timestep
 
@@ -191,6 +198,24 @@ The following input arguments are only valid for the W2AWaves wave type:
    The physical time in the modes file for the AMR-Wind simulation to start at.
    This argument is only active if HOS_init_timestep is omitted. AMR-Wind will pick the
    time step in the modes closest to the specified time.
+
+.. input_param:: OceanWaves.label.HOS_domain_offset_x
+
+   **type:** Real, optional, default = 0.
+
+   A physical space offset for mapping between the HOS domain and the AMR-Wind domain.
+   The coordinates of the HOS domain always start at (x,y) = (0,0), but often the setup
+   of an AMR-Wind domain is not constrained in this way, and also the AMR-Wind domain
+   may only represent a portion of the HOS domain. This parameter, :math:`x_textrm{off}`, 
+   contributes to the mapping such that :math:`x_\textrm{AMR-Wind} = x_\textrm{HOS} + x_\textrm{off}`.
+
+.. input_param:: OceanWaves.label.HOS_domain_offset_y
+
+   **type:** Real, optional, default = 0.
+
+   A physical space offset for mapping between the HOS domain and the AMR-Wind domain.
+   This parameter, :math:`y_textrm{off}`, contributes to the mapping such that
+   :math:`y_\textrm{AMR-Wind} = y_\textrm{HOS} + y_\textrm{off}`.
 
 .. input_param:: OceanWaves.label.fftw_planner_flag
 
