@@ -250,7 +250,7 @@ amrex::Real ConvectingTaylorVortex::compute_error(const Field& field)
             amrex::ParallelFor(
                 field(lev),
                 [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                    if (iblank_arrs[nbx](i, j, k) < 1) {
+                    if (std::abs(iblank_arrs[nbx](i, j, k)) < 1) {
                         imask_arrs[nbx](i, j, k) = 0;
                     }
                 });
