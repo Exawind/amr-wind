@@ -1,0 +1,14 @@
+.. meta::5086ab8e14d7e5ebcb29982860dd3249a91ebba2337f8ab8305d0cb71935d6e8007862a53afb6043e617f266622fd515fd57d15e18ca79abc45df451bf7b1167
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ocean_waves::ops::UpdateTargetVolumeFractionOp&lt; WaveTheoryTrait, typename &gt; Struct Template Reference
+
+UpdateTargetVolumeFractionOp&lt; WaveTheoryTrait, typename &gt; Struct Template Reference
+=========================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ocean__waves_1_1ops_1_1_update_target_volume_fraction_op.html

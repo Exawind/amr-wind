@@ -1,0 +1,14 @@
+.. meta::3238495e64bf6601a87428dc75ea386de99a8ba7bff405b50e9739faf6ec1153771a308f446039cc51c1a56c0708fd444aa3025482fce0860742bfb1cf2b79b8
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::derived::QCriterion Struct Reference
+
+QCriterion Struct Reference
+===========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1derived_1_1_q_criterion.html

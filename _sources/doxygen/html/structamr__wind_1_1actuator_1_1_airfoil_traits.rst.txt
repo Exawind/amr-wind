@@ -1,0 +1,14 @@
+.. meta::a03d36acd72ae584eadf9754503581855e519856a5145276013c2cdfb7cd165955f8dd6e06adb11becf404c3ff78cee39a8796b3e2102438071c322a0ce4ee56
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::AirfoilTraits&lt; T &gt; Struct Template Reference
+
+AirfoilTraits&lt; T &gt; Struct Template Reference
+==================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1_airfoil_traits.html

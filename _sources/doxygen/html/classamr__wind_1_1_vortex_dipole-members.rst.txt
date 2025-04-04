@@ -1,0 +1,14 @@
+.. meta::6cdd83c1251ff35ac6cd79d7c5c3d53bb2eb951d22572e78544087b186c51b2f3ef9592c6a58791d24685ca357ae6a4531a8e17076317402106a022d53632792
+
+:orphan:
+
+.. title:: AMR-Wind API: Member List
+
+Member List
+===========
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_vortex_dipole-members.html

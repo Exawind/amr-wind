@@ -1,0 +1,14 @@
+.. meta::982b25d95b42e5c5d0de7900466706ab635f715ba3d0726aee4ea885ab736fc322896ac5cdf9ac428c1f54d80aed06f8b0692417239588b5d64d3a194783d44f
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/mms -&gt; core Relation
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/physics/mms -&gt; core Relation
+============================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: dir_000025_000010.html

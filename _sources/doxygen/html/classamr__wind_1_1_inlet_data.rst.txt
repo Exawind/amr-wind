@@ -1,0 +1,14 @@
+.. meta::b9357d89a170e13a49ec0ace53f075448dfbafc9bff78d0744cd2c51c2c7d358efbaa3e728473847bd7d75ce1d7d6f1891de9a19b8287282e6f9312ba23a341d
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::InletData Class Reference
+
+InletData Class Reference
+=========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_inlet_data.html

@@ -1,0 +1,14 @@
+.. meta::7b50a9a388a18623f0f40a898b4046e81b4ec0607e951f76c4c9e0dd9752a4a8f8a4b8c245d80d31b02b40b7af34f4322967c72b9eba43b7675b64478fb416bb
+
+:orphan:
+
+.. title:: AMR-Wind API: Member List
+
+Member List
+===========
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_vorticity_mag_refinement-members.html
