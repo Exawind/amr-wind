@@ -23,7 +23,6 @@ OceanWaves.Wave1.number_interp_above_surface = 2
 
 # HOS domain starts at 0, 0 --> offset for CFD domain
 OceanWaves.Wave1.HOS_domain_offset_x = -8
-OceanWaves.Wave1.HOS_domain_offset_y = -2
 
 # Depth comes from model basin dimensions (MARIN, OC6)
 OceanWaves.Wave1.water_depth=3.6
