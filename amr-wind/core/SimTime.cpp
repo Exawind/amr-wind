@@ -19,6 +19,7 @@ void SimTime::parse_parameters()
     pp.query("fixed_dt", m_fixed_dt);
     pp.query("initial_dt", m_initial_dt);
     pp.query("max_dt", m_max_dt);
+    pp.query("min_dt", m_min_dt);
     pp.query("init_shrink", m_init_shrink);
     pp.query("max_dt_growth", m_dt_growth);
     pp.query("cfl", m_max_cfl);
@@ -192,6 +193,14 @@ void SimTime::set_current_cfl(
     if (m_adaptive) {
         if (m_max_dt > 0.) {
             dt_new = amrex::min(dt_new, m_max_dt);
+        }
+
+        if (m_min_dt > 0. && dt_new < m_min_dt) {
+            amrex::Abort(
+                "CFL restriction on adaptive dt has reduced the time step size "
+                "below the minimum allowable dt (min_dt). Aborting simulation "
+                "because velocity values have likely become too large and "
+                "unphysical.");
         }
 
         // Don't overshoot stop time
