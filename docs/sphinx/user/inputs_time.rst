@@ -64,7 +64,7 @@ This section also addresses the time-dependent nature of checkpoint files, plot 
    This parameter is more useful in the development context when running simulations that are not
    reliably stable. If a simulation's velocity values dramatically grow, i.e., they blow up,
    CFL-controlled timestepping would make the timestep size unrealistically small, often allowing
-   the simulation to continue to run indefinitely with an unphysical flow field. When this parameter
+   the simulation to continue to run indefinitely with an nonphysical flow field. When this parameter
    is active, the code will abort when the timestep size becomes smaller than the specified minimum,
    preventing the simulation from continuing to run wastefully.
 
