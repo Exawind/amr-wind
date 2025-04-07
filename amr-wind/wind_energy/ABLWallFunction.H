@@ -84,10 +84,6 @@ private:
     std::string m_wall_shear_stress_type{"moeng"};
     std::string m_wall_het_model{"none"};
     amrex::Real m_mol_length{10000};
-    // amrex::Real m_z0{0.1};
-    // amrex::Real m_kappa{0.41};
-    // amrex::Real m_gamma_m{5.0};
-    // amrex::Real m_beta_m{16.0};
 };
 
 class ABLTempWallFunc : public FieldBCIface
@@ -106,12 +102,6 @@ private:
     std::string m_wall_shear_stress_type{"moeng"};
     std::string m_wall_het_model{"none"};
     amrex::Real m_mol_length{-1e30};
-    // amrex::Real m_z0{0.1};
-    // amrex::Real m_kappa{0.41};
-    // amrex::Real m_gamma_m{5.0};
-    // amrex::Real m_gamma_h{5.0};
-    // amrex::Real m_beta_m{16.0};
-    // amrex::Real m_beta_h{16.0};
 };
 
 } // namespace amr_wind

@@ -147,10 +147,6 @@ ABLVelWallFunc::ABLVelWallFunc(
     pp.query("wall_shear_stress_type", m_wall_shear_stress_type);
     pp.query("wall_het_model", m_wall_het_model);
     pp.query("mol_length", m_mol_length);
-    // pp.query("surface_roughness_z0", m_z0);
-    // pp.query("kappa", m_kappa);
-    // pp.query("mo_gamma_m", m_gamma_m);
-    // pp.query("mo_beta_m", m_beta_m);
     m_wall_shear_stress_type = amrex::toLower(m_wall_shear_stress_type);
 
     if (m_wall_shear_stress_type == "constant" ||
@@ -316,12 +312,6 @@ ABLTempWallFunc::ABLTempWallFunc(
     pp.query("wall_shear_stress_type", m_wall_shear_stress_type);
     pp.query("wall_het_model", m_wall_het_model);
     pp.query("mol_length", m_mol_length);
-    // pp.query("surface_roughness_z0", m_z0);
-    // pp.query("kappa", m_kappa);
-    // pp.query("mo_gamma_m", m_gamma_m);
-    // pp.query("mo_beta_m", m_beta_m);
-    // pp.query("mo_gamma_h", m_gamma_h);
-    // pp.query("mo_beta_h", m_beta_h);
     m_wall_shear_stress_type = amrex::toLower(m_wall_shear_stress_type);
     amrex::Print() << "Heat Flux model: " << m_wall_shear_stress_type
                    << std::endl;
