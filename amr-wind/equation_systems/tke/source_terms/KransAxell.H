@@ -3,6 +3,7 @@
 
 #include "amr-wind/transport_models/TransportModel.H"
 #include "amr-wind/equation_systems/tke/TKESource.H"
+#include "amr-wind/utilities/constants.H"
 
 namespace amr_wind::pde::tke {
 
@@ -65,7 +66,7 @@ private:
     int m_sponge_south{0};
     int m_sponge_north{1};
     std::string m_wall_het_model{"none"};
-    amrex::Real m_monin_obukhov_length{10000};
+    amrex::Real m_monin_obukhov_length{constants::LARGE_NUM};
     amrex::Real m_gamma_m{5.0};
     amrex::Real m_beta_m{16.0};
 };

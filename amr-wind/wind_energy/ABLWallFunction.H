@@ -84,7 +84,7 @@ private:
     const ABLWallFunction& m_wall_func;
     std::string m_wall_shear_stress_type{"moeng"};
     std::string m_wall_het_model{"none"};
-    amrex::Real m_monin_obukhov_length{10000};
+    amrex::Real m_monin_obukhov_length{constants::LARGE_NUM};
 };
 
 class ABLTempWallFunc : public FieldBCIface
@@ -102,7 +102,7 @@ private:
     const ABLWallFunction& m_wall_func;
     std::string m_wall_shear_stress_type{"moeng"};
     std::string m_wall_het_model{"none"};
-    amrex::Real m_monin_obukhov_length{constants::LOW_NUM};
+    amrex::Real m_monin_obukhov_length{constants::LARGE_NUM};
 };
 
 } // namespace amr_wind
