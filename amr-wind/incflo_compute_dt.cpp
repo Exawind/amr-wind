@@ -78,7 +78,7 @@ void incflo::compute_dt()
                 const amrex::Real fac_z =
                     mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0;
 
-                const amrex::Real mask =
+                const auto mask =
                     static_cast<amrex::Real>(mask_arr[box_no](i, j, k));
 
                 return amrex::max<amrex::Real>(
@@ -117,7 +117,7 @@ void incflo::compute_dt()
                                  std::abs(v_bx(i, j, k, 1)) * dxinv[1] / fac_y +
                                  std::abs(v_bx(i, j, k, 2)) * dxinv[2] / fac_z;
 
-                        const amrex::Real mask =
+                        const auto mask =
                             static_cast<amrex::Real>(mask_arr[box_no](i, j, k));
 
                         // Multiply advective CFL by 2 when near interface
@@ -152,7 +152,7 @@ void incflo::compute_dt()
                                dxinv[1] / fac_y * dxinv[1] / fac_y +
                                dxinv[2] / fac_z * dxinv[2] / fac_z);
 
-                    const amrex::Real mask =
+                    const auto mask =
                         static_cast<amrex::Real>(mask_arr[box_no](i, j, k));
 
                     return amrex::max<amrex::Real>(
@@ -178,7 +178,7 @@ void incflo::compute_dt()
                     const amrex::Real fac_z =
                         mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0;
 
-                    const amrex::Real mask =
+                    const auto mask =
                         static_cast<amrex::Real>(mask_arr[box_no](i, j, k));
 
                     return amrex::max<amrex::Real>(
@@ -252,7 +252,7 @@ void incflo::compute_prescribe_dt()
                     mesh_mapping ? (fac_arr[box_no](i, j, k, 1)) : 1.0;
                 const amrex::Real fac_z =
                     mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0;
-                const amrex::Real mask =
+                const auto mask =
                     static_cast<amrex::Real>(mask_arr[box_no](i, j, k));
 
                 return amrex::max<amrex::Real>(
@@ -295,7 +295,7 @@ void incflo::compute_prescribe_dt()
                             mesh_mapping ? (fac_arr[box_no](i, j, k, 1)) : 1.0;
                         const amrex::Real fac_z =
                             mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0;
-                        const amrex::Real mask =
+                        const auto mask =
                             static_cast<amrex::Real>(mask_arr[box_no](i, j, k));
 
                         result = mask * (amrex::max(
