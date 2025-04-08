@@ -1,6 +1,7 @@
 
 #include "amr-wind/equation_systems/temperature/source_terms/DragTempForcing.H"
 #include "amr-wind/utilities/IOManager.H"
+#include "amr-wind/wind_energy/MOData.H"
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_Gpu.H"
@@ -69,7 +70,8 @@ void DragTempForcing::operator()(
     const auto& dt = m_time.delta_t();
     const amrex::Real psi_m =
         (m_wall_het_model == "mol")
-            ? stability(1.5 * dx[2], m_mol_length, m_gamma_m, m_beta_m)
+            ? MOData::calc_psi_m(
+                  1.5 * dx[2] / m_mol_length, m_beta_m, m_gamma_m)
             : 0.0;
     const amrex::Real psi_h_neighbour =
         (m_wall_het_model == "mol")

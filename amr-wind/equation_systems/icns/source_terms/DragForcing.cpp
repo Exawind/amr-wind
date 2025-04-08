@@ -196,11 +196,13 @@ void DragForcing::operator()(
 
     const amrex::Real non_neutral_neighbour =
         (m_wall_het_model == "mol")
-            ? stability(1.5 * dx[2], m_mol_length, m_gamma_m, m_beta_m)
+            ? MOData::calc_psi_m(
+                  1.5 * dx[2] / m_mol_length, m_beta_m, m_gamma_m)
             : 0.0;
     const amrex::Real non_neutral_cell =
         (m_wall_het_model == "mol")
-            ? stability(0.5 * dx[2], m_mol_length, m_gamma_m, m_beta_m)
+            ? MOData::calc_psi_m(
+                  0.5 * dx[2] / m_mol_length, m_beta_m, m_gamma_m)
             : 0.0;
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];

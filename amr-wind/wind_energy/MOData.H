@@ -68,6 +68,10 @@ struct MOData
     }
 
     amrex::Real calc_psi_m(amrex::Real zeta) const;
+    static amrex::Real calc_psi_m(
+        const amrex::Real zeta,
+        const amrex::Real beta_m,
+        const amrex::Real gamma_m);
     amrex::Real calc_psi_h(amrex::Real zeta) const;
     void update_fluxes(int max_iters = 25);
 };
