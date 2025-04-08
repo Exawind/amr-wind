@@ -53,7 +53,7 @@ KransAxell::KransAxell(const CFDSim& sim)
         amrex::Abort("Cannot find 1-D RANS profile file " + m_1d_rans);
     }
     pp.query("wall_het_model", m_wall_het_model);
-    pp.query("mol_length", m_mol_length);
+    pp.query("monin_obukhov_length", m_monin_obukhov_length);
     pp.query("mo_gamma_m", m_gamma_m);
     pp.query("mo_beta_m", m_beta_m);
     {
@@ -111,8 +111,8 @@ void KransAxell::operator()(
         m_gravity[0], m_gravity[1], m_gravity[2]};
     amrex::Real psi_m = 0.0;
     if (m_wall_het_model == "mol") {
-        psi_m =
-            MOData::calc_psi_m(1.5 * dx[2] / m_mol_length, m_beta_m, m_gamma_m);
+        psi_m = MOData::calc_psi_m(
+            1.5 * dx[2] / m_monin_obukhov_length, m_beta_m, m_gamma_m);
     }
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         amrex::Real bcforcing = 0;

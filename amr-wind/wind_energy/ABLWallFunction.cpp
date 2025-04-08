@@ -146,7 +146,7 @@ ABLVelWallFunc::ABLVelWallFunc(
     amrex::ParmParse pp("ABL");
     pp.query("wall_shear_stress_type", m_wall_shear_stress_type);
     pp.query("wall_het_model", m_wall_het_model);
-    pp.query("mol_length", m_mol_length);
+    pp.query("monin_obukhov_length", m_monin_obukhov_length);
     m_wall_shear_stress_type = amrex::toLower(m_wall_shear_stress_type);
 
     if (m_wall_shear_stress_type == "constant" ||
@@ -213,7 +213,7 @@ void ABLVelWallFunc::wall_model(
                 velocity.bc_type()[zlo] == BC::wall_model) {
                 if (m_wall_het_model == "mol") {
                     const amrex::Real z = 0.5 * dx[2];
-                    const amrex::Real zeta = z / m_mol_length;
+                    const amrex::Real zeta = z / m_monin_obukhov_length;
                     const amrex::Real psi_m = mo.calc_psi_m(zeta);
                     const amrex::Real z0 = mo.z0;
                     const amrex::Real kappa = mo.kappa;
@@ -311,7 +311,7 @@ ABLTempWallFunc::ABLTempWallFunc(
     amrex::ParmParse pp("ABL");
     pp.query("wall_shear_stress_type", m_wall_shear_stress_type);
     pp.query("wall_het_model", m_wall_het_model);
-    pp.query("mol_length", m_mol_length);
+    pp.query("monin_obukhov_length", m_monin_obukhov_length);
     m_wall_shear_stress_type = amrex::toLower(m_wall_shear_stress_type);
     amrex::Print() << "Heat Flux model: " << m_wall_shear_stress_type
                    << std::endl;
@@ -375,12 +375,13 @@ void ABLTempWallFunc::wall_model(
                 temperature.bc_type()[zlo] == BC::wall_model) {
                 if (m_wall_het_model == "mol") {
                     const amrex::Real z = 0.5 * dx[2];
-                    const amrex::Real zeta = z / m_mol_length;
+                    const amrex::Real zeta = z / m_monin_obukhov_length;
                     const amrex::Real psi_m = mo.calc_psi_m(zeta);
                     const amrex::Real z0 = mo.z0;
                     const amrex::Real kappa = mo.kappa;
                     const amrex::Real gravity_mod = 9.81;
-                    const amrex::Real mol_length = m_mol_length;
+                    const amrex::Real monin_obukhov_length =
+                        m_monin_obukhov_length;
                     amrex::ParallelFor(
                         amrex::bdryLo(bx, idim),
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -394,7 +395,7 @@ void ABLTempWallFunc::wall_model(
                             const amrex::Real ustar = wspd * kappa / drag;
                             const amrex::Real thetastar =
                                 theta2 * ustar * ustar /
-                                (kappa * gravity_mod * mol_length);
+                                (kappa * gravity_mod * monin_obukhov_length);
                             const amrex::Real surf_temp_flux =
                                 ustar * thetastar;
                             const amrex::Real blankTerrain =

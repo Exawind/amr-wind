@@ -65,7 +65,7 @@ private:
     int m_sponge_south{0};
     int m_sponge_north{1};
     std::string m_wall_het_model{"none"};
-    amrex::Real m_mol_length{10000};
+    amrex::Real m_monin_obukhov_length{10000};
     amrex::Real m_gamma_m{5.0};
     amrex::Real m_beta_m{16.0};
 };

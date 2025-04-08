@@ -227,7 +227,7 @@ This section is for setting atmospheric boundary layer parameters.
    Allows the use of different surface model options for the Monin-Obukhov length. Currently supports two options:
    (i) "none" - original model in the code and (ii) "mol" - Monin-Obukhov length is constant while heat-flux varies 
 
-.. input_param:: ABL.mol_length
+.. input_param:: ABL.monin_obukhov_length
 
    **type:** Real, optional, default = -1e30 
 

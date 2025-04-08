@@ -127,7 +127,7 @@ DragForcing::DragForcing(const CFDSim& sim)
     }
     amrex::ParmParse pp_abl("ABL");
     pp_abl.query("wall_het_model", m_wall_het_model);
-    pp_abl.query("mol_length", m_mol_length);
+    pp_abl.query("monin_obukhov_length", m_monin_obukhov_length);
     pp_abl.query("kappa", m_kappa);
     pp_abl.query("mo_gamma_m", m_gamma_m);
     pp_abl.query("mo_beta_m", m_beta_m);
@@ -197,12 +197,12 @@ void DragForcing::operator()(
     const amrex::Real non_neutral_neighbour =
         (m_wall_het_model == "mol")
             ? MOData::calc_psi_m(
-                  1.5 * dx[2] / m_mol_length, m_beta_m, m_gamma_m)
+                  1.5 * dx[2] / m_monin_obukhov_length, m_beta_m, m_gamma_m)
             : 0.0;
     const amrex::Real non_neutral_cell =
         (m_wall_het_model == "mol")
             ? MOData::calc_psi_m(
-                  0.5 * dx[2] / m_mol_length, m_beta_m, m_gamma_m)
+                  0.5 * dx[2] / m_monin_obukhov_length, m_beta_m, m_gamma_m)
             : 0.0;
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
