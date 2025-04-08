@@ -6,6 +6,7 @@
 #include "amr-wind/utilities/FieldPlaneAveragingFine.H"
 #include "amr-wind/core/FieldBCOps.H"
 #include "amr-wind/wind_energy/MOData.H"
+#include "amr-wind/utilities/constants.H"
 
 namespace amr_wind {
 
@@ -82,6 +83,8 @@ public:
 private:
     const ABLWallFunction& m_wall_func;
     std::string m_wall_shear_stress_type{"moeng"};
+    std::string m_wall_het_model{"none"};
+    amrex::Real m_monin_obukhov_length{constants::LARGE_NUM};
 };
 
 class ABLTempWallFunc : public FieldBCIface
@@ -98,6 +101,8 @@ public:
 private:
     const ABLWallFunction& m_wall_func;
     std::string m_wall_shear_stress_type{"moeng"};
+    std::string m_wall_het_model{"none"};
+    amrex::Real m_monin_obukhov_length{constants::LARGE_NUM};
 };
 
 } // namespace amr_wind
