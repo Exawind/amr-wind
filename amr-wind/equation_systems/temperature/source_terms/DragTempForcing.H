@@ -4,6 +4,7 @@
 #include "amr-wind/equation_systems/temperature/TemperatureSource.H"
 #include "amr-wind/core/SimTime.H"
 #include "amr-wind/CFDSim.H"
+#include "amr-wind/utilities/constants.H"
 
 namespace amr_wind::pde::temperature {
 
@@ -32,7 +33,7 @@ private:
     amrex::Real m_drag_coefficient{1.0};
 
     std::string m_wall_het_model{"none"};
-    amrex::Real m_mol_length{-1e30};
+    amrex::Real m_mol_length{constants::LOW_NUM};
     amrex::Real m_kappa{0.41};
     amrex::Real m_gamma_m{5.0};
     amrex::Real m_beta_m{16.0};

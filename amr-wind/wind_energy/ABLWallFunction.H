@@ -6,6 +6,7 @@
 #include "amr-wind/utilities/FieldPlaneAveragingFine.H"
 #include "amr-wind/core/FieldBCOps.H"
 #include "amr-wind/wind_energy/MOData.H"
+#include "amr-wind/utilities/constants.H"
 
 namespace amr_wind {
 
@@ -101,7 +102,7 @@ private:
     const ABLWallFunction& m_wall_func;
     std::string m_wall_shear_stress_type{"moeng"};
     std::string m_wall_het_model{"none"};
-    amrex::Real m_mol_length{-1e30};
+    amrex::Real m_mol_length{constants::LOW_NUM};
 };
 
 } // namespace amr_wind
