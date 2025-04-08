@@ -30,13 +30,19 @@ amrex::Real MOData::calc_psi_m(amrex::Real zeta) const
     return calc_psi_m(zeta, beta_m, gamma_m);
 }
 
-amrex::Real MOData::calc_psi_h(amrex::Real zeta) const
+amrex::Real MOData::calc_psi_h(
+    const amrex::Real zeta, const amrex::Real beta_h, const amrex::Real gamma_h)
 {
     if (zeta > 0) {
         return -gamma_h * zeta;
     }
-    amrex::Real x = std::sqrt(1 - beta_h * zeta);
+    const amrex::Real x = std::sqrt(1 - beta_h * zeta);
     return 2.0 * std::log(0.5 * (1 + x));
+}
+
+amrex::Real MOData::calc_psi_h(amrex::Real zeta) const
+{
+    return calc_psi_h(zeta, beta_h, gamma_h);
 }
 
 void MOData::update_fluxes(int max_iters)

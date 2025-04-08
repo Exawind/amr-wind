@@ -41,23 +41,6 @@ private:
     amrex::Real m_beta_h{16.0};
     amrex::Real m_soil_temperature{300};
     amrex::Vector<amrex::Real> m_gravity{0.0, 0.0, -9.81};
-
-    static amrex::Real thermal_stability(
-        const amrex::Real z,
-        const amrex::Real mol_length,
-        const amrex::Real gamma_h,
-        const amrex::Real beta_h)
-    {
-        const amrex::Real zeta = z / mol_length;
-        amrex::Real psi_h = 0;
-        if (zeta > 0) {
-            psi_h = -gamma_h * zeta;
-        } else {
-            amrex::Real x = std::sqrt(1 - beta_h * zeta);
-            psi_h = 2.0 * std::log(0.5 * (1 + x));
-        }
-        return psi_h;
-    }
 };
 
 } // namespace amr_wind::pde::temperature

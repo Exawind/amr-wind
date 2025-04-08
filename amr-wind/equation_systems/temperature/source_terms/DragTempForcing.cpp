@@ -75,11 +75,13 @@ void DragTempForcing::operator()(
             : 0.0;
     const amrex::Real psi_h_neighbour =
         (m_wall_het_model == "mol")
-            ? thermal_stability(1.5 * dx[2], m_mol_length, m_gamma_h, m_beta_h)
+            ? MOData::calc_psi_h(
+                  1.5 * dx[2] / m_mol_length, m_beta_h, m_gamma_h)
             : 0.0;
     const amrex::Real psi_h_cell =
         (m_wall_het_model == "mol")
-            ? thermal_stability(0.5 * dx[2], m_mol_length, m_gamma_h, m_beta_h)
+            ? MOData::calc_psi_h(
+                  0.5 * dx[2] / m_mol_length, m_beta_h, m_gamma_h)
             : 0.0;
     const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
     const amrex::Real cd_max = 10.0;
