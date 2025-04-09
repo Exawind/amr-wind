@@ -19,6 +19,7 @@ VortexDipole::VortexDipole(const CFDSim& sim)
         pp.queryarr("left_vortex_location", m_loc_left);
         pp.queryarr("right_vortex_location", m_loc_right);
         pp.query("vortex_core_radius", m_r0);
+        pp.queryarr("background_velocity", m_bvel);
     }
 }
 
@@ -45,6 +46,10 @@ void VortexDipole::initialize_fields(int level, const amrex::Geometry& geom)
     const amrex::Real z1 = m_loc_right[2];
     const amrex::Real z2 = m_loc_left[2];
 
+    const amrex::Real ub = m_bvel[0];
+    const amrex::Real vb = m_bvel[1];
+    const amrex::Real wb = m_bvel[2];
+
     const amrex::Real r0 = m_r0;
     const amrex::Real omegaEmag = m_omegaEmag;
 
@@ -59,11 +64,11 @@ void VortexDipole::initialize_fields(int level, const amrex::Geometry& geom)
             const amrex::Real r2 =
                 std::sqrt((x - x2) * (x - x2) + (z - z2) * (z - z2));
 
-            vel_arrs[nbx](i, j, k, 0) =
+            vel_arrs[nbx](i, j, k, 0) = ub +
                 -0.5 * omegaEmag * (z - z1) * std::exp(-(r1 / r0) * (r1 / r0)) +
                 0.5 * omegaEmag * (z - z2) * std::exp(-(r2 / r0) * (r2 / r0));
-            vel_arrs[nbx](i, j, k, 1) = 0.0;
-            vel_arrs[nbx](i, j, k, 2) =
+            vel_arrs[nbx](i, j, k, 1) = vb;
+            vel_arrs[nbx](i, j, k, 2) = wb +
                 0.5 * omegaEmag * (x - x1) * std::exp(-(r1 / r0) * (r1 / r0)) +
                 -0.5 * omegaEmag * (x - x2) * std::exp(-(r2 / r0) * (r2 / r0));
         });
