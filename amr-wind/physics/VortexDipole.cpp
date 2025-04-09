@@ -64,11 +64,13 @@ void VortexDipole::initialize_fields(int level, const amrex::Geometry& geom)
             const amrex::Real r2 =
                 std::sqrt((x - x2) * (x - x2) + (z - z2) * (z - z2));
 
-            vel_arrs[nbx](i, j, k, 0) = ub +
+            vel_arrs[nbx](i, j, k, 0) =
+                ub +
                 -0.5 * omegaEmag * (z - z1) * std::exp(-(r1 / r0) * (r1 / r0)) +
                 0.5 * omegaEmag * (z - z2) * std::exp(-(r2 / r0) * (r2 / r0));
             vel_arrs[nbx](i, j, k, 1) = vb;
-            vel_arrs[nbx](i, j, k, 2) = wb +
+            vel_arrs[nbx](i, j, k, 2) =
+                wb +
                 0.5 * omegaEmag * (x - x1) * std::exp(-(r1 / r0) * (r1 / r0)) +
                 -0.5 * omegaEmag * (x - x2) * std::exp(-(r2 / r0) * (r2 / r0));
         });
