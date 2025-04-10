@@ -17,4 +17,5 @@ target_sources(${amr_wind_lib_name} PRIVATE
   DragForcing.cpp
   ForestForcing.cpp
   VelocityFreeAtmosphereForcing.cpp
+  MultiphaseDragForcing.cpp
   )
