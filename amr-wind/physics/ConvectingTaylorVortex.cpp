@@ -212,6 +212,7 @@ template <typename T>
 amrex::Real ConvectingTaylorVortex::compute_error(const Field& field)
 {
     amrex::Real error = 0.0;
+    amrex::Real vol = 0.0;
     const amrex::Real time = m_time.new_time();
     const auto u0 = m_u0;
     const auto v0 = m_v0;
@@ -269,11 +270,11 @@ amrex::Real ConvectingTaylorVortex::compute_error(const Field& field)
             mesh_mapping ? ((*nu_coord_cc)(lev).const_arrays())
                          : amrex::MultiArray4<amrex::Real const>();
 
-        error += amrex::ParReduce(
-            amrex::TypeList<amrex::ReduceOpSum>{},
-            amrex::TypeList<amrex::Real>{}, fld, amrex::IntVect(0),
+        amrex::GpuTuple<amrex::Real, amrex::Real> vals = amrex::ParReduce(
+            amrex::TypeList<amrex::ReduceOpSum, amrex::ReduceOpSum>{},
+            amrex::TypeList<amrex::Real, amrex::Real>{}, fld, amrex::IntVect(0),
             [=] AMREX_GPU_DEVICE(int box_no, int i, int j, int k)
-                -> amrex::GpuTuple<amrex::Real> {
+                -> amrex::GpuTuple<amrex::Real, amrex::Real> {
                 auto const& fld_bx = fld_arr[box_no];
                 auto const& mask_bx = mask_arr[box_no];
 
@@ -293,15 +294,18 @@ amrex::Real ConvectingTaylorVortex::compute_error(const Field& field)
                 const amrex::Real cell_vol =
                     dx[0] * fac_x * dx[1] * fac_y * dx[2] * fac_z;
 
-                return cell_vol * mask_bx(i, j, k) * (u - u_exact) *
-                       (u - u_exact);
+                return {
+                    cell_vol * mask_bx(i, j, k) * (u - u_exact) * (u - u_exact),
+                    cell_vol * mask_bx(i, j, k)};
             });
+        error += amrex::get<0>(vals);
+        vol += amrex::get<1>(vals);
     }
 
     amrex::ParallelDescriptor::ReduceRealSum(error);
+    amrex::ParallelDescriptor::ReduceRealSum(vol);
 
-    const amrex::Real total_vol = m_mesh.Geom(0).ProbDomain().volume();
-    return std::sqrt(error / total_vol);
+    return std::sqrt(error / vol);
 }
 
 void ConvectingTaylorVortex::output_error()

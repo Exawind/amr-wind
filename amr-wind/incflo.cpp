@@ -124,6 +124,7 @@ void incflo::init_amr_wind_modules()
     }
 
     m_sim.pde_manager().fillpatch_state_fields(m_time.current_time());
+    m_sim.pde_manager().density_check();
     m_sim.post_manager().post_init_actions();
 }
 
