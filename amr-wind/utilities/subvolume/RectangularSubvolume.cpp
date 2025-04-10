@@ -31,12 +31,9 @@ void RectangularSubvolume::evaluate_inputs()
     const auto& geom = m_sim.mesh().Geom();
     for (int i = 0; i < m_sim.repo().num_active_levels(); i++) {
         if (!found) {
-            if (std::abs(m_dx_vec[0] - geom[i].CellSize(0)) <
-                    constants::LOOSE_TOL &&
-                std::abs(m_dx_vec[1] - geom[i].CellSize(1)) <
-                    constants::LOOSE_TOL &&
-                std::abs(m_dx_vec[2] - geom[i].CellSize(2)) <
-                    constants::LOOSE_TOL) {
+            if (std::abs(m_dx_vec[0] - geom[i].CellSize(0)) < 1e-4 &&
+                std::abs(m_dx_vec[1] - geom[i].CellSize(1)) < 1e-4 &&
+                std::abs(m_dx_vec[2] - geom[i].CellSize(2)) < 1e-4) {
 
                 amrex::Print()
                     << "RectangularSubvolume " + m_label +
@@ -62,22 +59,25 @@ void RectangularSubvolume::evaluate_inputs()
     // division of two reals --> integer will do a floor
     // **************************************************************
     int i0 = static_cast<int>(
-        (m_origin[0] - geom[m_lev_for_sub].ProbLo(0)) * 1.0001 / m_dx_vec[0]);
+        (m_origin[0] - geom[m_lev_for_sub].ProbLo(0)) * 1.0001 /
+        geom[m_lev_for_sub].CellSize(0));
     int j0 = static_cast<int>(
-        (m_origin[1] - geom[m_lev_for_sub].ProbLo(1)) * 1.0001 / m_dx_vec[1]);
+        (m_origin[1] - geom[m_lev_for_sub].ProbLo(1)) * 1.0001 /
+        geom[m_lev_for_sub].CellSize(1));
     int k0 = static_cast<int>(
-        (m_origin[2] - geom[m_lev_for_sub].ProbLo(2)) * 1.0001 / m_dx_vec[2]);
+        (m_origin[2] - geom[m_lev_for_sub].ProbLo(2)) * 1.0001 /
+        geom[m_lev_for_sub].CellSize(2));
 
     found = false;
     if (std::abs(
-            geom[m_lev_for_sub].ProbLo(0) + i0 * m_dx_vec[0] - m_origin[0]) <
-            constants::LOOSE_TOL &&
+            geom[m_lev_for_sub].ProbLo(0) +
+            i0 * geom[m_lev_for_sub].CellSize(0) - m_origin[0]) < 1e-4 &&
         std::abs(
-            geom[m_lev_for_sub].ProbLo(1) + i0 * m_dx_vec[1] - m_origin[1]) <
-            constants::LOOSE_TOL &&
+            geom[m_lev_for_sub].ProbLo(1) +
+            j0 * geom[m_lev_for_sub].CellSize(1) - m_origin[1]) < 1e-4 &&
         std::abs(
-            geom[m_lev_for_sub].ProbLo(2) + i0 * m_dx_vec[2] - m_origin[2]) <
-            constants::LOOSE_TOL) {
+            geom[m_lev_for_sub].ProbLo(2) +
+            k0 * geom[m_lev_for_sub].CellSize(2) - m_origin[2]) < 1e-4) {
         amrex::Print()
             << "RectangularSubvolume " + m_label +
                    ": Specified origin is the lower left corner of cell "
