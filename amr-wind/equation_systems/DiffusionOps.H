@@ -149,10 +149,32 @@ struct DiffusionOp<
         auto tau_state = std::is_same<Scheme, fvm::Godunov>::value
                              ? FieldState::New
                              : fstate;
+
         amrex::MLMG mlmg(*this->m_applier);
         mlmg.apply(
             this->m_pdefields.diff_term.state(tau_state).vec_ptrs(),
             this->m_pdefields.field.vec_ptrs());
+
+        const auto& repo = this->m_pdefields.repo;
+        const int nlevels = repo.num_active_levels();
+        auto& divtau = this->m_pdefields.diff_term.state(tau_state);
+        const auto& density =
+            this->m_pdefields.repo.get_field("density").state(FieldState::NPH);
+        if (!PDE::multiply_rho) {
+            for (int lev = 0; lev < nlevels; ++lev) {
+                const auto& divtau_arrs = divtau(lev).arrays();
+                const auto& rho_arrs = density(lev).const_arrays();
+
+                amrex::ParallelFor(
+                    divtau(lev), divtau.num_grow(), divtau.num_comp(),
+                    [=] AMREX_GPU_DEVICE(
+                        int nbx, int i, int j, int k, int n) noexcept {
+                        const amrex::Real rhoinv = 1.0 / rho_arrs[nbx](i, j, k);
+                        divtau_arrs[nbx](i, j, k, n) *= rhoinv;
+                    });
+            }
+            amrex::Gpu::streamSynchronize();
+        }
     }
 };
 
