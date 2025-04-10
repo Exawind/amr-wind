@@ -1,5 +1,5 @@
-#ifndef LINESAMPLER_H
-#define LINESAMPLER_H
+#ifndef RECTANGULARSUBVOLUME_H
+#define RECTANGULARSUBVOLUME_H
 
 #include "amr-wind/utilities/subvolume/SubvolumeBase.H"
 
@@ -60,4 +60,4 @@ protected:
 
 } // namespace amr_wind::subvolume
 
-#endif /* LINESAMPLER_H */
+#endif /* RECTANGULARSUBVOLUME_H */
