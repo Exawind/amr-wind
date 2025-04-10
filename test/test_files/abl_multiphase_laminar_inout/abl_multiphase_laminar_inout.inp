@@ -11,7 +11,7 @@ time.cfl              =   0.95       # CFL factor
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #
 #.......................................#
-io.restart_file = "../abl_multiphase_laminar/chk00005"
+io.restart_file = "../abl_multiphase_laminar_2planes/chk00005"
 time.plot_interval            =  10       # Steps between plot files
 time.checkpoint_interval      =  -1         # Steps between checkpoint files
 io.outputs = velocity_mueff temperature_mueff
@@ -65,9 +65,9 @@ OceanWaves.Wave1.water_depth=133
 OceanWaves.Wave1.relax_zone_gen_length=40.0
 OceanWaves.Wave1.relax_zone_out_length=40.0
 
-ABL.bndry_file = "../abl_multiphase_laminar/bndry_files"
+ABL.bndry_file = "../abl_multiphase_laminar_2planes/bndry_files"
 ABL.bndry_io_mode = 1
-ABL.bndry_planes = xlo
+ABL.bndry_planes = xlo xhi
 ABL.bndry_output_start_time = 0.2
 ABL.bndry_var_names = velocity temperature vof density
 ABL.bndry_output_format = native
@@ -87,11 +87,14 @@ geometry.prob_lo        =   0.       0.  -133.  # Lo corner coordinates
 geometry.prob_hi        =   400.   400.   400.  # Hi corner coordinates
 geometry.is_periodic    =   0   1   0   # Periodicity x y z (0/1)
 # Boundary conditions
-xlo.type = "mass_inflow"
+xlo.type = "mass_inflow_outflow"
 xlo.density = 1.3223
 xlo.vof = 0.0
 xlo.temperature = 0.0
-xhi.type = "pressure_outflow"
+xhi.type = "mass_inflow_outflow"
+xhi.density = 1.3223
+xhi.vof = 0.0
+xhi.temperature = 0.0
 zlo.type =   "slip_wall"
 zhi.type =   "slip_wall"
 zhi.temperature_type = "fixed_gradient"
