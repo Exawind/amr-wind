@@ -31,11 +31,14 @@ public:
     //! Class name of this sampler (e.g., Rectangular)
     virtual std::string subvolumetype() const = 0;
 
-    //! Read inputs and perform initialization actions
+    //! Read inputs
     virtual void initialize(const std::string& key) = 0;
 
     //! Check inputs and prepare for output
     virtual void evaluate_inputs() = 0;
+
+    //! Run actions after initialize
+    virtual void post_init_actions() { evaluate_inputs(); }
 
     //! Run actions after regrid
     virtual void post_regrid_actions() { evaluate_inputs(); }

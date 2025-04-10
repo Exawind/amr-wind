@@ -110,6 +110,7 @@ void Subvolume::initialize()
         obj->label() = lbl;
         obj->subvolumetype() = stype;
         obj->initialize(key);
+        obj->post_init_actions();
 
         m_subvolumes.emplace_back(std::move(obj));
     }
@@ -149,9 +150,7 @@ void Subvolume::write_subvolume()
     BL_PROFILE("amr-wind::Subvolume::write_subvolume");
 
     const std::string post_dir = m_sim.io_manager().post_processing_directory();
-    const std::string sampling_name =
-        amrex::Concatenate(m_label, m_sim.time().time_index());
-    const std::string name(post_dir + "/" + sampling_name);
+    const std::string name(post_dir + "/" + m_label);
 
     const auto time = m_sim.time().new_time();
     const auto itime = m_sim.time().time_index();
