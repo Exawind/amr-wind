@@ -22,9 +22,10 @@ public:
      *  \param elapsed_time Time elapsed since averaging was initiated
      */
     void operator()(
-        const SimTime& /*unused*/,
-        const amrex::Real /*unused*/,
-        const amrex::Real /*unused*/) override;
+        const SimTime& /*time*/,
+        const amrex::Real /*filter_width*/,
+        const int /*avg_frequency*/,
+        const amrex::Real /*elapsed_time*/) override;
 
     const std::string& average_field_name() override;
 

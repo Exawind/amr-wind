@@ -40,6 +40,7 @@ public:
     virtual void operator()(
         const SimTime& time,
         const amrex::Real filter_width,
+        const int avg_frequency,
         const amrex::Real elapsed_time) = 0;
 
     virtual const std::string& average_field_name() = 0;
@@ -94,9 +95,6 @@ private:
 
     //! Last time the average was accumulated
     amrex::Real m_last_avg_time{0.0};
-
-    //! Elapsed averaging time
-    amrex::Real m_elapsed_time{0.0};
 };
 
 } // namespace averaging

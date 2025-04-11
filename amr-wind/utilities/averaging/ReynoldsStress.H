@@ -28,6 +28,7 @@ public:
     void operator()(
         const SimTime& /*time*/,
         const amrex::Real /*filter_width*/,
+        const int /*avg_frequency*/,
         const amrex::Real /*elapsed_time*/) override;
 
     const std::string& average_field_name() override;

@@ -33,12 +33,13 @@ const std::string& ReAveraging::average_field_name()
 void ReAveraging::operator()(
     const SimTime& time,
     const amrex::Real filter_width,
+    const int avg_frequency,
     const amrex::Real elapsed_time)
 {
     const amrex::Real dt = time.delta_t();
     const amrex::Real filter =
-        amrex::max(amrex::min(filter_width, elapsed_time), dt);
-    const amrex::Real factor = amrex::max<amrex::Real>(filter - dt, 0.0);
+        amrex::max(amrex::min(filter_width, elapsed_time), (avg_frequency*dt));
+    const amrex::Real factor = amrex::max<amrex::Real>(filter - (avg_frequency*dt), 0.0);
 
     const int ncomp = m_field.num_comp();
     const int nlevels = m_field.repo().num_active_levels();
@@ -56,7 +57,7 @@ void ReAveraging::operator()(
                     const amrex::Real aval = avgarrs[nbx](i, j, k, n);
 
                     avgarrs[nbx](i, j, k, n) =
-                        (aval * factor + fval * dt) / filter;
+                        (aval * factor + fval * (avg_frequency*dt)) / filter;
                 }
             });
     }
