@@ -252,7 +252,7 @@ void DragForcing::operator()(
             const amrex::Real z0 = std::max(terrainz0(i, j, k), z0_min);
             const amrex::Real ustar = viscous_drag_calculations(
                 Dxz, Dyz, ux1r, uy1r, ux2r, uy2r, z0, dx[2], kappa, tiny);
-            if (is_waves) {
+            if (false) { // is_waves) {
                 form_drag_calculations(
                     Dxz, Dyz, i, j, k, target_lvs_arr, dx, ux1r, uy1r);
             }
