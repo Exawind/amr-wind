@@ -88,6 +88,15 @@ private:
 
     //! Time averaging window (in seconds)
     amrex::Real m_filter{0.0};
+
+    //! Time averaging frequency (in time steps)
+    int m_frequency{1};
+
+    //! Last time the average was accumulated
+    amrex::Real m_last_avg_time{0.0};
+
+    //! Elapsed averaging time
+    amrex::Real m_elapsed_time{0.0};
 };
 
 } // namespace averaging

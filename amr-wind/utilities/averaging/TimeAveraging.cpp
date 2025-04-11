@@ -27,6 +27,7 @@ void TimeAveraging::pre_init_actions()
             "Duplicates in " + m_label + ".labels");
         pp.query("averaging_start_time", m_start_time);
         pp.query("averaging_stop_time", m_stop_time);
+        pp.query("averaging_frequency", m_frequency);
         pp.get("averaging_window", m_filter);
     }
 
@@ -79,17 +80,28 @@ void TimeAveraging::post_advance_work()
 {
     const auto& time = m_sim.time();
     const auto cur_time = time.new_time();
+    const auto cur_step = time.time_index();
+    const auto cur_dt = time.delta_t();
 
-    // Check if we are within the averaging time period requested by the user
+    // Check the following:
+    //   1. if we are within the averaging time period requested by the user
+    //   2. if we are phase averaging (i.e., only accumulating the average at a certain
+    //      frequency), check to see if we are on a time step in which averaging should
+    //      be performed.  This is useful for simulations with periodic behavior, such 
+    //      as regular waves or actuator lines rotating at fixed rotor speed.
     const bool do_avg =
-        ((cur_time >= m_start_time) && (cur_time < m_stop_time));
+        (((cur_time >= m_start_time) && (cur_time < m_stop_time)) && 
+         (cur_step % m_frequency == 0));
     if (!do_avg) {
         return;
     }
 
-    const amrex::Real elapsed_time = (cur_time - m_start_time);
+    //const amrex::Real elapsed_time = (cur_time - m_start_time);
     for (const auto& avg : m_averages) {
-        (*avg)(time, m_filter, elapsed_time);
+        m_elapsed_time += 0.5*cur_dt;
+        std::cout << "Accumulating average.  Last accumulation done at: " << m_last_avg_time << ", elapsed time: " << m_elapsed_time << std::endl;
+        m_last_avg_time = cur_time;
+        (*avg)(time, m_filter, m_elapsed_time);
     }
 }
 
