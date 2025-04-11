@@ -1,0 +1,14 @@
+.. meta::58343847e94b9efce9f43cc12a69296ab79bd65dbac0601bc65bf6af08ea8f7a79838aaa7ea345b3aec8e65932286bd3707dc2c61c8e61577bd9561b82b3be6f
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/icns/source_terms -&gt; core Relation
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/equation\_systems/icns/source\_terms -&gt; core Relation
+=====================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: dir_000038_000010.html

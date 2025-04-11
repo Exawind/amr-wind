@@ -1,0 +1,14 @@
+.. meta::f7d4942e47bc3b7f8d653f04e1205d4ef96d80425ccade90c7dc001f194dd66ba832a4862591a12a3fd5b6854c745a3aec9056100917da3966fdab4d16a34c80
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ib::BoxData Struct Reference
+
+BoxData Struct Reference
+========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ib_1_1_box_data.html

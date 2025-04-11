@@ -1,0 +1,14 @@
+.. meta::c0be8fe0673b4b169b451520ae32cd2431bb38c92cfa3c34908ba9844e603cd90d737267789417fc2487cacdc1bf6e7ff3951719886aa2b09c260544a66f80cc
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::FieldRegOp&lt; ICNS, Scheme &gt; Struct Template Reference
+
+FieldRegOp&lt; ICNS, Scheme &gt; Struct Template Reference
+==========================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1pde_1_1_field_reg_op_3_01_i_c_n_s_00_01_scheme_01_4.html

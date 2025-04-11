@@ -1,0 +1,14 @@
+.. meta::65d4a912e909cd6112a101f66372f5692cf4d5c15f9214946786b791e78b784b5def956335cf8a4d5bd9588f1415f8dc4fd83fbe64a06c5ae65d3ed4a8c0aa45
+
+:orphan:
+
+.. title:: AMR-Wind API: PDE Operators
+
+PDE Operators
+=============
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: group__pdeop.html

@@ -1,0 +1,14 @@
+.. meta::df54ca4b8bc3cc717e2b488cf00dcc3cc001fbe6c9ebe8dac4bd0f7680fb76117f339cba02b55f92b322ff57bab06a9ef44a3a230ec9dfe1c9834aa47d15e00d
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/udfs/Rankine.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/physics/udfs/Rankine.H File Reference
+==================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _rankine_8_h.html

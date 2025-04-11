@@ -1,0 +1,14 @@
+.. meta::32f5d95971e18a7d3592819cbdc08bf3554aa58c6db77e8783758a9d9e5803f4b9a5777d4ae9698706159aa2c72e38d7ab7315271cdd22b69246db3448c10c2d
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::ReadInputsOp&lt; FixedWing, ActSrcLine &gt; Struct Reference
+
+ReadInputsOp&lt; FixedWing, ActSrcLine &gt; Struct Reference
+============================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1ops_1_1_read_inputs_op_3_01_fixed_wing_00_01_act_src_line_01_4.html
