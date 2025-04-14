@@ -120,6 +120,9 @@ DragForcing::DragForcing(const CFDSim& sim)
             terrain_phys.wave_negative_elevation_name();
         m_target_levelset = &sim.repo().get_field(target_levelset_name);
         m_terrain_is_waves = true;
+        // Inviscid form drag model can help when waves are smaller than cells,
+        // i.e., too small to be resolved with cell blanking
+        pp.query("wave_model_inviscid_form_drag", m_apply_MOSD);
     }
 }
 
@@ -149,6 +152,7 @@ void DragForcing::operator()(
     const auto& terrainz0 = (*m_terrainz0)(lev).const_array(mfi);
 
     const bool is_waves = m_terrain_is_waves;
+    const bool model_form_drag = m_apply_MOSD;
     const auto& target_vel_arr = is_waves
                                      ? (*m_target_vel)(lev).const_array(mfi)
                                      : amrex::Array4<amrex::Real>();
@@ -252,7 +256,7 @@ void DragForcing::operator()(
             const amrex::Real z0 = std::max(terrainz0(i, j, k), z0_min);
             const amrex::Real ustar = viscous_drag_calculations(
                 Dxz, Dyz, ux1r, uy1r, ux2r, uy2r, z0, dx[2], kappa, tiny);
-            if (is_waves) {
+            if (model_form_drag) {
                 form_drag_calculations(
                     Dxz, Dyz, i, j, k, target_lvs_arr, dx, ux1r, uy1r);
             }
