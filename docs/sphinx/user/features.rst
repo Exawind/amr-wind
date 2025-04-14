@@ -140,7 +140,9 @@ Flow physics
 
    * Derived fields and field operators such as vorticity, q-criterion, strain-rates, gradients, divergence, Laplacian [:ref:`inp <inputs_io_derived>`]
 
-   * in-situ post-processing with Ascent
+   * In-situ post-processing with Ascent
+
+   * Compression for field files [:ref:`doc <compression>`, :ref:`inp <inputs_io>`]
 
 High performance computing
 --------------------------
