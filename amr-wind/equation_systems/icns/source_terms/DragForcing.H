@@ -51,6 +51,7 @@ private:
     int m_sponge_north{1};
     bool m_is_laminar{false};
     bool m_terrain_is_waves{false};
+    bool m_apply_MOSD{false};
 };
 
 } // namespace amr_wind::pde::icns
