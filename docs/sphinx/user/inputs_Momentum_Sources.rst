@@ -268,7 +268,7 @@ Section: Momentum Sources
    when the waves are not sufficiently resolved, such as when the wave amplitude is less than the cell height,
    the analytical model for the form drag, activated by setting this option to true, can be used to compensate
    for the lack of resolution. Therefore, this option should remain set to false except in scenarios
-   when the form drag is known to be underresolved.
+   when the form drag is known to be under-resolved.
 
 
 The following arguments are influential when ``GravityForcing`` is included in :input_param:`ICNS.source_terms`.
