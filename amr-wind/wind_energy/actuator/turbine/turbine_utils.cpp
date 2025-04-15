@@ -32,6 +32,12 @@ void read_inputs(
     bool use_fllc = false;
     pp.query("fllc", use_fllc);
     if (use_fllc) {
+        std::string type;
+        pp.query("type", type);
+        if (type == "TurbineFastDisk") {
+            amrex::Abort(
+                "FLLC is not compatible with TurbineFastDisk turbine type");
+        }
         for (int i = 0; i < tdata.num_blades; ++i) {
             tdata.fllc.emplace_back();
             fllc_parse(pp, tdata.fllc.back());
