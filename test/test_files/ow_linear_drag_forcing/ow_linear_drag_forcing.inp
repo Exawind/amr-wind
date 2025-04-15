@@ -42,6 +42,7 @@ ICNS.reconstruct_true_pressure = true
 MultiphaseDragForcing.wave_roughness = 1e-3
 MultiphaseDragForcing.density_ratio_limit = 150
 MultiPhase.verbose=1
+mac_proj.bottom_atol = 1e-14
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
