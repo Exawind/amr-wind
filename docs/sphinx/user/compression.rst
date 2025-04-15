@@ -17,7 +17,7 @@ To read ZFP compressed HDF5 files into ParaView, ParaView must have the environm
     $ export HDF5_PLUGIN_PATH=$(spack location -i h5z-zfp)/plugin
     $ paraview
 
-Then the user can load the file as usual.
+Then the user can load the file as usual with the ``VisitChomboReader``.
 
 yt
 --
