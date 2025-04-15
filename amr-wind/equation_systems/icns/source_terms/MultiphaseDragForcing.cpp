@@ -30,49 +30,6 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real viscous_drag_calculations(
     return ustar;
 }
 
-// Implementation comes from MOSD approach in boundary_conditions/wall_models/
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void form_drag_calculations(
-    amrex::Real& Dxz,
-    amrex::Real& Dyz,
-    const int i,
-    const int j,
-    const int k,
-    amrex::Array4<amrex::Real const> const& phi,
-    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx,
-    const amrex::Real ux1r,
-    const amrex::Real uy1r)
-{
-    // phi = eta - z, so eta derivatives in x and y can be calculate with phi
-    amrex::Real n_x, n_y, n_z;
-    amr_wind::multiphase::youngs_finite_difference_normal(
-        i, j, k, phi, n_x, n_y, n_z);
-    // factor of 32 has to do with finite differences, number of points used
-    // negative to make normals point away from waves into air
-    const amrex::Real dx_eta_wave = -n_x / 32. / dx[0];
-    const amrex::Real dy_eta_wave = -n_y / 32. / dx[1];
-    const amrex::Real grad_eta_wave =
-        std::sqrt(dx_eta_wave * dx_eta_wave + dy_eta_wave * dy_eta_wave);
-    n_x = dx_eta_wave / grad_eta_wave;
-    n_y = dy_eta_wave / grad_eta_wave;
-
-    // Relative velocity while considering interface normal
-    const amrex::Real ur_mag =
-        std::sqrt(ux1r * ux1r * n_x * n_x + uy1r * uy1r * n_y * n_y);
-    // Heaviside function changes behavior for velocity surplus/deficit
-    const amrex::Real Heavi_arg = (ux1r * dx_eta_wave + uy1r * dy_eta_wave);
-    const amrex::Real Heavi =
-        (Heavi_arg + std::abs(Heavi_arg)) / (2 * Heavi_arg);
-
-    // Stress in each direction
-    const amrex::Real tau_xz = (1 / M_PI) * ur_mag * ur_mag * grad_eta_wave *
-                               grad_eta_wave * Heavi * n_x;
-    const amrex::Real tau_yz = (1 / M_PI) * ur_mag * ur_mag * grad_eta_wave *
-                               grad_eta_wave * Heavi * n_y;
-
-    // Drag terms from waves added to log law
-    Dxz += -tau_xz / dx[2];
-    Dyz += -tau_yz / dx[2];
-}
 } // namespace
 
 namespace amr_wind::pde::icns {
@@ -144,8 +101,6 @@ void MultiphaseDragForcing::operator()(
             const amrex::Real z0 = std::max(terrainz0(i, j, k), z0_min);
             const amrex::Real ustar = viscous_drag_calculations(
                 Dxz, Dyz, ux1r, uy1r, ux2r, uy2r, z0, dx[2], kappa, tiny);
-            form_drag_calculations(
-                Dxz, Dyz, i, j, k, target_lvs_arr, dx, ux1r, uy1r);
             const amrex::Real uTarget =
                 ustar / kappa * std::log(0.5 * dx[2] / z0);
             const amrex::Real uxTarget =
