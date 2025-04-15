@@ -68,7 +68,6 @@ private:
 
     //! Terrain Drag for waves
     bool m_terrain_is_waves{false};
-    bool m_vof_drag{false};
     amrex::Real m_wave_roughness{1e-4};
     Field* m_wave_volume_fraction{nullptr};
     Field* m_wave_negative_elevation{nullptr};

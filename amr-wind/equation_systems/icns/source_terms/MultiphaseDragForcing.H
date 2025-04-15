@@ -35,7 +35,6 @@ private:
     amrex::Real m_wave_roughness{1e-4};
     amrex::Real m_density_ratio_limit{100.};
     const SimTime& m_time;
-    const CFDSim& m_sim;
     const amrex::AmrCore& m_mesh;
     const Field& m_velocity;
     const Field& m_vof;

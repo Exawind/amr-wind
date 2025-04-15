@@ -36,7 +36,6 @@ namespace amr_wind::pde::icns {
 
 MultiphaseDragForcing::MultiphaseDragForcing(const CFDSim& sim)
     : m_time(sim.time())
-    , m_sim(sim)
     , m_mesh(sim.mesh())
     , m_velocity(sim.repo().get_field("velocity"))
     , m_vof(sim.repo().get_field("vof"))
