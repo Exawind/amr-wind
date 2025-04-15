@@ -26,8 +26,7 @@ transport.viscosity_fluid2=0.0
 transport.turbulent_prandtl = 0.3333
 turbulence.model = Laminar 
 
-incflo.physics = MultiPhase OceanWaves TerrainDrag 
-TerrainDrag.vof_drag = true
+incflo.physics = MultiPhase OceanWaves
 OceanWaves.label = Wave1
 OceanWaves.Wave1.type = LinearWaves
 OceanWaves.Wave1.wave_height=0.02
@@ -40,6 +39,8 @@ MultiPhase.density_fluid2=1.
 ICNS.source_terms = GravityForcing MultiphaseDragForcing
 ICNS.use_perturb_pressure = true
 ICNS.reconstruct_true_pressure = true
+MultiphaseDragForcing.wave_roughness = 1e-3
+MultiphaseDragForcing.density_ratio_limit = 150
 MultiPhase.verbose=1
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #

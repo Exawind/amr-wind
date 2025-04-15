@@ -72,13 +72,13 @@ void MultiphaseDragForcing::operator()(
         amrex::IntVect iv_gas{iv};
         amrex::IntVect iv_liquid{iv};
         int add_drag{0};
-        if (vof(i, j, k) < 0.5 && rho(i, j, k) < f_rho * rho(i, j, k - 1)) {
+        if (vof(i, j, k) < 0.5 && rho(i, j, k) * f_rho < rho(i, j, k - 1)) {
             // Current cell is mostly gas, density ratio indicates drag should
             // be added
             add_drag = 1;
             iv_liquid[2] -= 1;
         }
-        if (vof(i, j, k + 1) < 0.5 && rho(i, j, k + 1) < f_rho * rho(i, j, k)) {
+        if (vof(i, j, k + 1) < 0.5 && rho(i, j, k + 1) * f_rho < rho(i, j, k)) {
             // Above cell is mostly gas, density ratio indicates drag should be
             // subtracted
             add_drag = -1;
