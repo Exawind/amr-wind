@@ -252,6 +252,24 @@ Section: Momentum Sources
    This term turns off the sponge layer. This term is required for terrain simulations with periodic 
    boundary conditions. The default value is 0. 
 
+.. input_param:: DragForcing.wave_model_inviscid_form_drag
+
+   **type:** Boolean, optional, default = false
+
+   This input file option turns on or off an inviscid model for the form drag of waves in the domain. 
+   The formulation of this model is adapted from the Moving Surface Drag (MOSD) model developed by
+   `Ayala et al (2024) <https://doi.org/10.1007/s10546-024-00884-8>`_.
+   
+   When the OceanWaves physics module is active, and the volume fraction variable ("vof") is not in the simulation,
+   DragForcing will represent ocean waves as moving terrain. This is automatic and independent of DragForcing
+   input arguments. When waves are represented as moving terrain and
+   there is sufficient mesh resolution to resolve the shape of the wave, the blanking of cells performed
+   by the DragForcing routine will naturally introduce the form drag of the waves into the flow. However,
+   when the waves are not sufficiently resolved, such as when the wave amplitude is less than the cell height,
+   the analytical model for the form drag, activated by setting this option to true, can be used to compensate
+   for the lack of resolution. Therefore, this option should remain set to false except in scenarios
+   when the form drag is known to be under-resolved.
+
 
 The following arguments are influential when ``GravityForcing`` is included in :input_param:`ICNS.source_terms`.
 

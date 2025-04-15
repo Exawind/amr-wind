@@ -1,0 +1,76 @@
+----------------------- Tank dimensions -----------------------
+Length(m) of the wavetank    :: xlen             :: 28.0d0
+Beam(m) of the wavetank      :: ylen             :: 4.0d0
+Depth(m) of the wavetank     :: h                :: 3.6d0
+------------------------ Select case --------------------------
+Choice of computed case      :: icase            :: 4
+------------------ Sloshing case (icase = 1) ------------------
+Number of the natural mode   :: islosh           :: 3
+Amplitude (m) of the mode    :: aslosh           :: 0.2d0
+--------------- Monochromatic case (icase = 2) ----------------
+Amplitude (m) of wave train  :: amp_mono         :: 0.1d0
+Frequency (Hz) of wave train :: nu_mono          :: 0.5588d0
+Angle (deg) from x-axis      :: theta_mono       :: 0.d0
+Phasis (rad) of wave train   :: ph_mono          :: 0.d0
+Directional wmk type         :: ibat             :: 2
+Wave target distance (ibat=3):: xd_mono          :: 18.d0
+-------------------- File case (icase = 3) --------------------
+Name of frequency file       :: file_name        :: Hs4_Tp10
+Frequency cut-off            :: i_cut            :: 0
+Low cut_off frequency (Hz)   :: nuc_low          :: 0.3d0
+High cut_off frequency (Hz)  :: nuc_high         :: 3.d0
+------------------ Irregular wave (icase=4) -------------------
+Significant wave height (m)  :: Hs               :: 0.148d0
+Peak period (s)              :: Tp               :: 1.6971
+Shape factor (Jonswap)       :: gamma            :: 3.3d0
+Seed number for random numb. :: iseed            :: 2731
+-------------------- Wavemaker definition ---------------------
+Nonlinear order of wavemaker :: i_wmk            :: 2
+Type (1: piston, 2: hinged)  :: igeom            :: 2
+Rotation axis distance       :: d_hinge          :: 1.d0
+Time ramp                    :: iramp            :: 0
+Time ramp duration (s)       :: Tramp            :: 5.0d0
+----------------------- Numerical beach -----------------------
+Absorption numerical beach   :: iabsnb           :: 1
+Beginning front num. beach   :: xabsf            :: 0.8d0
+Absorption strength front    :: coeffabsf        :: 1.d0
+------------- Elevation/Velocity-Pressure probes --------------
+Use of probes                :: iprobes          :: 0
+Filename of probe positions  :: pro_file         :: prob.inp
+---------------------- Time-integration -----------------------
+Duration of the simulation   :: T_stop           :: 5.0d0
+Time tolerance: RK 4(5)      :: toler            :: 1.e-4
+Output frequency             :: f_out            :: 4.0
+--------------------------- Output ----------------------------
+Output: 1-dim. ; 0-nondim.   :: idim             :: 1
+free surface plot            :: i3d              :: 1
+modes plot                   :: imodes           :: 0
+wavemaker motion plot        :: iwmk             :: 0
+Swense output 1='yes',0='no' :: i_sw             :: 1
+HDF5 output 1='yes',0='no'   :: is_hdf5          :: 0
+----------------------- Discretization ------------------------
+Number of points in x-dir.   :: n1               :: 128
+Number of points in y-dir.   :: n2               :: 1
+Number of points in y-dir.   :: n3               :: 17
+HOS nonlinearity order       :: mHOS             :: 3
+Dealiasing parameters in x   :: p1               :: 3
+Dealiasing parameters in y   :: p2               :: 1
+Filtering in x-direction     :: coeffiltx        :: 1.d0
+Filtering in y-direction     :: coeffilty        :: 1.d0
+Filtering in z-direction     :: coeffiltz        :: 1.d0
+ --------------------- Wave breaking type ---------------------
+Breaking model type          :: ibrk             :: 0
+ ---------- Tian model characteristics (ibrk=1 or 3) ----------
+Breaking threshold           :: threshold        :: 0.85d0
+alpha eddy_viscosity         :: alpha_eddy_vis   :: 1.d0
+Length ramp visc. (wrt Lc)   :: ramp_eddy        :: 0.25d0
+Change of breaking length    :: fact_Lbr         :: 1.d0
+Change of breaking duration  :: fact_Tbr         :: 1.d0
+cubic spline interpolant     :: numspl           :: 5
+Additional constant visc.    :: eqv_vis          :: 0.d0
+-------- Chalikov model characteristics (ibrk=2 or 3) --------
+Filter order                 :: order_filt       :: 1
+Filter param                 :: r_filt           :: 0.75d0
+Filter coefficient           :: coeffilt_chalikov:: 0.9d0
+Diffusion strength           :: Cb               :: 0.03d0
+Diffusion threshold          :: threshold_s      :: 75.d0
