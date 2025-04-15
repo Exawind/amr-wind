@@ -32,12 +32,14 @@ public:
         const amrex::Array4<amrex::Real>& src_term) const override;
 
 private:
+    amrex::Real m_wave_roughness{1e-4};
+    amrex::Real m_density_ratio_limit{1e-2};
     const SimTime& m_time;
     const CFDSim& m_sim;
     const amrex::AmrCore& m_mesh;
     const Field& m_velocity;
-    const Field* m_target_vel{nullptr};
-    const Field* m_target_levelset{nullptr};
+    const Field& m_vof;
+    const Field& m_density;
 };
 
 } // namespace amr_wind::pde::icns
