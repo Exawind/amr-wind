@@ -4,7 +4,7 @@ To accurately represent wind turbine using the actuator line model (ALM) with Op
 
 The standard ALM has uniformly-spaced points and thus requires a fine value of epsilon and a large number of points along the blade to properly model it. In recent years, a correction, called filtered lifting line correction (FLLC), has been developed (see reference [1]). Such a correction also includes the use of points that are not uniformly-space, thus lifting the requirement of a small values of epsilon. It is recommended that you run the ALM with the FLLC on. 
 
-To enable the ALM with OpenFAST coupling, the ``Actuator`` physics should be added to ``ICNS.source_terms`` and ``Actuator.type = TurbineFastLine`` should be set. Next, the user should enablee FLLC, choose its type,  and set the option for a non-uniform point distribution:
+To enable the ALM with OpenFAST coupling, the ``Actuator`` physics should be added to ``ICNS.source_terms`` and ``Actuator.type = TurbineFastLine`` should be set. Next, the user should enable FLLC, choose its type,  and set the option for a non-uniform point distribution:
 
 .. code-block:: none
 
