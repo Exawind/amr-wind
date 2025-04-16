@@ -570,23 +570,3 @@ of the maximum LAD, :math:`L_m` is the maximum value of LAD at :math:`z_m` and :
 
 The simplified model with uniform LAD is recommended for forested regions with no knowledge of the individual trees. LAI values can be used from 
 climate model look-up tables for different regions around the world if no local remote sensing data is available. 
-
-Navigating source code
-------------------------
-
-``AMR-Wind`` is built on top of `AMReX library
-<https://amrex-codes.github.io/amrex/docs_html/>`_. Users are strongly
-recommended to read through the AMReX documentation and understand the basic
-AMReX concepts before jumping into the AMR-Wind source code.
-
-The `Basics section
-<https://amrex-codes.github.io/amrex/docs_html/Basics_Chapter.html>`_ provides a
-thorough overview of the basic data structures and ways to interact with these
-structures. The `GPU section
-<https://amrex-codes.github.io/amrex/docs_html/GPU_Chapter.html>`_ provides an
-overview of the AMReX GPU strategy and the higher-level functions (e.g.,
-``parallel-for`` abstractions) available to write GPU-ready code within
-AMR-Wind. The `Linear Solvers section
-<https://amrex-codes.github.io/amrex/docs_html/LinearSolvers_Chapter.html>`_
-provides an overview of the multi-level multigrid (MLMG) solvers used to solve
-the various linear systems within AMR-Wind.
