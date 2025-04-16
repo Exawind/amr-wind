@@ -80,6 +80,7 @@ incompressible
 incompressibility
 initializer
 initializers
+inviscid
 iteratively
 Kosovic
 levelset
