@@ -8,7 +8,7 @@ Frequently Asked Questions (FAQ) and Common Errors
    This error can appear when running actuator-based turbine simulations coupled to OpenFAST.
    AMR-Wind uses particles to keep track of actuator points, and the positions of these points
    are determined by the turbine model. If the velocity field in AMR-Wind becomes
-   huge or unrealistic (nan), then the turbine model can return bad particle positions
+   huge or unrealistic (e.g., not a number), then the turbine model can return bad particle positions
    that do not fit into the AMR-Wind domain. If this error stops your simulation,
    check the velocity field leading up to the error to determine if something went wrong there.
    If the velocity field is faulty, reevaluate your problem setup.
