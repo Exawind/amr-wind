@@ -31,7 +31,7 @@ an azimuthal force, which has different representations depending on the
 model variant.
 
 The forces are computed at discrete points on the disk surface using the
-:math:`i`\ th actuator point, and these discrete forces are then spread
+actuator point :math:`i`, and these discrete forces are then spread
 over the turbine disk via a spreading function, :math:`\Gamma_i`, often
 a Gaussian :cite:p:`martinez2015`:
 
@@ -42,7 +42,7 @@ a Gaussian :cite:p:`martinez2015`:
 
 where :math:`x_j` is an arbitrary location in space, :math:`\epsilon` is
 the characteristic width of the Gaussian kernel, and :math:`h_{i,j}` is
-the distance between the :math:`i`\ th actuator point and the
+the distance between the actuator point :math:`i` and the
 :math:`x_j` position in space. A more general form of
 `[eq:uniform_gauss] <#eq:uniform_gauss>`__ can be rewritten as a tensor
 product of contributions from each component of an orthogonal coordinate
@@ -165,8 +165,8 @@ vector, which contributes to :math:`\alpha` and :math:`U_{rel}`, is
 calculated
 :math:`\boldsymbol{u}_{rel} = \boldsymbol{u}(\boldsymbol{x}_{i}) - \dot{\boldsymbol{x}}_{i}`,
 where :math:`\dot{\boldsymbol{x}}_i` is the velocity of the
-:math:`i`\ th actuator point, :math:`\boldsymbol{x}_i` is the position
-of the :math:`i`\ th actuator point, and
+actuator point :math:`i`, :math:`\boldsymbol{x}_i` is the position
+of the actuator point :math:`i`, and
 :math:`\boldsymbol{u}(\boldsymbol{x}_i)` is the sampled fluid velocity
 at that point. The lift force and drag force are then added in vector
 form and distributed around surrounding grid cells by using a finite
@@ -185,7 +185,7 @@ Gaussian kernel:
 where :math:`\boldsymbol{f}_i=F_{l,i}\hat{e}_l + F_{d,i}\hat{e}_d` is
 the aerodynamic force vector of an actuator point :math:`i`,
 :math:`x_c`, :math:`x_t`, and :math:`x_s` are the distances from the
-center of the :math:`i`\ th actuator point to the point
+center of the actuator point :math:`i` to the point
 :math:`\boldsymbol{x}_j` in the chord, thickness, and spanwise
 directions, and :math:`\epsilon_c`, :math:`\epsilon_t`, and
 :math:`\epsilon_s` are the thickness of the Gaussian in the
