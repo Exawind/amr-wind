@@ -1,5 +1,5 @@
 User Manual
-=============
+===========
 
 .. toctree::
    :glob:
