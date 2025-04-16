@@ -47,6 +47,7 @@ objectives:
    theory/theory 
    developer/index
    references
+   bibrefs.rst
 
 
 Indices and tables
