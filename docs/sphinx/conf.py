@@ -36,6 +36,7 @@ spelling_warning = True
 spelling_ignore_contributor_names = False
 
 bibtex_bibfiles = ['references/references.bib']
+bibtex_reference_style = "author_year"
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
