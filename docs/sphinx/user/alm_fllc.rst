@@ -2,7 +2,7 @@
 
 To accurately represent wind turbine using the actuator line model (ALM) with OpenFAST, the user must select ALM parameters that are appropriate for the turbine of interest and for the near-turbine grid resolution.
 
-The standard ALM has uniformly-spaced points and thus requires a fine value of epsilon and a large number of points along the blade to properly model it. In recent years, a correction, called filtered lifting line correction (FLLC), has been developed (see reference [1]). Such a correction also includes the use of points that are not uniformly-space, thus lifting the requirement of a small values of epsilon. It is recommended that you run the ALM with the FLLC on. 
+The standard ALM has uniformly-spaced points and thus requires a fine value of epsilon and a large number of points along the blade to properly model it. In recent years, a correction, called filtered lifting line correction (FLLC), has been developed ::cite:p:`martinez-tossas_meneveau_2019`. Such a correction also includes the use of points that are not uniformly-space, thus lifting the requirement of a small values of epsilon. It is recommended that you run the ALM with the FLLC on. 
 
 To enable the ALM with OpenFAST coupling, the ``Actuator`` physics should be added to ``ICNS.source_terms`` and ``Actuator.type = TurbineFastLine`` should be set. Next, the user should enable FLLC, choose its type,  and set the option for a non-uniform point distribution:
 
@@ -12,7 +12,7 @@ To enable the ALM with OpenFAST coupling, the ``Actuator`` physics should be add
     Actuator.TurbineFastLine.fllc_nonuniform = 1
     Actuator.TurbineFastLine.fllc_type = variable_chord
 
-When selecting the ``Actuator.TurbineFastLine.fllc_nonuniform`` as ``1``, a new distribution of points is calculated internally, based on the ``Actuator.TurbineFastLine.num_points_blade`` and ``Actuator.TurbineFastLine.fllc_eps_dr_ratio`` entries. The ``Actuator.TurbineFastLine.fllc_eps_dr_ratio`` value should be at least 1 with a maximum value of 3. It is recommended to use the value 3. This parameter controls the distribution of points and its value should be selected based on the desired accuracy of the correction, according to Table 1 given in reference [2].
+When selecting the ``Actuator.TurbineFastLine.fllc_nonuniform`` as ``1``, a new distribution of points is calculated internally, based on the ``Actuator.TurbineFastLine.num_points_blade`` and ``Actuator.TurbineFastLine.fllc_eps_dr_ratio`` entries. The ``Actuator.TurbineFastLine.fllc_eps_dr_ratio`` value should be at least 1 with a maximum value of 3. It is recommended to use the value 3. This parameter controls the distribution of points and its value should be selected based on the desired accuracy of the correction, according to Table 1 given in :cite:`MartinezFLLCimpl`.
 
 .. code-block:: none
 
@@ -40,10 +40,3 @@ Lastly, in certain cases, a numerical instability arise from the application of 
     Actuator.TurbineFastLine.fllc_start_time = 5
 
 More details on other parameters are available in the description of each entry on the `input file reference page <inputs_Actuator>`.
-
-
-References
-----------
-
-[1] Martínez-Tossas LA, Meneveau C. Filtered lifting line theory and application to the actuator line model. Journal of Fluid Mechanics. 2019;863:269-292. doi:10.1017/jfm.2018.994 
-[2] Martinez-Tossas, L. A., Allaerts, D., Branlard, E., & Churchfield, M. J. (2025). A Solution Method for the Filtered Lifting Line Theory. Journal of Fluids Engineering, 147(1).
