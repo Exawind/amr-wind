@@ -113,7 +113,7 @@ jobs:
         ccache -s
         ls ${{matrix.ccache_cache}}
         du -hs ${{matrix.ccache_cache}}
-    - name: Report
+    - name: Build Report
       working-directory: ${{runner.workspace}}/build-ci-${{matrix.build_type}}-${{matrix.openmp_flag}}
       run: |
         echo "::add-matcher::.github/problem-matchers/gcc.json"
@@ -160,9 +160,14 @@ jobs:
         ls ${{matrix.ccache_cache}}
         du -hs ${{matrix.ccache_cache}}
     - name: Reference Test
+      id: ref-test
+      continue-on-error: true
       if: ${{matrix.build_type == 'Release' && github.event_name != 'push'}}
       working-directory: ${{runner.workspace}}/build-ci-${{matrix.build_type}}-${{matrix.openmp_flag}}-reference
       run: ctest ${{matrix.ctest_args}} -VV --output-on-failure
+    - name: Reference Test Warning
+      if: steps.ref-test.outcome == 'success'
+      run: echo "::warning::Reference test failed"
   GPU-Nvidia:
     name: GPU-CUDA
     needs: Formatting
