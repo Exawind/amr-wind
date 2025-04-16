@@ -1,5 +1,8 @@
 .. _alm_fllc:
 
+Filtered lifting line correction (FLLC)
+=======================================
+
 To accurately represent wind turbine using the actuator line model (ALM) with OpenFAST, the user must select ALM parameters that are appropriate for the turbine of interest and for the near-turbine grid resolution.
 
 The standard ALM has uniformly-spaced points and thus requires a fine value of epsilon and a large number of points along the blade to properly model it. In recent years, a correction, called filtered lifting line correction (FLLC), has been developed ::cite:p:`martinez-tossas_meneveau_2019`. Such a correction also includes the use of points that are not uniformly-space, thus lifting the requirement of a small values of epsilon. It is recommended that you run the ALM with the FLLC on. 
