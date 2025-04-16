@@ -10,4 +10,5 @@ User Manual
    inputs.rst
    abl_bndry_io.rst
    run.rst
+   faq.rst
    post_processing_examples.rst
