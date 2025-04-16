@@ -126,14 +126,14 @@ jobs:
       working-directory: ${{runner.workspace}}/build-ci-${{matrix.build_type}}-${{matrix.openmp_flag}}
       run: ctest ${{matrix.ctest_args}} -VV --output-on-failure
     - name: Reference Checkout
-      if: github.event_name != 'push'
+      if: ${{matrix.build_type == 'Release' && github.event_name != 'push'}}
       run : |
         git remote add reference https://github.com/Exawind/amr-wind.git
         git fetch reference main --depth=1
         git checkout reference/main
         git submodule update --recursive --depth=1
     - name: Reference Configure
-      if: github.event_name != 'push'
+      if: ${{matrix.build_type == 'Release' && github.event_name != 'push'}}
       run: |
         cmake -B ${{runner.workspace}}/build-ci-${{matrix.build_type}}-${{matrix.openmp_flag}}-reference \
           -DCMAKE_INSTALL_PREFIX:PATH=${{runner.workspace}}/install-${{matrix.build_type}}-${{matrix.openmp_flag}}-reference \
@@ -148,17 +148,19 @@ jobs:
           -DCMAKE_CXX_COMPILER_LAUNCHER:STRING=ccache \
           ${{github.workspace}}
     - name: Reference Build
-      if: github.event_name != 'push'
+      if: ${{matrix.build_type == 'Release' && github.event_name != 'push'}}
       run : |
         ccache -z
         cmake --build ${{runner.workspace}}/build-ci-${{matrix.build_type}}-${{matrix.openmp_flag}}-reference \
           --parallel ${{env.NPROCS}}
     - name: Reference Ccache Report
+      if: ${{matrix.build_type == 'Release' && github.event_name != 'push'}}
       run: |
         ccache -s
         ls ${{matrix.ccache_cache}}
         du -hs ${{matrix.ccache_cache}}
     - name: Reference Test
+      if: ${{matrix.build_type == 'Release' && github.event_name != 'push'}}
       working-directory: ${{runner.workspace}}/build-ci-${{matrix.build_type}}-${{matrix.openmp_flag}}-reference
       run: ctest ${{matrix.ctest_args}} -VV --output-on-failure
   GPU-Nvidia:
