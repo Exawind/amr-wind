@@ -137,11 +137,7 @@ they have the advantage of being fully contained within AMR-Wind.
 However, by coupling to OpenFAST, additional aspects of turbine behavior
 are included in the modeling framework, such as structural dynamics, and
 controllers can be easily incorporated to govern turbine behavior during
-the course of a simulation. The OpenFAST-coupled implementation for ADM
-is used in Section `[adm_validation] <#adm_validation>`__ for
-validation.
-
-.. _`sect:ALM`:
+the course of a simulation.
 
 Actuator line model
 ~~~~~~~~~~~~~~~~~~~
