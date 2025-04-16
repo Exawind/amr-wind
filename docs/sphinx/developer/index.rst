@@ -4,9 +4,9 @@ Developer Documentation
 =======================
 
 This section is meant for potential developers who are interested in modifying
-and extending the ``amr-wind`` source code for their own use cases.
+and extending the AMR-Wind source code for their own use cases.
 
-``AMR-Wind`` is built on top of `AMReX library
+AMR-Wind is built on top of `AMReX library
 <https://amrex-codes.github.io/amrex/docs_html/>`_. Users are strongly
 recommended to read through the AMReX documentation and understand the basic
 AMReX concepts before jumping into the AMR-Wind source code.

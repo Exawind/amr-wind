@@ -147,7 +147,7 @@ Mesoscale Forcing
 ~~~~~~~~~~~~~~~~~
 
 To incorporate larger-scale atmospheric dynamics under real conditions,
-`AMR-Wind` offers two approaches. If mesoscale momentum and/or temperature
+AMR-Wind offers two approaches. If mesoscale momentum and/or temperature
 source terms are known exactly, e.g., from a numerical weather prediction (NWP)
 model, then these may be directly applied. These mesoscale source terms would
 come from the RHS of the mesoscale equations of motion and may also include the
@@ -343,13 +343,13 @@ length scale is modified as follows
 Here the term :math:`H=1.5 dz` specifies the location at which the length scale switches to :math:`L=C_s\Delta` and :math:`\phi_M`
 is the atmospheric stability function. Currently, the implementation for the stability function uses a single global value. 
 The implementation of the non-linear model is split into two parts. The subgrid-scale viscosity term is directly used 
-within the ``AMR-Wind`` diffusion framework. The last two terms in :math:`M_{ij}` are added as source-terms in the momentum equation. 
+within the AMR-Wind diffusion framework. The last two terms in :math:`M_{ij}` are added as source-terms in the momentum equation. 
 
 .. _wall_models:
 
 Wall models
 -----------
-The wall models described in this section are implemented in ``AMR-Wind`` for
+The wall models described in this section are implemented in AMR-Wind for
 running wall-bounded flows.
 
 Monin-Obukhov Similarity Theory
@@ -398,7 +398,7 @@ Given a horizontal velocity magnitude
 :math:`z = z_{\mathrm{ref}}`, :math:`u_\tau` can be computed using a
 non-linear solve to satisfy `[eq:loglaw] <#eq:loglaw>`__.
 
-In ``AMR-Wind`` Newton-Raphson iterations are used with a convergence
+In AMR-Wind Newton-Raphson iterations are used with a convergence
 criterion of :math:`\lvert u_\tau^{n+1} - u_\tau^n \rvert < 10^{-5}`.
 For this, derivative of
 :math:`\frac{\partial u_{\mathrm{mag}}}{\partial {u_\tau}}` is used,

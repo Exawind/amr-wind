@@ -172,7 +172,7 @@ to add them to the path, enabling the executable to be used directly. When the s
 
     spack load amr-wind
 
-to make executables from amr-wind directly available. To verify that the package was loaded correctly, type
+to make executables from AMR-Wind directly available. To verify that the package was loaded correctly, type
 
 .. code-block:: console
 
