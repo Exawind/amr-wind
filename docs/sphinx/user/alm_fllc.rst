@@ -30,7 +30,8 @@ Two values of epsilon should be set for the FLLC. The regular epsilon and an eps
     Actuator.TurbineFastLine.epsilon_chord = 0.25 0.25 0.25  # for any grid resolution
 
 .. tip::
-If your near-turbine grid is not isotropic, then consider your "grid resolution" to be the largest of :math:`DX`,  :math:`DY`, and  :math:`DZ`. 
+
+    If your near-turbine grid is not isotropic, then consider your "grid resolution" to be the largest of :math:`\Delta x`,  :math:`\Delta y`, and  :math:`\Delta z`. 
 
 Lastly, in certain cases, a numerical instability arise from the application of the correction on the first few times steps. There is a spike in some of the ALM quantities that affect the correction. Thus, in these scenarios, the user can chose a delay, in seconds, to start the correction. In cases where instabilities are observed, a 5-second delay has shown to be sufficient:
 
