@@ -153,7 +153,10 @@ jobs:
         ccache -z
         cmake --build ${{runner.workspace}}/build-ci-${{matrix.build_type}}-${{matrix.openmp_flag}}-reference \
           --parallel ${{env.NPROCS}}
+    - name: Reference Ccache Report
+      run: |
         ccache -s
+        ls ${{matrix.ccache_cache}}
         du -hs ${{matrix.ccache_cache}}
     - name: Reference Test
       working-directory: ${{runner.workspace}}/build-ci-${{matrix.build_type}}-${{matrix.openmp_flag}}-reference
