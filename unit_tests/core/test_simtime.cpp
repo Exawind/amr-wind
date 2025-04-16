@@ -72,6 +72,7 @@ TEST_F(SimTimeTest, time_loop)
     int chkpt_counter = 0;
     while (time.new_timestep()) {
         time.set_current_cfl(1.125, 0.0, 0.0);
+        time.advance_time();
         ++counter;
 
         if (time.write_plot_file()) {
@@ -110,6 +111,7 @@ TEST_F(SimTimeTest, fixed_dt_loop)
     int chkpt_counter = 0;
     while (time.new_timestep()) {
         time.set_current_cfl(2.0, 0.0, 0.0);
+        time.advance_time();
         ++counter;
 
         if (time.write_plot_file()) {
@@ -148,6 +150,7 @@ TEST_F(SimTimeTest, fixed_dt_delay)
     int chkpt_counter = 0;
     while (time.new_timestep()) {
         time.set_current_cfl(2.0, 0.0, 0.0);
+        time.advance_time();
 
         if (time.write_plot_file()) {
             ++plot_counter;
@@ -184,6 +187,7 @@ TEST_F(SimTimeTest, plt_chk_timeinterval_loop)
     int chkpt_step_sum = 0;
     while (time.new_timestep()) {
         time.set_current_cfl(0.45 / 0.3, 0.0, 0.0);
+        time.advance_time();
         ++counter;
 
         if (time.write_plot_file()) {
@@ -227,6 +231,7 @@ TEST_F(SimTimeTest, plt_chk_timeinterval_delay)
     int chkpt_step_sum = 0;
     while (time.new_timestep()) {
         time.set_current_cfl(0.45 / 0.3, 0.0, 0.0);
+        time.advance_time();
         ++counter;
 
         if (time.write_plot_file()) {
@@ -293,6 +298,7 @@ TEST_F(SimTimeTest, enforce_timeinterval)
     int plot_step_sum = 0;
     while (time.new_timestep()) {
         time.set_current_cfl(0.45 / 0.4, 0.0, 0.0);
+        time.advance_time();
         ++counter;
         if (time.write_plot_file()) {
             ++plot_counter;
@@ -333,6 +339,7 @@ TEST_F(SimTimeTest, enforce_timeinterval_bigtimetol)
     int plot_step_sum = 0;
     while (time.new_timestep()) {
         time.set_current_cfl(0.45 / 0.4, 0.0, 0.0);
+        time.advance_time();
         ++counter;
         if (time.write_plot_file()) {
             ++plot_counter;
@@ -373,6 +380,7 @@ TEST_F(SimTimeTest, enforce_timeinterval_bigdttol)
     int plot_step_sum = 0;
     while (time.new_timestep()) {
         time.set_current_cfl(0.45 / 0.4, 0.0, 0.0);
+        time.advance_time();
         ++counter;
         if (time.write_plot_file()) {
             ++plot_counter;
@@ -415,6 +423,7 @@ TEST_F(SimTimeTest, enforce_timeinterval_delay)
     amrex::Real time2 = 0.0;
     while (time.new_timestep()) {
         time.set_current_cfl(0.45 / 0.4, 0.0, 0.0);
+        time.advance_time();
         ++counter;
         if (time.write_plot_file()) {
             ++plot_counter;
