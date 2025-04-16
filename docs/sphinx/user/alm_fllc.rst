@@ -1,0 +1,48 @@
+.. _alm_fllc:
+
+To accurately represent wind turbine using the actuator line model (ALM) with OpenFAST, the user must select ALM parameters that are appropriate for the turbine of interest and for the near-turbine grid resolution.
+
+The standard ALM has uniformly-spaced points and thus requires a fine value of epsilon and a large number of points along the blade to properly model it. In recent years, a correction, called filtered lifting line correction (FLLC), has been developed (see reference [1]). Such a correction also includes the use of points that are not uniformly-space, thus lifting the requirement of a small values of epsilon. It is recommended that you run the ALM with the FLLC on. 
+
+To enable the ALM with OpenFAST coupling, the ``Actuator`` physics should be added to ``ICNS.source_terms`` and ``Actuator.type = TurbineFastLine`` should be set. Next, the user should enablee FLLC, choose its type,  and set the option for a non-uniform point distribution:
+
+.. code-block:: none
+
+    Actuator.TurbineFastLine.fllc = 1
+    Actuator.TurbineFastLine.fllc_nonuniform = 1
+    Actuator.TurbineFastLine.fllc_type = variable_chord
+
+When selecting the ``Actuator.TurbineFastLine.fllc_nonuniform`` as ``1``, a new distribution of points is calculated internally, based on the ``Actuator.TurbineFastLine.num_points_blade`` and ``Actuator.TurbineFastLine.fllc_eps_dr_ratio`` entries. The ``Actuator.TurbineFastLine.fllc_eps_dr_ratio`` value should be at least 1 with a maximum value of 3. It is recommended to use the value 3. This parameter controls the distribution of points and its value should be selected based on the desired accuracy of the correction, according to Table 1 given in reference [2].
+
+.. code-block:: none
+
+    Actuator.TurbineFastLine.fllc_eps_dr_ratio = 3
+
+ .. note::
+
+    The entries ``Actuator.TurbineFastLine.num_points_blade`` and ``Actuator.TurbineFastLine.num_points_tower`` should match the entries ``NumBlNds`` from the AeroDyn's blade file  and ``NumTwrNds`` from the AeroDyn input file
+
+Two values of epsilon should be set for the FLLC. The regular epsilon and an epsilon for the chord. The ``epsilon_chord`` parameter represents the ideal epsilon value if FLLC were not to be used. But with FLLC, we set both.  The regular ``epsilon`` should be set for twice the grid resolution. If you have very fine grid near the turbine, e.g. 0.625 m,, then you can set ``epsilon`` to be 3 to 4 times the local grid resolution. The smaller the epsilon value, the more sensitive to the resolution the ALM will be. One of the key details of the correction is that it uses the ``epsilon_chord`` on the non-uniform points and that it should be set to a target value regardless of the underlying grid resolution. The target values again depend on the desired accuracy of the correction and guidelines are also given on Table 1 of the reference [2].
+
+.. code-block:: none
+
+    Actuator.TurbineFastLine.epsilon       = 10 10 10        # for a near-turbine grid of 5 m
+    Actuator.TurbineFastLine.epsilon_chord = 0.25 0.25 0.25  # for any grid resolution
+
+.. tip::
+If your near-turbine grid is not isotropic, then consider your "grid resolution" to be the largest of :math:`DX`,  :math:`DY`, and  :math:`DZ`. 
+
+Lastly, in certain cases, a numerical instability arise from the application of the correction on the first few times steps. There is a spike in some of the ALM quantities that affect the correction. Thus, in these scenarios, the user can chose a delay, in seconds, to start the correction. In cases where instabilities are observed, a 5-second delay has shown to be sufficient:
+
+.. code-block:: none
+
+    Actuator.TurbineFastLine.fllc_start_time = 5
+
+More details on other parameters are available in the description of each entry on the `input file reference page <inputs_Actuator>`.
+
+
+References
+----------
+
+[1] Martínez-Tossas LA, Meneveau C. Filtered lifting line theory and application to the actuator line model. Journal of Fluid Mechanics. 2019;863:269-292. doi:10.1017/jfm.2018.994 
+[2] Martinez-Tossas, L. A., Allaerts, D., Branlard, E., & Churchfield, M. J. (2025). A Solution Method for the Filtered Lifting Line Theory. Journal of Fluids Engineering, 147(1).
