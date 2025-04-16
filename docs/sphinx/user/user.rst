@@ -1,5 +1,5 @@
 User Manual
-=============
+===========
 
 .. toctree::
    :glob:
@@ -11,4 +11,5 @@ User Manual
    abl_bndry_io.rst
    alm_fllc.rst
    run.rst
+   faq.rst
    post_processing_examples.rst

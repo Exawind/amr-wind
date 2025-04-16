@@ -197,4 +197,4 @@ The path to this library file will come into play when setting up the turbine si
 
 |
 
-Go to the next step: :doc:`precursor`
+Go to the next step: :doc:`../walkthrough/precursor`
