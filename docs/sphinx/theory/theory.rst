@@ -147,7 +147,7 @@ Mesoscale Forcing
 ~~~~~~~~~~~~~~~~~
 
 To incorporate larger-scale atmospheric dynamics under real conditions,
-`AMR-Wind` offers two approaches. If mesoscale momentum and/or temperature
+AMR-Wind offers two approaches. If mesoscale momentum and/or temperature
 source terms are known exactly, e.g., from a numerical weather prediction (NWP)
 model, then these may be directly applied. These mesoscale source terms would
 come from the RHS of the mesoscale equations of motion and may also include the
@@ -343,13 +343,13 @@ length scale is modified as follows
 Here the term :math:`H=1.5 dz` specifies the location at which the length scale switches to :math:`L=C_s\Delta` and :math:`\phi_M`
 is the atmospheric stability function. Currently, the implementation for the stability function uses a single global value. 
 The implementation of the non-linear model is split into two parts. The subgrid-scale viscosity term is directly used 
-within the ``AMR-Wind`` diffusion framework. The last two terms in :math:`M_{ij}` are added as source-terms in the momentum equation. 
+within the AMR-Wind diffusion framework. The last two terms in :math:`M_{ij}` are added as source-terms in the momentum equation. 
 
 .. _wall_models:
 
 Wall models
 -----------
-The wall models described in this section are implemented in ``AMR-Wind`` for
+The wall models described in this section are implemented in AMR-Wind for
 running wall-bounded flows.
 
 Monin-Obukhov Similarity Theory
@@ -398,7 +398,7 @@ Given a horizontal velocity magnitude
 :math:`z = z_{\mathrm{ref}}`, :math:`u_\tau` can be computed using a
 non-linear solve to satisfy `[eq:loglaw] <#eq:loglaw>`__.
 
-In ``AMR-Wind`` Newton-Raphson iterations are used with a convergence
+In AMR-Wind Newton-Raphson iterations are used with a convergence
 criterion of :math:`\lvert u_\tau^{n+1} - u_\tau^n \rvert < 10^{-5}`.
 For this, derivative of
 :math:`\frac{\partial u_{\mathrm{mag}}}{\partial {u_\tau}}` is used,
@@ -570,23 +570,3 @@ of the maximum LAD, :math:`L_m` is the maximum value of LAD at :math:`z_m` and :
 
 The simplified model with uniform LAD is recommended for forested regions with no knowledge of the individual trees. LAI values can be used from 
 climate model look-up tables for different regions around the world if no local remote sensing data is available. 
-
-Navigating source code
-------------------------
-
-``AMR-Wind`` is built on top of `AMReX library
-<https://amrex-codes.github.io/amrex/docs_html/>`_. Users are strongly
-recommended to read through the AMReX documentation and understand the basic
-AMReX concepts before jumping into the AMR-Wind source code.
-
-The `Basics section
-<https://amrex-codes.github.io/amrex/docs_html/Basics_Chapter.html>`_ provides a
-thorough overview of the basic data structures and ways to interact with these
-structures. The `GPU section
-<https://amrex-codes.github.io/amrex/docs_html/GPU_Chapter.html>`_ provides an
-overview of the AMReX GPU strategy and the higher-level functions (e.g.,
-``parallel-for`` abstractions) available to write GPU-ready code within
-AMR-Wind. The `Linear Solvers section
-<https://amrex-codes.github.io/amrex/docs_html/LinearSolvers_Chapter.html>`_
-provides an overview of the multi-level multigrid (MLMG) solvers used to solve
-the various linear systems within AMR-Wind.
