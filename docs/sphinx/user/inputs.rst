@@ -95,5 +95,6 @@ documentation provided here might not work with older releases.
    inputs_KineticEnergy.rst
    inputs_Enstrophy.rst
    inputs_Actuator.rst
+   inputs_multiphase.rst
    inputs_ocean_waves.rst
 
