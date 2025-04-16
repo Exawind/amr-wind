@@ -1,5 +1,5 @@
 Getting Started
-===========
+===============
 
 This section outline how to get started with AMR-Wind, providing detailed compilation instructions on how to use Exawind-Manager,
 a Spack-based package management tool customized for the ExaWind software suite,
