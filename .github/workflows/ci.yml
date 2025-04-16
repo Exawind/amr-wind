@@ -1,6 +1,7 @@
 name: AMR-Wind-CI
 
 on:
+  workflow_dispatch:
   push:
     branches: [main]
   pull_request:
@@ -65,6 +66,7 @@ jobs:
       run: ${{matrix.install_deps}}
     - name: Setup
       run: |
+        mkdir -p ${{runner.workspace}}/golds-${{matrix.build_type}}-${{matrix.openmp_flag}}
         echo "NPROCS=${{matrix.procs}}" >> $GITHUB_ENV
         echo "CCACHE_COMPRESS=1" >> $GITHUB_ENV
         echo "CCACHE_COMPRESSLEVEL=10" >> $GITHUB_ENV
@@ -96,7 +98,7 @@ jobs:
           -DAMR_WIND_ENABLE_TESTS:BOOL=ON \
           -DAMR_WIND_TEST_WITH_FCOMPARE:BOOL=OFF \
           -DAMR_WIND_SAVE_GOLDS:BOOL=ON \
-          -DAMR_WIND_SAVED_GOLDS_DIRECTORY:PATH=${{runner.workspace}}/golds-${{matrix.build_type}}-${{matrix.openmp_flags}} \
+          -DAMR_WIND_SAVED_GOLDS_DIRECTORY:PATH=${{runner.workspace}}/golds-${{matrix.build_type}}-${{matrix.openmp_flag}} \
           -DCMAKE_CXX_COMPILER_LAUNCHER:STRING=ccache \
           ${{github.workspace}}
     - name: Build
