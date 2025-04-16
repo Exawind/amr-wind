@@ -1,4 +1,4 @@
-.. _`sec:turbine_models`:
+.. _turbine_models:
 
 Turbine models
 --------------

@@ -17,4 +17,6 @@ Theory Manual
 
 .. include:: include/terrainmodel.rst
 
-.. include:: include/forst_model.rst
+.. include:: include/forest_model.rst
+
+.. include:: include/turbine_models.rst

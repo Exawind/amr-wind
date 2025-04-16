@@ -16,10 +16,6 @@ capabilities.
    has significantly contributed to implementing or improving specific
    capability that was used for that publication.
 
-
-Capabilities
-------------
-
 .. tip::
 
    The capabilities are linked to the relevant input file references
@@ -29,7 +25,7 @@ Capabilities
 
 
 Methods and models
-~~~~~~~~~~~~~~~~~~
+------------------
 
 * Numerical methods
 
@@ -72,13 +68,13 @@ Methods and models
    * Two phase transport (separate coefficients for each material) [:ref:`inp <inputs_transport>`]
 
 Flow physics
-~~~~~~~~~~~~
+------------
 
 * Wind energy physics
 
    * Atmospheric boundary layer (ABL): various stability states (stable, unstable, neutral), precursor simulations with inflow boundary planes for wind farm simulations, anelastic formulation, mesoscale forcing, geostrophic forcing, Coriolis forcing, Monin-Obukhov similarity theory, gravity forcing, gravity wave damping [:ref:`inp <inputs_abl>`]
 
-   * Actuator turbine representations: Joukowsky disks, uniform disks, actuator line [:ref:`inp <inputs_actuator>`]
+   * Actuator turbine representations: Joukowsky disks, uniform disks, actuator line [:ref:`doc <turbine_models>`, :ref:`inp <inputs_actuator>`]
 
    * Coupling with OpenFAST
 
@@ -147,7 +143,7 @@ Flow physics
    * in-situ post-processing with Ascent
 
 High performance computing
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------
 
 * Highly parallelized and performance portable
 

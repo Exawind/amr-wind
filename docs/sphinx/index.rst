@@ -45,7 +45,6 @@ objectives:
    walkthrough/index
    user/user
    theory/theory 
-   theory/turbine_models
    developer/index
    references
    bibrefs.rst
