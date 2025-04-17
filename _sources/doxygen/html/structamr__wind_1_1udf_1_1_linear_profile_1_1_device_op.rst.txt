@@ -1,0 +1,14 @@
+.. meta::ed4fdfce15e108a5b361579f207e430d79b38a0f5de411a11ce07a0aa718e4bd05addb09a17250f7df145aead312da273a6dfed1f4f9ada53b3bcbea4821b3e8
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::udf::LinearProfile::DeviceOp Struct Reference
+
+DeviceOp Struct Reference
+=========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1udf_1_1_linear_profile_1_1_device_op.html

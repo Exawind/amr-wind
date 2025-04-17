@@ -1,0 +1,7 @@
+<map id="amr_wind::SecondMomentAveraging" name="amr_wind::SecondMomentAveraging">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,211,265,236"/>
+<area shape="rect" id="Node000002" href="$classamr__wind_1_1_f_plane_averaging.html" title=" " alt="" coords="34,93,237,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="138,147,138,210,133,210,133,147"/>
+<area shape="rect" id="Node000003" href="$classamr__wind_1_1_sim_time.html" title=" " alt="" coords="59,5,211,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="138,44,138,93,133,93,133,44"/>
+</map>

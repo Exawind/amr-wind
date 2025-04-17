@@ -1,0 +1,14 @@
+.. meta::e79222de388e9207f2565b35dcb5533bb759016f6cf589dbea610a2bc376877a61c878070e9b11693b9ba704b1f49b117bd16fb7c45e586b9d8f24049546b3ab
+
+:orphan:
+
+.. title:: AMR-Wind API: Class Hierarchy
+
+Class Hierarchy
+===============
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: inherits.html

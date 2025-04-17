@@ -1,0 +1,14 @@
+.. meta::9deddef9d4897b2d5d26bc33225e55ea68866a833c94414d39359173f8daa05b351206977d08122655fdb8e521d15b274d6802ae4734f41c9d5deef7559fbc00
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/udfs/CustomScalar.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/physics/udfs/CustomScalar.H Source File
+====================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _custom_scalar_8_h_source.html

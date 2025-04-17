@@ -1,0 +1,14 @@
+.. meta::0a879b8e4e9c5d6ea8f3e8c21f148e8f3a0dc0ece0decb92ca37331ed4459a7c909fbf78720e0a7cc71c226942dc8899a02625bf727e895b1e0b5c1809af82eb
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/core/Slice.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/core/Slice.H Source File
+=====================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _slice_8_h_source.html

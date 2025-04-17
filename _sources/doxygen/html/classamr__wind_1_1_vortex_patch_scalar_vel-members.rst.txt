@@ -1,0 +1,14 @@
+.. meta::48eb518d7adb750d7e0b5eb0af212838aa7b141069f84a8f2044c5fc62837c4ac9815f5495d5251d810547bd9f06e192e8a58846aa9c4d767ef3eaf8c4e75c92
+
+:orphan:
+
+.. title:: AMR-Wind API: Member List
+
+Member List
+===========
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_vortex_patch_scalar_vel-members.html
