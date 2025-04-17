@@ -21,9 +21,9 @@ When selecting the ``Actuator.TurbineFastLine.fllc_nonuniform`` as ``1``, a new 
 
     Actuator.TurbineFastLine.fllc_eps_dr_ratio = 3
 
- .. note::
+.. note::
 
-    The entries ``Actuator.TurbineFastLine.num_points_blade`` and ``Actuator.TurbineFastLine.num_points_tower`` should match the entries ``NumBlNds`` from the AeroDyn's blade file  and ``NumTwrNds`` from the AeroDyn input file
+    The entries ``Actuator.TurbineFastLine.num_points_blade`` and ``Actuator.TurbineFastLine.num_points_tower`` should match the entries ``NumBlNds`` from the AeroDyn's blade file  and ``NumTwrNds`` from the AeroDyn input file.
 
 Two values of epsilon should be set for the FLLC. The regular epsilon and an epsilon for the chord. The ``epsilon_chord`` parameter represents the ideal epsilon value if FLLC were not to be used. But with FLLC, we set both.  The regular ``epsilon`` should be set for twice the grid resolution. If you have very fine grid near the turbine, e.g. 0.625 m,, then you can set ``epsilon`` to be 3 to 4 times the local grid resolution. The smaller the epsilon value, the more sensitive to the resolution the ALM will be. One of the key details of the correction is that it uses the ``epsilon_chord`` on the non-uniform points and that it should be set to a target value regardless of the underlying grid resolution. The target values again depend on the desired accuracy of the correction and guidelines are also given on Table 1 of the reference [2].
 
