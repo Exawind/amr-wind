@@ -270,6 +270,24 @@ Section: Momentum Sources
    for the lack of resolution. Therefore, this option should remain set to false except in scenarios
    when the form drag is known to be under-resolved.
 
+.. input_param:: MultiphaseDragForcing.wave_roughness
+
+   **type:** Real, optional, default = 1e-4
+
+   Specify the uniform wave roughness to be used when calculating the viscous drag on the wave surface.
+
+.. input_param:: MultiphaseDragForcing.density_ratio_limit
+
+   **type:** Real, optional, default = 100
+   
+   The formulation of multiphase drag forcing is adapted from terrain drag, which assumes that
+   the terrain is not moving. In the multiphase context, both the air and the wave can influence each other,
+   but the wave will be much more resistant to motion because water is much heavier. This option allows
+   the user to determine which cells will have the drag term applied to them. When the density ratio between
+   a mostly air cell and the cell below it exceeds the density ratio limit, then the drag term will be applied
+   to those cells. This ratio is calculated by dividing the density of the (denser) cell below by the 
+   density of the (less dense) cell above.
+
 
 The following arguments are influential when ``GravityForcing`` is included in :input_param:`ICNS.source_terms`.
 
