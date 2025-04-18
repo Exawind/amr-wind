@@ -100,6 +100,8 @@ public:
     //! Perform post-processing actions after a system solve
     virtual void post_solve_actions() = 0;
 
+    virtual void improve_explicit_diffusion(const amrex::Real dt) {}
+
     //! Base class identifier used for factory registration interface
     static std::string base_identifier() { return "PDESystem"; }
 };

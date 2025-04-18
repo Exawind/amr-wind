@@ -262,6 +262,42 @@ struct ComputeRHSOp
         amrex::Gpu::streamSynchronize();
     }
 
+    void improve_explicit_diff(const amrex::Real dt)
+    {
+        explicit_RK2_post_hoc(dt);
+    }
+
+    void explicit_RK2_post_hoc(const amrex::Real dt)
+    {
+        // divtau must be the difference between new and old before calling this
+        const auto& d_divtau = fields.diff_term;
+
+        auto& dof = fields.field;
+        const auto& repo = fields.repo;
+        const auto& mask_cell = repo.get_int_field("mask_cell");
+
+        const int nlevels = repo.num_active_levels();
+        for (int lev = 0; lev < nlevels; ++lev) {
+            auto f_arrs = dof(lev).arrays();
+            const auto& d_diff_arrs = d_divtau(lev).const_arrays();
+            const auto& mask_arrs = mask_cell(lev).const_arrays();
+            const auto& rho_arrs = density(lev).const_arrays();
+
+            amrex::ParallelFor(
+                dof(lev), amrex::IntVect(0), dof.num_comp(),
+                [=] AMREX_GPU_DEVICE(
+                    int nbx, int i, int j, int k, int n) noexcept {
+                    auto factor =
+                        0.5 * dt * (amrex::Real)mask_arrs[nbx](i, j, k);
+                    if (PDE::multiply_rho) {
+                        factor /= rho_arrs[nbx](i, j, k);
+                    }
+                    f_arrs[nbx](i, j, k, n) +=
+                        factor * d_diff_arrs[nbx](i, j, k, n);
+                });
+        }
+    }
+
     // data members
     PDEFields& fields;
     Field& density;
