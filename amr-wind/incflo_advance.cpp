@@ -392,19 +392,13 @@ void incflo::ApplyPredictor(
         icns().solve(dt_diff);
     } else if (m_diff_type == DiffusionType::Explicit && m_use_godunov) {
         // explicit RK2
-        std::unique_ptr<amr_wind::ScratchField> diff_old =
-            m_repo.create_scratch_field(
-                AMREX_SPACEDIM, 0, amr_wind::FieldLoc::CELL);
-
+        auto diff_old = m_repo.create_scratch_field(
+            AMREX_SPACEDIM, 0, amr_wind::FieldLoc::CELL);
         auto& diff_new =
             icns().fields().diff_term.state(amr_wind::FieldState::New);
         amr_wind::field_ops::copy(*diff_old, diff_new, 0, 0, AMREX_SPACEDIM, 0);
         icns().compute_diffusion_term(amr_wind::FieldState::New);
-        amrex::Real dto2 = 0.5 * m_time.delta_t();
-        amr_wind::field_ops::saxpy(
-            icns().fields().field, -dto2, *diff_old, 0, 0, AMREX_SPACEDIM, 0);
-        amr_wind::field_ops::saxpy(
-            icns().fields().field, +dto2, diff_new, 0, 0, AMREX_SPACEDIM, 0);
+        icns().improve_explicit_diffusion(m_time.delta_t());
     }
     icns().post_solve_actions();
 
