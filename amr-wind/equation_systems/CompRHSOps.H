@@ -264,10 +264,10 @@ struct ComputeRHSOp
 
     void improve_explicit_diff(const amrex::Real dt)
     {
-        explicit_RK2_post_hoc(dt);
+        explicit_rk2_post_hoc(dt);
     }
 
-    void explicit_RK2_post_hoc(const amrex::Real dt)
+    void explicit_rk2_post_hoc(const amrex::Real dt)
     {
         // divtau must be the difference between new and old before calling this
         const auto& d_divtau = fields.diff_term;
