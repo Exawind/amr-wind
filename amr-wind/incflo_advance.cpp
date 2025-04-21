@@ -398,6 +398,7 @@ void incflo::ApplyPredictor(
             icns().fields().diff_term.state(amr_wind::FieldState::New);
         amr_wind::field_ops::copy(*diff_old, diff_new, 0, 0, AMREX_SPACEDIM, 0);
         icns().compute_diffusion_term(amr_wind::FieldState::New);
+        amr_wind::field_ops::saxpy(diff_new, -1.0, *diff_old, 0, 0, AMREX_SPACEDIM, 0);
         icns().improve_explicit_diffusion(m_time.delta_t());
     }
     icns().post_solve_actions();
