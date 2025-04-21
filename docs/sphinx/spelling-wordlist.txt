@@ -32,10 +32,12 @@ adaptively
 adaptivity
 advected
 advection
+aero
 amr
 amrex
 anelastic
 anisotropic
+azimuthal
 bicgcg
 bicgstab
 bool
@@ -80,12 +82,14 @@ incompressible
 incompressibility
 initializer
 initializers
+inviscid
 iteratively
 Kosovic
 levelset
 lidar
 mesoscale
 microscale
+multifidelity
 multigrid
 multiphase
 namespace

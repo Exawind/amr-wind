@@ -354,7 +354,8 @@ struct ReadInputsOp<W2AWaves>
             wdata.n1_sp = wdata.r_rmodes.get_second_spatial_dimension();
             // Get resolution (slightly different for NWT)
             wdata.dx0 = wdata.r_rmodes.get_xlen() / (wdata.n0_sp - 1);
-            wdata.dx1 = wdata.r_rmodes.get_ylen() / (wdata.n1_sp - 1);
+            wdata.dx1 =
+                wdata.r_rmodes.get_ylen() / amrex::max(wdata.n1_sp - 1, 1);
             // Get depth
             depth = wdata.r_rmodes.get_depth();
             // Get dimensional length
