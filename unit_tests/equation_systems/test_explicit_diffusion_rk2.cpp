@@ -74,7 +74,6 @@ protected:
         pde_mgr.register_icns();
         sim().create_turbulence_model();
         sim().init_physics();
-        // auto& density = sim().repo().declare_cc_field("density", 1, 3, 3);
         auto& k_eqn = pde_mgr.register_transport_pde("TKE");
         auto& tke = k_eqn.fields().field;
         auto& tke_old = tke.state(amr_wind::FieldState::Old);
@@ -99,7 +98,7 @@ protected:
         k_eqn.initialize();
         // Calculate diffusion term explicitly
         k_eqn.compute_diffusion_term(amr_wind::FieldState::Old);
-        // Incorporate RHS, which should only be the explicit diffusion\n";
+        // Incorporate RHS, which should only be the explicit diffusion
         k_eqn.compute_predictor_rhs(DiffusionType::Explicit);
     }
 
