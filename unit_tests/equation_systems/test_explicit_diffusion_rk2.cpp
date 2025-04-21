@@ -30,7 +30,7 @@ void init_scalar(amr_wind::Field& scalar)
 class ExplicitDiffusionRK2Test : public MeshTest
 {
 protected:
-    void populate_parameters()
+    void populate_parameters() override
     {
         {
             amrex::ParmParse pp("amr");
