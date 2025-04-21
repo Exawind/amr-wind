@@ -54,6 +54,8 @@ struct ComputeRHSOp<VOF, Scheme>
         bool /*unused*/)
     {}
 
+    void improve_explicit_diff(const amrex::Real /*unused*/) {}
+
     // data members
     PDEFields& fields;
 };
