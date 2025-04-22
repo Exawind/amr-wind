@@ -297,19 +297,6 @@ void incflo::ApplyPredictor(
                                    : amr_wind::FieldState::NPH;
     icns().pre_advection_actions(fstate_preadv);
 
-    // For scalars only first
-    // *************************************************************************************
-    // if ( m_use_godunov) Compute the explicit advective terms
-    //                     R_u^(n+1/2), R_s^(n+1/2) and R_t^(n+1/2)
-    // if (!m_use_godunov) Compute the explicit advective terms
-    //                     R_u^n      , R_s^n       and R_t^n
-    // *************************************************************************************
-    // TODO: Advection computation for scalar equations have not been adjusted
-    // for mesh mapping
-    for (auto& seqn : scalar_eqns()) {
-        seqn->compute_advection_term(amr_wind::FieldState::Old);
-    }
-
     // *************************************************************************************
     // Update density first
     // *************************************************************************************
@@ -323,6 +310,9 @@ void incflo::ApplyPredictor(
     // updated density at `n+1/2` to be computed before other scalars use it
     // when computing their source terms.
     for (auto& eqn : scalar_eqns()) {
+        // Compute explicit advection
+        eqn->compute_advection_term(amr_wind::FieldState::Old);
+
         // Compute (recompute for Godunov) the scalar forcing terms
         eqn->compute_source_term(amr_wind::FieldState::NPH);
 
