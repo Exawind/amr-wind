@@ -6,14 +6,15 @@
 
 namespace amr_wind::averaging {
 
-ReAveraging::ReAveraging(CFDSim& sim, const std::string& fname)
+ReAveraging::ReAveraging(CFDSim& sim, const std::string& avgname, const std::string& fname)
     : m_field(sim.repo().get_field(fname))
     , m_average(sim.repo().declare_field(
-          avg_name(m_field.name()),
+          avg_name(m_field.name(),avgname),
           m_field.num_comp(),
           1, // 1 ghost cell to account for sampling
           1,
-          m_field.field_location()))
+          m_field.field_location())),
+      m_avgname(avgname)
 {
     // Register default fillpatch operations
     m_average.set_default_fillpatch_bc(sim.time());

@@ -16,7 +16,7 @@ class ReynoldsStress : public FieldTimeAverage::Register<ReynoldsStress>
 public:
     static std::string identifier() { return "ReynoldsStress"; }
 
-    ReynoldsStress(CFDSim& /*sim*/, const std::string& fname);
+    ReynoldsStress(CFDSim& /*sim*/, const std::string& avgname, const std::string& fname);
 
     /** Update field averaging at a given timestep
      *
@@ -34,6 +34,21 @@ public:
     const std::string& average_field_name() override;
 
 private:
+    //! Generate the Reynolds stress field name based on the field name and label
+    static std::string stress_name(const std::string& fname,
+                                   const std::string& avgname)
+    {
+        return fname + "_" + "stress" + "_" + avgname;
+      //return fname + "_" + "_stress";
+    }
+
+    static std::string re_stress_name(const std::string& fname,
+                                      const std::string& avgname)
+    {
+        return fname + "_" + "reynolds_stress" + "_" + avgname;
+      //return fname + "_" + "_reynolds_stress";
+    }
+
     //! Fluctuating field
     const Field& m_field;
 

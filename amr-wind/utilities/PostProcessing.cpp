@@ -19,10 +19,10 @@ void perform_checks(
         return;
     }
 
-    if (ptype == averaging::TimeAveraging::identifier()) {
-        amrex::Abort(
-            "PostProcessing: Multiple instances of TimeAveraging not allowed");
-    }
+  //if (ptype == averaging::TimeAveraging::identifier()) {
+  //    amrex::Abort(
+  //        "PostProcessing: Multiple instances of TimeAveraging not allowed");
+  //}
 }
 } // namespace
 

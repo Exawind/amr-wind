@@ -6,17 +6,18 @@
 
 namespace amr_wind::averaging {
 
-ReynoldsStress::ReynoldsStress(CFDSim& sim, const std::string& fname)
+ReynoldsStress::ReynoldsStress(CFDSim& sim, const std::string& avgname, const std::string& fname)
     : m_field(sim.repo().get_field("velocity"))
-    , m_average(sim.repo().get_field("velocity_mean"))
+    , m_average(sim.repo().get_field("velocity_mean_" + avgname))
+  //, m_average(sim.repo().get_field("velocity_mean"))
     , m_stress(sim.repo().declare_field(
-          "velocity_stress",
+          stress_name(m_field.name(),avgname),
           6, // number of components of the reynolds stress tensor
           1, // Ghost cells
           1,
           m_field.field_location()))
     , m_re_stress(sim.repo().declare_field(
-          "velocity_reynolds_stress",
+          re_stress_name(m_field.name(),avgname),
           6, // number of components of the reynolds stress tensor
           1, // Ghost cells
           1,

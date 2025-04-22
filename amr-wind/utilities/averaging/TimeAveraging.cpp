@@ -31,11 +31,14 @@ void TimeAveraging::pre_init_actions()
         pp.get("averaging_window", m_filter);
     }
 
+    std::cout << "m_label = " << m_label << std::endl;
+
     for (const auto& lbl : labels) {
         //! Fields to be averaged
         amrex::Vector<std::string> fnames;
         std::string avg_type;
         const std::string pp_key = m_label + "." + lbl;
+        std::cout << "lbl = " << lbl << std::endl;
 
         amrex::ParmParse pp1(pp_key);
         pp1.getarr("fields", fnames);
@@ -49,7 +52,7 @@ void TimeAveraging::pre_init_actions()
 
             // Create the averaging entity
             m_averages.emplace_back(
-                FieldTimeAverage::create(avg_type, m_sim, fname));
+                FieldTimeAverage::create(avg_type, m_sim, m_label, fname));
 
             // Track fields that have an average
             m_registered.emplace(key, m_averages.back().get());
@@ -72,7 +75,7 @@ const std::string& TimeAveraging::add_averaging(
 
     // Create and register new average
     m_averages.emplace_back(
-        FieldTimeAverage::create(avg_type, m_sim, field_name));
+        FieldTimeAverage::create(avg_type, m_sim, m_label, field_name));
     return m_averages.back()->average_field_name();
 }
 
@@ -98,7 +101,7 @@ void TimeAveraging::post_advance_work()
 
     const amrex::Real elapsed_time = (cur_time - m_start_time);
     m_last_avg_time = cur_time;
-    std::cout << "Averaging..." << std::endl;
+    std::cout << "Averaging " << m_label << std::endl;
     for (const auto& avg : m_averages) {
         std::cout << "Accumulating average.  Last accumulation done at: " << m_last_avg_time << ", elapsed time: " << elapsed_time << std::endl;
         (*avg)(time, m_filter, m_frequency, elapsed_time);
