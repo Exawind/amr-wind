@@ -35,6 +35,115 @@ In addition to being able to specify constant values, the user has access to a v
   xlo.velocity = 5.0 5.0 0.0
   xlo.velocity.inflow_type = LinearProfile
 
+LinearProfile
+"""""""""""""
+
+The linear profile uses the following input parameters. The linear profile can be use for multiple fields and therefore the input file option should contain the ``field_name``, e.g. ``LinearProfile.velocity.direction = 1``.
+
+.. input_param:: LinearProfile.<field_name>.direction
+
+   **type:** int, optional, default = 2
+
+   The direction.
+
+.. input_param:: LinearProfile.<field_name>.start
+
+   **type:** Real, optional, default = minimum of domain in the ``direction`` direction
+
+   Start location of the linear profile.
+
+.. input_param:: LinearProfile.<field_name>.stop
+
+   **type:** Real, optional, default = maximum of domain in the ``direction`` direction
+
+   Stop location of the linear profile.
+
+.. input_param:: LinearProfile.<field_name>.start_val
+
+   **type:** Real, required (length = number of components of ``field_name``)
+
+   Start value of field.
+
+.. input_param:: LinearProfile.<field_name>.stop_val
+
+   **type:** Real, required (length = number of components of ``field_name``)
+
+   Stop value of field.
+
+Rankine
+"""""""
+
+The Rankine boundary condition uses the following input parameters. It is used for velocity fields only and the reference velocity is specified by ``incflo.velocity``.
+
+.. input_param:: Rankine.Umax
+
+   **type:** Real, optional, default = 15.0
+
+   The maximum velocity.
+
+.. input_param:: Rankine.Rmax
+
+   **type:** Real, optional, default = 125.0
+
+   The maximum radius.
+
+.. input_param:: Rankine.start_location
+
+   **type:** List of Real, optional, default = [-10 * ``Rmax``, 0.0, 0.0]
+
+   The start location.
+
+
+PowerLawProfile
+"""""""""""""""
+
+The power law profile uses the following input parameters. This one is only for velocity so there is no need to insert the field name in the input line.
+
+.. input_param:: PowerLawProfile.direction
+
+   **type:** int, optional, default = 2
+
+   The direction.
+
+.. input_param:: PowerLawProfile.zref
+
+   **type:** Real, required
+
+   The reference height.
+
+.. input_param:: PowerLawProfile.shear_exponent
+
+   **type:** Real, required
+
+   The shear exponent value.
+
+.. input_param:: PowerLawProfile.uref
+
+   **type:** Real list, required
+
+   The reference value of the velocity vector used to propagate the plane.
+
+.. input_param:: PowerLawProfile.zoffset
+
+   **type:** Real, optional, default = 0.0
+
+   The offset in the z direction (should be zero for a boundary condition)
+
+.. input_param:: PowerLawProfile.umin
+
+   **type:** Real, default = 0.0
+
+   The minimum velocity cutoff in the mean power law profile.
+
+.. input_param:: PowerLawProfile.umax
+
+   **type:** Real, default = 0.0
+
+   The maximum velocity cutoff in the mean power law profile.
+
+Custom boundary conditions
+""""""""""""""""""""""""""
+
 If the user wants to define their own boundary conditions, this is done by editing `CustomScalar` and `CustomVelocity` source and header files in the `udfs` folder. `CustomScalar` is used for scalar fields and `CustomVelocity` is used for velocity fields. These can then be activated in the input file as such::
 
   xlo.type = "mass_inflow"
@@ -120,8 +229,34 @@ If an outflow is expected at that boundary, any non-zero outflow velocity may be
 which would implement a Neumann type behavior as the
 boundary cell velocity will be overwritten by the inner cell velocity.
 
-There is currently an unresolved issue of non-convergence of the nodal projection
-for inflow-outflow boundaries.
+TwoLayer
+""""""""
+
+The two layer boundary condition uses the following input options. It is only used for velocity.
+
+.. input_param:: TwoLayer.top_vel
+
+   **type:** List of Real, required
+
+   The velocity in the top of the domain.
+
+.. input_param:: TwoLayer.bottom_vel
+
+   **type:** List of Real, required
+
+   The velocity in the bottom of the domain.
+
+.. input_param:: TwoLayer.init_perturb
+
+   **type:** Real, optional, default = 1.0
+
+   The initial perturbation.
+
+.. input_param:: TwoLayer.z_partition
+
+   **type:** Real, optional, default = 0.5
+
+   The z-coordinate for the top and bottom.
 
 
 Dynamic wall model (Wave model)
