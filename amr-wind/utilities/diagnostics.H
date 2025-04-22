@@ -5,6 +5,30 @@
 
 namespace amr_wind::diagnostics {
 
+void make_mask_multiplier(
+    amrex::MultiFab& mfab,
+    const amrex::MultiFab& mfab_mask,
+    const amrex::Real mask_val,
+    const amrex::Real set_val);
+
+void get_field_extrema(
+    amrex::Real& field_max_val,
+    amrex::Real& field_min_val,
+    const amr_wind::Field& field,
+    const int comp,
+    const int ncomp,
+    const int nghost);
+
+void get_field_extrema(
+    amrex::Real& field_max_val,
+    amrex::Real& field_min_val,
+    const amr_wind::Field& field,
+    const amr_wind::Field& field_mask,
+    const amrex::Real mask_val,
+    const int comp,
+    const int ncomp,
+    const int nghost);
+
 amrex::Real get_vel_max(
     const amrex::MultiFab& vel,
     const amrex::iMultiFab& level_mask,

@@ -115,6 +115,8 @@ struct ComputeRHSOp<Levelset, Scheme>
         amrex::Gpu::streamSynchronize();
     }
 
+    void improve_explicit_diff(const amrex::Real /*unused*/) {}
+
     // data members
     PDEFields& fields;
 };

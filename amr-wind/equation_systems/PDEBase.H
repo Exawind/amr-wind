@@ -100,6 +100,8 @@ public:
     //! Perform post-processing actions after a system solve
     virtual void post_solve_actions() = 0;
 
+    virtual void improve_explicit_diffusion(const amrex::Real dt) = 0;
+
     //! Base class identifier used for factory registration interface
     static std::string base_identifier() { return "PDESystem"; }
 };
@@ -135,6 +137,11 @@ public:
     //! Prepare boundaries for registered PDEs at the beginning of a timestep:
     //! -- intended for when boundaries rely on intermediate time states (nph)
     void prepare_boundaries();
+
+    //! Check that the bounds of density correspond to the expected values
+    //! -- only applies to two-phase and constant-density single-phase
+    //! -- performed once in post_init, will abort if density is unexpected
+    void density_check();
 
     //! Call fillpatch operator on state variables for all registered PDEs
     void fillpatch_state_fields(

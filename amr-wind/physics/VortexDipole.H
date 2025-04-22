@@ -41,6 +41,9 @@ private:
     //! Initial location of the right vortex
     amrex::Vector<amrex::Real> m_loc_right{0.1, 0., 0.};
 
+    //! Background velocity
+    amrex::Vector<amrex::Real> m_bvel{0., 0., 0.};
+
     //! Initial vorticity
     amrex::Real m_omegaEmag{299.5283853752};
 
