@@ -38,37 +38,45 @@ In addition to being able to specify constant values, the user has access to a v
 LinearProfile
 """""""""""""
 
-The linear profile uses the following input parameters. The linear profile can be use for multiple fields and therefore the input file option should contain the ``field_name``, e.g. ``LinearProfile.velocity.direction = 1``.
+The linear profile uses the following input parameters. The linear profile can be use for multiple fields and therefore the input file option should contain the ``field_name``, e.g. ``LinearProfile.velocity.direction = 1``. It sets up the following profile.
+
+.. math::
+
+   f(x_i) =  \begin{cases}
+      f_{\text{min}} & \text{if } x_i < x_{\text{min}}\\
+      f_{\text{max}} & \text{if } x_i > x_{\text{max}}\\
+      f_{\text{min}} + (f_{\text{max}}-f_{\text{min}}) \frac{x_i-x_{\text{min}}}{x_{\text{max}}-x_{\text{min}}} & \text{otherwise}
+    \end{cases}
 
 .. input_param:: LinearProfile.<field_name>.direction
 
    **type:** int, optional, default = 2
 
-   The coordinate direction along which this profile should be initialized (wall normal direction).
+   The coordinate direction along which this profile should be initialized (wall normal direction). :math:`i` value in the equation.
 
 .. input_param:: LinearProfile.<field_name>.start
 
    **type:** Real, optional, default = minimum of domain in the ``direction`` direction
 
-   Start location of the linear profile.
+   Start location of the linear profile. :math:`x_{\text{min}}` value in the equation.
 
 .. input_param:: LinearProfile.<field_name>.stop
 
    **type:** Real, optional, default = maximum of domain in the ``direction`` direction
 
-   Stop location of the linear profile.
+   Stop location of the linear profile. :math:`x_{\text{max}}` value in the equation.
 
 .. input_param:: LinearProfile.<field_name>.start_val
 
    **type:** Real, required (length = number of components of ``field_name``)
 
-   Start value of field.
+   Start value of field. :math:`f_{\text{min}}` value in the equation.
 
 .. input_param:: LinearProfile.<field_name>.stop_val
 
    **type:** Real, required (length = number of components of ``field_name``)
 
-   Stop value of field.
+   Stop value of field. :math:`f_{\text{max}}` value in the equation.
 
 Rankine
 """""""
