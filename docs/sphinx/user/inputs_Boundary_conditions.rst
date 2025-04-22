@@ -44,7 +44,7 @@ The linear profile uses the following input parameters. The linear profile can b
 
    **type:** int, optional, default = 2
 
-   The direction.
+   The coordinate direction along which this profile should be initialized (wall normal direction).
 
 .. input_param:: LinearProfile.<field_name>.start
 
@@ -103,7 +103,7 @@ The power law profile uses the following input parameters. This one is only for 
 
    **type:** int, optional, default = 2
 
-   The direction.
+   The coordinate direction along which this profile should be initialized (wall normal direction).
 
 .. input_param:: PowerLawProfile.zref
 
