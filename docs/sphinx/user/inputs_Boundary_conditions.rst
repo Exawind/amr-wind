@@ -105,49 +105,56 @@ The Rankine boundary condition uses the following input parameters. It is used f
 PowerLawProfile
 """""""""""""""
 
-The power law profile uses the following input parameters. This one is only for velocity so there is no need to insert the field name in the input line.
+The power law profile uses the following input parameters. This one is only for velocity so there is no need to insert the field name in the input line. This is the equation describing this boundary condition.
+
+.. math::
+
+   \begin{align}
+   p_f &= \text{min}\left(\text{max}\left(\left(\frac{x_i - x_o}{x_r}\right)^s, \frac{u_{\text{min}}}{u_r}\right), \frac{u_{\text{max}}}{u_r}\right) \\
+   f(x_i, n) &= u_n  p_f
+   \end{align}
 
 .. input_param:: PowerLawProfile.direction
 
    **type:** int, optional, default = 2
 
-   The coordinate direction along which this profile should be initialized (wall normal direction).
+   The coordinate direction along which this profile should be initialized (wall normal direction). :math:`i` value in the equation.
 
 .. input_param:: PowerLawProfile.zref
 
    **type:** Real, required
 
-   The reference height.
+   The reference height. :math:`x_r` in the equation.
 
 .. input_param:: PowerLawProfile.shear_exponent
 
    **type:** Real, required
 
-   The shear exponent value.
+   The shear exponent value. :math:`s` in the equation.
 
 .. input_param:: PowerLawProfile.uref
 
    **type:** Real list, required
 
-   The reference value of the velocity vector used to propagate the plane.
+   The reference value of the velocity vector used to propagate the plane. :math:`u_r` in the equation.
 
 .. input_param:: PowerLawProfile.zoffset
 
    **type:** Real, optional, default = 0.0
 
-   The offset in the z direction (should be zero for a boundary condition)
+   The offset in the direction (should be zero for a boundary condition). :math:`x_o` in the equation.
 
 .. input_param:: PowerLawProfile.umin
 
    **type:** Real, default = 0.0
 
-   The minimum velocity cutoff in the mean power law profile.
+   The minimum velocity cutoff in the mean power law profile. :math:`u_{\text{min}}` in the equation.
 
 .. input_param:: PowerLawProfile.umax
 
    **type:** Real, default = 0.0
 
-   The maximum velocity cutoff in the mean power law profile.
+   The maximum velocity cutoff in the mean power law profile. :math:`u_{\text{max}}` in the equation.
 
 Custom boundary conditions
 """"""""""""""""""""""""""
