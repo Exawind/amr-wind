@@ -102,7 +102,7 @@ public:
         const int ntime,
         const amrex::Real time,
         const amrex::Real dt,
-        amrex::Real tol)
+        amrex::Real tol) const
     {
 
         // Choose smallest tolerance between incoming and local
@@ -122,10 +122,10 @@ public:
         return (step_based || time_based);
     }
 
-    amrex::Real output_time_interval() { return m_out_time_interval; }
-    amrex::Real output_time_delay() { return m_out_time_delay; }
-    amrex::Real enforce_dt_tolerance() { return m_enforce_dt_tol; }
-    bool enforce_dt() { return m_enforce_dt; }
+    amrex::Real output_time_interval() const { return m_out_time_interval; }
+    amrex::Real output_time_delay() const { return m_out_time_delay; }
+    amrex::Real enforce_dt_tolerance() const { return m_enforce_dt_tol; }
+    bool enforce_dt() const { return m_enforce_dt; }
 
 protected:
     //! Time step interval for output

@@ -116,7 +116,10 @@ public:
     amrex::Real max_cfl() const { return m_max_cfl; }
 
     AMREX_FORCE_INLINE
-    amrex::Real get_minimum_enforce_dt_abs_tol() { return m_force_dt_abs_tol; }
+    amrex::Real get_minimum_enforce_dt_abs_tol() const
+    {
+        return m_force_dt_abs_tol;
+    }
 
     AMREX_FORCE_INLINE
     int time_index() const { return m_time_index; }
