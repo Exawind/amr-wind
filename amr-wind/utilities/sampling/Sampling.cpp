@@ -176,8 +176,10 @@ void Sampling::update_sampling_locations()
     }
 }
 
-void Sampling::output_actions() {
+void Sampling::output_actions()
+{
     BL_PROFILE("amr-wind::Sampling::output_actions");
+
     sampling_workflow();
 
     process_output();
