@@ -232,7 +232,7 @@ void SimTime::set_current_cfl(
                 dt_new, m_cur_time, m_plt_t_interval, m_force_plt_tol);
         }
         // Consider postprocessing as well
-        for (int npp = 0; npp < m_postprocess_enforce_dt.size(); ++npp) {
+        for (int npp = 0; npp < m_postprocess_time_interval.size(); ++npp) {
             if (m_postprocess_time_interval[npp] > 0.0 &&
                 m_postprocess_enforce_dt[npp] &&
                 m_cur_time + dt_new - m_postprocess_time_delay[npp] >= 0) {
@@ -408,7 +408,7 @@ void SimTime::calculate_minimum_enforce_dt_abs_tol()
         (m_force_plt_dt
              ? std::min(m_force_dt_abs_tol, m_force_plt_tol * m_plt_t_interval)
              : m_force_dt_abs_tol);
-    for (int npp = 0; npp < m_postprocess_enforce_dt.size(); ++npp) {
+    for (int npp = 0; npp < m_postprocess_time_interval.size(); ++npp) {
         m_force_dt_abs_tol =
             (m_postprocess_enforce_dt[npp]
                  ? std::min(
