@@ -53,11 +53,18 @@ void PostProcessManager::post_init_actions()
 {
     for (auto& post : m_post) {
         post->initialize();
+        m_sim.time().add_postproc_dt_parameters(
+            post->enforce_dt(), post->enforce_dt_tolerance(),
+            post->output_time_interval(), post->output_time_delay());
         post->post_advance_work();
+    }
+    // Calculate and get minimum tolerance
+    m_sim.time().calculate_minimum_enforce_dt_abs_tol();
+    auto tol = m_sim.time().get_minimum_enforce_dt_abs_tol();
+    for (auto& post : m_post) {
         if (post->do_output_now(
                 m_sim.time().time_index(), m_sim.time().new_time(),
-                m_sim.time().delta_t(),
-                1.0)) { // what should external tolerance be?
+                m_sim.time().delta_t(), tol)) {
             post->output_actions();
         }
     }
@@ -65,12 +72,14 @@ void PostProcessManager::post_init_actions()
 
 void PostProcessManager::post_advance_work()
 {
+    // Calculate and get minimum tolerance
+    m_sim.time().calculate_minimum_enforce_dt_abs_tol();
+    auto tol = m_sim.time().get_minimum_enforce_dt_abs_tol();
     for (auto& post : m_post) {
         post->post_advance_work();
         if (post->do_output_now(
                 m_sim.time().time_index(), m_sim.time().new_time(),
-                m_sim.time().delta_t(),
-                1.0)) { // what should external tolerance be?
+                m_sim.time().delta_t(), tol)) {
             post->output_actions();
         }
     }

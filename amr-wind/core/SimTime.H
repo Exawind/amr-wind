@@ -116,6 +116,9 @@ public:
     amrex::Real max_cfl() const { return m_max_cfl; }
 
     AMREX_FORCE_INLINE
+    amrex::Real get_minimum_enforce_dt_abs_tol() { return m_force_dt_abs_tol; }
+
+    AMREX_FORCE_INLINE
     int time_index() const { return m_time_index; }
 
     AMREX_FORCE_INLINE
@@ -147,6 +150,22 @@ public:
 
     //! Read user defined options from input file
     void parse_parameters();
+
+    //! Get timestep considerations from postprocessing instances
+    void add_postproc_dt_parameters(
+        const bool enforce_dt_flag,
+        const amrex::Real enforce_dt_tol,
+        const amrex::Real time_interval,
+        const amrex::Real time_delay)
+    {
+        m_postprocess_enforce_dt.emplace_back(enforce_dt_flag);
+        m_postprocess_enforce_dt_tol.emplace_back(enforce_dt_tol);
+        m_postprocess_time_interval.emplace_back(time_interval);
+        m_postprocess_time_delay.emplace_back(time_delay);
+    }
+
+    //! Calculate minimum enforce dt tolerance based on all considerations
+    void calculate_minimum_enforce_dt_abs_tol();
 
 private:
     //! Timestep sizes
@@ -221,6 +240,9 @@ private:
     //! Relative (to plt_t_interval) tolerance for enforcing dt
     amrex::Real m_force_plt_tol{1e-3};
 
+    //! Smallest absolute tolerance for enforcing dt, considering all
+    amrex::Real m_force_dt_abs_tol{1e8};
+
     //! Counter for the number of timesteps since start of simulation
     int m_time_index{0};
 
@@ -272,6 +294,12 @@ private:
 
     //! Bool for if plt time interval should be forced
     bool m_force_plt_dt{false};
+
+    //! Timestep considerations from postprocessing instances
+    std::vector<bool> m_postprocess_enforce_dt;
+    amrex::Vector<amrex::Real> m_postprocess_enforce_dt_tol;
+    amrex::Vector<amrex::Real> m_postprocess_time_interval;
+    amrex::Vector<amrex::Real> m_postprocess_time_delay;
 };
 
 } // namespace amr_wind

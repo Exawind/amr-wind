@@ -325,14 +325,7 @@ bool SimTime::write_plot_file() const
 {
     // If dt is enforced, allow smallest tolerance to be in effect. This avoids
     // unintentionally plotting in consecutive timesteps because of shortened dt
-    amrex::Real tol = m_plt_t_tol * m_dt[0];
-    tol =
-        (m_force_chkpt_dt
-             ? std::min(tol, m_force_chkpt_tol * m_chkpt_t_interval)
-             : tol);
-    tol =
-        (m_force_plt_dt ? std::min(tol, m_force_plt_tol * m_plt_t_interval)
-                        : tol);
+    const amrex::Real tol = std::min(m_plt_t_tol * m_dt[0], m_force_dt_abs_tol);
     return (
         ((m_plt_interval > 0) && (m_time_index - m_plt_delay >= 0) &&
          ((m_time_index - m_plt_start_index) % m_plt_interval == 0)) ||
@@ -346,14 +339,8 @@ bool SimTime::write_plot_file() const
 bool SimTime::write_checkpoint() const
 {
     // If dt is enforced, use smallest tolerance
-    amrex::Real tol = m_plt_t_tol * m_dt[0];
-    tol =
-        (m_force_chkpt_dt
-             ? std::min(tol, m_force_chkpt_tol * m_chkpt_t_interval)
-             : tol);
-    tol =
-        (m_force_plt_dt ? std::min(tol, m_force_plt_tol * m_plt_t_interval)
-                        : tol);
+    const amrex::Real tol =
+        std::min(m_chkpt_t_tol * m_dt[0], m_force_dt_abs_tol);
     return (
         ((m_chkpt_interval > 0) && (m_time_index - m_chkpt_delay >= 0) &&
          ((m_time_index - m_chkpt_start_index) % m_chkpt_interval == 0)) ||
@@ -395,6 +382,28 @@ void SimTime::set_restart_time(int tidx, amrex::Real time)
     m_new_time = time;
     m_cur_time = time;
     m_start_time = time;
+}
+
+void SimTime::calculate_minimum_enforce_dt_abs_tol()
+{
+    m_force_dt_abs_tol = 1e8;
+    m_force_dt_abs_tol =
+        (m_force_chkpt_dt
+             ? std::min(
+                   m_force_dt_abs_tol, m_force_chkpt_tol * m_chkpt_t_interval)
+             : m_force_dt_abs_tol);
+    m_force_dt_abs_tol =
+        (m_force_plt_dt
+             ? std::min(m_force_dt_abs_tol, m_force_plt_tol * m_plt_t_interval)
+             : m_force_dt_abs_tol);
+    for (int npp = 0; npp < m_postprocess_enforce_dt.size(); ++npp) {
+        m_force_dt_abs_tol =
+            (m_postprocess_enforce_dt[npp]
+                 ? std::min(
+                       m_force_dt_abs_tol, m_postprocess_enforce_dt_tol[npp] *
+                                               m_postprocess_time_interval[npp])
+                 : m_force_dt_abs_tol);
+    }
 }
 
 } // namespace amr_wind
