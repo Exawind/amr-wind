@@ -108,15 +108,14 @@ public:
         // Choose smallest tolerance between incoming and local
         tol = std::min(tol, m_out_time_tol * dt);
 
-        const bool step_based = (m_out_interval > 0) &&
-                                ((ntime - m_out_delay >= 0) &&
-                                 ((ntime - m_out_delay) % m_out_interval == 0));
+        const bool step_based =
+            (m_out_interval > 0) &&
+            ((ntime - m_out_delay >= 0) && (ntime % m_out_interval == 0));
         const bool time_based =
             (m_out_time_interval > 0.) &&
             ((time + tol - m_out_time_delay >= 0.) &&
-             (time + tol - m_out_time_delay -
-                  std::floor(
-                      (time + tol - m_out_time_delay) / m_out_time_interval) *
+             (time + tol -
+                  std::floor((time + tol) / m_out_time_interval) *
                       m_out_time_interval <
               dt));
 
