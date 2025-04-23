@@ -82,6 +82,14 @@ public:
                 "please only specify one.");
         }
 
+        if (m_out_interval <= 0 && m_out_time_interval <= 0.0) {
+            amrex::Abort(
+                "output_interval (or output_frequency) and "
+                "output_time_interval are both not specified. please specify "
+                "one of these input arguments so that this postprocessing tool "
+                "can output data.");
+        }
+
         if (m_out_time_interval <= 0.0 && m_enforce_dt) {
             amrex::Abort(
                 "enforce_output_time_dt is true, but output_time_interval "
