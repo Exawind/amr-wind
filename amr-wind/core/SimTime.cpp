@@ -229,6 +229,17 @@ void SimTime::set_current_cfl(
             dt_new = get_enforced_dt_for_output(
                 dt_new, m_cur_time, m_plt_t_interval, m_force_plt_tol);
         }
+        // Consider postprocessing as well
+        for (int npp = 0; npp < m_postprocess_enforce_dt.size(); ++npp) {
+            if (m_postprocess_time_interval[npp] > 0.0 &&
+                m_postprocess_enforce_dt[npp] &&
+                m_cur_time + dt_new - m_postprocess_time_delay[npp] >= 0) {
+                // Shorten dt if going to overshoot next output time
+                dt_new = get_enforced_dt_for_output(
+                    dt_new, m_cur_time, m_postprocess_time_interval[npp],
+                    m_postprocess_enforce_dt_tol[npp]);
+            }
+        }
 
         if (m_is_init && m_initial_dt > 0.0) {
             dt_new = amrex::min(dt_new, m_initial_dt);
