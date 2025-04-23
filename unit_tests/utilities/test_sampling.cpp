@@ -229,7 +229,7 @@ TEST_F(SamplingTest, sampling)
 
     SamplingImpl probes(sim(), "sampling");
     probes.initialize();
-    probes.post_advance_work();
+    probes.output_actions();
 
     EXPECT_TRUE(probes.write_flag);
 }
@@ -269,10 +269,18 @@ TEST_F(SamplingTest, sampling_timing)
 
     SamplingImpl probes(sim(), "sampling");
     probes.initialize();
-    probes.post_advance_work();
+    if (probes.do_output_now(
+            sim().time().time_index(), sim().time().new_time(),
+            sim().time().delta_t(), 1.0)) {
+        probes.output_actions();
+    }
     EXPECT_FALSE(probes.write_flag);
     sim().time().new_timestep();
-    probes.post_advance_work();
+    if (probes.do_output_now(
+            sim().time().time_index(), sim().time().new_time(),
+            sim().time().delta_t(), 1.0)) {
+        probes.output_actions();
+    }
     EXPECT_TRUE(probes.write_flag);
 }
 
