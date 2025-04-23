@@ -94,6 +94,8 @@ void SimTime::parse_parameters()
                "tolerances: dt may be shortened often and outputs may occur in "
                "consecutive timesteps.";
     }
+
+    calculate_minimum_enforce_dt_abs_tol();
 }
 
 bool SimTime::new_timestep()
@@ -397,7 +399,6 @@ void SimTime::set_restart_time(int tidx, amrex::Real time)
 
 void SimTime::calculate_minimum_enforce_dt_abs_tol()
 {
-    m_force_dt_abs_tol = 1e8;
     m_force_dt_abs_tol =
         (m_force_chkpt_dt
              ? std::min(

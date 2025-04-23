@@ -72,8 +72,7 @@ void PostProcessManager::post_init_actions()
 
 void PostProcessManager::post_advance_work()
 {
-    // Calculate and get minimum tolerance
-    m_sim.time().calculate_minimum_enforce_dt_abs_tol();
+    // Get minimum tolerance
     auto tol = m_sim.time().get_minimum_enforce_dt_abs_tol();
     for (auto& post : m_post) {
         post->post_advance_work();
