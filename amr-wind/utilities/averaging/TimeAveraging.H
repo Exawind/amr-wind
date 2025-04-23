@@ -63,6 +63,8 @@ public:
 
     void post_advance_work() override;
 
+    void output_actions() override {}
+
     void post_regrid_actions() override {}
 
     const std::string& add_averaging(

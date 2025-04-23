@@ -28,8 +28,9 @@ public:
     //! Read user inputs and create the different data probe instances
     void initialize() override;
 
-    //! Interpolate fields at a given timestep and output to disk
-    void post_advance_work() override;
+    void post_advance_work() override {};
+
+    void output_actions() override;
 
     //! Actions to perform post regrid e.g. redistribute particles
     void post_regrid_actions() override;
@@ -41,8 +42,6 @@ private:
 
     amrex::Vector<std::string> m_var_names;
     amrex::Vector<Field*> m_fields;
-
-    int m_out_freq{1};
 };
 
 } // namespace ascent_int

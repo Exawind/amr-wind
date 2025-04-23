@@ -54,6 +54,12 @@ void PostProcessManager::post_init_actions()
     for (auto& post : m_post) {
         post->initialize();
         post->post_advance_work();
+        if (post->do_output_now(
+                m_sim.time().time_index(), m_sim.time().new_time(),
+                m_sim.time().delta_t(),
+                1.0)) { // what should external tolerance be?
+            post->output_actions();
+        }
     }
 }
 
@@ -61,6 +67,12 @@ void PostProcessManager::post_advance_work()
 {
     for (auto& post : m_post) {
         post->post_advance_work();
+        if (post->do_output_now(
+                m_sim.time().time_index(), m_sim.time().new_time(),
+                m_sim.time().delta_t(),
+                1.0)) { // what should external tolerance be?
+            post->output_actions();
+        }
     }
 }
 

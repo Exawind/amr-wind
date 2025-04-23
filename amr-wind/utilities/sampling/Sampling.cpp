@@ -46,10 +46,9 @@ void Sampling::initialize()
             ioutils::all_distinct(int_field_names),
             "Duplicates in " + m_label + ".int_fields");
         pp.queryarr("derived_fields", derived_field_names);
-        pp.query("output_frequency", m_out_freq);
         pp.query("output_format", m_out_fmt);
-        pp.query("output_delay", m_out_delay);
         pp.query("restart_sample", m_restart_sample);
+        populate_output_parameters(pp);
     }
 
     // Process field information
@@ -177,23 +176,8 @@ void Sampling::update_sampling_locations()
     }
 }
 
-void Sampling::post_advance_work()
-{
-
-    BL_PROFILE("amr-wind::Sampling::post_advance_work");
-    const auto& time = m_sim.time();
-    const int tidx = time.time_index();
-
-    // Skip processing if delay has not been reached
-    if (tidx < m_out_delay) {
-        return;
-    }
-
-    // Skip processing if it is not an output timestep
-    if (!(tidx % m_out_freq == 0)) {
-        return;
-    }
-
+void Sampling::output_actions() {
+    BL_PROFILE("amr-wind::Sampling::output_actions");
     sampling_workflow();
 
     process_output();

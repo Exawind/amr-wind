@@ -25,7 +25,7 @@ void WaveEnergy::initialize()
     amrex::Real w_lev = 0.0;
     {
         amrex::ParmParse pp(m_label);
-        pp.query("output_frequency", m_out_freq);
+        populate_output_parameters(pp);
         pp.query("water_level", w_lev);
     }
     // Get gravity and density
@@ -164,15 +164,9 @@ amrex::Real WaveEnergy::calculate_potential_energy()
     return wave_pe;
 }
 
-void WaveEnergy::post_advance_work()
+void WaveEnergy::output_actions()
 {
-    BL_PROFILE("amr-wind::WaveEnergy::post_advance_work");
-    const auto& time = m_sim.time();
-    const int tidx = time.time_index();
-    // Skip processing if it is not an output timestep
-    if (!(tidx % m_out_freq == 0)) {
-        return;
-    }
+    BL_PROFILE("amr-wind::WaveEnergy::output_actions");
 
     m_wave_kinetic_energy = calculate_kinetic_energy() / m_escl;
     m_wave_potential_energy = calculate_potential_energy() / m_escl + m_pe_off;

@@ -49,7 +49,7 @@ public:
 
     /** Perform output routine
      */
-    // virtual void perform_output() = 0;
+    virtual void output_actions() = 0;
 
     //! Actions to perform post regrid
     virtual void post_regrid_actions() = 0;
