@@ -120,6 +120,12 @@ public:
     bool adaptive_timestep() const { return m_adaptive; }
 
     AMREX_FORCE_INLINE
+    bool force_regrid_restart() const { return m_regrid_restart; }
+
+    AMREX_FORCE_INLINE
+    int regrid_restart_startlevel() const { return m_regrid_restart_startlevel; }
+
+    AMREX_FORCE_INLINE
     bool use_force_cfl() const { return m_use_force_cfl; }
 
     AMREX_FORCE_INLINE
@@ -216,6 +222,12 @@ private:
 
     //! Initial starting time index for regriding
     int m_regrid_start_index{0};
+
+    //! Flag indicating if regrid on restart
+    bool m_regrid_restart{false};
+     
+    //! Start re-gridding on level
+    int m_regrid_restart_startlevel{0};
 
     //! Maximum timesteps for simulation
     int m_stop_time_index{-1};
