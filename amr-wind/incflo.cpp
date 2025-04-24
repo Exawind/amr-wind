@@ -76,7 +76,9 @@ void incflo::init_mesh()
         // Read starting configuration from chk file.
         ReadCheckpointFile();
 
-        int regrid_startlevel = (m_time.force_regrid_restart()) ? m_time.regrid_restart_startlevel() : finestLevel();
+        int regrid_startlevel = (m_time.force_regrid_restart())
+                                    ? m_time.regrid_restart_startlevel()
+                                    : finestLevel();
 
         for (int lev = regrid_startlevel; lev <= maxLevel(); ++lev) {
             regrid(lev, m_time.current_time());
@@ -90,7 +92,8 @@ void incflo::init_mesh()
         }
 
         if (ParallelDescriptor::IOProcessor()) {
-            amrex::Print() << "Forced re-grid of checkpoint from level: " << regrid_startlevel << std::endl;
+            amrex::Print() << "Forced re-grid of checkpoint from level: "
+                           << regrid_startlevel << std::endl;
             amrex::Print() << "Grid summary: " << std::endl;
             printGridSummary(amrex::OutStream(), 0, finest_level);
         }

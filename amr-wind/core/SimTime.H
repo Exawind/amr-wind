@@ -123,7 +123,10 @@ public:
     bool force_regrid_restart() const { return m_regrid_restart; }
 
     AMREX_FORCE_INLINE
-    int regrid_restart_startlevel() const { return m_regrid_restart_startlevel; }
+    int regrid_restart_startlevel() const
+    {
+        return m_regrid_restart_startlevel;
+    }
 
     AMREX_FORCE_INLINE
     bool use_force_cfl() const { return m_use_force_cfl; }
@@ -225,7 +228,7 @@ private:
 
     //! Flag indicating if regrid on restart
     bool m_regrid_restart{false};
-     
+
     //! Start re-gridding on level
     int m_regrid_restart_startlevel{0};
 

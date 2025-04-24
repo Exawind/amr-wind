@@ -274,10 +274,10 @@ bool SimTime::continue_simulation() const
 
 bool SimTime::do_regrid() const
 {
-    bool do_reg = 
+    bool do_reg =
         ((m_regrid_interval > 0) &&
-        ((m_time_index - m_regrid_start_index) > 0) &&
-        ((m_time_index - m_regrid_start_index) % m_regrid_interval == 0));
+         ((m_time_index - m_regrid_start_index) > 0) &&
+         ((m_time_index - m_regrid_start_index) % m_regrid_interval == 0));
 
     return do_reg;
 }
