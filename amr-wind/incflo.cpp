@@ -300,8 +300,10 @@ void incflo::Evolve()
 
         if (m_prescribe_vel) {
             pre_advance_stage2();
-            ComputePrescribeDt();
+            compute_prescribe_dt();
+            pre_advance_stage1();
         } else {
+            compute_dt();
             pre_advance_stage1();
             pre_advance_stage2();
         }
