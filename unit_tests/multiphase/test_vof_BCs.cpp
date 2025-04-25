@@ -192,7 +192,7 @@ protected:
             bc_string = "mass_inflow";
         } else if (option == 2) {
             // Slip wall
-            vof_distr = 1;        // high-order extrapolation
+            vof_distr = 2;        // first-order extrapolation
             nonzero_flux = false; // flux cannot occur
             bc_string = "slip_wall";
         } else if (option == 3) {
@@ -341,7 +341,7 @@ constexpr double tol1 = 1.0e-15;
 constexpr double tol2 = 6.0e-2;
 
 TEST_F(VOFBCTest, dirichletX) { testing_bc_coorddir(1, 0, tol1); }
-TEST_F(VOFBCTest, slipwallY) { testing_bc_coorddir(2, 1, tol2); }
+TEST_F(VOFBCTest, slipwallY) { testing_bc_coorddir(2, 1, tol1); }
 TEST_F(VOFBCTest, noslipwallZ) { testing_bc_coorddir(3, 2, tol1); }
 TEST_F(VOFBCTest, pressureX) { testing_bc_coorddir(4, 0, tol1); }
 
