@@ -110,7 +110,6 @@ void init_vof(amr_wind::Field& vof, bool bounded)
 
 void modify_vof(amr_wind::Field& vof, amrex::Vector<int> ncell)
 {
-    const auto& mesh = vof.repo().mesh();
     const int nlevels = vof.repo().num_active_levels();
     const int nx = ncell[0];
     const int ny = ncell[1];
