@@ -354,26 +354,35 @@ TEST_F(DiagnosticsTest, Field_Extrema)
     const amrex::Real gold_fmax_l = 1.;
 
     // Get max and min using masking for phase
-    /*amrex::Real fmin_g{0.}, fmax_g{0.}, fmin_l{0.}, fmax_l{0.};
-    amr_wind::diagnostics::get_field_extrema(
+    amrex::Real fmin_g{0.}, fmax_g{0.}, fmin_l{0.}, fmax_l{0.};
+    bool found_g = amr_wind::diagnostics::get_field_extrema(
         fmax_g, fmin_g, vof, vof, 0., 0, 1, 1);
-    amr_wind::diagnostics::get_field_extrema(
+    bool found_l = amr_wind::diagnostics::get_field_extrema(
         fmax_l, fmin_l, vof, vof, 1., 0, 1, 1);
 
-    EXPECT_NEAR(fmin_g, gold_fmin_g, tol);
-    EXPECT_NEAR(fmax_g, gold_fmax_g, tol);
-    EXPECT_NEAR(fmin_l, gold_fmin_l, tol);
-    EXPECT_NEAR(fmax_l, gold_fmax_l, tol);*/
+    // Confirm that gas and liquid not found
+    EXPECT_FALSE(found_g);
+    EXPECT_FALSE(found_l);
+
+    // No gas or liquid in domain, so these values will be bad
+    EXPECT_GT(fmin_g, gold_fmin_g);
+    EXPECT_LT(fmax_g, gold_fmax_g);
+    EXPECT_GT(fmin_l, gold_fmin_l);
+    EXPECT_LT(fmax_l, gold_fmax_l);
 
     // Modify vof to ensure some single-phase cells while remaining unbounded
     modify_vof(vof, m_ncell);
     // Get max and min using masking for phase
-    amrex::Real fmin_g{0.}, fmax_g{0.}, fmin_l{0.}, fmax_l{0.};
-    amr_wind::diagnostics::get_field_extrema(
+    found_g = amr_wind::diagnostics::get_field_extrema(
         fmax_g, fmin_g, vof, vof, 0., 0, 1, 1);
-    amr_wind::diagnostics::get_field_extrema(
+    found_l = amr_wind::diagnostics::get_field_extrema(
         fmax_l, fmin_l, vof, vof, 1., 0, 1, 1);
 
+    // Phases should be found this time
+    EXPECT_TRUE(found_g);
+    EXPECT_TRUE(found_l);
+
+    // Extrema should be valid this time
     EXPECT_NEAR(fmin_g, gold_fmin_g, tol);
     EXPECT_NEAR(fmax_g, gold_fmax_g, tol);
     EXPECT_NEAR(fmin_l, gold_fmin_l, tol);

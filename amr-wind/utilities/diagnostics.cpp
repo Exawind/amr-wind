@@ -49,7 +49,7 @@ void amr_wind::diagnostics::get_field_extrema(
     amrex::ParallelDescriptor::ReduceRealMin(field_min_val);
 }
 
-void amr_wind::diagnostics::get_field_extrema(
+bool amr_wind::diagnostics::get_field_extrema(
     amrex::Real& field_max_val,
     amrex::Real& field_min_val,
     const amr_wind::Field& field,
@@ -64,6 +64,8 @@ void amr_wind::diagnostics::get_field_extrema(
 
     amrex::Real max_val_lev{constants::LOW_NUM};
     amrex::Real min_val_lev{constants::LARGE_NUM};
+    amrex::Real min_mask_lev = min_val_lev;
+    amrex::Real mask_min = min_mask_lev;
     field_max_val = max_val_lev;
     field_min_val = min_val_lev;
     for (int lev = 0; lev <= finest_level; lev++) {
@@ -77,6 +79,8 @@ void amr_wind::diagnostics::get_field_extrema(
             mask_addend_max, field_mask(lev), mask_val, constants::LOW_NUM);
         amr_wind::diagnostics::make_mask_addend(
             mask_addend_min, field_mask(lev), mask_val, constants::LARGE_NUM);
+        min_mask_lev = mask_addend_min.min(0, nghost);
+        mask_min = amrex::min(mask_min, min_mask_lev);
         amrex::MultiFab::Add(
             mask_addend_max, field(lev), comp, 0, ncomp, nghost);
         amrex::MultiFab::Add(
@@ -91,6 +95,10 @@ void amr_wind::diagnostics::get_field_extrema(
 
     amrex::ParallelDescriptor::ReduceRealMax(field_max_val);
     amrex::ParallelDescriptor::ReduceRealMin(field_min_val);
+    amrex::ParallelDescriptor::ReduceRealMax(mask_min);
+
+    const bool found_mask_val = (mask_min < constants::TIGHT_TOL);
+    return found_mask_val;
 }
 
 amrex::Real amr_wind::diagnostics::get_vel_max(
