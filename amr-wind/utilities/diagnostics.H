@@ -5,7 +5,7 @@
 
 namespace amr_wind::diagnostics {
 
-void make_mask_multiplier(
+void make_mask_addend(
     amrex::MultiFab& mfab,
     const amrex::MultiFab& mfab_mask,
     const amrex::Real mask_val,

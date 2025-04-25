@@ -4,7 +4,7 @@
 
 using namespace amrex;
 
-void amr_wind::diagnostics::make_mask_multiplier(
+void amr_wind::diagnostics::make_mask_addend(
     amrex::MultiFab& mfab,
     const amrex::MultiFab& mfab_mask,
     const amrex::Real mask_val,
@@ -17,7 +17,7 @@ void amr_wind::diagnostics::make_mask_multiplier(
         [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
             arr[nbx](i, j, k, n) = std::abs(arr_mask[nbx](i, j, k) - mask_val) <
                                            constants::TIGHT_TOL
-                                       ? 1.0
+                                       ? 0.0
                                        : set_val;
         });
 }
@@ -67,24 +67,23 @@ void amr_wind::diagnostics::get_field_extrema(
     field_max_val = max_val_lev;
     field_min_val = min_val_lev;
     for (int lev = 0; lev <= finest_level; lev++) {
-        amrex::MultiFab mask_multiplier_max(
+        amrex::MultiFab mask_addend_max(
             field_mask(lev).boxArray(), field_mask(lev).DistributionMap(),
             ncomp, nghost);
-        amrex::MultiFab mask_multiplier_min(
+        amrex::MultiFab mask_addend_min(
             field_mask(lev).boxArray(), field_mask(lev).DistributionMap(),
             ncomp, nghost);
-        amr_wind::diagnostics::make_mask_multiplier(
-            mask_multiplier_max, field_mask(lev), mask_val, constants::LOW_NUM);
-        amr_wind::diagnostics::make_mask_multiplier(
-            mask_multiplier_min, field_mask(lev), mask_val,
-            constants::LARGE_NUM);
-        amrex::MultiFab::Multiply(
-            mask_multiplier_max, field(lev), comp, 0, ncomp, nghost);
-        amrex::MultiFab::Multiply(
-            mask_multiplier_min, field(lev), comp, 0, ncomp, nghost);
+        amr_wind::diagnostics::make_mask_addend(
+            mask_addend_max, field_mask(lev), mask_val, constants::LOW_NUM);
+        amr_wind::diagnostics::make_mask_addend(
+            mask_addend_min, field_mask(lev), mask_val, constants::LARGE_NUM);
+        amrex::MultiFab::Add(
+            mask_addend_max, field(lev), comp, 0, ncomp, nghost);
+        amrex::MultiFab::Add(
+            mask_addend_min, field(lev), comp, 0, ncomp, nghost);
         for (int n = 0; n < ncomp; ++n) {
-            max_val_lev = mask_multiplier_max.max(n, nghost);
-            min_val_lev = mask_multiplier_min.min(n, nghost);
+            max_val_lev = mask_addend_max.max(n, nghost);
+            min_val_lev = mask_addend_min.min(n, nghost);
             field_min_val = amrex::min(field_min_val, min_val_lev);
             field_max_val = amrex::max(field_max_val, max_val_lev);
         }
