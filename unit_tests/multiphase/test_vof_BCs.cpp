@@ -371,7 +371,6 @@ protected:
 };
 
 constexpr double tol1 = 1.0e-15;
-constexpr double tol2 = 6.0e-2;
 
 TEST_F(VOFBCTest, dirichletX) { testing_bc_coorddir(1, 0, tol1); }
 TEST_F(VOFBCTest, slipwallY) { testing_bc_coorddir(2, 1, tol1); }
