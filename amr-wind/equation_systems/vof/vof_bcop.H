@@ -22,6 +22,10 @@ struct BCOp<VOF>
         BCVOF bc(m_fields.field);
         bc(VOF::default_bc_value);
 
+        auto& density = m_fields.repo.get_field("density");
+        BCDensityMod bc_dens(density);
+        bc(VOF::default_density_bc_value);
+
         // No source terms currently exist for VOF, so this is inconsequential
         BCSrcTerm bc_src(m_fields.src_term);
         bc_src();
