@@ -108,6 +108,30 @@ void init_vof(amr_wind::Field& vof, bool bounded)
     amrex::Gpu::streamSynchronize();
 }
 
+void modify_vof(amr_wind::Field& vof, amrex::Vector<int> ncell)
+{
+    const auto& mesh = vof.repo().mesh();
+    const int nlevels = vof.repo().num_active_levels();
+    const int nx = ncell[0];
+    const int ny = ncell[1];
+    const int nz = ncell[2];
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+        const auto& farrs = vof(lev).arrays();
+
+        amrex::ParallelFor(
+            vof(lev), vof.num_grow(),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                if (i == 0 || j == 0 || k == 0) {
+                    farrs[nbx](i, j, k) = 0;
+                } else if (i == nx - 1 || j == ny - 1 || k == nz - 1) {
+                    farrs[nbx](i, j, k) = 1;
+                }
+            });
+    }
+    amrex::Gpu::streamSynchronize();
+}
+
 } // namespace
 
 class DiagnosticsTest : public MeshTest
@@ -329,6 +353,20 @@ TEST_F(DiagnosticsTest, Field_Extrema)
     const amrex::Real gold_fmin_l = 1.;
     const amrex::Real gold_fmax_l = 1.;
 
+    // Get max and min using masking for phase
+    /*amrex::Real fmin_g{0.}, fmax_g{0.}, fmin_l{0.}, fmax_l{0.};
+    amr_wind::diagnostics::get_field_extrema(
+        fmax_g, fmin_g, vof, vof, 0., 0, 1, 1);
+    amr_wind::diagnostics::get_field_extrema(
+        fmax_l, fmin_l, vof, vof, 1., 0, 1, 1);
+
+    EXPECT_NEAR(fmin_g, gold_fmin_g, tol);
+    EXPECT_NEAR(fmax_g, gold_fmax_g, tol);
+    EXPECT_NEAR(fmin_l, gold_fmin_l, tol);
+    EXPECT_NEAR(fmax_l, gold_fmax_l, tol);*/
+
+    // Modify vof to ensure some single-phase cells while remaining unbounded
+    modify_vof(vof, m_ncell);
     // Get max and min using masking for phase
     amrex::Real fmin_g{0.}, fmax_g{0.}, fmin_l{0.}, fmax_l{0.};
     amr_wind::diagnostics::get_field_extrema(
