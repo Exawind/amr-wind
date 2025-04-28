@@ -156,6 +156,8 @@ struct AdvectionOp<
                 if (PDE::multiply_rho) {
                     auto rhotrac_box =
                         amrex::grow(bx, fvm::Godunov::nghost_state);
+                    auto srctrac_box =
+                        amrex::grow(bx, fvm::Godunov::nghost_src);
                     rhotracfab.resize(
                         rhotrac_box, PDE::ndim, amrex::The_Async_Arena());
                     rhotrac = rhotracfab.array();
@@ -176,7 +178,7 @@ struct AdvectionOp<
                                 rho_arr(i, j, k) * tra_arr(i, j, k, n);
                             rhotrac_nph(i, j, k, n) =
                                 rho_nph_arr(i, j, k) * tra_nph_arr(i, j, k, n);
-                            if (mphase_vof) {
+                            if (mphase_vof && srctrac_box.contains(i, j, k)) {
                                 // Need to remove the effect of the multiply_rho
                                 // routine -- the setup is different for
                                 // mass-consistent multiphase advection
