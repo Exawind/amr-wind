@@ -60,8 +60,8 @@ MacProjOp::MacProjOp(
     pp_proj.query("verbose_fields", m_verbose_output_fields);
     if (m_verbose_output_fields && !m_has_overset) {
         amrex::Print()
-            << "verbose_fields for the MAC projection were requested, but the "
-               "simulation is not overset. The phi_before_mac and "
+            << "WARNING: verbose_fields for the MAC projection were requested, "
+               "but the simulation is not overset. The phi_before_mac and "
                "phi_after_mac fields will not be updated.\n";
     }
 #ifdef AMR_WIND_USE_FFT
