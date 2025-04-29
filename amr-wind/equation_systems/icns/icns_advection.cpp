@@ -56,11 +56,16 @@ MacProjOp::MacProjOp(
 {
     amrex::ParmParse pp("incflo");
     pp.query("density", m_rho_0);
-#ifdef AMR_WIND_USE_FFT
-    {
-        amrex::ParmParse pp("mac_proj");
-        pp.query("use_fft", m_use_fft);
+    amrex::ParmParse pp_proj("mac_proj");
+    pp_proj.query("verbose_fields", m_verbose_output_fields);
+    if (m_verbose_output_fields && !m_has_overset) {
+        amrex::Print()
+            << "verbose_fields for the MAC projection were requested, but the "
+               "simulation is not overset. The phi_before_mac and "
+               "phi_after_mac fields will not be updated.\n";
     }
+#ifdef AMR_WIND_USE_FFT
+    pp_proj.query("use_fft", m_use_fft);
 #endif
 }
 
@@ -340,8 +345,16 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
                 (*phif)(lev), 0, pressure(lev), 0, 1);
         }
 
+        if (m_verbose_output_fields) {
+            field_ops::copy(
+                m_repo.get_field("phi_before_mac"), *phif, 0, 0, 1, 0);
+        }
         m_mac_proj->project(
             phif->vec_ptrs(), m_options.rel_tol, m_options.abs_tol);
+        if (m_verbose_output_fields) {
+            field_ops::copy(
+                m_repo.get_field("phi_after_mac"), *phif, 0, 0, 1, 0);
+        }
 
     } else {
 #ifdef AMR_WIND_USE_FFT
