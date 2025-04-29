@@ -396,6 +396,12 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
         if (m_verbose_output_fields) {
             field_ops::copy(
                 m_repo.get_field("phi_before_mac"), *phif, 0, 0, 1, 0);
+            field_ops::copy(
+                m_repo.get_field("u_before_mac"), u_mac, 0, 0, 1, 0);
+            field_ops::copy(
+                m_repo.get_field("v_before_mac"), v_mac, 0, 0, 1, 0);
+            field_ops::copy(
+                m_repo.get_field("w_before_mac"), w_mac, 0, 0, 1, 0);
         }
         m_mac_proj->project(
             phif->vec_ptrs(), m_options.rel_tol, m_options.abs_tol);
