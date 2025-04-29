@@ -7,6 +7,7 @@
 #include "amr-wind/wind_energy/ABL.H"
 #include "amr-wind/physics/TerrainDrag.H"
 #include "amr-wind/utilities/linear_interpolation.H"
+#include "amr-wind/utilities/constants.H"
 
 namespace {
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real viscous_drag_calculations(
@@ -19,14 +20,17 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real viscous_drag_calculations(
     const amrex::Real z0,
     const amrex::Real dz,
     const amrex::Real kappa,
-    const amrex::Real tiny)
+    const amrex::Real non_neutral_neighbour)
 {
     const amrex::Real m2 = std::sqrt(ux2r * ux2r + uy2r * uy2r);
-    const amrex::Real ustar = m2 * kappa / std::log(1.5 * dz / z0);
+    const amrex::Real ustar =
+        m2 * kappa / (std::log(1.5 * dz / z0) - non_neutral_neighbour);
     Dxz += -ustar * ustar * ux1r /
-           (tiny + std::sqrt(ux1r * ux1r + uy1r * uy1r)) / dz;
+           (amr_wind::constants::EPS + std::sqrt(ux1r * ux1r + uy1r * uy1r)) /
+           dz;
     Dyz += -ustar * ustar * uy1r /
-           (tiny + std::sqrt(ux1r * ux1r + uy1r * uy1r)) / dz;
+           (amr_wind::constants::EPS + std::sqrt(ux1r * ux1r + uy1r * uy1r)) /
+           dz;
     return ustar;
 }
 
@@ -120,7 +124,16 @@ DragForcing::DragForcing(const CFDSim& sim)
             terrain_phys.wave_negative_elevation_name();
         m_target_levelset = &sim.repo().get_field(target_levelset_name);
         m_terrain_is_waves = true;
+        // Inviscid form drag model can help when waves are smaller than cells,
+        // i.e., too small to be resolved with cell blanking
+        pp.query("wave_model_inviscid_form_drag", m_apply_MOSD);
     }
+    amrex::ParmParse pp_abl("ABL");
+    pp_abl.query("wall_het_model", m_wall_het_model);
+    pp_abl.query("monin_obukhov_length", m_monin_obukhov_length);
+    pp_abl.query("kappa", m_kappa);
+    pp_abl.query("mo_gamma_m", m_gamma_m);
+    pp_abl.query("mo_beta_m", m_beta_m);
 }
 
 DragForcing::~DragForcing() = default;
@@ -149,6 +162,7 @@ void DragForcing::operator()(
     const auto& terrainz0 = (*m_terrainz0)(lev).const_array(mfi);
 
     const bool is_waves = m_terrain_is_waves;
+    const bool model_form_drag = m_apply_MOSD;
     const auto& target_vel_arr = is_waves
                                      ? (*m_target_vel)(lev).const_array(mfi)
                                      : amrex::Array4<amrex::Real>();
@@ -181,9 +195,19 @@ void DragForcing::operator()(
     const amrex::Real Cd =
         (is_laminar && dx[2] < 1) ? drag_coefficient : drag_coefficient / dx[2];
     const amrex::Real z0_min = 1e-4;
-    const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
     const amrex::Real kappa = 0.41;
     const amrex::Real cd_max = 1000.0;
+
+    const amrex::Real non_neutral_neighbour =
+        (m_wall_het_model == "mol")
+            ? MOData::calc_psi_m(
+                  1.5 * dx[2] / m_monin_obukhov_length, m_beta_m, m_gamma_m)
+            : 0.0;
+    const amrex::Real non_neutral_cell =
+        (m_wall_het_model == "mol")
+            ? MOData::calc_psi_m(
+                  0.5 * dx[2] / m_monin_obukhov_length, m_beta_m, m_gamma_m)
+            : 0.0;
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
         const amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
@@ -251,17 +275,20 @@ void DragForcing::operator()(
             const amrex::Real uy2r = vel(i, j, k + 1, 1) - wall_v;
             const amrex::Real z0 = std::max(terrainz0(i, j, k), z0_min);
             const amrex::Real ustar = viscous_drag_calculations(
-                Dxz, Dyz, ux1r, uy1r, ux2r, uy2r, z0, dx[2], kappa, tiny);
-            if (is_waves) {
+                Dxz, Dyz, ux1r, uy1r, ux2r, uy2r, z0, dx[2], kappa,
+                non_neutral_neighbour);
+            if (model_form_drag) {
                 form_drag_calculations(
                     Dxz, Dyz, i, j, k, target_lvs_arr, dx, ux1r, uy1r);
             }
             const amrex::Real uTarget =
-                ustar / kappa * std::log(0.5 * dx[2] / z0);
-            const amrex::Real uxTarget =
-                uTarget * ux2r / (tiny + std::sqrt(ux2r * ux2r + uy2r * uy2r));
-            const amrex::Real uyTarget =
-                uTarget * uy2r / (tiny + std::sqrt(ux2r * ux2r + uy2r * uy2r));
+                ustar / kappa * (std::log(0.5 * dx[2] / z0) - non_neutral_cell);
+            const amrex::Real uxTarget = uTarget * ux2r /
+                                         (amr_wind::constants::EPS +
+                                          std::sqrt(ux2r * ux2r + uy2r * uy2r));
+            const amrex::Real uyTarget = uTarget * uy2r /
+                                         (amr_wind::constants::EPS +
+                                          std::sqrt(ux2r * ux2r + uy2r * uy2r));
             // BC forcing pushes nonrelative velocity toward target velocity
             bc_forcing_x = -(uxTarget - ux1) / dt;
             bc_forcing_y = -(uyTarget - uy1) / dt;
@@ -276,8 +303,8 @@ void DragForcing::operator()(
             target_w = target_vel_arr(i, j, k, 2);
         }
 
-        const amrex::Real CdM =
-            std::min(Cd / (m + tiny), cd_max / scale_factor);
+        const amrex::Real CdM = std::min(
+            Cd / (m + amr_wind::constants::EPS), cd_max / scale_factor);
         src_term(i, j, k, 0) -=
             (CdM * m * (ux1 - target_u) * blank(i, j, k) + Dxz * drag(i, j, k) +
              bc_forcing_x * drag(i, j, k) +

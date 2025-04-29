@@ -28,7 +28,7 @@ void amr_wind::diagnostics::get_field_extrema(
     const amr_wind::Field& field,
     const int comp,
     const int ncomp,
-    const bool include_ghosts)
+    const int nghost)
 {
     const int finest_level = field.repo().num_active_levels() - 1;
 
@@ -38,10 +38,8 @@ void amr_wind::diagnostics::get_field_extrema(
     field_min_val = min_val_lev;
     for (int lev = 0; lev <= finest_level; lev++) {
         for (int n = comp; n < comp + ncomp; ++n) {
-            max_val_lev =
-                field(lev).max(n, include_ghosts ? field.num_grow()[n] : 0);
-            min_val_lev =
-                field(lev).min(n, include_ghosts ? field.num_grow()[n] : 0);
+            max_val_lev = field(lev).max(n, nghost);
+            min_val_lev = field(lev).min(n, nghost);
             field_min_val = amrex::min(field_min_val, min_val_lev);
             field_max_val = amrex::max(field_max_val, max_val_lev);
         }
@@ -59,7 +57,7 @@ void amr_wind::diagnostics::get_field_extrema(
     const amrex::Real mask_val,
     const int comp,
     const int ncomp,
-    const bool include_ghosts)
+    const int nghost)
 
 {
     const int finest_level = field.repo().num_active_levels() - 1;
@@ -71,26 +69,22 @@ void amr_wind::diagnostics::get_field_extrema(
     for (int lev = 0; lev <= finest_level; lev++) {
         amrex::MultiFab mask_multiplier_max(
             field_mask(lev).boxArray(), field_mask(lev).DistributionMap(),
-            ncomp, include_ghosts ? field_mask.num_grow()[0] : 0);
+            ncomp, nghost);
         amrex::MultiFab mask_multiplier_min(
             field_mask(lev).boxArray(), field_mask(lev).DistributionMap(),
-            ncomp, include_ghosts ? field_mask.num_grow()[0] : 0);
+            ncomp, nghost);
         amr_wind::diagnostics::make_mask_multiplier(
             mask_multiplier_max, field_mask(lev), mask_val, constants::LOW_NUM);
         amr_wind::diagnostics::make_mask_multiplier(
             mask_multiplier_min, field_mask(lev), mask_val,
             constants::LARGE_NUM);
         amrex::MultiFab::Multiply(
-            mask_multiplier_max, field(lev), comp, 0, ncomp,
-            include_ghosts ? field.num_grow() : amrex::IntVect(0));
+            mask_multiplier_max, field(lev), comp, 0, ncomp, nghost);
         amrex::MultiFab::Multiply(
-            mask_multiplier_min, field(lev), comp, 0, ncomp,
-            include_ghosts ? field.num_grow() : amrex::IntVect(0));
+            mask_multiplier_min, field(lev), comp, 0, ncomp, nghost);
         for (int n = 0; n < ncomp; ++n) {
-            max_val_lev = mask_multiplier_max.max(
-                n, include_ghosts ? field.num_grow()[n] : 0);
-            min_val_lev = mask_multiplier_min.min(
-                n, include_ghosts ? field.num_grow()[n] : 0);
+            max_val_lev = mask_multiplier_max.max(n, nghost);
+            min_val_lev = mask_multiplier_min.min(n, nghost);
             field_min_val = amrex::min(field_min_val, min_val_lev);
             field_max_val = amrex::max(field_max_val, max_val_lev);
         }
