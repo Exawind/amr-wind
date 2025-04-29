@@ -37,6 +37,47 @@ amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM> get_projection_bc(
     return r;
 }
 
+void mask_face_velocity(
+    const amrex::iMultiFab& mask_cell,
+    const amrex::MultiFab& cc_vel,
+    amrex::Array<amrex::MultiFab*, ICNS::ndim> fc_vel)
+{
+
+    const auto& marrs = mask_cell.const_arrays();
+    const auto& vel = cc_vel.const_arrays();
+    auto umac = (*fc_vel[0]).arrays();
+    auto vmac = (*fc_vel[1]).arrays();
+    auto wmac = (*fc_vel[2]).arrays();
+    amrex::ParallelFor(
+        mask_cell, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            // If any neighboring cell is masked, use interpolated value
+            if (marrs[nbx](i - 1, j, k) + marrs[nbx](i, j, k) < 2) {
+                umac[nbx](i, j, k) =
+                    0.5 * (vel[nbx](i - 1, j, k, 0) + vel[nbx](i, j, k, 0));
+            }
+            if (marrs[nbx](i, j, k) + marrs[nbx](i + 1, j, k) < 2) {
+                umac[nbx](i + 1, j, k) =
+                    0.5 * (vel[nbx](i, j, k, 0) + vel[nbx](i + 1, j, k, 0));
+            }
+            if (marrs[nbx](i, j - 1, k) + marrs[nbx](i, j, k) < 2) {
+                vmac[nbx](i, j, k) =
+                    0.5 * (vel[nbx](i, j - 1, k, 1) + vel[nbx](i, j, k, 1));
+            }
+            if (marrs[nbx](i, j, k) + marrs[nbx](i, j + 1, k) < 2) {
+                vmac[nbx](i, j + 1, k) =
+                    0.5 * (vel[nbx](i, j, k, 1) + vel[nbx](i, j + 1, k, 1));
+            }
+            if (marrs[nbx](i, j, k - 1) + marrs[nbx](i, j, k) < 2) {
+                wmac[nbx](i, j, k) =
+                    0.5 * (vel[nbx](i, j, k - 1, 2) + vel[nbx](i, j, k, 2));
+            }
+            if (marrs[nbx](i, j, k) + marrs[nbx](i, j, k + 1) < 2) {
+                wmac[nbx](i, j, k + 1) =
+                    0.5 * (vel[nbx](i, j, k, 2) + vel[nbx](i, j, k + 1, 2));
+            }
+        });
+}
+
 } // namespace
 
 MacProjOp::MacProjOp(
@@ -312,6 +353,13 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
         mac_vec[lev][0] = &u_mac(lev);
         mac_vec[lev][1] = &v_mac(lev);
         mac_vec[lev][2] = &w_mac(lev);
+        if (m_has_overset) {
+            // Where masked, replace modified face velocities with interpolated
+            // overset values
+            mask_face_velocity(
+                m_repo.get_int_field("mask_cell")(lev),
+                m_repo.get_field("velocity")(lev), mac_vec[lev]);
+        }
         if (m_is_anelastic) {
             for (int idim = 0; idim < ICNS::ndim; ++idim) {
                 amrex::Multiply(
