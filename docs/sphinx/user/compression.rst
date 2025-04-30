@@ -19,8 +19,8 @@ To read ZFP compressed HDF5 files into ParaView, ParaView must have the environm
 
 Then the user can load the file as usual with the ``VisitChomboReader``.
 
-Convert to numpy (npy) files
-----------------------------
+Convert to numpy files
+----------------------
 
 To convert the HDF5 files to plain numpy data files, we have provided a script to do so in `tools` directory of this repository. It requires the ``h5py`` and ``hdf5plugin`` Python packages.
 
