@@ -65,7 +65,8 @@ struct FieldRegOp<ICNS, Scheme>
         if (verbose_fields) {
             repo.declare_cc_field("phi_before_mac");
             repo.declare_cc_field("phi_after_mac");
-            repo.declare_face_normal_field({"u_before_mac", "v_before_mac", "w_before_mac"});
+            repo.declare_face_normal_field(
+                {"u_before_mac", "v_before_mac", "w_before_mac"});
             iomgr.register_output_var("phi_before_mac");
             iomgr.register_output_var("phi_after_mac");
             iomgr.register_output_var("u_before_mac");
