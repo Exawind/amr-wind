@@ -50,28 +50,28 @@ void mask_face_velocity(
     auto wmac = (*fc_vel[2]).arrays();
     amrex::ParallelFor(
         mask_cell, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-            // If any neighboring cell is masked, use interpolated value
-            if (marrs[nbx](i - 1, j, k) + marrs[nbx](i, j, k) < 2) {
+            // If both neighboring cells are masked, use interpolated value
+            if (marrs[nbx](i - 1, j, k) + marrs[nbx](i, j, k) == 0) {
                 umac[nbx](i, j, k) =
                     0.5 * (vel[nbx](i - 1, j, k, 0) + vel[nbx](i, j, k, 0));
             }
-            if (marrs[nbx](i, j, k) + marrs[nbx](i + 1, j, k) < 2) {
+            if (marrs[nbx](i, j, k) + marrs[nbx](i + 1, j, k) == 0) {
                 umac[nbx](i + 1, j, k) =
                     0.5 * (vel[nbx](i, j, k, 0) + vel[nbx](i + 1, j, k, 0));
             }
-            if (marrs[nbx](i, j - 1, k) + marrs[nbx](i, j, k) < 2) {
+            if (marrs[nbx](i, j - 1, k) + marrs[nbx](i, j, k) == 0) {
                 vmac[nbx](i, j, k) =
                     0.5 * (vel[nbx](i, j - 1, k, 1) + vel[nbx](i, j, k, 1));
             }
-            if (marrs[nbx](i, j, k) + marrs[nbx](i, j + 1, k) < 2) {
+            if (marrs[nbx](i, j, k) + marrs[nbx](i, j + 1, k) == 0) {
                 vmac[nbx](i, j + 1, k) =
                     0.5 * (vel[nbx](i, j, k, 1) + vel[nbx](i, j + 1, k, 1));
             }
-            if (marrs[nbx](i, j, k - 1) + marrs[nbx](i, j, k) < 2) {
+            if (marrs[nbx](i, j, k - 1) + marrs[nbx](i, j, k) == 0) {
                 wmac[nbx](i, j, k) =
                     0.5 * (vel[nbx](i, j, k - 1, 2) + vel[nbx](i, j, k, 2));
             }
-            if (marrs[nbx](i, j, k) + marrs[nbx](i, j, k + 1) < 2) {
+            if (marrs[nbx](i, j, k) + marrs[nbx](i, j, k + 1) == 0) {
                 wmac[nbx](i, j, k + 1) =
                     0.5 * (vel[nbx](i, j, k, 2) + vel[nbx](i, j, k + 1, 2));
             }
