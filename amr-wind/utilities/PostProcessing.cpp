@@ -84,6 +84,20 @@ void PostProcessManager::post_advance_work()
     }
 }
 
+void PostProcessManager::final_output()
+{
+    // Get minimum tolerance
+    auto tol = m_sim.time().get_minimum_enforce_dt_abs_tol();
+    for (auto& post : m_post) {
+        // Avoid doing output if already taken place on final time step
+        if (!post->do_output_now(
+                m_sim.time().time_index(), m_sim.time().new_time(),
+                m_sim.time().delta_t(), tol)) {
+            post->output_actions();
+        }
+    }
+}
+
 void PostProcessManager::post_regrid_actions()
 {
     for (auto& post : m_post) {

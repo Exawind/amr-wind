@@ -173,6 +173,9 @@ public:
     //! Call all registered utilities to perform actions after a timestep
     void post_advance_work();
 
+    //! Call all registered utilities to output at final time
+    void final_output();
+
     void post_regrid_actions();
 
 private:
