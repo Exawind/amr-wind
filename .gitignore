@@ -24,3 +24,4 @@ settings.json
 build*
 __pycache__/
 docs/sphinx/doxygen
+docs/sphinx/references/auto

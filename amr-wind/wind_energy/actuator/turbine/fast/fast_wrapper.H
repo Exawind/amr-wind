@@ -97,7 +97,6 @@ inline void FAST_ExtInfw_Restart(
     int* /*unused*/,
     int* /*unused*/,
     int* /*unused*/,
-    int* /*unused*/,
     OpFM_InputType* /*unused*/,
     OpFM_OutputType* /*unused*/,
     SC_DX_InputType* /*unused*/,

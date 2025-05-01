@@ -3,7 +3,7 @@
 Section: incflo
 ~~~~~~~~~~~~~~~
 
-This section deals with parameters that mostly determine how amr-wind is run such 
+This section deals with parameters that mostly determine how AMR-Wind is run such 
 as initial conditions and discretization options.
 
 .. input_param:: incflo.physics

@@ -130,9 +130,14 @@ void populate_fields_all_levels(
 {
 
     // Get data from modes
-    bool no_EOF = wdata.rmodes.get_data(
-        wdata.ntime + wdata.n_offset + ntime_off, wdata.mX, wdata.mY, wdata.mZ,
-        wdata.mFS);
+    bool no_EOF =
+        wdata.is_ocean
+            ? wdata.c_rmodes.get_data(
+                  wdata.ntime + wdata.n_offset + ntime_off, wdata.c_mX,
+                  wdata.c_mY, wdata.c_mZ, wdata.c_mFS)
+            : wdata.r_rmodes.get_data(
+                  wdata.ntime + wdata.n_offset + ntime_off, wdata.r_mX,
+                  wdata.r_mY, wdata.r_mZ, wdata.r_mFS, wdata.r_mAdd);
     // Navigate when end of file is reached
     if (!no_EOF) {
         // End of file detected, reset reading
@@ -141,9 +146,13 @@ void populate_fields_all_levels(
         amrex::Print() << "WARNING (waves2amr_ops): end of mode data file "
                           "detected, resetting to beginning of mode data.\n";
         // Read data again, now from a valid timestep
-        no_EOF = wdata.rmodes.get_data(
-            wdata.ntime + wdata.n_offset + ntime_off, wdata.mX, wdata.mY,
-            wdata.mZ, wdata.mFS);
+        no_EOF = wdata.is_ocean
+                     ? wdata.c_rmodes.get_data(
+                           wdata.ntime + wdata.n_offset + ntime_off, wdata.c_mX,
+                           wdata.c_mY, wdata.c_mZ, wdata.c_mFS)
+                     : wdata.r_rmodes.get_data(
+                           wdata.ntime + wdata.n_offset + ntime_off, wdata.r_mX,
+                           wdata.r_mY, wdata.r_mZ, wdata.r_mFS, wdata.r_mAdd);
         // If no valid data is detected at this point, abort
         if (!no_EOF) {
             amrex::Abort(
@@ -155,28 +164,49 @@ void populate_fields_all_levels(
     }
 
     // Convert to spatial data in vectors
-    modes_hosgrid::copy_complex(wdata.n0, wdata.n1, wdata.mFS, wdata.eta_mptr);
-    modes_hosgrid::populate_hos_eta(
-        wdata.rmodes, wdata.plan, wdata.eta_mptr, wdata.sp_eta_vec);
+    if (wdata.is_ocean) {
+        modes_hosgrid::copy_complex(
+            wdata.n0, wdata.n1, wdata.c_mFS, wdata.c_eta_mptr);
+        modes_hosgrid::populate_hos_eta(
+            wdata.c_rmodes, wdata.plan_vector, wdata.c_eta_mptr,
+            wdata.sp_eta_vec);
+    } else {
+        modes_hosgrid::copy_real(
+            wdata.n0, wdata.n1, wdata.r_mFS, wdata.r_eta_mptr);
+        modes_hosgrid::populate_hos_eta(
+            wdata.r_rmodes, wdata.plan_vector, wdata.r_eta_mptr,
+            wdata.sp_eta_vec);
+    }
 
     for (int iht = 0; iht < wdata.indvec.size(); ++iht) {
         // Get sample height
         amrex::Real ht = wdata.hvec[wdata.indvec[iht]];
         // Sample velocity
-        modes_hosgrid::populate_hos_vel(
-            wdata.rmodes, ht, wdata.mX, wdata.mY, wdata.mZ, wdata.plan,
-            wdata.u_mptr, wdata.v_mptr, wdata.w_mptr, wdata.sp_u_vec,
-            wdata.sp_v_vec, wdata.sp_w_vec, iht * wdata.n0 * wdata.n1);
+        if (wdata.is_ocean) {
+            modes_hosgrid::populate_hos_vel(
+                wdata.c_rmodes, ht, wdata.zsl, wdata.c_mX, wdata.c_mY,
+                wdata.c_mZ, wdata.plan_vector, wdata.c_u_mptr, wdata.c_v_mptr,
+                wdata.c_w_mptr, wdata.sp_u_vec, wdata.sp_v_vec, wdata.sp_w_vec,
+                iht * wdata.n0 * wdata.n1);
+        } else {
+            modes_hosgrid::populate_hos_vel(
+                wdata.r_rmodes, ht, wdata.zsl, wdata.r_mX, wdata.r_mY,
+                wdata.r_mZ, wdata.r_mAdd, wdata.plan_vector, wdata.r_u_mptr,
+                wdata.r_v_mptr, wdata.r_w_mptr, wdata.au_mptr, wdata.av_mptr,
+                wdata.aw_mptr, wdata.sp_u_vec, wdata.sp_v_vec, wdata.sp_w_vec,
+                iht * wdata.n0 * wdata.n1);
+        }
     }
 
     // Interpolate to fields (vector of MultiFabs)
     interp_to_mfab::interp_eta_to_levelset_field(
-        wdata.n0, wdata.n1, wdata.dx0, wdata.dx1, wdata.zsl, wdata.sp_eta_vec,
-        lvs_field.vec_ptrs(), geom_all);
-    interp_to_mfab::interp_velocity_to_field(
-        wdata.n0, wdata.n1, wdata.dx0, wdata.dx1, wdata.indvec, wdata.hvec,
-        wdata.sp_u_vec, wdata.sp_v_vec, wdata.sp_w_vec, vel_field.vec_ptrs(),
+        wdata.n0_sp, wdata.n1_sp, wdata.dx0, wdata.dx1, wdata.xlo0, wdata.xlo1,
+        wdata.zsl, wdata.is_ocean, wdata.sp_eta_vec, lvs_field.vec_ptrs(),
         geom_all);
+    interp_to_mfab::interp_velocity_to_field(
+        wdata.n0_sp, wdata.n1_sp, wdata.dx0, wdata.dx1, wdata.xlo0, wdata.xlo1,
+        wdata.is_ocean, wdata.indvec, wdata.hvec, wdata.sp_u_vec,
+        wdata.sp_v_vec, wdata.sp_w_vec, vel_field.vec_ptrs(), geom_all);
 
     // Zero velocity in pure gas cells
     postprocess_velocity_field_liquid(vel_field, lvs_field, geom_all);
@@ -216,10 +246,14 @@ struct ReadInputsOp<W2AWaves>
         }
 
         pp.get("HOS_modes_filename", wdata.modes_file);
+        pp.query("HOS_simulation_is_ocean", wdata.is_ocean);
         pp.query("HOS_init_timestep", wdata.ntime);
         if (!pp.contains("HOS_init_timestep")) {
             pp.query("HOS_init_time", wdata.t_winit);
         }
+        // Check effect !!!
+        pp.query("HOS_domain_offset_x", wdata.xlo0);
+        pp.query("HOS_domain_offset_y", wdata.xlo1);
 
         // Default fftw_plan is deterministic
         std::string fftw_planner_flag{"estimate"};
@@ -238,22 +272,34 @@ struct ReadInputsOp<W2AWaves>
         pp.query("number_interp_above_surface", nh_above);
 
         // Initialize mode reader
-        bool file_exists = wdata.rmodes.initialize(wdata.modes_file);
+        bool file_exists{false};
+        if (wdata.is_ocean) {
+            file_exists = wdata.c_rmodes.initialize(wdata.modes_file, true);
+        } else {
+            file_exists = wdata.r_rmodes.initialize(wdata.modes_file, false);
+        }
 
         // Abort if file does not exist
         if (!file_exists) {
             amrex::Abort(
                 "Waves2AMR ReadInputsOp: modes file requested does not exist");
         }
+        // modify initialize to differentiate between file not existing and file
+        // being wrong type (ocean or NWT)
 
         // Get dt of HOS data
-        wdata.dt_modes = wdata.rmodes.get_dtout();
+        wdata.dt_modes = wdata.is_ocean ? wdata.c_rmodes.get_dtout()
+                                        : wdata.r_rmodes.get_dtout();
 
         // Get initial time and timestep synced
         if (wdata.t_winit > 0.0) {
             // If initial time was specified
             // Get time index near requested time
-            wdata.ntime = wdata.rmodes.time2step(wdata.t_winit, wdata.ntime);
+            wdata.ntime =
+                wdata.is_ocean
+                    ? wdata.c_rmodes.time2step(wdata.t_winit, wdata.ntime)
+                    : wdata.r_rmodes.time2step(wdata.t_winit, wdata.ntime);
+            ;
             // Sync time to time index
             wdata.t_winit = wdata.dt_modes * wdata.ntime;
             // Save first timestep
@@ -266,26 +312,58 @@ struct ReadInputsOp<W2AWaves>
         }
 
         // Initialize variables to store modes
-        int vsize = wdata.rmodes.get_vector_size();
-        double initval = 0.0;
-        wdata.mX.resize(vsize, initval);
-        wdata.mY.resize(vsize, initval);
-        wdata.mZ.resize(vsize, initval);
-        wdata.mFS.resize(vsize, initval);
+        amrex::Real depth{0.0};
+        if (wdata.is_ocean) {
+            int vsize = wdata.c_rmodes.get_vector_size();
+            double initval = 0.0;
+            wdata.c_mX.resize(vsize, initval);
+            wdata.c_mY.resize(vsize, initval);
+            wdata.c_mZ.resize(vsize, initval);
+            wdata.c_mFS.resize(vsize, initval);
 
-        // Get dimensions of data
-        wdata.n0 = wdata.rmodes.get_first_dimension();
-        wdata.n1 = wdata.rmodes.get_second_dimension();
-        // Get resolution
-        wdata.dx0 = wdata.rmodes.get_xlen() / wdata.n0;
-        wdata.dx1 = wdata.rmodes.get_ylen() / wdata.n1;
-        // Get depth
-        const amrex::Real depth = wdata.rmodes.get_depth();
-        // Get dimensional length
-        wdata.dimL = wdata.rmodes.get_L();
-        // Get nominal last timestep of data
-        wdata.n_wstop =
-            (int)((wdata.rmodes.get_Tstop() + 1e-8) / wdata.dt_modes);
+            // Get dimensions of data
+            wdata.n0 = wdata.c_rmodes.get_first_fft_dimension();
+            wdata.n1 = wdata.c_rmodes.get_second_fft_dimension();
+            wdata.n0_sp = wdata.c_rmodes.get_first_spatial_dimension();
+            wdata.n1_sp = wdata.c_rmodes.get_second_spatial_dimension();
+            // Get resolution
+            wdata.dx0 = wdata.c_rmodes.get_xlen() / wdata.n0_sp;
+            wdata.dx1 = wdata.c_rmodes.get_ylen() / wdata.n1_sp;
+            // Get depth
+            depth = wdata.c_rmodes.get_depth();
+            // Get dimensional length
+            wdata.dimL = wdata.c_rmodes.get_L();
+            // Get nominal last timestep of data
+            wdata.n_wstop =
+                (int)((wdata.c_rmodes.get_Tstop() + 1e-8) / wdata.dt_modes);
+        } else {
+            int vsize = wdata.r_rmodes.get_vector_size();
+            int vasize = wdata.r_rmodes.get_addl_vector_size();
+            double initval = 0.0;
+            wdata.r_mX.resize(vsize, initval);
+            wdata.r_mY.resize(vsize, initval);
+            wdata.r_mZ.resize(vsize, initval);
+            wdata.r_mFS.resize(vsize, initval);
+            wdata.r_mAdd.resize(vasize, initval);
+
+            // Get dimensions of data
+            wdata.n0 = wdata.r_rmodes.get_first_fft_dimension();
+            wdata.n1 = wdata.r_rmodes.get_second_fft_dimension();
+            wdata.n2 = wdata.r_rmodes.get_third_dimension();
+            wdata.n0_sp = wdata.r_rmodes.get_first_spatial_dimension();
+            wdata.n1_sp = wdata.r_rmodes.get_second_spatial_dimension();
+            // Get resolution (slightly different for NWT)
+            wdata.dx0 = wdata.r_rmodes.get_xlen() / (wdata.n0_sp - 1);
+            wdata.dx1 =
+                wdata.r_rmodes.get_ylen() / amrex::max(wdata.n1_sp - 1, 1);
+            // Get depth
+            depth = wdata.r_rmodes.get_depth();
+            // Get dimensional length
+            wdata.dimL = wdata.r_rmodes.get_L();
+            // Get nominal last timestep of data
+            wdata.n_wstop =
+                (int)((wdata.r_rmodes.get_Tstop() + 1e-8) / wdata.dt_modes);
+        }
 
         // Check if stop time is exceeded, introduce offset to ntime
         if (wdata.ntime + wdata.n_offset > wdata.n_wstop) {
@@ -306,10 +384,24 @@ struct ReadInputsOp<W2AWaves>
         }
 
         // Allocate pointers for FFTW
-        wdata.eta_mptr = modes_hosgrid::allocate_complex(wdata.n0, wdata.n1);
-        wdata.u_mptr = modes_hosgrid::allocate_complex(wdata.n0, wdata.n1);
-        wdata.v_mptr = modes_hosgrid::allocate_complex(wdata.n0, wdata.n1);
-        wdata.w_mptr = modes_hosgrid::allocate_complex(wdata.n0, wdata.n1);
+        if (wdata.is_ocean) {
+            wdata.c_eta_mptr =
+                modes_hosgrid::allocate_complex(wdata.n0, wdata.n1);
+            wdata.c_u_mptr =
+                modes_hosgrid::allocate_complex(wdata.n0, wdata.n1);
+            wdata.c_v_mptr =
+                modes_hosgrid::allocate_complex(wdata.n0, wdata.n1);
+            wdata.c_w_mptr =
+                modes_hosgrid::allocate_complex(wdata.n0, wdata.n1);
+        } else {
+            wdata.r_eta_mptr = modes_hosgrid::allocate_real(wdata.n0, wdata.n1);
+            wdata.r_u_mptr = modes_hosgrid::allocate_real(wdata.n0, wdata.n1);
+            wdata.r_v_mptr = modes_hosgrid::allocate_real(wdata.n0, wdata.n1);
+            wdata.r_w_mptr = modes_hosgrid::allocate_real(wdata.n0, wdata.n1);
+            wdata.au_mptr = modes_hosgrid::allocate_real(wdata.n0, 1);
+            wdata.av_mptr = modes_hosgrid::allocate_real(wdata.n0, 1);
+            wdata.aw_mptr = modes_hosgrid::allocate_real(wdata.n0, 1);
+        }
 
         // Set up planner flag based on input
         auto plan_f = modes_hosgrid::planner_flags::estimate;
@@ -325,8 +417,14 @@ struct ReadInputsOp<W2AWaves>
                    "specified; defaulting to estimate (FFTW_ESTIMATE).\n";
         }
         // Set up plan for FFTW
-        wdata.plan = modes_hosgrid::plan_ifftw(
-            wdata.n0, wdata.n1, wdata.eta_mptr, plan_f);
+        if (wdata.is_ocean) {
+            wdata.plan_vector.emplace_back(modes_hosgrid::plan_ifftw(
+                wdata.n0, wdata.n1, wdata.c_eta_mptr, plan_f));
+        } else {
+            modes_hosgrid::plan_ifftw_nwt(
+                wdata.n0, wdata.n1, wdata.plan_vector, wdata.r_eta_mptr,
+                plan_f);
+        }
 
         // Create height vector for velocity mode conversion before
         // interpolation, with prob_lo as bottom
@@ -341,9 +439,14 @@ struct ReadInputsOp<W2AWaves>
         }
 
         // Always get modes on every processor for initialization
-        bool no_EOF = wdata.rmodes.get_data(
-            wdata.ntime + wdata.n_offset, wdata.mX, wdata.mY, wdata.mZ,
-            wdata.mFS);
+        bool no_EOF =
+            wdata.is_ocean
+                ? wdata.c_rmodes.get_data(
+                      wdata.ntime + wdata.n_offset, wdata.c_mX, wdata.c_mY,
+                      wdata.c_mZ, wdata.c_mFS)
+                : wdata.r_rmodes.get_data(
+                      wdata.ntime + wdata.n_offset, wdata.r_mX, wdata.r_mY,
+                      wdata.r_mZ, wdata.r_mFS, wdata.r_mAdd);
         if (!no_EOF) {
             // End of file detected, reset reading
             wdata.n_offset = update_offset_timestep(wdata.ntime, wdata.n_winit);
@@ -352,9 +455,14 @@ struct ReadInputsOp<W2AWaves>
                 << "WARNING (waves2amr_ops): end of mode data file "
                    "detected, resetting to beginning of mode data.\n";
             // Read data again, now from a valid timestep
-            no_EOF = wdata.rmodes.get_data(
-                wdata.ntime + wdata.n_offset, wdata.mX, wdata.mY, wdata.mZ,
-                wdata.mFS);
+            no_EOF =
+                wdata.is_ocean
+                    ? wdata.c_rmodes.get_data(
+                          wdata.ntime + wdata.n_offset, wdata.c_mX, wdata.c_mY,
+                          wdata.c_mZ, wdata.c_mFS)
+                    : wdata.r_rmodes.get_data(
+                          wdata.ntime + wdata.n_offset, wdata.r_mX, wdata.r_mY,
+                          wdata.r_mZ, wdata.r_mFS, wdata.r_mAdd);
             // If no valid data is detected at this point, abort
             if (!no_EOF) {
                 amrex::Abort(
@@ -366,25 +474,61 @@ struct ReadInputsOp<W2AWaves>
         }
 
         // Convert modes to spatial data
-        modes_hosgrid::copy_complex(
-            wdata.n0, wdata.n1, wdata.mFS, wdata.eta_mptr);
-        wdata.sp_eta_vec.resize(
-            static_cast<size_t>(wdata.n0) * static_cast<size_t>(wdata.n1), 0.0);
-        modes_hosgrid::populate_hos_eta(
-            wdata.rmodes, wdata.plan, wdata.eta_mptr, wdata.sp_eta_vec);
-        // Mesh is not yet created, so get data at every height
-        const auto n_hts = wdata.hvec.size();
-        wdata.sp_u_vec.resize(static_cast<size_t>(wdata.n0 * wdata.n1) * n_hts);
-        wdata.sp_v_vec.resize(static_cast<size_t>(wdata.n0 * wdata.n1) * n_hts);
-        wdata.sp_w_vec.resize(static_cast<size_t>(wdata.n0 * wdata.n1) * n_hts);
-        for (int iht = 0; iht < static_cast<int>(n_hts); ++iht) {
-            // Get sample height
-            amrex::Real ht = wdata.hvec[iht];
-            // Sample velocity
-            modes_hosgrid::populate_hos_vel(
-                wdata.rmodes, ht, wdata.mX, wdata.mY, wdata.mZ, wdata.plan,
-                wdata.u_mptr, wdata.v_mptr, wdata.w_mptr, wdata.sp_u_vec,
-                wdata.sp_v_vec, wdata.sp_w_vec, iht * wdata.n0 * wdata.n1);
+        if (wdata.is_ocean) {
+            modes_hosgrid::copy_complex(
+                wdata.n0, wdata.n1, wdata.c_mFS, wdata.c_eta_mptr);
+            wdata.sp_eta_vec.resize(
+                static_cast<size_t>(wdata.n0) * static_cast<size_t>(wdata.n1),
+                0.0);
+            modes_hosgrid::populate_hos_eta(
+                wdata.c_rmodes, wdata.plan_vector, wdata.c_eta_mptr,
+                wdata.sp_eta_vec);
+            // Mesh is not yet created, so get data at every height
+            const auto n_hts = wdata.hvec.size();
+            wdata.sp_u_vec.resize(
+                static_cast<size_t>(wdata.n0 * wdata.n1) * n_hts);
+            wdata.sp_v_vec.resize(
+                static_cast<size_t>(wdata.n0 * wdata.n1) * n_hts);
+            wdata.sp_w_vec.resize(
+                static_cast<size_t>(wdata.n0 * wdata.n1) * n_hts);
+            for (int iht = 0; iht < static_cast<int>(n_hts); ++iht) {
+                // Get sample height
+                amrex::Real ht = wdata.hvec[iht];
+                // Sample velocity
+                modes_hosgrid::populate_hos_vel(
+                    wdata.c_rmodes, ht, wdata.zsl, wdata.c_mX, wdata.c_mY,
+                    wdata.c_mZ, wdata.plan_vector, wdata.c_u_mptr,
+                    wdata.c_v_mptr, wdata.c_w_mptr, wdata.sp_u_vec,
+                    wdata.sp_v_vec, wdata.sp_w_vec, iht * wdata.n0 * wdata.n1);
+            }
+        } else {
+            modes_hosgrid::copy_real(
+                wdata.n0, wdata.n1, wdata.r_mFS, wdata.r_eta_mptr);
+            wdata.sp_eta_vec.resize(
+                static_cast<size_t>(wdata.n0) * static_cast<size_t>(wdata.n1),
+                0.0);
+            modes_hosgrid::populate_hos_eta(
+                wdata.r_rmodes, wdata.plan_vector, wdata.r_eta_mptr,
+                wdata.sp_eta_vec);
+            // Mesh is not yet created, so get data at every height
+            const auto n_hts = wdata.hvec.size();
+            wdata.sp_u_vec.resize(
+                static_cast<size_t>(wdata.n0 * wdata.n1) * n_hts);
+            wdata.sp_v_vec.resize(
+                static_cast<size_t>(wdata.n0 * wdata.n1) * n_hts);
+            wdata.sp_w_vec.resize(
+                static_cast<size_t>(wdata.n0 * wdata.n1) * n_hts);
+            for (int iht = 0; iht < static_cast<int>(n_hts); ++iht) {
+                // Get sample height
+                amrex::Real ht = wdata.hvec[iht];
+                // Sample velocity
+                modes_hosgrid::populate_hos_vel(
+                    wdata.r_rmodes, ht, wdata.zsl, wdata.r_mX, wdata.r_mY,
+                    wdata.r_mZ, wdata.r_mAdd, wdata.plan_vector, wdata.r_u_mptr,
+                    wdata.r_v_mptr, wdata.r_w_mptr, wdata.au_mptr,
+                    wdata.av_mptr, wdata.aw_mptr, wdata.sp_u_vec,
+                    wdata.sp_v_vec, wdata.sp_w_vec, iht * wdata.n0 * wdata.n1);
+            }
         }
 
         // Declare fields for HOS
@@ -441,12 +585,13 @@ struct InitDataOp<W2AWaves>
         std::iota(indvec.begin(), indvec.end(), 0);
         // Interpolate to MultiFabs (one level at a time)
         interp_to_mfab::interp_eta_to_levelset_multifab(
-            wdata.n0, wdata.n1, wdata.dx0, wdata.dx1, wdata.zsl,
-            wdata.sp_eta_vec, ow_levelset(level), problo, dx);
+            wdata.n0_sp, wdata.n1_sp, wdata.dx0, wdata.dx1, wdata.xlo0,
+            wdata.xlo1, wdata.zsl, wdata.is_ocean, wdata.sp_eta_vec,
+            ow_levelset(level), problo, dx);
         interp_to_mfab::interp_velocity_to_multifab(
-            wdata.n0, wdata.n1, wdata.dx0, wdata.dx1, indvec, wdata.hvec,
-            wdata.sp_u_vec, wdata.sp_v_vec, wdata.sp_w_vec, ow_velocity(level),
-            problo, dx);
+            wdata.n0_sp, wdata.n1_sp, wdata.dx0, wdata.dx1, wdata.xlo0,
+            wdata.xlo1, wdata.is_ocean, indvec, wdata.hvec, wdata.sp_u_vec,
+            wdata.sp_v_vec, wdata.sp_w_vec, ow_velocity(level), problo, dx);
         // Zero velocity in pure air cells
         postprocess_velocity_mfab_liquid(
             ow_velocity(level), ow_levelset(level), dx);
@@ -547,7 +692,9 @@ struct UpdateTargetFieldsOp<W2AWaves>
         bool read_flag = false;
         // Check if time indicates reading must take place
         int new_ntime =
-            wdata.rmodes.time2step(time + wdata.t_winit, wdata.ntime);
+            wdata.is_ocean
+                ? wdata.c_rmodes.time2step(time + wdata.t_winit, wdata.ntime)
+                : wdata.r_rmodes.time2step(time + wdata.t_winit, wdata.ntime);
         int double_data = evaluate_read_resize(
             wdata.ntime, read_flag, wdata.resize_flag, wdata.t, wdata.t_last,
             new_ntime, wdata.t_winit, wdata.dt_modes, time);

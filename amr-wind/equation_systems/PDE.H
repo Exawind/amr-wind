@@ -167,6 +167,16 @@ public:
 
     void post_solve_actions() override { m_post_solve_op(m_time.new_time()); }
 
+    void improve_explicit_diffusion(const amrex::Real dt) override
+    {
+        if (PDE::has_diffusion) {
+            BL_PROFILE(
+                "amr-wind::" + this->identifier() +
+                "::improve_explicit_diffusion");
+            m_rhs_op.improve_explicit_diff(dt);
+        }
+    }
+
 protected:
     //! CFD simulation controller instance
     CFDSim& m_sim;

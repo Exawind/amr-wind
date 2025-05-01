@@ -4,6 +4,7 @@
 #include "amr-wind/equation_systems/icns/MomentumSource.H"
 #include "amr-wind/core/SimTime.H"
 #include "amr-wind/CFDSim.H"
+#include "amr-wind/utilities/constants.H"
 
 namespace amr_wind::pde::icns {
 
@@ -51,6 +52,12 @@ private:
     int m_sponge_north{1};
     bool m_is_laminar{false};
     bool m_terrain_is_waves{false};
+    bool m_apply_MOSD{false};
+    std::string m_wall_het_model{"none"};
+    amrex::Real m_monin_obukhov_length{constants::LARGE_NUM};
+    amrex::Real m_kappa{0.41};
+    amrex::Real m_gamma_m{5.0};
+    amrex::Real m_beta_m{16.0};
 };
 
 } // namespace amr_wind::pde::icns

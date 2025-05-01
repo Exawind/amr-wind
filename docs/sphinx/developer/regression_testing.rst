@@ -70,13 +70,6 @@ Upon successful build, you will notice CTest has been enabled.
    # Rerun only tests that failed previously
    ctest --rerun-failed --output-on-failure -j 8
 
-.. warning::
-
-   Regression testing capability is only available using the CMake build
-   process. The legacy GNUMakefile process does not support the regression
-   testing capability via CTest. The user must manually run the cases with
-   :program:`amr_wind` and then run :program:`fcompare` to determine issues.
-
 Testing against gold files
 --------------------------
 

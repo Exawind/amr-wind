@@ -63,19 +63,19 @@ To install the required packages on Linux:
 
 .. code-block:: console
 
-    $ sudo apt-get install -y --no-install-recommends graphviz libenchant-2-dev
+    sudo apt-get install -y --no-install-recommends graphviz libenchant-2-dev
 
 and on OSX with homebrew:
 
 .. code-block:: console
 
-    $ brew install doxygen graphviz enchant
+    brew install doxygen graphviz enchant
 
 To install the required python packages:
 
 .. code-block:: console
 
-    $ pip install sphinx sphinx_rtd_theme sphinx_toolbox sphinx_copybutton pyenchant sphinxcontrib-spelling doxysphinx
+    pip install sphinx sphinx_rtd_theme sphinx_toolbox sphinx_copybutton pyenchant sphinxcontrib-spelling doxysphinx
 
 Build
 `````
@@ -84,11 +84,11 @@ Run the following command to build the documentation:
 
 .. code-block:: console
 
-    $ cd build && cmake -DAMR_WIND_ENABLE_DOCUMENTATION:BOOL=ON .. && cmake --build . -t docs
+    cd build && cmake -DAMR_WIND_ENABLE_DOCUMENTATION:BOOL=ON .. && cmake --build . -t docs
 
 .. tip::
 
-   On OSX, before running the cmake, you may need to :code:`$ export PYENCHANT_LIBRARY_PATH=/opt/homebrew/lib/libenchant-2.dylib`
+   On OSX, before running the cmake, you may need to :code:`export PYENCHANT_LIBRARY_PATH=/opt/homebrew/lib/libenchant-2.dylib`
 
 The resulting documentation is in `docs/spinx/html`
 directory. Documentation can also be generated in other formats,

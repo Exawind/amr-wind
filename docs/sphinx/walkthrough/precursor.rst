@@ -59,9 +59,9 @@ a scratch directory as the active directory during a simulation run. In that con
 Please consult the user manual of your cluster to design such a script properly. 
 
 Here are a few tips for submitting an AMR-Wind run. If you used a Spack environment to compile
-amr-wind, it is easiest to reference the amr-wind executable by activating Spack, activating the environment, and then using
+AMR-Wind, it is easiest to reference the amr-wind executable by activating Spack, activating the environment, and then using
 the command ``spack load amr-wind`` to have the correct executable available without needing to specify its full path. Finally,
-the syntax of the amr-wind command looks like
+the syntax of the AMR-Wind command looks like
 
 .. code-block:: console
 

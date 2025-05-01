@@ -40,6 +40,6 @@ Restarting AMR-Wind with OpenFAST Turbines
 #. Change your ``time.start_time`` to the restart time (optional)
 #. Set ``io.restart_file`` to your AMR-Wind checkpoint directory
 #. Set ``Actuator.T1.openfast_sim_mode = restart`` for each turbine (i.e. T1 in this example)
-#. Set ``Actuator.T1.openfast_restart_file`` as the OpenFAST checkpoint file. Note that this must be a relative path from your amr-wind case root, and the ".chkp" must be removed from the filename
+#. Set ``Actuator.T1.openfast_restart_file`` as the OpenFAST checkpoint file. Note that this must be a relative path from your AMR-Wind case root, and the ".chkp" must be removed from the filename
 #. Set ``Actuator.T1.openfast_start_time`` to the restart time and double check that ``Actuator.T1.openfast_stop_time`` is ok
 #. Re-submit case as above

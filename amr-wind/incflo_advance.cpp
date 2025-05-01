@@ -14,10 +14,7 @@ using namespace amrex;
 void incflo::pre_advance_stage1()
 {
     BL_PROFILE("amr-wind::incflo::pre_advance_stage1");
-
-    // Compute time step size
-    bool explicit_diffusion = (m_diff_type == DiffusionType::Explicit);
-    ComputeDt(explicit_diffusion);
+    advance_time();
 }
 
 void incflo::pre_advance_stage2()
@@ -297,19 +294,6 @@ void incflo::ApplyPredictor(
                                    : amr_wind::FieldState::NPH;
     icns().pre_advection_actions(fstate_preadv);
 
-    // For scalars only first
-    // *************************************************************************************
-    // if ( m_use_godunov) Compute the explicit advective terms
-    //                     R_u^(n+1/2), R_s^(n+1/2) and R_t^(n+1/2)
-    // if (!m_use_godunov) Compute the explicit advective terms
-    //                     R_u^n      , R_s^n       and R_t^n
-    // *************************************************************************************
-    // TODO: Advection computation for scalar equations have not been adjusted
-    // for mesh mapping
-    for (auto& seqn : scalar_eqns()) {
-        seqn->compute_advection_term(amr_wind::FieldState::Old);
-    }
-
     // *************************************************************************************
     // Update density first
     // *************************************************************************************
@@ -323,6 +307,9 @@ void incflo::ApplyPredictor(
     // updated density at `n+1/2` to be computed before other scalars use it
     // when computing their source terms.
     for (auto& eqn : scalar_eqns()) {
+        // Compute explicit advection
+        eqn->compute_advection_term(amr_wind::FieldState::Old);
+
         // Compute (recompute for Godunov) the scalar forcing terms
         eqn->compute_source_term(amr_wind::FieldState::NPH);
 
@@ -341,17 +328,14 @@ void incflo::ApplyPredictor(
             // Post-processing actions after a PDE solve
         } else if (m_diff_type == DiffusionType::Explicit && m_use_godunov) {
             // explicit RK2
-            std::unique_ptr<amr_wind::ScratchField> diff_old =
+            auto diff_old =
                 m_repo.create_scratch_field(1, 0, amr_wind::FieldLoc::CELL);
             auto& diff_new =
                 eqn->fields().diff_term.state(amr_wind::FieldState::New);
             amr_wind::field_ops::copy(*diff_old, diff_new, 0, 0, 1, 0);
             eqn->compute_diffusion_term(amr_wind::FieldState::New);
-            amrex::Real dto2 = 0.5 * m_time.delta_t();
-            amr_wind::field_ops::saxpy(
-                eqn->fields().field, -dto2, *diff_old, 0, 0, 1, 0);
-            amr_wind::field_ops::saxpy(
-                eqn->fields().field, +dto2, diff_new, 0, 0, 1, 0);
+            amr_wind::field_ops::saxpy(diff_new, -1.0, *diff_old, 0, 0, 1, 0);
+            eqn->improve_explicit_diffusion(m_time.delta_t());
         }
         eqn->post_solve_actions();
 
@@ -395,19 +379,15 @@ void incflo::ApplyPredictor(
         icns().solve(dt_diff);
     } else if (m_diff_type == DiffusionType::Explicit && m_use_godunov) {
         // explicit RK2
-        std::unique_ptr<amr_wind::ScratchField> diff_old =
-            m_repo.create_scratch_field(
-                AMREX_SPACEDIM, 0, amr_wind::FieldLoc::CELL);
-
+        auto diff_old = m_repo.create_scratch_field(
+            AMREX_SPACEDIM, 0, amr_wind::FieldLoc::CELL);
         auto& diff_new =
             icns().fields().diff_term.state(amr_wind::FieldState::New);
         amr_wind::field_ops::copy(*diff_old, diff_new, 0, 0, AMREX_SPACEDIM, 0);
         icns().compute_diffusion_term(amr_wind::FieldState::New);
-        amrex::Real dto2 = 0.5 * m_time.delta_t();
         amr_wind::field_ops::saxpy(
-            icns().fields().field, -dto2, *diff_old, 0, 0, AMREX_SPACEDIM, 0);
-        amr_wind::field_ops::saxpy(
-            icns().fields().field, +dto2, diff_new, 0, 0, AMREX_SPACEDIM, 0);
+            diff_new, -1.0, *diff_old, 0, 0, AMREX_SPACEDIM, 0);
+        icns().improve_explicit_diffusion(m_time.delta_t());
     }
     icns().post_solve_actions();
 

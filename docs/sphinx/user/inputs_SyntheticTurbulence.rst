@@ -29,43 +29,43 @@ This section is for setting turbulence injection parameters.
   
    The type of profile to use. Options are ConstValue, LinearProfile, and PowerLawProfile.
    
-   The following inputs are used only for PowerLawProfile.
+The following inputs are used only for PowerLawProfile.
 
-  .. input_param:: SynthTurb.zref
+.. input_param:: SynthTurb.zref
 
-     **type:** Real, required
-  
-     The default reference height at the center of the turbulence grid.
+   **type:** Real, required
 
-  .. input_param:: SynthTurb.shear_exponent
-  
-     **type:** Real, required
-  
-     The shear exponent value.
-   
-  .. input_param:: SynthTurb.uref
+   The default reference height at the center of the turbulence grid.
 
-     **type:** Real list, required
-  
-     The reference value of the velocity vector used to propagate the plane.
+.. input_param:: SynthTurb.shear_exponent
 
-  .. input_param:: SynthTurb.zoffset
- 
-     **type:** Real, optional, default = 
-  
-     The offset in the z direction between the turbulence box and the simulation.
+   **type:** Real, required
 
-  .. input_param:: SynthTurb.umin
+   The shear exponent value.
 
-     **type:** Real, required
-  
-     The minimum velocity cutoff in the mean power law profile.
+.. input_param:: SynthTurb.uref
 
-  .. input_param:: SynthTurb.umax
+   **type:** Real list, required
 
-     **type:** Real, required
-  
-     The maximum velocity cutoff in the mean power law profile.
+   The reference value of the velocity vector used to propagate the plane.
+
+.. input_param:: SynthTurb.zoffset
+
+   **type:** Real, optional, default = 
+
+   The offset in the z direction between the turbulence box and the simulation.
+
+.. input_param:: SynthTurb.umin
+
+   **type:** Real, required
+
+   The minimum velocity cutoff in the mean power law profile.
+
+.. input_param:: SynthTurb.umax
+
+   **type:** Real, required
+
+   The maximum velocity cutoff in the mean power law profile.
 
 .. input_param:: SynthTurb.gauss_smearing_factor 
 

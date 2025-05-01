@@ -1,5 +1,5 @@
-Citations for AMR-Wind
-======================
+How to Cite AMR-Wind
+====================
 
 The following journal articles (`AMR-Wind reference <https://doi.org/10.1002/we.70010>`_, `ExaWind reference <https://doi.org/10.1002/we.2886>`_) should be cited when referencing AMR-Wind::
 

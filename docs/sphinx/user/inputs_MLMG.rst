@@ -4,7 +4,7 @@ Section: MLMG options
 ~~~~~~~~~~~~~~~~~~~~~
 
 This section specifies the Multi-Level Multi-Grid (MLMG) options for each type
-of linear solve. There are three types of linear solves performed in amr-wind
+of linear solve. There are three types of linear solves performed in AMR-Wind
 "diffusion" which is a cell based Helmholtz like solve to advance the momentum
 equations, "nodal_proj" is a node based pressure projection, and "mac_proj"
 projects velocities to faces. The options are the same for each and the prefix

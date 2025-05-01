@@ -336,9 +336,8 @@ void FastIface::fast_restart_turbine(FastTurbine& fi)
 #if OPENFAST_VERSION_MAJOR == 4
     fast_func(
         FAST_ExtInfw_Restart, &fi.tid_local, chkpt_file.begin(), &abort_lev,
-        &fi.dt_fast, &m_inflow_type, &fi.num_blades, &fi.num_blade_elem,
-        &fi.num_tower_elem, &fi.time_index, &fi.to_cfd, &fi.from_cfd, &fi.to_sc,
-        &fi.from_sc);
+        &fi.dt_fast, &fi.num_blades, &fi.num_blade_elem, &fi.num_tower_elem,
+        &fi.time_index, &fi.to_cfd, &fi.from_cfd, &fi.to_sc, &fi.from_sc);
 #else
     fast_func(
         FAST_OpFM_Restart, &fi.tid_local, chkpt_file.begin(), &abort_lev,

@@ -60,9 +60,6 @@ public:
     // Evolve solution to final time through repeated calls to Advance()
     void Evolve();
 
-    // Evolve solution in a multiblock framework by desired number of steps
-    void Evolve_MultiBlock(int multiblock_step, int max_block_step);
-
     // Tag cells for refinement
     void
     ErrorEst(int lev, amrex::TagBoxArray& tags, amrex::Real time, int ngrow)
@@ -135,9 +132,9 @@ public:
     amr_wind::Field& pressure() const { return m_repo.get_field("p"); }
     amr_wind::Field& grad_p() const { return m_repo.get_field("gp"); }
 
-    // for cuda
-    void ComputeDt(bool explicit_diffusion);
-    void ComputePrescribeDt();
+    void compute_dt();
+    void compute_prescribe_dt();
+    void advance_time() { m_time.advance_time(); }
 
     void ApplyPredictor(
         const bool incremental_projection = false,

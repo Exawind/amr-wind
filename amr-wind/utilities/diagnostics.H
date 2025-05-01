@@ -17,7 +17,7 @@ void get_field_extrema(
     const amr_wind::Field& field,
     const int comp,
     const int ncomp,
-    const bool include_ghosts = true);
+    const int nghost);
 
 void get_field_extrema(
     amrex::Real& field_max_val,
@@ -27,7 +27,7 @@ void get_field_extrema(
     const amrex::Real mask_val,
     const int comp,
     const int ncomp,
-    const bool include_ghosts = true);
+    const int nghost);
 
 amrex::Real get_vel_max(
     const amrex::MultiFab& vel,
