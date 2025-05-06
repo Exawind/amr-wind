@@ -1,0 +1,14 @@
+.. meta::9a112b6a3b7f0bfa1264342f879409a9ccf679da5ce7bb43615e2b7c7721ec2a193ff7fe6004cc45b6a3200e349a29da1e141096f316e5c6199595d3a93ab60a
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/actuator/turbine/turbine_types.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/wind\_energy/actuator/turbine/turbine\_types.H File Reference
+==========================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: turbine__types_8_h.html

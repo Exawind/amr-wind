@@ -1,0 +1,14 @@
+.. meta::e0f868e40ccdde2cee3872f9330ac2d97d3aedfdf344d3b43994704e09b7a6f12ccda5b667210684e2783841f4a5ea4764d6079b74e0f1d0b129b54ee53da721
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::udf::ConstValue Class Reference
+
+ConstValue Class Reference
+==========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1udf_1_1_const_value.html

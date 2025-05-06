@@ -1,0 +1,14 @@
+.. meta::b8adaf51b3a14b4f06720a62d9286dd0c49177ec06c09e09fdd78bae2ed34ddeb1c909a6a9c415628165e214fb8456d7e7543b681d6c79b73ac71593be215916
+
+:orphan:
+
+.. title:: AMR-Wind API: Shear Stress Wall Models
+
+Shear Stress Wall Models
+========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: group__shear__stress.html

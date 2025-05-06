@@ -1,0 +1,14 @@
+.. meta::af46609f500c6471ddc3547c58482a3ab7d91b4ca4a1d539fc1258e4606ed45ed0575fabd31f36ce0dad1882c5229d010043d7cc73c561e73e6c90c765f0eab0
+
+:orphan:
+
+.. title:: AMR-Wind API: Member List
+
+Member List
+===========
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_gradient_mag_refinement-members.html

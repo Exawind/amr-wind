@@ -1,0 +1,14 @@
+.. meta::905ad3bc4615ff45cb4517fd8bd39037cd4c6d0a258e5ea4ebe185951d520ab35f0d5108917a29a6ae8eca21f50d5002783c6c98b72dc1073d34f6d758009cf8
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/turbulence/turb_utils.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/turbulence/turb\_utils.cpp File Reference
+======================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: turb__utils_8cpp.html

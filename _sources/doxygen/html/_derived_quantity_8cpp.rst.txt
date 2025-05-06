@@ -1,0 +1,14 @@
+.. meta::6dec44c67bf836999c8962ea020b452b7f99330b44074cc8636bd5b7f7bbc3d694760615d4a572d71259a9860ed1a00133992d89c949f88f0d593107424ff24c
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/DerivedQuantity.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/DerivedQuantity.cpp File Reference
+=========================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _derived_quantity_8cpp.html

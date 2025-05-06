@@ -1,0 +1,14 @@
+.. meta::685b39be3530cd60d8a887cae8d913a1e432aba474fc2ebfd356a09601ff3f830e0359f7c32b41a9e962cd9fbefa075c2a9b255c99e766357f733147cb8b5d70
+
+:orphan:
+
+.. title:: AMR-Wind API: Member List
+
+Member List
+===========
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_third_moment_averaging-members.html

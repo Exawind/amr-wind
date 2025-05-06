@@ -1,0 +1,14 @@
+.. meta::4c1dd6a8d92ea50bdfabd9032f7572d8720f29c0c7037b8e994bf83206a81f4132f99476f29ed079697691835699d56ec2cdf4f2774b59e97a24f2e4a9d69bba
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/tke/source_terms/KransAxell.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/equation\_systems/tke/source\_terms/KransAxell.H Source File
+=========================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _krans_axell_8_h_source.html

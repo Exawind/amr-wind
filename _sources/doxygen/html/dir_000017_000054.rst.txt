@@ -1,0 +1,14 @@
+.. meta::bf2e77971b2843bae7200b75719b5afc9951213d77af339ebf1ee4547767cb06d90eacd4d7243a92d6dd86ecee081207894c2dc6bebe2273ba9e13a6b3a8e978
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems -&gt; wind_energy Relation
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/equation\_systems -&gt; wind\_energy Relation
+==========================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: dir_000017_000054.html

@@ -1,0 +1,14 @@
+.. meta::64c5148a9f99348e4e6d1db264a07c6ee0a2e215b45ace9df3186d2a05a954e2faecd2cde03f146fa0853f847f471fb11019668b9fac40392de3d0d6f7311e49
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::terraindrag Namespace Reference
+
+terraindrag Namespace Reference
+===============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: namespaceamr__wind_1_1terraindrag.html
