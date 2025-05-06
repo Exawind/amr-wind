@@ -66,20 +66,24 @@ void iblank_node_to_mask_vof(
                         }
                     }
                 }
-                // Check nodes neighboring node for being near solid
+                // Check nodes neighboring node for being near solid or overset
                 bool near_solid = false;
+                bool near_overset_boundary = false;
                 for (int ii = i - 1; ii < i + 2; ii++) {
                     for (int jj = j - 1; jj < j + 2; jj++) {
                         for (int kk = k - 1; kk < k + 2; kk++) {
                             near_solid = ibarrs[nbx](ii, jj, kk) == 0
                                              ? true
                                              : near_solid;
+                            near_overset_boundary = ibarrs[nbx](ii, jj, kk) == 1
+                                                        ? true
+                                                        : near_overset_boundary;
                         }
                     }
                 }
-                // Do mask -1 cells near interface
+                // Do mask -1 cells near interface and overset boundary
                 if (ibarrs[nbx](i, j, k) == -1 &&
-                    (near_interface && !near_solid)) {
+                    (near_overset_boundary && near_interface && !near_solid)) {
                     marrs[nbx](i, j, k) = 1;
                 }
             });
@@ -119,20 +123,26 @@ void prepare_mask_cell_for_mac(FieldRepo& repo)
                     // Check cells neighboring node for being near interface
                     bool near_interface = amr_wind::multiphase::interface_band(
                         i, j, k, vofarrs[nbx], 1, band_tol);
-                    // Check neighboring cells for being near solid
+                    // Check neighboring cells for being near solid or overset
                     bool near_solid = false;
+                    bool near_overset_boundary = false;
                     for (int ii = i - 1; ii < i + 2; ii++) {
                         for (int jj = j - 1; jj < j + 2; jj++) {
                             for (int kk = k - 1; kk < k + 2; kk++) {
                                 near_solid = ibarrs[nbx](ii, jj, kk) == 0
                                                  ? true
                                                  : near_solid;
+                                near_overset_boundary =
+                                    ibarrs[nbx](ii, jj, kk) == 1
+                                        ? true
+                                        : near_overset_boundary;
                             }
                         }
                     }
                     // Do mask -1 cells near interface
                     if (ibarrs[nbx](i, j, k) == -1 &&
-                        (near_interface && !near_solid)) {
+                        (near_overset_boundary && near_interface &&
+                         !near_solid)) {
                         marrs[nbx](i, j, k) = 1;
                     }
                 });
