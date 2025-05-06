@@ -108,7 +108,7 @@ as initial conditions and discretization options.
 
 .. input_param:: incflo.diffusion_type
 
-   **type:** Integer, optional, default = 2
+   **type:** Integer, optional, default = 1
 
    Determines how the diffusion term is handled when updating the momentum equations. 
    A value of 0 is explicit diffusion and all diffusion terms are moved to the right hand side 
@@ -123,13 +123,15 @@ as initial conditions and discretization options.
    When present, this parameter contains list of sections to be read with
    specific post-postprocessing actions. Currently, the code supports
    :ref:`Sampling <inputs_sampling>`, :ref:`KineticEnergy <inputs_ke>`,
-   :ref:`Enstrophy <inputs_enst>` and :ref:`Averaging <inputs_averaging>`
+   :ref:`Enstrophy <inputs_enst>` and :ref:`Averaging <inputs_averaging>`.
+   Post-processing routines have a shared set of output parameters,
+   which are detailed :ref:`here <inputs_post_processing>`.
 
    ::
 
      incflo.post_processing     = sampling ke enst
      sampling.type              = Sampling
-     sampling.output_frequency  = 5
+     sampling.output_interval   = 5
      sampling.labels            = line1 line2
      sampling.fields            = velocity
      sampling.line1.type        = LineSampler
@@ -141,7 +143,7 @@ as initial conditions and discretization options.
      sampling.line2.start       = 500.0 500.0 10.0
      sampling.line2.end         = 500.0 500.0 210.0
      ke.type                    = KineticEnergy
-     ke.output_frequency        = 2
+     ke.output_interval         = 2
 
    In the above example, the code will read the parameters with keyword
    ``sampling`` to initialize user-defined probes.

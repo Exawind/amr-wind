@@ -3,28 +3,14 @@
 Section: Sampling
 ~~~~~~~~~~~~~~~~~
 
-This section controls data-sampling (post-processing) actions supported within
-AMR-wind. Note that while the input parameters use the keyword ``sampling``, the
-actual keyword is determined by the labels provided to
-:input_param:`incflo.post_processing`. So for example, if
-``incflo.post_processing = my_sampling``, then the options must be prefixed with
-``my_sampling.``.
-
-.. input_param:: sampling.output_frequency
-
-   **type:** Integer, optional, default = 100
-
-   Specify the output frequency (in timesteps) when data sampling is performed
-   and output to disk.
-
-.. input_param:: sampling.output_delay
-
-   **type:** Integer, optional, default = 0
-
-   Specify the output delay (in timesteps) when data sampling and output will begin
-   during a simulation. E.g., a delay of 100 will wait until the hundredth timestep to
-   check if, according to the output frequency, sampling should be performed and
-   output to disk.
+This section controls data-sampling actions supported within
+AMR-Wind. The input parameters below use the label ``sampling`` as an example,
+as if this was provided to :input_param:`incflo.post_processing` in the input file.
+The actual type of post-processing for a given label is determined by the keyword
+provided to the ``type`` argument, such as ``LineSampler`` or ``PlaneSampler``.
+Examples are provided for each type of sampler. For more information on specifying
+when sampled data is output to a file, see the :ref:`post-processing
+inputs <inputs_post_processing>`
 
 .. input_param:: sampling.output_format
 
