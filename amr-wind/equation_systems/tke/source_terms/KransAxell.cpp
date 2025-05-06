@@ -3,7 +3,9 @@
 #include "amr-wind/equation_systems/tke/source_terms/KransAxell.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/turbulence/TurbulenceModel.H"
+#include "amr-wind/wind_energy/MOData.H"
 #include "amr-wind/utilities/linear_interpolation.H"
+#include "amr-wind/utilities/constants.H"
 namespace amr_wind::pde::tke {
 
 KransAxell::KransAxell(const CFDSim& sim)
@@ -50,6 +52,10 @@ KransAxell::KransAxell(const CFDSim& sim)
     } else {
         amrex::Abort("Cannot find 1-D RANS profile file " + m_1d_rans);
     }
+    pp.query("wall_het_model", m_wall_het_model);
+    pp.query("monin_obukhov_length", m_monin_obukhov_length);
+    pp.query("mo_gamma_m", m_gamma_m);
+    pp.query("mo_beta_m", m_beta_m);
     {
         amrex::ParmParse pp_incflow("incflo");
         pp_incflow.queryarr("gravity", m_gravity);
@@ -57,7 +63,6 @@ KransAxell::KransAxell(const CFDSim& sim)
 
     amrex::ParmParse pp_drag("DragForcing");
     pp_drag.query("sponge_strength", m_sponge_strength);
-    pp_drag.query("sponge_density", m_sponge_density);
     pp_drag.query("sponge_distance_west", m_sponge_distance_west);
     pp_drag.query("sponge_distance_east", m_sponge_distance_east);
     pp_drag.query("sponge_distance_south", m_sponge_distance_south);
@@ -94,9 +99,8 @@ void KransAxell::operator()(
     const auto& dt = m_time.delta_t();
     const amrex::Real heat_flux = m_heat_flux;
     const amrex::Real Cmu = m_Cmu;
-    const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
     const amrex::Real kappa = m_kappa;
-    const amrex::Real z0 = m_z0;
+    amrex::Real z0 = m_z0;
     const bool has_terrain =
         this->m_sim.repo().int_field_exists("terrain_blank");
     const amrex::Real sponge_start = m_meso_start;
@@ -105,6 +109,11 @@ void KransAxell::operator()(
     const auto* tke_values_d = m_tke_values_d.data();
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
         m_gravity[0], m_gravity[1], m_gravity[2]};
+    amrex::Real psi_m = 0.0;
+    if (m_wall_het_model == "mol") {
+        psi_m = MOData::calc_psi_m(
+            1.5 * dx[2] / m_monin_obukhov_length, m_beta_m, m_gamma_m);
+    }
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         amrex::Real bcforcing = 0;
         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
@@ -112,7 +121,8 @@ void KransAxell::operator()(
             const amrex::Real ux = vel(i, j, k + 1, 0);
             const amrex::Real uy = vel(i, j, k + 1, 1);
             const amrex::Real m = std::sqrt(ux * ux + uy * uy);
-            const amrex::Real ustar = m * kappa / std::log(3 * z / z0);
+            const amrex::Real ustar =
+                m * kappa / (std::log(3 * z / z0) - psi_m);
             const amrex::Real T0 = ref_theta_arr(i, j, k);
             const amrex::Real hf = std::abs(gravity[2]) / T0 * heat_flux;
             const amrex::Real rans_b = std::pow(
@@ -133,31 +143,38 @@ void KransAxell::operator()(
             1.0 / dt * (tke_arr(i, j, k) - ref_tke);
         dissip_arr(i, j, k) = std::pow(Cmu, 3) *
                               std::pow(tke_arr(i, j, k), 1.5) /
-                              (tlscale_arr(i, j, k) + tiny);
+                              (tlscale_arr(i, j, k) + amr_wind::constants::EPS);
         src_term(i, j, k) +=
             shear_prod_arr(i, j, k) + buoy_prod_arr(i, j, k) -
             dissip_arr(i, j, k) -
             (1 - static_cast<int>(has_terrain)) * (sponge_forcing - bcforcing);
     });
     if (has_terrain) {
+        const amrex::Real z0_min = 1e-4;
         const auto* const m_terrain_blank =
             &this->m_sim.repo().get_int_field("terrain_blank");
         const auto* const m_terrain_drag =
             &this->m_sim.repo().get_int_field("terrain_drag");
         auto* const m_terrain_height =
             &this->m_sim.repo().get_field("terrain_height");
+        auto* const m_terrainz0 = &this->m_sim.repo().get_field("terrainz0");
         const auto& blank_arr = (*m_terrain_blank)(lev).const_array(mfi);
         const auto& drag_arr = (*m_terrain_drag)(lev).const_array(mfi);
         const auto& terrain_height = (*m_terrain_height)(lev).const_array(mfi);
+        const auto& terrainz0 = (*m_terrainz0)(lev).const_array(mfi);
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                const amrex::Real cell_z0 =
+                    drag_arr(i, j, k) * std::max(terrainz0(i, j, k), z0_min) +
+                    (1 - drag_arr(i, j, k)) * z0;
                 amrex::Real terrainforcing = 0;
                 amrex::Real dragforcing = 0;
                 amrex::Real ux = vel(i, j, k + 1, 0);
                 amrex::Real uy = vel(i, j, k + 1, 1);
                 amrex::Real z = 0.5 * dx[2];
                 amrex::Real m = std::sqrt(ux * ux + uy * uy);
-                const amrex::Real ustar = m * kappa / std::log(3.0 * z / z0);
+                const amrex::Real ustar =
+                    m * kappa / (std::log(3 * z / cell_z0) - psi_m);
                 const amrex::Real T0 = ref_theta_arr(i, j, k);
                 const amrex::Real hf = std::abs(gravity[2]) / T0 * heat_flux;
                 const amrex::Real rans_b = std::pow(
@@ -166,12 +183,16 @@ void KransAxell::operator()(
                 terrainforcing =
                     (ustar * ustar / (Cmu * Cmu) + rans_b - tke_arr(i, j, k)) /
                     dt;
+                amrex::Real bcforcing = 0;
+                if (k == 0) {
+                    bcforcing = (1 - blank_arr(i, j, k)) * terrainforcing;
+                }
                 ux = vel(i, j, k, 0);
                 uy = vel(i, j, k, 1);
                 const amrex::Real uz = vel(i, j, k, 2);
                 m = std::sqrt(ux * ux + uy * uy + uz * uz);
-                const amrex::Real Cd =
-                    std::min(10 / (dx[2] * m + tiny), 100 / dx[2]);
+                const amrex::Real Cd = std::min(
+                    10 / (dx[2] * m + amr_wind::constants::EPS), 100 / dx[2]);
                 dragforcing = -Cd * m * tke_arr(i, j, k, 0);
                 z = std::max(
                     problo[2] + (k + 0.5) * dx[2] - terrain_height(i, j, k),
@@ -188,15 +209,15 @@ void KransAxell::operator()(
                 }
                 const amrex::Real sponge_forcing =
                     1.0 / dt * (tke_arr(i, j, k) - ref_tke);
-                src_term(i, j, k) +=
+                src_term(i, j, k) =
+                    (1 - blank_arr(i, j, k)) * src_term(i, j, k) +
                     drag_arr(i, j, k) * terrainforcing +
                     blank_arr(i, j, k) * dragforcing -
-                    static_cast<int>(has_terrain) * sponge_forcing;
-                ;
+                    static_cast<int>(has_terrain) *
+                        (sponge_forcing - bcforcing);
             });
         if (m_horizontal_sponge) {
             const amrex::Real sponge_strength = m_sponge_strength;
-            const amrex::Real sponge_density = m_sponge_density;
             const amrex::Real start_east = probhi[0] - m_sponge_distance_east;
             const amrex::Real start_west = problo[0] - m_sponge_distance_west;
             const amrex::Real start_north = probhi[1] - m_sponge_distance_north;
@@ -220,6 +241,8 @@ void KransAxell::operator()(
                         (start_west - x) / (start_west - problo[0]);
                     xi_start = sponge_west * std::max(xi_start, 0.0);
                     xi_end = sponge_east * std::max(xi_end, 0.0);
+                    xi_start /= (xi_start + amr_wind::constants::EPS);
+                    xi_end /= (xi_end + amr_wind::constants::EPS);
                     xstart_damping =
                         sponge_west * sponge_strength * xi_start * xi_start;
                     xend_damping =
@@ -230,6 +253,8 @@ void KransAxell::operator()(
                         (start_south - y) / (start_south - problo[1]);
                     yi_start = sponge_south * std::max(yi_start, 0.0);
                     yi_end = sponge_north * std::max(yi_end, 0.0);
+                    yi_start /= (yi_start + amr_wind::constants::EPS);
+                    yi_end /= (yi_end + amr_wind::constants::EPS);
                     ystart_damping = sponge_strength * yi_start * yi_start;
                     yend_damping = sponge_strength * yi_end * yi_end;
                     const amrex::Real ref_tke =
@@ -238,10 +263,14 @@ void KransAxell::operator()(
                                   wind_heights_d, wind_heights_d + vsize,
                                   tke_values_d, z)
                             : tke_arr(i, j, k, 0);
-                    src_term(i, j, k, 0) -=
+                    const amrex::Real damping_sum =
                         (xstart_damping + xend_damping + ystart_damping +
-                         yend_damping) *
-                        (tke_arr(i, j, k) - sponge_density * ref_tke);
+                         yend_damping + amr_wind::constants::EPS);
+                    const amrex::Real sponge_forcing =
+                        (xstart_damping + xend_damping + ystart_damping +
+                         yend_damping) /
+                        (damping_sum * dt) * (tke_arr(i, j, k) - ref_tke);
+                    src_term(i, j, k, 0) -= sponge_forcing;
                 });
         }
     }

@@ -21,4 +21,3 @@ Theory Manual
 
 .. include:: include/turbine_models.rst
 
-=======

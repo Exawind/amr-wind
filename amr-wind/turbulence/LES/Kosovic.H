@@ -4,6 +4,7 @@
 #include <string>
 #include "amr-wind/turbulence/TurbModelBase.H"
 #include "amr-wind/core/FieldRepo.H"
+#include "amr-wind/utilities/constants.H"
 
 namespace amr_wind::turbulence {
 
@@ -57,7 +58,7 @@ private:
     amrex::Real m_surfaceRANSExp{2};
     amrex::Real m_LESTurnOff{1e15};
     bool m_writeTerms{false};
-    amrex::Real m_refMOL{-1e30};
+    amrex::Real m_refMOL{constants::LOW_NUM};
     const Field& m_vel;
     const Field& m_rho;
     Field& m_Nij;
