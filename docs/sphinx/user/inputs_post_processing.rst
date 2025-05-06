@@ -13,18 +13,9 @@ actual keyword is determined by the labels provided to
 ``incflo.post_processing = my_postproc``, then the options must be prefixed with
 ``my_postproc.``.
 
-.. input_param:: incflo.post_processing
-
-   **type:** String, multiple
-
-   Specify the labels of the post-processing instances for the simulation.
-   The names of the labels need not be related to the type of post-processing;
-   the kind of post-processing routine is specified as the ``type`` under the
-   designated label.
-
 .. input_param:: postproc.type
 
-   **type:** String, required
+   **type:** String, optional, default = Sampling
 
    Specify the type of post-processing routine to apply to this label.
 

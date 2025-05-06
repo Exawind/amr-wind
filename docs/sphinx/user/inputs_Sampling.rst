@@ -6,9 +6,7 @@ Section: Sampling
 This section controls data-sampling actions supported within
 AMR-Wind. The input parameters below use the label ``sampling`` as an example,
 as if this was provided to :input_param:`incflo.post_processing` in the input file.
-The actual type of post-processing for a given label is determined by the keyword
-provided to the ``type`` argument, such as ``LineSampler`` or ``PlaneSampler``.
-Examples are provided for each type of sampler. For more information on specifying
+For more information on specifying
 when sampled data is output to a file, see the :ref:`post-processing
 inputs <inputs_post_processing>`
 

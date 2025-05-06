@@ -145,6 +145,9 @@ as initial conditions and discretization options.
      ke.type                    = KineticEnergy
      ke.output_interval         = 2
 
-   In the above example, the code will read the parameters with keyword
+   In the above example, the code will read the parameters with the keyword
    ``sampling`` to initialize user-defined probes.
+   The names of the ``post_processing`` labels need not be related to the type of post-processing;
+   the kind of post-processing routine is specified as the ``type`` under the
+   designated label.
    
