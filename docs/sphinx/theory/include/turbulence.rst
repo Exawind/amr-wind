@@ -163,4 +163,7 @@ is the atmospheric stability function. Currently, the implementation for the sta
 The implementation of the non-linear model is split into two parts. The subgrid-scale viscosity term is directly used 
 within the AMR-Wind diffusion framework. The last two terms in :math:`M_{ij}` are added as source-terms in the momentum equation. 
 
+- **Multiphase Variant**
 
+The non-linear model can also be used for multiphase flows. However, the user has to change the model name in input file to 
+``turbulence.model = MultiPhaseKosovic`` instead of ``turbulence.model= Kosovic``. 

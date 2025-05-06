@@ -51,19 +51,12 @@ private:
     amrex::Real m_C1{2.1};
     amrex::Real m_C2{2.1};
     amrex::Real m_Sk{0.5};
-    bool m_surfaceRANS{false};
-    amrex::Real m_surfaceFactor{0};
-    amrex::Real m_switchLoc{24};
-    amrex::Real m_surfaceRANSExp{2};
-    amrex::Real m_LESTurnOff{1e15};
     bool m_writeTerms{false};
-    amrex::Real m_refMOL{-1e30};
     amrex::Vector<amrex::Real> m_gravity{0.0, 0.0, -9.81};
     const Field& m_vel;
     const Field& m_rho;
     Field& m_Nij;
     Field& m_divNij;
-    Field& m_density_prod;
 };
 
 } // namespace amr_wind::turbulence
