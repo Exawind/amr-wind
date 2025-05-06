@@ -25,6 +25,8 @@ void SimTime::parse_parameters()
     pp.query("cfl", m_max_cfl);
     pp.query("verbose", m_verbose);
     pp.query("regrid_interval", m_regrid_interval);
+    pp.query("force_regrid_on_restart", m_regrid_restart);
+    pp.query("regrid_restart_startlevel", m_regrid_restart_startlevel);
     pp.query("plot_interval", m_plt_interval);
     pp.query("plot_time_interval", m_plt_t_interval);
     pp.query("plot_delay", m_plt_delay);
@@ -315,10 +317,12 @@ bool SimTime::continue_simulation() const
 
 bool SimTime::do_regrid() const
 {
-    return (
-        (m_regrid_interval > 0) &&
-        ((m_time_index - m_regrid_start_index) > 0) &&
-        ((m_time_index - m_regrid_start_index) % m_regrid_interval == 0));
+    bool do_reg =
+        ((m_regrid_interval > 0) &&
+         ((m_time_index - m_regrid_start_index) > 0) &&
+         ((m_time_index - m_regrid_start_index) % m_regrid_interval == 0));
+
+    return do_reg;
 }
 
 bool SimTime::write_plot_file() const
