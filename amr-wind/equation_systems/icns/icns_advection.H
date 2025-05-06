@@ -65,6 +65,7 @@ private:
     bool m_variable_density{false};
     bool m_mesh_mapping{false};
     bool m_is_anelastic{false};
+    bool m_verbose_output_fields{false};
     amrex::Real m_rho_0{1.0};
 };
 

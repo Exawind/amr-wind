@@ -37,6 +37,47 @@ amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM> get_projection_bc(
     return r;
 }
 
+void mask_face_velocity(
+    const amrex::iMultiFab& mask_cell,
+    const amrex::MultiFab& cc_vel,
+    amrex::Array<amrex::MultiFab*, ICNS::ndim> fc_vel)
+{
+
+    const auto& marrs = mask_cell.const_arrays();
+    const auto& vel = cc_vel.const_arrays();
+    auto umac = (*fc_vel[0]).arrays();
+    auto vmac = (*fc_vel[1]).arrays();
+    auto wmac = (*fc_vel[2]).arrays();
+    amrex::ParallelFor(
+        mask_cell, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            // If both neighboring cells are masked, use interpolated value
+            if (marrs[nbx](i - 1, j, k) + marrs[nbx](i, j, k) == 0) {
+                umac[nbx](i, j, k) =
+                    0.5 * (vel[nbx](i - 1, j, k, 0) + vel[nbx](i, j, k, 0));
+            }
+            if (marrs[nbx](i, j, k) + marrs[nbx](i + 1, j, k) == 0) {
+                umac[nbx](i + 1, j, k) =
+                    0.5 * (vel[nbx](i, j, k, 0) + vel[nbx](i + 1, j, k, 0));
+            }
+            if (marrs[nbx](i, j - 1, k) + marrs[nbx](i, j, k) == 0) {
+                vmac[nbx](i, j, k) =
+                    0.5 * (vel[nbx](i, j - 1, k, 1) + vel[nbx](i, j, k, 1));
+            }
+            if (marrs[nbx](i, j, k) + marrs[nbx](i, j + 1, k) == 0) {
+                vmac[nbx](i, j + 1, k) =
+                    0.5 * (vel[nbx](i, j, k, 1) + vel[nbx](i, j + 1, k, 1));
+            }
+            if (marrs[nbx](i, j, k - 1) + marrs[nbx](i, j, k) == 0) {
+                wmac[nbx](i, j, k) =
+                    0.5 * (vel[nbx](i, j, k - 1, 2) + vel[nbx](i, j, k, 2));
+            }
+            if (marrs[nbx](i, j, k) + marrs[nbx](i, j, k + 1) == 0) {
+                wmac[nbx](i, j, k + 1) =
+                    0.5 * (vel[nbx](i, j, k, 2) + vel[nbx](i, j, k + 1, 2));
+            }
+        });
+}
+
 } // namespace
 
 MacProjOp::MacProjOp(
@@ -56,11 +97,16 @@ MacProjOp::MacProjOp(
 {
     amrex::ParmParse pp("incflo");
     pp.query("density", m_rho_0);
-#ifdef AMR_WIND_USE_FFT
-    {
-        amrex::ParmParse pp("mac_proj");
-        pp.query("use_fft", m_use_fft);
+    amrex::ParmParse pp_proj("mac_proj");
+    pp_proj.query("verbose_fields", m_verbose_output_fields);
+    if (m_verbose_output_fields && !m_has_overset) {
+        amrex::Print()
+            << "WARNING: verbose_fields for the MAC projection were requested, "
+               "but the simulation is not overset. The phi_before_mac and "
+               "phi_after_mac fields will not be updated.\n";
     }
+#ifdef AMR_WIND_USE_FFT
+    pp_proj.query("use_fft", m_use_fft);
 #endif
 }
 
@@ -307,6 +353,13 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
         mac_vec[lev][0] = &u_mac(lev);
         mac_vec[lev][1] = &v_mac(lev);
         mac_vec[lev][2] = &w_mac(lev);
+        if (m_has_overset) {
+            // Where masked, replace modified face velocities with interpolated
+            // overset values
+            mask_face_velocity(
+                m_repo.get_int_field("mask_cell")(lev),
+                m_repo.get_field("velocity")(lev), mac_vec[lev]);
+        }
         if (m_is_anelastic) {
             for (int idim = 0; idim < ICNS::ndim; ++idim) {
                 amrex::Multiply(
@@ -336,12 +389,25 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
     if (m_has_overset) {
         auto phif = m_repo.create_scratch_field(1, 1, amr_wind::FieldLoc::CELL);
         for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
-            amrex::average_node_to_cellcenter(
-                (*phif)(lev), 0, pressure(lev), 0, 1);
+            (*phif)(lev).setVal(0.);
         }
 
+        if (m_verbose_output_fields) {
+            field_ops::copy(
+                m_repo.get_field("phi_before_mac"), *phif, 0, 0, 1, 0);
+            field_ops::copy(
+                m_repo.get_field("u_before_mac"), u_mac, 0, 0, 1, 0);
+            field_ops::copy(
+                m_repo.get_field("v_before_mac"), v_mac, 0, 0, 1, 0);
+            field_ops::copy(
+                m_repo.get_field("w_before_mac"), w_mac, 0, 0, 1, 0);
+        }
         m_mac_proj->project(
             phif->vec_ptrs(), m_options.rel_tol, m_options.abs_tol);
+        if (m_verbose_output_fields) {
+            field_ops::copy(
+                m_repo.get_field("phi_after_mac"), *phif, 0, 0, 1, 0);
+        }
 
     } else {
 #ifdef AMR_WIND_USE_FFT
@@ -350,6 +416,14 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
         } else
 #endif
         {
+            if (m_verbose_output_fields) {
+                field_ops::copy(
+                    m_repo.get_field("u_before_mac"), u_mac, 0, 0, 1, 0);
+                field_ops::copy(
+                    m_repo.get_field("v_before_mac"), v_mac, 0, 0, 1, 0);
+                field_ops::copy(
+                    m_repo.get_field("w_before_mac"), w_mac, 0, 0, 1, 0);
+            }
             m_mac_proj->project(m_options.rel_tol, m_options.abs_tol);
         }
     }
