@@ -36,9 +36,9 @@ void PostProcessManager::pre_init_actions()
     std::set<std::string> registered_types;
 
     for (const auto& label : pnames) {
-        std::string ptype = "";
+        std::string ptype = "Sampling";
         amrex::ParmParse pp1(label);
-        pp1.get("type", ptype);
+        pp1.query("type", ptype);
 
         perform_checks(registered_types, ptype);
         m_post.emplace_back(PostProcessBase::create(ptype, m_sim, label));
