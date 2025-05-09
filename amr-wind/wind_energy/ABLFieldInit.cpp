@@ -37,6 +37,7 @@ void ABLFieldInit::initialize_from_inputfile()
                 m_wind_heights.push_back(value1);
                 m_u_values.push_back(value2);
                 m_v_values.push_back(value3);
+              //m_theta_values.push_back(value4);
                 m_tke_values.push_back(value5);
             }
         }
