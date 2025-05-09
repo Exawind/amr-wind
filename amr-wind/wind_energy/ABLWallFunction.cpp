@@ -6,6 +6,7 @@
 #include "amr-wind/diffusion/diffusion.H"
 #include "amr-wind/wind_energy/ShearStress.H"
 #include "amr-wind/wind_energy/MOData.H"
+#include "amr-wind/utilities/linear_interpolation.H"
 
 #include <cmath>
 
@@ -46,9 +47,38 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
 
     if (pp.contains("surface_temp_flux")) {
         pp.query("surface_temp_flux", m_mo.surf_temp_flux);
+        amrex::Print() 
+            << "ABLWallFunction: Surface temperature flux mode is selected."
+            << std::endl;
+    } else if (pp.contains("surface_temp_timetable")) {
+        pp.query("surface_temp_timetable", m_surf_temp_timetable);
+        m_tempflux = false;
+        m_temp_table = true;
+        amrex::Print() 
+            << "ABLWallFunction: Surface temperature time table mode is selected."
+            << std::endl;
+        if (!m_surf_temp_timetable.empty()) {
+            std::ifstream ifh(m_surf_temp_timetable, std::ios::in);
+            if (!ifh.good()) {
+                amrex::Abort(
+                    "Cannot find surface_temp_timetable file: " +
+                    m_surf_temp_timetable);
+            }
+            amrex::Real data_time;
+            amrex::Real data_value;
+            ifh.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            while (ifh >> data_time) {
+                ifh >> data_value;
+                m_surf_temp_time.push_back(data_time);
+                m_surf_temp_value.push_back(data_value);
+            }
+        }
     } else if (pp.contains("surface_temp_rate")) {
         m_tempflux = false;
         pp.get("surface_temp_rate", m_surf_temp_rate);
+        amrex::Print() 
+            << "ABLWallFunction: Surface temperature rate mode is selected."
+            << std::endl;
         if (pp.contains("surface_temp_init")) {
             pp.get("surface_temp_init", m_surf_temp_init);
         } else {
@@ -107,12 +137,19 @@ void ABLWallFunction::update_umean(
     const auto& time = m_sim.time();
 
     if (!m_tempflux) {
-        m_mo.surf_temp =
-            m_surf_temp_init +
-            m_surf_temp_rate *
-                amrex::max<amrex::Real>(
-                    time.current_time() - m_surf_temp_rate_tstart, 0.0) /
-                3600.0;
+        if (!m_temp_table) {
+            m_mo.surf_temp =
+                m_surf_temp_init +
+                m_surf_temp_rate *
+                    amrex::max<amrex::Real>(
+                        time.current_time() - m_surf_temp_rate_tstart, 0.0) /
+                    3600.0;
+        } else {
+            m_mo.surf_temp = amr_wind::interp::linear(m_surf_temp_time,
+                                                      m_surf_temp_value, 
+                                                      time.current_time());
+        }
+        amrex::Print() << "Current surface temperature: " << m_mo.surf_temp << std::endl;
     }
 
     if (m_inflow_outflow) {

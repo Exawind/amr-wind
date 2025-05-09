@@ -53,7 +53,13 @@ private:
 
     amrex::Vector<amrex::Real> m_gravity{0.0, 0.0, -9.81};
 
+    //! Ability to read in a table of surface temperature versus time.
+    std::string m_surf_temp_timetable;
+    amrex::Vector<amrex::Real> m_surf_temp_time;
+    amrex::Vector<amrex::Real> m_surf_temp_value;
+
     bool m_tempflux{true};
+    bool m_temp_table{false};
     amrex::Real m_surf_temp_rate{0.0};
     amrex::Real m_surf_temp_rate_tstart{0.0};
     amrex::Real m_surf_temp_init{300.0};
