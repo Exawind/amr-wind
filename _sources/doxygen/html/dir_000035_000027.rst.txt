@@ -1,0 +1,14 @@
+.. meta::8ac7076a06127233dcec123aa734fdfe2c970ea61690f8314d49c10b6bcc4d81b48bd602f7bd639c6fe160de29297ed063df16165f25fcf2aac14eda6aabaa3b
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling -&gt; ncutils Relation
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling -&gt; ncutils Relation
+======================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: dir_000035_000027.html

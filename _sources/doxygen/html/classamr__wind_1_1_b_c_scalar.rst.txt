@@ -1,0 +1,14 @@
+.. meta::ce4ef7b7911b9b218948a17fd8b69d5c32823801bfd5c9e7edf91e7da56540131c13272c0bfe6d3bac44ceadc81b620e8b9a46bb7ca482978652d038dc96a9a1
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::BCScalar Class Reference
+
+BCScalar Class Reference
+========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_b_c_scalar.html

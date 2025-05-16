@@ -1,0 +1,14 @@
+.. meta::028f658679f85227833f5c274fe7085bc229b526d4fc95e3fb75f5d139e37de882b546639f49d6d73de18458a38d4e2021f341b0b4e7cbda7160d1337cbea879
+
+:orphan:
+
+.. title:: AMR-Wind API: Class Members - Typedefs
+
+Class Members - Typedefs
+========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: functions_type.html

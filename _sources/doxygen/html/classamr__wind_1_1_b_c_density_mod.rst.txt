@@ -1,0 +1,14 @@
+.. meta::a462b5b346cf4e95aff7a8d49aac34c22cd5a1d03a9f82090264234869c7bbe41b57c0659e572d6ac426d21e16f33cae49a73a5c47c5b64b54e9737ab5e43748
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::BCDensityMod Class Reference
+
+BCDensityMod Class Reference
+============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_b_c_density_mod.html

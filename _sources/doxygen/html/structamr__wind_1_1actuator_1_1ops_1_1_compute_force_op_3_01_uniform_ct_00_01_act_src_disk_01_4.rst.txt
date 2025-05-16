@@ -1,0 +1,14 @@
+.. meta::aeaefcb05485a9299401399aa92f3d00a53f4ac7b3a4f4c9dcabaf0f93a1e3d6bd7efee6a87ab8532035bf658d971b96a513040027fc712f9d26019f9d026e5d
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::ComputeForceOp&lt; UniformCt, ActSrcDisk &gt; Struct Reference
+
+ComputeForceOp&lt; UniformCt, ActSrcDisk &gt; Struct Reference
+==============================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1ops_1_1_compute_force_op_3_01_uniform_ct_00_01_act_src_disk_01_4.html

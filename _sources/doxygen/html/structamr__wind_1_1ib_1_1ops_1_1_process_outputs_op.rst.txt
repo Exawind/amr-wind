@@ -1,0 +1,14 @@
+.. meta::3ee3d5cc375fec79f55217a56e8ff151ba30b00284a0865eff0f5b9d2c36e76f182fd1bb101b00aec0391c3c214b768083225cbfd14e1b5007ed2f555fb61639
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ib::ops::ProcessOutputsOp&lt; GeomTrait, typename &gt; Struct Template Reference
+
+ProcessOutputsOp&lt; GeomTrait, typename &gt; Struct Template Reference
+=======================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ib_1_1ops_1_1_process_outputs_op.html

@@ -1,0 +1,14 @@
+.. meta::c22ee71402f89e88816eb8b5fefd51f808a9803db2e4540c6b57a62e5f5beb84c68f20e94b5ac85f0b0a28e7524814c34e9870c4990cf3526c9b5aa4b6fcb054
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::Physics Class Reference
+
+Physics Class Reference
+=======================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_physics.html
