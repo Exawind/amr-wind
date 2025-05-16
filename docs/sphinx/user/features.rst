@@ -1,11 +1,11 @@
 .. _capabilities:
 
 
-Capabilities and Roadmap
-========================
+Capabilities
+============
 
 This section documents a non-exhaustive list of current AMR-Wind
-capabilities and roadmap for future capabilities.
+capabilities.
 
 .. tip::
 
@@ -16,10 +16,6 @@ capabilities and roadmap for future capabilities.
    has significantly contributed to implementing or improving specific
    capability that was used for that publication.
 
-
-Capabilities
-------------
-
 .. tip::
 
    The capabilities are linked to the relevant input file references
@@ -29,7 +25,7 @@ Capabilities
 
 
 Methods and models
-~~~~~~~~~~~~~~~~~~
+------------------
 
 * Numerical methods
 
@@ -72,13 +68,13 @@ Methods and models
    * Two phase transport (separate coefficients for each material) [:ref:`inp <inputs_transport>`]
 
 Flow physics
-~~~~~~~~~~~~
+------------
 
 * Wind energy physics
 
    * Atmospheric boundary layer (ABL): various stability states (stable, unstable, neutral), precursor simulations with inflow boundary planes for wind farm simulations, anelastic formulation, mesoscale forcing, geostrophic forcing, Coriolis forcing, Monin-Obukhov similarity theory, gravity forcing, gravity wave damping [:ref:`inp <inputs_abl>`]
 
-   * Actuator turbine representations: Joukowsky disks, uniform disks, actuator line [:ref:`inp <inputs_actuator>`]
+   * Actuator turbine representations: Joukowsky disks, uniform disks, actuator line [:ref:`doc <turbine_models>`, :ref:`inp <inputs_actuator>`]
 
    * Coupling with OpenFAST
 
@@ -98,7 +94,7 @@ Flow physics
 
 * Ocean wave forcing (for multiphase flows) [:ref:`inp <inputs_ocean_waves>`]
 
-   * Wave types: linear (monochromatic), Stokes (second to fifth order), irregular (input by modes files from HOS-Ocean)
+   * Wave types: linear (monochromatic), Stokes (second to fifth order), irregular (input by modes files from HOS-Ocean or HOS-NWT)
 
    * Relaxation zones force wave profile to generate waves at lower x boundary or force toward quiescent flat interface at upper x boundary. Wave profile can also be enforced (instead of numerical beach) at upper x boundary for periodic simulations.
 
@@ -144,10 +140,12 @@ Flow physics
 
    * Derived fields and field operators such as vorticity, q-criterion, strain-rates, gradients, divergence, Laplacian [:ref:`inp <inputs_io_derived>`]
 
-   * in-situ post-processing with Ascent
+   * In-situ post-processing with Ascent
+
+   * Compression for field files [:ref:`doc <compression>`, :ref:`inp <inputs_io>`]
 
 High performance computing
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------
 
 * Highly parallelized and performance portable
 
@@ -166,21 +164,4 @@ High performance computing
    * native AMReX solvers such as MLMG [:ref:`inp <inputs_mlmg>`]
 
    * hypre
-
-
-Roadmap
--------
-
-The roadmap is an evolving, living document and does not purport to
-track every future capability. It is not a promise of future
-capabilities. The main use case is to inform users of
-potential upcoming new capabilities.
-
-Current development
-~~~~~~~~~~~~~~~~~~~
-
-* Inflow-outflow BCs to enable coupling amr-wind to ERF mesoscale modeling software
-
-* Temporal and spatial varying MMC forcing
-
 

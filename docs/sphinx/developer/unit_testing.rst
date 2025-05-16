@@ -15,11 +15,6 @@ unit tests, the unit test scaffolding facilities available within AMR-Wind unit
 testing infrastructure, and a brief overview of the process of creating new unit
 tests.
 
-.. warning::
-
-   The legacy GNUMakefile system does not support building unit tests. User must
-   use the CMake build process to be able to run unit tests.
-
 Running unit tests
 ------------------
 
