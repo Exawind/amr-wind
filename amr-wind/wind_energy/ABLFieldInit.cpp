@@ -221,8 +221,6 @@ void ABLFieldInit::operator()(
                 velocity(i, j, k, 1) += interp::linear_impl(th, vv, z, idx);
             });
     } else if (m_initial_wind_profile) {
-        //! Compute Terrain
-        //! Reading the Terrain Coordinates from  file
         amrex::Vector<amrex::Real> xterrain;
         amrex::Vector<amrex::Real> yterrain;
         amrex::Vector<amrex::Real> zterrain;
@@ -249,7 +247,6 @@ void ABLFieldInit::operator()(
         const auto* xterrain_ptr = d_xterrain.data();
         const auto* yterrain_ptr = d_yterrain.data();
         const auto* zterrain_ptr = d_zterrain.data();
-        //! RANS 1-D profile
         const amrex::Real* windh = m_windht_d.data();
         const amrex::Real* uu = m_prof_u_d.data();
         const amrex::Real* vv = m_prof_v_d.data();
@@ -423,8 +420,6 @@ void ABLFieldInit::init_tke(
     const auto& tke_arrs = tke_mf.arrays();
     const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
     if (m_initial_wind_profile) {
-        //! Compute Terrain
-        //! Reading the Terrain Coordinates from  file
         amrex::Vector<amrex::Real> xterrain;
         amrex::Vector<amrex::Real> yterrain;
         amrex::Vector<amrex::Real> zterrain;
@@ -451,13 +446,9 @@ void ABLFieldInit::init_tke(
         const auto* xterrain_ptr = d_xterrain.data();
         const auto* yterrain_ptr = d_yterrain.data();
         const auto* zterrain_ptr = d_zterrain.data();
-        //! RANS 1-D profile
         const amrex::Real* windh = m_windht_d.data();
-        // const amrex::Real* uu = m_prof_u_d.data();
-        // const amrex::Real* vv = m_prof_v_d.data();
         const bool terrain_aligned_profile = m_terrain_aligned_profile;
         const int nwvals = static_cast<int>(m_wind_heights.size());
-        // const amrex::Real* windh = m_windht_d.data();
         const amrex::Real* tke_data = m_prof_tke_d.data();
         amrex::ParallelFor(
             tke_mf,
