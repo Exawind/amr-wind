@@ -8,6 +8,7 @@
 #include "AMReX_Gpu.H"
 #include "AMReX_ParmParse.H"
 #include "amr-wind/utilities/linear_interpolation.H"
+#include "amr-wind/utilities/io_utils.H"
 namespace amr_wind {
 
 ABLFieldInit::ABLFieldInit()
@@ -25,6 +26,9 @@ void ABLFieldInit::initialize_from_inputfile()
     amrex::ParmParse pp_abl("ABL");
     //! Check for wind profile
     pp_abl.query("initial_wind_profile", m_initial_wind_profile);
+    pp_abl.query("terrain_aligned_profile", m_terrain_aligned_profile);
+    amrex::ParmParse pp_terrain("TerrainDrag");
+    pp_terrain.query("terrain_file", m_terrain_file);
     if (m_initial_wind_profile) {
         pp_abl.query("rans_1dprofile_file", m_1d_rans);
         if (!m_1d_rans.empty()) {
@@ -217,15 +221,52 @@ void ABLFieldInit::operator()(
                 velocity(i, j, k, 1) += interp::linear_impl(th, vv, z, idx);
             });
     } else if (m_initial_wind_profile) {
+        //! Compute Terrain
+        //! Reading the Terrain Coordinates from  file
+        amrex::Vector<amrex::Real> xterrain;
+        amrex::Vector<amrex::Real> yterrain;
+        amrex::Vector<amrex::Real> zterrain;
+        if (m_terrain_aligned_profile) {
+            ioutils::read_flat_grid_file(
+                m_terrain_file, xterrain, yterrain, zterrain);
+        }
+        const auto xterrain_size = xterrain.size();
+        const auto yterrain_size = yterrain.size();
+        const auto zterrain_size = zterrain.size();
+        amrex::Gpu::DeviceVector<amrex::Real> d_xterrain(xterrain_size);
+        amrex::Gpu::DeviceVector<amrex::Real> d_yterrain(yterrain_size);
+        amrex::Gpu::DeviceVector<amrex::Real> d_zterrain(zterrain_size);
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, xterrain.begin(), xterrain.end(),
+            d_xterrain.begin());
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, yterrain.begin(), yterrain.end(),
+            d_yterrain.begin());
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, zterrain.begin(), zterrain.end(),
+            d_zterrain.begin());
+
+        const auto* xterrain_ptr = d_xterrain.data();
+        const auto* yterrain_ptr = d_yterrain.data();
+        const auto* zterrain_ptr = d_zterrain.data();
         //! RANS 1-D profile
         const amrex::Real* windh = m_windht_d.data();
         const amrex::Real* uu = m_prof_u_d.data();
         const amrex::Real* vv = m_prof_v_d.data();
-
+        const bool terrain_aligned_profile = m_terrain_aligned_profile;
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-
+                amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                amrex::Real y = problo[1] + (j + 0.5) * dx[1];
+                amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+                const amrex::Real terrainHt =
+                    terrain_aligned_profile
+                        ? interp::bilinear(
+                              xterrain_ptr, xterrain_ptr + xterrain_size,
+                              yterrain_ptr, yterrain_ptr + yterrain_size,
+                              zterrain_ptr, x, y)
+                        : 0.0;
+                z = std::max(0.5 * dx[2], z - terrainHt);
                 density(i, j, k) = rho_init;
                 const amrex::Real theta =
                     (ntvals > 0) ? interp::linear(th, th + ntvals, tv, z)
@@ -382,13 +423,56 @@ void ABLFieldInit::init_tke(
     const auto& tke_arrs = tke_mf.arrays();
     const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
     if (m_initial_wind_profile) {
-        const int nwvals = static_cast<int>(m_wind_heights.size());
+        //! Compute Terrain
+        //! Reading the Terrain Coordinates from  file
+        amrex::Vector<amrex::Real> xterrain;
+        amrex::Vector<amrex::Real> yterrain;
+        amrex::Vector<amrex::Real> zterrain;
+        if (m_terrain_aligned_profile) {
+            ioutils::read_flat_grid_file(
+                m_terrain_file, xterrain, yterrain, zterrain);
+        }
+        const auto xterrain_size = xterrain.size();
+        const auto yterrain_size = yterrain.size();
+        const auto zterrain_size = zterrain.size();
+        amrex::Gpu::DeviceVector<amrex::Real> d_xterrain(xterrain_size);
+        amrex::Gpu::DeviceVector<amrex::Real> d_yterrain(yterrain_size);
+        amrex::Gpu::DeviceVector<amrex::Real> d_zterrain(zterrain_size);
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, xterrain.begin(), xterrain.end(),
+            d_xterrain.begin());
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, yterrain.begin(), yterrain.end(),
+            d_yterrain.begin());
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, zterrain.begin(), zterrain.end(),
+            d_zterrain.begin());
+
+        const auto* xterrain_ptr = d_xterrain.data();
+        const auto* yterrain_ptr = d_yterrain.data();
+        const auto* zterrain_ptr = d_zterrain.data();
+        //! RANS 1-D profile
         const amrex::Real* windh = m_windht_d.data();
+        // const amrex::Real* uu = m_prof_u_d.data();
+        // const amrex::Real* vv = m_prof_v_d.data();
+        const bool terrain_aligned_profile = m_terrain_aligned_profile;
+        const int nwvals = static_cast<int>(m_wind_heights.size());
+        // const amrex::Real* windh = m_windht_d.data();
         const amrex::Real* tke_data = m_prof_tke_d.data();
         amrex::ParallelFor(
             tke_mf,
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+                amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                amrex::Real y = problo[1] + (j + 0.5) * dx[1];
+                amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+                const amrex::Real terrainHt =
+                    terrain_aligned_profile
+                        ? interp::bilinear(
+                              xterrain_ptr, xterrain_ptr + xterrain_size,
+                              yterrain_ptr, yterrain_ptr + yterrain_size,
+                              zterrain_ptr, x, y)
+                        : 0.0;
+                z = std::max(0.5 * dx[2], z - terrainHt);
                 const amrex::Real tke_prof =
                     (nwvals > 0)
                         ? interp::linear(windh, windh + nwvals, tke_data, z)
