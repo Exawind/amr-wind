@@ -47,7 +47,7 @@ void ABLFieldInit::initialize_from_inputfile()
         amrex::Vector<amrex::Real> xterrain;
         amrex::Vector<amrex::Real> yterrain;
         amrex::Vector<amrex::Real> zterrain;
-       if (m_terrain_aligned_profile) {
+        if (m_terrain_aligned_profile) {
             ioutils::read_flat_grid_file(
                 m_terrain_file, xterrain, yterrain, zterrain);
         }
