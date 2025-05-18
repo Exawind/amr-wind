@@ -237,6 +237,4 @@ This section is for setting atmospheric boundary layer parameters.
 
    **type:** Boolean, optional, default= false
 
-   Used in conjunction with immersed forcing for terrain. This option allows the user to align the wind, temperature and turbulence 
-   profiles to be aligned with the terrain.
-
+   Used in conjunction with immersed forcing for terrain. This option allows the user to align the wind, temperature and turbulence profiles to be aligned with the terrain.
