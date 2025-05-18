@@ -70,6 +70,9 @@ private:
     bool m_initial_wind_profile{false};
     bool m_terrain_aligned_profile{false};
     std::string m_terrain_file{"terrain.amrwind"};
+    amrex::Gpu::DeviceVector<amrex::Real> m_xterrain;
+    amrex::Gpu::DeviceVector<amrex::Real> m_yterrain;
+    amrex::Gpu::DeviceVector<amrex::Real> m_zterrain;
     //! File name for 1-D data file
     std::string m_1d_rans;
     amrex::Vector<amrex::Real> m_wind_heights;

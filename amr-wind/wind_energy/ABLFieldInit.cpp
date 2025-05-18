@@ -44,6 +44,28 @@ void ABLFieldInit::initialize_from_inputfile()
                 m_tke_values.push_back(value5);
             }
         }
+        amrex::Vector<amrex::Real> xterrain;
+        amrex::Vector<amrex::Real> yterrain;
+        amrex::Vector<amrex::Real> zterrain;
+       if (m_terrain_aligned_profile) {
+            ioutils::read_flat_grid_file(
+                m_terrain_file, xterrain, yterrain, zterrain);
+        }
+        const auto xterrain_size = xterrain.size();
+        const auto yterrain_size = yterrain.size();
+        const auto zterrain_size = zterrain.size();
+        m_xterrain.resize(xterrain_size);
+        m_yterrain.resize(yterrain_size);
+        m_zterrain.resize(zterrain_size);
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, xterrain.begin(), xterrain.end(),
+            m_xterrain.begin());
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, yterrain.begin(), yterrain.end(),
+            m_yterrain.begin());
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, zterrain.begin(), zterrain.end(),
+            m_zterrain.begin());
     }
     // Temperature variation as a function of height
     pp_abl.getarr("temperature_heights", m_theta_heights);
@@ -221,32 +243,11 @@ void ABLFieldInit::operator()(
                 velocity(i, j, k, 1) += interp::linear_impl(th, vv, z, idx);
             });
     } else if (m_initial_wind_profile) {
-        amrex::Vector<amrex::Real> xterrain;
-        amrex::Vector<amrex::Real> yterrain;
-        amrex::Vector<amrex::Real> zterrain;
-        if (m_terrain_aligned_profile) {
-            ioutils::read_flat_grid_file(
-                m_terrain_file, xterrain, yterrain, zterrain);
-        }
-        const auto xterrain_size = xterrain.size();
-        const auto yterrain_size = yterrain.size();
-        const auto zterrain_size = zterrain.size();
-        amrex::Gpu::DeviceVector<amrex::Real> d_xterrain(xterrain_size);
-        amrex::Gpu::DeviceVector<amrex::Real> d_yterrain(yterrain_size);
-        amrex::Gpu::DeviceVector<amrex::Real> d_zterrain(zterrain_size);
-        amrex::Gpu::copy(
-            amrex::Gpu::hostToDevice, xterrain.begin(), xterrain.end(),
-            d_xterrain.begin());
-        amrex::Gpu::copy(
-            amrex::Gpu::hostToDevice, yterrain.begin(), yterrain.end(),
-            d_yterrain.begin());
-        amrex::Gpu::copy(
-            amrex::Gpu::hostToDevice, zterrain.begin(), zterrain.end(),
-            d_zterrain.begin());
-
-        const auto* xterrain_ptr = d_xterrain.data();
-        const auto* yterrain_ptr = d_yterrain.data();
-        const auto* zterrain_ptr = d_zterrain.data();
+        const auto* xterrain_ptr = m_xterrain.data();
+        const auto* yterrain_ptr = m_yterrain.data();
+        const auto* zterrain_ptr = m_zterrain.data();
+        const auto xterrain_size = m_xterrain.size();
+        const auto yterrain_size = m_yterrain.size();
         const amrex::Real* windh = m_windht_d.data();
         const amrex::Real* uu = m_prof_u_d.data();
         const amrex::Real* vv = m_prof_v_d.data();
@@ -420,36 +421,15 @@ void ABLFieldInit::init_tke(
     const auto& tke_arrs = tke_mf.arrays();
     const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
     if (m_initial_wind_profile) {
-        amrex::Vector<amrex::Real> xterrain;
-        amrex::Vector<amrex::Real> yterrain;
-        amrex::Vector<amrex::Real> zterrain;
-        if (m_terrain_aligned_profile) {
-            ioutils::read_flat_grid_file(
-                m_terrain_file, xterrain, yterrain, zterrain);
-        }
-        const auto xterrain_size = xterrain.size();
-        const auto yterrain_size = yterrain.size();
-        const auto zterrain_size = zterrain.size();
-        amrex::Gpu::DeviceVector<amrex::Real> d_xterrain(xterrain_size);
-        amrex::Gpu::DeviceVector<amrex::Real> d_yterrain(yterrain_size);
-        amrex::Gpu::DeviceVector<amrex::Real> d_zterrain(zterrain_size);
-        amrex::Gpu::copy(
-            amrex::Gpu::hostToDevice, xterrain.begin(), xterrain.end(),
-            d_xterrain.begin());
-        amrex::Gpu::copy(
-            amrex::Gpu::hostToDevice, yterrain.begin(), yterrain.end(),
-            d_yterrain.begin());
-        amrex::Gpu::copy(
-            amrex::Gpu::hostToDevice, zterrain.begin(), zterrain.end(),
-            d_zterrain.begin());
-
-        const auto* xterrain_ptr = d_xterrain.data();
-        const auto* yterrain_ptr = d_yterrain.data();
-        const auto* zterrain_ptr = d_zterrain.data();
+        const auto* xterrain_ptr = m_xterrain.data();
+        const auto* yterrain_ptr = m_yterrain.data();
+        const auto* zterrain_ptr = m_zterrain.data();
         const amrex::Real* windh = m_windht_d.data();
         const bool terrain_aligned_profile = m_terrain_aligned_profile;
         const int nwvals = static_cast<int>(m_wind_heights.size());
         const amrex::Real* tke_data = m_prof_tke_d.data();
+        const auto xterrain_size = m_xterrain.size();
+        const auto yterrain_size = m_yterrain.size();
         amrex::ParallelFor(
             tke_mf,
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
