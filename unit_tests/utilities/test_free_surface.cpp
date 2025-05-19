@@ -142,9 +142,6 @@ void init_vof_diffuse(amr_wind::Field& vof_fld, amrex::Real water_level)
                     1.0, amrex::max<amrex::Real>(
                              0.0, 0.5 + 0.25 * (water_level - z) / dx[2]));
                 farrs[nbx](i, j, k) = local_vof;
-                if (i == 0 && j == 0) {
-                    std::cout << k << " " << local_vof << " " << z << std::endl;
-                }
             });
     }
     amrex::Gpu::streamSynchronize();
