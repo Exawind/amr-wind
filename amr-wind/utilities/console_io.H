@@ -5,9 +5,9 @@
 #include "AMReX_MLMG.H"
 #include "amr-wind/CFDSim.H"
 
-using namespace amrex::mpidatatypes;
-
 namespace amr_wind::io {
+
+using namespace amrex::mpidatatypes;
 
 void print_banner(MPI_Comm /*comm*/, std::ostream& /*out*/);
 

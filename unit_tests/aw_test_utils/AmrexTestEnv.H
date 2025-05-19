@@ -5,8 +5,6 @@
 #include "AMReX.H"
 #include "AMReX_ParmParse.H"
 
-using namespace amrex::mpidatatypes;
-
 namespace amr_wind_tests {
 
 /** Global setup/teardown test environment configuration for AMR-Wind unit tests
@@ -30,6 +28,7 @@ public:
 
     void SetUp() override
     {
+        using namespace amrex::mpidatatypes;
         amrex::Initialize(m_argc, m_argv, true, MPI_COMM_WORLD, []() {
             amrex::ParmParse pp("amrex");
             if (!(pp.contains("v") || pp.contains("verbose"))) {

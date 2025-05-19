@@ -7,6 +7,8 @@ int main(int argc, char* argv[])
     MPI_Init(&argc, &argv);
 #endif
 
+    using namespace amrex::mpidatatypes;
+    
     amr_wind::io::print_banner(MPI_COMM_WORLD, std::cout);
 
     amrex::Initialize(argc, argv, true, MPI_COMM_WORLD, []() {
