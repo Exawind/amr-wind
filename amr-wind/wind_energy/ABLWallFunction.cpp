@@ -30,7 +30,8 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
     pp.query("mo_gamma_h", m_mo.gamma_h);
     pp.query("mo_beta_m", m_mo.beta_m);
     pp.query("mo_beta_h", m_mo.beta_h);
-    pp.query("surface_roughness_z0", m_mo.z0);
+    pp.query("aerodynamic_roughness_length_z0", m_mo.z0);
+    pp.query("thermal_roughness_length_z0t", m_mo.z0t);
     pp.query("normal_direction", m_direction);
     AMREX_ASSERT((0 <= m_direction) && (m_direction < AMREX_SPACEDIM));
 
