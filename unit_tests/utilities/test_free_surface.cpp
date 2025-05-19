@@ -121,6 +121,35 @@ void init_vof_slope(
     amrex::Gpu::streamSynchronize();
 }
 
+void init_vof_diffuse(amr_wind::Field& vof_fld, amrex::Real water_level)
+{
+    const auto& mesh = vof_fld.repo().mesh();
+    const int nlevels = vof_fld.repo().num_active_levels();
+
+    // Since VOF is cell centered
+    amrex::Real offset = 0.5;
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+        const auto& dx = mesh.Geom(lev).CellSizeArray();
+        const auto& problo = mesh.Geom(lev).ProbLoArray();
+        const auto& farrs = vof_fld(lev).arrays();
+
+        amrex::ParallelFor(
+            vof_fld(lev), vof_fld.num_grow(),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                const amrex::Real z = problo[2] + (k + offset) * dx[2];
+                const amrex::Real local_vof = amrex::min<amrex::Real>(
+                    1.0, amrex::max<amrex::Real>(
+                             0.0, 0.5 + 0.25 * (water_level - z) / dx[2]));
+                farrs[nbx](i, j, k) = local_vof;
+                if (i == 0 && j == 0) {
+                    std::cout << k << " " << local_vof << " " << z << std::endl;
+                }
+            });
+    }
+    amrex::Gpu::streamSynchronize();
+}
+
 //! Custom mesh class to be able to refine like a simulation would
 //  - combination of AmrTestMesh and incflo classes
 //  - with ability to initialize the refiner and regrid
@@ -587,6 +616,38 @@ TEST_F(FreeSurfaceTest, regrid)
     // Check that result is unchanged on new mesh
     tool.update_sampling_locations();
     tool.check_output("~", m_water_level1);
+}
+
+TEST_F(FreeSurfaceTest, point_diffuse)
+{
+    initialize_mesh();
+    auto& repo = sim().repo();
+    auto& vof = repo.declare_field("vof", 1, 2);
+    setup_grid_0d(1);
+
+    // Chosen to be cell center
+    const amrex::Real water_lev_diffuse = 61.;
+
+    init_vof_diffuse(vof, water_lev_diffuse);
+    auto& m_sim = sim();
+    FreeSurfaceImpl tool(m_sim);
+    tool.initialize("freesurface");
+    tool.update_sampling_locations();
+
+    // Check number of points
+    auto ngp = tool.num_gridpoints();
+    EXPECT_EQ(ngp, 1);
+    // Check location after being read
+    int npos = tool.check_pos(0, "=", m_pt_coord[0]);
+    ASSERT_EQ(npos, 1);
+    npos = tool.check_pos(1, "=", m_pt_coord[1]);
+    ASSERT_EQ(npos, 1);
+    // Check output value
+    int nout = tool.check_output("~", water_lev_diffuse);
+    ASSERT_EQ(nout, 1);
+    // Check sampling locations
+    int nsloc = tool.check_sloc("~");
+    ASSERT_EQ(nsloc, 1);
 }
 
 } // namespace amr_wind_tests
