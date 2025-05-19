@@ -49,7 +49,7 @@ macro(setup_test)
     file(GLOB TEST_FILES "${CURRENT_TEST_SOURCE_DIR}/*")
     file(COPY ${TEST_FILES} DESTINATION "${CURRENT_TEST_BINARY_DIR}/")
     set(RUNTIME_OPTIONS "time.max_step=10 io.plot_file=plt time.plot_interval=10 amrex.the_arena_is_managed=0 amrex.abort_on_out_of_gpu_memory=1")
-    if(NOT AMR_WIND_TEST_WITH_FCOMPARE) #Avoid all I/O otherwise
+    if((NOT AMR_WIND_TEST_WITH_FCOMPARE) AND (NOT AMR_WIND_SAVE_GOLDS)) #Avoid all I/O otherwise
       set(RUNTIME_OPTIONS "${RUNTIME_OPTIONS} time.plot_interval=-1 time.checkpoint_interval=-1")
     endif()
     if(AMR_WIND_ENABLE_FPE_TRAP_FOR_TESTS)
@@ -283,6 +283,9 @@ add_test_re(ctv_godunov_plm)
 add_test_re(ctv_bds)
 add_test_re(ctv_mol_mesh_map)
 add_test_re(ctv_mol_mesh_map_explicit)
+add_test_re(abl_specifiedmol_neutral)
+add_test_re(abl_specifiedmol_stable)
+add_test_re(abl_specifiedmol_unstable)
 
 if(AMR_WIND_ENABLE_NETCDF)
   add_test_re(abl_bndry_output)
