@@ -7,11 +7,11 @@
 
 namespace amr_wind::io {
 
-void print_banner(MPI_Comm /*comm*/, std::ostream& /*out*/);
+void print_banner(amrex::MPI_Comm /*comm*/, std::ostream& /*out*/);
 
-void print_usage(MPI_Comm /*comm*/, std::ostream& /*out*/);
+void print_usage(amrex::MPI_Comm /*comm*/, std::ostream& /*out*/);
 
-void print_error(MPI_Comm /*comm*/, const std::string& msg);
+void print_error(amrex::MPI_Comm /*comm*/, const std::string& msg);
 
 void print_summary(std::ostream&);
 
