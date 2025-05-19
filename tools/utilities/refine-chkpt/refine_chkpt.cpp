@@ -7,9 +7,9 @@ int main(int argc, char* argv[])
     MPI_Init(&argc, &argv);
 #endif
 
-    amr_wind::io::print_banner(amrex::MPI_COMM_WORLD, std::cout);
+    amr_wind::io::print_banner(MPI_COMM_WORLD, std::cout);
 
-    amrex::Initialize(argc, argv, true, amrex::MPI_COMM_WORLD, []() {
+    amrex::Initialize(argc, argv, true, MPI_COMM_WORLD, []() {
         amrex::ParmParse pp("amrex");
         // Set the defaults so that we throw an exception instead of attempting
         // to generate backtrace files. However, if the user has explicitly set
