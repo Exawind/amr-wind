@@ -83,10 +83,10 @@ where ``uid`` is the global probe id, ``set_id`` is the label id
 (e.g., ``plane_sampling.labels = plane1 plane2``, numbered as the user
 input order), ``probe_id`` is the local probe id to this label,
 ``*co`` are the coordinates of the probe, and the other columns are
-the user requested sampled fields. The same labels are seeing by other
+the user requested sampled fields. The same labels are seen by other
 visualization tools such as ParaView. The directory also contains a
 ``sampling_info.yaml`` YAML file where additional information (e.g., time) is
-stored. This file is automatically parse by the provided particle
+stored. This file is automatically parsed by the provided particle
 reader tool and the information is stored in a dictionary that is a
 member variable of the class.
 
@@ -133,7 +133,7 @@ The ``PlaneSampler`` samples the flow-field on two-dimensional planes defined by
 two axes: ``axis1`` and ``axis2`` with the bottom corner located at ``origin``
 and is divided into equally spaced nodes defined by the two entries in
 ``num_points`` vector. Multiple planes parallel to the reference planes can be
-sampled by specifying the ``offset_vector`` vector along which the the planes are
+sampled by specifying the ``offset_vector`` vector along which the planes are
 offset for as many planes as there are entries in the ``offset`` array.
 
 Example::
