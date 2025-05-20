@@ -783,7 +783,8 @@ struct UpdateTargetFieldsOp<W2AWaves>
                            << "    last interp time " << t_last << std::endl
                            << "    simulation time  " << time << std::endl
                            << "    new data time    " << wdata.t << std::endl
-                           << "    double data read flag " << double_data << std::endl;
+                           << "    double data read " << double_data
+                           << std::endl;
 
             if (wdata.resize_flag) {
                 // Reset flag
