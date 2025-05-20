@@ -284,8 +284,6 @@ struct ReadInputsOp<W2AWaves>
             amrex::Abort(
                 "Waves2AMR ReadInputsOp: modes file requested does not exist");
         }
-        // modify initialize to differentiate between file not existing and file
-        // being wrong type (ocean or NWT)
 
         // Get dt of HOS data
         wdata.dt_modes = wdata.is_ocean ? wdata.c_rmodes.get_dtout()
@@ -310,6 +308,10 @@ struct ReadInputsOp<W2AWaves>
             // Save first timestep
             wdata.n_winit = wdata.ntime;
         }
+
+        amrex::Print() << "OceanWaves: Initializing Waves2AMR profile at time "
+                       << wdata.t_winit << ", step " << wdata.n_winit
+                       << std::endl;
 
         // Initialize variables to store modes
         amrex::Real depth{0.0};
@@ -336,6 +338,17 @@ struct ReadInputsOp<W2AWaves>
             // Get nominal last timestep of data
             wdata.n_wstop =
                 (int)((wdata.c_rmodes.get_Tstop() + 1e-8) / wdata.dt_modes);
+
+            amrex::Print()
+                << "OceanWaves: Waves2AMR parameters from HOS-Ocean file: \n"
+                << "    nx " << wdata.n0_sp << "  dx " << wdata.dx0 << "  Lx "
+                << wdata.c_rmodes.get_xlen() << std::endl
+                << "    ny " << wdata.n1_sp << "  dy " << wdata.dx1 << "  Ly "
+                << wdata.c_rmodes.get_ylen() << std::endl
+                << "    depth " << depth << std::endl
+                << "    output time interval " << wdata.dt_modes
+                << "  nominal last time " << wdata.n_wstop * wdata.dt_modes
+                << std::endl;
         } else {
             int vsize = wdata.r_rmodes.get_vector_size();
             int vasize = wdata.r_rmodes.get_addl_vector_size();
@@ -363,6 +376,17 @@ struct ReadInputsOp<W2AWaves>
             // Get nominal last timestep of data
             wdata.n_wstop =
                 (int)((wdata.r_rmodes.get_Tstop() + 1e-8) / wdata.dt_modes);
+
+            amrex::Print()
+                << "OceanWaves: Waves2AMR parameters from HOS-NWT file: \n"
+                << "    nx " << wdata.n0_sp << "  dx " << wdata.dx0 << "  Lx "
+                << wdata.r_rmodes.get_xlen() << std::endl
+                << "    ny " << wdata.n1_sp << "  dy " << wdata.dx1 << "  Ly "
+                << wdata.r_rmodes.get_ylen() << std::endl
+                << "    nz " << wdata.n2 << "  depth " << depth << std::endl
+                << "    output time interval " << wdata.dt_modes
+                << "  nominal last time " << wdata.n_wstop * wdata.dt_modes
+                << std::endl;
         }
 
         // Check if stop time is exceeded, introduce offset to ntime
