@@ -506,10 +506,34 @@ bool FreeSurfaceSampler::update_sampling_locations()
                                 // Multiphase cell case
                                 if (vof_arr(i, j, k) < (1.0 - 1e-12) &&
                                     vof_arr(i, j, k) > 1e-12) {
+                                    amrex::IntVect iv_up{i, j, k},
+                                        iv_down{i, j, k};
+                                    iv_up[dir] += 1;
+                                    iv_down[dir] -= 1;
+                                    const bool intersect_above =
+                                        (vof_arr(i, j, k) - 0.5) *
+                                            (vof_arr(iv_up) - 0.5) <=
+                                        0.;
+                                    const bool intersect_below =
+                                        (vof_arr(i, j, k) - 0.5) *
+                                            (vof_arr(iv_down) - 0.5) <=
+                                        0.;
+                                    const bool closer_than_above =
+                                        std::abs(vof_arr(i, j, k) - 0.5) <
+                                        std::abs(vof_arr(iv_up) - 0.5);
+                                    const bool closer_than_below =
+                                        std::abs(vof_arr(i, j, k) - 0.5) <=
+                                        std::abs(vof_arr(iv_down) - 0.5);
+                                    calc_flag =
+                                        (intersect_above &&
+                                         closer_than_above) ||
+                                        (intersect_below && closer_than_below);
                                     // Get interface reconstruction
-                                    multiphase::fit_plane(
-                                        i, j, k, vof_arr, mx, my, mz, alpha);
-                                    calc_flag = true;
+                                    if (calc_flag) {
+                                        multiphase::fit_plane(
+                                            i, j, k, vof_arr, mx, my, mz,
+                                            alpha);
+                                    }
                                 }
 
                                 if (calc_flag) {
