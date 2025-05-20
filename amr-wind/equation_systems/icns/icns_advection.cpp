@@ -208,7 +208,6 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
 {
     BL_PROFILE("amr-wind::ICNS::advection_mac_project");
     const auto& geom = m_repo.mesh().Geom();
-    const auto& pressure = m_repo.get_field("p");
     auto& u_mac = m_repo.get_field("u_mac");
     auto& v_mac = m_repo.get_field("v_mac");
     auto& w_mac = m_repo.get_field("w_mac");
@@ -334,10 +333,11 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
     }
 
     if (m_has_overset) {
+        // In masked regions, the pressure should not change from what was used
+        // when preparing the MAC velocity field; therefore, phi is set to 0
         auto phif = m_repo.create_scratch_field(1, 1, amr_wind::FieldLoc::CELL);
         for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
-            amrex::average_node_to_cellcenter(
-                (*phif)(lev), 0, pressure(lev), 0, 1);
+            (*phif)(lev).setVal(0.);
         }
 
         m_mac_proj->project(
