@@ -88,6 +88,13 @@ void MOData::update_fluxes(int max_iters)
         ++iter;
     } while ((std::abs(utau_iter - utau) > 1e-5) && iter <= max_iters);
 
+    amrex::Print()
+        << "MOData::update_fluxes: output\n"
+        << "  utau = " << utau << "\n" 
+        << "  q = " << surf_temp_flux << "\n"
+        << "  L = " << obukhov_len 
+        << std::endl;
+
     if (iter >= max_iters) {
         amrex::Print()
             << "MOData::update_fluxes: Convergence criteria not met after "
