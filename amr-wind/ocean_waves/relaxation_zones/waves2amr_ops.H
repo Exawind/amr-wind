@@ -251,7 +251,6 @@ struct ReadInputsOp<W2AWaves>
         if (!pp.contains("HOS_init_timestep")) {
             pp.query("HOS_init_time", wdata.t_winit);
         }
-        // Check effect !!!
         pp.query("HOS_domain_offset_x", wdata.xlo0);
         pp.query("HOS_domain_offset_y", wdata.xlo1);
 
