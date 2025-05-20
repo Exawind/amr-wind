@@ -462,6 +462,40 @@ struct ReadInputsOp<W2AWaves>
                 std::to_string(flag));
         }
 
+        amrex::Real z_double{0.};
+        bool found_z_double{false};
+        for (int n = 0; n < wdata.hvec.size() - 1; ++n) {
+            const amrex::Real dz = wdata.hvec[n] - wdata.hvec[n + 1];
+            if (!found_z_double && dz >= 2.0 * dz0) {
+                z_double = 0.5 * (wdata.hvec[n] + wdata.hvec[n + 1]);
+                found_z_double = true;
+            }
+        }
+
+        amrex::Print()
+            << "OceanWaves: Waves2AMR height vector for interpolation: \n"
+            << "    start " << wdata.hvec[0] << "  end "
+            << wdata.hvec[wdata.hvec.size() - 1] << "  num points "
+            << wdata.hvec.size() << std::endl
+            << "    initial dz " << wdata.hvec[0] - wdata.hvec[1]
+            << "  first two grown dz "
+            << wdata.hvec[nh_above] - wdata.hvec[nh_above + 1] << " "
+            << wdata.hvec[nh_above + 1] - wdata.hvec[nh_above + 2]
+            << "  final dz "
+            << wdata.hvec[wdata.hvec.size() - 2] -
+                   wdata.hvec[wdata.hvec.size() - 1]
+            << std::endl;
+
+        if (found_z_double) {
+            amrex::Print()
+                << "    interp spacing reaches double that of surface at "
+                << z_double << std::endl;
+        } else {
+            amrex::Print() << "    interp spacing remains less than double "
+                              "that of surface "
+                           << std::endl;
+        }
+
         // Always get modes on every processor for initialization
         bool no_EOF =
             wdata.is_ocean
