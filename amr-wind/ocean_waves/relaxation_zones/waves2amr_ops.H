@@ -39,7 +39,7 @@ int evaluate_read_resize(
         // Time index for reading
         ntime = new_ntime;
         // Sim time to go with recorded data
-        wtime = new_ntime * wdt + wtinit;
+        wtime = new_ntime * wdt - wtinit;
         // If double reading is deemed necessary, check for convenience
         if (double_data == 1 && std::abs(wtime - time) <= 1e-10) {
             // Reading can be done just once, w2a fields replace ow fields
@@ -778,6 +778,13 @@ struct UpdateTargetFieldsOp<W2AWaves>
 
         // Read HOS data if necessary based on time
         if (read_flag) {
+
+            amrex::Print() << "OceanWaves: Waves2AMR reading from file: step "
+                           << wdata.ntime << std::endl
+                           << "    last interp time " << t_last << std::endl
+                           << "    simulation time  " << time << std::endl
+                           << "    new data time    " << wdata.t << std::endl
+                           << "    double data read flag " << double_data << std::endl;
 
             if (wdata.resize_flag) {
                 // Reset flag
