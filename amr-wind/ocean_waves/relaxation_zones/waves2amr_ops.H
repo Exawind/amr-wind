@@ -212,6 +212,42 @@ void populate_fields_all_levels(
     postprocess_velocity_field_liquid(vel_field, lvs_field, geom_all);
 }
 
+void time_interpolate_wave_fields(
+    amr_wind::Field& lvs_field,
+    amr_wind::Field& vel_field,
+    const amr_wind::Field& future_lvs_field,
+    const amr_wind::Field& future_vel_field,
+    const amrex::Real t_old,
+    const amrex::Real t_new,
+    const amrex::Real t_future)
+{
+    for (int lev = 0; lev < lvs_field.repo().num_active_levels(); ++lev) {
+        auto phi = lvs_field(lev).arrays();
+        auto vel = vel_field(lev).arrays();
+        const auto future_phi = future_lvs_field(lev).const_arrays();
+        const auto future_vel = future_vel_field(lev).const_arrays();
+
+        amrex::ParallelFor(
+            lvs_field(lev), lvs_field.num_grow(),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                // Interpolate temporally every time
+                phi[nbx](i, j, k) +=
+                    (future_phi[nbx](i, j, k) - phi[nbx](i, j, k)) *
+                    ((t_new - t_old) / (t_future - t_old + 1e-16));
+                vel[nbx](i, j, k, 0) +=
+                    (future_vel[nbx](i, j, k, 0) - vel[nbx](i, j, k, 0)) *
+                    ((t_new - t_old) / (t_future - t_old + 1e-16));
+                vel[nbx](i, j, k, 1) +=
+                    (future_vel[nbx](i, j, k, 1) - vel[nbx](i, j, k, 1)) *
+                    ((t_new - t_old) / (t_future - t_old + 1e-16));
+                vel[nbx](i, j, k, 2) +=
+                    (future_vel[nbx](i, j, k, 2) - vel[nbx](i, j, k, 2)) *
+                    ((t_new - t_old) / (t_future - t_old + 1e-16));
+            });
+    }
+    amrex::Gpu::streamSynchronize();
+}
+
 } // namespace
 #endif
 
@@ -839,32 +875,9 @@ struct UpdateTargetFieldsOp<W2AWaves>
         }
 
         // Temporally interpolate at every timestep to get target solution
-        for (int lev = 0; lev < nlevels; ++lev) {
-            auto phi = ow_levelset(lev).arrays();
-            auto vel = ow_velocity(lev).arrays();
-            const auto W2A_phi = w2a_levelset(lev).const_arrays();
-            const auto W2A_vel = w2a_velocity(lev).const_arrays();
-
-            const amrex::Real W2A_t = wdata.t;
-            amrex::ParallelFor(
-                ow_levelset(lev), amrex::IntVect(3),
-                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                    // Interpolate temporally every time
-                    phi[nbx](i, j, k) +=
-                        (W2A_phi[nbx](i, j, k) - phi[nbx](i, j, k)) *
-                        ((time - t_last) / (W2A_t - t_last + 1e-16));
-                    vel[nbx](i, j, k, 0) +=
-                        (W2A_vel[nbx](i, j, k, 0) - vel[nbx](i, j, k, 0)) *
-                        ((time - t_last) / (W2A_t - t_last + 1e-16));
-                    vel[nbx](i, j, k, 1) +=
-                        (W2A_vel[nbx](i, j, k, 1) - vel[nbx](i, j, k, 1)) *
-                        ((time - t_last) / (W2A_t - t_last + 1e-16));
-                    vel[nbx](i, j, k, 2) +=
-                        (W2A_vel[nbx](i, j, k, 2) - vel[nbx](i, j, k, 2)) *
-                        ((time - t_last) / (W2A_t - t_last + 1e-16));
-                });
-        }
-        amrex::Gpu::streamSynchronize();
+        time_interpolate_wave_fields(
+            ow_levelset, ow_velocity, w2a_levelset, w2a_velocity, t_last, time,
+            wdata.t);
 #else
         amrex::ignore_unused(data, time);
 #endif
