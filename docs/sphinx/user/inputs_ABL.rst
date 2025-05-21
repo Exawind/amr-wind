@@ -233,5 +233,8 @@ This section is for setting atmospheric boundary layer parameters.
 
    Used in conjunction with `ABL.wall_het_model`. The default value runs a neutral boundary layer. 
 
+.. input_param:: ABL.terrain_aligned_profile 
 
+   **type:** Boolean, optional, default= false
 
+   Used in conjunction with immersed forcing for terrain. This option allows the user to align the wind, temperature and turbulence profiles to be aligned with the terrain.
