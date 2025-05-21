@@ -221,31 +221,14 @@ void time_interpolate_wave_fields(
     const amrex::Real t_new,
     const amrex::Real t_future)
 {
-    for (int lev = 0; lev < lvs_field.repo().num_active_levels(); ++lev) {
-        auto phi = lvs_field(lev).arrays();
-        auto vel = vel_field(lev).arrays();
-        const auto future_phi = future_lvs_field(lev).const_arrays();
-        const auto future_vel = future_vel_field(lev).const_arrays();
-
-        amrex::ParallelFor(
-            lvs_field(lev), lvs_field.num_grow(),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                // Interpolate temporally every time
-                phi[nbx](i, j, k) +=
-                    (future_phi[nbx](i, j, k) - phi[nbx](i, j, k)) *
-                    ((t_new - t_old) / (t_future - t_old + 1e-16));
-                vel[nbx](i, j, k, 0) +=
-                    (future_vel[nbx](i, j, k, 0) - vel[nbx](i, j, k, 0)) *
-                    ((t_new - t_old) / (t_future - t_old + 1e-16));
-                vel[nbx](i, j, k, 1) +=
-                    (future_vel[nbx](i, j, k, 1) - vel[nbx](i, j, k, 1)) *
-                    ((t_new - t_old) / (t_future - t_old + 1e-16));
-                vel[nbx](i, j, k, 2) +=
-                    (future_vel[nbx](i, j, k, 2) - vel[nbx](i, j, k, 2)) *
-                    ((t_new - t_old) / (t_future - t_old + 1e-16));
-            });
-    }
-    amrex::Gpu::streamSynchronize();
+    const amrex::Real b = (t_new - t_old) / (t_future - t_old + 1e-16);
+    const amrex::Real a = 1. - b;
+    amr_wind::field_ops::lincomb(
+        lvs_field, a, lvs_field, 0, b, future_lvs_field, 0, 0, 1,
+        lvs_field.num_grow());
+    amr_wind::field_ops::lincomb(
+        vel_field, a, vel_field, 0, b, future_vel_field, 0, 0, AMREX_SPACEDIM,
+        vel_field.num_grow());
 }
 
 } // namespace
