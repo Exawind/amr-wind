@@ -785,9 +785,18 @@ struct UpdateTargetFieldsOp<W2AWaves>
             // Only perform reading where needed, communicate offset though
             amrex::ParallelDescriptor::ReduceIntMax(wdata.n_offset);
 
-            // If double read is required, then copy older wave data to ow_
-            // fields and modify interpolation parameters to get things right
-            if (double_data == 1) {
+            // Previous W2A data is more recent than last interpolated data
+            t_last = (wdata.ntime - 1) * wdata.dt_modes;
+
+            if (double_data == 0) {
+                // Previous W2A data needs to be copied into ow fields
+                amr_wind::field_ops::copy(
+                    ow_levelset, w2a_levelset, 0, 0, 1, ow_levelset.num_grow());
+                amr_wind::field_ops::copy(
+                    ow_velocity, w2a_velocity, 0, 0, AMREX_SPACEDIM,
+                    ow_velocity.num_grow());
+            } else if (double_data == 1) {
+                // Previous W2A data is unknown, read into ow fields
                 if (wdata.do_interp) {
                     populate_fields_all_levels(
                         wdata, geom, ow_levelset, ow_velocity, -1);
@@ -806,12 +815,8 @@ struct UpdateTargetFieldsOp<W2AWaves>
                 // Fill patch to get correct ghost cells after average down
                 ow_velocity.fillpatch(sim.time().new_time());
                 ow_levelset.fillpatch(sim.time().new_time());
-
-                // Prior t_last (corresponding to ow fields)
-                t_last = (wdata.ntime - 1) * wdata.dt_modes;
-            } else if (double_data == 2) {
-                t_last = (wdata.ntime - 1) * wdata.dt_modes;
             }
+            // ow fields cancel when double_data == 2, no modification
 
             // After possible prior read, now read data for this ntime
             if (wdata.do_interp) {
