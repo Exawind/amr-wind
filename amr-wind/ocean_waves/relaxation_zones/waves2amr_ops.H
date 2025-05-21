@@ -810,13 +810,7 @@ struct UpdateTargetFieldsOp<W2AWaves>
                 // Prior t_last (corresponding to ow fields)
                 t_last = (wdata.ntime - 1) * wdata.dt_modes;
             } else if (double_data == 2) {
-                // Restarting simulation or taking a big step, new time at ntime
-                // Initialize ow fields to 0 for time interp, will be replaced
-                if (wdata.do_interp) {
-                    ow_levelset.setVal(0.0, ow_levelset.num_grow()[0]);
-                    ow_velocity.setVal(0.0, ow_levelset.num_grow()[0]);
-                }
-                // No modification needed for t_last, leads to interp factor = 1
+                t_last = (wdata.ntime - 1) * wdata.dt_modes;
             }
 
             // After possible prior read, now read data for this ntime
@@ -853,16 +847,16 @@ struct UpdateTargetFieldsOp<W2AWaves>
                     // Interpolate temporally every time
                     phi[nbx](i, j, k) +=
                         (W2A_phi[nbx](i, j, k) - phi[nbx](i, j, k)) *
-                        (time - t_last) / (W2A_t - t_last + 1e-16);
+                        ((time - t_last) / (W2A_t - t_last + 1e-16));
                     vel[nbx](i, j, k, 0) +=
                         (W2A_vel[nbx](i, j, k, 0) - vel[nbx](i, j, k, 0)) *
-                        (time - t_last) / (W2A_t - t_last + 1e-16);
+                        ((time - t_last) / (W2A_t - t_last + 1e-16));
                     vel[nbx](i, j, k, 1) +=
                         (W2A_vel[nbx](i, j, k, 1) - vel[nbx](i, j, k, 1)) *
-                        (time - t_last) / (W2A_t - t_last + 1e-16);
+                        ((time - t_last) / (W2A_t - t_last + 1e-16));
                     vel[nbx](i, j, k, 2) +=
                         (W2A_vel[nbx](i, j, k, 2) - vel[nbx](i, j, k, 2)) *
-                        (time - t_last) / (W2A_t - t_last + 1e-16);
+                        ((time - t_last) / (W2A_t - t_last + 1e-16));
                 });
         }
         amrex::Gpu::streamSynchronize();
