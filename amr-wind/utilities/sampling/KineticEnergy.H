@@ -28,8 +28,9 @@ public:
     //! Read user inputs and create the different data probe instances
     void initialize() override;
 
-    //! Interpolate fields at a given timestep and output to disk
-    void post_advance_work() override;
+    void post_advance_work() override {};
+
+    void output_actions() override;
 
     void post_regrid_actions() override {}
 
@@ -63,9 +64,6 @@ private:
 
     //! filename for ASCII output
     std::string m_out_fname;
-
-    //! Frequency of data sampling and output
-    int m_out_freq{10};
 
     //! width in ASCII output
     int m_width{22};
