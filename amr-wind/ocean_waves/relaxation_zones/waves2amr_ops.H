@@ -39,7 +39,7 @@ int evaluate_read_resize(
         // Time index for reading
         ntime = new_ntime;
         // Sim time to go with recorded data
-        wtime = new_ntime * wdt + wtinit;
+        wtime = new_ntime * wdt - wtinit;
         // If double reading is deemed necessary, check for convenience
         if (double_data == 1 && std::abs(wtime - time) <= 1e-10) {
             // Reading can be done just once, w2a fields replace ow fields
@@ -270,7 +270,6 @@ struct ReadInputsOp<W2AWaves>
         if (!pp.contains("HOS_init_timestep")) {
             pp.query("HOS_init_time", wdata.t_winit);
         }
-        // Check effect !!!
         pp.query("HOS_domain_offset_x", wdata.xlo0);
         pp.query("HOS_domain_offset_y", wdata.xlo1);
 
@@ -303,8 +302,6 @@ struct ReadInputsOp<W2AWaves>
             amrex::Abort(
                 "Waves2AMR ReadInputsOp: modes file requested does not exist");
         }
-        // modify initialize to differentiate between file not existing and file
-        // being wrong type (ocean or NWT)
 
         // Get dt of HOS data
         wdata.dt_modes = wdata.is_ocean ? wdata.c_rmodes.get_dtout()
@@ -329,6 +326,10 @@ struct ReadInputsOp<W2AWaves>
             // Save first timestep
             wdata.n_winit = wdata.ntime;
         }
+
+        amrex::Print() << "OceanWaves: Initializing Waves2AMR profile at time "
+                       << wdata.t_winit << ", step " << wdata.n_winit
+                       << std::endl;
 
         // Initialize variables to store modes
         amrex::Real depth{0.0};
@@ -355,6 +356,17 @@ struct ReadInputsOp<W2AWaves>
             // Get nominal last timestep of data
             wdata.n_wstop =
                 (int)((wdata.c_rmodes.get_Tstop() + 1e-8) / wdata.dt_modes);
+
+            amrex::Print()
+                << "OceanWaves: Waves2AMR parameters from HOS-Ocean file: \n"
+                << "    nx " << wdata.n0_sp << "  dx " << wdata.dx0 << "  Lx "
+                << wdata.c_rmodes.get_xlen() << std::endl
+                << "    ny " << wdata.n1_sp << "  dy " << wdata.dx1 << "  Ly "
+                << wdata.c_rmodes.get_ylen() << std::endl
+                << "    depth " << depth << std::endl
+                << "    output time interval " << wdata.dt_modes
+                << "  nominal last time " << wdata.n_wstop * wdata.dt_modes
+                << std::endl;
         } else {
             int vsize = wdata.r_rmodes.get_vector_size();
             int vasize = wdata.r_rmodes.get_addl_vector_size();
@@ -382,6 +394,17 @@ struct ReadInputsOp<W2AWaves>
             // Get nominal last timestep of data
             wdata.n_wstop =
                 (int)((wdata.r_rmodes.get_Tstop() + 1e-8) / wdata.dt_modes);
+
+            amrex::Print()
+                << "OceanWaves: Waves2AMR parameters from HOS-NWT file: \n"
+                << "    nx " << wdata.n0_sp << "  dx " << wdata.dx0 << "  Lx "
+                << wdata.r_rmodes.get_xlen() << std::endl
+                << "    ny " << wdata.n1_sp << "  dy " << wdata.dx1 << "  Ly "
+                << wdata.r_rmodes.get_ylen() << std::endl
+                << "    nz " << wdata.n2 << "  depth " << depth << std::endl
+                << "    output time interval " << wdata.dt_modes
+                << "  nominal last time " << wdata.n_wstop * wdata.dt_modes
+                << std::endl;
         }
 
         // Check if stop time is exceeded, introduce offset to ntime
@@ -455,6 +478,40 @@ struct ReadInputsOp<W2AWaves>
                 "Waves2AMR ReadInputsOp: create_height_vector error, failure "
                 "code " +
                 std::to_string(flag));
+        }
+
+        amrex::Real z_double{0.};
+        bool found_z_double{false};
+        for (int n = 0; n < wdata.hvec.size() - 1; ++n) {
+            const amrex::Real dz = wdata.hvec[n] - wdata.hvec[n + 1];
+            if (!found_z_double && dz >= 2.0 * dz0) {
+                z_double = 0.5 * (wdata.hvec[n] + wdata.hvec[n + 1]);
+                found_z_double = true;
+            }
+        }
+
+        amrex::Print()
+            << "OceanWaves: Waves2AMR height vector for interpolation: \n"
+            << "    start " << wdata.hvec[0] << "  end "
+            << wdata.hvec[wdata.hvec.size() - 1] << "  num points "
+            << wdata.hvec.size() << std::endl
+            << "    initial dz " << wdata.hvec[0] - wdata.hvec[1]
+            << "  first two grown dz "
+            << wdata.hvec[nh_above] - wdata.hvec[nh_above + 1] << " "
+            << wdata.hvec[nh_above + 1] - wdata.hvec[nh_above + 2]
+            << "  final dz "
+            << wdata.hvec[wdata.hvec.size() - 2] -
+                   wdata.hvec[wdata.hvec.size() - 1]
+            << std::endl;
+
+        if (found_z_double) {
+            amrex::Print()
+                << "    interp spacing reaches double that of surface at "
+                << z_double << std::endl;
+        } else {
+            amrex::Print() << "    interp spacing remains less than double "
+                              "that of surface "
+                           << std::endl;
         }
 
         // Always get modes on every processor for initialization
@@ -739,6 +796,14 @@ struct UpdateTargetFieldsOp<W2AWaves>
 
         // Read HOS data if necessary based on time
         if (read_flag) {
+
+            amrex::Print() << "OceanWaves: Waves2AMR reading from file: step "
+                           << wdata.ntime << std::endl
+                           << "    last interp time " << t_last << std::endl
+                           << "    simulation time  " << time << std::endl
+                           << "    new data time    " << wdata.t << std::endl
+                           << "    double data read " << double_data
+                           << std::endl;
 
             if (wdata.resize_flag) {
                 // Reset flag
