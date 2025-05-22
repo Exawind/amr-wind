@@ -18,11 +18,6 @@ void perform_checks(
         registered_types.insert(ptype);
         return;
     }
-
-  //if (ptype == averaging::TimeAveraging::identifier()) {
-  //    amrex::Abort(
-  //        "PostProcessing: Multiple instances of TimeAveraging not allowed");
-  //}
 }
 } // namespace
 

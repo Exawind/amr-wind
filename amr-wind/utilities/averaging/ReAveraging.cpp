@@ -6,15 +6,16 @@
 
 namespace amr_wind::averaging {
 
-ReAveraging::ReAveraging(CFDSim& sim, const std::string& avgname, const std::string& fname)
+ReAveraging::ReAveraging(
+    CFDSim& sim, const std::string& avgname, const std::string& fname)
     : m_field(sim.repo().get_field(fname))
     , m_average(sim.repo().declare_field(
-          avg_name(m_field.name(),avgname),
+          avg_name(m_field.name(), avgname),
           m_field.num_comp(),
           1, // 1 ghost cell to account for sampling
           1,
-          m_field.field_location())),
-      m_avgname(avgname)
+          m_field.field_location()))
+    , m_avgname(avgname)
 {
     // Register default fillpatch operations
     m_average.set_default_fillpatch_bc(sim.time());
@@ -38,9 +39,10 @@ void ReAveraging::operator()(
     const amrex::Real elapsed_time)
 {
     const amrex::Real dt = time.delta_t();
-    const amrex::Real filter =
-        amrex::max(amrex::min(filter_width, elapsed_time), (avg_frequency*dt));
-    const amrex::Real factor = amrex::max<amrex::Real>(filter - (avg_frequency*dt), 0.0);
+    const amrex::Real filter = amrex::max(
+        amrex::min(filter_width, elapsed_time), (avg_frequency * dt));
+    const amrex::Real factor =
+        amrex::max<amrex::Real>(filter - (avg_frequency * dt), 0.0);
 
     const int ncomp = m_field.num_comp();
     const int nlevels = m_field.repo().num_active_levels();
@@ -58,7 +60,7 @@ void ReAveraging::operator()(
                     const amrex::Real aval = avgarrs[nbx](i, j, k, n);
 
                     avgarrs[nbx](i, j, k, n) =
-                        (aval * factor + fval * (avg_frequency*dt)) / filter;
+                        (aval * factor + fval * (avg_frequency * dt)) / filter;
                 }
             });
     }

@@ -24,7 +24,11 @@ namespace averaging {
  *  \ingroup utilities
  */
 class FieldTimeAverage
-    : public Factory<FieldTimeAverage, CFDSim&, const std::string&, const std::string&>
+    : public Factory<
+          FieldTimeAverage,
+          CFDSim&,
+          const std::string&,
+          const std::string&>
 {
 public:
     static std::string base_identifier() { return "FieldTimeAverage"; }

@@ -88,12 +88,14 @@ void TimeAveraging::post_advance_work()
 
     // Check the following:
     //   1. if we are within the averaging time period requested by the user
-    //   2. if we are phase averaging (i.e., only accumulating the average at a certain
-    //      frequency), check to see if we are on a time step in which averaging should
-    //      be performed.  This is useful for simulations with periodic behavior, such 
-    //      as regular waves or actuator lines rotating at fixed rotor speed.
+    //   2. if we are phase averaging (i.e., only accumulating the average at a
+    //   certain
+    //      frequency), check to see if we are on a time step in which averaging
+    //      should be performed.  This is useful for simulations with periodic
+    //      behavior, such as regular waves or actuator lines rotating at fixed
+    //      rotor speed.
     const bool do_avg =
-        (((cur_time >= m_start_time) && (cur_time < m_stop_time)) && 
+        (((cur_time >= m_start_time) && (cur_time < m_stop_time)) &&
          (cur_step % m_frequency == 0));
     if (!do_avg) {
         return;
@@ -103,7 +105,9 @@ void TimeAveraging::post_advance_work()
     m_last_avg_time = cur_time;
     std::cout << "Averaging " << m_label << std::endl;
     for (const auto& avg : m_averages) {
-        std::cout << "Accumulating average.  Last accumulation done at: " << m_last_avg_time << ", elapsed time: " << elapsed_time << std::endl;
+        std::cout << "Accumulating average.  Last accumulation done at: "
+                  << m_last_avg_time << ", elapsed time: " << elapsed_time
+                  << std::endl;
         (*avg)(time, m_filter, m_frequency, elapsed_time);
     }
 }
