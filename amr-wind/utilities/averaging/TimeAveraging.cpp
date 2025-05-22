@@ -31,21 +31,22 @@ void TimeAveraging::pre_init_actions()
         pp.get("averaging_window", m_filter);
     }
 
-    std::cout << "m_label = " << m_label << std::endl;
+    amrex::Print() << "TimeAveraging: Initializing " << m_label << std::endl;
 
     for (const auto& lbl : labels) {
         //! Fields to be averaged
         amrex::Vector<std::string> fnames;
         std::string avg_type;
         const std::string pp_key = m_label + "." + lbl;
-        std::cout << "lbl = " << lbl << std::endl;
-
         amrex::ParmParse pp1(pp_key);
         pp1.getarr("fields", fnames);
         ioutils::assert_with_message(
             ioutils::all_distinct(fnames),
             "Duplicates in " + pp_key + ".fields");
         pp1.get("averaging_type", avg_type);
+
+        amrex::Print() << "    - initializing average labeled " << lbl
+                       << ", type " << avg_type << std::endl;
 
         for (const auto& fname : fnames) {
             const std::string key = fname + "_" + avg_type;
