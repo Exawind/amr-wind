@@ -41,14 +41,12 @@ private:
     stress_name(const std::string& fname, const std::string& avgname)
     {
         return fname + "_" + "stress" + "_" + avgname;
-        // return fname + "_" + "_stress";
     }
 
     static std::string
     re_stress_name(const std::string& fname, const std::string& avgname)
     {
         return fname + "_" + "reynolds_stress" + "_" + avgname;
-        // return fname + "_" + "_reynolds_stress";
     }
 
     //! Fluctuating field

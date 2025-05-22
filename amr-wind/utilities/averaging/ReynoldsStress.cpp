@@ -10,7 +10,6 @@ ReynoldsStress::ReynoldsStress(
     CFDSim& sim, const std::string& avgname, const std::string& fname)
     : m_field(sim.repo().get_field("velocity"))
     , m_average(sim.repo().get_field("velocity_mean_" + avgname))
-    //, m_average(sim.repo().get_field("velocity_mean"))
     , m_stress(sim.repo().declare_field(
           stress_name(m_field.name(), avgname),
           6, // number of components of the reynolds stress tensor

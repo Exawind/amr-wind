@@ -15,7 +15,6 @@ ReAveraging::ReAveraging(
           1, // 1 ghost cell to account for sampling
           1,
           m_field.field_location()))
-    , m_avgname(avgname)
 {
     // Register default fillpatch operations
     m_average.set_default_fillpatch_bc(sim.time());

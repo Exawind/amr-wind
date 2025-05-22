@@ -44,9 +44,6 @@ private:
 
     //! Reynolds averaged field
     Field& m_average;
-
-    //! Averaging instance name
-    const std::string& m_avgname;
 };
 
 } // namespace amr_wind::averaging

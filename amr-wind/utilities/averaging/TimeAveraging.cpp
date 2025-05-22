@@ -84,7 +84,6 @@ void TimeAveraging::post_advance_work()
     const auto& time = m_sim.time();
     const auto cur_time = time.new_time();
     const auto cur_step = time.time_index();
-    const auto cur_dt = time.delta_t();
 
     // Check the following:
     //   1. if we are within the averaging time period requested by the user
