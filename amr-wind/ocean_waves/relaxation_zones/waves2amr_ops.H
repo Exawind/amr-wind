@@ -212,6 +212,25 @@ void populate_fields_all_levels(
     postprocess_velocity_field_liquid(vel_field, lvs_field, geom_all);
 }
 
+void time_interpolate_wave_fields(
+    amr_wind::Field& lvs_field,
+    amr_wind::Field& vel_field,
+    const amr_wind::Field& future_lvs_field,
+    const amr_wind::Field& future_vel_field,
+    const amrex::Real t_old,
+    const amrex::Real t_new,
+    const amrex::Real t_future)
+{
+    const amrex::Real b = (t_new - t_old) / (t_future - t_old + 1e-16);
+    const amrex::Real a = 1. - b;
+    amr_wind::field_ops::lincomb(
+        lvs_field, a, lvs_field, 0, b, future_lvs_field, 0, 0, 1,
+        lvs_field.num_grow());
+    amr_wind::field_ops::lincomb(
+        vel_field, a, vel_field, 0, b, future_vel_field, 0, 0, AMREX_SPACEDIM,
+        vel_field.num_grow());
+}
+
 } // namespace
 #endif
 
@@ -850,9 +869,18 @@ struct UpdateTargetFieldsOp<W2AWaves>
             // Only perform reading where needed, communicate offset though
             amrex::ParallelDescriptor::ReduceIntMax(wdata.n_offset);
 
-            // If double read is required, then copy older wave data to ow_
-            // fields and modify interpolation parameters to get things right
-            if (double_data == 1) {
+            // Previous W2A data is more recent than last interpolated data
+            t_last = (wdata.ntime - 1) * wdata.dt_modes;
+
+            if (double_data == 0) {
+                // Previous W2A data needs to be copied into ow fields
+                amr_wind::field_ops::copy(
+                    ow_levelset, w2a_levelset, 0, 0, 1, ow_levelset.num_grow());
+                amr_wind::field_ops::copy(
+                    ow_velocity, w2a_velocity, 0, 0, AMREX_SPACEDIM,
+                    ow_velocity.num_grow());
+            } else if (double_data == 1) {
+                // Previous W2A data is unknown, read into ow fields
                 if (wdata.do_interp) {
                     populate_fields_all_levels(
                         wdata, geom, ow_levelset, ow_velocity, -1);
@@ -871,18 +899,8 @@ struct UpdateTargetFieldsOp<W2AWaves>
                 // Fill patch to get correct ghost cells after average down
                 ow_velocity.fillpatch(sim.time().new_time());
                 ow_levelset.fillpatch(sim.time().new_time());
-
-                // Prior t_last (corresponding to ow fields)
-                t_last = (wdata.ntime - 1) * wdata.dt_modes;
-            } else if (double_data == 2) {
-                // Restarting simulation or taking a big step, new time at ntime
-                // Initialize ow fields to 0 for time interp, will be replaced
-                if (wdata.do_interp) {
-                    ow_levelset.setVal(0.0, ow_levelset.num_grow()[0]);
-                    ow_velocity.setVal(0.0, ow_levelset.num_grow()[0]);
-                }
-                // No modification needed for t_last, leads to interp factor = 1
             }
+            // ow fields cancel when double_data == 2, no modification
 
             // After possible prior read, now read data for this ntime
             if (wdata.do_interp) {
@@ -905,32 +923,9 @@ struct UpdateTargetFieldsOp<W2AWaves>
         }
 
         // Temporally interpolate at every timestep to get target solution
-        for (int lev = 0; lev < nlevels; ++lev) {
-            auto phi = ow_levelset(lev).arrays();
-            auto vel = ow_velocity(lev).arrays();
-            const auto W2A_phi = w2a_levelset(lev).const_arrays();
-            const auto W2A_vel = w2a_velocity(lev).const_arrays();
-
-            const amrex::Real W2A_t = wdata.t;
-            amrex::ParallelFor(
-                ow_levelset(lev), amrex::IntVect(3),
-                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                    // Interpolate temporally every time
-                    phi[nbx](i, j, k) +=
-                        (W2A_phi[nbx](i, j, k) - phi[nbx](i, j, k)) *
-                        (time - t_last) / (W2A_t - t_last + 1e-16);
-                    vel[nbx](i, j, k, 0) +=
-                        (W2A_vel[nbx](i, j, k, 0) - vel[nbx](i, j, k, 0)) *
-                        (time - t_last) / (W2A_t - t_last + 1e-16);
-                    vel[nbx](i, j, k, 1) +=
-                        (W2A_vel[nbx](i, j, k, 1) - vel[nbx](i, j, k, 1)) *
-                        (time - t_last) / (W2A_t - t_last + 1e-16);
-                    vel[nbx](i, j, k, 2) +=
-                        (W2A_vel[nbx](i, j, k, 2) - vel[nbx](i, j, k, 2)) *
-                        (time - t_last) / (W2A_t - t_last + 1e-16);
-                });
-        }
-        amrex::Gpu::streamSynchronize();
+        time_interpolate_wave_fields(
+            ow_levelset, ow_velocity, w2a_levelset, w2a_velocity, t_last, time,
+            wdata.t);
 #else
         amrex::ignore_unused(data, time);
 #endif
