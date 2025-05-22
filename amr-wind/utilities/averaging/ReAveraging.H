@@ -36,7 +36,6 @@ private:
     avg_name(const std::string& fname, const std::string& avgname)
     {
         return fname + "_" + "mean" + "_" + avgname;
-        // return fname + "_" + "mean";
     }
 
     //! Fluctuating field
