@@ -102,11 +102,11 @@ void TimeAveraging::post_advance_work()
 
     const amrex::Real elapsed_time = (cur_time - m_start_time);
     m_last_avg_time = cur_time;
-    std::cout << "Averaging " << m_label << std::endl;
+    amrex::Print() << "TimeAveraging: " << m_label << std::endl;
     for (const auto& avg : m_averages) {
-        std::cout << "Accumulating average.  Last accumulation done at: "
-                  << m_last_avg_time << ", elapsed time: " << elapsed_time
-                  << std::endl;
+        amrex::Print() << "Accumulating average.  Last accumulation done at: "
+                       << m_last_avg_time << ", elapsed time: " << elapsed_time
+                       << std::endl;
         (*avg)(time, m_filter, m_frequency, elapsed_time);
     }
 }
