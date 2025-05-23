@@ -24,7 +24,11 @@ namespace averaging {
  *  \ingroup utilities
  */
 class FieldTimeAverage
-    : public Factory<FieldTimeAverage, CFDSim&, const std::string&>
+    : public Factory<
+          FieldTimeAverage,
+          CFDSim&,
+          const std::string&,
+          const std::string&>
 {
 public:
     static std::string base_identifier() { return "FieldTimeAverage"; }
@@ -35,11 +39,13 @@ public:
      *
      *  \param time SimTime instance
      *  \param filter_width Time-averaging window specified by user
+     *  \param avg_frequency Frequency at which averaging is performed
      *  \param elapsed_time Time elapsed since averaging was initiated
      */
     virtual void operator()(
         const SimTime& time,
         const amrex::Real filter_width,
+        const int avg_frequency,
         const amrex::Real elapsed_time) = 0;
 
     virtual const std::string& average_field_name() = 0;
@@ -88,6 +94,12 @@ private:
 
     //! Time averaging window (in seconds)
     amrex::Real m_filter{0.0};
+
+    //! Time averaging frequency (in time steps)
+    int m_frequency{1};
+
+    //! Last time the average was accumulated
+    amrex::Real m_last_avg_time{0.0};
 };
 
 } // namespace averaging
