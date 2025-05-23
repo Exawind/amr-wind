@@ -36,7 +36,7 @@ Two values of epsilon should be set for the FLLC: the regular epsilon and an eps
 
     If your near-turbine grid is not isotropic, then consider your "grid resolution" to be the largest of :math:`\Delta x`,  :math:`\Delta y`, and  :math:`\Delta z`. 
 
-Lastly, in certain cases, a numerical instability can arise from the application of the correction on the first few time steps. When a simulation begins, there is often an initial spike in some of the ALM quantities that affect the correction. Thus, in these scenarios, the user can chose a delay, in seconds, to start the correction. In cases where instabilities are observed, a 5-second delay has been shown to be sufficient:
+Lastly, in certain cases, a numerical instability can arise from the application of the correction on the first few time steps. When a simulation begins, there is often an initial spike in some of the ALM quantities that affect the correction. Thus, in these scenarios, the user can choose a delay, in seconds, to start the correction. In cases where instabilities are observed, a 5-second delay has been shown to be sufficient:
 
 .. code-block:: none
 

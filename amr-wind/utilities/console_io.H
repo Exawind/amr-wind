@@ -7,6 +7,8 @@
 
 namespace amr_wind::io {
 
+using namespace amrex::mpidatatypes;
+
 void print_banner(MPI_Comm /*comm*/, std::ostream& /*out*/);
 
 void print_usage(MPI_Comm /*comm*/, std::ostream& /*out*/);

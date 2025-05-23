@@ -259,4 +259,57 @@ TEST_F(OceanWavesW2ATest, time_reset)
     EXPECT_EQ(ntime + noff, 1);
 }
 
+TEST_F(OceanWavesW2ATest, time_interp)
+{
+    populate_parameters();
+    initialize_mesh();
+    // Set up fields and initial values
+    auto& lvs = sim().repo().declare_cc_field("ow_levelset", 1, 3, 1);
+    auto& vel = sim().repo().declare_cc_field("ow_velocity", 3, 3, 1);
+    auto& w2a_lvs = sim().repo().declare_cc_field("w2a_levelset", 1, 3, 1);
+    auto& w2a_vel = sim().repo().declare_cc_field("w2a_velocity", 3, 3, 1);
+    lvs.setVal(0.);
+    amrex::Real t_last = 0.;
+
+    // First time from "file"
+    w2a_lvs.setVal(1.0);
+    amrex::Real t_w2a = 1.;
+
+    // Interpolate once in time
+    amrex::Real t_sim = 0.5;
+    time_interpolate_wave_fields(
+        lvs, vel, w2a_lvs, w2a_vel, t_last, t_sim, t_w2a);
+
+    // Record time that data has been interpolated to
+    t_last = t_sim;
+
+    // Check value of levelset
+    const amrex::Real fmax1 = utils::field_max(lvs);
+    const amrex::Real fmin1 = utils::field_min(lvs);
+    EXPECT_NEAR(fmax1, 0.5, 1e-10);
+    EXPECT_NEAR(fmin1, 0.5, 1e-10);
+
+    // Step forward in time, after current w2a data
+    t_sim += 1.;
+
+    if (t_sim > t_w2a) {
+        // Copy current w2a data and update old time
+        amr_wind::field_ops::copy(lvs, w2a_lvs, 0, 0, 1, lvs.num_grow());
+        t_last = t_w2a;
+        // Update w2a values (as in a file read)
+        w2a_lvs.setVal(0.);
+        t_w2a += 1.;
+    }
+
+    // Interpolate again
+    time_interpolate_wave_fields(
+        lvs, vel, w2a_lvs, w2a_vel, t_last, t_sim, t_w2a);
+
+    // Check value of levelset
+    const amrex::Real fmax2 = utils::field_max(lvs);
+    const amrex::Real fmin2 = utils::field_min(lvs);
+    EXPECT_NEAR(fmax2, 0.5, 1e-10);
+    EXPECT_NEAR(fmin2, 0.5, 1e-10);
+}
+
 } // namespace amr_wind_tests
