@@ -39,7 +39,7 @@ int evaluate_read_resize(
         // Time index for reading
         ntime = new_ntime;
         // Sim time to go with recorded data
-        wtime = new_ntime * wdt + wtinit;
+        wtime = new_ntime * wdt - wtinit;
         // If double reading is deemed necessary, check for convenience
         if (double_data == 1 && std::abs(wtime - time) <= 1e-10) {
             // Reading can be done just once, w2a fields replace ow fields
@@ -212,6 +212,25 @@ void populate_fields_all_levels(
     postprocess_velocity_field_liquid(vel_field, lvs_field, geom_all);
 }
 
+void time_interpolate_wave_fields(
+    amr_wind::Field& lvs_field,
+    amr_wind::Field& vel_field,
+    const amr_wind::Field& future_lvs_field,
+    const amr_wind::Field& future_vel_field,
+    const amrex::Real t_old,
+    const amrex::Real t_new,
+    const amrex::Real t_future)
+{
+    const amrex::Real b = (t_new - t_old) / (t_future - t_old + 1e-16);
+    const amrex::Real a = 1. - b;
+    amr_wind::field_ops::lincomb(
+        lvs_field, a, lvs_field, 0, b, future_lvs_field, 0, 0, 1,
+        lvs_field.num_grow());
+    amr_wind::field_ops::lincomb(
+        vel_field, a, vel_field, 0, b, future_vel_field, 0, 0, AMREX_SPACEDIM,
+        vel_field.num_grow());
+}
+
 } // namespace
 #endif
 
@@ -251,7 +270,6 @@ struct ReadInputsOp<W2AWaves>
         if (!pp.contains("HOS_init_timestep")) {
             pp.query("HOS_init_time", wdata.t_winit);
         }
-        // Check effect !!!
         pp.query("HOS_domain_offset_x", wdata.xlo0);
         pp.query("HOS_domain_offset_y", wdata.xlo1);
 
@@ -284,8 +302,6 @@ struct ReadInputsOp<W2AWaves>
             amrex::Abort(
                 "Waves2AMR ReadInputsOp: modes file requested does not exist");
         }
-        // modify initialize to differentiate between file not existing and file
-        // being wrong type (ocean or NWT)
 
         // Get dt of HOS data
         wdata.dt_modes = wdata.is_ocean ? wdata.c_rmodes.get_dtout()
@@ -310,6 +326,10 @@ struct ReadInputsOp<W2AWaves>
             // Save first timestep
             wdata.n_winit = wdata.ntime;
         }
+
+        amrex::Print() << "OceanWaves: Initializing Waves2AMR profile at time "
+                       << wdata.t_winit << ", step " << wdata.n_winit
+                       << std::endl;
 
         // Initialize variables to store modes
         amrex::Real depth{0.0};
@@ -336,6 +356,17 @@ struct ReadInputsOp<W2AWaves>
             // Get nominal last timestep of data
             wdata.n_wstop =
                 (int)((wdata.c_rmodes.get_Tstop() + 1e-8) / wdata.dt_modes);
+
+            amrex::Print()
+                << "OceanWaves: Waves2AMR parameters from HOS-Ocean file: \n"
+                << "    nx " << wdata.n0_sp << "  dx " << wdata.dx0 << "  Lx "
+                << wdata.c_rmodes.get_xlen() << std::endl
+                << "    ny " << wdata.n1_sp << "  dy " << wdata.dx1 << "  Ly "
+                << wdata.c_rmodes.get_ylen() << std::endl
+                << "    depth " << depth << std::endl
+                << "    output time interval " << wdata.dt_modes
+                << "  nominal last time " << wdata.n_wstop * wdata.dt_modes
+                << std::endl;
         } else {
             int vsize = wdata.r_rmodes.get_vector_size();
             int vasize = wdata.r_rmodes.get_addl_vector_size();
@@ -363,6 +394,17 @@ struct ReadInputsOp<W2AWaves>
             // Get nominal last timestep of data
             wdata.n_wstop =
                 (int)((wdata.r_rmodes.get_Tstop() + 1e-8) / wdata.dt_modes);
+
+            amrex::Print()
+                << "OceanWaves: Waves2AMR parameters from HOS-NWT file: \n"
+                << "    nx " << wdata.n0_sp << "  dx " << wdata.dx0 << "  Lx "
+                << wdata.r_rmodes.get_xlen() << std::endl
+                << "    ny " << wdata.n1_sp << "  dy " << wdata.dx1 << "  Ly "
+                << wdata.r_rmodes.get_ylen() << std::endl
+                << "    nz " << wdata.n2 << "  depth " << depth << std::endl
+                << "    output time interval " << wdata.dt_modes
+                << "  nominal last time " << wdata.n_wstop * wdata.dt_modes
+                << std::endl;
         }
 
         // Check if stop time is exceeded, introduce offset to ntime
@@ -436,6 +478,40 @@ struct ReadInputsOp<W2AWaves>
                 "Waves2AMR ReadInputsOp: create_height_vector error, failure "
                 "code " +
                 std::to_string(flag));
+        }
+
+        amrex::Real z_double{0.};
+        bool found_z_double{false};
+        for (int n = 0; n < wdata.hvec.size() - 1; ++n) {
+            const amrex::Real dz = wdata.hvec[n] - wdata.hvec[n + 1];
+            if (!found_z_double && dz >= 2.0 * dz0) {
+                z_double = 0.5 * (wdata.hvec[n] + wdata.hvec[n + 1]);
+                found_z_double = true;
+            }
+        }
+
+        amrex::Print()
+            << "OceanWaves: Waves2AMR height vector for interpolation: \n"
+            << "    start " << wdata.hvec[0] << "  end "
+            << wdata.hvec[wdata.hvec.size() - 1] << "  num points "
+            << wdata.hvec.size() << std::endl
+            << "    initial dz " << wdata.hvec[0] - wdata.hvec[1]
+            << "  first two grown dz "
+            << wdata.hvec[nh_above] - wdata.hvec[nh_above + 1] << " "
+            << wdata.hvec[nh_above + 1] - wdata.hvec[nh_above + 2]
+            << "  final dz "
+            << wdata.hvec[wdata.hvec.size() - 2] -
+                   wdata.hvec[wdata.hvec.size() - 1]
+            << std::endl;
+
+        if (found_z_double) {
+            amrex::Print()
+                << "    interp spacing reaches double that of surface at "
+                << z_double << std::endl;
+        } else {
+            amrex::Print() << "    interp spacing remains less than double "
+                              "that of surface "
+                           << std::endl;
         }
 
         // Always get modes on every processor for initialization
@@ -721,6 +797,14 @@ struct UpdateTargetFieldsOp<W2AWaves>
         // Read HOS data if necessary based on time
         if (read_flag) {
 
+            amrex::Print() << "OceanWaves: Waves2AMR reading from file: step "
+                           << wdata.ntime << std::endl
+                           << "    last interp time " << t_last << std::endl
+                           << "    simulation time  " << time << std::endl
+                           << "    new data time    " << wdata.t << std::endl
+                           << "    double data read " << double_data
+                           << std::endl;
+
             if (wdata.resize_flag) {
                 // Reset flag
                 wdata.resize_flag = false;
@@ -785,9 +869,18 @@ struct UpdateTargetFieldsOp<W2AWaves>
             // Only perform reading where needed, communicate offset though
             amrex::ParallelDescriptor::ReduceIntMax(wdata.n_offset);
 
-            // If double read is required, then copy older wave data to ow_
-            // fields and modify interpolation parameters to get things right
-            if (double_data == 1) {
+            // Previous W2A data is more recent than last interpolated data
+            t_last = (wdata.ntime - 1) * wdata.dt_modes;
+
+            if (double_data == 0) {
+                // Previous W2A data needs to be copied into ow fields
+                amr_wind::field_ops::copy(
+                    ow_levelset, w2a_levelset, 0, 0, 1, ow_levelset.num_grow());
+                amr_wind::field_ops::copy(
+                    ow_velocity, w2a_velocity, 0, 0, AMREX_SPACEDIM,
+                    ow_velocity.num_grow());
+            } else if (double_data == 1) {
+                // Previous W2A data is unknown, read into ow fields
                 if (wdata.do_interp) {
                     populate_fields_all_levels(
                         wdata, geom, ow_levelset, ow_velocity, -1);
@@ -806,18 +899,8 @@ struct UpdateTargetFieldsOp<W2AWaves>
                 // Fill patch to get correct ghost cells after average down
                 ow_velocity.fillpatch(sim.time().new_time());
                 ow_levelset.fillpatch(sim.time().new_time());
-
-                // Prior t_last (corresponding to ow fields)
-                t_last = (wdata.ntime - 1) * wdata.dt_modes;
-            } else if (double_data == 2) {
-                // Restarting simulation or taking a big step, new time at ntime
-                // Initialize ow fields to 0 for time interp, will be replaced
-                if (wdata.do_interp) {
-                    ow_levelset.setVal(0.0, ow_levelset.num_grow()[0]);
-                    ow_velocity.setVal(0.0, ow_levelset.num_grow()[0]);
-                }
-                // No modification needed for t_last, leads to interp factor = 1
             }
+            // ow fields cancel when double_data == 2, no modification
 
             // After possible prior read, now read data for this ntime
             if (wdata.do_interp) {
@@ -840,32 +923,9 @@ struct UpdateTargetFieldsOp<W2AWaves>
         }
 
         // Temporally interpolate at every timestep to get target solution
-        for (int lev = 0; lev < nlevels; ++lev) {
-            auto phi = ow_levelset(lev).arrays();
-            auto vel = ow_velocity(lev).arrays();
-            const auto W2A_phi = w2a_levelset(lev).const_arrays();
-            const auto W2A_vel = w2a_velocity(lev).const_arrays();
-
-            const amrex::Real W2A_t = wdata.t;
-            amrex::ParallelFor(
-                ow_levelset(lev), amrex::IntVect(3),
-                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                    // Interpolate temporally every time
-                    phi[nbx](i, j, k) +=
-                        (W2A_phi[nbx](i, j, k) - phi[nbx](i, j, k)) *
-                        (time - t_last) / (W2A_t - t_last + 1e-16);
-                    vel[nbx](i, j, k, 0) +=
-                        (W2A_vel[nbx](i, j, k, 0) - vel[nbx](i, j, k, 0)) *
-                        (time - t_last) / (W2A_t - t_last + 1e-16);
-                    vel[nbx](i, j, k, 1) +=
-                        (W2A_vel[nbx](i, j, k, 1) - vel[nbx](i, j, k, 1)) *
-                        (time - t_last) / (W2A_t - t_last + 1e-16);
-                    vel[nbx](i, j, k, 2) +=
-                        (W2A_vel[nbx](i, j, k, 2) - vel[nbx](i, j, k, 2)) *
-                        (time - t_last) / (W2A_t - t_last + 1e-16);
-                });
-        }
-        amrex::Gpu::streamSynchronize();
+        time_interpolate_wave_fields(
+            ow_levelset, ow_velocity, w2a_levelset, w2a_velocity, t_last, time,
+            wdata.t);
 #else
         amrex::ignore_unused(data, time);
 #endif
