@@ -1,0 +1,14 @@
+.. meta::71f8071149d6b4a71d9deceafa3806185204e401b2474968d4d376f6d36b494f29a137b581db050808a71ee469beb30d5842cc18419dbc341e6bd1126d925894
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::sampling::LidarSampler Class Reference
+
+LidarSampler Class Reference
+============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1sampling_1_1_lidar_sampler.html

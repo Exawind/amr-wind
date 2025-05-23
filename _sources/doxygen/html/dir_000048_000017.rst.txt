@@ -1,0 +1,14 @@
+.. meta::d8cb588fb44d944c66a48982f46c0f887eb77101423fbeb83c3cec3809e13f7461df7b56a5d2735fc03a0bc6f437bc61b63e3cf2173bc60af51e46052474c593
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/udfs -&gt; equation_systems Relation
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/physics/udfs -&gt; equation\_systems Relation
+==========================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: dir_000048_000017.html

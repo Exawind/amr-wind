@@ -1,0 +1,14 @@
+.. meta::12aa2188ba44d91a005b89d7fddf496c4ab3c23adf3ed73983b56bcc1a95a560de8a83b2987ab27f36364e3c8357fa35f531d2e788b22d740af7c24361e4b9d2
+
+:orphan:
+
+.. title:: AMR-Wind API: ncutils::NCVar Struct Reference
+
+NCVar Struct Reference
+======================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structncutils_1_1_n_c_var.html

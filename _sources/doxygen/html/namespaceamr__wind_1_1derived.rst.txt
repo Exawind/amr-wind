@@ -1,0 +1,14 @@
+.. meta::fc0d6947439e051cb44b69af3aff22b75bfe77445ea20e60dc5006f10d457c0fd70dca6ffe769bd1bec57fcdf422e5bbce5b78f403ea9a88c2257e9c2b2d3d27
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::derived Namespace Reference
+
+derived Namespace Reference
+===========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: namespaceamr__wind_1_1derived.html

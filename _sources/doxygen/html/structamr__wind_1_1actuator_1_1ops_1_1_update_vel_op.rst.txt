@@ -1,0 +1,14 @@
+.. meta::a661d0b2d0aa0fdfbb305c5480b77f5c526f08a76e33effbcd1d18538e11484b5cc005b6c18750427b21e22aedbd4b0cfa127cd516b07a69f902b75127f4101c
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::UpdateVelOp&lt; ActTrait, SrcTrait, typename &gt; Struct Template Reference
+
+UpdateVelOp&lt; ActTrait, SrcTrait, typename &gt; Struct Template Reference
+===========================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1ops_1_1_update_vel_op.html

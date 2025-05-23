@@ -1,0 +1,15 @@
+<map id="amr_wind::FieldInfo" name="amr_wind::FieldInfo">
+<area shape="rect" id="Node000001" title=" " alt="" coords="90,313,241,339"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="33,218,119,243"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="93,253,121,287,150,311,146,315,117,291,89,257"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="5,93,144,133"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="78,147,79,218,73,218,72,147"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="145,211,370,251"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="238,264,214,291,184,315,181,311,210,287,234,260"/>
+<area shape="rect" id="Node000005" href="$classamr__wind_1_1_field_fill_patch_ops_base.html" title=" " alt="" coords="168,93,347,133"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="260,147,260,210,255,210,255,147"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="371,101,528,126"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="420,135,290,213,287,208,417,131"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="430,5,469,31"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="452,44,452,101,447,101,447,44"/>
+</map>

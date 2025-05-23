@@ -1,0 +1,14 @@
+.. meta::9c46bd42147b62645525790f6afcc60838b05878d28378be68f8cc5830afb65622d7e5be9380597d0bb21fd733048d5279ed9f27cd9f9c4f8a6a10bf5603543d
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::OceanWavesFillInflow Class Reference
+
+OceanWavesFillInflow Class Reference
+====================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_ocean_waves_fill_inflow.html

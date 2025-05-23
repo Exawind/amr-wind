@@ -1,0 +1,14 @@
+.. meta::fe6ce775533b49957da92e8f34fe47e70c28b1ea748b721d604066c1d846c76d3dd562a5f5c837db77093359c81a2dc36f1f861cf8de7ed60a30a629c5e49fab
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ib::ops::InitDataOp&lt; Cylinder &gt; Struct Reference
+
+InitDataOp&lt; Cylinder &gt; Struct Reference
+=============================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ib_1_1ops_1_1_init_data_op_3_01_cylinder_01_4.html

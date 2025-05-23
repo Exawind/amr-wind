@@ -1,0 +1,14 @@
+.. meta::e8e4a89aedfab7a3af0f04039958b1233df1f25ae75634b808cb2b547744981517c31d665e8f709a0cebeaa7f5e9d9033e2c02cc4d1cbdf6f70ca7091995af3c
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::udf::UDFImpl&lt; T &gt; Class Template Reference
+
+UDFImpl&lt; T &gt; Class Template Reference
+===========================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1udf_1_1_u_d_f_impl.html

@@ -1,0 +1,14 @@
+.. meta::60eb0db24aad7e1939acd8097cedf32332cbc6d721ec05a09343965e5d1e192391bf3324316501301a85ea94aba6f24673040adc138fcddf5d72756a2213b68e
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/actuator/turbine/fast/FastIface.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/wind\_energy/actuator/turbine/fast/FastIface.cpp File Reference
+============================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _fast_iface_8cpp.html

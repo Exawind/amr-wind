@@ -1,0 +1,14 @@
+.. meta::bf03aeeaa770657b7f939427a735ebd0882d744a922d1690d932ddfaddd6de602ac5c380d81ba18c21e48500da74dacf0933139d442a52209c5c43e0b67b6610
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::turbulence::Kosovic&lt; Transport &gt; Class Template Reference
+
+Kosovic&lt; Transport &gt; Class Template Reference
+===================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1turbulence_1_1_kosovic.html

@@ -1,0 +1,14 @@
+.. meta::b7b7dd90511c6c3df01825799b78f9ebbe155dc9da1ac4f08ff7a81d405fd2805cbcb51bcea30f2549fbca4f44e87320ec7a7e702c02b8bfab1f26ff715a909f
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ib::Sphere Struct Reference
+
+Sphere Struct Reference
+=======================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ib_1_1_sphere.html

@@ -1,0 +1,14 @@
+.. meta::0c091af54bb746c3cc3fdf0a579df8b0a2fc52615d4c3e4336f1969768f729e58fb8417a15c911fde781f6733d64b7ea7f9ca42d20bfe98b3378e521a3896534
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ScratchField Class Reference
+
+ScratchField Class Reference
+============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_scratch_field.html

@@ -1,0 +1,14 @@
+.. meta::88cf7e9d21a86f2efb2403d2e0c5f6505368dbe0bb64064193d5dbed6718cfc65cf35a8c4e4ffb50f72b3ab1487aa4d9e329db07b4eaed8c3bc76363f0608fb2
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/boundary_conditions/MassInflowOutflowBC.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/boundary\_conditions/MassInflowOutflowBC.H File Reference
+======================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _mass_inflow_outflow_b_c_8_h.html

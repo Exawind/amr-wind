@@ -1,0 +1,14 @@
+.. meta::33acaa93b0f8b98353e901abde8a25fbbb89ad3987a25ffc019d314f113474ee48151fbdb2157062788f92cb117eaa815964723bb0809091dc42e171b49255ba
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ExtSolverMgr Class Reference
+
+ExtSolverMgr Class Reference
+============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_ext_solver_mgr.html

@@ -1,0 +1,14 @@
+.. meta::b28aba9c4a1fae3f8acd5daebbf62780bc609f102155b922ab47ec92dbb52149dbd0db1428787f5e8089d673238f5adb7331c08eb14ef2dc46c8e808776887c1
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ib::IBType Struct Reference
+
+IBType Struct Reference
+=======================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ib_1_1_i_b_type.html

@@ -1,0 +1,14 @@
+.. meta::dcf05871d7abdaeae23950127b2e12dff544a692919bd782a37d2fb35f7676a3c5b2bbe16e44eb8c9db12b4873008ecd66cb7952100954c45356db6aea80221b
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::FLLCOp Struct Reference
+
+FLLCOp Struct Reference
+=======================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1_f_l_l_c_op.html

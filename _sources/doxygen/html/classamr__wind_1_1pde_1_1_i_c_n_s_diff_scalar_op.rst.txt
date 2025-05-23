@@ -1,0 +1,14 @@
+.. meta::25f2d2748ed4fe6e4bf70ebc6202218a5838d7d2c8fbe90da99e2a4383788a8cc08699085ac75e969cc0d46c5175deebe895738d8b55c289c9f69e76b3d760a0
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::ICNSDiffScalarOp Class Reference
+
+ICNSDiffScalarOp Class Reference
+================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1pde_1_1_i_c_n_s_diff_scalar_op.html

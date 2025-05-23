@@ -1,0 +1,14 @@
+.. meta::3503cae4cffceb0c950a688cbb63169f5e051732ef0a81b8df8abf65294b7e9e146efb68ef130ff986109e7c132baa583a421eb1ba3cdc0a2f8fd7a2d3e50c0f
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ocean_waves::OceanWaves Class Reference
+
+OceanWaves Class Reference
+==========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1ocean__waves_1_1_ocean_waves.html

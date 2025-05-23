@@ -1,0 +1,14 @@
+.. meta::28cf21967015fefd948ab614460f4541f0755e747c0abaf8cb1114188906f910f2c0a1e52832882eb9c01dc851ccde8d3272946ed0983b46ad651796d5dc0a8f
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/averaging/ReAveraging.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/averaging/ReAveraging.cpp File Reference
+===============================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _re_averaging_8cpp.html

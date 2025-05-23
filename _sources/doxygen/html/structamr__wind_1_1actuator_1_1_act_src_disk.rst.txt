@@ -1,0 +1,14 @@
+.. meta::25b6a5739f2ad5ce60c4fb97beb990fbeb60127c888df1b29e69216739bd838d9e65ed455cc6cb53081bef1f2393d6003bd40db364fe4b106ea2707ec588ea9e
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ActSrcDisk Struct Reference
+
+ActSrcDisk Struct Reference
+===========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1_act_src_disk.html

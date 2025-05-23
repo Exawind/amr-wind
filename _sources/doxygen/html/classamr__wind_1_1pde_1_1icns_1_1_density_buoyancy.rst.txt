@@ -1,0 +1,14 @@
+.. meta::90fc9529ec56773095f3470f696beb1b89dd9e3ba6672b057c7b57f32e66f92bad0c14fd55bbcbe9f9cfecaaf97b3f973d2734ddefc2504ae9d3ca08f0e39805
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::icns::DensityBuoyancy Class Reference
+
+DensityBuoyancy Class Reference
+===============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1pde_1_1icns_1_1_density_buoyancy.html

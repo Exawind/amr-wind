@@ -1,0 +1,14 @@
+.. meta::c73e69dd57c1b75ca380ca4ff279857d1aa450ede4ea0a8ba8632d7d1d83d9a7a01370ce066d60f0612688f65e56f0bc97a1d991d0865bc4ba8973e4e82bf076
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::fvm::stencil::StencilJHI Struct Reference
+
+StencilJHI Struct Reference
+===========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1fvm_1_1stencil_1_1_stencil_j_h_i.html

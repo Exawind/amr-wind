@@ -1,0 +1,14 @@
+.. meta::5be9549ce89764ad772ef1ab320663ade08c624953db1bb7e28a8b7439278a4abb43716da411a46467b6e25153719449fac7d3adc5f31b0aefb983bf2fe1bdf1
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::synth_turb::MeanProfile Class Reference
+
+MeanProfile Class Reference
+===========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1synth__turb_1_1_mean_profile.html

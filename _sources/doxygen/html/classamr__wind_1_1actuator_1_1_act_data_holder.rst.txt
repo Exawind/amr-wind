@@ -1,0 +1,14 @@
+.. meta::74f972189fd9458ab08e440b70fd62031150f19ef5f1406e13a63d52eec45eaa47ade4d6e3ab17508c06839a6ed9b3ebc60d37d5786067f9951433a85e891b65
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ActDataHolder&lt; ActTrait &gt; Class Template Reference
+
+ActDataHolder&lt; ActTrait &gt; Class Template Reference
+========================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1actuator_1_1_act_data_holder.html

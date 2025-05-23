@@ -1,0 +1,14 @@
+.. meta::a2abca9797f1d2f50be78ba036b0acb4319c8722108de3c70015e80c822f6bed65e95456dec8762a9a2891f9d19c974275cf591e77e323321bc94d8583c36636
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::Joukowsky Struct Reference
+
+Joukowsky Struct Reference
+==========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1_joukowsky.html

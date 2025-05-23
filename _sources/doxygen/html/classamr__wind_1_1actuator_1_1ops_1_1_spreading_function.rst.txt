@@ -1,0 +1,14 @@
+.. meta::4ca65f9af7d9c6f3ab0c5341cd1b643063c6a2df6175e9ead7a92b73e5df1d44376b7224864700745428ebb6420c9d5d784a91fca997a14041925bb5879eed7a
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::SpreadingFunction&lt; T &gt; Class Template Reference
+
+SpreadingFunction&lt; T &gt; Class Template Reference
+=====================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1actuator_1_1ops_1_1_spreading_function.html

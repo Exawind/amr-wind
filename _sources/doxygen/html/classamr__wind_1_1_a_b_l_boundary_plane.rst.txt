@@ -1,0 +1,14 @@
+.. meta::1efbda70f44cb0bc0b8e26516ff9ccd6e249d6ba5045f3bc9ef16ff9a671e1ccb6d7b342d989198f6d73c1df155223e94855a97aade45a8c3c9271de1c54ac0d
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ABLBoundaryPlane Class Reference
+
+ABLBoundaryPlane Class Reference
+================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_a_b_l_boundary_plane.html

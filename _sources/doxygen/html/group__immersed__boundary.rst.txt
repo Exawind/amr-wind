@@ -1,0 +1,14 @@
+.. meta::e59f96303477ab394ab5b63035b84e019f7b202264039323ab1824fa83e0da8776e9298bd8718d818ab02443ce583a3232fedf64b224dbe11a895fcbb72428f9
+
+:orphan:
+
+.. title:: AMR-Wind API: Immersed boundary module
+
+Immersed boundary module
+========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: group__immersed__boundary.html

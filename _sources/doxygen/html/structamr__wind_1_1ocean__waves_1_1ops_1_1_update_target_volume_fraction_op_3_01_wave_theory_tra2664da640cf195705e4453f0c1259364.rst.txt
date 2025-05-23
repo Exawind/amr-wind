@@ -1,0 +1,14 @@
+.. meta::fd2723c6ae1cb33c90e6233fef9ad9d549ab0da4b6941d3f9050efca0c196c448550b7d61687b95c5b0e4e9f57efcad9ab3b240965599e2fa22166c116831ba2
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ocean_waves::ops::UpdateTargetVolumeFractionOp&lt; WaveTheoryTrait, typename std::enable_if_t&lt; std::is_base_of_v&lt; RelaxZonesType, WaveTheoryTrait &gt; &gt; &gt; Struct Template Reference
+
+is\_base\_of\_v&lt; RelaxZonesType, WaveTheoryTrait &gt; &gt; &gt; Struct Template Reference
+============================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ocean__waves_1_1ops_1_1_update_target_volume_fraction_op_3_01_wave_theory_tra2664da640cf195705e4453f0c1259364.html

@@ -1,0 +1,14 @@
+.. meta::e97c041fea39e6258196d78a3a2a65cdab6edb1bba1d2f8b098cc1f371cfe87a0382e4803d6f550f8209de6636610869d35f4f277fefb73fe138b6a89efabe2e
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::AdvectionOp&lt; PDE, Scheme, typename &gt; Struct Template Reference
+
+AdvectionOp&lt; PDE, Scheme, typename &gt; Struct Template Reference
+====================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1pde_1_1_advection_op.html

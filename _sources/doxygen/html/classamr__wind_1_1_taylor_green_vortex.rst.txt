@@ -1,0 +1,14 @@
+.. meta::fb254abfa9f43e23c34628e481069ee9e853598c5a0b4215682175cc5ae6a507fd5d4ee930feaeb8bfdd34bfa6019af618ffcc4bcfa03a63fe1609942c92b552
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::TaylorGreenVortex Class Reference
+
+TaylorGreenVortex Class Reference
+=================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_taylor_green_vortex.html

@@ -1,0 +1,14 @@
+.. meta::f56c6049a1402659d841e6decf3ad1e91ad2cf274eb19b4cea10a5c5d3a5a51714de75cce06ff27149c6cac545e7d400121c3dfa16c405daf10b73abae172594
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::synth_turb::LinearShearOp Struct Reference
+
+LinearShearOp Struct Reference
+==============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1synth__turb_1_1_linear_shear_op.html

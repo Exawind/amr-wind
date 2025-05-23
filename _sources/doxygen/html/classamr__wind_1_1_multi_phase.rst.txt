@@ -1,0 +1,14 @@
+.. meta::f9abc762f1d8ddb08ffdea69918da8f85641ff3924a8a2024f51327691e37095f05bee57d4a39e825b9b089224050c46ba75a6e78bcedb95ebdb27f8ebe4b2f7
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::MultiPhase Class Reference
+
+MultiPhase Class Reference
+==========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_multi_phase.html

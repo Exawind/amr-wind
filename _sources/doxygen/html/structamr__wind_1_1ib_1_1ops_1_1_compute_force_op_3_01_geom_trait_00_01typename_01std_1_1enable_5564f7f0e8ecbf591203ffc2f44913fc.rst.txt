@@ -1,0 +1,14 @@
+.. meta::0f09691de310c9411fa25120309dd4644f51ed9ff3bbf82304ec07a6dde1c0e68140525faaf1cc3989fc197da396b921b294a4e262f61a84db547f056671a222
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ib::ops::ComputeForceOp&lt; GeomTrait, typename std::enable_if_t&lt; std::is_base_of_v&lt; BluffBodyType, GeomTrait &gt; &gt; &gt; Struct Template Reference
+
+is\_base\_of\_v&lt; BluffBodyType, GeomTrait &gt; &gt; &gt; Struct Template Reference
+=====================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ib_1_1ops_1_1_compute_force_op_3_01_geom_trait_00_01typename_01std_1_1enable_5564f7f0e8ecbf591203ffc2f44913fc.html

@@ -1,0 +1,14 @@
+.. meta::a6268b0f58eea3704105a5c95ecd35afc0a765e4da7436bed37d95b26f059ceed3457e348f57a3dcb94d961422d299fbf2b08fa66d83de345b208e0f4b2cfee5
+
+:orphan:
+
+.. title:: AMR-Wind API: exw_fast::SC_DX_InputType Struct Reference
+
+SC\_DX\_InputType Struct Reference
+==================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structexw__fast_1_1_s_c___d_x___input_type.html

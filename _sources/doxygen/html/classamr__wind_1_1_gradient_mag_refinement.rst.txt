@@ -1,0 +1,14 @@
+.. meta::4b3fcca5750ce19af14de2d7343857b14dbd6189c762814e93eb05b2c1006c48c5eca407a3e1f52fd5bcd718c0d11dcc3f1a4d3d1ae1f62a98848e3eab5b0772
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::GradientMagRefinement Class Reference
+
+GradientMagRefinement Class Reference
+=====================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_gradient_mag_refinement.html

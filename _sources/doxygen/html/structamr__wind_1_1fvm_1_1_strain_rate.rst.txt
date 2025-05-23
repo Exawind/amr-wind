@@ -1,0 +1,14 @@
+.. meta::b97cc7e012a6c64d08e5ab849c5be22b5c5827691159992dc9b920813cd4c974330e453c97e2e2f186f4583d5f5cf20b7c953a67c34b1fd7278a9a7d55aa0949
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::fvm::StrainRate&lt; FTypeIn, FTypeOut &gt; Struct Template Reference
+
+StrainRate&lt; FTypeIn, FTypeOut &gt; Struct Template Reference
+===============================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1fvm_1_1_strain_rate.html

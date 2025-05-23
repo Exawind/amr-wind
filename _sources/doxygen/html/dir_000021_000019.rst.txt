@@ -1,0 +1,14 @@
+.. meta::828eb0c8f91fdba1430fb568c7e7b33b3f949b2e0f28833ba9a38be1205af05fcc605fa936c78a8f72b59db95eaab3772ce594eb64b343480ff5537419acba89
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/immersed_boundary -&gt; fvm Relation
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/immersed\_boundary -&gt; fvm Relation
+==================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: dir_000021_000019.html

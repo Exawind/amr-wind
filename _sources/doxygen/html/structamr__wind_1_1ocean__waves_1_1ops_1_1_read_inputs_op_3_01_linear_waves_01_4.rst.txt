@@ -1,0 +1,14 @@
+.. meta::a053c8a7a0893e32abd0c681f8131609209327b9ecd93e574708774df6b411b13664296bb8d0ab6c73da3144ec13e9e9bf4f5d8e6d01590e0aed2e1537170931
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ocean_waves::ops::ReadInputsOp&lt; LinearWaves &gt; Struct Reference
+
+ReadInputsOp&lt; LinearWaves &gt; Struct Reference
+==================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ocean__waves_1_1ops_1_1_read_inputs_op_3_01_linear_waves_01_4.html

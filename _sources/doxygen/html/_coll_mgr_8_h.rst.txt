@@ -1,0 +1,14 @@
+.. meta::cacf5b628d1bdb478b53f090255ae3d27e1cf3d589779b8f51c5600aa92ccd2a6797910974f45dbd9b0f660e8348509d3fc5b168df9d78dc3a668202efc600d4
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/core/CollMgr.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/core/CollMgr.H File Reference
+==========================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _coll_mgr_8_h.html

@@ -1,0 +1,14 @@
+.. meta::6bb58d8afbb984bf7b435d84c577ae70ee84aa245eeb8a8d02b2df51bed39768a3b422d5dfcbe74ee4d64a4c3981121006a7ccb3167ff9ead9216a47492d5a57
+
+:orphan:
+
+.. title:: AMR-Wind API: exw_fast::FastTurbine Struct Reference
+
+FastTurbine Struct Reference
+============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structexw__fast_1_1_fast_turbine.html

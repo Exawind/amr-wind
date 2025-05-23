@@ -1,0 +1,14 @@
+.. meta::d3d8376abd0bebc7aa72e74ada85dd2640a72b41f7a18a5ae9be0dfeb214b1563dd320b333b0e557258ed23e5dbdb43aeded059c5668506b86613ca610abf07b
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::CartBoxRefinement Class Reference
+
+CartBoxRefinement Class Reference
+=================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_cart_box_refinement.html

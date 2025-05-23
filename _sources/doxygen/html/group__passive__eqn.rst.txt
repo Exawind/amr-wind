@@ -1,0 +1,14 @@
+.. meta::1d395502db32523f2f6aa9b1512a1945009f427fa8dff9d095f3eb437f09a9afa1af03d051318d195758ac71dbefb037e8bbfa0b8ba09ac05a60ed8cce21d77a
+
+:orphan:
+
+.. title:: AMR-Wind API: Passive scalar transport equation
+
+Passive scalar transport equation
+=================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: group__passive__eqn.html

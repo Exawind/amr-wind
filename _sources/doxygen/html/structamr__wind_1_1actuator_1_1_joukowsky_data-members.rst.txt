@@ -1,0 +1,14 @@
+.. meta::ac6bd94df8d12025fc89da11403721059e3966774e20cba297a1d4cce35e177ae2fbe7f3a73ac5905ce7f67827e01cfe993ac0c33847e0dd3095201663fe8880
+
+:orphan:
+
+.. title:: AMR-Wind API: Member List
+
+Member List
+===========
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1_joukowsky_data-members.html

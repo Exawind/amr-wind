@@ -1,0 +1,14 @@
+.. meta::429b36977e61fbf81af80024308aa7604d5af6edd53a84ee90a592b81dc5247f51202caf80a6795e869c2cf98eb11e774967a558388cf40f24b8cb54d1ecc117
+
+:orphan:
+
+.. title:: AMR-Wind API: Member List
+
+Member List
+===========
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ocean__waves_1_1ops_1_1_apply_relax_zones_op_3_01_wave_theory_trait_00_01type92f788ff166a0b209d85e24a8e994d73.html

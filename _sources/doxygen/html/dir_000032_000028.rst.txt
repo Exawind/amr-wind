@@ -1,0 +1,14 @@
+.. meta::63e61e2e3339e2957118a141ce592c95d03e02a0c23bbe5e16a9e26dc20685ef0080f97bb006737ae573dec09e8029b60cc8948609236b73fb95a0c145bcfa88
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/projection -&gt; ocean_waves Relation
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/projection -&gt; ocean\_waves Relation
+===================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: dir_000032_000028.html

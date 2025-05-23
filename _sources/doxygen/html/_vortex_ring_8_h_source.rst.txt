@@ -1,0 +1,14 @@
+.. meta::b19df31c2fba2f35208cd98835c6d4203d06867eb97da76f88b085ead92def2e727aeae090e8b9941b5ec6e546720676b13bb8c3a2aed9913e50d882ea6e56a4
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/VortexRing.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/physics/VortexRing.H Source File
+=============================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _vortex_ring_8_h_source.html

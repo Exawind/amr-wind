@@ -1,0 +1,14 @@
+.. meta::ca337e4cca2d5c2bca8b7d042328422ecffb328bbda824f8008d2bed9da0ee0506b8d51617e2600cfda503dc6be82f24ccd603b94ff33fe9f467dd1f30ca9a26
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/actuator/ActParser.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/wind\_energy/actuator/ActParser.H File Reference
+=============================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _act_parser_8_h.html

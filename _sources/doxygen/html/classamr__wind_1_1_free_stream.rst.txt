@@ -1,0 +1,14 @@
+.. meta::ae1d249849294789253849f29e1a505ef1922efdb118f6b45585986d4b864e740b7c8a1b633654b3c5b821a8b1f339a5abb4b8e1b9a228af073de4e709a7b0d6
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::FreeStream Class Reference
+
+FreeStream Class Reference
+==========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_free_stream.html

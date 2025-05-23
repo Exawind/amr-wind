@@ -1,0 +1,14 @@
+.. meta::4127c686f54b4b01b6fad076029966e4ebc51beb7ea9320f8e1f277834140930ec4840bc8e4d91d6b1a4ac7dca35da9469949a66db9cc5e1d770a1bf8578bd24
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/boundary_conditions/BCInterface.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/boundary\_conditions/BCInterface.H File Reference
+==============================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _b_c_interface_8_h.html

@@ -1,0 +1,14 @@
+.. meta::74c3d65a1f94f642f3efda4b8b49b3b64aff01c3fd83a75809880ff5a73cbba17fd31fe51671058b85fcb1a59d55ab52d9ad71af624a099c28bd1110d79462f8
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::BCOp&lt; PDE, typename &gt; Struct Template Reference
+
+BCOp&lt; PDE, typename &gt; Struct Template Reference
+=====================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1pde_1_1_b_c_op.html

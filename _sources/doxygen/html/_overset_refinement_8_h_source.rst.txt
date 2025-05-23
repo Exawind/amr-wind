@@ -1,0 +1,14 @@
+.. meta::079b5f0f79f3e7bc36daf44917d2e309e3d716a0ee1197be4fccec3cd999ed0e21e16d9b0eae3ac471bbf3a91ddcea494c716385ab8ea01f933018bd8c855400
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/tagging/OversetRefinement.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/tagging/OversetRefinement.H Source File
+==============================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _overset_refinement_8_h_source.html

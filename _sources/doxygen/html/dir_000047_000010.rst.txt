@@ -1,0 +1,14 @@
+.. meta::888b39881495d5039fe0470692c3dd1904f24c2b8f115562fbbeae9a77cca77299465bfadd628cc6bbf536293310e77445ba9fa4da633a7110ad079bc7cc3623
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/turbulence -&gt; core Relation
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/turbulence -&gt; core Relation
+===========================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: dir_000047_000010.html

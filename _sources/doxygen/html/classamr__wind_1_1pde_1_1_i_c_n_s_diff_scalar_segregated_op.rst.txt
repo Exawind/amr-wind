@@ -1,0 +1,14 @@
+.. meta::c16f6ea9542749396c17ac43a07e16986b4bf7bbe738564f032019c62b3b998730f6838185cc0f84b31e57e421f3bf194787a8344f2a4e16bb47652e4f689c17
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::ICNSDiffScalarSegregatedOp Class Reference
+
+ICNSDiffScalarSegregatedOp Class Reference
+==========================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1pde_1_1_i_c_n_s_diff_scalar_segregated_op.html

@@ -1,0 +1,14 @@
+.. meta::2ee86f9a909af0bcd9d40bb726081279faf21f4f178dfc927cd10dd685b178abc930ab7ebaa9de5de23a6e75cb470a8ed575699cf8ddf696fe0881310f7e3015
+
+:orphan:
+
+.. title:: AMR-Wind API: Member List
+
+Member List
+===========
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1sampling_1_1_prism_parameters-members.html

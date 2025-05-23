@@ -1,0 +1,5 @@
+<map id="amr_wind::VortexRing" name="amr_wind::VortexRing">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,108,171,133"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="6,5,170,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="91,74,91,108,85,108,85,74"/>
+</map>

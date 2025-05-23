@@ -1,0 +1,14 @@
+.. meta::e2e77b80832363486b8dbcf37cc86f8ff59aba0f9e11e94188e28ac135f1b212ceafd7f59bfe917f183b729f32da78ba2d5e27aa00db1b9c7a13c6b5a9f5e2f9
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::UpdateVelOp&lt; ActTrait, ActSrcLine, typename std::enable_if_t&lt; std::is_base_of_v&lt; WingType, ActTrait &gt; &amp;&amp;UseDefaultOp&lt; ActTrait, ActSrcLine &gt;::update_vel &gt; &gt; Struct Template Reference
+
+update\_vel &gt; &gt; Struct Template Reference
+===============================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1ops_1_1_update_vel_op_3_01_act_trait_00_01_act_src_line_00_01typecd00946bec51c16e675a8172b8998e6d.html

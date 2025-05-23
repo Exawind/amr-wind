@@ -1,0 +1,14 @@
+.. meta::d0470053ee5d29789067fff59f59da8c79dbc68f2fd554f4143bf7250720ee38358c0a3607dcd93363d6a7277e7a8234b97182cf0f87eb7e0d764d33b311aad3
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::turbulence::KOmegaSSTIDDES&lt; Transport &gt; Class Template Reference
+
+KOmegaSSTIDDES&lt; Transport &gt; Class Template Reference
+==========================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1turbulence_1_1_k_omega_s_s_t_i_d_d_e_s.html

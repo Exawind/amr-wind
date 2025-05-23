@@ -1,0 +1,14 @@
+.. meta::34b3ba7bd4f15be8f2c7f064cc2d6f6050d647abbd92ae591c0f85d2d3d014a6fd18c5777f19b99fdaf44632f00542c2fd595beba8cffcb97beded97b9933a55
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::InitDataOp&lt; TurbineFast, SrcTrait &gt; Struct Template Reference
+
+InitDataOp&lt; TurbineFast, SrcTrait &gt; Struct Template Reference
+===================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1ops_1_1_init_data_op_3_01_turbine_fast_00_01_src_trait_01_4.html

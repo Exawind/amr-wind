@@ -1,0 +1,7 @@
+<map id="amr_wind::ABLStatsBase" name="amr_wind::ABLStatsBase">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,256,189,281"/>
+<area shape="rect" id="Node000002" href="$structamr__wind_1_1_factory.html" title=" " alt="" coords="9,137,185,207"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="100,220,100,256,95,256,95,220"/>
+<area shape="rect" id="Node000003" href="$structamr__wind_1_1_factory.html" title=" " alt="" coords="21,5,173,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="100,59,100,137,95,137,95,59"/>
+</map>

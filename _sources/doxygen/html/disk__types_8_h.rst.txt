@@ -1,0 +1,14 @@
+.. meta::50015425d0c8c437b1647466f77ba17fd5296ea4eb435ecd49d28e66c0cb76f748b59e4a2f0e19d36de0274496c24a6e1750e9fc528e3b2d890f862c8b783951
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/actuator/disk/disk_types.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/wind\_energy/actuator/disk/disk\_types.H File Reference
+====================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: disk__types_8_h.html

@@ -1,0 +1,14 @@
+.. meta::e543b2f15ef9c12a03c60c379858884a1d1d25f852c2f8e78843b12dbaf3f165508f5717b5d747e480e8af2c90bb5a8b0cd5ea812fb922634d67e9ddca0d7fc3
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ocean_waves::ops::ApplyRelaxZonesOp&lt; WaveTheoryTrait, typename &gt; Struct Template Reference
+
+ApplyRelaxZonesOp&lt; WaveTheoryTrait, typename &gt; Struct Template Reference
+==============================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ocean__waves_1_1ops_1_1_apply_relax_zones_op.html

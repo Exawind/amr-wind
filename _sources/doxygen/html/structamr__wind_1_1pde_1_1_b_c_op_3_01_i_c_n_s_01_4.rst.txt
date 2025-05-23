@@ -1,0 +1,14 @@
+.. meta::d29ef91c9462ebbbb991a2e037c281aa26b9bdb70842a6a2a2b1c338108052cf38b187e0f996950172729a3531fcc4fa6558f80e464c68560e68996d4d1c7e32
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::BCOp&lt; ICNS &gt; Struct Reference
+
+BCOp&lt; ICNS &gt; Struct Reference
+===================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1pde_1_1_b_c_op_3_01_i_c_n_s_01_4.html

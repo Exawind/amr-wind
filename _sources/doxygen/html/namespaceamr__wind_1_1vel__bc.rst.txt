@@ -1,0 +1,14 @@
+.. meta::f414cb0218705473080743e1473e45d3b92c6fee386020635d65418039af9cb959cb25de4d96abc11916403000d625e902499b4e482c22c46ab0ccf23beaea86
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::vel_bc Namespace Reference
+
+vel\_bc Namespace Reference
+===========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: namespaceamr__wind_1_1vel__bc.html

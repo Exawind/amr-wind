@@ -1,0 +1,33 @@
+<map id="exw_fast::FastIface" name="exw_fast::FastIface">
+<area shape="rect" id="Node000001" title=" " alt="" coords="1273,169,1420,195"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="955,64,1117,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1132,111,1250,143,1315,167,1313,172,1249,149,1130,116"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="961,143,1111,168"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="1125,160,1273,173,1273,178,1125,166"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="571,51,706,76"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="708,77,981,140,980,145,707,82"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="281,5,319,31"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="333,20,572,52,571,57,332,25"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="281,71,319,96"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="333,79,571,65,571,70,333,84"/>
+<area shape="rect" id="Node000015" title=" " alt="" coords="574,121,703,147"/>
+<area shape="poly" id="edge15_Node000015_Node000006" title=" " alt="" coords="333,85,574,122,574,127,332,91"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="953,193,1119,233"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="1132,202,1249,191,1273,189,1273,194,1250,197,1133,208"/>
+<area shape="rect" id="Node000008" href="$structexw__fast_1_1_fast_turbine.html" title=" " alt="" coords="557,228,720,253"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="734,231,953,216,953,221,734,237"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="257,375,343,400"/>
+<area shape="poly" id="edge16_Node000001_Node000009" title=" " alt="" coords="357,383,440,378,533,369,762,328,984,278,1173,229,1302,192,1303,197,1175,234,986,283,763,333,534,374,441,384,357,388"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="357,379,442,362,488,348,532,329,560,311,586,290,625,251,628,255,590,294,564,316,535,334,490,353,443,367,358,384"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="5,367,144,407"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="158,385,256,385,256,390,158,390"/>
+<area shape="rect" id="Node000011" href="$structexw__fast_1_1_op_f_m___input_type.html" title=" " alt="" coords="201,136,399,161"/>
+<area shape="poly" id="edge10_Node000008_Node000011" title=" " alt="" coords="396,161,464,175,534,194,612,226,610,230,532,199,463,181,395,166"/>
+<area shape="rect" id="Node000012" href="$structexw__fast_1_1_op_f_m___output_type.html" title=" " alt="" coords="196,185,404,211"/>
+<area shape="poly" id="edge11_Node000008_Node000012" title=" " alt="" coords="415,210,557,228,557,233,415,215"/>
+<area shape="rect" id="Node000013" href="$structexw__fast_1_1_s_c___d_x___input_type.html" title=" " alt="" coords="199,235,401,260"/>
+<area shape="poly" id="edge12_Node000008_Node000013" title=" " alt="" coords="415,243,533,241,557,240,557,245,533,246,415,248"/>
+<area shape="rect" id="Node000014" href="$structexw__fast_1_1_s_c___d_x___output_type.html" title=" " alt="" coords="193,284,407,309"/>
+<area shape="poly" id="edge13_Node000008_Node000014" title=" " alt="" coords="420,281,533,263,589,251,591,256,534,269,420,286"/>
+<area shape="poly" id="edge14_Node000007_Node000015" title=" " alt="" coords="717,147,954,194,953,199,716,152"/>
+</map>

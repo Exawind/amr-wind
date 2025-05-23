@@ -1,0 +1,14 @@
+.. meta::d5c6cb19f357d2c3587f42cafda702cce76a42d114db89242a7da291d59deabe289436f947568ba15817db0594861c0dd4292cbd003415cbf53dc52cde7593db
+
+:orphan:
+
+.. title:: AMR-Wind API: AMR-Wind core
+
+AMR-Wind core
+=============
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: group__core.html

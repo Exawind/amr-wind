@@ -1,0 +1,14 @@
+.. meta::06ff067ae4b66178e2c29bb6f2372ae6b636a875ce35bb69e486cfffa5b55fa174631ba697802a8b22d082cf912a377e2f180237400a211d4b14193d73f46879
+
+:orphan:
+
+.. title:: AMR-Wind API: Mesh refinement
+
+Mesh refinement
+===============
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: group__amr__utils.html

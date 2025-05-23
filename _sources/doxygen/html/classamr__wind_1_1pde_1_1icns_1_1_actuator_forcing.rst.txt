@@ -1,0 +1,14 @@
+.. meta::114fcc7602d91a76205faccec980e1b316bd7a3c8efd332e2bff2ffad8738350764d232e36c1eab8134ed15d5f9d8cc5f9363b3d830b4dd5ba4f7d39d01706dc
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::icns::ActuatorForcing Class Reference
+
+ActuatorForcing Class Reference
+===============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1pde_1_1icns_1_1_actuator_forcing.html

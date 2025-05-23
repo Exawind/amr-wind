@@ -1,0 +1,7 @@
+<map id="amr_wind::pde::DiffusionOp&lt; PDE, Scheme, std::enable_if_t&lt; std::is_base_of_v&lt; ScalarTransport, PDE &gt; &gt; &gt;" name="amr_wind::pde::DiffusionOp&lt; PDE, Scheme, std::enable_if_t&lt; std::is_base_of_v&lt; ScalarTransport, PDE &gt; &gt; &gt;">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,197,256,267"/>
+<area shape="rect" id="Node000002" href="$classamr__wind_1_1pde_1_1_diff_solver_iface.html" title=" " alt="" coords="35,108,226,148"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="133,162,133,197,128,197,128,162"/>
+<area shape="rect" id="Node000003" href="$classamr__wind_1_1pde_1_1_diff_solver_iface.html" title=" " alt="" coords="35,5,226,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="133,59,133,108,128,108,128,59"/>
+</map>

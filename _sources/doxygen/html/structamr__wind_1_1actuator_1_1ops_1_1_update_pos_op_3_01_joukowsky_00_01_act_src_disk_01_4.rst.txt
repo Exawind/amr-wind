@@ -1,0 +1,14 @@
+.. meta::8ddd69aa3574a55be090d6920f15de06471e3f7cf882be54246959cf1cfa8cca68d1b828f38ae7b8e99761a85b58e01eb55b1372b33851aa8cee6017c55f8354
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::UpdatePosOp&lt; Joukowsky, ActSrcDisk &gt; Struct Reference
+
+UpdatePosOp&lt; Joukowsky, ActSrcDisk &gt; Struct Reference
+===========================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1ops_1_1_update_pos_op_3_01_joukowsky_00_01_act_src_disk_01_4.html

@@ -1,0 +1,15 @@
+<map id="amr_wind::actuator::TurbineInfo" name="amr_wind::actuator::TurbineInfo">
+<area shape="rect" id="Node000001" title=" " alt="" coords="74,373,222,413"/>
+<area shape="rect" id="Node000002" href="$structamr__wind_1_1actuator_1_1_act_info.html" title=" " alt="" coords="74,284,222,324"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="151,338,151,373,145,373,145,338"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="42,196,129,221"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="103,231,137,282,133,285,98,234"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="5,93,144,133"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="81,146,87,195,81,196,76,147"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="159,196,276,221"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="203,234,164,285,160,282,199,231"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="168,101,277,126"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="224,140,221,196,215,196,219,140"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="203,5,242,31"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="225,44,225,101,220,101,220,44"/>
+</map>

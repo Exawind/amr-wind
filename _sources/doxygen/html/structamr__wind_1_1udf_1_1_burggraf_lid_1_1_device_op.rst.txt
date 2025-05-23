@@ -1,0 +1,14 @@
+.. meta::aa0dcf252299793622c95b3390d66c4a18b49919d9848777f83d919dc1065d3a0a676970ae4ff33d1ed5133e1eee40127770773b2195fec2a89901c6a2c23ba4
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::udf::BurggrafLid::DeviceOp Struct Reference
+
+DeviceOp Struct Reference
+=========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1udf_1_1_burggraf_lid_1_1_device_op.html

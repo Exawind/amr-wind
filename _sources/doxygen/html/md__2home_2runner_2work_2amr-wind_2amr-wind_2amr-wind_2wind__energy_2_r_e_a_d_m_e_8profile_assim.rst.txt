@@ -1,0 +1,14 @@
+.. meta::151351e5ca8ca45beef56160c4458ae524dea3061febbd8e2a1c701bb09b7cb4507a443ac211485bb1be982bdffc347745cc5a4e7f99191461a8d3bf75422cde
+
+:orphan:
+
+.. title:: AMR-Wind API: Profile Assimilation Development Notes
+
+Profile Assimilation Development Notes
+======================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: md__2home_2runner_2work_2amr-wind_2amr-wind_2amr-wind_2wind__energy_2_r_e_a_d_m_e_8profile_assim.html

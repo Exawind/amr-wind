@@ -1,0 +1,14 @@
+.. meta::3400aa930693c127fa9753ed444437505c9f3ae1037fa09425ae6e13273d46a6a47a10b58361c62fe009fed6e81af92926a987d7cc2aae4ff1ef19e74e2802d0
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ABLStatsBase Class Reference
+
+ABLStatsBase Class Reference
+============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_a_b_l_stats_base.html

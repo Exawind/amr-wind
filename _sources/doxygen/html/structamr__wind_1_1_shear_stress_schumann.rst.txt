@@ -1,0 +1,14 @@
+.. meta::915d1afff2c3115f4e7c5b8fa31b53361a7491720b1e04cae07372ccdfbc0b62ade01e08c904b0e9763b62d141502275b025f7e07c39de1f28a59000ea62455f
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ShearStressSchumann Struct Reference
+
+ShearStressSchumann Struct Reference
+====================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1_shear_stress_schumann.html

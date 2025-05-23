@@ -1,0 +1,14 @@
+.. meta::60ddf62a6c3fe24e81403e6d3aa0c5c121b3188094525a88d5b42df5dda76d83e1a7b252bf1e56b9537105533428d2c1f54548a12a0c98b3ea08eae27625f1cd
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ocean_waves::ops::ApplyRelaxZonesOp&lt; WaveTheoryTrait, typename std::enable_if_t&lt; std::is_base_of_v&lt; RelaxZonesType, WaveTheoryTrait &gt; &gt; &gt; Struct Template Reference
+
+is\_base\_of\_v&lt; RelaxZonesType, WaveTheoryTrait &gt; &gt; &gt; Struct Template Reference
+============================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ocean__waves_1_1ops_1_1_apply_relax_zones_op_3_01_wave_theory_trait_00_01type9769b55f703f896066ca069133206e8f.html

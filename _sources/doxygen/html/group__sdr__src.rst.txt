@@ -1,0 +1,14 @@
+.. meta::e00aacac252b4ea7ecfee26bfe7ad023eaade8b29b48346ca20a79964a56896621e997ce4b04d84a97cf551219f270b5280c7b990ef45f1aa7ec9efd82fcb923
+
+:orphan:
+
+.. title:: AMR-Wind API: SDR source terms
+
+SDR source terms
+================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: group__sdr__src.html

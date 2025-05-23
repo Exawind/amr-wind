@@ -1,0 +1,14 @@
+.. meta::ee4084bcd96b269552be826b5195d7c97498268f377186209e5d945957ebb2fd75fdef8dc943ede8de5ea2c0d848463c1f67a6025c0e67edba8cb633a668aced
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ABLTempWallFunc Class Reference
+
+ABLTempWallFunc Class Reference
+===============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_a_b_l_temp_wall_func.html

@@ -1,0 +1,14 @@
+.. meta::2d704f632591f8cf3057b0506226bd7af3d98bdc4542732c575e6f7eb6de0ac8fccced8a94d916a2aa5550aeeab9dc33e778af193880e9305d74de57c3f28547
+
+:orphan:
+
+.. title:: AMR-Wind API: Member List
+
+Member List
+===========
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1ops_1_1_init_data_op_3_01_fixed_wing_00_01_act_src_line_01_4-members.html

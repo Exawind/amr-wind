@@ -1,0 +1,14 @@
+.. meta::a535b58fb9579e5a8d727b1c57617ed1a0fd951b04820f98fc7f9060991221f2a283f13da52778f9f2c40f417f50589c33f8f4a13f1365f654331880391f4cc2
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ib::IB Class Reference
+
+IB Class Reference
+==================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1ib_1_1_i_b.html

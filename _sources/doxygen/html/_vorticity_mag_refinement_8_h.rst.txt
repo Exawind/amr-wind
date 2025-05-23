@@ -1,0 +1,14 @@
+.. meta::1be57656a220ac5b7ed111e12ea6404508e77c0d0f4ab017d85feb0f948ad4bb5205878a05a5ffc507780117648815378092b81bb23c01b45f978d9385544429
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/tagging/VorticityMagRefinement.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/tagging/VorticityMagRefinement.H File Reference
+======================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _vorticity_mag_refinement_8_h.html

@@ -1,0 +1,14 @@
+.. meta::130ed8940f4bf6c0ce4bcaf3252bd0010cc9432d38d44499cbf52f44c2bc5e49a3dd8e4a93204f37797591e1ca387229d983823621b02b324ebb9fe3cccc570e
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::udf::Rankine::DeviceOp Struct Reference
+
+DeviceOp Struct Reference
+=========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1udf_1_1_rankine_1_1_device_op.html

@@ -1,0 +1,14 @@
+.. meta::38e1e44f6c418c4272c6b9c6dfd02577edb9ba578a3a5a13387e8d6a70343d59eb30315ac0586c2af2dcf8646771777dc5f7b8f5d2cc0ac3e3a8814ee145ecb2
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/fvm/laplacian.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/fvm/laplacian.H File Reference
+===========================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: laplacian_8_h.html

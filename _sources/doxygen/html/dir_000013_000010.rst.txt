@@ -1,0 +1,14 @@
+.. meta::272b07a93172d0bf6f3819f54e2637cb5a8d661f3e59bd1eb55fd0232250c7814eb4fcfeebed55416c88a31fef435e2334aa74e3e4bf2b53fb941ada231ca53a
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/actuator/disk -&gt; core Relation
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/wind\_energy/actuator/disk -&gt; core Relation
+===========================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: dir_000013_000010.html

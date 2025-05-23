@@ -1,0 +1,14 @@
+.. meta::a4fce66efba612c48ec8e23c7dc3eb0eb2eae60fce0fabade4ee7e52a71aa98f46e0614178538051547d5181783e7a345ee98b119f6a530f8bd1cda056359dca
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems -&gt; convection Relation
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/equation\_systems -&gt; convection Relation
+========================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: dir_000017_000009.html

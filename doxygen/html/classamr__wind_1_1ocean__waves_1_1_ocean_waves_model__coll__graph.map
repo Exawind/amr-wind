@@ -1,0 +1,7 @@
+<map id="amr_wind::ocean_waves::OceanWavesModel" name="amr_wind::ocean_waves::OceanWavesModel">
+<area shape="rect" id="Node000001" title=" " alt="" coords="19,256,202,296"/>
+<area shape="rect" id="Node000002" href="$structamr__wind_1_1_factory.html" title=" " alt="" coords="5,137,216,207"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="113,221,113,256,108,256,108,221"/>
+<area shape="rect" id="Node000003" href="$structamr__wind_1_1_factory.html" title=" " alt="" coords="35,5,187,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="113,59,113,137,108,137,108,59"/>
+</map>

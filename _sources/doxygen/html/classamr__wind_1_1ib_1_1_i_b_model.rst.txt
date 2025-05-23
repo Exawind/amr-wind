@@ -1,0 +1,14 @@
+.. meta::385511f6fd08213a4b55b119a94186165edddb9a99d4ff41aa88ad3669623ee23c466025568e5de0f726b43696628bb62955b640ac953dddef5b1e714b5e2b9c
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ib::IBModel&lt; GeomTrait &gt; Class Template Reference
+
+IBModel&lt; GeomTrait &gt; Class Template Reference
+===================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1ib_1_1_i_b_model.html

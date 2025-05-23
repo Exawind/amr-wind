@@ -1,0 +1,14 @@
+.. meta::7440d3c4153867ac8e28ccb9ecb1f69749a59479bf61b995546243b0b25079188f07c78256b8962462983844383c8e5d3a84ce1a5837803480ef886be1e24ffd
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ib::ops::ReadInputsOp&lt; Cylinder &gt; Struct Reference
+
+ReadInputsOp&lt; Cylinder &gt; Struct Reference
+===============================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ib_1_1ops_1_1_read_inputs_op_3_01_cylinder_01_4.html

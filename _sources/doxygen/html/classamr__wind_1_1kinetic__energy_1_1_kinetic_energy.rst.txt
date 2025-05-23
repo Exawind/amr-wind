@@ -1,0 +1,14 @@
+.. meta::a0899686b9a2185cf45b0fb5f2ed6ed39a537dbdfbcc26f3d48904d1c9e7e48b83f362345029d0a6d144db0937f984d8059ce4b8bcfe2aaf6c25c0dc1c641091
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::kinetic_energy::KineticEnergy Class Reference
+
+KineticEnergy Class Reference
+=============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1kinetic__energy_1_1_kinetic_energy.html

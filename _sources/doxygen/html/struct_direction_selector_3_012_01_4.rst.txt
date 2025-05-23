@@ -1,0 +1,14 @@
+.. meta::5a05f2b8d207f1db7c0a8406436056804a793c9382101b98a1616bc48a9f82ba91badaf7268c7e9ecaf3b2e3ee183a4ab8e5da78d45465c8b96d11aad0d9c706
+
+:orphan:
+
+.. title:: AMR-Wind API: DirectionSelector&lt; 2 &gt; Struct Reference
+
+DirectionSelector&lt; 2 &gt; Struct Reference
+=============================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: struct_direction_selector_3_012_01_4.html

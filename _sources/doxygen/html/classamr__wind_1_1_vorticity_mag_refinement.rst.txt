@@ -1,0 +1,14 @@
+.. meta::6861a3ccb719c4b2534b4e6212bd9cc280b8dc3854dd89bb95e198e1102d32cb9487f6cd2390bc0323f418ae24f9caece19cf8db22988564fea33fbdea174271
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::VorticityMagRefinement Class Reference
+
+VorticityMagRefinement Class Reference
+======================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_vorticity_mag_refinement.html

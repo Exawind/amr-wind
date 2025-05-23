@@ -1,0 +1,14 @@
+.. meta::180d4a5c471b3ea29cb8e90a6be51609df8dd48af258ae09695dffe4f82c42b35d93e2dbfb2b09fc4cdafca8ca628a0ed89fe40400c7f95adb46d8f2fa7cea41
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/immersed_boundary/bluff_body -&gt; core Relation
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/immersed\_boundary/bluff\_body -&gt; core Relation
+===============================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: dir_000006_000010.html

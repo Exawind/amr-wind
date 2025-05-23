@@ -1,0 +1,14 @@
+.. meta::b7ff1bef92408e5c99f980f0dfcf2a0f01ab88db27acfc31759b2f93a765aa82e5cd03c9bcd243c0f9b9d588b357476e0d66741d70e39a0703501461f40481eb
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/RadarSampler.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/RadarSampler.cpp File Reference
+===============================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _radar_sampler_8cpp.html

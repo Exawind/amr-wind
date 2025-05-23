@@ -1,0 +1,14 @@
+.. meta::c45dfa6f279c99b03f8919e585c074036a6c53deb95e11d32942c36da0d88d78836962a7e437935078784a5fe631792a1a61623000252dfe1b891b938c1edbd9
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/temperature/source_terms -&gt; transport_models Relation
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/equation\_systems/temperature/source\_terms -&gt; transport\_models Relation
+=========================================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: dir_000040_000045.html

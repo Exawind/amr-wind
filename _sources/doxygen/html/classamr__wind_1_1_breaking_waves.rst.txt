@@ -1,0 +1,14 @@
+.. meta::9b8091a6e1525d2f945aed4d3c83a20d2d96b09e00d0f6a98b5244d114c9ca50587474912d64b22f5089ea493104994c029649b59266ad6c5cd75f1d69ade71b
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::BreakingWaves Class Reference
+
+BreakingWaves Class Reference
+=============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_breaking_waves.html

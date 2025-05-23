@@ -1,0 +1,14 @@
+.. meta::7a74ff646874f5bb7142c1e1d57f6ea1a68f1cbff3da168869f3d346e7544cce94f72e285c67e67cd91101e59eb67cca51ed3470ff70683a272645f1da0b803b
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::DiffSolverIface&lt; LinOp &gt; Class Template Reference
+
+DiffSolverIface&lt; LinOp &gt; Class Template Reference
+=======================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1pde_1_1_diff_solver_iface.html

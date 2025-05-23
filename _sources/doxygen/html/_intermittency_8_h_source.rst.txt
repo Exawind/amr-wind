@@ -1,0 +1,14 @@
+.. meta::7d58e7872c1713fbe9327b9d3563cc8604ddf3e00a7ead429d0a2347aef213e748280567124eaaf30edd4bcbcff91e9d47134c5948dec336e26809b18dfc98ae
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/Intermittency.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/physics/Intermittency.H Source File
+================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _intermittency_8_h_source.html
