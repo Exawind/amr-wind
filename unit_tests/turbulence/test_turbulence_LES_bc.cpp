@@ -355,7 +355,8 @@ TEST_F(TurbLESTestBC, test_1eqKsgs_wallmodel_failnofillpatch)
         amrex::ParmParse pp("ABL");
         pp.add("wall_shear_stress_type", (std::string) "local");
         pp.add("kappa", kappa);
-        pp.add("surface_roughness_z0", z0);
+        pp.add("aerodynamic_roughness_length_z0", z0);
+        pp.add("thermal_roughness_length_z0t", z0 + 0.02);
     }
     {
         // Explicit diffusion populates wall cells, doesn't update velocity
