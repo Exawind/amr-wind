@@ -30,8 +30,22 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
     pp.query("mo_gamma_h", m_mo.gamma_h);
     pp.query("mo_beta_m", m_mo.beta_m);
     pp.query("mo_beta_h", m_mo.beta_h);
-    pp.query("aerodynamic_roughness_length_z0", m_mo.z0);
-    pp.query("thermal_roughness_length_z0t", m_mo.z0t);
+    const char* z0_same = "surface_roughness_z0";
+    const char* z0_aero = "aerodynamic_roughness_length_z0";
+    const char* z0_therm = "thermal_roughness_length_z0t";
+    pp.query(z0_same, m_mo.z0);
+    if (!pp.contains(z0_same)) {
+        pp.query(z0_aero, m_mo.z0);
+        pp.query(z0_therm, m_mo.z0t);
+    } else if (pp.contains(z0_aero) || pp.contains(z0_therm)) {
+        amrex::Abort(
+            "ABLWallFunction parameter conflict: Roughness lengths must be "
+            "specified as the same (" +
+            std::string(z0_same) + ") or as different (" +
+            std::string(z0_aero) + " and " + std::string(z0_therm) + ").");
+    } else {
+        m_mo.z0t = m_mo.z0;
+    }
     pp.query("normal_direction", m_direction);
     AMREX_ASSERT((0 <= m_direction) && (m_direction < AMREX_SPACEDIM));
 
