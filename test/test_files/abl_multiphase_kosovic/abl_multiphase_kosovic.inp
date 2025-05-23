@@ -2,7 +2,7 @@
 #            SIMULATION CONTROL         #
 #.......................................#
 time.stop_time                           = 7200
-time.max_step                            = 10          # Max number of time steps
+time.max_step                            = -1          # Max number of time steps
 time.fixed_dt                            = -1          # Use this constant dt if > 0
 time.initial_dt                          = 0.05
 time.cfl                                 = 0.9         # CFL factor
@@ -14,10 +14,10 @@ io.outputs                               = velocity terrain_blank  ow_velocity
 incflo.use_godunov                       = 1
 incflo.diffusion_type                    = 1
 incflo.godunov_type                      = weno_z
-  incflo.mflux_type                        = upwind
+incflo.mflux_type                        = upwind
 turbulence.model                         = MultiPhaseKosovic
 incflo.gravity                           = 0.  0. -9.81  # Gravitational force (3D)
-  transport.model                          = TwoPhaseTransport
+transport.model                          = TwoPhaseTransport
 transport.viscosity_fluid1               = 1e-3
 transport.viscosity_fluid2               = 1e-5
 transport.laminar_prandtl_fluid1         = 7.2
@@ -32,8 +32,8 @@ incflo.verbose                           =   2          # incflo_level
 #            GEOMETRY & BCs             #
 #.......................................#
 geometry.prob_lo                         = 0.       0.    -200.  # Lo corner coordinates
-geometry.prob_hi                         = 1000 1000 1600  # Hi corner coordinates; 600 / 128 = 4.6875 m resolution
-amr.n_cell                               = 96 96 160
+geometry.prob_hi                         = 3000 3000 1600  # Hi corner coordinates; 600 / 128 = 4.6875 m resolution
+amr.n_cell                               = 384 384 904
 amr.max_level                            = 0
 geometry.is_periodic                     = 1   1   0  
 zlo.type                                 = slip_wall
@@ -56,7 +56,12 @@ GeostrophicForcing.wind_forcing_ramp_height = 16.0
 CoriolisForcing.latitude                 = 90.0
 CoriolisForcing.north_vector             = 0.0 1.0 0.0
 CoriolisForcing.east_vector              = 1.0 0.0 0.0
-BoussinesqBuoyancy.reference_temperature = 290							
+BoussinesqBuoyancy.reference_temperature = 290
+RayleighDamping.reference_velocity       = 10.0 0 0
+RayleighDamping.length_sloped_damping    = 400
+RayleighDamping.length_complete_damping  = 200
+RayleighDamping.time_scale               = 20.0
+RayleighDamping.force_coord_directions   = 0 0 1								
 ABL.reference_temperature                = 290
 ABL.temperature_heights                  = 0.0 300 1300 2300
 ABL.temperature_values                   = 290 290 293 296
@@ -80,7 +85,7 @@ OceanWaves.Wave1.wave_length             = 400.0
 OceanWaves.Wave1.water_depth             = 200.0
 OceanWaves.Wave1.relax_zone_gen_length   = 400.0
 OceanWaves.Wave1.relax_zone_out_length   = 800.0
-
+OceanWaves.Wave1.initialize_wave_field   = true
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #          POST-Processing              #
@@ -95,7 +100,9 @@ OceanWaves.Wave1.relax_zone_out_length   = 800.0
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            MESH REFINEMENT            #
 #.......................................#
-
+tagging.labels                           = static
+tagging.static.type                      = CartBoxRefinement
+tagging.static.static_refinement_def     = static_box.txt
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               TURBINES                #
