@@ -47,16 +47,16 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
 
     if (pp.contains("surface_temp_flux")) {
         pp.query("surface_temp_flux", m_mo.surf_temp_flux);
-        amrex::Print() 
+        amrex::Print()
             << "ABLWallFunction: Surface temperature flux mode is selected."
             << std::endl;
     } else if (pp.contains("surface_temp_timetable")) {
         pp.query("surface_temp_timetable", m_surf_temp_timetable);
         m_tempflux = false;
         m_temp_table = true;
-        amrex::Print() 
-            << "ABLWallFunction: Surface temperature time table mode is selected."
-            << std::endl;
+        amrex::Print() << "ABLWallFunction: Surface temperature time table "
+                          "mode is selected."
+                       << std::endl;
         if (!m_surf_temp_timetable.empty()) {
             std::ifstream ifh(m_surf_temp_timetable, std::ios::in);
             if (!ifh.good()) {
@@ -76,7 +76,7 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
     } else if (pp.contains("surface_temp_rate")) {
         m_tempflux = false;
         pp.get("surface_temp_rate", m_surf_temp_rate);
-        amrex::Print() 
+        amrex::Print()
             << "ABLWallFunction: Surface temperature rate mode is selected."
             << std::endl;
         if (pp.contains("surface_temp_init")) {
@@ -145,11 +145,11 @@ void ABLWallFunction::update_umean(
                         time.current_time() - m_surf_temp_rate_tstart, 0.0) /
                     3600.0;
         } else {
-            m_mo.surf_temp = amr_wind::interp::linear(m_surf_temp_time,
-                                                      m_surf_temp_value, 
-                                                      time.current_time());
+            m_mo.surf_temp = amr_wind::interp::linear(
+                m_surf_temp_time, m_surf_temp_value, time.current_time());
         }
-        amrex::Print() << "Current surface temperature: " << m_mo.surf_temp << std::endl;
+        amrex::Print() << "Current surface temperature: " << m_mo.surf_temp
+                       << std::endl;
     }
 
     if (m_inflow_outflow) {
