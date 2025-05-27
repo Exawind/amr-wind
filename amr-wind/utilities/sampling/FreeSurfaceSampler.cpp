@@ -518,16 +518,8 @@ bool FreeSurfaceSampler::update_sampling_locations()
                                         (vof_arr(i, j, k) - 0.5) *
                                             (vof_arr(iv_down) - 0.5) <=
                                         0.;
-                                    const bool closer_than_above =
-                                        std::abs(vof_arr(i, j, k) - 0.5) <
-                                        std::abs(vof_arr(iv_up) - 0.5);
-                                    const bool closer_than_below =
-                                        std::abs(vof_arr(i, j, k) - 0.5) <=
-                                        std::abs(vof_arr(iv_down) - 0.5);
                                     calc_flag =
-                                        (intersect_above &&
-                                         closer_than_above) ||
-                                        (intersect_below && closer_than_below);
+                                        intersect_above || intersect_below;
                                     // Get interface reconstruction
                                     if (calc_flag) {
                                         multiphase::fit_plane(
