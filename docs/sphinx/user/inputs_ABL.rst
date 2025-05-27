@@ -35,6 +35,43 @@ This section is for setting atmospheric boundary layer parameters.
    Note: currently the fluctuating velocity terms in the shear stress model are only
    available at the first cell center above the wall. This limitation will be removed soon.
 
+.. input_param:: ABL.surface_temp_flux
+
+   **type:** Real, optional
+
+   Surface temperature flux setting for the ABL wall function. Specifies a constant temperature flux
+   at the wall-modeled boundary. This is not a required argument because there are other options for
+   setting up the surface temperature condition.
+
+.. input_param:: ABL.surface_temp_timetable
+
+   **type:** String, optional
+
+   File name of surface temperature time table, allowing the surface temperature
+   to change with time without specifying a surface temperature rate.
+
+.. input_param:: ABL.surface_temp_rate
+
+   **type:** Real, optional
+
+   Constant rate at which the surface temperature changes.
+
+.. input_param:: ABL.surface_temp_init
+
+   **type:** Real, optional
+
+   Initial temperature of the wall-modeled surface. This parameter is only active
+   when the surface temperature rate is specified. If this parameter is active but not
+   specified, the initial temperature will be set to the reference temperature of the simulation.
+
+.. input_param:: ABL.surface_temp_rate_tstart
+
+   **type:** Real, optional
+
+   Start time of the surface temperature rate of change. Prior to this time,
+   the surface temperature remains at the initial value. This parameter is only
+   active when the surface temperature rate is specified. The default start time is 0.
+
 
 .. input_param:: ABL.temperature_heights
 
@@ -233,5 +270,8 @@ This section is for setting atmospheric boundary layer parameters.
 
    Used in conjunction with `ABL.wall_het_model`. The default value runs a neutral boundary layer. 
 
+.. input_param:: ABL.terrain_aligned_profile 
 
+   **type:** Boolean, optional, default= false
 
+   Used in conjunction with immersed forcing for terrain. This option allows the user to align the wind, temperature and turbulence profiles to be aligned with the terrain.
