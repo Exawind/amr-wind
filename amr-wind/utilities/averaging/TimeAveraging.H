@@ -97,9 +97,6 @@ private:
 
     //! Time averaging frequency (in time steps)
     int m_frequency{1};
-
-    //! Last time the average was accumulated
-    amrex::Real m_last_avg_time{0.0};
 };
 
 } // namespace averaging
