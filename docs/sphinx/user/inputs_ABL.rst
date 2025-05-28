@@ -21,13 +21,13 @@ This section is for setting atmospheric boundary layer parameters.
    if this parameter (which sets both) is used with either of the roughness parameters below,
    the code will abort to prevent using conflicting parameters.
 
-.. input_param:: ABL.aerodynamic_roughness_length_z0
+.. input_param:: ABL.aerodynamic_roughness_length
 
    **type:** Real, optional, default = 0.1
 
    Wall model surface roughness length (in meters) for aerodynamic processes, i.e., the wall momentum flux/shear stress model.
 
-.. input_param:: ABL.thermal_roughness_length_z0t
+.. input_param:: ABL.thermal_roughness_length
 
    **type:** Real, optional, default = 0.1
 

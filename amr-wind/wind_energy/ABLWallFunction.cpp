@@ -31,8 +31,8 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
     pp.query("mo_beta_m", m_mo.beta_m);
     pp.query("mo_beta_h", m_mo.beta_h);
     const char* z0_same = "surface_roughness_z0";
-    const char* z0_aero = "aerodynamic_roughness_length_z0";
-    const char* z0_therm = "thermal_roughness_length_z0t";
+    const char* z0_aero = "aerodynamic_roughness_length";
+    const char* z0_therm = "thermal_roughness_length";
     pp.query(z0_same, m_mo.z0);
     if (!pp.contains(z0_same)) {
         pp.query(z0_aero, m_mo.z0);
