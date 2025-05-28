@@ -61,14 +61,14 @@ void MOData::update_fluxes(int max_iters)
         utau_iter = utau;
         switch (alg_type) {
         case ThetaCalcType::HEAT_FLUX:
-            surf_temp = surf_temp_flux * (std::log(zref / z0) - psi_h) /
+            surf_temp = surf_temp_flux * (std::log(zref / z0t) - psi_h) /
                             (utau * kappa) +
                         theta_mean;
             break;
 
         case ThetaCalcType::SURFACE_TEMPERATURE:
             surf_temp_flux = -(theta_mean - surf_temp) * utau * kappa /
-                             (std::log(zref / z0) - psi_h);
+                             (std::log(zref / z0t) - psi_h);
             break;
         }
 
@@ -87,6 +87,11 @@ void MOData::update_fluxes(int max_iters)
         utau = kappa * vmag_mean / (std::log(zref / z0) - psi_m);
         ++iter;
     } while ((std::abs(utau_iter - utau) > 1e-5) && iter <= max_iters);
+
+    amrex::Print() << "MOData::update_fluxes: output\n"
+                   << "  utau = " << utau << "\n"
+                   << "  q = " << surf_temp_flux << "\n"
+                   << "  L = " << obukhov_len << std::endl;
 
     if (iter >= max_iters) {
         amrex::Print()
