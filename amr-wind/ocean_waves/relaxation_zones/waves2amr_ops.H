@@ -77,41 +77,6 @@ int evaluate_read_resize(
     return double_data;
 }
 
-void postprocess_velocity_mfab_liquid(
-    amrex::MultiFab& vel_mfab,
-    amrex::MultiFab& lvs_mfab,
-    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx)
-{
-    auto vel = vel_mfab.arrays();
-    const auto phi = lvs_mfab.const_arrays();
-    amrex::ParallelFor(
-        vel_mfab, amrex::IntVect(3),
-        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-            // Set velocity to zero if no liquid present
-            const amrex::Real cell_length_2D =
-                std::sqrt(dx[0] * dx[0] + dx[2] * dx[2]);
-            if (phi[nbx](i, j, k) + cell_length_2D < 0) {
-                vel[nbx](i, j, k, 0) = 0.0;
-                vel[nbx](i, j, k, 1) = 0.0;
-                vel[nbx](i, j, k, 2) = 0.0;
-            }
-        });
-    amrex::Gpu::streamSynchronize();
-}
-
-void postprocess_velocity_field_liquid(
-    amr_wind::Field& vel_field,
-    amr_wind::Field& lvs_field,
-    amrex::Vector<amrex::Geometry>& geom_all)
-{
-    int nlevels = vel_field.repo().num_active_levels();
-    for (int lev = 0; lev < nlevels; ++lev) {
-        const auto& dx_lev = geom_all[lev].CellSizeArray();
-        postprocess_velocity_mfab_liquid(
-            vel_field(lev), lvs_field(lev), dx_lev);
-    }
-}
-
 int update_offset_timestep(const int ntime, const int n0)
 {
     // Offending timestep (goes too far): ntime + offset
@@ -207,9 +172,6 @@ void populate_fields_all_levels(
         wdata.n0_sp, wdata.n1_sp, wdata.dx0, wdata.dx1, wdata.xlo0, wdata.xlo1,
         wdata.is_ocean, wdata.indvec, wdata.hvec, wdata.sp_u_vec,
         wdata.sp_v_vec, wdata.sp_w_vec, vel_field.vec_ptrs(), geom_all);
-
-    // Zero velocity in pure gas cells
-    postprocess_velocity_field_liquid(vel_field, lvs_field, geom_all);
 }
 
 void time_interpolate_wave_fields(
@@ -668,9 +630,6 @@ struct InitDataOp<W2AWaves>
             wdata.n0_sp, wdata.n1_sp, wdata.dx0, wdata.dx1, wdata.xlo0,
             wdata.xlo1, wdata.is_ocean, indvec, wdata.hvec, wdata.sp_u_vec,
             wdata.sp_v_vec, wdata.sp_w_vec, ow_velocity(level), problo, dx);
-        // Zero velocity in pure air cells
-        postprocess_velocity_mfab_liquid(
-            ow_velocity(level), ow_levelset(level), dx);
 
         // Populate flow fields according to intended forcing and init setup
         const auto& ow_phi = ow_levelset(level).const_arrays();
