@@ -6,10 +6,11 @@
 
 namespace amr_wind::averaging {
 
-ReAveraging::ReAveraging(CFDSim& sim, const std::string& fname)
+ReAveraging::ReAveraging(
+    CFDSim& sim, const std::string& avgname, const std::string& fname)
     : m_field(sim.repo().get_field(fname))
     , m_average(sim.repo().declare_field(
-          avg_name(m_field.name()),
+          avg_name(m_field.name(), avgname),
           m_field.num_comp(),
           1, // 1 ghost cell to account for sampling
           1,
@@ -33,12 +34,13 @@ const std::string& ReAveraging::average_field_name()
 void ReAveraging::operator()(
     const SimTime& time,
     const amrex::Real filter_width,
+    const amrex::Real avg_time_interval,
     const amrex::Real elapsed_time)
 {
-    const amrex::Real dt = time.delta_t();
     const amrex::Real filter =
-        amrex::max(amrex::min(filter_width, elapsed_time), dt);
-    const amrex::Real factor = amrex::max<amrex::Real>(filter - dt, 0.0);
+        amrex::max(amrex::min(filter_width, elapsed_time), avg_time_interval);
+    const amrex::Real factor =
+        amrex::max<amrex::Real>(filter - avg_time_interval, 0.0);
 
     const int ncomp = m_field.num_comp();
     const int nlevels = m_field.repo().num_active_levels();
@@ -56,7 +58,7 @@ void ReAveraging::operator()(
                     const amrex::Real aval = avgarrs[nbx](i, j, k, n);
 
                     avgarrs[nbx](i, j, k, n) =
-                        (aval * factor + fval * dt) / filter;
+                        (aval * factor + fval * avg_time_interval) / filter;
                 }
             });
     }
