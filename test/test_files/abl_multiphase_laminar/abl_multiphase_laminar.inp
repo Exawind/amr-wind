@@ -14,6 +14,25 @@ time.cfl              =   0.95       # CFL factor
 time.plot_interval            =  10       # Steps between plot files
 time.checkpoint_interval      =  5        # Steps between checkpoint files
 io.outputs = velocity_mueff temperature_mueff
+
+incflo.post_processing = avg1 avg2
+avg1.type = TimeAveraging
+avg1.labels = means
+avg1.averaging_window = 10.0
+avg1.averaging_interval = 1.
+avg1.means.fields = velocity
+avg1.means.averaging_type = ReAveraging
+avg2.type = TimeAveraging
+avg2.labels = means stress
+# Wave period should be (k * g * tanh(k * depth))^0.5 = 1.241s for this case
+#   where k = 2pi / wave length
+avg2.averaging_time_interval = 1.241
+avg2.averaging_window = 12.41
+avg2.means.fields = velocity
+avg2.means.averaging_type = ReAveraging
+avg2.stress.fields = velocity
+avg2.stress.averaging_type = ReynoldsStress
+
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #
 #.......................................#
