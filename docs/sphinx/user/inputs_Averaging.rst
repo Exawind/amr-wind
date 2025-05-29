@@ -38,7 +38,7 @@ field is required.
 
    **type:** Integer, optional, default = 1
 
-   Specify an interval of time steps over which to do averaging.
+   Specify an interval of time steps at which to do averaging.
    This allows for the averaging to take place only at instances
    that correspond to the averaging interval, which can be useful
    for phase averaging in contexts like periodic domains, regular
