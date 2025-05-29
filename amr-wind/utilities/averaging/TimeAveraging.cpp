@@ -3,6 +3,7 @@
 #include "amr-wind/utilities/averaging/TimeAveraging.H"
 #include "amr-wind/utilities/averaging/ReAveraging.H"
 #include "amr-wind/utilities/io_utils.H"
+#include "amr-wind/utilities/constants.H"
 #include "amr-wind/CFDSim.H"
 
 #include "AMReX_ParmParse.H"
@@ -105,18 +106,19 @@ void TimeAveraging::post_advance_work()
     m_accumulated_avg_time_interval += cur_dt;
 
     // Check the following:
-    //   1. if we are within the averaging time period requested by the user
-    //   2. if we are phase averaging (i.e., only accumulating the average at a
+    //   1. if we are phase averaging (i.e., only accumulating the average at a
     //   certain frequency), check to see if we are on a time step in which
     //   averaging should be performed.  This is useful for simulations with
     //   periodic behavior, such as regular waves or actuator lines rotating at
     //   fixed rotor speed.
+    //   2. if we are within the averaging time period requested by the user
+    const auto t_tol = amr_wind::constants::LOOSE_TOL * cur_dt;
     const bool do_phase_avg =
         (m_time_interval < 0.
              ? cur_step % m_interval == 0
-             : cur_time - std::floor(cur_time / m_time_interval) *
-                              m_time_interval <
-                   cur_dt);
+             : (cur_time + t_tol) / m_time_interval -
+                       std::floor((cur_time + t_tol) / m_time_interval) <
+                   cur_dt / m_time_interval);
     const bool do_avg =
         (((cur_time >= m_start_time) && (cur_time < m_stop_time)) &&
          do_phase_avg);
