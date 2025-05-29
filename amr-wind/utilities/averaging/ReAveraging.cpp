@@ -37,8 +37,8 @@ void ReAveraging::operator()(
     const amrex::Real avg_time_interval,
     const amrex::Real elapsed_time)
 {
-    const amrex::Real filter = amrex::max(
-        amrex::min(filter_width, elapsed_time), avg_time_interval);
+    const amrex::Real filter =
+        amrex::max(amrex::min(filter_width, elapsed_time), avg_time_interval);
     const amrex::Real factor =
         amrex::max<amrex::Real>(filter - avg_time_interval, 0.0);
 
