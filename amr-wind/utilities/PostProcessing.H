@@ -114,9 +114,8 @@ public:
         const bool time_based =
             (m_out_time_interval > 0.) &&
             ((time + tol - m_out_time_delay >= 0.) &&
-             (time + tol -
-                  std::floor((time + tol) / m_out_time_interval) *
-                      m_out_time_interval <
+             (time - std::floor((time + tol) / m_out_time_interval) *
+                         m_out_time_interval <
               dt));
 
         return (step_based || time_based);
