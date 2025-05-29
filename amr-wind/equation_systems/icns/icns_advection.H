@@ -333,11 +333,6 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                     limiter_type = PPM::default_limiter;
                 }
 
-                if ((godunov_scheme == godunov::scheme::WENOZ) ||
-                    (godunov_scheme == godunov::scheme::WENO_JS)) {
-                    m_allow_inflow_on_outflow = true;
-                }
-
                 // if state is NPH, then n and n+1 are known, and only
                 // spatial extrapolation is performed
                 const amrex::Real dt_extrap =
