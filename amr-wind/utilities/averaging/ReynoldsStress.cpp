@@ -48,14 +48,13 @@ const std::string& ReynoldsStress::average_field_name()
 void ReynoldsStress::operator()(
     const SimTime& time,
     const amrex::Real filter_width,
-    int avg_frequency,
+    const amrex::Real avg_time_interval,
     const amrex::Real elapsed_time)
 {
-    const amrex::Real dt = time.delta_t();
     const amrex::Real filter = amrex::max(
-        amrex::min(filter_width, elapsed_time), (avg_frequency * dt));
+        amrex::min(filter_width, elapsed_time), avg_time_interval);
     const amrex::Real factor =
-        amrex::max<amrex::Real>(filter - (avg_frequency * dt), 0.0);
+        amrex::max<amrex::Real>(filter - avg_time_interval, 0.0);
 
     const int ncomp = m_field.num_comp();
     const int nlevels = m_field.repo().num_active_levels();
@@ -87,7 +86,7 @@ void ReynoldsStress::operator()(
                         const amrex::Real avg = stressarrs[nbx](i, j, k, mn);
                         // The stress <AB>
                         stressarrs[nbx](i, j, k, mn) =
-                            (avg * factor + fval2 * (avg_frequency * dt)) /
+                            (avg * factor + fval2 * avg_time_interval) /
                             filter;
                         // The Reynolds stress <ab>
                         restressarrs[nbx](i, j, k, mn) =

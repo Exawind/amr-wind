@@ -23,13 +23,13 @@ public:
      *
      *  \param time SimTime instance
      *  \param filter_width Time-averaging window specified by user
-     *  \param avg_frequency Frequency at which averaging is performed
+     *  \param avg_time_interval Time interval over which averaging is performed
      *  \param elapsed_time Time elapsed since averaging was initiated
      */
     void operator()(
         const SimTime& /*time*/,
         const amrex::Real /*filter_width*/,
-        const int /*avg_frequency*/,
+        const amrex::Real /*avg_time_interval*/,
         const amrex::Real /*elapsed_time*/) override;
 
     const std::string& average_field_name() override;

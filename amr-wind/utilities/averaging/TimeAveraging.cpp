@@ -27,7 +27,22 @@ void TimeAveraging::pre_init_actions()
             "Duplicates in " + m_label + ".labels");
         pp.query("averaging_start_time", m_start_time);
         pp.query("averaging_stop_time", m_stop_time);
-        pp.query("averaging_frequency", m_frequency);
+        pp.query("averaging_interval", m_interval);
+        if (!pp.contains("averaging_interval")) {
+            pp.query("averaging_time_interval", m_time_interval);
+        } else if (m_interval < 1) {
+            if (!pp.contains("averaging_time_interval")) {
+                amrex::Abort(
+                    "TimeAveraging: averaging_interval has been set to an "
+                    "unrealistic value (< 1) to turn it off, but "
+                    "averaging_time_interval has not been specified instead. "
+                    "Please set one of these parameters to a realistic value "
+                    "or omit both to use the default averaging_interval of 1 "
+                    "(averaging every time step).");
+            } else {
+                pp.get("averaging_time_interval", m_time_interval);
+            }
+        }
         pp.get("averaging_window", m_filter);
     }
 
@@ -85,26 +100,35 @@ void TimeAveraging::post_advance_work()
     const auto& time = m_sim.time();
     const auto cur_time = time.new_time();
     const auto cur_step = time.time_index();
+    const auto cur_dt = time.delta_t();
+
+    m_accumulated_avg_time_interval += cur_dt;
 
     // Check the following:
     //   1. if we are within the averaging time period requested by the user
     //   2. if we are phase averaging (i.e., only accumulating the average at a
-    //   certain
-    //      frequency), check to see if we are on a time step in which averaging
-    //      should be performed.  This is useful for simulations with periodic
-    //      behavior, such as regular waves or actuator lines rotating at fixed
-    //      rotor speed.
+    //   certain frequency), check to see if we are on a time step in which
+    //   averaging should be performed.  This is useful for simulations with
+    //   periodic behavior, such as regular waves or actuator lines rotating at
+    //   fixed rotor speed.
+    const bool do_phase_avg =
+        (m_time_interval < 0.
+             ? cur_step % m_interval == 0
+             : cur_time - std::floor(cur_time / m_time_interval) *
+                              m_time_interval <
+                   cur_dt);
     const bool do_avg =
         (((cur_time >= m_start_time) && (cur_time < m_stop_time)) &&
-         (cur_step % m_frequency == 0));
+         do_phase_avg);
     if (!do_avg) {
         return;
     }
 
     const amrex::Real elapsed_time = (cur_time - m_start_time);
     for (const auto& avg : m_averages) {
-        (*avg)(time, m_filter, m_frequency, elapsed_time);
+        (*avg)(time, m_filter, m_accumulated_avg_time_interval, elapsed_time);
     }
+    m_accumulated_avg_time_interval = 0.;
 }
 
 } // namespace amr_wind::averaging
