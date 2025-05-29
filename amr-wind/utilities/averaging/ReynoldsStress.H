@@ -23,7 +23,7 @@ public:
      *
      *  \param time SimTime instance
      *  \param filter_width Time-averaging window specified by user
-     *  \param avg_time_interval Time interval over which averaging is performed
+     *  \param avg_time_interval Time interval at which averaging is performed
      *  \param elapsed_time Time elapsed since averaging was initiated
      */
     void operator()(
