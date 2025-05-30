@@ -53,14 +53,12 @@ TEST_F(PostProcTimeTest, time_interval)
     post_manager.pre_init_actions();
     post_manager.post_init_actions();
 
-    int counter = 0;
     int out_counter = 0;
     amrex::Real out_time_sum = 0.0;
     int out_step_sum = 0;
     while (time.new_timestep()) {
         time.set_current_cfl(0.45 / 0.3, 0.0, 0.0);
         time.advance_time();
-        ++counter;
         post_manager.post_advance_work();
     }
 
@@ -113,14 +111,12 @@ TEST_F(PostProcTimeTest, enforce_time_interval)
     time.delta_t() = 1.0;
     post_manager.post_init_actions();
 
-    int counter = 0;
     int out_counter = 0;
     amrex::Real out_time_sum = 0.0;
     int out_step_sum = 0;
     while (time.new_timestep()) {
         time.set_current_cfl(0.45 / 0.4, 0.0, 0.0);
         time.advance_time();
-        ++counter;
         post_manager.post_advance_work();
     }
 
