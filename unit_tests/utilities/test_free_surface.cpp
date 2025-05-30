@@ -618,8 +618,11 @@ TEST_F(FreeSurfaceTest, regrid)
 TEST_F(FreeSurfaceTest, point_diffuse)
 {
     initialize_mesh();
+    sim().activate_overset();
     auto& repo = sim().repo();
     auto& vof = repo.declare_field("vof", 1, 2);
+    auto& iblank = repo.get_int_field("iblank_cell");
+    iblank.setVal(-1);
     setup_grid_0d(1);
 
     // Chosen to be cell center
