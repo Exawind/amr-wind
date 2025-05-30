@@ -243,7 +243,7 @@ TEST_F(FieldNormsTest, levelmask_on)
     // Initialize sampler and check result on initial mesh
     FieldNormsImpl tool(rsim, "fieldnorm");
     tool.initialize();
-    tool.post_advance_work();
+    tool.output_actions();
     // Only highest level will be counted
     // sqrt(number of cells * cell volume * cell value * cell value)
     amrex::Real unorm =
@@ -261,7 +261,7 @@ TEST_F(FieldNormsTest, levelmask_on)
     rmesh.remesh();
 
     // Check result on new mesh
-    tool.post_advance_work();
+    tool.output_actions();
     // Only base level exists, which includes factor
     unorm =
         std::sqrt(m_ncell0 * m_cv0 * lev0_fac * lev0_fac * m_u * m_u / m_dv);
@@ -313,7 +313,7 @@ TEST_F(FieldNormsTest, levelmask_on_with_box)
     // Initialize sampler and check result on initial mesh
     FieldNormsImpl tool(rsim, "fieldnorm");
     tool.initialize();
-    tool.post_advance_work();
+    tool.output_actions();
     tool.check_output(
         1.342655804506534, 1.9393917176204616, 4.0279674135195087);
 
@@ -324,7 +324,7 @@ TEST_F(FieldNormsTest, levelmask_on_with_box)
     rmesh.remesh();
 
     // Check result on new mesh
-    tool.post_advance_work();
+    tool.output_actions();
     tool.check_output(
         1.3500000000000343, 1.9499999999999589, 4.0500000000000043);
 }
@@ -370,7 +370,7 @@ TEST_F(FieldNormsTest, levelmask_off)
     // Initialize sampler and check result on initial mesh
     FieldNormsImpl tool(rsim, "fieldnorm");
     tool.initialize();
-    tool.post_advance_work();
+    tool.output_actions();
     // Both levels will be counted
     amrex::Real unorm = std::sqrt(
         ((m_ncell0 * 8.) * (m_cv0 / 8.) * m_u * m_u +
@@ -393,7 +393,7 @@ TEST_F(FieldNormsTest, levelmask_off)
     rmesh.remesh();
 
     // Check result on new mesh
-    tool.post_advance_work();
+    tool.output_actions();
     // Only base level exists, which includes factor
     unorm =
         std::sqrt(m_ncell0 * m_cv0 * lev0_fac * lev0_fac * m_u * m_u / m_dv);
@@ -444,7 +444,7 @@ TEST_F(FieldNormsTest, levelmask_on_int_refinement)
     // Initialize sampler and check result on initial mesh
     FieldNormsImpl tool(rsim, "fieldnorm");
     tool.initialize();
-    tool.post_advance_work();
+    tool.output_actions();
     // Only highest level will be counted
     // sqrt(number of cells * cell volume * cell value * cell value)
     amrex::Real unorm =
@@ -462,7 +462,7 @@ TEST_F(FieldNormsTest, levelmask_on_int_refinement)
     rmesh.remesh();
 
     // Check result on new mesh
-    tool.post_advance_work();
+    tool.output_actions();
     // Only base level exists, which includes factor
     unorm =
         std::sqrt(m_ncell0 * m_cv0 * lev0_fac * lev0_fac * m_u * m_u / m_dv);
