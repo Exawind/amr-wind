@@ -38,6 +38,13 @@ objectives:
 - be able to leverage the high-performance leadership class computing
   facilities available at DOE national laboratories.
 
+## Part of the WETO Stack
+
+AMR-Wind is primarily developed with the support of the U.S. Department of Energy and is part of the [WETO Software Stack](https://nrel.github.io/WETOStack). For more information and other integrated modeling software, see:
+- [Portfolio Overview](https://nrel.github.io/WETOStack/portfolio_analysis/overview.html)
+- [Entry Guide](https://nrel.github.io/WETOStack/_static/entry_guide/index.html)
+- [High-Fidelity Modeling Workshop](https://nrel.github.io/WETOStack/workshops/user_workshops_2024.html#high-fidelity-modeling)
+
 ## References
 To cite AMR-Wind and to learn more about the methodology, use the following [journal article](https://doi.org/10.1002/we.70010) as well as the [ExaWind reference](https://doi.org/10.1002/we.2886):
 
