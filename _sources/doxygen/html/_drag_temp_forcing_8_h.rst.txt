@@ -1,0 +1,14 @@
+.. meta::2db6fd2fcee9765e6716fdf602108229e5f6e0bbdec70dd26baa78aa3600e18172f26c10c5d58e62505cac474b1e0170512bfa995d624e838d1239ac9369b3c7
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/temperature/source_terms/DragTempForcing.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/equation\_systems/temperature/source\_terms/DragTempForcing.H File Reference
+=========================================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _drag_temp_forcing_8_h.html

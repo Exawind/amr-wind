@@ -1,0 +1,14 @@
+.. meta::ef580907b52319c5704c1af6bbde8fd7132a46c9646a6e2c27e1a94fcdecafe437904e884130ddcd3c2d71edbea14399299d4ec1516e4d3a605f426d97f270ca
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::DiffusionOp&lt; ICNS, Scheme &gt; Struct Template Reference
+
+DiffusionOp&lt; ICNS, Scheme &gt; Struct Template Reference
+===========================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1pde_1_1_diffusion_op_3_01_i_c_n_s_00_01_scheme_01_4.html

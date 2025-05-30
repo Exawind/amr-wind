@@ -1,0 +1,14 @@
+.. meta::e27389e514f1951c3b6a783d8b97f9bfd4e22d8a83d538711d3cce86cc1d2e6a1d535c4da316b21ca0a7b86ffe2481b0a4fcc06a481966e2331b5f8f51c80e88
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ib::bluff_body Namespace Reference
+
+bluff\_body Namespace Reference
+===============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: namespaceamr__wind_1_1ib_1_1bluff__body.html

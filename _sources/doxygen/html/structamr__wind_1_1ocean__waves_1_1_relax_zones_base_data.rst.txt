@@ -1,0 +1,14 @@
+.. meta::e036fe7f80896287a05477f14db3a6dbe3fe4edc826a97cb4049bdfc19c0e32698ac42ba1f967daa6375ac2370babc2cf7e3233d645eed4389a2dea8b767f1ed
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ocean_waves::RelaxZonesBaseData Struct Reference
+
+RelaxZonesBaseData Struct Reference
+===================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ocean__waves_1_1_relax_zones_base_data.html

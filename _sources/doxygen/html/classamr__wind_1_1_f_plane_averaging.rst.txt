@@ -1,0 +1,14 @@
+.. meta::5d017fb1b158bd965c49861d1c1e89019c2883ef10b14b6386c9a9a1b072b4e2bea2832fd1d217f686b814f463e8a7c9cadd3a39ef0d4f64a3eb8be59e98b60d
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::FPlaneAveraging&lt; FType &gt; Class Template Reference
+
+FPlaneAveraging&lt; FType &gt; Class Template Reference
+=======================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_f_plane_averaging.html

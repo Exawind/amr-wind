@@ -1,0 +1,14 @@
+.. meta::a6f206e9e195d4c076c1b548a7861dc8e547fe2dca9b024f690ee66391947a8f6b8d3b0a59b8d908b7919af8f42d44416415f9927f7a27b90cbf03b9ae05ebb7
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::PassiveScalar Struct Reference
+
+PassiveScalar Struct Reference
+==============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1pde_1_1_passive_scalar.html

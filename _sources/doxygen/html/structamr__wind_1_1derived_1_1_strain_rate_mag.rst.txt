@@ -1,0 +1,14 @@
+.. meta::da2512c892992e32ea5c2b1a4a9ca1a214c1a8733e81e4cbf2c73c1f864e0402834514766ca5ca8ad25a8cf6d660f69d29df6aec42c39e97640c0b7dc96839b4
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::derived::StrainRateMag Struct Reference
+
+StrainRateMag Struct Reference
+==============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1derived_1_1_strain_rate_mag.html

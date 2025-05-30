@@ -1,0 +1,14 @@
+.. meta::216b50ea25a6d29c258fd6e801cee0f8318f82dba1574a2c05dd17ed95087c56d7d4b83cbde4389c497a0b0e8780d244b06c506cfcafd2675b2a8e18af7c9640
+
+:orphan:
+
+.. title:: AMR-Wind API: ncutils::NCGroup Class Reference
+
+NCGroup Class Reference
+=======================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classncutils_1_1_n_c_group.html

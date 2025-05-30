@@ -1,0 +1,14 @@
+.. meta::919e8fbcd7a6acd17ef157093941273b1dfee8fbb134b4d1b0b741e011a46803330d4a2b819fdcf47115f7d8b77fd1427f6338fae7bd2ff01a01061847a97e3b
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/multiphase/BreakingWaves.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/physics/multiphase/BreakingWaves.H Source File
+===========================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _breaking_waves_8_h_source.html

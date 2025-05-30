@@ -1,0 +1,14 @@
+.. meta::4f6a36565542e56314e8ca73cced20a6f93976670bcc256b5746eaae2ff24b0a37130af49a66ec9789104774b71b580831b198659569413c063e701d4ec5b018
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::SecondMomentAveraging Class Reference
+
+SecondMomentAveraging Class Reference
+=====================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_second_moment_averaging.html

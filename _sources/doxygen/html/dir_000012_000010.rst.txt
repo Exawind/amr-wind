@@ -1,0 +1,14 @@
+.. meta::7b4e98efd183f69f1ebf436a4ca312219ae92ae95a61dcff93464cda5e480aba0a9235e53bc2f4e817ac6b2a3cb05ab61b4f39f6178d445d402b306b5675db17
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/diffusion -&gt; core Relation
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/diffusion -&gt; core Relation
+==========================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: dir_000012_000010.html

@@ -1,0 +1,14 @@
+.. meta::1d4369bb2f7e0818ba4b2b487daf4e97fc953890bfb50dce6d1e4b80a5f32597e503c8581a395b01548f3255808ccbedd9d6c27205747d190b027201058344e7
+
+:orphan:
+
+.. title:: AMR-Wind API: Equation of state models
+
+Equation of state models
+========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: group__eos.html
