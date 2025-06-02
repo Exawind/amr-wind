@@ -42,7 +42,7 @@ protected:
         }
     }
 
-    void intialize_domain()
+    void initialize_domain()
     {
         initialize_mesh();
         sim().repo().declare_field("actuator_src_term", 3, 0);
@@ -190,7 +190,7 @@ protected:
 
 TEST_F(ActJoukowskyTest, parsing_operations)
 {
-    intialize_domain();
+    initialize_domain();
     basic_disk_setup();
     add_actuators("TestJoukowskyDisk", {"D1"});
     ActPhysicsTest act(sim());
@@ -199,7 +199,7 @@ TEST_F(ActJoukowskyTest, parsing_operations)
 
 TEST_F(ActJoukowskyTest, execution)
 {
-    intialize_domain();
+    initialize_domain();
     basic_disk_setup();
     add_actuators("TestJoukowskyDisk", {"D1"});
     ActPhysicsTest act(sim());

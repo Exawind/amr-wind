@@ -136,7 +136,7 @@ TEST_F(WaveEnergyTest, checkoutput)
     // Initialize postprocessing tool
     WaveEnergyImpl tool(sim(), "waveenergy");
     tool.initialize();
-    tool.post_advance_work();
+    tool.output_actions();
 
     // Get answers
     amrex::Real ke = 0.0;

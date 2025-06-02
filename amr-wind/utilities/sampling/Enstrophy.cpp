@@ -22,8 +22,7 @@ void Enstrophy::initialize()
 {
     BL_PROFILE("amr-wind::Enstrophy::initialize");
     amrex::ParmParse pp(m_label);
-    pp.query("output_frequency", m_out_freq);
-
+    populate_output_parameters(pp);
     prepare_ascii_file();
 }
 
@@ -87,18 +86,10 @@ amrex::Real Enstrophy::calculate_enstrophy()
     return total_enstrophy;
 }
 
-void Enstrophy::post_advance_work()
+void Enstrophy::output_actions()
 {
-    BL_PROFILE("amr-wind::Enstrophy::post_advance_work");
-    const auto& time = m_sim.time();
-    const int tidx = time.time_index();
-    // Skip processing if it is not an output timestep
-    if (!(tidx % m_out_freq == 0)) {
-        return;
-    }
-
+    BL_PROFILE("amr-wind::Enstrophy::output_actions");
     m_total_enstrophy = calculate_enstrophy();
-
     write_ascii();
 }
 

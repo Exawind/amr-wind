@@ -9,6 +9,8 @@ int main(int argc, char* argv[])
     MPI_Init(&argc, &argv);
 #endif
 
+    using namespace amrex::mpidatatypes;
+
     if (argc < 2) {
         // Print usage and exit with error code if no input file was provided.
         amr_wind::io::print_usage(MPI_COMM_WORLD, std::cout);

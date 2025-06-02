@@ -13,3 +13,4 @@ User Manual
    run.rst
    faq.rst
    post_processing_examples.rst
+   compression

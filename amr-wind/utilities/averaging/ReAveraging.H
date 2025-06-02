@@ -12,27 +12,30 @@ class ReAveraging : public FieldTimeAverage::Register<ReAveraging>
 public:
     static std::string identifier() { return "ReAveraging"; }
 
-    ReAveraging(CFDSim& /*sim*/, const std::string& fname);
+    ReAveraging(
+        CFDSim& /*sim*/, const std::string& avgname, const std::string& fname);
 
     /** Update field averaging at a given timestep
      *
      *  \param time SimTime instance
      *  \param filter_width Time-averaging window specified by user
-     *
+     *  \param avg_time_interval Time interval at which averaging is performed
      *  \param elapsed_time Time elapsed since averaging was initiated
      */
     void operator()(
-        const SimTime& /*unused*/,
-        const amrex::Real /*unused*/,
-        const amrex::Real /*unused*/) override;
+        const SimTime& /*time*/,
+        const amrex::Real /*filter_width*/,
+        const amrex::Real /*avg_time_interval*/,
+        const amrex::Real /*elapsed_time*/) override;
 
     const std::string& average_field_name() override;
 
 private:
     //! Generate the averaged field name based on the field name
-    static std::string avg_name(const std::string& fname)
+    static std::string
+    avg_name(const std::string& fname, const std::string& avgname)
     {
-        return fname + "_mean";
+        return fname + "_" + "mean" + "_" + avgname;
     }
 
     //! Fluctuating field

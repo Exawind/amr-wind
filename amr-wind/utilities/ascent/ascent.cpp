@@ -30,7 +30,7 @@ void AscentPostProcess::initialize()
         pp.getarr("fields", field_names);
         ioutils::assert_with_message(
             ioutils::all_distinct(field_names), "Duplicates in ascent.fields");
-        pp.query("output_frequency", m_out_freq);
+        populate_output_parameters(pp);
     }
 
     // Process field information
@@ -49,14 +49,9 @@ void AscentPostProcess::initialize()
     }
 }
 
-void AscentPostProcess::post_advance_work()
+void AscentPostProcess::output_actions()
 {
-    BL_PROFILE("amr-wind::AscentPostProcess::post_advance_work");
-
-    const auto& time = m_sim.time();
-    const int tidx = time.time_index();
-    // Output only on given frequency
-    if (!(tidx % m_out_freq == 0)) return;
+    BL_PROFILE("amr-wind::AscentPostProcess::output_actions");
 
     amrex::Vector<int> istep(
         m_sim.mesh().finestLevel() + 1, m_sim.time().time_index());

@@ -6,6 +6,7 @@
 #include "amr-wind/diffusion/diffusion.H"
 #include "amr-wind/wind_energy/ShearStress.H"
 #include "amr-wind/wind_energy/MOData.H"
+#include "amr-wind/utilities/linear_interpolation.H"
 
 #include <cmath>
 
@@ -29,7 +30,22 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
     pp.query("mo_gamma_h", m_mo.gamma_h);
     pp.query("mo_beta_m", m_mo.beta_m);
     pp.query("mo_beta_h", m_mo.beta_h);
-    pp.query("surface_roughness_z0", m_mo.z0);
+    const char* z0_same = "surface_roughness_z0";
+    const char* z0_aero = "aerodynamic_roughness_length";
+    const char* z0_therm = "thermal_roughness_length";
+    pp.query(z0_same, m_mo.z0);
+    if (!pp.contains(z0_same)) {
+        pp.query(z0_aero, m_mo.z0);
+        pp.query(z0_therm, m_mo.z0t);
+    } else if (pp.contains(z0_aero) || pp.contains(z0_therm)) {
+        amrex::Abort(
+            "ABLWallFunction parameter conflict: Roughness lengths must be "
+            "specified as the same (" +
+            std::string(z0_same) + ") or as different (" +
+            std::string(z0_aero) + " and " + std::string(z0_therm) + ").");
+    } else {
+        m_mo.z0t = m_mo.z0;
+    }
     pp.query("normal_direction", m_direction);
     AMREX_ASSERT((0 <= m_direction) && (m_direction < AMREX_SPACEDIM));
 
@@ -46,9 +62,38 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
 
     if (pp.contains("surface_temp_flux")) {
         pp.query("surface_temp_flux", m_mo.surf_temp_flux);
+        amrex::Print()
+            << "ABLWallFunction: Surface temperature flux mode is selected."
+            << std::endl;
+    } else if (pp.contains("surface_temp_timetable")) {
+        pp.query("surface_temp_timetable", m_surf_temp_timetable);
+        m_tempflux = false;
+        m_temp_table = true;
+        amrex::Print() << "ABLWallFunction: Surface temperature time table "
+                          "mode is selected."
+                       << std::endl;
+        if (!m_surf_temp_timetable.empty()) {
+            std::ifstream ifh(m_surf_temp_timetable, std::ios::in);
+            if (!ifh.good()) {
+                amrex::Abort(
+                    "Cannot find surface_temp_timetable file: " +
+                    m_surf_temp_timetable);
+            }
+            amrex::Real data_time;
+            amrex::Real data_value;
+            ifh.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            while (ifh >> data_time) {
+                ifh >> data_value;
+                m_surf_temp_time.push_back(data_time);
+                m_surf_temp_value.push_back(data_value);
+            }
+        }
     } else if (pp.contains("surface_temp_rate")) {
         m_tempflux = false;
         pp.get("surface_temp_rate", m_surf_temp_rate);
+        amrex::Print()
+            << "ABLWallFunction: Surface temperature rate mode is selected."
+            << std::endl;
         if (pp.contains("surface_temp_init")) {
             pp.get("surface_temp_init", m_surf_temp_init);
         } else {
@@ -107,12 +152,19 @@ void ABLWallFunction::update_umean(
     const auto& time = m_sim.time();
 
     if (!m_tempflux) {
-        m_mo.surf_temp =
-            m_surf_temp_init +
-            m_surf_temp_rate *
-                amrex::max<amrex::Real>(
-                    time.current_time() - m_surf_temp_rate_tstart, 0.0) /
-                3600.0;
+        if (!m_temp_table) {
+            m_mo.surf_temp =
+                m_surf_temp_init +
+                m_surf_temp_rate *
+                    amrex::max<amrex::Real>(
+                        time.current_time() - m_surf_temp_rate_tstart, 0.0) /
+                    3600.0;
+        } else {
+            m_mo.surf_temp = amr_wind::interp::linear(
+                m_surf_temp_time, m_surf_temp_value, time.current_time());
+        }
+        amrex::Print() << "Current surface temperature: " << m_mo.surf_temp
+                       << std::endl;
     }
 
     if (m_inflow_outflow) {

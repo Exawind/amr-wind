@@ -338,6 +338,7 @@ void incflo::Evolve()
     if (m_time.write_last_checkpoint()) {
         m_sim.io_manager().write_checkpoint_file();
     }
+    m_sim.post_manager().final_output();
 }
 
 void incflo::do_advance(const int fixed_point_iteration)

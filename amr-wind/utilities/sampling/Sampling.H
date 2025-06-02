@@ -53,8 +53,11 @@ public:
     //! Read user inputs and create the different data probe instances
     void initialize() override;
 
+    //! Actions to do at end of every time step
+    void post_advance_work() override {};
+
     //! Interpolate fields at a given timestep and output to disk
-    void post_advance_work() override;
+    void output_actions() override;
 
     //! Actions to perform post regrid e.g. redistribute particles
     void post_regrid_actions() override;
@@ -179,12 +182,6 @@ private:
 
     //! Number of sampling container particles:
     size_t m_total_particles{0};
-
-    //! Frequency of data sampling and output
-    int m_out_freq{100};
-
-    //! Delay number of timestep before output
-    int m_out_delay{0};
 };
 
 } // namespace amr_wind::sampling

@@ -75,6 +75,62 @@ void init_mac_velocity(
     amrex::Gpu::streamSynchronize();
 }
 
+void init_vof(amr_wind::Field& vof, bool bounded)
+{
+    const auto& mesh = vof.repo().mesh();
+    const int nlevels = vof.repo().num_active_levels();
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+        const auto& dx = mesh.Geom(lev).CellSizeArray();
+        const auto& problo = mesh.Geom(lev).ProbLoArray();
+        const auto& probhi = mesh.Geom(lev).ProbHiArray();
+        const auto& farrs = vof(lev).arrays();
+
+        amrex::ParallelFor(
+            vof(lev), vof.num_grow(),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                const amrex::Real xc_rel = (i + 0.5) * dx[0];
+                const amrex::Real yc_rel = (j + 0.5) * dx[1];
+                const amrex::Real zc_rel = (k + 0.5) * dx[2];
+
+                const amrex::Real Lx = probhi[0] - problo[0];
+                const amrex::Real Ly = probhi[1] - problo[1];
+                const amrex::Real Lz = probhi[2] - problo[2];
+
+                farrs[nbx](i, j, k) = xc_rel / Lx + yc_rel / Ly + zc_rel / Lz;
+
+                if (bounded) {
+                    farrs[nbx](i, j, k) =
+                        amrex::min(1.0, amrex::max(0.0, farrs[nbx](i, j, k)));
+                }
+            });
+    }
+    amrex::Gpu::streamSynchronize();
+}
+
+void modify_vof(amr_wind::Field& vof, amrex::Vector<int> ncell)
+{
+    const int nlevels = vof.repo().num_active_levels();
+    const int nx = ncell[0];
+    const int ny = ncell[1];
+    const int nz = ncell[2];
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+        const auto& farrs = vof(lev).arrays();
+
+        amrex::ParallelFor(
+            vof(lev), vof.num_grow(),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                if (i == 0 || j == 0 || k == 0) {
+                    farrs[nbx](i, j, k) = 0;
+                } else if (i == nx - 1 || j == ny - 1 || k == nz - 1) {
+                    farrs[nbx](i, j, k) = 1;
+                }
+            });
+    }
+    amrex::Gpu::streamSynchronize();
+}
+
 } // namespace
 
 class DiagnosticsTest : public MeshTest
@@ -86,8 +142,7 @@ protected:
 
         {
             amrex::ParmParse pp("amr");
-            amrex::Vector<int> ncell{{24, 24, 8}};
-            pp.addarr("n_cell", ncell);
+            pp.addarr("n_cell", m_ncell);
         }
         {
             amrex::ParmParse pp("geometry");
@@ -97,6 +152,7 @@ protected:
             pp.addarr("is_periodic", amrex::Vector<int>{{1, 1, 0}});
         }
     }
+    const amrex::Vector<int> m_ncell{{24, 24, 8}};
     const amrex::Vector<amrex::Real> m_problo{{-5.0, -5.0, -2.0}};
     const amrex::Vector<amrex::Real> m_probhi{{5.0, 5.0, 2.0}};
 };
@@ -267,6 +323,85 @@ TEST_F(DiagnosticsTest, Max_MACvel_MultiLevel)
     EXPECT_NEAR(std::abs(fc_results[11]), 7.5 * 4.0 / 16.0, tol);
     EXPECT_NEAR(std::abs(fc_results[15]), 0.5 * 4.0 / 16.0, tol);
     EXPECT_NEAR(std::abs(fc_results[22]), 0.5 * 10.0 / 48.0, tol);
+}
+
+TEST_F(DiagnosticsTest, Field_Extrema)
+{
+    initialize_mesh();
+    auto& repo = sim().repo();
+    auto& vof = repo.declare_field("vof", 1, 1);
+    init_vof(vof, false);
+
+    // Get max and min regardless of phase
+    amrex::Real fmin{0.}, fmax{0.};
+    amr_wind::diagnostics::get_field_extrema(fmax, fmin, vof, 0, 1, 1);
+
+    // Lowest and highest possible values according to init_vof
+    const amrex::Real gold_fmin =
+        -0.5 * (1. / m_ncell[0] + 1. / m_ncell[1] + 1. / m_ncell[2]);
+    const amrex::Real gold_fmax =
+        3. + 0.5 * (1. / m_ncell[0] + 1. / m_ncell[1] + 1. / m_ncell[2]);
+
+    constexpr amrex::Real tol = 1.0e-10;
+    EXPECT_NEAR(fmin, gold_fmin, tol);
+    EXPECT_NEAR(fmax, gold_fmax, tol);
+
+    // Phase-specific reference values
+    const amrex::Real gold_fmin_g = 0.;
+    const amrex::Real gold_fmax_g = 0.;
+    const amrex::Real gold_fmin_l = 1.;
+    const amrex::Real gold_fmax_l = 1.;
+
+    // Get max and min using masking for phase
+    amrex::Real fmin_g{0.}, fmax_g{0.}, fmin_l{0.}, fmax_l{0.};
+    bool found_g = amr_wind::diagnostics::get_field_extrema(
+        fmax_g, fmin_g, vof, vof, 0., 0, 1, 1);
+    bool found_l = amr_wind::diagnostics::get_field_extrema(
+        fmax_l, fmin_l, vof, vof, 1., 0, 1, 1);
+
+    // Confirm that gas and liquid not found
+    EXPECT_FALSE(found_g);
+    EXPECT_FALSE(found_l);
+
+    // No gas or liquid in domain, so these values will be bad
+    EXPECT_GT(fmin_g, gold_fmin_g);
+    EXPECT_LT(fmax_g, gold_fmax_g);
+    EXPECT_GT(fmin_l, gold_fmin_l);
+    EXPECT_LT(fmax_l, gold_fmax_l);
+
+    // Modify vof to ensure some single-phase cells while remaining unbounded
+    modify_vof(vof, m_ncell);
+    // Get max and min using masking for phase
+    found_g = amr_wind::diagnostics::get_field_extrema(
+        fmax_g, fmin_g, vof, vof, 0., 0, 1, 1);
+    found_l = amr_wind::diagnostics::get_field_extrema(
+        fmax_l, fmin_l, vof, vof, 1., 0, 1, 1);
+
+    // Phases should be found this time
+    EXPECT_TRUE(found_g);
+    EXPECT_TRUE(found_l);
+
+    // Extrema should be valid this time
+    EXPECT_NEAR(fmin_g, gold_fmin_g, tol);
+    EXPECT_NEAR(fmax_g, gold_fmax_g, tol);
+    EXPECT_NEAR(fmin_l, gold_fmin_l, tol);
+    EXPECT_NEAR(fmax_l, gold_fmax_l, tol);
+
+    // Init vof again with bounds
+    init_vof(vof, true);
+
+    // Get max and min with masking on bounded vof
+    amrex::Real fmin_g_bounded{0.}, fmax_g_bounded{0.}, fmin_l_bounded{0.},
+        fmax_l_bounded{0.};
+    amr_wind::diagnostics::get_field_extrema(
+        fmax_g_bounded, fmin_g_bounded, vof, vof, 0., 0, 1, 1);
+    amr_wind::diagnostics::get_field_extrema(
+        fmax_l_bounded, fmin_l_bounded, vof, vof, 1., 0, 1, 1);
+
+    EXPECT_NEAR(fmin_g_bounded, gold_fmin_g, tol);
+    EXPECT_NEAR(fmax_g_bounded, gold_fmax_g, tol);
+    EXPECT_NEAR(fmin_l_bounded, gold_fmin_l, tol);
+    EXPECT_NEAR(fmax_l_bounded, gold_fmax_l, tol);
 }
 
 } // namespace amr_wind_tests

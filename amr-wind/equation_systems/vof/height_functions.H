@@ -7,3 +7,4 @@
 namespace amr_wind {
 namespace multiphase {}
 } // namespace amr_wind
+#endif
