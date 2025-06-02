@@ -31,6 +31,32 @@ void TerrainRefinement::initialize(const std::string& key)
         amrex::Abort("TerrainRefinement: level should be strictly above 0");
     }
 
+
+    int cnt = pp.countval("poly_outer");
+    if (cnt > 0) {
+        amrex::Vector<amrex::Real> poly_outer;
+        pp.getarr("poly_outer", poly_outer);
+        const int n = poly_outer.size();
+        const int n_points = static_cast<int>(poly_outer[0]);
+        amrex::Print() << "Number of points:" << n_points << std::endl;
+        const int n_expected = n_points * 2 + 1;
+        if (n_expected != n) {
+            amrex::Abort("Expected a list of " + std::to_string(n_expected) + " floats, found " + std::to_string(n-1) + "!");
+        }         
+        m_poly_outer.resize(n_points);
+        for (int i = 0; i < n_points; ++i) {
+            const auto pt_x = poly_outer[1+ 2*i];
+            const auto pt_y = poly_outer[1+ 2*i + 1];
+            m_poly_outer[i] = amr_wind::polygon_utils::Point({pt_x, pt_y});
+            // amrex::Print() << pt_x << " " << pt_y << std::endl;
+        }            
+    }
+
+    // if (m_poly_outer.size()) {        
+    //     amrex::Print() << amr_wind::polygon_utils::is_point_in_polygon(m_poly_outer, amr_wind::polygon_utils::Point({0, 0})) << std::endl;
+    //     amrex::Print() << amr_wind::polygon_utils::is_point_in_polygon(m_poly_outer, amr_wind::polygon_utils::Point({600, 600})) << std::endl;
+    // }
+
     amrex::Vector<amrex::Real> box_lo(AMREX_SPACEDIM, 0);
     amrex::Vector<amrex::Real> box_hi(AMREX_SPACEDIM, 0);
     if (pp.queryarr("box_lo", box_lo, 0, static_cast<int>(box_lo.size())) ==
@@ -78,10 +104,12 @@ void TerrainRefinement::operator()(
                 prob_lo[0] + (i + 0.5) * dx[0],
                 prob_lo[1] + (j + 0.5) * dx[1],
                 prob_lo[2] + (k + 0.5) * dx[2])};
+            
+            const bool in_poly = m_poly_outer.size() ? amr_wind::polygon_utils::is_point_in_polygon(m_poly_outer, amr_wind::polygon_utils::Point({coord[0], coord[1]})) : true;
 
             if (
                 ((cellHt >= -0.5)*dx[2]  && (cellHt <= m_vertical_distance)) &&
-                (mterrain_b_arrs[nbx](i, j, k) < 1) && 
+                (mterrain_b_arrs[nbx](i, j, k) < 1) && in_poly &&
                 (tagging_box.contains(coord))
             ) {
                 tag_arrs[nbx](i, j, k) = amrex::TagBox::SET;
