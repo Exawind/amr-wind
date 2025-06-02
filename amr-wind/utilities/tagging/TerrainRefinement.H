@@ -45,12 +45,11 @@ private:
     IntField* m_terrain_blank{nullptr};
     int m_max_lev{0};
     amrex::Real m_vertical_distance{0.0};
-    amrex::RealBox m_tagging_box;  
-    
+    amrex::RealBox m_tagging_box;
 
     //! Boxarrays for each level in AMR hierarchy
     amrex::Vector<amr_wind::polygon_utils::Point> m_poly_outer;
-
+    amrex::Vector<amrex::Vector<amr_wind::polygon_utils::Point>> m_poly_rings;
 };
 
 } // namespace amr_wind

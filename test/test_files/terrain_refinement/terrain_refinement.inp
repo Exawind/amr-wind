@@ -73,3 +73,5 @@ tagging.terrain_lvl1.level = 1
 tagging.terrain_lvl2.type = TerrainRefinement
 tagging.terrain_lvl2.vertical_distance = 40
 tagging.terrain_lvl2.level = 2
+tagging.terrain_lvl2.poly_outer= 4 -500 -500  -500 500  500 500 500 -500
+tagging.terrain_lvl2.poly_inners= 1 4 -250 -250  -250 250  250 250 250 -250
