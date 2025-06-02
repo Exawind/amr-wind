@@ -28,7 +28,7 @@ and these arguments are described below.
 
 .. input_param:: postproc.output_interval
 
-   **type:** Integer, optional
+   **type:** Integer, optional, default = 10
 
    Specify the output interval (in time steps) when post-processing is performed
    and output to disk. This quantity can instead be specified as ``output_frequency``,
