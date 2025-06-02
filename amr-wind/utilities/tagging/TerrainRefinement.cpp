@@ -30,9 +30,11 @@ void TerrainRefinement::initialize(const std::string& key)
         amrex::Abort("TerrainRefinement: level should be strictly above 0");
     }
 
-    int cnt = pp.countval("poly_outer");
-    if (cnt > 0) {
-        amrex::Vector<amrex::Real> poly_outer;
+    amrex::Vector<amrex::Real> poly_outer;
+    amrex::Vector<amrex::Real> poly_inners;
+    pp.queryarr("poly_outer", poly_outer);
+
+    if (poly_outer.size() > 0) {            
         pp.getarr("poly_outer", poly_outer);
         const int n = poly_outer.size();
         const int n_points = static_cast<int>(poly_outer[0]);
@@ -50,9 +52,8 @@ void TerrainRefinement::initialize(const std::string& key)
             m_poly_outer[i] = amr_wind::polygon_utils::Point({pt_x, pt_y});
             // amrex::Print() << pt_x << " " << pt_y << std::endl;
         }
-        {
-            amrex::Vector<amrex::Real> poly_inners;
-            pp.getarr("poly_inners", poly_inners);
+        pp.queryarr("poly_inners", poly_inners);
+        if (poly_inners.size() > 0) {            
             const int n_rings = static_cast<int>(poly_inners[0]);
             m_poly_rings.resize(n_rings);
             // amrex::Print() << "Number of inner rings:" << n_rings <<
