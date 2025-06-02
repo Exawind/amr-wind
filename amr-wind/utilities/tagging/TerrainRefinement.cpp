@@ -33,12 +33,10 @@ void TerrainRefinement::initialize(const std::string& key)
     amrex::Vector<amrex::Real> poly_outer;
     amrex::Vector<amrex::Real> poly_inners;
     pp.queryarr("poly_outer", poly_outer);
-
     if (poly_outer.size() > 0) {
         pp.getarr("poly_outer", poly_outer);
         const int n = poly_outer.size();
         const int n_points = static_cast<int>(poly_outer[0]);
-        // amrex::Print() << "Number of points:" << n_points << std::endl;
         const int n_expected = n_points * 2 + 1;
         if (n_expected != n) {
             amrex::Abort(
@@ -50,28 +48,21 @@ void TerrainRefinement::initialize(const std::string& key)
             const auto pt_x = poly_outer[1 + 2 * i];
             const auto pt_y = poly_outer[1 + 2 * i + 1];
             m_poly_outer[i] = amr_wind::polygon_utils::Point({pt_x, pt_y});
-            // amrex::Print() << pt_x << " " << pt_y << std::endl;
         }
         pp.queryarr("poly_inners", poly_inners);
         if (poly_inners.size() > 0) {
             const int n_rings = static_cast<int>(poly_inners[0]);
             m_poly_rings.resize(n_rings);
-            // amrex::Print() << "Number of inner rings:" << n_rings <<
-            // std::endl;
             int offset = 1;
             for (int ring_i = 0; ring_i < n_rings; ++ring_i) {
                 const int n_pts = static_cast<int>(poly_inners[offset]);
                 m_poly_rings[ring_i].resize(n_pts);
-                // amrex::Print() << "Number of inner points:" << n_pts <<
-                // std::endl;
                 offset += 1;
                 for (int pt_i = 0; pt_i < n_pts; ++pt_i) {
                     const auto pt_x = poly_inners[offset + 2 * pt_i];
                     const auto pt_y = poly_inners[offset + 2 * pt_i + 1];
                     m_poly_rings[ring_i][pt_i] =
                         amr_wind::polygon_utils::Point({pt_x, pt_y});
-                    // amrex::Print() << m_poly_rings[ring_i][pt_i].x <<
-                    // std::endl;
                 }
                 offset += 2 * n_pts;
             }
@@ -114,8 +105,6 @@ void TerrainRefinement::operator()(
     const auto tagging_box = m_tagging_box;
 
     const auto& tag_arrs = tags.arrays();
-
-    // const auto& farrs = mfab.const_arrays();
     const auto& mfab = (*m_terrain_height)(level);
     const auto& mterrain_h_arrs = mfab.const_arrays();
     const auto& mterrain_b_arrs = (*m_terrain_blank)(level).const_arrays();
