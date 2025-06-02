@@ -160,13 +160,14 @@ void PDEMgr::density_check()
     if (m_sim.repo().field_exists("vof")) {
         amrex::Real rho_l_max{1.0}, rho_l_min{1.0};
         amrex::Real rho_g_max{1.0}, rho_g_min{1.0};
-        diagnostics::get_field_extrema(
+        const bool liquid_found = diagnostics::get_field_extrema(
             rho_l_max, rho_l_min, m_sim.repo().get_field("density"),
             m_sim.repo().get_field("vof"), 1.0, 0, 1, 1);
-        diagnostics::get_field_extrema(
+        const bool gas_found = diagnostics::get_field_extrema(
             rho_g_max, rho_g_min, m_sim.repo().get_field("density"),
             m_sim.repo().get_field("vof"), 0.0, 0, 1, 1);
-        if (std::abs(rho_l_max - rho_l_min) > constants::LOOSE_TOL) {
+        if (liquid_found &&
+            std::abs(rho_l_max - rho_l_min) > constants::LOOSE_TOL) {
             amrex::Abort(
                 "Density check failed. Liquid density maximum is too different "
                 "from liquid density minimum.\n"
@@ -174,13 +175,26 @@ void PDEMgr::density_check()
                 std::to_string(rho_l_max) + ", rho_l_min = " +
                 std::to_string(rho_l_min) + advice2 + advice3);
         }
-        if (std::abs(rho_g_max - rho_g_min) > constants::LOOSE_TOL) {
+        if (gas_found &&
+            std::abs(rho_g_max - rho_g_min) > constants::LOOSE_TOL) {
             amrex::Abort(
                 "Density check failed. Gas density maximum is too different "
                 "from gas density minimum.\n"
                 "rho_g_max = " +
                 std::to_string(rho_g_max) + ", rho_g_min = " +
                 std::to_string(rho_g_min) + advice + advice2 + advice3);
+        }
+        if (!liquid_found) {
+            amrex::Print()
+                << "WARNING: Simulation is multiphase, but no fully liquid "
+                   "cells (vof = 1) were found during the initial density "
+                   "check.\n";
+        }
+        if (!gas_found) {
+            amrex::Print()
+                << "WARNING: Simulation is multiphase, but no fully gas "
+                   "cells (vof = 0) were found during the initial density "
+                   "check.\n";
         }
     } else if (m_constant_density) {
         amrex::Real rho_max{1.0}, rho_min{1.0};
