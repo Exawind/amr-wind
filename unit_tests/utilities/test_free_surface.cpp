@@ -121,6 +121,32 @@ void init_vof_slope(
     amrex::Gpu::streamSynchronize();
 }
 
+void init_vof_diffuse(amr_wind::Field& vof_fld, amrex::Real water_level)
+{
+    const auto& mesh = vof_fld.repo().mesh();
+    const int nlevels = vof_fld.repo().num_active_levels();
+
+    // Since VOF is cell centered
+    amrex::Real offset = 0.5;
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+        const auto& dx = mesh.Geom(lev).CellSizeArray();
+        const auto& problo = mesh.Geom(lev).ProbLoArray();
+        const auto& farrs = vof_fld(lev).arrays();
+
+        amrex::ParallelFor(
+            vof_fld(lev), vof_fld.num_grow(),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                const amrex::Real z = problo[2] + (k + offset) * dx[2];
+                const amrex::Real local_vof = amrex::min<amrex::Real>(
+                    1.0, amrex::max<amrex::Real>(
+                             0.0, 0.5 + 0.25 * (water_level - z) / dx[2]));
+                farrs[nbx](i, j, k) = local_vof;
+            });
+    }
+    amrex::Gpu::streamSynchronize();
+}
+
 //! Custom mesh class to be able to refine like a simulation would
 //  - combination of AmrTestMesh and incflo classes
 //  - with ability to initialize the refiner and regrid
