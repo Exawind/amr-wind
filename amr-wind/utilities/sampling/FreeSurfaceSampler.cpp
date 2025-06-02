@@ -568,25 +568,32 @@ bool FreeSurfaceSampler::update_sampling_locations()
                                         vof_arr(i, j, k) - vof_arr(i, j, k - 1);
                                     const amrex::Real dv_zr =
                                         vof_arr(i, j, k + 1) - vof_arr(i, j, k);
+                                    // Distances from cell center to probe loc
                                     const amrex::Real dist_0 = loc0 - xm[gc0];
                                     const amrex::Real dist_1 = loc1 - xm[gc1];
+                                    // Central slopes for when sign of distance
+                                    // to interface is unkown
                                     amrex::Real slope_dir =
                                         dir == 0
                                             ? 0.5 * (dv_xl + dv_xr)
                                             : (dir == 1
                                                    ? 0.5 * (dv_yl + dv_yr)
                                                    : 0.5 * (dv_zl + dv_zr));
+                                    // One-sided slopes for when sign of
+                                    // distance to interface is known
                                     amrex::Real slope_0 =
                                         dist_0 > 0 ? (dir == 0 ? dv_yr : dv_xr)
                                                    : (dir == 0 ? dv_yl : dv_xl);
                                     amrex::Real slope_1 =
                                         dist_1 > 0 ? (dir == 2 ? dv_yr : dv_zr)
                                                    : (dir == 2 ? dv_yl : dv_zl);
+                                    // Turn finite differences into true slopes
                                     slope_dir *= dxi[dir];
                                     slope_0 *= dxi[gc0];
                                     slope_1 *= dxi[gc1];
+                                    // Trilinear interpolation
                                     ht = (0.5 + slope_dir * xm[dir] -
-                                          (0.5 + slope_0 * dist_0 +
+                                          (vof_arr(i, j, k) + slope_0 * dist_0 +
                                            slope_1 * dist_1)) /
                                          slope_dir;
                                 }
