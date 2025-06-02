@@ -625,9 +625,8 @@ TEST_F(FreeSurfaceTest, point_diffuse)
     iblank.setVal(-1);
     setup_grid_0d(1);
 
-    // Chosen to be cell center
-    const amrex::Real water_lev_diffuse = 61.;
-
+    // -- Chosen to be cell center --
+    amrex::Real water_lev_diffuse = 61.;
     init_vof_diffuse(vof, water_lev_diffuse);
     auto& m_sim = sim();
     FreeSurfaceImpl tool(m_sim);
@@ -648,6 +647,24 @@ TEST_F(FreeSurfaceTest, point_diffuse)
     // Check sampling locations
     int nsloc = tool.check_sloc("~");
     ASSERT_EQ(nsloc, 1);
+
+    // -- Chosen to be cell edge --
+    water_lev_diffuse = 62.;
+    init_vof_diffuse(vof, water_lev_diffuse);
+    tool.update_sampling_locations();
+
+    // Check output value
+    nout = tool.check_output("~", water_lev_diffuse);
+    ASSERT_EQ(nout, 1);
+
+    // -- Chosen to be neither cell center nor edge --
+    water_lev_diffuse = 61.5;
+    init_vof_diffuse(vof, water_lev_diffuse);
+    tool.update_sampling_locations();
+
+    // Check output value
+    nout = tool.check_output("~", water_lev_diffuse);
+    ASSERT_EQ(nout, 1);
 }
 
 } // namespace amr_wind_tests
