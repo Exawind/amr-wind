@@ -574,7 +574,7 @@ bool FreeSurfaceSampler::update_sampling_locations()
                                     const amrex::Real dist_0 = loc0 - xm[gc0];
                                     const amrex::Real dist_1 = loc1 - xm[gc1];
                                     // Central slopes for when sign of distance
-                                    // to interface is unkown
+                                    // to interface is unknown
                                     amrex::Real slope_dir =
                                         dir == 0
                                             ? 0.5 * (dv_xl + dv_xr)
