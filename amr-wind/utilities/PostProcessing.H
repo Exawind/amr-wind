@@ -79,8 +79,8 @@ public:
                 amrex::Print()
                     << "WARNING: legacy input argument of output_frequency has "
                        "been specified; the code will function as normal, but "
-                       "the "
-                       "new input argument of output_interval is preferred.\n";
+                       "the new input argument of output_interval is "
+                       "preferred.\n";
             }
         }
 
