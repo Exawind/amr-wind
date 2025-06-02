@@ -137,7 +137,7 @@ void TerrainRefinement::operator()(
                 }
             }
 
-            if (((cellHt >= -0.5) * dx[2] && (cellHt <= m_vertical_distance)) &&
+            if (((cellHt >= -0.5 * dx[2]) && (cellHt <= m_vertical_distance)) &&
                 (mterrain_b_arrs[nbx](i, j, k) < 1) && in_poly &&
                 (tagging_box.contains(coord))) {
                 tag_arrs[nbx](i, j, k) = amrex::TagBox::SET;
