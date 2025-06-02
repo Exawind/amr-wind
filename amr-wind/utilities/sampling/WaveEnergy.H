@@ -41,8 +41,10 @@ public:
     //! Read user inputs and get information needed for calculations
     void initialize() override;
 
+    void post_advance_work() override {};
+
     //! Integrate energy components and output to file
-    void post_advance_work() override;
+    void output_actions() override;
 
     void post_regrid_actions() override {}
 
@@ -93,9 +95,6 @@ private:
 
     //! filename for ASCII output
     std::string m_out_fname;
-
-    //! Frequency of data sampling and output
-    int m_out_freq{10};
 
     //! width in ASCII output
     int m_width{22};

@@ -517,11 +517,13 @@ bool FreeSurfaceSampler::update_sampling_locations()
                                     vof_arr(i, j, k) > 1e-12) {
                                     if (!has_overset ||
                                         ibl_arr(i, j, k) != -1) {
+                                        // Planar reconstruction
                                         calc_flag = true;
                                         multiphase::fit_plane(
                                             i, j, k, vof_arr, mx, my, mz,
                                             alpha);
                                     } else {
+                                        // Interpolation (later)
                                         calc_flag_diffuse = true;
                                     }
                                 }
