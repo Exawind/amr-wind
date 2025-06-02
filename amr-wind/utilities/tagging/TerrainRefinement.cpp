@@ -36,12 +36,12 @@ void TerrainRefinement::initialize(const std::string& key)
         pp.getarr("poly_outer", poly_outer);
         const int n = poly_outer.size();
         const int n_points = static_cast<int>(poly_outer[0]);
-        amrex::Print() << "Number of points:" << n_points << std::endl;
+        // amrex::Print() << "Number of points:" << n_points << std::endl;
         const int n_expected = n_points * 2 + 1;
         if (n_expected != n) {
             amrex::Abort(
                 "Expected a list of " + std::to_string(n_expected) +
-                " floats, found " + std::to_string(n - 1) + "!");
+                " numbers, found " + std::to_string(n - 1) + "!");
         }
         m_poly_outer.resize(n_points);
         for (int i = 0; i < n_points; ++i) {
@@ -72,7 +72,13 @@ void TerrainRefinement::initialize(const std::string& key)
                     // amrex::Print() << m_poly_rings[ring_i][pt_i].x <<
                     // std::endl;
                 }
-                offset += n_pts;
+                offset += 2 * n_pts;
+            }
+            if ((n_rings > 0) && (offset != poly_inners.size())) {
+                amrex::Abort(
+                    "Expected a list of " + std::to_string(offset) +
+                    " numbers, found " + std::to_string(poly_inners.size()) +
+                    "!");
             }
         }
     }
