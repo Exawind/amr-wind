@@ -119,30 +119,38 @@ void TerrainRefinement::operator()(
                 coord[0], coord[1]};
 
             // 1. Check tagging box first
-            if (!tagging_box.contains(coord)) return;
+            if (!tagging_box.contains(coord)) {
+                return;
+            }
 
             // 2. Check vertical distance
-            if ((cellHt < -0.5 * dx[2]) || (cellHt > vertical_distance)) return;
+            if ((cellHt < -0.5 * dx[2]) || (cellHt > vertical_distance)) {
+                return;
+            }
 
             // 3. Check terrain blanking
-            if (mterrain_b_arrs[nbx](i, j, k) >= 1) return;
+            if (mterrain_b_arrs[nbx](i, j, k) >= 1) {
+                return;
+            }
 
             // 4. Polygon point-in-polygon test using the new layout
             bool in_poly = false;
             if (!polygon_is_empty) {
                 // Outer ring
-                int start = p_ring_offsets[0];
-                int end = (n_rings > 1) ? p_ring_offsets[1] : n_points;
+                int start = static_cast<int>(p_ring_offsets[0]);
+                int end = (n_rings > 1) ? static_cast<int>(p_ring_offsets[1])
+                                        : static_cast<int>(n_points);
                 int n = end - start;
                 if (amr_wind::polygon_utils::Polygon::is_point_in_ring(
                         p_poly_points + start, n, testPt)) {
                     in_poly = true;
                     // Check holes
                     for (int ring_i = 1; ring_i < n_rings; ++ring_i) {
-                        int h_start = p_ring_offsets[ring_i];
-                        int h_end = (ring_i + 1 < n_rings)
-                                        ? p_ring_offsets[ring_i + 1]
-                                        : n_points;
+                        int h_start = static_cast<int>(p_ring_offsets[ring_i]);
+                        int h_end =
+                            (ring_i + 1 < n_rings)
+                                ? static_cast<int>(p_ring_offsets[ring_i + 1])
+                                : static_cast<int>(n_points);
                         int h_n = h_end - h_start;
                         if (amr_wind::polygon_utils::Polygon::is_point_in_ring(
                                 p_poly_points + h_start, h_n, testPt)) {
