@@ -33,12 +33,6 @@ void TerrainRefinement::initialize(const std::string& key)
     // Read polygon from input file
     m_polygon.read_from_parmparse(key);
 
-    // Print polygon only if present
-    if (!m_polygon.is_empty()) {
-        amrex::Print() << "\n--- Polygon Geometry ---\n";
-        m_polygon.print();
-    }
-
     amrex::Vector<amrex::Real> box_lo(AMREX_SPACEDIM, 0);
     amrex::Vector<amrex::Real> box_hi(AMREX_SPACEDIM, 0);
     if (pp.queryarr("box_lo", box_lo, 0, static_cast<int>(box_lo.size())) ==
