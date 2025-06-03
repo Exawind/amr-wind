@@ -436,6 +436,12 @@ bool FreeSurfaceSampler::update_sampling_locations()
     const int gc1 = m_gc1;
     const int ncomp = m_ncomp;
 
+    bool has_overset = m_sim.has_overset();
+    amr_wind::IntField* iblank_ptr{nullptr};
+    if (has_overset) {
+        iblank_ptr = &m_sim.repo().get_int_field("iblank_cell");
+    }
+
     // Loop instances
     for (int ni = 0; ni < m_ninst; ++ni) {
         for (int lev = 0; lev <= finest_level; lev++) {
@@ -456,6 +462,8 @@ bool FreeSurfaceSampler::update_sampling_locations()
                 auto loc_arr = floc(lev).const_array(mfi);
                 auto idx_arr = fidx(lev).const_array(mfi);
                 auto vof_arr = m_vof(lev).const_array(mfi);
+                auto ibl_arr = has_overset ? (*iblank_ptr)(lev).const_array(mfi)
+                                           : amrex::Array4<int>();
                 const auto& vbx = mfi.validbox();
                 amrex::ParallelFor(
                     vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -489,6 +497,7 @@ bool FreeSurfaceSampler::update_sampling_locations()
                                 // intersection of cells but lower one
                                 // is not single-phase)
                                 bool calc_flag = false;
+                                bool calc_flag_diffuse = false;
                                 if ((ni % 2 == 0 &&
                                      vof_arr(i, j, k) >= 1.0 - 1e-12) ||
                                     (ni % 2 != 0 &&
@@ -506,15 +515,22 @@ bool FreeSurfaceSampler::update_sampling_locations()
                                 // Multiphase cell case
                                 if (vof_arr(i, j, k) < (1.0 - 1e-12) &&
                                     vof_arr(i, j, k) > 1e-12) {
-                                    // Get interface reconstruction
-                                    multiphase::fit_plane(
-                                        i, j, k, vof_arr, mx, my, mz, alpha);
-                                    calc_flag = true;
+                                    if (!has_overset ||
+                                        ibl_arr(i, j, k) != -1) {
+                                        // Planar reconstruction
+                                        calc_flag = true;
+                                        multiphase::fit_plane(
+                                            i, j, k, vof_arr, mx, my, mz,
+                                            alpha);
+                                    } else {
+                                        // Interpolation (later)
+                                        calc_flag_diffuse = true;
+                                    }
                                 }
 
+                                // Initialize height measurement
+                                amrex::Real ht = plo[dir];
                                 if (calc_flag) {
-                                    // Initialize height measurement
-                                    amrex::Real ht = plo[dir];
                                     // Reassign slope coefficients
                                     const amrex::Real mdr =
                                         (dir == 0) ? mx
@@ -540,6 +556,51 @@ bool FreeSurfaceSampler::update_sampling_locations()
                                                    (xm[gc1] - 0.5 * dx[gc1]))) /
                                                  (mdr * dxi[dir]);
                                     }
+                                }
+                                if (calc_flag_diffuse) {
+                                    const amrex::Real dv_xl =
+                                        vof_arr(i, j, k) - vof_arr(i - 1, j, k);
+                                    const amrex::Real dv_xr =
+                                        vof_arr(i + 1, j, k) - vof_arr(i, j, k);
+                                    const amrex::Real dv_yl =
+                                        vof_arr(i, j, k) - vof_arr(i, j - 1, k);
+                                    const amrex::Real dv_yr =
+                                        vof_arr(i, j + 1, k) - vof_arr(i, j, k);
+                                    const amrex::Real dv_zl =
+                                        vof_arr(i, j, k) - vof_arr(i, j, k - 1);
+                                    const amrex::Real dv_zr =
+                                        vof_arr(i, j, k + 1) - vof_arr(i, j, k);
+                                    // Distances from cell center to probe loc
+                                    const amrex::Real dist_0 = loc0 - xm[gc0];
+                                    const amrex::Real dist_1 = loc1 - xm[gc1];
+                                    // Central slopes for when sign of distance
+                                    // to interface is unknown
+                                    amrex::Real slope_dir =
+                                        dir == 0
+                                            ? 0.5 * (dv_xl + dv_xr)
+                                            : (dir == 1
+                                                   ? 0.5 * (dv_yl + dv_yr)
+                                                   : 0.5 * (dv_zl + dv_zr));
+                                    // One-sided slopes for when sign of
+                                    // distance to interface is known
+                                    amrex::Real slope_0 =
+                                        dist_0 > 0 ? (dir == 0 ? dv_yr : dv_xr)
+                                                   : (dir == 0 ? dv_yl : dv_xl);
+                                    amrex::Real slope_1 =
+                                        dist_1 > 0 ? (dir == 2 ? dv_yr : dv_zr)
+                                                   : (dir == 2 ? dv_yl : dv_zl);
+                                    // Turn finite differences into true slopes
+                                    slope_dir *= dxi[dir];
+                                    slope_0 *= dxi[gc0];
+                                    slope_1 *= dxi[gc1];
+                                    // Trilinear interpolation
+                                    ht = (0.5 + slope_dir * xm[dir] -
+                                          (vof_arr(i, j, k) + slope_0 * dist_0 +
+                                           slope_1 * dist_1)) /
+                                         slope_dir;
+                                }
+
+                                if (calc_flag || calc_flag_diffuse) {
                                     // If interface is below lower
                                     // bound, continue to look
                                     if (ht < xm[dir] - 0.5 * dx[dir]) {

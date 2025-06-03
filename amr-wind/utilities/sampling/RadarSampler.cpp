@@ -245,8 +245,9 @@ bool RadarSampler::update_sampling_locations()
 
             // Assume vertical_ref and radar_ref are normal to each other and
             // unit
-            vs::Vector swept_axis(sampling_utils::rotate_euler_vector(
-                vertical_ref, sweep_angle, radar_ref));
+            vs::Vector swept_axis(
+                sampling_utils::rotate_euler_vector(
+                    vertical_ref, sweep_angle, radar_ref));
             vs::Vector elevation_axis(-vertical_ref ^ swept_axis);
 
             amrex::Long cq_idx = k * num_points_quad();
@@ -257,10 +258,12 @@ bool RadarSampler::update_sampling_locations()
                     m_initial_cone[i][0] - m_start[0],
                     m_initial_cone[i][1] - m_start[1],
                     m_initial_cone[i][2] - m_start[2]);
-                vs::Vector swept_point(sampling_utils::rotate_euler_vector(
-                    vertical_ref, sweep_angle, temp_point));
-                vs::Vector rotated_point(sampling_utils::rotate_euler_vector(
-                    elevation_axis, elevation_angle, swept_point));
+                vs::Vector swept_point(
+                    sampling_utils::rotate_euler_vector(
+                        vertical_ref, sweep_angle, temp_point));
+                vs::Vector rotated_point(
+                    sampling_utils::rotate_euler_vector(
+                        elevation_axis, elevation_angle, swept_point));
                 const amrex::Long point_index = i + k * m_cone_size;
                 m_current_cones[point_index][0] = rotated_point[0] + m_start[0];
                 m_current_cones[point_index][1] = rotated_point[1] + m_start[1];
