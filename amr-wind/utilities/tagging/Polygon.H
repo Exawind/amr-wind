@@ -101,12 +101,28 @@ public:
         if (!bounding_box_contains(pt)) {
             return false;
         }
+        // Check if on edge of outer ring
         if (winding_number(0, pt) == 0) {
-            return false; // outer ring
+            return false; // outside or on edge of outer ring
         }
+        // Check if on edge or inside any hole
         for (int h = 1; h < num_rings(); ++h) {
-            if (winding_number(h, pt) != 0) {
-                return false; // inside a hole
+            int wn = winding_number(h, pt);
+            if (wn != 0) {
+                return false; // inside hole
+            }
+            // Check if on edge of hole
+            int start = m_ring_offsets[h];
+            int end = (h + 1 < static_cast<int>(m_ring_offsets.size()))
+                          ? m_ring_offsets[h + 1]
+                          : static_cast<int>(m_points.size());
+            int n = end - start;
+            for (int j = 0; j < n; ++j) {
+                const auto& p1 = m_points[start + j];
+                const auto& p2 = m_points[start + ((j + 1) % n)];
+                if (is_point_on_segment(pt, p1, p2)) {
+                    return false; // on edge of hole
+                }
             }
         }
         return true;
@@ -270,8 +286,8 @@ private:
     Point m_bbox_max;
 
     /** \brief Helper: check if point pt is on segment p1-p2 */
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool
-    is_point_on_segment(const Point& pt, const Point& p1, const Point& p2) const
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE static bool
+    is_point_on_segment(const Point& pt, const Point& p1, const Point& p2)
     {
         amrex::Real cross = is_left(p1, p2, pt);
         if (std::abs(cross) > 1e-12) {
