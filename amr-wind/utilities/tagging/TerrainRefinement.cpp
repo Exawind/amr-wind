@@ -38,16 +38,6 @@ void TerrainRefinement::initialize(const std::string& key)
         amrex::Print() << "\n--- Polygon Geometry ---\n";
         m_polygon.print();
     }
-    // amrex::Vector<amr_wind::polygon_utils::Polygon::Point> test_points = {
-    //     {500, 500}, {750, 500}, {1050, 500}};
-
-    // for (std::size_t i = 0; i < test_points.size(); ++i) {
-    //     const auto& pt = test_points[i];
-    //     bool inside = m_polygon.contains(pt);
-    //     amrex::Print() << "Point " << i << " (" << pt[0] << ", " << pt[1]
-    //                    << ") is " << (inside ? "inside" : "outside")
-    //                    << " the polygon.\n";
-    // }
 
     amrex::Vector<amrex::Real> box_lo(AMREX_SPACEDIM, 0);
     amrex::Vector<amrex::Real> box_hi(AMREX_SPACEDIM, 0);

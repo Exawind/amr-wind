@@ -139,7 +139,7 @@ public:
         m_points.clear();
         m_ring_offsets.clear();
         m_ring_offsets.push_back(0);
-        for (std::size_t i = 0; i < outer_coords.size(); i += 2) {
+        for (amrex::Long i = 0; i < outer_coords.size(); i += 2) {
             m_points.push_back({outer_coords[i], outer_coords[i + 1]});
         }
 
@@ -155,7 +155,7 @@ public:
                 "Polygon hole must have an even number of coordinates.");
 
             m_ring_offsets.push_back(m_points.size());
-            for (std::size_t i = 0; i < hole_coords.size(); i += 2) {
+            for (amrex::Long i = 0; i < hole_coords.size(); i += 2) {
                 m_points.push_back({hole_coords[i], hole_coords[i + 1]});
             }
         }
