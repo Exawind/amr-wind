@@ -1053,14 +1053,18 @@ amrex::Vector<amrex::BoxArray> ABLBoundaryPlane::read_bndry_native_boxarrays(
 
         const int normal = ori.coordDir();
         const amrex::GpuArray<int, 2> perp = utils::perpendicular_idx(normal);
-        AMREX_ALWAYS_ASSERT(constants::is_close(
-            prob_lo[perp[0]], m_mesh.Geom(0).ProbLo(perp[0])));
-        AMREX_ALWAYS_ASSERT(constants::is_close(
-            prob_lo[perp[1]], m_mesh.Geom(0).ProbLo(perp[1])));
-        AMREX_ALWAYS_ASSERT(constants::is_close(
-            prob_hi[perp[0]], m_mesh.Geom(0).ProbHi(perp[0])));
-        AMREX_ALWAYS_ASSERT(constants::is_close(
-            prob_hi[perp[1]], m_mesh.Geom(0).ProbHi(perp[1])));
+        AMREX_ALWAYS_ASSERT(
+            constants::is_close(
+                prob_lo[perp[0]], m_mesh.Geom(0).ProbLo(perp[0])));
+        AMREX_ALWAYS_ASSERT(
+            constants::is_close(
+                prob_lo[perp[1]], m_mesh.Geom(0).ProbLo(perp[1])));
+        AMREX_ALWAYS_ASSERT(
+            constants::is_close(
+                prob_hi[perp[0]], m_mesh.Geom(0).ProbHi(perp[0])));
+        AMREX_ALWAYS_ASSERT(
+            constants::is_close(
+                prob_hi[perp[1]], m_mesh.Geom(0).ProbHi(perp[1])));
 
         amrex::Vector<int> ref_ratio;
         ref_ratio.resize(nlevels, 0);
