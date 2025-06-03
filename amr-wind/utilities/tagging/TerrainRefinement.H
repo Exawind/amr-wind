@@ -1,37 +1,36 @@
-#ifndef FIELDREFINEMENT_H
-#define FIELDREFINEMENT_H
+#ifndef TERRAINREFINEMENT_H
+#define TERRAINREFINEMENT_H
 
 #include "amr-wind/CFDSim.H"
-#include "amr-wind/utilities/tagging/poly_ops.H"
 #include "amr-wind/utilities/tagging/RefinementCriteria.H"
+#include "amr-wind/utilities/tagging/Polygon.H"
 
 namespace amr_wind {
-// class CFDSim;
 class Field;
-// class IntField;
 
-/** AMR refinement using a given distance to terrain
- *  \ingroup amr_utils
+/**
+ * \class TerrainRefinement
+ * \ingroup amr_utils
+ * \brief AMR refinement using a given distance to terrain and optional polygon
+ * region.
  *
- *  ```
- *  tagging.labels = terrain_lvl1 terrain_lvl2
- *  tagging.terrain_lvl1.type = TerrainRefinement
- *  tagging.terrain_lvl1.vertical_distance = 100
- *  tagging.terrain_lvl1.level = 1
- *  tagging.terrain_lvl1.poly_outer = ...
- *  tagging.terrain_lvl1.poly_inners = ...
- *  tagging.terrain_lvl1.box_lo = ...
- *  tagging.terrain_lvl1.box_hi = ...
- *  tagging.terrain_lvl2.type = TerrainRefinement
- *  tagging.terrain_lvl2.vertical_distance = 40
- *  tagging.terrain_lvl2.level = 2
- *  tagging.terrain_lvl2.poly_outer = ...
+ * Example usage in input file:
+ * \code
+ * tagging.labels = terrain_lvl1
+ * tagging.terrain_lvl1.type = TerrainRefinement
+ * tagging.terrain_lvl1.vertical_distance = 100
+ * tagging.terrain_lvl1.level = 1
+ * tagging.terrain_lvl1.poly_exterior = 0 0  0 10  10 10  10 0  0 0
+ * tagging.terrain_lvl1.poly_num_holes = 1
+ * tagging.terrain_lvl1.poly_hole_0 = 2 2  2 8  8 8  8 2  2 2
+ * tagging.terrain_lvl1.box_lo = 0 0 0
+ * tagging.terrain_lvl1.box_hi = 10 10 10
+ * \endcode
  *
- * poly_outer should be define as: number_of_points pt0_x pt0_y ... ptN_x ptN_y
- * poly_outer poly_inners be define as: number_of_inner_rings
- * number_of_points_in_ring0 r0_pt0_x r0_pt0_x ... r0_ptN_x r0_ptN_x
- * number_of_points_in_ringN rN_pt0_x rN_pt0_x ... rN_ptN_x rN_ptN_x
- *  ```
+ * - Only cells within the polygon (if specified), tagging box, and vertical
+ * distance above terrain are refined.
+ * - If no polygon is specified, the refinement applies to the whole tagging
+ * box.
  */
 
 class TerrainRefinement : public RefinementCriteria::Register<TerrainRefinement>
@@ -43,9 +42,19 @@ public:
 
     ~TerrainRefinement() override = default;
 
-    //! Read input file and initialize boxarray used to refine each level
+    /**
+     * \brief Read input file and initialize boxarray used to refine each level
+     * \param key ParmParse prefix for this refinement
+     */
     void initialize(const std::string& key) override;
 
+    /**
+     * \brief Tag cells for refinement
+     * \param level AMR level
+     * \param tags TagBoxArray to set
+     * \param time Current simulation time
+     * \param ngrow Number of ghost cells
+     */
     void operator()(
         const int level,
         amrex::TagBoxArray& tags,
@@ -55,22 +64,19 @@ public:
 private:
     const CFDSim& m_sim;
 
-    // Pointer to the terrain_height field.
+    /** \brief Pointer to the terrain_height field */
     Field* m_terrain_height{nullptr};
-    // Pointer to the terrain_blank field so that we try not to refine under the
-    // terrain
+    /** \brief Pointer to the terrain_blank field so that we try not to refine
+     * under the terrain */
     IntField* m_terrain_blank{nullptr};
-    // Target grid refinement level
+    /** \brief Target grid refinement level */
     int m_max_lev{0};
-    // Distance above the terrain to refine
+    /** \brief Distance above the terrain to refine */
     amrex::Real m_vertical_distance{0.0};
-    // The usual tagging bbox
+    /** \brief The usual tagging bbox */
     amrex::RealBox m_tagging_box;
-
-    // Optional: The coordinates of the polygon's exterior ring
-    amrex::Vector<amr_wind::polygon_utils::Point> m_poly_outer;
-    // Optional: The coordinates of the polygon's interior ring(s)
-    amrex::Vector<amrex::Vector<amr_wind::polygon_utils::Point>> m_poly_rings;
+    /** \brief Optional: The coordinates of the polygon's exterior ring */
+    amr_wind::polygon_utils::Polygon m_polygon;
 };
 
 } // namespace amr_wind

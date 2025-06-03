@@ -1,0 +1,83 @@
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#            SIMULATION STOP            #
+#.......................................#
+time.stop_time               =   -100.0     # Max (simulated) time to evolve
+time.max_step                =   0        # Max number of time steps
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#         TIME STEP COMPUTATION         #
+#.......................................#
+time.fixed_dt         =   1        # Use this constant dt if > 0
+time.cfl              =   0.9         # CFL factor
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#            INPUT AND OUTPUT           #
+#.......................................#
+time.plot_interval            =  1000000       # Steps between plot files
+time.checkpoint_interval      =  -1       # Steps between checkpoint files
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#               PHYSICS                 #
+#.......................................#
+ConstValue.density.value = 1.0
+ConstValue.velocity.value = 1.0 0.0 0.0
+
+incflo.use_godunov = 1
+incflo.diffusion_type = 2
+incflo.do_initial_proj = 0
+incflo.initial_iterations = 0
+transport.viscosity = 1.0e-15
+transport.laminar_prandtl = 0.7
+transport.turbulent_prandtl = 0.3333
+turbulence.model = Laminar
+io.int_outputs = terrain_blank terrain_drag
+incflo.physics = FreeStream TerrainDrag
+ICNS.source_terms                        = DragForcing
+DragForcing.is_laminar = 1
+TerrainDrag.terrain_file = "terrain.amrwind"
+amr.n_cell              =  56 56 52    # Grid cells at coarsest AMRlevel
+amr.max_level           = 0           # Max AMR level in hierarchy
+geometry.prob_lo        =   0    0  0
+geometry.prob_hi        =   1024 1024 1024
+geometry.is_periodic    =   0   0   0   # Periodicity x y z (0/1)
+
+# Boundary conditions
+xlo.type = "mass_inflow"
+xlo.density = 1.0
+xlo.velocity = 1.0 0.0 0.0
+xhi.type = "pressure_outflow"
+ylo.type =   "slip_wall"
+yhi.type =   "slip_wall"
+zlo.type =   "slip_wall"
+zhi.type =   "slip_wall"
+
+incflo.verbose          =   0          # incflo_level
+
+amr.blocking_factor_z = 4
+amr.max_level = 3
+amr.grid_eff = 1
+amr.n_error_buf = 1
+
+tagging.labels = terrain_lvl1 terrain_lvl2 terrain_lvl2_whole_terrain terrain_lvl3
+
+tagging.terrain_lvl1.type = TerrainRefinement
+tagging.terrain_lvl1.vertical_distance = 200
+tagging.terrain_lvl1.level = 1
+tagging.terrain_lvl1.poly_exterior = 898 461 892 422 883 384 870 347 853 311 833 278 809 246 783 217 754 191 722 167 689 147 653 130 616 117 578 108 539 102 500 100 461 102 422 108 384 117 347 130 311 147 278 167 246 191 217 217 191 246 167 278 147 311 130 347 117 384 108 422 102 461 100 500 102 539 108 578 117 616 130 653 147 689 167 722 191 754 217 783 246 809 278 833 311 853 347 870 384 883 422 892 461 898 500 900 539 898 578 892 616 883 653 870 689 853 722 833 754 809 783 783 809 754 833 722 853 689 870 653 883 616 892 578 898 539 900 500 898 461
+tagging.terrain_lvl1.poly_num_holes = 1
+tagging.terrain_lvl1.poly_hole_0 = 699 520 696 539 691 558 685 577 676 594 666 611 655 627 641 641 627 655 611 666 594 676 577 685 558 691 539 696 520 699 500 700 480 699 461 696 442 691 423 685 406 676 389 666 373 655 359 641 345 627 334 611 324 594 315 577 309 558 304 539 301 520 300 500 301 480 304 461 309 442 315 423 324 406 334 389 345 373 359 359 373 345 389 334 406 324 423 315 442 309 461 304 480 301 500 300 520 301 539 304 558 309 577 315 594 324 611 334 627 345 641 359 655 373 666 389 676 406 685 423 691 442 696 461 699 480 700 500 699 520
+
+tagging.terrain_lvl2.type = TerrainRefinement
+tagging.terrain_lvl2.vertical_distance = 100
+tagging.terrain_lvl2.level = 2
+tagging.terrain_lvl2.poly_exterior = 700 500 699 480 696 461 691 442 685 423 676 406 666 389 655 373 641 359 627 345 611 334 594 324 577 315 558 309 539 304 520 301 500 300 480 301 461 304 442 309 423 315 406 324 389 334 373 345 359 359 345 373 334 389 324 406 315 423 309 442 304 461 301 480 300 500 301 520 304 539 309 558 315 577 324 594 334 611 345 627 359 641 373 655 389 666 406 676 423 685 442 691 461 696 480 699 500 700 520 699 539 696 558 691 577 685 594 676 611 666 627 655 641 641 655 627 666 611 676 594 685 577 691 558 696 539 699 520 700 500
+
+# This will apply to the whole terrain
+tagging.terrain_lvl2_whole_terrain.type = TerrainRefinement
+tagging.terrain_lvl2_whole_terrain.vertical_distance = 50
+tagging.terrain_lvl2_whole_terrain.level = 2
+
+tagging.terrain_lvl3.type = TerrainRefinement
+tagging.terrain_lvl3.vertical_distance = 10
+tagging.terrain_lvl3.level = 3
+tagging.terrain_lvl3.poly_exterior = 699 520 696 539 691 558 685 577 676 594 666 611 655 627 641 641 627 655 611 666 594 676 577 685 558 691 539 696 520 699 500 700 480 699 461 696 442 691 423 685 406 676 389 666 373 655 359 641 345 627 334 611 324 594 315 577 309 558 304 539 301 520 300 500 301 480 304 461 309 442 315 423 324 406 334 389 345 373 359 359 373 345 389 334 406 324 423 315 442 309 461 304 480 301 500 300 520 301 539 304 558 309 577 315 594 324 611 334 627 345 641 359 655 373 666 389 676 406 685 423 691 442 696 461 699 480 700 500 699 520

@@ -1,8 +1,8 @@
-#include "amr-wind/utilities/tagging/TerrainRefinement.H"
 #include "amr-wind/CFDSim.H"
-
 #include "AMReX.H"
+#include "AMReX_Gpu.H"
 #include "AMReX_ParmParse.H"
+#include "amr-wind/utilities/tagging/TerrainRefinement.H"
 
 namespace amr_wind {
 
@@ -27,53 +27,27 @@ void TerrainRefinement::initialize(const std::string& key)
     pp.get("vertical_distance", m_vertical_distance);
     pp.get("level", m_max_lev);
     if (m_max_lev <= 0) {
-        amrex::Abort("TerrainRefinement: level should be strictly above 0");
+        amrex::Abort("TerrainRefinement: level must be > 0");
     }
 
-    amrex::Vector<amrex::Real> poly_outer;
-    amrex::Vector<amrex::Real> poly_inners;
-    pp.queryarr("poly_outer", poly_outer);
-    if (poly_outer.size() > 0) {
-        pp.getarr("poly_outer", poly_outer);
-        const int n = poly_outer.size();
-        const int n_points = static_cast<int>(poly_outer[0]);
-        const int n_expected = n_points * 2 + 1;
-        if (n_expected != n) {
-            amrex::Abort(
-                "Expected a list of " + std::to_string(n_expected) +
-                " numbers, found " + std::to_string(n - 1) + "!");
-        }
-        m_poly_outer.resize(n_points);
-        for (int i = 0; i < n_points; ++i) {
-            const auto pt_x = poly_outer[1 + 2 * i];
-            const auto pt_y = poly_outer[1 + 2 * i + 1];
-            m_poly_outer[i] = amr_wind::polygon_utils::Point({pt_x, pt_y});
-        }
-        pp.queryarr("poly_inners", poly_inners);
-        if (poly_inners.size() > 0) {
-            const int n_rings = static_cast<int>(poly_inners[0]);
-            m_poly_rings.resize(n_rings);
-            int offset = 1;
-            for (int ring_i = 0; ring_i < n_rings; ++ring_i) {
-                const int n_pts = static_cast<int>(poly_inners[offset]);
-                m_poly_rings[ring_i].resize(n_pts);
-                offset += 1;
-                for (int pt_i = 0; pt_i < n_pts; ++pt_i) {
-                    const auto pt_x = poly_inners[offset + 2 * pt_i];
-                    const auto pt_y = poly_inners[offset + 2 * pt_i + 1];
-                    m_poly_rings[ring_i][pt_i] =
-                        amr_wind::polygon_utils::Point({pt_x, pt_y});
-                }
-                offset += 2 * n_pts;
-            }
-            if ((n_rings > 0) && (offset != poly_inners.size())) {
-                amrex::Abort(
-                    "Expected a list of " + std::to_string(offset) +
-                    " numbers, found " + std::to_string(poly_inners.size()) +
-                    "!");
-            }
-        }
+    // Read polygon from input file
+    m_polygon.read_from_parmparse(key);
+
+    // Print polygon only if present
+    if (!m_polygon.is_empty()) {
+        amrex::Print() << "\n--- Polygon Geometry ---\n";
+        m_polygon.print();
     }
+    // amrex::Vector<amr_wind::polygon_utils::Polygon::Point> test_points = {
+    //     {500, 500}, {750, 500}, {1050, 500}};
+
+    // for (std::size_t i = 0; i < test_points.size(); ++i) {
+    //     const auto& pt = test_points[i];
+    //     bool inside = m_polygon.contains(pt);
+    //     amrex::Print() << "Point " << i << " (" << pt[0] << ", " << pt[1]
+    //                    << ") is " << (inside ? "inside" : "outside")
+    //                    << " the polygon.\n";
+    // }
 
     amrex::Vector<amrex::Real> box_lo(AMREX_SPACEDIM, 0);
     amrex::Vector<amrex::Real> box_hi(AMREX_SPACEDIM, 0);
@@ -92,22 +66,54 @@ void TerrainRefinement::initialize(const std::string& key)
 }
 
 void TerrainRefinement::operator()(
-    int level, amrex::TagBoxArray& tags, amrex::Real time, int /*ngrow*/)
+    int level, amrex::TagBoxArray& tags, amrex::Real time, int ngrow)
 {
+    (void)time;
+    (void)ngrow;
     const bool do_tag = level < m_max_lev;
     if (!do_tag) {
         return;
     }
-    const auto& repo = m_sim.repo();
-    const auto& geom = repo.mesh().Geom(level);
+    // Geometry
+    const auto& geom = m_sim.repo().mesh().Geom(level);
     const auto& prob_lo = geom.ProbLoArray();
     const auto& dx = geom.CellSizeArray();
-    const auto tagging_box = m_tagging_box;
 
+    // Get tagging box and vertical distance for device
+    const auto tagging_box = m_tagging_box;
+    auto vertical_distance = m_vertical_distance;
+
+    // Tag arrays
     const auto& tag_arrs = tags.arrays();
+
+    // Get terrain arrays
     const auto& mfab = (*m_terrain_height)(level);
     const auto& mterrain_h_arrs = mfab.const_arrays();
     const auto& mterrain_b_arrs = (*m_terrain_blank)(level).const_arrays();
+
+    // Prepare polygon data for GPU
+    const bool polygon_is_empty = m_polygon.is_empty();
+    auto n_rings = m_polygon.num_rings();
+    auto n_points = m_polygon.points().size();
+
+#ifdef AMREX_USE_GPU
+    amrex::Gpu::DeviceVector<amr_wind::polygon_utils::Polygon::Point>
+        poly_points_dv(n_points);
+    amrex::Gpu::copyAsync(
+        amrex::Gpu::hostToDevice, m_polygon.points().begin(),
+        m_polygon.points().end(), poly_points_dv.begin());
+    auto const* p_poly_points = poly_points_dv.data();
+
+    amrex::Gpu::DeviceVector<int> ring_offsets_dv(
+        m_polygon.ring_offsets().size());
+    amrex::Gpu::copyAsync(
+        amrex::Gpu::hostToDevice, m_polygon.ring_offsets().begin(),
+        m_polygon.ring_offsets().end(), ring_offsets_dv.begin());
+    auto const* p_ring_offsets = ring_offsets_dv.data();
+#else
+    auto const* p_poly_points = m_polygon.points().data();
+    auto const* p_ring_offsets = m_polygon.ring_offsets().data();
+#endif
 
     amrex::ParallelFor(
         mfab, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
@@ -119,30 +125,52 @@ void TerrainRefinement::operator()(
                 prob_lo[0] + (i + 0.5) * dx[0], prob_lo[1] + (j + 0.5) * dx[1],
                 prob_lo[2] + (k + 0.5) * dx[2])};
 
-            const auto testPt =
-                amr_wind::polygon_utils::Point({coord[0], coord[1]});
-            bool in_poly = m_poly_outer.size()
-                               ? amr_wind::polygon_utils::is_point_in_polygon(
-                                     m_poly_outer, testPt)
-                               : true;
-            if (in_poly) {
-                for (int ring_i = 0; ring_i < m_poly_rings.size(); ++ring_i) {
-                    const bool in_ring =
-                        amr_wind::polygon_utils::is_point_in_polygon(
-                            m_poly_rings[ring_i], testPt);
-                    if (in_ring) {
-                        in_poly = false;
-                        break;
+            const amr_wind::polygon_utils::Polygon::Point testPt{
+                coord[0], coord[1]};
+
+            // 1. Check tagging box first
+            if (!tagging_box.contains(coord)) return;
+
+            // 2. Check vertical distance
+            if ((cellHt < -0.5 * dx[2]) || (cellHt > vertical_distance)) return;
+
+            // 3. Check terrain blanking
+            if (mterrain_b_arrs[nbx](i, j, k) >= 1) return;
+
+            // 4. Polygon point-in-polygon test using the new layout
+            bool in_poly = false;
+            if (!polygon_is_empty) {
+                // Outer ring
+                int start = p_ring_offsets[0];
+                int end = (n_rings > 1) ? p_ring_offsets[1] : n_points;
+                int n = end - start;
+                if (amr_wind::polygon_utils::Polygon::is_point_in_ring(
+                        p_poly_points + start, n, testPt)) {
+                    in_poly = true;
+                    // Check holes
+                    for (int ring_i = 1; ring_i < n_rings; ++ring_i) {
+                        int h_start = p_ring_offsets[ring_i];
+                        int h_end = (ring_i + 1 < n_rings)
+                                        ? p_ring_offsets[ring_i + 1]
+                                        : n_points;
+                        int h_n = h_end - h_start;
+                        if (amr_wind::polygon_utils::Polygon::is_point_in_ring(
+                                p_poly_points + h_start, h_n, testPt)) {
+                            in_poly = false;
+                            break;
+                        }
                     }
                 }
+            } else {
+                in_poly = true;
             }
 
-            if (((cellHt >= -0.5 * dx[2]) && (cellHt <= m_vertical_distance)) &&
-                (mterrain_b_arrs[nbx](i, j, k) < 1) && in_poly &&
-                (tagging_box.contains(coord))) {
+            if (in_poly) {
                 tag_arrs[nbx](i, j, k) = amrex::TagBox::SET;
             }
         });
+
+    amrex::Gpu::streamSynchronize();
 }
 
 } // namespace amr_wind
