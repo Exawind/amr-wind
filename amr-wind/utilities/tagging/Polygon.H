@@ -63,15 +63,19 @@ public:
     /** \brief Return the number of points in ring i */
     int ring_size(int i) const
     {
+        if (i < 0 || i >= static_cast<int>(m_ring_offsets.size())) return 0;
         int start = m_ring_offsets[i];
-        int end = (i + 1 < m_ring_offsets.size()) ? m_ring_offsets[i + 1]
-                                                  : m_points.size();
+        int end = (i + 1 < static_cast<int>(m_ring_offsets.size()))
+                      ? m_ring_offsets[i + 1]
+                      : m_points.size();
         return end - start;
     }
 
     /** \brief Return a pointer to the start of ring i */
     const Point* ring_ptr(int i) const
     {
+        if (i < 0 || i >= static_cast<int>(m_ring_offsets.size()))
+            return nullptr;
         return m_points.data() + m_ring_offsets[i];
     }
 
@@ -83,6 +87,7 @@ public:
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool
     contains(const Point& pt) const
     {
+        if (is_empty()) return false;
         if (!bounding_box_contains(pt)) return false;
         if (winding_number(0, pt) == 0) return false; // outer ring
         for (int h = 1; h < num_rings(); ++h) {
@@ -169,6 +174,11 @@ public:
      */
     void print(std::ostream& os = amrex::OutStream()) const
     {
+        if (is_empty()) {
+            os << "Polygon: (empty)\n";
+            os << "Bounding box: not computed\n";
+            return;
+        }
         os << "Polygon (outer ring):\n";
         for (int i = 0; i < ring_size(0); ++i) {
             const auto& p = ring_ptr(0)[i];
@@ -253,12 +263,15 @@ private:
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE int
     winding_number(int ring_idx, const Point& pt) const
     {
+        if (ring_idx < 0 || ring_idx >= static_cast<int>(m_ring_offsets.size()))
+            return 0;
         int wn = 0;
         int start = m_ring_offsets[ring_idx];
-        int end = (ring_idx + 1 < m_ring_offsets.size())
+        int end = (ring_idx + 1 < static_cast<int>(m_ring_offsets.size()))
                       ? m_ring_offsets[ring_idx + 1]
                       : m_points.size();
         int n = end - start;
+        if (n == 0) return 0;
         for (int j = 0; j < n; ++j) {
             const auto& p1 = m_points[start + j];
             const auto& p2 = m_points[start + ((j + 1) % n)];
