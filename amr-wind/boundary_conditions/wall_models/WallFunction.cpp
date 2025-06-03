@@ -22,8 +22,9 @@ WallFunction::WallFunction(CFDSim& sim)
         amrex::ParmParse pp("BodyForce");
         amrex::Vector<amrex::Real> body_force{0.0, 0.0, 0.0};
         pp.getarr("magnitude", body_force);
-        m_log_law.utau_mean = std::sqrt(std::sqrt(
-            body_force[0] * body_force[0] + body_force[1] * body_force[1]));
+        m_log_law.utau_mean = std::sqrt(
+            std::sqrt(
+                body_force[0] * body_force[0] + body_force[1] * body_force[1]));
     }
     {
         amrex::ParmParse pp("transport");

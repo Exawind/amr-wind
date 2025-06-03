@@ -101,12 +101,15 @@ amrex::Real get_field_err(
                                 (in_z_bdy && not_in_xy_bdy)) {
                                 error += std::abs(f_arr(i, j, k) - 1.0);
                                 if (i == 9) {
-                                    error += std::abs((amrex::Real)(
-                                        i_arr(i - 1, j, k, 0) + 1));
-                                    error += std::abs((amrex::Real)(
-                                        i_arr(i - 1, j, k, 1) - 0));
-                                    error += std::abs((amrex::Real)(
-                                        i_arr(i - 1, j, k, 2) - 0));
+                                    error += std::abs(
+                                        (amrex::Real)(i_arr(i - 1, j, k, 0) +
+                                                      1));
+                                    error += std::abs(
+                                        (amrex::Real)(i_arr(i - 1, j, k, 1) -
+                                                      0));
+                                    error += std::abs(
+                                        (amrex::Real)(i_arr(i - 1, j, k, 2) -
+                                                      0));
                                 } else if (i == -1) {
                                     error += std::abs(
                                         (amrex::Real)(i_arr(i, j, k, 0) - 0));
@@ -137,12 +140,15 @@ amrex::Real get_field_err(
                                 (in_z_bdy && not_in_xy_bdy)) {
                                 error += std::abs(f_arr(i, j, k) - 2.0);
                                 if (j == 9) {
-                                    error += std::abs((amrex::Real)(
-                                        i_arr(i, j - 1, k, 3) - 0));
-                                    error += std::abs((amrex::Real)(
-                                        i_arr(i, j - 1, k, 4) + 1));
-                                    error += std::abs((amrex::Real)(
-                                        i_arr(i, j - 1, k, 5) - 0));
+                                    error += std::abs(
+                                        (amrex::Real)(i_arr(i, j - 1, k, 3) -
+                                                      0));
+                                    error += std::abs(
+                                        (amrex::Real)(i_arr(i, j - 1, k, 4) +
+                                                      1));
+                                    error += std::abs(
+                                        (amrex::Real)(i_arr(i, j - 1, k, 5) -
+                                                      0));
                                 } else if (j == -1) {
                                     error += std::abs(
                                         (amrex::Real)(i_arr(i, j, k, 3) - 0));
@@ -173,12 +179,15 @@ amrex::Real get_field_err(
                                 (in_zf_bdy && not_in_xy_bdy)) {
                                 error += std::abs(f_arr(i, j, k) - 3.0);
                                 if (k == 9) {
-                                    error += std::abs((amrex::Real)(
-                                        i_arr(i, j, k - 1, 6) - 0));
-                                    error += std::abs((amrex::Real)(
-                                        i_arr(i, j, k - 1, 7) - 0));
-                                    error += std::abs((amrex::Real)(
-                                        i_arr(i, j, k - 1, 8) + 1));
+                                    error += std::abs(
+                                        (amrex::Real)(i_arr(i, j, k - 1, 6) -
+                                                      0));
+                                    error += std::abs(
+                                        (amrex::Real)(i_arr(i, j, k - 1, 7) -
+                                                      0));
+                                    error += std::abs(
+                                        (amrex::Real)(i_arr(i, j, k - 1, 8) +
+                                                      1));
                                 } else if (k == -1) {
                                     error += std::abs(
                                         (amrex::Real)(i_arr(i, j, k, 6) - 0));
