@@ -131,7 +131,7 @@ block, and 2. ``cylinder`` -- refines the region inside a cylindrical block.
 
    Names of the input subsections that define specific geometries for refinement.
 
-.. input_param:: tagging.GeoemtryRefinement.level
+.. input_param:: tagging.GeometryRefinement.level
 
    **type:**  Integer, optional, default: -1
 
@@ -219,6 +219,14 @@ Refinement using terrain and polygons
 This section controls refinement using terrain fields in the domain along
 with user-specified polygon regions.
 
+.. input_param:: tagging.TerrainRefinement.level
+
+   **type:**  Integer, optional, default: -1
+
+   If ``level`` is provided and is greater than or equal to 0, then the
+   refinement based on geometries defined for this section is only performed at
+   that level.
+
 .. input_param:: tagging.TerrainRefinement.vertical_distance
 
    **type:** Real, required
@@ -252,11 +260,25 @@ with user-specified polygon regions.
    The coordinates are input as pairs of x and y locations, so there must be an even number
    of entries for this argument.
 
+.. input_param:: tagging.TerrainRefinement.box_lo
+
+   **type:** Vector<Real>, optional
+
+   List of the low corner values for a bounding box where the tagging
+   will be active. By default the bounding box will span the entire domain.
+
+.. input_param:: tagging.TerrainRefinement.box_hi
+
+   **type:** Vector<Real>, optional
+
+   List of the high corner values for a bounding box where the tagging
+   will be active. By default the bounding box will span the entire domain.
+
 Example::
 
   tagging.terr1.type = TerrainRefinement
   tagging.terr1.vertical_distance = 200
-  tagging.terr1.level = 1
+  tagging.terr1.level = 0 # Refine the coarsest grid level
   tagging.terr1.poly_exterior = 10 10 10 20 20 20 20 10
   tagging.terr1.poly_num_holes = 1
   tagging.terr1.poly_hole_0 = 5 5 5 10 10 10 10 5

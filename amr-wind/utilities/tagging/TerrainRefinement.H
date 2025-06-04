@@ -19,7 +19,7 @@ class Field;
  * tagging.labels = terrain_lvl1
  * tagging.terrain_lvl1.type = TerrainRefinement
  * tagging.terrain_lvl1.vertical_distance = 100
- * tagging.terrain_lvl1.level = 1
+ * tagging.terrain_lvl1.level = 0
  * tagging.terrain_lvl1.poly_exterior = 0 0  0 10  10 10  10 0  0 0
  * tagging.terrain_lvl1.poly_num_holes = 1
  * tagging.terrain_lvl1.poly_hole_0 = 2 2  2 8  8 8  8 2  2 2
@@ -69,7 +69,7 @@ private:
     /** \brief Pointer to the terrain_blank field so that we try not to refine
      * under the terrain */
     IntField* m_terrain_blank{nullptr};
-    /** \brief Target grid refinement level */
+    /** \brief Grid refinement level */
     int m_max_lev{0};
     /** \brief Distance above the terrain to refine */
     amrex::Real m_vertical_distance{0.0};
