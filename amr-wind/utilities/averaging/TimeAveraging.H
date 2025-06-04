@@ -3,6 +3,7 @@
 
 #include "amr-wind/core/Factory.H"
 #include "amr-wind/utilities/PostProcessing.H"
+#include "amr-wind/utilities/constants.H"
 
 #include "AMReX_Vector.H"
 
@@ -95,10 +96,7 @@ private:
     amrex::Real m_stop_time{std::numeric_limits<amrex::Real>::max()};
 
     //! Time averaging window (in seconds)
-    amrex::Real m_filter{0.0};
-
-    //! Time averaging interval (in time steps)
-    int m_interval{1};
+    amrex::Real m_filter{amr_wind::constants::LARGE_NUM};
 
     //! Time averaging time interval (in seconds)
     amrex::Real m_time_interval{-1.};
