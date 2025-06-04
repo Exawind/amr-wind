@@ -29,7 +29,7 @@ def check_rasterio_cell_values(raster_path, points):
 
 def main(plot=False, npoints=20, seed=42):
     # --- 1. Generate raster with Gaussian hill + asymmetry ---
-    ncols = nrows = 50
+    ncols, nrows = 50, 60
     xllcorner = yllcorner = 0.0
     cellsize = 1.0
     nodata = -9999.0

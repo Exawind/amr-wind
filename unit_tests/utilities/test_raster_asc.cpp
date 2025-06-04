@@ -6,18 +6,18 @@
 
 using amr_wind::utils::RasterASC;
 
-double simple_bilinear(
-    double xll,
-    double yll,
-    double dx,
+amrex::Real simple_bilinear(
+    amrex::Real xll,
+    amrex::Real yll,
+    amrex::Real dx,
     int nx,
     int ny,
-    const std::vector<double>& vals,
-    double x,
-    double y)
+    const amrex::Vector<amrex::Real>& vals,
+    amrex::Real x,
+    amrex::Real y)
 {
-    double fx = (x - xll) / dx;
-    double fy = (y - yll) / dx;
+    amrex::Real fx = (x - xll) / dx;
+    amrex::Real fy = (y - yll) / dx;
     int i = static_cast<int>(fx);
     int j = static_cast<int>(fy);
 
@@ -27,21 +27,21 @@ double simple_bilinear(
     if (i >= nx - 1) i = nx - 2;
     if (j >= ny - 1) j = ny - 2;
 
-    double ddx = fx - i;
-    double ddy = fy - j;
+    amrex::Real ddx = fx - i;
+    amrex::Real ddy = fy - j;
 
     int idx00 = j * nx + i;
     int idx10 = j * nx + (i + 1);
     int idx01 = (j + 1) * nx + i;
     int idx11 = (j + 1) * nx + (i + 1);
 
-    double v00 = vals[idx00];
-    double v10 = vals[idx10];
-    double v01 = vals[idx01];
-    double v11 = vals[idx11];
+    amrex::Real v00 = vals[idx00];
+    amrex::Real v10 = vals[idx10];
+    amrex::Real v01 = vals[idx01];
+    amrex::Real v11 = vals[idx11];
 
-    double v0 = v00 * (1.0 - ddx) + v10 * ddx;
-    double v1 = v01 * (1.0 - ddx) + v11 * ddx;
+    amrex::Real v0 = v00 * (1.0 - ddx) + v10 * ddx;
+    amrex::Real v1 = v01 * (1.0 - ddx) + v11 * ddx;
     return v0 * (1.0 - ddy) + v1 * ddy;
 }
 
@@ -73,45 +73,57 @@ TEST(RasterASC, ReadAndInterp)
     RasterASC raster;
     raster.read("unit_tests/utilities/raster.asc");
 
-    std::vector<double> vals(
+    amrex::Vector<amrex::Real> vals(
         raster.value_ptr(), raster.value_ptr() + raster.nx() * raster.ny());
 
-    std::vector<double> xvec(raster.nx()), yvec(raster.ny());
+    amrex::Vector<amrex::Real> xvec(raster.nx()), yvec(raster.ny());
     for (int i = 0; i < raster.nx(); ++i)
         xvec[i] = raster.x0() + i * raster.dx();
     for (int j = 0; j < raster.ny(); ++j)
         yvec[j] = raster.y0() + j * raster.dx();
 
-    std::vector<std::tuple<double, double, double>> sample_points = {
-        {18.35246582, 46.58500101, 0.44239862},
-        {35.86770315, 29.33426573, 0.94196709},
-        {7.64491338, 7.64373150, 0.16562960},
-        {2.84609700, 42.44263114, 0.21750405},
-        {29.45463558, 34.69555631, 0.95882797},
-        {1.00864022, 47.52558276, 0.20468483},
-        {40.78968940, 10.40461642, 0.54802177},
-        {8.90942339, 8.98682098, 0.21414673},
-        {14.90786991, 25.71306515, 0.87791723},
-        {21.16530591, 14.27022787, 0.82893759},
-        {29.98079184, 6.83519917, 0.50818880},
-        {14.31508778, 17.95173032, 0.69534286},
-        {22.34742923, 38.47362211, 0.74547716},
-        {9.78401533, 25.19748748, 0.53652727},
-        {29.02831387, 2.27607022, 0.37606392},
-        {29.76969774, 8.35568206, 0.56783972},
-        {3.18752806, 46.49539133, 0.22711187},
-        {47.31596962, 39.61147006, 0.65539201},
-        {14.92607469, 4.78593359, 0.25920084},
-        {33.52741830, 21.56747219, 1.05801096},
-    };
-    for (size_t idx = 0; idx < sample_points.size(); ++idx) {
-        const auto& [x, y, expected] = sample_points[idx];
-        double actual = raster.interp(x, y);
-        double bilinear = amr_wind::interp::bilinear(xvec, yvec, vals, x, y);
+    const auto nx = raster.nx();
+    const auto ny = raster.ny();
+    amrex::Vector<amrex::Real> vals_colmajor(nx * ny);
+    for (int j = 0; j < ny; ++j) {
+        for (int i = 0; i < nx; ++i) {
+            vals_colmajor[i * ny + j] = vals[j * nx + i];
+        }
+    }
 
-        std::cout << "Point [" << idx << "] interp(" << x << ", " << y
-                  << ") = " << actual << ", bilinear = " << bilinear
-                  << ", expected = " << expected << std::endl;
+    amrex::Vector<std::tuple<amrex::Real, amrex::Real, amrex::Real>>
+        sample_points = {
+            {18.35246582, 56.09214408, 0.37614633},
+            {35.86770315, 35.32085057, 0.76834714},
+            {7.64491338, 9.20367670, 0.18235972},
+            {2.84609700, 51.10439260, 0.20160817},
+            {29.45463558, 41.77628209, 0.63283002},
+            {1.00864022, 57.22468128, 0.20113749},
+            {40.78968940, 12.52800753, 0.57948968},
+            {8.90942339, 10.82086608, 0.24168717},
+            {14.90786991, 30.96062947, 0.76456552},
+            {21.16530591, 17.18251927, 0.99193907},
+            {29.98079184, 8.23013778, 0.55662496},
+            {14.31508778, 21.61534875, 0.78565062},
+            {22.34742923, 46.32538172, 0.46843597},
+            {9.78401533, 30.33983187, 0.48460924},
+            {29.02831387, 2.74057435, 0.38430209},
+            {29.76969774, 10.06092330, 0.63800644},
+            {3.18752806, 55.98424670, 0.21921830},
+            {47.31596962, 47.69544354, 0.63721744},
+            {14.92607469, 5.76265473, 0.27800605},
+            {33.52741830, 25.96899713, 1.07977482},
+        };
+    for (int idx = 0; idx < sample_points.size(); ++idx) {
+        const auto& [x, y, expected] = sample_points[idx];
+        amrex::Real actual = raster.interp(x, y);
+        amrex::Real bilinear =
+            amr_wind::interp::bilinear(xvec, yvec, vals_colmajor, x, y);
+
+        // std::cout << "Point [" << idx << "] interp(" << x << ", " << y
+        //           << ") = " << actual << ", bilinear = " << bilinear
+        //           << ", expected = " << expected << std::endl;
         EXPECT_NEAR(actual, expected, 1e-8);
+        EXPECT_NEAR(actual, bilinear, 1e-8);
     }
 }
