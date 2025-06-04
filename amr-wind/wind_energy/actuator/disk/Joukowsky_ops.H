@@ -168,9 +168,10 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
             for (int i = 0; i < f.size(); ++i) {
                 const auto x = (i + 0.5) * dx;
                 f[i] = 2.0 / M_PI *
-                       std::acos(std::exp(
-                           -0.5 * ddata.num_blades * std::sqrt(1.0 + lambda_2) *
-                           (1.0 - x)));
+                       std::acos(
+                           std::exp(
+                               -0.5 * ddata.num_blades *
+                               std::sqrt(1.0 + lambda_2) * (1.0 - x)));
             }
         }
 
