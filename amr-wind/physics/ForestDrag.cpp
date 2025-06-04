@@ -43,6 +43,13 @@ void ForestDrag::initialize_fields(int level, const amrex::Geometry& geom)
     auto& fst_id = m_forest_id(level);
     drag.setVal(0.0);
     fst_id.setVal(-1.0);
+
+    const bool has_terrain = m_sim.repo().field_exists("terrain_height");
+    const auto& terrain = has_terrain
+                              ? m_sim.repo().get_field("terrain_height")(level)
+                              : m_sim.repo().get_field("velocity")(
+                                    level); // Just to get a MultiFab shape
+
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
@@ -54,22 +61,29 @@ void ForestDrag::initialize_fields(int level, const amrex::Geometry& geom)
                 const auto& levelDrag = drag.array(mfi);
                 const auto& levelId = fst_id.array(mfi);
                 const auto* forests_ptr = d_forests.data();
+                const auto levelTerrain =
+                    has_terrain
+                        ? terrain.array(mfi)
+                        : amrex::Array4<const amrex::Real>(); // Empty array
                 amrex::ParallelFor(
                     bxi, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         const auto x = prob_lo[0] + (i + 0.5) * dx[0];
                         const auto y = prob_lo[1] + (j + 0.5) * dx[1];
                         const auto z = prob_lo[2] + (k + 0.5) * dx[2];
+                        const auto terrain_h =
+                            has_terrain ? levelTerrain(i, j, k) : 0.0;
+                        const auto z_agl = z - terrain_h;
                         const auto& fst = forests_ptr[nf];
                         const auto radius = std::sqrt(
                             (x - fst.m_x_forest) * (x - fst.m_x_forest) +
                             (y - fst.m_y_forest) * (y - fst.m_y_forest));
-                        if (z <= fst.m_height_forest &&
+                        if (z_agl >= 0 && z_agl <= fst.m_height_forest &&
                             radius <= (0.5 * fst.m_diameter_forest)) {
                             const auto treelaimax = fst.lm();
                             levelId(i, j, k) = fst.m_id;
                             levelDrag(i, j, k) +=
                                 fst.m_cd_forest *
-                                fst.area_fraction(z, treelaimax);
+                                fst.area_fraction(z_agl, treelaimax);
                         }
                     });
             }

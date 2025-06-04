@@ -60,7 +60,8 @@ struct Forest
     }
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::RealBox real_bounding_box(
-        const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& prob_lo) const
+        const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& prob_lo,
+        const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& prob_hi) const
     {
         const amrex::Real search_tol = 1.1;
         const amrex::Real search_radius = 0.5 * search_tol * m_diameter_forest;
@@ -69,14 +70,14 @@ struct Forest
         const auto z0 = prob_lo[2];
         const auto x1 = m_x_forest + search_radius;
         const auto y1 = m_y_forest + search_radius;
-        const auto z1 = m_height_forest;
+        const auto z1 = prob_hi[2];
         return {x0, y0, z0, x1, y1, z1};
     }
 
     amrex::Box bounding_box(const amrex::Geometry& geom) const
     {
         return utils::realbox_to_box(
-            real_bounding_box(geom.ProbLoArray()), geom);
+            real_bounding_box(geom.ProbLoArray(), geom.ProbHiArray()), geom);
     }
 };
 
