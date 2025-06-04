@@ -119,9 +119,13 @@ TEST_F(TimeAveragingTest, step_vs_time)
     const auto& f_avg2 = sim().repo().get_field(m_name2);
     constexpr amrex::Real tol = 1e-8;
 
+    amrex::Real avg_val{0.};
+    int step_count{0};
     while (time.new_timestep()) {
+        ++step_count;
         // Give field a linear profile with time
-        temp.setVal(10. * time.current_time());
+        const amrex::Real fval = 10. * time.current_time();
+        temp.setVal(fval);
         time.set_current_cfl(0.45 / 0.3, 0.0, 0.0);
         time.advance_time();
         post_manager.post_advance_work();
@@ -137,7 +141,13 @@ TEST_F(TimeAveragingTest, step_vs_time)
         EXPECT_NEAR(max_f1, max_f2, tol);
         EXPECT_NEAR(min_f1, min_f2, tol);
         // Confirm value is as expected
-        // std::cout << time.current_time() << " " << max_f1 << std::endl;
+        if (step_count % 2 == 0) {
+            const amrex::Real avg_time =
+                amrex::max(amrex::min(time.new_time(), m_fwidth), 2. * m_dt);
+            const amrex::Real old_avg_time = amrex::max(avg_time - 2. * m_dt, 0.);
+            avg_val = (avg_val * (old_avg_time) + 2. * m_dt * fval) / avg_time;
+            EXPECT_NEAR(max_f1, avg_val, tol);
+        }
     }
 }
 
