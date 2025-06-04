@@ -1,6 +1,7 @@
 #include "aw_test_utils/MeshTest.H"
 #include "aw_test_utils/iter_tools.H"
 #include "aw_test_utils/test_utils.H"
+#include "amr-wind/physics/TerrainDrag.H"
 #include "amr-wind/physics/ForestDrag.H"
 #include "amr-wind/core/field_ops.H"
 #include "amr-wind/utilities/sampling/FieldNorms.H"
@@ -16,22 +17,32 @@ void write_forest(const std::string& fname)
     os << "2  512 762 120 200 0.2 10 0.8 \n";
 }
 
-void write_terrain(amr_wind::Field& terrain)
+void write_terrain(const std::string& fname)
 {
-    for (int lev = 0; lev < terrain.repo().num_active_levels(); ++lev) {
-        auto arrs = terrain(lev).arrays();
-        for (amrex::MFIter mfi(terrain(lev)); mfi.isValid(); ++mfi) {
-            auto arr = arrs[mfi.index()]; // FIX: use mfi.index() instead of mfi
-            const auto bx = mfi.validbox();
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    // Example: flat terrain at z=10, or sloped: arr(i,j,k) = i
-                    // + j;
-                    arr(i, j, k) = 10.0;
-                });
-        }
-    }
-    amrex::Gpu::streamSynchronize();
+    std::ofstream os(fname);
+    // Write terrain height
+    os << "6\n";
+    os << "2\n";
+    os << "0.0\n";
+    os << "448.0\n";
+    os << "449.0\n";
+    os << "576.0\n";
+    os << "577.0\n";
+    os << "1024.0\n";
+    os << "0.0\n";
+    os << "1024.0\n";
+    os << "0.0\n";
+    os << "0.0\n";
+    os << "0.0\n";
+    os << "0.0\n";
+    os << "100.0\n";
+    os << "100.0\n";
+    os << "100.0\n";
+    os << "100.0\n";
+    os << "0.0\n";
+    os << "0.0\n";
+    os << "0.0\n";
+    os << "0.0\n";
 }
 
 } // namespace
@@ -60,6 +71,7 @@ protected:
         }
     }
     std::string m_forest_fname = "forest.amrwind";
+    std::string m_terrain_fname = "terrain.amrwind";
 };
 
 TEST_F(ForestTest, forest)
@@ -101,28 +113,23 @@ TEST_F(ForestTest, forest)
 TEST_F(ForestTest, forest_with_terrain)
 {
     write_forest(m_forest_fname);
+    write_terrain(m_terrain_fname);
     populate_parameters();
     initialize_mesh();
-
-    // Add terrain field to the repo
-    auto& repo = sim().repo();
-    auto& terrain =
-        repo.declare_field("terrain_height", 1, 0, 1, amr_wind::FieldLoc::CELL);
-
-    write_terrain(terrain);
 
     auto& pde_mgr = sim().pde_manager();
     pde_mgr.register_icns();
     sim().init_physics();
 
     amrex::ParmParse pp("incflo");
-    amrex::Vector<std::string> physics{"forestDrag"};
+    amrex::Vector<std::string> physics{"forestDrag", "terrainDrag"};
     pp.addarr("physics", physics);
-
+    amr_wind::terraindrag::TerrainDrag terrain_drag(sim());
     amr_wind::forestdrag::ForestDrag forest_drag(sim());
     const int nlevels = sim().repo().num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = sim().repo().mesh().Geom(lev);
+        terrain_drag.initialize_fields(lev, geom);
         forest_drag.initialize_fields(lev, geom);
     }
 
@@ -132,6 +139,7 @@ TEST_F(ForestTest, forest_with_terrain)
     EXPECT_GE(max_id, 1.0);
 
     const auto& f_drag = sim().repo().get_field("forest_drag");
+    const auto& terrain_height = sim().repo().get_field("terrain_height");
     const amrex::Real max_drag =
         amr_wind::field_ops::global_max_magnitude(f_drag);
     EXPECT_GT(max_drag, 0.0);
@@ -141,7 +149,7 @@ TEST_F(ForestTest, forest_with_terrain)
     const auto& dx = geom0.CellSizeArray();
     const auto& prob_lo = geom0.ProbLoArray();
     const auto& drag_mf = f_drag(0);
-    const auto& terrain_mf = terrain(0);
+    const auto& terrain_mf = terrain_height(0);
 
     for (amrex::MFIter mfi(drag_mf); mfi.isValid(); ++mfi) {
         const auto& drag_arr = drag_mf.const_array(mfi);
