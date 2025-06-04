@@ -49,7 +49,11 @@ void ForestDrag::initialize_fields(int level, const amrex::Geometry& geom)
                               ? m_sim.repo().get_field("terrain_height")(level)
                               : m_sim.repo().get_field("velocity")(
                                     level); // Just to get a MultiFab shape
-
+    if (!has_terrain) {
+        amrex::Print()
+            << "\n[ForestDrag] terrain_height field not found, assuming "
+               "a flat terrain\n";
+    }
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
