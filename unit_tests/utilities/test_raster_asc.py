@@ -17,16 +17,6 @@ import rasterio
 from scipy.interpolate import RegularGridInterpolator
 
 
-def check_rasterio_cell_values(raster_path, points):
-    with rasterio.open(raster_path) as src:
-        coords = [(x, y) for x, y, _ in points]
-        for idx, (val, (x, y, expected)) in enumerate(zip(src.sample(coords), points)):
-            v = val[0]
-            print(
-                f"Point [{idx}] (x={x:.3f}, y={y:.3f}) -> rasterio.sample = {v:.8f}, expected = {expected:.8f}"
-            )
-
-
 def main(plot=False, npoints=20, seed=42):
     # --- 1. Generate raster with Gaussian hill + asymmetry ---
     ncols, nrows = 50, 60
@@ -124,12 +114,14 @@ def main(plot=False, npoints=20, seed=42):
 
     # --- Print for C++ ---
     sample_points = list(zip(rand_pts[:, 0], rand_pts[:, 1], rand_vals))
-    print("std::vector<std::tuple<double, double, double>> sample_points = {")
-    for xi, yi, vi in sample_points:
-        print(f"    {{{xi:.8f}, {yi:.8f}, {vi:.8f}}},")
-    print("};")
-
-    check_rasterio_cell_values("unit_tests/utilities/raster.asc", sample_points)
+    print(
+        "amrex::Vector<std::tuple<amrex::Real, amrex::Real, amrex::Real, amrex::Real>> sample_points = {"
+    )
+    with rasterio.open("unit_tests/utilities/raster.asc") as src:
+        for xi, yi, vi in sample_points:
+            v_nearest = next(src.sample([(xi, yi)]))[0]
+            print(f"    {{{xi:.8f}, {yi:.8f}, {vi:.8f}, {v_nearest:.8f}}},")
+        print("};")
 
 
 if __name__ == "__main__":

@@ -1,3 +1,78 @@
+/**
+ * \file raster_ops.H
+ * \brief Minimal raster reader and interpolator for ArcGIS ASCII raster files
+ * (.asc) on a regular grid.
+ *
+ * Reference: ArcGIS ASCII raster format specification
+ * https://desktop.arcgis.com/en/arcmap/latest/manage-data/raster-and-images/esri-ascii-raster-format.htm
+ *
+ * This class supports both cell-centered ("area") and node-centered ("point")
+ * pixel interpretations. By default, the raster is interpreted as cell-centered
+ * ("area").
+ *
+ * Features:
+ *  - Read ArcGIS ASCII raster files (.asc)
+ *  - Set raster data directly for testing
+ *  - Bilinear interpolation and nearest-neighbor lookup
+ *  - Supports both cell-centered and node-centered grids
+ *  - Handles nodata values
+ *
+ * Usage Example:
+ * \code
+ * #include "amr-wind/utilities/raster_ops.H"
+ * using amr_wind::utils::RasterASC;
+ * using amr_wind::utils::PixelInterpretation;
+ * using amr_wind::utils::pixel_interpretation_from_string;
+ *
+ * // --- Host usage ---
+ * RasterASC raster;
+ * raster.read("myraster.asc");
+ * amrex::Real val = raster.interp(10.5, 20.5);
+ * amrex::Real nearest = raster.find_nearest(10.5, 20.5);
+ *
+ * // --- Static methods (host or device/GPU) ---
+ * // Suppose you have a device pointer to values and want to interpolate on the
+ * GPU: const amrex::Real* vals = raster.value_ptr(); int nx = raster.nx(); int
+ * ny = raster.ny(); amrex::Real xll = raster.x0(); amrex::Real yll =
+ * raster.y0(); amrex::Real dx = raster.dx(); amrex::Real nodata =
+ * raster.nodata_value(); PixelInterpretation interp =
+ * raster.pixel_interpretation();
+ *
+ * // Example: Interpolate at many points on the GPU
+ * amrex::Vector<amrex::Real> xs = ...; // coordinates on device
+ * amrex::Vector<amrex::Real> ys = ...;
+ * amrex::Vector<amrex::Real> out_vals(xs.size());
+ *
+ * amrex::ParallelFor(xs.size(), [=] AMREX_GPU_DEVICE (int i) noexcept {
+ *     out_vals[i] = RasterASC::interp_value(
+ *         xll, yll, dx, nx, ny, vals, xs[i], ys[i], nodata, interp);
+ * });
+ *
+ * // Example: Find nearest value at many points on the GPU
+ * amrex::ParallelFor(xs.size(), [=] AMREX_GPU_DEVICE (int i) noexcept {
+ *     out_vals[i] = RasterASC::find_nearest_value(
+ *         xll, yll, dx, nx, ny, vals, xs[i], ys[i], nodata, interp);
+ * });
+ *
+ * // --- Setting pixel interpretation ---
+ * raster.set_pixel_interpretation(PixelInterpretation::Point);
+ * // or using a string:
+ * raster.set_pixel_interpretation(pixel_interpretation_from_string("area"));
+ *
+ * // --- Set data directly (for tests or synthetic rasters) ---
+ * amrex::Vector<amrex::Real> vals_vec = {1.0, 2.0, 3.0, 4.0};
+ * raster.from_data(2, 2, 0.0, 0.0, 1.0, -9999.0, vals_vec,
+ * PixelInterpretation::Area);
+ * \endcode
+ *
+ * PixelInterpretation options:
+ *   - Area: cell-centered (default, Arc/ESRI ASCII "area")
+ *   - Point: node-centered
+ *
+ * To convert from string: use pixel_interpretation_from_string("area") or
+ * ("point").
+ */
+
 #ifndef RASTER_OPS_H
 #define RASTER_OPS_H
 
@@ -7,35 +82,112 @@
 #include <fstream>
 #include <sstream>
 
-/**
- * Reference: ArcGIS ASCII raster format specification
- * https://desktop.arcgis.com/en/arcmap/latest/manage-data/raster-and-images/esri-ascii-raster-format.htm
- */
-
 namespace amr_wind::utils {
 
-/** \brief Minimal raster reader for ArcGIS ASCII raster files (.asc) on a
- * regular grid.
- *
- *  Stores only the lower-left corner, cell size, and value array.
- *  Provides a static, GPU-friendly, optimized bilinear interpolation.
- *
- *  Usage:
- *    RasterASC raster;
- *    raster.read("file.asc");
- *    // Host or device interpolation:
- *    amrex::Real val = RasterASC::interp_value(
- *        raster.x0(), raster.y0(), raster.dx(),
- *        raster.nx(), raster.ny(), raster.value_ptr(), x, y,
- * raster.nodata_value());
- *
- *  See:
- * https://desktop.arcgis.com/en/arcmap/latest/manage-data/raster-and-images/esri-ascii-raster-format.htm
- */
+enum class PixelInterpretation {
+    Area, // cell-centered (default, Arc/ESRI ASCII "area")
+    Point // node-centered
+};
+
+inline PixelInterpretation
+pixel_interpretation_from_string(const std::string& s)
+{
+    std::string lower = s;
+    std::transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
+    if (lower == "area" || lower == "cell" || lower == "cellcentered" ||
+        lower == "cell-centered") {
+        return PixelInterpretation::Area;
+    }
+    if (lower == "point" || lower == "node" || lower == "nodecentered" ||
+        lower == "node-centered") {
+        return PixelInterpretation::Point;
+    }
+    amrex::Abort("Unknown PixelInterpretation string: " + s);
+    return PixelInterpretation::Area; // Silence warning
+}
+
+inline std::string to_string(PixelInterpretation interp)
+{
+    switch (interp) {
+    case PixelInterpretation::Area:
+        return "area";
+    case PixelInterpretation::Point:
+        return "point";
+    default:
+        return "unknown";
+    }
+}
+
 class RasterASC
 {
 public:
     RasterASC() = default;
+
+    void set_pixel_interpretation(PixelInterpretation interp)
+    {
+        m_pixel_interp = interp;
+    }
+
+    /**
+     * \brief Find the value at the nearest grid point to (x, y) (host/device).
+     *
+     * \param xll Lower-left x coordinate
+     * \param yll Lower-left y coordinate
+     * \param dx  Cell size (square, as per ArcGIS ASCII spec)
+     * \param nx  Number of x grid points
+     * \param ny  Number of y grid points
+     * \param vals Pointer to flattened value array (row-major: [j * nx + i])
+     * \param x   Query x coordinate
+     * \param y   Query y coordinate
+     * \param nodata The no data value
+     * \param pixel_interp Pixel interpretation (Area = cell-centered, Point =
+     * node-centered)
+     * \return    Value at nearest grid point to (x, y)
+     */
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE static amrex::Real
+    find_nearest_value(
+        amrex::Real xll,
+        amrex::Real yll,
+        amrex::Real dx,
+        int nx,
+        int ny,
+        const amrex::Real* vals,
+        amrex::Real x,
+        amrex::Real y,
+        amrex::Real nodata,
+        PixelInterpretation pixel_interp = PixelInterpretation::Area)
+    {
+        // Compute indices (assuming (xll, yll) is the lower-left corner, and
+        // (0,0) is the first cell)
+        amrex::Real fx = (x - xll) / dx;
+        amrex::Real fy = (y - yll) / dx;
+        if (pixel_interp == PixelInterpretation::Area) {
+            fx -= 0.5;
+            fy -= 0.5;
+        }
+        int i = static_cast<int>(amrex::Math::round(fx));
+        int j = static_cast<int>(amrex::Math::round(fy));
+
+        // Clamp indices to valid range
+        if (i < 0) {
+            i = 0;
+        }
+        if (j < 0) {
+            j = 0;
+        }
+        if (i >= nx) {
+            i = nx - 1;
+        }
+        if (j >= ny) {
+            j = ny - 1;
+        }
+
+        amrex::Real val = vals[j * nx + i];
+        if (val == nodata) {
+            return nodata;
+        }
+        return val;
+    }
 
     /**
      * \brief Optimized bilinear interpolation for regular grids (host/device).
@@ -49,6 +201,8 @@ public:
      * \param x   Query x coordinate
      * \param y   Query y coordinate
      * \param nodata The no data value
+     * \param pixel_interp Pixel interpretation (Area = cell-centered, Point =
+     * node-centered)
      * \return    Interpolated value at (x, y)
      */
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE static amrex::Real interp_value(
@@ -60,10 +214,15 @@ public:
         const amrex::Real* vals,
         amrex::Real x,
         amrex::Real y,
-        amrex::Real nodata)
+        amrex::Real nodata,
+        PixelInterpretation pixel_interp = PixelInterpretation::Area)
     {
         amrex::Real fx = (x - xll) / dx;
         amrex::Real fy = (y - yll) / dx;
+        if (pixel_interp == PixelInterpretation::Area) {
+            fx -= 0.5;
+            fy -= 0.5;
+        }
         int i = static_cast<int>(fx);
         int j = static_cast<int>(fy);
 
@@ -116,7 +275,22 @@ public:
     {
         return interp_value(
             m_xllcorner, m_yllcorner, m_dx, m_ncols, m_nrows, m_values.data(),
-            x, y, m_nodata);
+            x, y, m_nodata, m_pixel_interp);
+    }
+
+    /**
+     * \brief Find the value at the nearest grid point to (x, y)
+     *
+     * \param x Query x coordinate
+     * \param y Query y coordinate
+     * \return  Value at nearest grid point to (x, y)
+     */
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+    find_nearest(amrex::Real x, amrex::Real y) const
+    {
+        return find_nearest_value(
+            m_xllcorner, m_yllcorner, m_dx, m_ncols, m_nrows, m_values.data(),
+            x, y, m_nodata, m_pixel_interp);
     }
 
     /// \brief Pointer to value array
@@ -148,10 +322,19 @@ public:
     {
         return m_dx;
     }
+
+    /// \brief Get the nodata value
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real nodata_value() const
     {
         return m_nodata;
     };
+
+    /// \brief Get the current pixel interpretation
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE PixelInterpretation
+    pixel_interpretation() const
+    {
+        return m_pixel_interp;
+    }
 
     /**
      * \brief Read ArcGIS ASCII raster file (.asc) and populate value array.
@@ -216,7 +399,20 @@ public:
         }
     }
 
-    /// Test-only: set all member data directly (for unit tests)
+    /**
+     * \brief Set all raster metadata and values directly (for tests or
+     * synthetic rasters).
+     *
+     * \param ncols         Number of columns (x grid points)
+     * \param nrows         Number of rows (y grid points)
+     * \param xll           Lower-left x coordinate
+     * \param yll           Lower-left y coordinate
+     * \param dx            Cell size (square, as per ArcGIS ASCII spec)
+     * \param nodata        The no data value
+     * \param values        Flattened value array (row-major: [j * ncols + i])
+     * \param interp        Pixel interpretation (Area = cell-centered, Point =
+     * node-centered)
+     */
     void from_data(
         int ncols,
         int nrows,
@@ -224,7 +420,8 @@ public:
         amrex::Real yll,
         amrex::Real dx,
         amrex::Real nodata,
-        const amrex::Vector<amrex::Real>& values)
+        const amrex::Vector<amrex::Real>& values,
+        PixelInterpretation interp = PixelInterpretation::Area)
     {
         m_ncols = ncols;
         m_nrows = nrows;
@@ -233,9 +430,11 @@ public:
         m_dx = dx;
         m_nodata = nodata;
         m_values = values;
+        m_pixel_interp = interp;
     }
 
 private:
+    PixelInterpretation m_pixel_interp{PixelInterpretation::Area};
     amrex::Vector<amrex::Real> m_values;
     int m_ncols{0}, m_nrows{0};
     amrex::Real m_xllcorner{0.0}, m_yllcorner{0.0};
