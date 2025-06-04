@@ -34,7 +34,6 @@ protected:
         }
     }
 
-protected:
     const std::string m_name = "temperature_mean_tavg";
     const amrex::Real m_fwidth = 2.0;
     const amrex::Real m_dt = 0.1;
