@@ -150,7 +150,6 @@ TEST_F(TimeAveragingTest, phase_stairstep_offset)
     const auto& f_avg = sim().repo().get_field(m_name);
     constexpr amrex::Real tol = 1e-8;
 
-    amrex::Real avg_val{0.};
     int step_count{0};
     while (time.new_timestep()) {
         ++step_count;

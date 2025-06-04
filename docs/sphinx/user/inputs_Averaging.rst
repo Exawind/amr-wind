@@ -18,7 +18,7 @@ field is required.
 
 .. input_param:: averaging.averaging_window
 
-   **type:** Real, required
+   **type:** Real, optional, default = huge number (no window)
    
    Specify the averaging window over which the time-averaging is done.
 

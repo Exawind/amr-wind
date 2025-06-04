@@ -3,7 +3,6 @@
 #include "amr-wind/utilities/averaging/TimeAveraging.H"
 #include "amr-wind/utilities/averaging/ReAveraging.H"
 #include "amr-wind/utilities/io_utils.H"
-#include "amr-wind/utilities/constants.H"
 #include "amr-wind/CFDSim.H"
 
 #include "AMReX_ParmParse.H"
@@ -29,7 +28,7 @@ void TimeAveraging::pre_init_actions()
         pp.query("averaging_start_time", m_start_time);
         pp.query("averaging_stop_time", m_stop_time);
         pp.query("averaging_time_interval", m_time_interval);
-        pp.get("averaging_window", m_filter);
+        pp.query("averaging_window", m_filter);
     }
 
     amrex::Print() << "TimeAveraging: Initializing " << m_label << std::endl;
@@ -85,7 +84,6 @@ void TimeAveraging::post_advance_work()
 {
     const auto& time = m_sim.time();
     const auto cur_time = time.new_time();
-    const auto cur_step = time.time_index();
     const auto cur_dt = time.delta_t();
 
     m_accumulated_avg_time_interval += cur_dt;
