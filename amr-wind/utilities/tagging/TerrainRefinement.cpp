@@ -162,8 +162,8 @@ void TerrainRefinement::operator()(
             bool in_poly = false;
             if (!polygon_is_empty) {
                 in_poly = amr_wind::polygon_utils::Polygon::is_point_in_polygon(
-                    p_poly_points, p_ring_offsets, n_rings, n_points,
-                    center_point);
+                    p_poly_points, p_ring_offsets, n_rings,
+                    static_cast<int>(n_points), center_point);
 
             } else {
                 in_poly = true;

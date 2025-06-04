@@ -322,8 +322,7 @@ public:
     {
         // Outer ring
         int start = static_cast<int>(p_ring_offsets[0]);
-        int end = (n_rings > 1) ? static_cast<int>(p_ring_offsets[1])
-                                : static_cast<int>(n_points);
+        int end = (n_rings > 1) ? p_ring_offsets[1] : n_points;
         int n = end - start;
         // Check if pt is on edge of outer ring
         for (int j = 0; j < n; ++j) {
@@ -338,10 +337,9 @@ public:
         }
         // Check holes
         for (int ring_i = 1; ring_i < n_rings; ++ring_i) {
-            int h_start = static_cast<int>(p_ring_offsets[ring_i]);
-            int h_end = (ring_i + 1 < n_rings)
-                            ? static_cast<int>(p_ring_offsets[ring_i + 1])
-                            : static_cast<int>(n_points);
+            int h_start = p_ring_offsets[ring_i];
+            int h_end =
+                (ring_i + 1 < n_rings) ? p_ring_offsets[ring_i + 1] : n_points;
             int h_n = h_end - h_start;
             // Check if pt is on edge of hole
             for (int j = 0; j < h_n; ++j) {
