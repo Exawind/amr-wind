@@ -116,8 +116,10 @@ void TimeAveraging::post_advance_work()
     const bool do_phase_avg =
         (m_time_interval < 0.
              ? cur_step % m_interval == 0
-             : (cur_time + t_tol) / m_time_interval -
-                       std::floor((cur_time + t_tol) / m_time_interval) <
+             : (cur_time - m_start_time + t_tol) / m_time_interval -
+                       std::floor(
+                           (cur_time - m_start_time + t_tol) /
+                           m_time_interval) <
                    cur_dt / m_time_interval);
     const bool do_avg =
         (((cur_time >= m_start_time) && (cur_time < m_stop_time)) &&
