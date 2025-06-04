@@ -32,7 +32,7 @@ protected:
             pp.add("type", (std::string) "TimeAveraging");
             pp.add("labels", (std::string) "means");
             pp.add("averaging_window", (amrex::Real)m_fwidth);
-            pp.add("averaging_interval", (amrex::Real)2);
+            pp.add("averaging_interval", (int)2);
         }
         {
             amrex::ParmParse pp("tavg1.means");
@@ -65,7 +65,7 @@ TEST_F(TimeAveragingTest, every_step)
     populate_parameters();
     {
         amrex::ParmParse pp("tavg1");
-        pp.add("averaging_interval", (amrex::Real)1);
+        pp.add("averaging_interval", (int)1);
     }
     initialize_mesh();
 
@@ -144,11 +144,106 @@ TEST_F(TimeAveragingTest, step_vs_time)
         if (step_count % 2 == 0) {
             const amrex::Real avg_time =
                 amrex::max(amrex::min(time.new_time(), m_fwidth), 2. * m_dt);
-            const amrex::Real old_avg_time = amrex::max(avg_time - 2. * m_dt, 0.);
+            const amrex::Real old_avg_time =
+                amrex::max(avg_time - 2. * m_dt, 0.);
             avg_val = (avg_val * (old_avg_time) + 2. * m_dt * fval) / avg_time;
             EXPECT_NEAR(max_f1, avg_val, tol);
         }
     }
+}
+
+TEST_F(TimeAveragingTest, phase_stairstep_offset)
+{
+    populate_parameters();
+    {
+        amrex::ParmParse pp("tavg2");
+        pp.add("averaging_start_time", (amrex::Real)0.1);
+    }
+    initialize_mesh();
+
+    auto& m_sim = sim();
+    amr_wind::PostProcessManager& post_manager = m_sim.post_manager();
+    auto& time = sim().time();
+    auto& temp = sim().repo().declare_cc_field("temperature", 1, 1, 1);
+    temp.setVal(0.);
+    post_manager.pre_init_actions();
+    post_manager.post_init_actions();
+
+    const auto& f_avg2 = sim().repo().get_field(m_name2);
+    constexpr amrex::Real tol = 1e-8;
+
+    amrex::Real avg_val{0.};
+    int step_count{0};
+    while (time.new_timestep()) {
+        ++step_count;
+        // Give field a linear profile with time
+        const amrex::Real fval = (step_count % 2) * 5.;
+        temp.setVal(fval);
+        time.set_current_cfl(0.45 / 0.3, 0.0, 0.0);
+        time.advance_time();
+        post_manager.post_advance_work();
+        // Get field values
+        const auto max_f2 = utils::field_max(f_avg2);
+        const auto min_f2 = utils::field_min(f_avg2);
+        // Confirm mean fields are uniform
+        EXPECT_NEAR(max_f2, min_f2, tol);
+        // Confirm value is as expected
+        if (step_count % 2 == 1) {
+            EXPECT_NEAR(max_f2, 5.0, tol);
+        }
+    }
+}
+
+TEST_F(TimeAveragingTest, mismatch_time_interval)
+{
+    populate_parameters();
+    {
+        amrex::ParmParse pp("tavg2");
+        pp.add("averaging_time_interval", (amrex::Real)0.15);
+    }
+    initialize_mesh();
+
+    auto& m_sim = sim();
+    amr_wind::PostProcessManager& post_manager = m_sim.post_manager();
+    auto& time = sim().time();
+    auto& temp = sim().repo().declare_cc_field("temperature", 1, 1, 1);
+    temp.setVal(0.);
+    post_manager.pre_init_actions();
+    post_manager.post_init_actions();
+
+    const auto& f_avg1 = sim().repo().get_field(m_name1);
+    const auto& f_avg2 = sim().repo().get_field(m_name2);
+    constexpr amrex::Real tol = 1e-8;
+
+    int step_count{0};
+    while (time.new_timestep()) {
+        ++step_count;
+        // Give field a linear profile with time
+        const amrex::Real fval = 10. * time.current_time();
+        temp.setVal(fval);
+        time.set_current_cfl(0.45 / 0.3, 0.0, 0.0);
+        time.advance_time();
+        post_manager.post_advance_work();
+    }
+
+    // Get field values
+    const auto max_f2 = utils::field_max(f_avg2);
+    const auto min_f2 = utils::field_min(f_avg2);
+    // Confirm mean fields are uniform
+    EXPECT_NEAR(max_f2, min_f2, tol);
+    // Times when averaging should occur:
+    // 0.2, 0.3, 0.5, 0.6, 0.8, 0.9
+    amrex::Real avg_val = 0.2 * 2.0 / 0.2;
+    avg_val = (avg_val * (0.3 - 0.1) + 3.0 * 0.1) / 0.3;
+    avg_val = (avg_val * (0.5 - 0.2) + 5.0 * 0.2) / 0.5;
+    avg_val = (avg_val * (0.6 - 0.1) + 6.0 * 0.1) / 0.6;
+    avg_val = (avg_val * (0.8 - 0.2) + 8.0 * 0.2) / 0.8;
+    avg_val = (avg_val * (0.9 - 0.1) + 9.0 * 0.1) / 0.9;
+    EXPECT_NEAR(max_f2, avg_val, tol);
+
+    const amrex::Real avg_val_ideal = (0.2 * 2.0 + 0.1 * 3.0 + 0.2 * 5.0 +
+                                       0.1 * 6.0 + 0.2 * 8.0 + 0.1 * 9.0) /
+                                      0.9;
 }
 
 } // namespace amr_wind_tests
