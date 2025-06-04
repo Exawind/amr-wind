@@ -6,45 +6,6 @@
 
 using amr_wind::utils::RasterASC;
 
-amrex::Real simple_bilinear(
-    amrex::Real xll,
-    amrex::Real yll,
-    amrex::Real dx,
-    int nx,
-    int ny,
-    const amrex::Vector<amrex::Real>& vals,
-    amrex::Real x,
-    amrex::Real y)
-{
-    amrex::Real fx = (x - xll) / dx;
-    amrex::Real fy = (y - yll) / dx;
-    int i = static_cast<int>(fx);
-    int j = static_cast<int>(fy);
-
-    // Clamp indices (for safety)
-    if (i < 0) i = 0;
-    if (j < 0) j = 0;
-    if (i >= nx - 1) i = nx - 2;
-    if (j >= ny - 1) j = ny - 2;
-
-    amrex::Real ddx = fx - i;
-    amrex::Real ddy = fy - j;
-
-    int idx00 = j * nx + i;
-    int idx10 = j * nx + (i + 1);
-    int idx01 = (j + 1) * nx + i;
-    int idx11 = (j + 1) * nx + (i + 1);
-
-    amrex::Real v00 = vals[idx00];
-    amrex::Real v10 = vals[idx10];
-    amrex::Real v01 = vals[idx01];
-    amrex::Real v11 = vals[idx11];
-
-    amrex::Real v0 = v00 * (1.0 - ddx) + v10 * ddx;
-    amrex::Real v1 = v01 * (1.0 - ddx) + v11 * ddx;
-    return v0 * (1.0 - ddy) + v1 * ddy;
-}
-
 TEST(RasterASC, Interpolation)
 {
     RasterASC raster;
@@ -80,20 +41,29 @@ TEST(RasterASC, ReadAndInterp)
     raster.read("unit_tests/utilities/raster.asc");
 
     amrex::Vector<amrex::Real> vals(
-        raster.value_ptr(), raster.value_ptr() + raster.nx() * raster.ny());
+        raster.value_ptr(),
+        raster.value_ptr() + static_cast<std::size_t>(raster.nx()) *
+                                 static_cast<std::size_t>(raster.ny()));
 
     amrex::Vector<amrex::Real> xvec(raster.nx()), yvec(raster.ny());
-    for (int i = 0; i < raster.nx(); ++i)
+    for (int i = 0; i < raster.nx(); ++i) {
         xvec[i] = raster.x0() + i * raster.dx();
-    for (int j = 0; j < raster.ny(); ++j)
+    }
+    for (int j = 0; j < raster.ny(); ++j) {
         yvec[j] = raster.y0() + j * raster.dx();
-
+    }
     const auto nx = raster.nx();
     const auto ny = raster.ny();
-    amrex::Vector<amrex::Real> vals_colmajor(nx * ny);
+    amrex::Vector<amrex::Real> vals_colmajor(
+        static_cast<std::size_t>(nx) * static_cast<std::size_t>(ny));
     for (int j = 0; j < ny; ++j) {
         for (int i = 0; i < nx; ++i) {
-            vals_colmajor[i * ny + j] = vals[j * nx + i];
+            vals_colmajor
+                [static_cast<std::size_t>(i) * static_cast<std::size_t>(ny) +
+                 static_cast<std::size_t>(j)] = vals
+                    [static_cast<std::size_t>(j) *
+                         static_cast<std::size_t>(nx) +
+                     static_cast<std::size_t>(i)];
         }
     }
 
@@ -120,15 +90,11 @@ TEST(RasterASC, ReadAndInterp)
             {14.92607469, 5.76265473, 0.27800605},
             {33.52741830, 25.96899713, 1.07977482},
         };
-    for (int idx = 0; idx < sample_points.size(); ++idx) {
-        const auto& [x, y, expected] = sample_points[idx];
+    for (const auto& [x, y, expected] : sample_points) {
         amrex::Real actual = raster.interp(x, y);
         amrex::Real bilinear =
             amr_wind::interp::bilinear(xvec, yvec, vals_colmajor, x, y);
 
-        // std::cout << "Point [" << idx << "] interp(" << x << ", " << y
-        //           << ") = " << actual << ", bilinear = " << bilinear
-        //           << ", expected = " << expected << std::endl;
         EXPECT_NEAR(actual, expected, 1e-8);
         EXPECT_NEAR(actual, bilinear, 1e-8);
     }

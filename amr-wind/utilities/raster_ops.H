@@ -68,10 +68,18 @@ public:
         int j = static_cast<int>(fy);
 
         // Clamp indices to valid range
-        if (i < 0) i = 0;
-        if (j < 0) j = 0;
-        if (i >= nx - 1) i = nx - 2;
-        if (j >= ny - 1) j = ny - 2;
+        if (i < 0) {
+            i = 0;
+        }
+        if (j < 0) {
+            j = 0;
+        }
+        if (i >= nx - 1) {
+            i = nx - 2;
+        }
+        if (j >= ny - 1) {
+            j = ny - 2;
+        }
 
         amrex::Real ddx = fx - i;
         amrex::Real ddy = fy - j;
@@ -183,7 +191,9 @@ public:
             amrex::Abort("Failed to read nodata");
         }
 
-        m_values.resize(m_ncols * m_nrows);
+        m_values.resize(
+            static_cast<std::size_t>(m_ncols) *
+            static_cast<std::size_t>(m_nrows));
 
         // ArcGIS ASCII starts from top row, so we read from last y to first
         int count = 0;
