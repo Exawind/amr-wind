@@ -41,6 +41,7 @@ Each section must contain the keyword ``type`` that is one of the refinement typ
 ``FieldRefinement``        Refinement based on error metric for field or its gradient
 ``OversetRefinement``      Refinement around fringe/field interface
 ``GeometryRefinement``     Refinement using geometric shapes
+``TerrainRefinement``      Refinement using terrain fields and polygon regions
 ``QCriterionRefinement``   Refinement using Q-Criterion
 ``VorticityMagRefinement`` Refinement using vorticity
 ========================== ===================================================================
@@ -211,6 +212,54 @@ The axis and the extents along the axis are defined by two position vectors
 ``start`` and ``end``. The radial extent is specified by ``outer_radius``. An
 optional ``inner_radius`` can be specified to restrict tagging to an annulus
 between the inner and outer radii.
+
+Refinement using terrain and polygons
+`````````````````````````````````````
+
+This section controls refinement using terrain fields in the domain along
+with user-specified polygon regions.
+
+.. input_param:: tagging.TerrainRefinement.vertical_distance
+
+   **type:** Real, required
+
+   Distance (in z) above the terrain to refine. Tagging is added between
+   the terrain and the specified height above it, and it is also
+   bound laterally by the polygon parameters listed below.
+
+.. input_param:: tagging.TerrainRefinement.poly_exterior
+
+   **type:** List of reals, optional
+
+   Coordinates (x and y) of the polygon exterior. Within this polygonal
+   region, the refinement is applied. The coordinates are input as pairs of x and y locations,
+   so there must be an even number of entries for this argument.
+
+.. input_param:: tagging.TerrainRefinement.poly_num_holes
+
+   **type:** Integer, optional, default = 0
+
+   The number of holes within the polygonal region. This parameter allows the user to carve out
+   sections within the polygon exterior where refinement is not desired. Each hole is defined
+   in the same manner as the polygon exterior with coordinates constructing a polygon boundary.
+
+.. input_param:: tagging.TerrainRefinement.poly_hole_n
+
+   **type:** List of reals, optional
+
+   Coordinates (x and y) of the polygon hole boundary, where ``n`` is the 0-based index of the
+   hole being specified (e.g., ``poly_hole_0`` would be used to define the first polygon hole).
+   The coordinates are input as pairs of x and y locations, so there must be an even number
+   of entries for this argument.
+
+Example::
+
+  tagging.terr1.type = TerrainRefinement
+  tagging.terr1.vertical_distance = 200
+  tagging.terr1.level = 1
+  tagging.terr1.poly_exterior = 10 10 10 20 20 20 20 10
+  tagging.terr1.poly_num_holes = 1
+  tagging.terr1.poly_hole_0 = 5 5 5 10 10 10 10 5
 
 Refinement using Q-Criterion
 `````````````````````````````````````

@@ -156,8 +156,9 @@ amrex::Vector<const amrex::MultiFab*> Field::vec_const_ptrs() const noexcept
     amrex::Vector<const amrex::MultiFab*> ret;
     ret.reserve(nlevels);
     for (int lev = 0; lev < nlevels; ++lev) {
-        ret.push_back(static_cast<const amrex::MultiFab*>(
-            &m_repo.get_multifab(m_id, lev)));
+        ret.push_back(
+            static_cast<const amrex::MultiFab*>(
+                &m_repo.get_multifab(m_id, lev)));
     }
     return ret;
 }
