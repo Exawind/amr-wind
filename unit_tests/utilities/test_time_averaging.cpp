@@ -194,11 +194,11 @@ TEST_F(TimeAveragingTest, mismatch_time_interval)
     int step_count{0};
     while (time.new_timestep()) {
         ++step_count;
-        // Give field a linear profile with time
-        const amrex::Real fval = 10. * time.current_time();
-        temp.setVal(fval);
         time.set_current_cfl(0.45 / 0.3, 0.0, 0.0);
         time.advance_time();
+        // Give field a linear profile with time
+        const amrex::Real fval = 10. * time.new_time();
+        temp.setVal(fval);
         post_manager.post_advance_work();
     }
 
