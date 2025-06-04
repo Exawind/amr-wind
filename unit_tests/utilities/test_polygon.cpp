@@ -24,20 +24,23 @@ TEST(Polygon, SimpleSquare)
     std::cout << "SimpleSquare: Testing point (5,5) (inside)\n";
     EXPECT_TRUE(poly.contains({5.0, 5.0}));
     EXPECT_TRUE(Polygon::is_point_in_ring(pts, n_outer, {5.0, 5.0}));
-    EXPECT_TRUE(Polygon::is_point_in_polygon(
-        all_pts, ring_offsets, n_rings, n_points, {5.0, 5.0}));
+    EXPECT_TRUE(
+        Polygon::is_point_in_polygon(
+            all_pts, ring_offsets, n_rings, n_points, {5.0, 5.0}));
 
     std::cout << "SimpleSquare: Testing point (0,5) (on edge)\n";
     EXPECT_FALSE(poly.contains({0.0, 5.0}));
     EXPECT_FALSE(Polygon::is_point_in_ring(pts, n_outer, {0.0, 5.0}));
-    EXPECT_FALSE(Polygon::is_point_in_polygon(
-        all_pts, ring_offsets, n_rings, n_points, {0.0, 5.0}));
+    EXPECT_FALSE(
+        Polygon::is_point_in_polygon(
+            all_pts, ring_offsets, n_rings, n_points, {0.0, 5.0}));
 
     std::cout << "SimpleSquare: Testing point (-1,5) (outside)\n";
     EXPECT_FALSE(poly.contains({-1.0, 5.0}));
     EXPECT_FALSE(Polygon::is_point_in_ring(pts, n_outer, {-1.0, 5.0}));
-    EXPECT_FALSE(Polygon::is_point_in_polygon(
-        all_pts, ring_offsets, n_rings, n_points, {-1.0, 5.0}));
+    EXPECT_FALSE(
+        Polygon::is_point_in_polygon(
+            all_pts, ring_offsets, n_rings, n_points, {-1.0, 5.0}));
 }
 
 TEST(Polygon, PolygonWithHole)
@@ -66,28 +69,33 @@ TEST(Polygon, PolygonWithHole)
     std::cout << "PolygonWithHole: Testing point (2,2) (inside outer, outside "
                  "hole)\n";
     EXPECT_TRUE(poly.contains({2.0, 2.0}));
-    EXPECT_TRUE(Polygon::is_point_in_polygon(
-        all_pts, ring_offsets, n_rings, n_points, {2.0, 2.0}));
+    EXPECT_TRUE(
+        Polygon::is_point_in_polygon(
+            all_pts, ring_offsets, n_rings, n_points, {2.0, 2.0}));
 
     std::cout << "PolygonWithHole: Testing point (5,5) (inside hole)\n";
     EXPECT_FALSE(poly.contains({5.0, 5.0}));
-    EXPECT_FALSE(Polygon::is_point_in_polygon(
-        all_pts, ring_offsets, n_rings, n_points, {5.0, 5.0}));
+    EXPECT_FALSE(
+        Polygon::is_point_in_polygon(
+            all_pts, ring_offsets, n_rings, n_points, {5.0, 5.0}));
 
     std::cout << "PolygonWithHole: Testing point (10,5) (on exterior edge)\n";
     EXPECT_FALSE(poly.contains({10.0, 5.0}));
-    EXPECT_FALSE(Polygon::is_point_in_polygon(
-        all_pts, ring_offsets, n_rings, n_points, {10.0, 5.0}));
+    EXPECT_FALSE(
+        Polygon::is_point_in_polygon(
+            all_pts, ring_offsets, n_rings, n_points, {10.0, 5.0}));
 
     std::cout << "PolygonWithHole: Testing point (3,5) (on hole edge)\n";
     EXPECT_FALSE(poly.contains({3.0, 5.0}));
-    EXPECT_FALSE(Polygon::is_point_in_polygon(
-        all_pts, ring_offsets, n_rings, n_points, {3.0, 5.0}));
+    EXPECT_FALSE(
+        Polygon::is_point_in_polygon(
+            all_pts, ring_offsets, n_rings, n_points, {3.0, 5.0}));
 
     std::cout << "PolygonWithHole: Testing point (-1,5) (outside)\n";
     EXPECT_FALSE(poly.contains({-1.0, 5.0}));
-    EXPECT_FALSE(Polygon::is_point_in_polygon(
-        all_pts, ring_offsets, n_rings, n_points, {-1.0, 5.0}));
+    EXPECT_FALSE(
+        Polygon::is_point_in_polygon(
+            all_pts, ring_offsets, n_rings, n_points, {-1.0, 5.0}));
 }
 
 TEST(Polygon, ComplexPolygonSelfIntersecting)
@@ -110,8 +118,9 @@ TEST(Polygon, ComplexPolygonSelfIntersecting)
     std::cout << "ComplexPolygonSelfIntersecting: Testing point (5,5) (center, "
                  "ambiguous)\n";
     EXPECT_FALSE(poly.contains({5.0, 5.0}));
-    EXPECT_FALSE(Polygon::is_point_in_polygon(
-        all_pts, ring_offsets, n_rings, n_points, {5.0, 5.0}));
+    EXPECT_FALSE(
+        Polygon::is_point_in_polygon(
+            all_pts, ring_offsets, n_rings, n_points, {5.0, 5.0}));
 }
 
 TEST(Polygon, DegenerateCases)
@@ -127,8 +136,9 @@ TEST(Polygon, DegenerateCases)
 
     std::cout << "DegenerateCases: Testing single point polygon at (1,1)\n";
     EXPECT_FALSE(poly.contains({1.0, 1.0}));
-    EXPECT_FALSE(Polygon::is_point_in_polygon(
-        all_pts, ring_offsets, n_rings, n_points, {1.0, 1.0}));
+    EXPECT_FALSE(
+        Polygon::is_point_in_polygon(
+            all_pts, ring_offsets, n_rings, n_points, {1.0, 1.0}));
 
     // Line
     Polygon poly2;
@@ -143,8 +153,9 @@ TEST(Polygon, DegenerateCases)
 
     std::cout << "DegenerateCases: Testing line polygon from (0,0) to (1,1)\n";
     EXPECT_FALSE(poly2.contains({0.5, 0.5}));
-    EXPECT_FALSE(Polygon::is_point_in_polygon(
-        all_pts2, ring_offsets2, n_rings2, n_points2, {0.5, 0.5}));
+    EXPECT_FALSE(
+        Polygon::is_point_in_polygon(
+            all_pts2, ring_offsets2, n_rings2, n_points2, {0.5, 0.5}));
 }
 
 TEST(Polygon, BoundingBox)
@@ -203,16 +214,19 @@ TEST(Polygon, MultipleHoles)
     std::cout
         << "MultipleHoles: Testing point (5,5) (inside outer, outside holes)\n";
     EXPECT_TRUE(poly.contains({5.0, 5.0}));
-    EXPECT_TRUE(Polygon::is_point_in_polygon(
-        all_pts, ring_offsets, n_rings, n_points, {5.0, 5.0}));
+    EXPECT_TRUE(
+        Polygon::is_point_in_polygon(
+            all_pts, ring_offsets, n_rings, n_points, {5.0, 5.0}));
 
     std::cout << "MultipleHoles: Testing point (3,3) (inside hole 1)\n";
     EXPECT_FALSE(poly.contains({3.0, 3.0}));
-    EXPECT_FALSE(Polygon::is_point_in_polygon(
-        all_pts, ring_offsets, n_rings, n_points, {3.0, 3.0}));
+    EXPECT_FALSE(
+        Polygon::is_point_in_polygon(
+            all_pts, ring_offsets, n_rings, n_points, {3.0, 3.0}));
 
     std::cout << "MultipleHoles: Testing point (7,7) (inside hole 2)\n";
     EXPECT_FALSE(poly.contains({7.0, 7.0}));
-    EXPECT_FALSE(Polygon::is_point_in_polygon(
-        all_pts, ring_offsets, n_rings, n_points, {7.0, 7.0}));
+    EXPECT_FALSE(
+        Polygon::is_point_in_polygon(
+            all_pts, ring_offsets, n_rings, n_points, {7.0, 7.0}));
 }
