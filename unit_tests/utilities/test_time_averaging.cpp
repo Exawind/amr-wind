@@ -180,9 +180,7 @@ TEST_F(TimeAveragingTest, mismatch_time_interval)
 
     const auto& f_avg = sim().repo().get_field(m_name);
 
-    int step_count{0};
     while (time.new_timestep()) {
-        ++step_count;
         time.advance_time();
         // Give field a linear profile with time
         const amrex::Real fval = 10. * time.new_time();
