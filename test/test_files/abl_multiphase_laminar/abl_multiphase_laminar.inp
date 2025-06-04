@@ -19,7 +19,6 @@ incflo.post_processing = avg1 avg2
 avg1.type = TimeAveraging
 avg1.labels = means
 avg1.averaging_window = 10.0
-avg1.averaging_interval = 1.
 avg1.means.fields = velocity
 avg1.means.averaging_type = ReAveraging
 avg2.type = TimeAveraging
