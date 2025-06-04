@@ -1,0 +1,14 @@
+.. meta::01dfe53e6d6fe6131f98e177aabaf04f752167d01890340c4199dd1cd9bcc709e53a2a723ff932761eedb30e451d6a1dcb9def1bbd17ec783535c5daea2af6c1
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::wave_energy Namespace Reference
+
+wave\_energy Namespace Reference
+================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: namespaceamr__wind_1_1wave__energy.html

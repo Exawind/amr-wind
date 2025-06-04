@@ -1,0 +1,14 @@
+.. meta::5ad64816ace06863639c2b010c53c3f123200719c6ba40a51c1543aa4768bb54fd3bf1e303e45bf37959c6fa5cf9837124d266e05a93bf06c3673b8331e58eb1
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/passive_scalar Directory Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/equation\_systems/passive\_scalar Directory Reference
+==================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: dir_c29e83733bb5f71ced1b88d3b6313f77.html

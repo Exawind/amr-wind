@@ -1,0 +1,14 @@
+.. meta::26271aa4c6a0644cae7b669056b4c83e4aee73c5124e24277331fb32c7f1ffa3cee73bffc44e36442645845973ba5b846384d8324a4a5eb7fbed6b69330c01f0
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::vs::TensorT&lt; T &gt; Struct Template Reference
+
+TensorT&lt; T &gt; Struct Template Reference
+============================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1vs_1_1_tensor_t.html

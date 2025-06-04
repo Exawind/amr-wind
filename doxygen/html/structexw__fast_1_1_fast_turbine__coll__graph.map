@@ -1,0 +1,15 @@
+<map id="exw_fast::FastTurbine" name="exw_fast::FastTurbine">
+<area shape="rect" id="Node000001" title=" " alt="" coords="561,149,724,174"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="257,42,343,67"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="358,55,444,66,492,76,538,91,589,118,628,146,625,151,586,122,536,96,491,81,443,71,357,60"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="5,35,144,75"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="158,52,256,52,256,57,158,57"/>
+<area shape="rect" id="Node000004" href="$structexw__fast_1_1_op_f_m___input_type.html" title=" " alt="" coords="201,95,399,121"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="413,117,538,135,591,146,590,151,537,140,412,122"/>
+<area shape="rect" id="Node000005" href="$structexw__fast_1_1_op_f_m___output_type.html" title=" " alt="" coords="196,149,404,174"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="418,159,561,159,561,164,418,164"/>
+<area shape="rect" id="Node000006" href="$structexw__fast_1_1_s_c___d_x___input_type.html" title=" " alt="" coords="199,202,401,227"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="415,203,537,187,600,171,601,177,538,192,416,209"/>
+<area shape="rect" id="Node000007" href="$structexw__fast_1_1_s_c___d_x___output_type.html" title=" " alt="" coords="193,255,407,281"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="420,258,479,247,536,230,587,202,625,172,629,176,590,206,538,234,480,252,421,263"/>
+</map>

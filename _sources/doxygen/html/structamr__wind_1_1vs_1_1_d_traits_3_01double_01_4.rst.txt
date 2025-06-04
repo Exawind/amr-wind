@@ -1,0 +1,14 @@
+.. meta::9bb370d564034943bf2c663c16e6e6a2ad7ef5878d0878b56f9fe31ff9e35b7431bcebe58da0d77bd08f0e71d82393df5d540baa5f465a6632c269086399802a
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::vs::DTraits&lt; double &gt; Struct Reference
+
+DTraits&lt; double &gt; Struct Reference
+========================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1vs_1_1_d_traits_3_01double_01_4.html

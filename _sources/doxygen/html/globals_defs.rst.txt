@@ -1,0 +1,14 @@
+.. meta::353ee58e96d5221ce88f997d7334576cd8d42062d8e8e4b7602e1ec9d4eadc2531d41313507cd35ecf62c3ba8c0abc87ac6421092dc2e1cff67e8a65d1a56ad2
+
+:orphan:
+
+.. title:: AMR-Wind API: File Members
+
+File Members
+============
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: globals_defs.html

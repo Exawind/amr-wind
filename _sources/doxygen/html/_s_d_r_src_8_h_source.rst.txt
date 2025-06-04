@@ -1,0 +1,14 @@
+.. meta::120d65b690be4ebc4445ae8b7635464a681777961e49aaedfbb5b8ff4d4ba429c76e8e97fe8223df7e66acc8dd848738968d494d08614ee4d33754113afb0c58
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/sdr/source_terms/SDRSrc.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/equation\_systems/sdr/source\_terms/SDRSrc.H Source File
+=====================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _s_d_r_src_8_h_source.html

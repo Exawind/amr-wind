@@ -1,0 +1,14 @@
+.. meta::8bc97e24653c8a9d00c49c79c7e0e507d02ed3733abbf79c875ebb884dec2f6d745d9026dcf266b719dc375611352f6b2ff93b033b537499fe88220ece7b722d
+
+:orphan:
+
+.. title:: AMR-Wind API: exw_fast::OpFM_InputType Struct Reference
+
+OpFM\_InputType Struct Reference
+================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structexw__fast_1_1_op_f_m___input_type.html

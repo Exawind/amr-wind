@@ -1,0 +1,14 @@
+.. meta::71a08aca82026e8b3fff9b4401255607ed9822c145643de12bc6e6297d6b87d4e4398a713ee4d23c4e29185b6b847bfceda42dec54e58eea4c44b2b05ceee942
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/actuator/turbine/fast/turbine_fast_ops.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/wind\_energy/actuator/turbine/fast/turbine\_fast\_ops.H Source File
+================================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: turbine__fast__ops_8_h_source.html

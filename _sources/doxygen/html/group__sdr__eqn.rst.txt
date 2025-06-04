@@ -1,0 +1,14 @@
+.. meta::c55bf9a32051656cf6ff58df9b545e057be271302079a77db84c94ac629793723c2dcb5c14ae795ea7476eb4dd97c8b8bf24d2cd6aed325c35acbe19edfdb9d2
+
+:orphan:
+
+.. title:: AMR-Wind API: Specific Dissipation Rate (SDR) transport equation
+
+Specific Dissipation Rate (SDR) transport equation
+==================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: group__sdr__eqn.html
