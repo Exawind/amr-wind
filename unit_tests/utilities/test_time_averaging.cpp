@@ -155,7 +155,7 @@ TEST_F(TimeAveragingTest, phase_stairstep_offset)
         // Confirm mean fields are uniform
         EXPECT_NEAR(max_f, min_f, m_tol);
         // Confirm value is as expected
-        if (step_count % 2 == 1) {
+        if (step_count % 2 != 0) {
             EXPECT_NEAR(max_f, 5.0, m_tol);
         }
     }
