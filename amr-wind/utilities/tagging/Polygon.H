@@ -43,6 +43,32 @@ public:
     /** \brief Returns true if the polygon has no points */
     bool is_empty() const { return m_points.empty(); }
 
+    /**
+     * \brief Get the bounding box of the polygon
+     *
+     * \param[out] bbox_min Lower left corner of bounding box (x, y)
+     * \param[out] bbox_max Upper right corner of bounding box (x, y)
+     */
+    void get_bounding_box(Point& bbox_min, Point& bbox_max) const
+    {
+        bbox_min = m_bbox_min;
+        bbox_max = m_bbox_max;
+    }
+
+    /**
+     * \brief Returns true if the bounding box has been computed and is valid
+     *
+     * The bounding box is considered valid if min < max in both x and y.
+     * This is typically set by calling compute_bounding_box().
+     *
+     * \return True if bounding box is valid, false otherwise
+     */
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool bbox_valid() const
+    {
+        return (m_bbox_min[0] < m_bbox_max[0]) &&
+               (m_bbox_min[1] < m_bbox_max[1]);
+    }
+
     /** \brief Add a vertex to the outer ring (must be called before any holes)
      */
     void add_outer_vertex(const Point& pt)
@@ -101,31 +127,25 @@ public:
         if (!bounding_box_contains(pt)) {
             return false;
         }
-        // Check if on edge of outer ring
-        if (winding_number(0, pt) == 0) {
-            return false; // outside or on edge of outer ring
-        }
-        // Check if on edge or inside any hole
-        for (int h = 1; h < num_rings(); ++h) {
-            int wn = winding_number(h, pt);
-            if (wn != 0) {
-                return false; // inside hole
-            }
-            // Check if on edge of hole
-            int start = m_ring_offsets[h];
-            int end = (h + 1 < static_cast<int>(m_ring_offsets.size()))
-                          ? m_ring_offsets[h + 1]
-                          : static_cast<int>(m_points.size());
-            int n = end - start;
-            for (int j = 0; j < n; ++j) {
-                const auto& p1 = m_points[start + j];
-                const auto& p2 = m_points[start + ((j + 1) % n)];
-                if (is_point_on_segment(pt, p1, p2)) {
-                    return false; // on edge of hole
-                }
-            }
-        }
-        return true;
+        return is_point_in_polygon(
+            m_points.data(), m_ring_offsets.data(), num_rings(), num_points(),
+            pt);
+    }
+
+    /**
+     * \brief Standalone check if a point is inside a bounding box
+     * \param pt The point to test
+     * \param bbox_min Lower left corner of bounding box
+     * \param bbox_max Upper right corner of bounding box
+     * \return True if inside bounding box, false otherwise
+     */
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE static bool
+    poly_bounding_box_contains(
+        const Point& pt, const Point& bbox_min, const Point& bbox_max)
+    {
+        return (
+            pt[0] >= bbox_min[0] && pt[0] <= bbox_max[0] &&
+            pt[1] >= bbox_min[1] && pt[1] <= bbox_max[1]);
     }
 
     /**
@@ -136,9 +156,7 @@ public:
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool
     bounding_box_contains(const Point& pt) const
     {
-        return (
-            pt[0] >= m_bbox_min[0] && pt[0] <= m_bbox_max[0] &&
-            pt[1] >= m_bbox_min[1] && pt[1] <= m_bbox_max[1]);
+        return poly_bounding_box_contains(pt, m_bbox_min, m_bbox_max);
     }
 
     /** \brief Compute the bounding box of the polygon */
@@ -240,9 +258,14 @@ public:
     /** \brief Access to raw points for GPU */
     const amrex::Vector<Point>& points() const { return m_points; }
 
+    /** \brief Get total number of points */
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE int num_points() const
+    {
+        return static_cast<int>(m_points.size());
+    }
+
     /** \brief Access to ring offsets for GPU */
     const amrex::Vector<int>& ring_offsets() const { return m_ring_offsets; }
-
     /**
      * \brief Standalone ring point-in-polygon test for GPU use
      * \param ring Pointer to ring points
@@ -277,6 +300,62 @@ public:
             }
         }
         return wn != 0;
+    }
+
+    /**
+     * \brief Standalone check if a point is inside a polygon with holes, given
+     * raw data pointers
+     * \param p_poly_points Pointer to all polygon points
+     * \param p_ring_offsets Pointer to ring offsets
+     * \param n_rings Number of rings (outer + holes)
+     * \param n_points Total number of points
+     * \param pt The point to test
+     * \return True if strictly inside, false otherwise (false on edge or in
+     * hole)
+     */
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE static bool is_point_in_polygon(
+        const Point* p_poly_points,
+        const int* p_ring_offsets,
+        int n_rings,
+        int n_points,
+        const Point& pt)
+    {
+        // Outer ring
+        int start = static_cast<int>(p_ring_offsets[0]);
+        int end = (n_rings > 1) ? static_cast<int>(p_ring_offsets[1])
+                                : static_cast<int>(n_points);
+        int n = end - start;
+        // Check if pt is on edge of outer ring
+        for (int j = 0; j < n; ++j) {
+            const auto& p1 = p_poly_points[start + j];
+            const auto& p2 = p_poly_points[start + ((j + 1) % n)];
+            if (is_point_on_segment(pt, p1, p2)) {
+                return false;
+            }
+        }
+        if (!is_point_in_ring(p_poly_points + start, n, pt)) {
+            return false;
+        }
+        // Check holes
+        for (int ring_i = 1; ring_i < n_rings; ++ring_i) {
+            int h_start = static_cast<int>(p_ring_offsets[ring_i]);
+            int h_end = (ring_i + 1 < n_rings)
+                            ? static_cast<int>(p_ring_offsets[ring_i + 1])
+                            : static_cast<int>(n_points);
+            int h_n = h_end - h_start;
+            // Check if pt is on edge of hole
+            for (int j = 0; j < h_n; ++j) {
+                const auto& p1 = p_poly_points[h_start + j];
+                const auto& p2 = p_poly_points[h_start + ((j + 1) % h_n)];
+                if (is_point_on_segment(pt, p1, p2)) {
+                    return false;
+                }
+            }
+            if (is_point_in_ring(p_poly_points + h_start, h_n, pt)) {
+                return false;
+            }
+        }
+        return true;
     }
 
 private:
