@@ -26,8 +26,8 @@ void TerrainRefinement::initialize(const std::string& key)
     // Outer radial extent of the cylinder, always read in from input file
     pp.get("vertical_distance", m_vertical_distance);
     pp.get("level", m_max_lev);
-    if (m_max_lev <= 0) {
-        amrex::Abort("TerrainRefinement: level must be > 0");
+    if (m_max_lev < 0) {
+        amrex::Abort("TerrainRefinement: level must be >= 0");
     }
 
     // Read polygon from input file
@@ -44,7 +44,7 @@ void TerrainRefinement::initialize(const std::string& key)
         m_tagging_box.setHi(box_hi);
     }
 
-    amrex::Print() << "Created terrain refinement with level " << m_max_lev
+    amrex::Print() << "Created terrain refinement for level " << m_max_lev
                    << " and vertical distance " << m_vertical_distance
                    << std::endl;
 }
@@ -54,7 +54,7 @@ void TerrainRefinement::operator()(
 {
     (void)time;
     (void)ngrow;
-    const bool do_tag = level < m_max_lev;
+    const bool do_tag = level <= m_max_lev;
     if (!do_tag) {
         return;
     }
@@ -65,7 +65,15 @@ void TerrainRefinement::operator()(
 
     // Get tagging box and vertical distance for device
     const auto tagging_box = m_tagging_box;
+
+    // Round up to the nearest positive multiple of dx[2] (if not already a
+    // multiple)
     auto vertical_distance = m_vertical_distance;
+    if (vertical_distance <= 0.0) {
+        vertical_distance = dx[2];
+    } else {
+        vertical_distance = std::ceil(vertical_distance / dx[2]) * dx[2];
+    }
 
     // Tag arrays
     const auto& tag_arrs = tags.arrays();
@@ -101,33 +109,37 @@ void TerrainRefinement::operator()(
 
     amrex::ParallelFor(
         mfab, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-            const amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
-            const amrex::Real terrainHt = mterrain_h_arrs[nbx](i, j, k);
-            const amrex::Real cellHt = z - terrainHt;
+            // 1. Early exit if already tagged
+            if (tag_arrs[nbx](i, j, k) == amrex::TagBox::SET) {
+                return;
+            }
 
             const amrex::RealVect coord = {AMREX_D_DECL(
                 prob_lo[0] + (i + 0.5) * dx[0], prob_lo[1] + (j + 0.5) * dx[1],
                 prob_lo[2] + (k + 0.5) * dx[2])};
 
+            const auto terrainHt = mterrain_h_arrs[nbx](i, j, k);
+            const auto cellHt = coord[2] - terrainHt;
+
             const amr_wind::polygon_utils::Polygon::Point testPt{
                 coord[0], coord[1]};
 
-            // 1. Check tagging box first
+            // 2. Check tagging box first
             if (!tagging_box.contains(coord)) {
                 return;
             }
 
-            // 2. Check vertical distance
+            // 3. Check vertical distance
             if ((cellHt < -0.5 * dx[2]) || (cellHt > vertical_distance)) {
                 return;
             }
 
-            // 3. Check terrain blanking
+            // 4. Check terrain blanking
             if (mterrain_b_arrs[nbx](i, j, k) >= 1) {
                 return;
             }
 
-            // 4. Polygon point-in-polygon test using the new layout
+            // 5. Polygon point-in-polygon test using the new layout
             bool in_poly = false;
             if (!polygon_is_empty) {
                 // Outer ring
