@@ -97,9 +97,6 @@ private:
     //! Time averaging window (in seconds)
     amrex::Real m_filter{0.0};
 
-    //! Time averaging interval (in time steps)
-    int m_interval{1};
-
     //! Time averaging time interval (in seconds)
     amrex::Real m_time_interval{-1.};
 

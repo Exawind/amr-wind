@@ -23,39 +23,24 @@ protected:
         }
         {
             amrex::ParmParse pp("incflo");
-            pp.addarr(
-                "post_processing",
-                amrex::Vector<std::string>{"tavg1", "tavg2"});
+            pp.add("post_processing", (std::string) "tavg");
         }
         {
-            amrex::ParmParse pp("tavg1");
-            pp.add("type", (std::string) "TimeAveraging");
-            pp.add("labels", (std::string) "means");
-            pp.add("averaging_window", (amrex::Real)m_fwidth);
-            pp.add("averaging_interval", (int)2);
-        }
-        {
-            amrex::ParmParse pp("tavg1.means");
-            pp.add("fields", (std::string) "temperature");
-            pp.add("averaging_type", (std::string) "ReAveraging");
-        }
-        {
-            amrex::ParmParse pp("tavg2");
+            amrex::ParmParse pp("tavg");
             pp.add("type", (std::string) "TimeAveraging");
             pp.add("labels", (std::string) "means");
             pp.add("averaging_window", (amrex::Real)m_fwidth);
             pp.add("averaging_time_interval", (amrex::Real)2.0 * m_dt);
         }
         {
-            amrex::ParmParse pp("tavg2.means");
+            amrex::ParmParse pp("tavg.means");
             pp.add("fields", (std::string) "temperature");
             pp.add("averaging_type", (std::string) "ReAveraging");
         }
     }
 
 protected:
-    const std::string m_name1 = "temperature_mean_tavg1";
-    const std::string m_name2 = "temperature_mean_tavg2";
+    const std::string m_name = "temperature_mean_tavg";
     const amrex::Real m_fwidth = 2.0;
     const amrex::Real m_dt = 0.1;
 };
@@ -64,8 +49,8 @@ TEST_F(TimeAveragingTest, every_step)
 {
     populate_parameters();
     {
-        amrex::ParmParse pp("tavg1");
-        pp.add("averaging_interval", (int)1);
+        amrex::ParmParse pp("tavg");
+        pp.add("averaging_time_interval", (amrex::Real)-1.);
     }
     initialize_mesh();
 
@@ -77,7 +62,7 @@ TEST_F(TimeAveragingTest, every_step)
     post_manager.pre_init_actions();
     post_manager.post_init_actions();
 
-    const auto& f_avg1 = sim().repo().get_field(m_name1);
+    const auto& f_avg = sim().repo().get_field(m_name);
     constexpr amrex::Real tol = 1e-8;
 
     amrex::Real avg_val{0.};
@@ -89,20 +74,20 @@ TEST_F(TimeAveragingTest, every_step)
         time.advance_time();
         post_manager.post_advance_work();
         // Get field values
-        const auto max_f1 = utils::field_max(f_avg1);
-        const auto min_f1 = utils::field_min(f_avg1);
+        const auto max_f = utils::field_max(f_avg);
+        const auto min_f = utils::field_min(f_avg);
         // Confirm mean fields are uniform
-        EXPECT_NEAR(max_f1, min_f1, tol);
+        EXPECT_NEAR(max_f, min_f, tol);
         // Confirm value is as expected
         const amrex::Real avg_time =
             amrex::max(amrex::min(time.new_time(), m_fwidth), m_dt);
         const amrex::Real old_avg_time = amrex::max(avg_time - m_dt, 0.);
         avg_val = (avg_val * (old_avg_time) + m_dt * fval) / avg_time;
-        EXPECT_NEAR(max_f1, avg_val, tol);
+        EXPECT_NEAR(max_f, avg_val, tol);
     }
 }
 
-TEST_F(TimeAveragingTest, step_vs_time)
+TEST_F(TimeAveragingTest, phase_linear)
 {
     populate_parameters();
     initialize_mesh();
@@ -115,8 +100,7 @@ TEST_F(TimeAveragingTest, step_vs_time)
     post_manager.pre_init_actions();
     post_manager.post_init_actions();
 
-    const auto& f_avg1 = sim().repo().get_field(m_name1);
-    const auto& f_avg2 = sim().repo().get_field(m_name2);
+    const auto& f_avg = sim().repo().get_field(m_name);
     constexpr amrex::Real tol = 1e-8;
 
     amrex::Real avg_val{0.};
@@ -130,16 +114,10 @@ TEST_F(TimeAveragingTest, step_vs_time)
         time.advance_time();
         post_manager.post_advance_work();
         // Get field values
-        const auto max_f1 = utils::field_max(f_avg1);
-        const auto max_f2 = utils::field_max(f_avg2);
-        const auto min_f1 = utils::field_min(f_avg1);
-        const auto min_f2 = utils::field_min(f_avg2);
+        const auto max_f = utils::field_max(f_avg);
+        const auto min_f = utils::field_min(f_avg);
         // Confirm mean fields are uniform
-        EXPECT_NEAR(max_f1, min_f1, tol);
-        EXPECT_NEAR(max_f2, min_f2, tol);
-        // Confirm mean fields match with different methods
-        EXPECT_NEAR(max_f1, max_f2, tol);
-        EXPECT_NEAR(min_f1, min_f2, tol);
+        EXPECT_NEAR(max_f, min_f, tol);
         // Confirm value is as expected
         if (step_count % 2 == 0) {
             const amrex::Real avg_time =
@@ -147,7 +125,7 @@ TEST_F(TimeAveragingTest, step_vs_time)
             const amrex::Real old_avg_time =
                 amrex::max(avg_time - 2. * m_dt, 0.);
             avg_val = (avg_val * (old_avg_time) + 2. * m_dt * fval) / avg_time;
-            EXPECT_NEAR(max_f1, avg_val, tol);
+            EXPECT_NEAR(max_f, avg_val, tol);
         }
     }
 }
@@ -156,7 +134,7 @@ TEST_F(TimeAveragingTest, phase_stairstep_offset)
 {
     populate_parameters();
     {
-        amrex::ParmParse pp("tavg2");
+        amrex::ParmParse pp("tavg");
         pp.add("averaging_start_time", (amrex::Real)0.1);
     }
     initialize_mesh();
@@ -169,7 +147,7 @@ TEST_F(TimeAveragingTest, phase_stairstep_offset)
     post_manager.pre_init_actions();
     post_manager.post_init_actions();
 
-    const auto& f_avg2 = sim().repo().get_field(m_name2);
+    const auto& f_avg = sim().repo().get_field(m_name);
     constexpr amrex::Real tol = 1e-8;
 
     amrex::Real avg_val{0.};
@@ -183,13 +161,13 @@ TEST_F(TimeAveragingTest, phase_stairstep_offset)
         time.advance_time();
         post_manager.post_advance_work();
         // Get field values
-        const auto max_f2 = utils::field_max(f_avg2);
-        const auto min_f2 = utils::field_min(f_avg2);
+        const auto max_f = utils::field_max(f_avg);
+        const auto min_f = utils::field_min(f_avg);
         // Confirm mean fields are uniform
-        EXPECT_NEAR(max_f2, min_f2, tol);
+        EXPECT_NEAR(max_f, min_f, tol);
         // Confirm value is as expected
         if (step_count % 2 == 1) {
-            EXPECT_NEAR(max_f2, 5.0, tol);
+            EXPECT_NEAR(max_f, 5.0, tol);
         }
     }
 }
@@ -198,7 +176,7 @@ TEST_F(TimeAveragingTest, mismatch_time_interval)
 {
     populate_parameters();
     {
-        amrex::ParmParse pp("tavg2");
+        amrex::ParmParse pp("tavg");
         pp.add("averaging_time_interval", (amrex::Real)0.15);
     }
     initialize_mesh();
@@ -211,8 +189,7 @@ TEST_F(TimeAveragingTest, mismatch_time_interval)
     post_manager.pre_init_actions();
     post_manager.post_init_actions();
 
-    const auto& f_avg1 = sim().repo().get_field(m_name1);
-    const auto& f_avg2 = sim().repo().get_field(m_name2);
+    const auto& f_avg = sim().repo().get_field(m_name);
     constexpr amrex::Real tol = 1e-8;
 
     int step_count{0};
@@ -227,10 +204,10 @@ TEST_F(TimeAveragingTest, mismatch_time_interval)
     }
 
     // Get field values
-    const auto max_f2 = utils::field_max(f_avg2);
-    const auto min_f2 = utils::field_min(f_avg2);
+    const auto max_f = utils::field_max(f_avg);
+    const auto min_f = utils::field_min(f_avg);
     // Confirm mean fields are uniform
-    EXPECT_NEAR(max_f2, min_f2, tol);
+    EXPECT_NEAR(max_f, min_f, tol);
     // Times when averaging should occur:
     // 0.2, 0.3, 0.5, 0.6, 0.8, 0.9
     amrex::Real avg_val = 0.2 * 2.0 / 0.2;
@@ -239,11 +216,13 @@ TEST_F(TimeAveragingTest, mismatch_time_interval)
     avg_val = (avg_val * (0.6 - 0.1) + 6.0 * 0.1) / 0.6;
     avg_val = (avg_val * (0.8 - 0.2) + 8.0 * 0.2) / 0.8;
     avg_val = (avg_val * (0.9 - 0.1) + 9.0 * 0.1) / 0.9;
-    EXPECT_NEAR(max_f2, avg_val, tol);
+    EXPECT_NEAR(max_f, avg_val, tol);
 
     const amrex::Real avg_val_ideal = (0.2 * 2.0 + 0.1 * 3.0 + 0.2 * 5.0 +
                                        0.1 * 6.0 + 0.2 * 8.0 + 0.1 * 9.0) /
                                       0.9;
+
+    EXPECT_NEAR(max_f, avg_val_ideal, tol);
 }
 
 } // namespace amr_wind_tests
