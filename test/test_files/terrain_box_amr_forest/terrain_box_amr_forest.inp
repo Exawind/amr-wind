@@ -37,6 +37,9 @@ ICNS.source_terms                        = DragForcing ForestForcing
 DragForcing.is_laminar = 1
 TerrainDrag.terrain_file = "terrain.amrwind"
 ForestDrag.forest_file = "forest.amrwind"
+ForestDrag.verbose = 1
+
+
 amr.n_cell              =  56 56 104    # Grid cells at coarsest AMRlevel
 amr.max_level           = 1           # Max AMR level in hierarchy
 geometry.prob_lo        =   0    0  0

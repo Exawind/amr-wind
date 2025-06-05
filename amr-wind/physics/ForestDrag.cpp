@@ -17,6 +17,7 @@ ForestDrag::ForestDrag(CFDSim& sim)
 
     amrex::ParmParse pp(identifier());
     pp.query("forest_file", m_forest_file);
+    pp.query("verbose", m_verbose);
 
     m_sim.io_manager().register_output_var("forest_drag");
     m_sim.io_manager().register_output_var("forest_id");
@@ -50,25 +51,70 @@ void ForestDrag::initialize_fields(int level, const amrex::Geometry& geom)
                               : m_sim.repo().get_field("velocity")(
                                     level); // Just to get a MultiFab shape
     if (!has_terrain) {
-        amrex::Print()
-            << "\n[ForestDrag] terrain_height field not found, assuming "
-               "a flat terrain\n";
+        amrex::Print() << "\n[ForestDrag] terrain_height field not "
+                          "found, assuming "
+                          "a flat terrain\n";
     }
+
+    const auto forest_bbox = ForestDrag::global_forest_realbox(forests);
+    const auto max_forest_height = forest_bbox.hi(2);
+
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
     for (amrex::MFIter mfi(m_forest_drag(level)); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.growntilebox();
+
+        // Skip tile if it does not overlap any forest in x/y
+        amrex::Real tile_lo_x = prob_lo[0] + vbx.smallEnd(0) * dx[0];
+        amrex::Real tile_hi_x = prob_lo[0] + (vbx.bigEnd(0) + 1) * dx[0];
+        amrex::Real tile_lo_y = prob_lo[1] + vbx.smallEnd(1) * dx[1];
+        amrex::Real tile_hi_y = prob_lo[1] + (vbx.bigEnd(1) + 1) * dx[1];
+        if (tile_hi_x < forest_bbox.lo(0) || tile_lo_x > forest_bbox.hi(0) ||
+            tile_hi_y < forest_bbox.lo(1) || tile_lo_y > forest_bbox.hi(1)) {
+            if (m_verbose) {
+                amrex::Print()
+                    << "[ForestDrag][level " << level
+                    << "] Skipping tile: no 2D overlap with any forest "
+                    << "(tile x: [" << tile_lo_x << ", " << tile_hi_x << "], "
+                    << "tile y: [" << tile_lo_y << ", " << tile_hi_y << "], "
+                    << "forest bbox x: [" << forest_bbox.lo(0) << ", "
+                    << forest_bbox.hi(0) << "], "
+                    << "forest bbox y: [" << forest_bbox.lo(1) << ", "
+                    << forest_bbox.hi(1) << "])\n";
+            }
+            continue;
+        }
+
+        const auto levelTerrain =
+            has_terrain ? terrain.array(mfi)
+                        : amrex::Array4<const amrex::Real>(); // Empty array
+
+        auto min_cell_z = prob_lo[2] + (vbx.smallEnd(2) + 0.5) * dx[2];
+        auto max_terrain =
+            has_terrain ? max_terrain_in_box(levelTerrain, vbx) : 0.0;
+        const auto min_height_agl = min_cell_z - max_terrain;
+        if ((min_height_agl > max_forest_height) && m_verbose) {
+            amrex::Print() << "[ForestDrag][level " << level
+                           << "] Skipping tile: min_height_agl="
+                           << min_height_agl
+                           << " > max_forest_height=" << max_forest_height
+                           << " (tile z: " << min_cell_z
+                           << ", max terrain: " << max_terrain << ")\n";
+            continue;
+        }
+
         for (int nf = 0; nf < static_cast<int>(forests.size()); nf++) {
+            if (min_height_agl > forests[nf].m_height_forest) {
+                continue;
+            }
             const auto bxi = vbx & forests[nf].bounding_box(geom);
+
             if (!bxi.isEmpty()) {
                 const auto& levelDrag = drag.array(mfi);
                 const auto& levelId = fst_id.array(mfi);
                 const auto* forests_ptr = d_forests.data();
-                const auto levelTerrain =
-                    has_terrain
-                        ? terrain.array(mfi)
-                        : amrex::Array4<const amrex::Real>(); // Empty array
+
                 amrex::ParallelFor(
                     bxi, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         const auto x = prob_lo[0] + (i + 0.5) * dx[0];
