@@ -13,6 +13,7 @@ TerrainRefinement::TerrainRefinement(const CFDSim& sim)
 void TerrainRefinement::initialize(const std::string& key)
 {
     amrex::ParmParse pp(key);
+    pp.query("verbose", m_verbose);
 
     const auto& repo = m_sim.repo();
 
@@ -43,6 +44,18 @@ void TerrainRefinement::initialize(const std::string& key)
         1) {
         m_tagging_box.setHi(box_hi);
     }
+
+#ifdef AMREX_USE_GPU
+    m_poly_points_dv.resize(m_polygon.points().size());
+    amrex::Gpu::copyAsync(
+        amrex::Gpu::hostToDevice, m_polygon.points().begin(),
+        m_polygon.points().end(), m_poly_points_dv.begin());
+
+    m_ring_offsets_dv.resize(m_polygon.ring_offsets().size());
+    amrex::Gpu::copyAsync(
+        amrex::Gpu::hostToDevice, m_polygon.ring_offsets().begin(),
+        m_polygon.ring_offsets().end(), m_ring_offsets_dv.begin());
+#endif
 
     amrex::Print() << "Created terrain refinement for level " << m_max_lev
                    << " and vertical distance " << m_vertical_distance
@@ -89,19 +102,8 @@ void TerrainRefinement::operator()(
     auto n_points = m_polygon.points().size();
 
 #ifdef AMREX_USE_GPU
-    amrex::Gpu::DeviceVector<amr_wind::polygon_utils::Polygon::Point>
-        poly_points_dv(n_points);
-    amrex::Gpu::copyAsync(
-        amrex::Gpu::hostToDevice, m_polygon.points().begin(),
-        m_polygon.points().end(), poly_points_dv.begin());
-    auto const* p_poly_points = poly_points_dv.data();
-
-    amrex::Gpu::DeviceVector<int> ring_offsets_dv(
-        m_polygon.ring_offsets().size());
-    amrex::Gpu::copyAsync(
-        amrex::Gpu::hostToDevice, m_polygon.ring_offsets().begin(),
-        m_polygon.ring_offsets().end(), ring_offsets_dv.begin());
-    auto const* p_ring_offsets = ring_offsets_dv.data();
+    auto const* p_poly_points = m_poly_points_dv.data();
+    auto const* p_ring_offsets = m_ring_offsets_dv.data();
 #else
     auto const* p_poly_points = m_polygon.points().data();
     auto const* p_ring_offsets = m_polygon.ring_offsets().data();
@@ -117,62 +119,125 @@ void TerrainRefinement::operator()(
         m_polygon.get_bounding_box(bbox_lo, bbox_hi);
     }
 
-    amrex::ParallelFor(
-        mfab, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-            // 1. Early exit if already tagged
-            if (tag_arrs[nbx](i, j, k) == amrex::TagBox::SET) {
-                return;
-            }
+    for (amrex::MFIter mfi(mfab, amrex::TilingIfNotGPU()); mfi.isValid();
+         ++mfi) {
+        const auto& bx = mfi.tilebox();
+        int nbx = mfi.LocalIndex();
 
-            const amrex::RealVect coord = {AMREX_D_DECL(
-                prob_lo[0] + (i + 0.5) * dx[0], prob_lo[1] + (j + 0.5) * dx[1],
-                prob_lo[2] + (k + 0.5) * dx[2])};
+        // Compute tilebox bounds in physical space
+        amrex::Real tile_lo_x = prob_lo[0] + (bx.smallEnd(0) + 0.0) * dx[0];
+        amrex::Real tile_hi_x = prob_lo[0] + (bx.bigEnd(0) + 1.0) * dx[0];
+        amrex::Real tile_lo_y = prob_lo[1] + (bx.smallEnd(1) + 0.0) * dx[1];
+        amrex::Real tile_hi_y = prob_lo[1] + (bx.bigEnd(1) + 1.0) * dx[1];
+        amrex::Real tile_lo_z = prob_lo[2] + (bx.smallEnd(2) + 0.0) * dx[2];
+        amrex::Real tile_hi_z = prob_lo[2] + (bx.bigEnd(2) + 1.0) * dx[2];
 
-            const auto terrainHt = mterrain_h_arrs[nbx](i, j, k);
-            const auto cellHt = coord[2] - terrainHt;
-
-            const amr_wind::polygon_utils::Polygon::Point center_point{
-                coord[0], coord[1]};
-
-            // 1. Check terrain blanking
-            if (mterrain_b_arrs[nbx](i, j, k) >= 1) {
-                return;
-            }
-
-            // 2. Check vertical distance
-            if ((cellHt < -0.5 * dx[2]) || (cellHt > vertical_distance)) {
-                return;
-            }
-
-            // 3. Check tagging box
-            if (!tagging_box.contains(coord)) {
-                return;
-            }
-
-            // 4. Check polygon bounding box
-            if (!polygon_is_empty) {
-                if (!amr_wind::polygon_utils::Polygon::
-                        poly_bounding_box_contains(
-                            center_point, bbox_lo, bbox_hi)) {
-                    return;
+        // Compute min/max terrain height in this tile
+        amrex::Real min_terrain = std::numeric_limits<amrex::Real>::max();
+        amrex::Real max_terrain = std::numeric_limits<amrex::Real>::lowest();
+        for (int k = bx.smallEnd(2); k <= bx.bigEnd(2); ++k) {
+            for (int j = bx.smallEnd(1); j <= bx.bigEnd(1); ++j) {
+                for (int i = bx.smallEnd(0); i <= bx.bigEnd(0); ++i) {
+                    amrex::Real th = mterrain_h_arrs[nbx](i, j, k);
+                    min_terrain = std::min(min_terrain, th);
+                    max_terrain = std::max(max_terrain, th);
                 }
             }
+        }
 
-            // 5. Point-in-polygon
-            bool in_poly = false;
-            if (!polygon_is_empty) {
-                in_poly = amr_wind::polygon_utils::Polygon::is_point_in_polygon(
-                    p_poly_points, p_ring_offsets, n_rings,
-                    static_cast<int>(n_points), center_point);
-
-            } else {
-                in_poly = true;
+        // If the entire tile is outside the vertical distance window, skip it
+        if (tile_hi_z < min_terrain - 0.5 * dx[2] ||
+            tile_lo_z > max_terrain + vertical_distance) {
+            if (m_verbose > 0) {
+                amrex::Print()
+                    << "Level " << level
+                    << " (vertical_distance=" << vertical_distance
+                    << "): Skipping tile by elevation: [z " << tile_lo_z << ","
+                    << tile_hi_z << "] vs terrain [" << min_terrain << ","
+                    << max_terrain << "]\n";
             }
+            continue;
+        }
 
-            if (in_poly) {
-                tag_arrs[nbx](i, j, k) = amrex::TagBox::SET;
+        // Only check polygon if not empty
+        if (!polygon_is_empty) {
+            // Check for overlap with polygon bounding box
+            if (tile_hi_x < bbox_lo[0] || tile_lo_x > bbox_hi[0] ||
+                tile_hi_y < bbox_lo[1] || tile_lo_y > bbox_hi[1]) {
+                if (m_verbose > 0) {
+                    amrex::Print()
+                        << "Level " << level
+                        << " (vertical_distance=" << vertical_distance
+                        << "): Skipping tile: [" << tile_lo_x << ","
+                        << tile_hi_x << "] x [" << tile_lo_y << "," << tile_hi_y
+                        << "] "
+                        << "does not overlap polygon bbox [" << bbox_lo[0]
+                        << "," << bbox_hi[0] << "] x [" << bbox_lo[1] << ","
+                        << bbox_hi[1] << "]\n";
+                }
+                continue; // Skip this tile, no overlap
             }
-        });
+        }
+
+        amrex::ParallelFor(
+            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                // 1. Early exit if already tagged
+                if (tag_arrs[nbx](i, j, k) == amrex::TagBox::SET) {
+                    return;
+                }
+
+                const amrex::RealVect coord = {AMREX_D_DECL(
+                    prob_lo[0] + (i + 0.5) * dx[0],
+                    prob_lo[1] + (j + 0.5) * dx[1],
+                    prob_lo[2] + (k + 0.5) * dx[2])};
+
+                const auto terrainHt = mterrain_h_arrs[nbx](i, j, k);
+                const auto cellHt = coord[2] - terrainHt;
+
+                const amr_wind::polygon_utils::Polygon::Point center_point{
+                    coord[0], coord[1]};
+
+                // 1. Check terrain blanking
+                if (mterrain_b_arrs[nbx](i, j, k) >= 1) {
+                    return;
+                }
+
+                // 2. Check vertical distance
+                if ((cellHt < -0.5 * dx[2]) || (cellHt > vertical_distance)) {
+                    return;
+                }
+
+                // 3. Check tagging box
+                if (!tagging_box.contains(coord)) {
+                    return;
+                }
+
+                // 4. Check polygon bounding box
+                if (!polygon_is_empty) {
+                    if (!amr_wind::polygon_utils::Polygon::
+                            poly_bounding_box_contains(
+                                center_point, bbox_lo, bbox_hi)) {
+                        return;
+                    }
+                }
+
+                // 5. Point-in-polygon
+                bool in_poly = false;
+                if (!polygon_is_empty) {
+                    in_poly =
+                        amr_wind::polygon_utils::Polygon::is_point_in_polygon(
+                            p_poly_points, p_ring_offsets, n_rings,
+                            static_cast<int>(n_points), center_point);
+
+                } else {
+                    in_poly = true;
+                }
+
+                if (in_poly) {
+                    tag_arrs[nbx](i, j, k) = amrex::TagBox::SET;
+                }
+            });
+    }
 
     amrex::Gpu::streamSynchronize();
 }

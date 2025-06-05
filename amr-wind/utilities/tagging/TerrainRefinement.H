@@ -77,6 +77,14 @@ private:
     amrex::RealBox m_tagging_box;
     /** \brief Optional: The coordinates of the polygon's exterior ring */
     amr_wind::polygon_utils::Polygon m_polygon;
+    /** \brief Verbose output level */
+    int m_verbose{0};
+
+#ifdef AMREX_USE_GPU
+    amrex::Gpu::DeviceVector<amr_wind::polygon_utils::Polygon::Point>
+        m_poly_points_dv;
+    amrex::Gpu::DeviceVector<int> m_ring_offsets_dv;
+#endif
 };
 
 } // namespace amr_wind
