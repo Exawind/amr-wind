@@ -26,14 +26,15 @@ TerrainDrag::TerrainDrag(CFDSim& sim)
     m_terrain_is_waves = sim.physics_manager().contains("OceanWaves") &&
                          !sim.repo().field_exists("vof");
 
+    amrex::ParmParse pp(identifier());
     if (!m_terrain_is_waves) {
-        amrex::ParmParse pp(identifier());
         pp.query("terrain_file", m_terrain_file);
         pp.query("roughness_file", m_roughness_file);
     } else {
         m_wave_volume_fraction = &m_repo.get_field(m_wave_volume_fraction_name);
         m_wave_negative_elevation =
             &m_repo.get_field(m_wave_negative_elevation_name);
+        pp.query("wave_roughness", m_wave_roughness);
     }
 
     m_sim.io_manager().register_output_int_var("terrain_drag");
@@ -186,7 +187,7 @@ void TerrainDrag::convert_waves_to_terrain_fields()
 {
     const int nlevels = m_sim.repo().num_active_levels();
     // Uniform, low roughness for waves
-    m_terrainz0.setVal(1e-4);
+    m_terrainz0.setVal(m_wave_roughness);
     for (int level = 0; level < nlevels; ++level) {
         const auto geom = m_sim.repo().mesh().Geom(level);
         const auto& dx = geom.CellSizeArray();
