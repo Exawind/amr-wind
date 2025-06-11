@@ -15,8 +15,9 @@ void init_scalar_increasing(amr_wind::Field& fld, int dir)
         amrex::ParallelFor(
             fld(lev), amrex::IntVect(1),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
-                farrs[nbx](i, j, k, 0) = (amrex::Real)(
-                    dir == 0 ? i * i : (dir == 1 ? j * j : k * k));
+                farrs[nbx](i, j, k, 0) =
+                    (amrex::Real)(dir == 0 ? i * i
+                                           : (dir == 1 ? j * j : k * k));
             });
     }
     amrex::Gpu::streamSynchronize();
@@ -31,10 +32,10 @@ void init_scalar_slopechange(amr_wind::Field& fld, int dir, int center)
         amrex::ParallelFor(
             fld(lev), amrex::IntVect(1),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
-                farrs[nbx](i, j, k, 0) = (amrex::Real)(
-                    dir == 0 ? std::abs(i - center)
-                             : (dir == 1 ? std::abs(j - center)
-                                         : std::abs(k - center)));
+                farrs[nbx](i, j, k, 0) =
+                    (amrex::Real)(dir == 0 ? std::abs(i - center)
+                                           : (dir == 1 ? std::abs(j - center)
+                                                       : std::abs(k - center)));
             });
     }
     amrex::Gpu::streamSynchronize();

@@ -14,6 +14,7 @@ target_sources(${amr_wind_unit_test_exe_name} PRIVATE
   test_field_norms.cpp
   test_tensor_ops.cpp
   test_post_processing_time.cpp
+  test_time_averaging.cpp
   )
 
 if (AMR_WIND_ENABLE_NETCDF)
