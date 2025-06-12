@@ -208,7 +208,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         }
 
         // Populate boundaries (valid cells) using velocity BCs
-        m_macproj_op.set_inflow_velocity(time + 0.5 * dt);
+        m_macproj_op.set_inflow_velocity(time);
 
         // MAC projection
         m_macproj_op(fstate, dt);
@@ -217,8 +217,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         if (fvm::Godunov::nghost_state > 0) {
             amrex::Array<Field*, AMREX_SPACEDIM> mac_vel = {
                 AMREX_D_DECL(&u_mac, &v_mac, &w_mac)};
-            dof_field.fillpatch_sibling_fields(
-                time + 0.5 * dt, u_mac.num_grow(), mac_vel);
+            dof_field.fillpatch_sibling_fields(time, u_mac.num_grow(), mac_vel);
         }
 
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
