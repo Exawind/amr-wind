@@ -118,8 +118,7 @@ public:
      * \param pt The point to test
      * \return True if inside, false otherwise
      */
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool
-    contains(const Point& pt) const
+    bool contains(const Point& pt) const
     {
         if (is_empty()) {
             return false;
@@ -259,13 +258,11 @@ public:
     const amrex::Vector<Point>& points() const { return m_points; }
 
     /** \brief Get total number of points */
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE int num_points() const
-    {
-        return static_cast<int>(m_points.size());
-    }
+    int num_points() const { return static_cast<int>(m_points.size()); }
 
     /** \brief Access to ring offsets for GPU */
     const amrex::Vector<int>& ring_offsets() const { return m_ring_offsets; }
+
     /**
      * \brief Standalone ring point-in-polygon test for GPU use
      * \param ring Pointer to ring points
@@ -378,8 +375,7 @@ private:
     }
 
     /** \brief Compute winding number for a point with respect to ring i */
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE int
-    winding_number(int ring_idx, const Point& pt) const
+    int winding_number(int ring_idx, const Point& pt) const
     {
         if (ring_idx < 0 ||
             ring_idx >= static_cast<int>(m_ring_offsets.size())) {
