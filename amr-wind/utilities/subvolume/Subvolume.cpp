@@ -46,8 +46,6 @@ void Subvolume::initialize()
             ioutils::all_distinct(int_field_names),
             "Duplicates in " + m_label + ".int_fields");
         pp.queryarr("derived_fields", derived_field_names);
-        pp.query("output_frequency", m_out_freq);
-        pp.query("output_delay", m_out_delay);
     }
 
     // Process field information
@@ -125,29 +123,9 @@ void Subvolume::post_regrid_actions()
     }
 }
 
-void Subvolume::post_advance_work()
+void Subvolume::output_actions()
 {
-
-    BL_PROFILE("amr-wind::Subvolume::post_advance_work");
-    const auto& time = m_sim.time();
-    const int tidx = time.time_index();
-
-    // Skip processing if delay has not been reached
-    if (tidx < m_out_delay) {
-        return;
-    }
-
-    // Skip processing if it is not an output timestep
-    if (!(tidx % m_out_freq == 0)) {
-        return;
-    }
-
-    write_subvolume();
-}
-
-void Subvolume::write_subvolume()
-{
-    BL_PROFILE("amr-wind::Subvolume::write_subvolume");
+    BL_PROFILE("amr-wind::Subvolume::output_actions");
 
     const std::string post_dir = m_sim.io_manager().post_processing_directory();
     const std::string name(post_dir + "/" + m_label);

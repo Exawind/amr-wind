@@ -44,9 +44,10 @@ public:
     void post_regrid_actions() override;
 
     //! Get chunks and output to disk
-    void post_advance_work() override;
+    void output_actions() override;
 
-    void write_subvolume();
+    //! Actions to do at end of every time step
+    void post_advance_work() override {};
 
     const amrex::Vector<std::string>& var_names() const { return m_var_names; }
 
@@ -83,12 +84,6 @@ private:
 
     // number of derived field components
     int m_ndcomp{0};
-
-    //! Frequency of data output
-    int m_out_freq{100};
-
-    //! Delay number of timestep before output
-    int m_out_delay{0};
 };
 
 } // namespace amr_wind::subvolume
