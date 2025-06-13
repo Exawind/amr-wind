@@ -1,0 +1,14 @@
+.. meta::dff42a90bbea66d0d4e2ee757cce6ab645a6083c3f9525c12f5a7b2ecc16e6bb9a21d8e036ea8e353eff6aca74c96d8c85d0092acc8239e66557c980b5c8504d
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/Enstrophy.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/Enstrophy.H Source File
+=======================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _enstrophy_8_h_source.html

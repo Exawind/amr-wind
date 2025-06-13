@@ -1,0 +1,11 @@
+<map id="amr_wind::pde::DiffusionOp&lt; PDE, Scheme, typename &gt;" name="amr_wind::pde::DiffusionOp&lt; PDE, Scheme, typename &gt;">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,169,236,209"/>
+<area shape="rect" id="Node000002" href="$structamr__wind_1_1pde_1_1_diffusion_op_3_01_i_c_n_s_00_01_scheme_01_4.html" title=" " alt="" coords="537,17,721,57"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="144,157,193,107,224,83,259,64,329,42,403,30,474,25,537,26,537,32,474,31,403,35,331,47,261,69,227,88,196,111,148,161"/>
+<area shape="rect" id="Node000003" href="$structamr__wind_1_1pde_1_1_diffusion_op_3_01_p_d_e_00_01_scheme_00_01std_1_1enable__if__t_3_01st927f6c10f00e60faa776b8287d8b9959.html" title=" " alt="" coords="504,103,755,172"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="249,174,503,147,504,153,250,179"/>
+<area shape="rect" id="Node000004" href="$structamr__wind_1_1pde_1_1_diffusion_op_3_01_s_d_r_00_01_scheme_01_4.html" title=" " alt="" coords="537,196,721,236"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="250,199,260,200,537,212,537,217,260,205,249,205"/>
+<area shape="rect" id="Node000005" href="$structamr__wind_1_1pde_1_1_diffusion_op_3_01_t_k_e_00_01_scheme_01_4.html" title=" " alt="" coords="537,260,721,300"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="180,212,261,239,332,253,406,263,538,274,537,280,405,269,332,258,259,244,178,217"/>
+</map>

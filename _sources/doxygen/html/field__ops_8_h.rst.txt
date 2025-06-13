@@ -1,0 +1,14 @@
+.. meta::b6ba8323525e69fad85677967adff60866f191627058c06cd7e49e77ef0984eac0f34da1f5aff9742ed4605173f8b6b395cece7275ddce58e781e908827e6a84
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/core/field_ops.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/core/field\_ops.H File Reference
+=============================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: field__ops_8_h.html

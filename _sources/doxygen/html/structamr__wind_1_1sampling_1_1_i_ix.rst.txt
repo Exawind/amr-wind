@@ -1,0 +1,14 @@
+.. meta::1a038e8d7b6e4b8fa054bfea721c579bf9a81011a5acd16a0f7a58c88ec66ff54c3e0a455c4752619ff41820f163926320b8db13a2f229271f2310f84f09a5ba
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::sampling::IIx Struct Reference
+
+IIx Struct Reference
+====================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1sampling_1_1_i_ix.html

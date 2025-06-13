@@ -1,0 +1,14 @@
+.. meta::8a4785f940d4adf701cd34858c56f9218ea0a23a98aefa5d152730cc17af0b3123ef343e1e57e2f0df3c6b59023d6c06b3bdf6d8bec7374f76479a909b10e14e
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::base::AreaComputer Class Reference
+
+AreaComputer Class Reference
+============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1actuator_1_1ops_1_1base_1_1_area_computer.html

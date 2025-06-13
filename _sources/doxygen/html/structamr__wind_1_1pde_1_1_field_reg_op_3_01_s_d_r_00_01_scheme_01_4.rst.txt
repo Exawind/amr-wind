@@ -1,0 +1,14 @@
+.. meta::d662ef774c8b1d8030ec31e8a3ad0c9857b3be591b5a5536ccade4fa498923d7637fd87c0bdf8c2636fff4d7e980f9547ec3157b924242271dd76f8cc5ae792b
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::FieldRegOp&lt; SDR, Scheme &gt; Struct Template Reference
+
+FieldRegOp&lt; SDR, Scheme &gt; Struct Template Reference
+=========================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1pde_1_1_field_reg_op_3_01_s_d_r_00_01_scheme_01_4.html

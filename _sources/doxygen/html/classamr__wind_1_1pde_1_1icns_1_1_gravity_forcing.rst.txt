@@ -1,0 +1,14 @@
+.. meta::41ce8da0480c62c2aec826e62aded75ab83c783044895dafdb8ad2484493c13cc29b3b5adc1c7b0beafa297fddb8dd3894ee08311281ecb09449c5892543af1b
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::icns::GravityForcing Class Reference
+
+GravityForcing Class Reference
+==============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1pde_1_1icns_1_1_gravity_forcing.html

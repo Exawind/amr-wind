@@ -1,0 +1,14 @@
+.. meta::1f90b702c52f18779e7754ff2625d314271e4b37ac7fdd3c90b42f7d4aa755910de0cbd68ef9ebac5a33855ab3f79c07e5747e554976e5e1791e260e578188af
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ABLAnelastic Class Reference
+
+ABLAnelastic Class Reference
+============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_a_b_l_anelastic.html

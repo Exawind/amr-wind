@@ -1,0 +1,14 @@
+.. meta::0d6f3220b933d3e75c56f15d47061df72b54bdc2609cd51334998ef4f126ea73ccd8cfaf80e342b425015822b8485d5d41c71e0671587b956e8d8d0cebaa9c10
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::DiskBaseData Struct Reference
+
+DiskBaseData Struct Reference
+=============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1_disk_base_data.html

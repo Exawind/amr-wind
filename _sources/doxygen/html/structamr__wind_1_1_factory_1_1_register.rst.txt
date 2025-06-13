@@ -1,0 +1,14 @@
+.. meta::482602a11f6cc36028b43af9cb5ca2a8023d3bb7f4cfba1be11798cabd06d9e9181ca5b4288e8e655a9ae00ffe27b637ee8c355b0b03227e0cddec0a573749d3
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::Factory&lt; Base, Args &gt;::Register&lt; T &gt; Struct Template Reference
+
+Register&lt; T &gt; Struct Template Reference
+=============================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1_factory_1_1_register.html

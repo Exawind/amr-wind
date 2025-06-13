@@ -1,0 +1,14 @@
+.. meta::dd4a3d97bf7569666b888ffed61cc66a552d5208259f1ae1b3ed7a2570e9c4c7dd4507f6f8d2d27b5f333c910008291d99b4b187332872c7d824984eb742e6e5
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::FlatPlateData Struct Reference
+
+FlatPlateData Struct Reference
+==============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1_flat_plate_data.html

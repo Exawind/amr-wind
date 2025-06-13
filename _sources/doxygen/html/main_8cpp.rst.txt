@@ -1,0 +1,14 @@
+.. meta::c269b00f42192c34f8513950a0aa18a985148b1d17b343b888480a25ffa48b319efdcf2c0ca632896c7b56ecd2f623db59cc73e02c373c4e8e3b63695940aabd
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/main.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/main.cpp File Reference
+====================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: main_8cpp.html

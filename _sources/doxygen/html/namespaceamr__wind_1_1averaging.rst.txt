@@ -1,0 +1,14 @@
+.. meta::26df4aa83c1f63a91ac88cc0a551496f07846c5edda1474c6045c4bf62fc3cbca8a2e9577632f7e403c7310beba57fd67571d7f9b0a33da74122e0726602ccbf
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::averaging Namespace Reference
+
+averaging Namespace Reference
+=============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: namespaceamr__wind_1_1averaging.html

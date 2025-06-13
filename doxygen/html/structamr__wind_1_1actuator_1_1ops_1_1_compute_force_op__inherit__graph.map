@@ -1,0 +1,11 @@
+<map id="amr_wind::actuator::ops::ComputeForceOp&lt; ActTrait, SrcTrait, typename &gt;" name="amr_wind::actuator::ops::ComputeForceOp&lt; ActTrait, SrcTrait, typename &gt;">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,212,179,281"/>
+<area shape="rect" id="Node000002" href="$structamr__wind_1_1actuator_1_1ops_1_1_compute_force_op_3_01_act_trait_00_01_act_src_line_00_01t0d6f79d77e33907836cc99e5bb44dcea.html" title=" " alt="" coords="465,42,739,155"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="166,204,202,188,336,147,465,119,466,124,337,153,204,193,168,208"/>
+<area shape="rect" id="Node000003" href="$structamr__wind_1_1actuator_1_1ops_1_1_compute_force_op_3_01_joukowsky_00_01_act_src_disk_01_4.html" title="Compute Forces following procedures of Sorenson 2020." alt="" coords="503,179,701,234"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="192,234,202,233,502,211,503,216,203,239,193,240"/>
+<area shape="rect" id="Node000004" href="$structamr__wind_1_1actuator_1_1ops_1_1_compute_force_op_3_01_turbine_fast_00_01_src_trait_01_4.html" title=" " alt="" coords="511,258,693,313"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="193,255,203,256,511,278,511,283,202,261,192,260"/>
+<area shape="rect" id="Node000005" href="$structamr__wind_1_1actuator_1_1ops_1_1_compute_force_op_3_01_uniform_ct_00_01_act_src_disk_01_4.html" title=" " alt="" coords="503,337,701,391"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="163,285,204,303,281,324,360,339,504,356,503,362,359,345,279,329,202,308,160,290"/>
+</map>

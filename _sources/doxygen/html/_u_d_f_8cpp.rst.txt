@@ -1,0 +1,14 @@
+.. meta::f300b4157c3b02e28dd6f28266055a6993718f45774f73a01e5bae65c7845295ec4b122359b1a037de944d5a63f61485d0976b18659272bc5c956a4e66244461
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/udfs/UDF.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/physics/udfs/UDF.cpp File Reference
+================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _u_d_f_8cpp.html
