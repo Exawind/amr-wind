@@ -63,7 +63,8 @@ public:
 
 private:
     const CFDSim& m_sim;
-
+    /** \brief Key name for this refinement criteria */
+    std::string m_key;
     /** \brief Pointer to the terrain_height field */
     Field* m_terrain_height{nullptr};
     /** \brief Pointer to the terrain_blank field so that we try not to refine
@@ -78,7 +79,7 @@ private:
     /** \brief Optional: The coordinates of the polygon's exterior ring */
     amr_wind::polygon_utils::Polygon m_polygon;
     /** \brief Verbose output level */
-    int m_verbose{0};
+    int m_verbose{-1};
 
 #ifdef AMREX_USE_GPU
     amrex::Gpu::DeviceVector<amr_wind::polygon_utils::Polygon::Point>

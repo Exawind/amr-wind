@@ -2,6 +2,7 @@
 #include "AMReX.H"
 #include "AMReX_Gpu.H"
 #include "AMReX_ParmParse.H"
+#include "amr-wind/physics/TerrainDrag.H"
 #include "amr-wind/utilities/tagging/TerrainRefinement.H"
 
 namespace amr_wind {
@@ -12,6 +13,7 @@ TerrainRefinement::TerrainRefinement(const CFDSim& sim)
 
 void TerrainRefinement::initialize(const std::string& key)
 {
+    m_key = key.substr(8); // Store the key name
     amrex::ParmParse pp(key);
     pp.query("verbose", m_verbose);
 
@@ -57,16 +59,15 @@ void TerrainRefinement::initialize(const std::string& key)
         m_polygon.ring_offsets().end(), m_ring_offsets_dv.begin());
 #endif
 
-    amrex::Print() << "Created terrain refinement for level " << m_max_lev
-                   << " and vertical distance " << m_vertical_distance
-                   << std::endl;
+    amrex::Print() << "Created terrain refinement " << m_key << " for level "
+                   << m_max_lev << " and vertical distance "
+                   << m_vertical_distance << std::endl;
 }
 
 void TerrainRefinement::operator()(
-    int level, amrex::TagBoxArray& tags, amrex::Real time, int ngrow)
+    int level, amrex::TagBoxArray& tags, amrex::Real /*time*/, int /*ngrow*/)
 {
-    (void)time;
-    (void)ngrow;
+    bool verbose = (m_verbose >= 0) && (m_verbose <= level);
     const bool do_tag = level <= m_max_lev;
     if (!do_tag) {
         return;
@@ -88,6 +89,9 @@ void TerrainRefinement::operator()(
         vertical_distance = std::ceil(vertical_distance / dx[2]) * dx[2];
     }
 
+    auto terrain_phys =
+        m_sim.physics_manager().get<amr_wind::terraindrag::TerrainDrag>();
+
     // Tag arrays
     const auto& tag_arrs = tags.arrays();
 
@@ -95,6 +99,9 @@ void TerrainRefinement::operator()(
     const auto& mfab = (*m_terrain_height)(level);
     const auto& mterrain_h_arrs = mfab.const_arrays();
     const auto& mterrain_b_arrs = (*m_terrain_blank)(level).const_arrays();
+
+    // TODO: Check if terrain height is initialized
+    terrain_phys.initialize_fields(level, m_sim.repo().mesh().Geom(level));
 
     // Prepare polygon data for GPU
     const bool polygon_is_empty = m_polygon.is_empty();
@@ -148,9 +155,9 @@ void TerrainRefinement::operator()(
         // If the entire tile is outside the vertical distance window, skip it
         if (tile_hi_z < min_terrain - 0.5 * dx[2] ||
             tile_lo_z > max_terrain + vertical_distance) {
-            if (m_verbose > 0) {
+            if (verbose) {
                 amrex::Print()
-                    << "Level " << level
+                    << m_key << " - Level " << level
                     << " (vertical_distance=" << vertical_distance
                     << "): Skipping tile by elevation: [z " << tile_lo_z << ","
                     << tile_hi_z << "] vs terrain [" << min_terrain << ","
@@ -164,9 +171,9 @@ void TerrainRefinement::operator()(
             // Check for overlap with polygon bounding box
             if (tile_hi_x < bbox_lo[0] || tile_lo_x > bbox_hi[0] ||
                 tile_hi_y < bbox_lo[1] || tile_lo_y > bbox_hi[1]) {
-                if (m_verbose > 0) {
+                if (verbose) {
                     amrex::Print()
-                        << "Level " << level
+                        << m_key << " - Level " << level
                         << " (vertical_distance=" << vertical_distance
                         << "): Skipping tile: [" << tile_lo_x << ","
                         << tile_hi_x << "] x [" << tile_lo_y << "," << tile_hi_y
