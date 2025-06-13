@@ -94,7 +94,7 @@ void PDEMgr::prepare_boundaries()
 {
     // If state variables exist at NPH, fill their boundary cells
     const auto nph_time =
-        m_sim.time().current_time() + 0.5 * m_sim.time().delta_t();
+        0.5 * (m_sim.time().current_time() + m_sim.time().new_time());
     if (m_constant_density &&
         m_sim.repo().field_exists("density", FieldState::NPH)) {
         auto& nph_field =
