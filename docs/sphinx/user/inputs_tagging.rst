@@ -224,8 +224,21 @@ with user-specified polygon regions.
    **type:**  Integer, optional, default: -1
 
    If ``level`` is provided and is greater than or equal to 0, then the
-   refinement based on geometries defined for this section is only performed at
-   that level.
+   refinement based on this section is only performed at that specific level.
+
+.. input_param:: tagging.TerrainRefinement.min_level
+
+   **type:**  Integer, optional, default: 0
+
+   If ``level`` is not specified, this option specifies the minimum level
+   where this refinement is active.
+
+.. input_param:: tagging.TerrainRefinement.max_level
+
+   **type:**  Integer, optional, default: ``mesh.maxLevel()``
+
+   If ``level`` is not specified, this option specifies the maximum level
+   where this refinement is active.
 
 .. input_param:: tagging.TerrainRefinement.vertical_distance
 
@@ -234,6 +247,25 @@ with user-specified polygon regions.
    Distance (in z) above the terrain to refine. Tagging is added between
    the terrain and the specified height above it, and it is also
    bound laterally by the polygon parameters listed below.
+
+.. input_param:: tagging.TerrainRefinement.grid_buffer_ratio_lo
+   
+   **type:** List of reals, optional, default = 0.0
+
+   Ratio of the subgrid (tile) height to use as a buffer **below** the terrain surface.
+   This buffer ensures that cells below the nominal terrain tagging region are also tagged,
+   which can help with smoother transitions and prevent under-refinement near the terrain interface.
+   The buffer size is computed as ``grid_buffer_ratio_lo * box_height`` for each tile,
+   where ``box_height`` is the physical height of the tile in the z-direction.
+   **Making this ratio larger will ensure that more cells below the terrain are tagged for refinement.**
+   **If multiple values are provided, they will be applied to different levels of the mesh.**
+
+.. input_param:: tagging.TerrainRefinement.grid_buffer_ratio_hi
+
+   **type:** List of reals, optional, default = 0.0
+
+   Similar to ``grid_buffer_ratio_lo``, but this parameter specifies the ratio of the subgrid (tile)
+   height to use as a buffer **above** the terrain surface. 
 
 .. input_param:: tagging.TerrainRefinement.poly_exterior
 
@@ -274,14 +306,27 @@ with user-specified polygon regions.
    List of the high corner values for a bounding box where the tagging
    will be active. By default the bounding box will span the entire domain.
 
+.. input_param:: tagging.TerrainRefinement.verbose
+
+   **type:** List of ints, optional
+
+   If provided, this parameter controls the verbosity of the tagging output on a per-level basis.
+   Each entry in the list corresponds to a mesh level, where a nonzero value enables verbose output for that level.
+   If fewer values are provided than the number of levels, the last value is used for all higher levels.
+   For example, if ``verbose = 1 0 0``, then only level 0 will print tagging information, 
+   while levels 1 and above will not print any information.
+
 Example::
 
   tagging.terr1.type = TerrainRefinement
   tagging.terr1.vertical_distance = 200
-  tagging.terr1.level = 0 # Refine the coarsest grid level
+  tagging.terr1.max_level = 1 # Refine only levels 1 and below
   tagging.terr1.poly_exterior = 10 10 10 20 20 20 20 10
   tagging.terr1.poly_num_holes = 1
   tagging.terr1.poly_hole_0 = 5 5 5 10 10 10 10 5
+  tagging.terr1.grid_buffer_ratio_lo = 0.0 0.75
+  tagging.terr1.grid_buffer_ratio_hi = 0.0 0.75
+  tagging.terr1.verbose = 0 1 
 
 Refinement using Q-Criterion
 `````````````````````````````````````

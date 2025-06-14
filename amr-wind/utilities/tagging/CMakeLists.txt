@@ -10,6 +10,7 @@ target_sources(${amr_wind_lib_name} PRIVATE
   OversetRefinement.cpp
   GeometryRefinement.cpp
   TerrainRefinement.cpp
+  TerrainElevation.cpp
 
   # Geometry based refinement options
   BoxRefiner.cpp

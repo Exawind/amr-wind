@@ -4,6 +4,9 @@
 #include "AMReX_ParmParse.H"
 #include "amr-wind/physics/TerrainDrag.H"
 #include "amr-wind/utilities/tagging/TerrainRefinement.H"
+#include "amr-wind/utilities/io_utils.H"
+#include "amr-wind/utilities/linear_interpolation.H"
+#include "amr-wind/utilities/tagging/TerrainElevation.H"
 
 namespace amr_wind {
 
@@ -15,22 +18,26 @@ void TerrainRefinement::initialize(const std::string& key)
 {
     m_key = key.substr(8); // Store the key name
     amrex::ParmParse pp(key);
-    pp.query("verbose", m_verbose);
+    pp.queryarr("verbose", m_verbose_levels);
+    pp.queryarr("grid_buffer_ratio_lo", m_grid_buffer_ratio_lo);
+    pp.queryarr("grid_buffer_ratio_hi", m_grid_buffer_ratio_hi);
 
-    const auto& repo = m_sim.repo();
-
-    const bool is_terrain = repo.field_exists("terrain_height");
-    if (!is_terrain) {
-        amrex::Abort("Need terrain blanking variable to use this refinement");
-    }
-    m_terrain_height = &(m_sim.repo().get_field("terrain_height"));
-    m_terrain_blank = &(m_sim.repo().get_int_field("terrain_blank"));
+    //! Reading the Terrain Coordinates from  file
+    amrex::ParmParse pp_terrain("TerrainDrag");
+    pp_terrain.query("terrain_file", m_terrain_file);
+    amr_wind::TerrainElevation::ensure_loaded(m_terrain_file);
 
     // Outer radial extent of the cylinder, always read in from input file
     pp.get("vertical_distance", m_vertical_distance);
-    pp.get("level", m_max_lev);
-    if (m_max_lev < 0) {
-        amrex::Abort("TerrainRefinement: level must be >= 0");
+
+    // Get the levels
+    pp.query("level", m_set_level);
+    if (m_set_level >= 0) {
+        m_min_level = m_set_level;
+        m_max_level = m_set_level;
+    } else {
+        pp.query("min_level", m_min_level);
+        pp.query("max_level", m_max_level);
     }
 
     // Read polygon from input file
@@ -59,19 +66,41 @@ void TerrainRefinement::initialize(const std::string& key)
         m_polygon.ring_offsets().end(), m_ring_offsets_dv.begin());
 #endif
 
-    amrex::Print() << "Created terrain refinement " << m_key << " for level "
-                   << m_max_lev << " and vertical distance "
-                   << m_vertical_distance << std::endl;
+    auto active_levels =
+        amr_wind::format_utils::list_to_string(get_active_levels(), ", ", true);
+
+    amrex::Print() << "Created terrain refinement " << m_key << " for levels "
+                   << active_levels << " and vertical distance "
+                   << m_vertical_distance << " (grid_buffer_ratio_lo: "
+                   << amr_wind::format_utils::list_to_string(
+                          m_grid_buffer_ratio_lo, ", ", true)
+                   << ", grid_buffer_ratio_hi: "
+                   << amr_wind::format_utils::list_to_string(
+                          m_grid_buffer_ratio_hi, ", ", true)
+                   << ")" << std::endl;
 }
 
 void TerrainRefinement::operator()(
     int level, amrex::TagBoxArray& tags, amrex::Real /*time*/, int /*ngrow*/)
 {
-    bool verbose = (m_verbose >= 0) && (m_verbose <= level);
-    const bool do_tag = level <= m_max_lev;
-    if (!do_tag) {
+    const bool verbose = is_level_verbose(level);
+
+    if (!should_tag_level(level)) {
         return;
     }
+
+    // Get the buffer ratios for this level
+    auto buffer_lo = m_grid_buffer_ratio_lo.empty()
+                         ? 0.0
+                         : (level < m_grid_buffer_ratio_lo.size()
+                                ? m_grid_buffer_ratio_lo[level]
+                                : m_grid_buffer_ratio_lo.back());
+    auto buffer_hi = m_grid_buffer_ratio_hi.empty()
+                         ? 0.0
+                         : (level < m_grid_buffer_ratio_hi.size()
+                                ? m_grid_buffer_ratio_hi[level]
+                                : m_grid_buffer_ratio_hi.back());
+
     // Geometry
     const auto& geom = m_sim.repo().mesh().Geom(level);
     const auto& prob_lo = geom.ProbLoArray();
@@ -89,19 +118,10 @@ void TerrainRefinement::operator()(
         vertical_distance = std::ceil(vertical_distance / dx[2]) * dx[2];
     }
 
-    auto terrain_phys =
-        m_sim.physics_manager().get<amr_wind::terraindrag::TerrainDrag>();
-
     // Tag arrays
     const auto& tag_arrs = tags.arrays();
 
-    // Get terrain arrays
-    const auto& mfab = (*m_terrain_height)(level);
-    const auto& mterrain_h_arrs = mfab.const_arrays();
-    const auto& mterrain_b_arrs = (*m_terrain_blank)(level).const_arrays();
-
-    // TODO: Check if terrain height is initialized
-    terrain_phys.initialize_fields(level, m_sim.repo().mesh().Geom(level));
+    const auto& mfab = (*m_sim.repo().fields()[0])(level);
 
     // Prepare polygon data for GPU
     const bool polygon_is_empty = m_polygon.is_empty();
@@ -126,45 +146,57 @@ void TerrainRefinement::operator()(
         m_polygon.get_bounding_box(bbox_lo, bbox_hi);
     }
 
+    auto terrain_ptr = amr_wind::TerrainElevation::get_instance();
+    AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+        terrain_ptr && terrain_ptr->is_loaded(),
+        "TerrainElevation must be loaded before TerrainRefinement is used.");
+
+    const auto& xterrain = terrain_ptr->x();
+    const auto& yterrain = terrain_ptr->y();
+    const auto& zterrain = terrain_ptr->z();
+
+    const auto xterrain_size = xterrain.size();
+    const auto yterrain_size = yterrain.size();
+    const auto zterrain_size = zterrain.size();
+    amrex::Gpu::DeviceVector<amrex::Real> d_xterrain(xterrain_size);
+    amrex::Gpu::DeviceVector<amrex::Real> d_yterrain(yterrain_size);
+    amrex::Gpu::DeviceVector<amrex::Real> d_zterrain(zterrain_size);
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, xterrain.begin(), xterrain.end(),
+        d_xterrain.begin());
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, yterrain.begin(), yterrain.end(),
+        d_yterrain.begin());
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, zterrain.begin(), zterrain.end(),
+        d_zterrain.begin());
+    const auto* xterrain_ptr = d_xterrain.data();
+    const auto* yterrain_ptr = d_yterrain.data();
+    const auto* zterrain_ptr = d_zterrain.data();
+
     for (amrex::MFIter mfi(mfab, amrex::TilingIfNotGPU()); mfi.isValid();
          ++mfi) {
         const auto& bx = mfi.tilebox();
         int nbx = mfi.LocalIndex();
 
+        // Compute buffer height based on the vertical distance and buffer ratio
+        // This buffer is used to ensure that we tag cells that are slightly
+        // above the terrain, allowing for a smoother transition in terrain
+        // refinement.
+        // The buffer is a fraction of the box height in the z-direction
+        // and is defined as a ratio of the vertical distance.
+        // This ensures that the buffer is proportional to the vertical distance
+        // and adapts to the size of the box in the z-direction.
+        const auto box_height = bx.length(2) * dx[2];
+        auto buffer_z_lo = buffer_lo * box_height;
+        buffer_z_lo = std::max(buffer_z_lo, 0.5 * dx[2]);
+        auto buffer_z_hi = buffer_hi * box_height;
+
         // Compute tilebox bounds in physical space
-        amrex::Real tile_lo_x = prob_lo[0] + (bx.smallEnd(0) + 0.0) * dx[0];
-        amrex::Real tile_hi_x = prob_lo[0] + (bx.bigEnd(0) + 1.0) * dx[0];
-        amrex::Real tile_lo_y = prob_lo[1] + (bx.smallEnd(1) + 0.0) * dx[1];
-        amrex::Real tile_hi_y = prob_lo[1] + (bx.bigEnd(1) + 1.0) * dx[1];
-        amrex::Real tile_lo_z = prob_lo[2] + (bx.smallEnd(2) + 0.0) * dx[2];
-        amrex::Real tile_hi_z = prob_lo[2] + (bx.bigEnd(2) + 1.0) * dx[2];
-
-        // Compute min/max terrain height in this tile
-        amrex::Real min_terrain = std::numeric_limits<amrex::Real>::max();
-        amrex::Real max_terrain = std::numeric_limits<amrex::Real>::lowest();
-        for (int k = bx.smallEnd(2); k <= bx.bigEnd(2); ++k) {
-            for (int j = bx.smallEnd(1); j <= bx.bigEnd(1); ++j) {
-                for (int i = bx.smallEnd(0); i <= bx.bigEnd(0); ++i) {
-                    amrex::Real th = mterrain_h_arrs[nbx](i, j, k);
-                    min_terrain = std::min(min_terrain, th);
-                    max_terrain = std::max(max_terrain, th);
-                }
-            }
-        }
-
-        // If the entire tile is outside the vertical distance window, skip it
-        if (tile_hi_z < min_terrain - 0.5 * dx[2] ||
-            tile_lo_z > max_terrain + vertical_distance) {
-            if (verbose) {
-                amrex::Print()
-                    << m_key << " - Level " << level
-                    << " (vertical_distance=" << vertical_distance
-                    << "): Skipping tile by elevation: [z " << tile_lo_z << ","
-                    << tile_hi_z << "] vs terrain [" << min_terrain << ","
-                    << max_terrain << "]\n";
-            }
-            continue;
-        }
+        auto tile_lo_x = prob_lo[0] + (bx.smallEnd(0) + 0.0) * dx[0];
+        auto tile_hi_x = prob_lo[0] + (bx.bigEnd(0) + 1.0) * dx[0];
+        auto tile_lo_y = prob_lo[1] + (bx.smallEnd(1) + 0.0) * dx[1];
+        auto tile_hi_y = prob_lo[1] + (bx.bigEnd(1) + 1.0) * dx[1];
 
         // Only check polygon if not empty
         if (!polygon_is_empty) {
@@ -198,19 +230,19 @@ void TerrainRefinement::operator()(
                     prob_lo[1] + (j + 0.5) * dx[1],
                     prob_lo[2] + (k + 0.5) * dx[2])};
 
-                const auto terrainHt = mterrain_h_arrs[nbx](i, j, k);
+                const amrex::Real terrainHt = interp::bilinear(
+                    xterrain_ptr, xterrain_ptr + xterrain_size, yterrain_ptr,
+                    yterrain_ptr + yterrain_size, zterrain_ptr, coord[0],
+                    coord[1]);
+
                 const auto cellHt = coord[2] - terrainHt;
 
                 const amr_wind::polygon_utils::Polygon::Point center_point{
                     coord[0], coord[1]};
 
-                // 1. Check terrain blanking
-                if (mterrain_b_arrs[nbx](i, j, k) >= 1) {
-                    return;
-                }
-
                 // 2. Check vertical distance
-                if ((cellHt < -0.5 * dx[2]) || (cellHt > vertical_distance)) {
+                if ((cellHt < -buffer_z_lo) ||
+                    (cellHt > std::max(vertical_distance, buffer_z_hi))) {
                     return;
                 }
 
@@ -247,6 +279,20 @@ void TerrainRefinement::operator()(
     }
 
     amrex::Gpu::streamSynchronize();
+}
+
+amrex::Vector<int> TerrainRefinement::get_active_levels() const
+{
+    const int max_level = m_sim.repo().mesh().maxLevel();
+    amrex::Vector<int> levels;
+    int min_lev = std::max(0, m_set_level >= 0 ? m_set_level : m_min_level);
+    int max_lev =
+        std::min(max_level, m_set_level >= 0 ? m_set_level : m_max_level);
+
+    for (int lev = min_lev; lev <= max_lev; ++lev) {
+        levels.push_back(lev);
+    }
+    return levels;
 }
 
 } // namespace amr_wind
