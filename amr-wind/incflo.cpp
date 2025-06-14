@@ -104,6 +104,7 @@ void incflo::init_amr_wind_modules()
 {
     BL_PROFILE("amr-wind::incflo::init_amr_wind_modules");
     if (m_sim.has_overset()) {
+        m_time.override_simulation_end_parameters();
         m_sim.overset_manager()->post_init_actions();
         m_ovst_ops.initialize(m_sim);
     } else {

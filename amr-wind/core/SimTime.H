@@ -170,6 +170,13 @@ public:
     //! Calculate minimum enforce dt tolerance based on all considerations
     void calculate_minimum_enforce_dt_abs_tol();
 
+    //! Deactivate ending parameters (overset should be externally controlled)
+    void override_simulation_end_parameters()
+    {
+        m_stop_time_index = -1;
+        m_stop_time = -1.;
+    }
+
 private:
     //! Timestep sizes
     amrex::Vector<amrex::Real> m_dt =
