@@ -1,0 +1,14 @@
+.. meta::d6686dd08e205bc63856c3fd4b68fc3c8685ef25605b82acae7038d101301445f7ee504fdf28b7f66ca1b6f5053b6b602d8f7f8ca54e569655b2eebe60e52359
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/tensor_ops.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/tensor\_ops.H File Reference
+===================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: tensor__ops_8_h.html

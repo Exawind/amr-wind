@@ -1,0 +1,14 @@
+.. meta::8bc3723a27a81d302204153ba8949b749a2ee0b6ae4f2fc717e21db1e4f7150b1aee4dc09c20cba60e20eb02bad2ff2b2e72d3df4c67e334f73d3ffe92f91139
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ib::ops::UpdatePosOp&lt; GeomTrait, typename std::enable_if_t&lt; std::is_base_of_v&lt; BluffBodyType, GeomTrait &gt; &gt; &gt; Struct Template Reference
+
+is\_base\_of\_v&lt; BluffBodyType, GeomTrait &gt; &gt; &gt; Struct Template Reference
+=====================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ib_1_1ops_1_1_update_pos_op_3_01_geom_trait_00_01typename_01std_1_1enable__if6d1ea73ba779347c18c5c52b18d81043.html

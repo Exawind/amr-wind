@@ -1,0 +1,14 @@
+.. meta::99f34bce6750e87981e732c1a1559a40ef8410192c8f232196191de509486f7b20b74937f3a18aae5e3557187ddb072648777f97456b0f5e482eff9d30286468
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::utils::Slice&lt; T &gt; Struct Template Reference
+
+Slice&lt; T &gt; Struct Template Reference
+==========================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1utils_1_1_slice.html

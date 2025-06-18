@@ -1,0 +1,14 @@
+.. meta::1fb51b6bf7b663ec96f08671fff1f89f824d5b7726771909a3738e444885377ce9988e6acf61f131d4ab06a94899cb8286a3f8a6e0da911451e16f09f0d47ce3
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/icns/source_terms/BoussinesqBuoyancy.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/equation\_systems/icns/source\_terms/BoussinesqBuoyancy.H Source File
+==================================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _boussinesq_buoyancy_8_h_source.html

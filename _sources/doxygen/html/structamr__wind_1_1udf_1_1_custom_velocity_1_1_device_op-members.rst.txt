@@ -1,0 +1,14 @@
+.. meta::542890041dad16f28c1a964d2c4e9732cf69c15ca51c949508bce91e09a254922ec67864653f9fcc155b12f637cf93efa1c7d57f2ea602e84463c4ba035b42ff
+
+:orphan:
+
+.. title:: AMR-Wind API: Member List
+
+Member List
+===========
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1udf_1_1_custom_velocity_1_1_device_op-members.html

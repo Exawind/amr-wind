@@ -1,0 +1,14 @@
+.. meta::e3569785763226fce8410859b0e517544a76733bde79cb4785803ebf85b4bbf0b33cc03f67c9f7b365ac858852b18d29c99496f6e478d752449ee60d73835aef
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::MOSD Struct Reference
+
+MOSD Struct Reference
+=====================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1_m_o_s_d.html

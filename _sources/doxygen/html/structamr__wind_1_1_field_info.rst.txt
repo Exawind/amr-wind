@@ -1,0 +1,14 @@
+.. meta::1df5e624b4fa998d5649e36d21807ed5b8f7a4de65745e700600dfa1d096445f3363e15019ef40bab04a2c3195121767e0ec6f71bf2ebb995ccef23d7ff4ae85
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::FieldInfo Struct Reference
+
+FieldInfo Struct Reference
+==========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1_field_info.html

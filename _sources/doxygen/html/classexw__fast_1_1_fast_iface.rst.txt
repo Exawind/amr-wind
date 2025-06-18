@@ -1,0 +1,14 @@
+.. meta::5cccd139295406e78cf2acb492b9ca333c0016b901b15202c836b52fb60e661c2269bf67bf39379a9fd056b5ab9aa49a3c75a94cd65e462eb5ffdd1cf4e53ac0
+
+:orphan:
+
+.. title:: AMR-Wind API: exw_fast::FastIface Class Reference
+
+FastIface Class Reference
+=========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classexw__fast_1_1_fast_iface.html
