@@ -5,6 +5,16 @@
 #include <cmath>
 #include "amr-wind/utilities/constants.H"
 
+namespace {
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE int
+idx(const int i_off, const int j_off, const int k_off)
+{
+    return (k_off + 1) + 3 * (j_off + 1) + 9 * (i_off + 1);
+}
+
+} // namespace
+
 namespace amr_wind::multiphase {
 
 /** Young's finite-difference gradient scheme.
@@ -70,56 +80,107 @@ youngs_finite_difference_normal_neumann(
     const int i,
     const int j,
     const int k,
-    const int ibdy,
-    const int jbdy,
-    const int kbdy,
+    amrex::Array4<int const> const& iblank,
     amrex::Array4<amrex::Real const> const& volfrac,
     amrex::Real& mx,
     amrex::Real& my,
     amrex::Real& mz) noexcept
 {
     // Do neumann condition via indices
-    const int im1 = ibdy == -1 ? i : i - 1;
-    const int jm1 = jbdy == -1 ? j : j - 1;
-    const int km1 = kbdy == -1 ? k : k - 1;
-    const int ip1 = ibdy == +1 ? i : i + 1;
-    const int jp1 = jbdy == +1 ? j : j + 1;
-    const int kp1 = kbdy == +1 ? k : k + 1;
 
-    amrex::Real mm1 = volfrac(im1, jm1, km1) + volfrac(im1, jm1, kp1) +
-                      volfrac(im1, jp1, km1) + volfrac(im1, jp1, kp1) +
-                      2.0 * (volfrac(im1, jm1, k) + volfrac(im1, jp1, k) +
-                             volfrac(im1, j, km1) + volfrac(im1, j, kp1)) +
-                      4.0 * volfrac(im1, j, k);
-    amrex::Real mm2 = volfrac(ip1, jm1, km1) + volfrac(ip1, jm1, kp1) +
-                      volfrac(ip1, jp1, km1) + volfrac(ip1, jp1, kp1) +
-                      2.0 * (volfrac(ip1, jm1, k) + volfrac(ip1, jp1, k) +
-                             volfrac(ip1, j, km1) + volfrac(ip1, j, kp1)) +
-                      4.0 * volfrac(ip1, j, k);
+    /*amrex::Real dvf_x{0.}, dvf_y{0.}, dvf_z{0.};
+    int ct_x{0}, ct_y{0}, ct_z{0};
+    for (int ii = i - 1; ii <= i + 1; ++ii) {
+        for (int jj = j - 1; jj <= j + 1; ++jj) {
+            for (int nk = -1; nk <= 0; ++nk) {
+                if (iblank(ii, jj, k + nk + 1) == iblank(ii, jj, k + nk) &&
+                    iblank(ii, jj, k) == ibl_c) {
+                    dvf_z +=
+                        volfrac(ii, jj, k + nk + 1) - volfrac(ii, jj, k + nk);
+                    ct_z++;
+                }
+            }
+        }
+    }*/
+
+    const int ibl_c = iblank(i, j, k);
+    amrex::Vector<amrex::Real> dvf{0., 0., 0.};
+    amrex::Vector<int> ct{0, 0, 0};
+    const amrex::IntVect iv{i, j, k};
+    for (int ddir = 0; ddir < 3; ++ddir) {
+        const int odir0 = (ddir + 1) % 3;
+        const int odir1 = (ddir + 2) % 3;
+        for (int n0 = -1; n0 <= 1; ++n0) {
+            for (int n1 = -1; n1 <= 1; ++n1) {
+                for (int n2 = -1; n2 <= 0; ++n2) {
+                    amrex::IntVect iv_p = iv;
+                    iv_p[odir0] += n0;
+                    iv_p[odir1] += n1;
+                    amrex::IntVect iv_m = iv_p;
+                    iv_p[ddir] += n2 + 1;
+                    iv_m[ddir] += n2;
+                    if (iblank(iv_p) == iblank(iv_m) && iblank(iv_p) == ibl_c) {
+                        dvf[ddir] += volfrac(iv_p) - volfrac(iv_m);
+                        ct[ddir]++;
+                    }
+                }
+            }
+        }
+        dvf[ddir] /= (amrex::Real)ct[ddir];
+    }
+
+    amrex::Vector<amrex::Real> vf(27, 0.);
+    for (int n0 = -1; n0 <= 1; ++n0) {
+        for (int n1 = -1; n1 <= 1; ++n1) {
+            for (int n2 = -1; n2 <= 1; ++n2) {
+                amrex::IntVect iv_l = iv;
+                iv_l[0] += n0;
+                iv_l[1] += n1;
+                iv_l[2] += n2;
+                vf[idx(n0, n1, n2)] = iblank(iv_l) == ibl_c
+                                          ? volfrac(iv_l)
+                                          : volfrac(iv) +
+                                                (amrex::Real)n0 * dvf[0] +
+                                                (amrex::Real)n1 * dvf[1] +
+                                                (amrex::Real)n2 * dvf[2];
+            }
+        }
+    }
+
+    amrex::Real mm1 = vf[idx(-1, -1, -1)] + vf[idx(-1, -1, 1)] +
+                      vf[idx(-1, 1, -1)] + vf[idx(-1, 1, 1)] +
+                      2.0 * (vf[idx(-1, -1, 0)] + vf[idx(-1, 1, 0)] +
+                             vf[idx(-1, 0, -1)] + vf[idx(-1, 0, 1)]) +
+                      4.0 * vf[idx(-1, 0, 0)];
+    amrex::Real mm2 = vf[idx(1, -1, -1)] + vf[idx(1, -1, 1)] +
+                      vf[idx(1, 1, -1)] + vf[idx(1, 1, 1)] +
+                      2.0 * (vf[idx(1, -1, 0)] + vf[idx(1, 1, 0)] +
+                             vf[idx(1, 0, -1)] + vf[idx(1, 0, 1)]) +
+                      4.0 * vf[idx(1, 0, 0)];
     mx = mm1 - mm2;
 
-    mm1 = volfrac(im1, jm1, km1) + volfrac(im1, jm1, kp1) +
-          volfrac(ip1, jm1, km1) + volfrac(ip1, jm1, kp1) +
-          2.0 * (volfrac(im1, jm1, k) + volfrac(ip1, jm1, k) +
-                 volfrac(i, jm1, km1) + volfrac(i, jm1, kp1)) +
-          4.0 * volfrac(i, jm1, k);
-    mm2 = volfrac(im1, jp1, km1) + volfrac(im1, jp1, kp1) +
-          volfrac(ip1, jp1, km1) + volfrac(ip1, jp1, kp1) +
-          2.0 * (volfrac(im1, jp1, k) + volfrac(ip1, jp1, k) +
-                 volfrac(i, jp1, km1) + volfrac(i, jp1, kp1)) +
-          4.0 * volfrac(i, jp1, k);
+    mm1 = vf[idx(-1, -1, -1)] + vf[idx(-1, -1, 1)] + vf[idx(1, -1, -1)] +
+          vf[idx(1, -1, 1)] +
+          2.0 * (vf[idx(-1, -1, 0)] + vf[idx(1, -1, 0)] + vf[idx(0, -1, -1)] +
+                 vf[idx(0, -1, 1)]) +
+          4.0 * vf[idx(0, -1, 0)];
+    mm2 = vf[idx(-1, 1, -1)] + vf[idx(-1, 1, 1)] + vf[idx(1, 1, -1)] +
+          vf[idx(1, 1, 1)] +
+          2.0 * (vf[idx(-1, 1, 0)] + vf[idx(1, 1, 0)] + vf[idx(0, 1, -1)] +
+                 vf[idx(0, 1, 1)]) +
+          4.0 * vf[idx(0, 1, 0)];
     my = mm1 - mm2;
 
-    mm1 = volfrac(im1, jm1, km1) + volfrac(im1, jp1, km1) +
-          volfrac(ip1, jm1, km1) + volfrac(ip1, jp1, km1) +
-          2.0 * (volfrac(im1, j, km1) + volfrac(ip1, j, km1) +
-                 volfrac(i, jm1, km1) + volfrac(i, jp1, km1)) +
-          4.0 * volfrac(i, j, km1);
-    mm2 = volfrac(im1, jm1, kp1) + volfrac(im1, jp1, kp1) +
-          volfrac(ip1, jm1, kp1) + volfrac(ip1, jp1, kp1) +
-          2.0 * (volfrac(im1, j, kp1) + volfrac(ip1, j, kp1) +
-                 volfrac(i, jm1, kp1) + volfrac(i, jp1, kp1)) +
-          4.0 * volfrac(i, j, kp1);
+    mm1 = vf[idx(-1, -1, -1)] + vf[idx(-1, 1, -1)] + vf[idx(1, -1, -1)] +
+          vf[idx(1, 1, -1)] +
+          2.0 * (vf[idx(-1, 0, -1)] + vf[idx(1, 0, -1)] + vf[idx(0, -1, -1)] +
+                 vf[idx(0, 1, -1)]) +
+          4.0 * vf[idx(0, 0, -1)];
+    mm2 = vf[idx(-1, -1, 1)] + vf[idx(-1, 1, 1)] + vf[idx(1, -1, 1)] +
+          vf[idx(1, 1, 1)] +
+          2.0 * (vf[idx(-1, 0, 1)] + vf[idx(1, 0, 1)] + vf[idx(0, -1, 1)] +
+                 vf[idx(0, 1, 1)]) +
+          4.0 * vf[idx(0, 0, 1)];
     mz = mm1 - mm2;
 }
 

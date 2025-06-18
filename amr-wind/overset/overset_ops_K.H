@@ -20,6 +20,7 @@ amrex::Real AMREX_GPU_DEVICE AMREX_FORCE_INLINE alpha_flux(
     const int k,
     const int dir,
     const amrex::Real margin,
+    amrex::Array4<int const> const& ibl,
     amrex::Array4<amrex::Real const> const& vof,
     amrex::Array4<amrex::Real const> const& tg_vof,
     amrex::Array4<amrex::Real const> const& normal)
@@ -35,6 +36,9 @@ amrex::Real AMREX_GPU_DEVICE AMREX_FORCE_INLINE alpha_flux(
     const amrex::Real norm_ = std::abs(normal(iv, dir));
     const amrex::Real norm_nb = std::abs(normal(ivm, dir));
 
+    // Gradient of iblank
+    const amrex::Real gibl = (ibl(iv) - ibl(ivm));
+
     // Determine which delta_phi (and multiply by normal)
     // The sign depends on side of flux face
     const amrex::Real dphi_ = (vof(iv) - tg_vof(iv)) * norm_;
@@ -44,7 +48,8 @@ amrex::Real AMREX_GPU_DEVICE AMREX_FORCE_INLINE alpha_flux(
     // Upwinding when on the gas side, downwinding on the liquid
     // Across the interface defined as crossing 0.5 or within margin of 0.5
     if ((std::abs(vof(iv) - 0.5) > margin ||
-         std::abs(vof(ivm) - 0.5) > margin)) {
+         std::abs(vof(ivm) - 0.5) > margin) &&
+        std::abs(gibl) < 2) {
         if (gphi > 0.0) {
             dphi_eval = (vof(ivm) < 0.5 && vof(iv) <= 0.5 + margin) ? dphi_nb
                                                                     : dphi_eval;
@@ -58,6 +63,13 @@ amrex::Real AMREX_GPU_DEVICE AMREX_FORCE_INLINE alpha_flux(
                                                                     : dphi_eval;
         }
     }
+    if (std::abs(gibl) == 2) {
+        if (gibl > 0) {
+            dphi_eval = dphi_nb;
+        } else {
+            dphi_eval = dphi_;
+        }
+    }
     return dphi_eval;
 }
 
@@ -66,6 +78,7 @@ void AMREX_GPU_DEVICE AMREX_FORCE_INLINE velocity_face(
     const int j,
     const int k,
     const int dir,
+    amrex::Array4<int const> const& ibl,
     amrex::Array4<amrex::Real const> const& vof,
     amrex::Array4<amrex::Real const> const& velocity,
     amrex::Real& uface,
@@ -79,6 +92,9 @@ void AMREX_GPU_DEVICE AMREX_FORCE_INLINE velocity_face(
 
     // Gradient of phi normal to interface
     const amrex::Real gphi = (vof(iv) - vof(ivm));
+
+    // Gradient of iblank
+    const amrex::Real gibl = (ibl(iv) - ibl(ivm));
 
     // Get velocities on both sides
     const amrex::Real u_ = velocity(iv, 0);
@@ -109,6 +125,7 @@ void AMREX_GPU_DEVICE AMREX_FORCE_INLINE gp_rho_face(
     const int j,
     const int k,
     const int dir,
+    amrex::Array4<int const> const& ibl,
     amrex::Array4<amrex::Real const> const& vof,
     amrex::Array4<amrex::Real const> const& gp,
     amrex::Array4<amrex::Real const> const& rho,
