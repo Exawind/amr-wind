@@ -199,8 +199,9 @@ void OversetOps::sharpen_nalu_data()
     const auto nlevels = repo.num_active_levels();
     const auto geom = m_sim_ptr->mesh().Geom();
 
-    // Get blanking for cells
+    // Get blanking for cells and nodes
     const auto& iblank_cell = repo.get_int_field("iblank_cell");
+    const auto& iblank_node = repo.get_int_field("iblank_node");
 
     // Get fields that will be modified
     auto& vof = repo.get_field("vof");
@@ -299,10 +300,10 @@ void OversetOps::sharpen_nalu_data()
 
             // Sharpening fluxes for vof, density, and momentum
             overset_ops::populate_sharpen_fluxes(
-                (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), vof(lev),
-                (*target_vof)(lev), (*normal_vec)(lev), velocity(lev), gp(lev),
-                rho(lev), pvscale, m_upw_margin, m_mphase->rho1(),
-                m_mphase->rho2());
+                (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev),
+                iblank_cell(lev), vof(lev), (*target_vof)(lev),
+                (*normal_vec)(lev), velocity(lev), gp(lev), rho(lev), pvscale,
+                m_upw_margin, m_mphase->rho1(), m_mphase->rho2());
 
             // Process fluxes
             overset_ops::process_fluxes_calc_src(
@@ -350,8 +351,8 @@ void OversetOps::sharpen_nalu_data()
 
             overset_ops::apply_fluxes(
                 (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), (*p_src)(lev),
-                vof(lev), rho(lev), velocity(lev), gp(lev), p(lev), dx, ptfac,
-                m_vof_tol);
+                iblank_cell(lev), iblank_node(lev), vof(lev), rho(lev),
+                velocity(lev), gp(lev), p(lev), dx, ptfac, m_vof_tol);
 
             vof(lev).FillBoundary(geom[lev].periodicity());
             velocity(lev).FillBoundary(geom[lev].periodicity());

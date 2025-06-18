@@ -537,7 +537,8 @@ void MultiPhase::levelset2vof(
         amrex::ParallelFor(
             levelset,
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                // Neumann of levelset across iblank boundaries
+                /* // Neumann of levelset across iblank boundaries
+                amrex
                 int ibdy =
                     (iblank_arrs[nbx](i, j, k) != iblank_arrs[nbx](i - 1, j, k))
                         ? -1
@@ -563,10 +564,10 @@ void MultiPhase::levelset2vof(
                 kbdy =
                     (iblank_arrs[nbx](i, j, k) != iblank_arrs[nbx](i, j, k + 1))
                         ? +1
-                        : kbdy;
+                        : kbdy; */
                 amrex::Real mx, my, mz;
                 multiphase::youngs_finite_difference_normal_neumann(
-                    i, j, k, ibdy, jbdy, kbdy, phi_arrs[nbx], mx, my, mz);
+                    i, j, k, iblank_arrs[nbx], phi_arrs[nbx], mx, my, mz);
                 mx = std::abs(mx / 32.);
                 my = std::abs(my / 32.);
                 mz = std::abs(mz / 32.);
