@@ -422,9 +422,8 @@ struct ReadInputsOp<W2AWaves>
         }
         // Set up plan for FFTW
         if (wdata.is_ocean) {
-            wdata.plan_vector.emplace_back(
-                modes_hosgrid::plan_ifftw(
-                    wdata.n0, wdata.n1, wdata.c_eta_mptr, plan_f));
+            wdata.plan_vector.emplace_back(modes_hosgrid::plan_ifftw(
+                wdata.n0, wdata.n1, wdata.c_eta_mptr, plan_f));
         } else {
             modes_hosgrid::plan_ifftw_nwt(
                 wdata.n0, wdata.n1, wdata.plan_vector, wdata.r_eta_mptr,
@@ -589,10 +588,8 @@ struct InitDataOp<W2AWaves>
     void
     // cppcheck-suppress constParameterReference
     operator()(
-        W2AWaves::DataType& data,
-        int level,
-        const amrex::Geometry& geom,
-        bool multiphase_mode)
+        W2AWaves::DataType &
+            data, int level, const amrex::Geometry & geom, bool multiphase_mode)
     {
 
 #ifdef AMR_WIND_USE_W2A
@@ -652,6 +649,16 @@ struct InitDataOp<W2AWaves>
         const bool has_beach = wdata.has_beach && multiphase_mode;
         const bool init_wave_field = wdata.init_wave_field || !multiphase_mode;
 
+        amrex::MultiFab phi_tmp_fab(
+            velocity(level).boxArray(), velocity(level).DistributionMap(), 1,
+            3);
+        amrex::MultiFab vel_tmp_fab(
+            velocity(level).boxArray(), velocity(level).DistributionMap(),
+            AMREX_SPACEDIM, 3);
+
+        const auto& phi_tmp = phi_tmp_fab.arrays();
+        const auto& vel_tmp = vel_tmp_fab.arrays();
+
         amrex::ParallelFor(
             velocity(level), amrex::IntVect(3),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
@@ -673,17 +680,13 @@ struct InitDataOp<W2AWaves>
                     x, problo[0], gen_length, probhi[0], beach_length, wave_sol,
                     bulk, outlet);
 
-                const amrex::Real phi = local_profile[3] - z;
-                const amrex::Real cell_length_2D =
-                    std::sqrt(dx[0] * dx[0] + dx[2] * dx[2]);
-                if (phi + cell_length_2D >= 0) {
-                    vel[nbx](i, j, k, 0) = local_profile[0];
-                    vel[nbx](i, j, k, 1) = local_profile[1];
-                    vel[nbx](i, j, k, 2) = local_profile[2];
-                }
+                phi_tmp[nbx](i, j, k) = local_profile[3] - z;
+                vel_tmp[nbx](i, j, k, 0) = local_profile[0];
+                vel_tmp[nbx](i, j, k, 1) = local_profile[1];
+                vel_tmp[nbx](i, j, k, 2) = local_profile[2];
 
                 if (multiphase_mode) {
-                    phi_arrs[nbx](i, j, k) = phi;
+                    phi_arrs[nbx](i, j, k) = phi_tmp[nbx](i, j, k);
                 }
 
                 // Default w2a values matter for where no updates happen
@@ -691,6 +694,39 @@ struct InitDataOp<W2AWaves>
                 w2a_vel[nbx](i, j, k, 0) = quiescent[0];
                 w2a_vel[nbx](i, j, k, 1) = quiescent[0];
                 w2a_vel[nbx](i, j, k, 2) = quiescent[0];
+            });
+        amrex::Gpu::streamSynchronize();
+
+        amrex::ParallelFor(
+            velocity(level), amrex::IntVect(2),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                const amrex::Real eps = 2. * std::cbrt(dx[0] * dx[1] * dx[2]);
+                const amrex::Real vof_local =
+                    multiphase::levelset_to_vof(i, j, k, eps, phi_tmp[nbx]);
+
+                if (vof_local > 1. - constants::TIGHT_TOL) {
+                    // Entire cell is liquid
+                    vel[nbx](i, j, k, 0) = vel_tmp[nbx](i, j, k, 0);
+                    vel[nbx](i, j, k, 1) = vel_tmp[nbx](i, j, k, 1);
+                    vel[nbx](i, j, k, 2) = vel_tmp[nbx](i, j, k, 2);
+                } else if (vof_local > 1e-3) {
+                    // Velocity of liquid becomes velocity of entire cell
+                    // Interpolate using cell-centered values to liquid centroid
+                    // Consider only z-direction to find centroid
+                    const amrex::Real z_cell = problo[2] + (k + 0.5) * dx[2];
+                    const amrex::Real z_cell_below = z_cell - dx[2];
+                    const amrex::Real z_cell_bottom = z_cell - 0.5 * dx[2];
+                    const amrex::Real z_liq_center =
+                        z_cell_bottom + 0.5 * vof_local * dx[2];
+                    for (int n = 0; n < AMREX_SPACEDIM; ++n) {
+                        vel[nbx](i, j, k, n) =
+                            vel_tmp[nbx](i, j, k - 1, n) +
+                            (vel_tmp[nbx](i, j, k, n) -
+                             vel_tmp[nbx](i, j, k - 1, n)) *
+                                ((z_liq_center - z_cell_below) /
+                                 (z_cell - z_cell_below));
+                    }
+                }
             });
         amrex::Gpu::streamSynchronize();
 #else
