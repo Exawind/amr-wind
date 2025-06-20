@@ -224,12 +224,10 @@ void FastIface::fast_init_turbine(FastTurbine& fi)
     char out_file[fast_strlen()];
     fast_func(
         FAST_ExtInfw_Init, &fi.tid_local, &fi.stop_time, inp_file.begin(),
-        &fi.tid_global, out_file, &m_num_sc_inputs_glob, &m_num_sc_inputs,
-        &m_num_sc_outputs, &m_init_sc_inputs_glob, &m_init_sc_inputs_turbine,
-        &fi.num_pts_blade, &fi.num_pts_tower, fi.base_pos.begin(), &abort_lev,
-        &fi.dt_cfd, &fi.dt_fast, &m_inflow_type, &fi.num_blades,
-        &fi.num_blade_elem, &fi.num_tower_elem, &fi.chord_cluster_type,
-        &fi.to_cfd, &fi.from_cfd, &fi.to_sc, &fi.from_sc);
+        &fi.tid_global, out_file, &fi.num_pts_blade, &fi.num_pts_tower,
+        fi.base_pos.begin(), &abort_lev, &fi.dt_cfd, &fi.dt_fast,
+        &m_inflow_type, &fi.num_blades, &fi.num_blade_elem, &fi.num_tower_elem,
+        &fi.chord_cluster_type, &fi.to_cfd, &fi.from_cfd);
 #else
     fast_func(
         FAST_OpFM_Init, &fi.tid_local, &fi.stop_time, inp_file.begin(),
@@ -337,7 +335,7 @@ void FastIface::fast_restart_turbine(FastTurbine& fi)
     fast_func(
         FAST_ExtInfw_Restart, &fi.tid_local, chkpt_file.begin(), &abort_lev,
         &fi.dt_fast, &fi.num_blades, &fi.num_blade_elem, &fi.num_tower_elem,
-        &fi.time_index, &fi.to_cfd, &fi.from_cfd, &fi.to_sc, &fi.from_sc);
+        &fi.time_index, &fi.to_cfd, &fi.from_cfd);
 #else
     fast_func(
         FAST_OpFM_Restart, &fi.tid_local, chkpt_file.begin(), &abort_lev,

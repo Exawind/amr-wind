@@ -94,8 +94,10 @@ struct FastTurbine
     exw_fast::OfInputType to_cfd;
     exw_fast::OfOutputType from_cfd;
 
+#if OPENFAST_VERSION_MAJOR != 4
     exw_fast::SC_DX_InputType to_sc;
     exw_fast::SC_DX_OutputType from_sc;
+#endif
 };
 
 } // namespace exw_fast
