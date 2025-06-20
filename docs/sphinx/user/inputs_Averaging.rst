@@ -18,7 +18,7 @@ field is required.
 
 .. input_param:: averaging.averaging_window
 
-   **type:** Real, required
+   **type:** Real, optional, default = huge number (no window)
    
    Specify the averaging window over which the time-averaging is done.
 
@@ -33,6 +33,18 @@ field is required.
    **type:** Real, optional, default = simulation end time
 
    Specify the time to stop time-averaging.
+
+.. input_param:: averaging.averaging_time_interval
+
+   **type:** Real, optional, default = -1. (off)
+
+   Specify an interval of simulation time at which to do averaging.
+   This allows for the averaging to take place only at instances
+   that correspond to the averaging interval, which can be useful
+   for phase averaging in contexts like periodic domains, regular
+   waves, or fixed rotor speed simulations. When used with an
+   averaging start time, the interval starts relative to the
+   averaging start time.
 
 Example::
 

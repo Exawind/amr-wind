@@ -49,8 +49,9 @@ amrex::Vector<const amrex::iMultiFab*> IntField::vec_const_ptrs() const noexcept
     amrex::Vector<const amrex::iMultiFab*> ret;
     ret.reserve(nlevels);
     for (int lev = 0; lev < nlevels; ++lev) {
-        ret.push_back(static_cast<const amrex::iMultiFab*>(
-            &m_repo.get_int_fab(m_id, lev)));
+        ret.push_back(
+            static_cast<const amrex::iMultiFab*>(
+                &m_repo.get_int_fab(m_id, lev)));
     }
     return ret;
 }
