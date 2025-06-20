@@ -41,6 +41,7 @@ Each section must contain the keyword ``type`` that is one of the refinement typ
 ``FieldRefinement``        Refinement based on error metric for field or its gradient
 ``OversetRefinement``      Refinement around fringe/field interface
 ``GeometryRefinement``     Refinement using geometric shapes
+``TerrainRefinement``      Refinement using terrain fields and polygon regions
 ``QCriterionRefinement``   Refinement using Q-Criterion
 ``VorticityMagRefinement`` Refinement using vorticity
 ========================== ===================================================================
@@ -130,7 +131,7 @@ block, and 2. ``cylinder`` -- refines the region inside a cylindrical block.
 
    Names of the input subsections that define specific geometries for refinement.
 
-.. input_param:: tagging.GeoemtryRefinement.level
+.. input_param:: tagging.GeometryRefinement.level
 
    **type:**  Integer, optional, default: -1
 
@@ -211,6 +212,121 @@ The axis and the extents along the axis are defined by two position vectors
 ``start`` and ``end``. The radial extent is specified by ``outer_radius``. An
 optional ``inner_radius`` can be specified to restrict tagging to an annulus
 between the inner and outer radii.
+
+Refinement using terrain and polygons
+`````````````````````````````````````
+
+This section controls refinement using terrain fields in the domain along
+with user-specified polygon regions.
+
+.. input_param:: tagging.TerrainRefinement.level
+
+   **type:**  Integer, optional, default: -1
+
+   If ``level`` is provided and is greater than or equal to 0, then the
+   refinement based on this section is only performed at that specific level.
+
+.. input_param:: tagging.TerrainRefinement.min_level
+
+   **type:**  Integer, optional, default: 0
+
+   If ``level`` is not specified, this option specifies the minimum level
+   where this refinement is active.
+
+.. input_param:: tagging.TerrainRefinement.max_level
+
+   **type:**  Integer, optional, default: ``mesh.maxLevel()``
+
+   If ``level`` is not specified, this option specifies the maximum level
+   where this refinement is active.
+
+.. input_param:: tagging.TerrainRefinement.vertical_distance
+
+   **type:** Real, required
+
+   Distance (in z) above the terrain to refine. Tagging is added between
+   the terrain and the specified height above it, and it is also
+   bound laterally by the polygon parameters listed below.
+
+.. input_param:: tagging.TerrainRefinement.grid_buffer_ratio_lo
+   
+   **type:** List of reals, optional, default = 0.0
+
+   Ratio of the subgrid (tile) height to use as a buffer **below** the terrain surface.
+   This buffer ensures that cells below the nominal terrain tagging region are also tagged,
+   which can help with smoother transitions and prevent under-refinement near the terrain interface.
+   The buffer size is computed as ``grid_buffer_ratio_lo * box_height`` for each tile,
+   where ``box_height`` is the physical height of the tile in the z-direction.
+   **Making this ratio larger will ensure that more cells below the terrain are tagged for refinement.**
+   **If multiple values are provided, they will be applied to different levels of the mesh.**
+
+.. input_param:: tagging.TerrainRefinement.grid_buffer_ratio_hi
+
+   **type:** List of reals, optional, default = 0.0
+
+   Similar to ``grid_buffer_ratio_lo``, but this parameter specifies the ratio of the subgrid (tile)
+   height to use as a buffer **above** the terrain surface. 
+
+.. input_param:: tagging.TerrainRefinement.poly_exterior
+
+   **type:** List of reals, optional
+
+   Coordinates (x and y) of the polygon exterior. Within this polygonal
+   region, the refinement is applied. The coordinates are input as pairs of x and y locations,
+   so there must be an even number of entries for this argument.
+
+.. input_param:: tagging.TerrainRefinement.poly_num_holes
+
+   **type:** Integer, optional, default = 0
+
+   The number of holes within the polygonal region. This parameter allows the user to carve out
+   sections within the polygon exterior where refinement is not desired. Each hole is defined
+   in the same manner as the polygon exterior with coordinates constructing a polygon boundary.
+
+.. input_param:: tagging.TerrainRefinement.poly_hole_n
+
+   **type:** List of reals, optional
+
+   Coordinates (x and y) of the polygon hole boundary, where ``n`` is the 0-based index of the
+   hole being specified (e.g., ``poly_hole_0`` would be used to define the first polygon hole).
+   The coordinates are input as pairs of x and y locations, so there must be an even number
+   of entries for this argument.
+
+.. input_param:: tagging.TerrainRefinement.box_lo
+
+   **type:** Vector<Real>, optional
+
+   List of the low corner values for a bounding box where the tagging
+   will be active. By default the bounding box will span the entire domain.
+
+.. input_param:: tagging.TerrainRefinement.box_hi
+
+   **type:** Vector<Real>, optional
+
+   List of the high corner values for a bounding box where the tagging
+   will be active. By default the bounding box will span the entire domain.
+
+.. input_param:: tagging.TerrainRefinement.verbose
+
+   **type:** List of ints, optional
+
+   If provided, this parameter controls the verbosity of the tagging output on a per-level basis.
+   Each entry in the list corresponds to a mesh level, where a nonzero value enables verbose output for that level.
+   If fewer values are provided than the number of levels, the last value is used for all higher levels.
+   For example, if ``verbose = 1 0 0``, then only level 0 will print tagging information, 
+   while levels 1 and above will not print any information.
+
+Example::
+
+  tagging.terr1.type = TerrainRefinement
+  tagging.terr1.vertical_distance = 200
+  tagging.terr1.max_level = 1 # Refine only levels 1 and below
+  tagging.terr1.poly_exterior = 10 10 10 20 20 20 20 10
+  tagging.terr1.poly_num_holes = 1
+  tagging.terr1.poly_hole_0 = 5 5 5 10 10 10 10 5
+  tagging.terr1.grid_buffer_ratio_lo = 0.0 0.75
+  tagging.terr1.grid_buffer_ratio_hi = 0.0 0.75
+  tagging.terr1.verbose = 0 1 
 
 Refinement using Q-Criterion
 `````````````````````````````````````
