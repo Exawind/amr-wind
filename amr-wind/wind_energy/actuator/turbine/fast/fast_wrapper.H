@@ -68,11 +68,6 @@ inline void FAST_ExtInfw_Init(
     const char* /*unused*/,
     int* /*unused*/,
     int* /*unused*/,
-    int* /*unused*/,
-    float* /*unused*/,
-    float* /*unused*/,
-    int* /*unused*/,
-    int* /*unused*/,
     float* /*unused*/,
     int* /*unused*/,
     double* /*unused*/,
@@ -83,8 +78,6 @@ inline void FAST_ExtInfw_Init(
     int* /*unused*/,
     OpFM_InputType* /*unused*/,
     OpFM_OutputType* /*unused*/,
-    SC_DX_InputType* /*unused*/,
-    SC_DX_OutputType* /*unused*/,
     int* /*unused*/,
     char* /*unused*/)
 {}
@@ -99,8 +92,6 @@ inline void FAST_ExtInfw_Restart(
     int* /*unused*/,
     OpFM_InputType* /*unused*/,
     OpFM_OutputType* /*unused*/,
-    SC_DX_InputType* /*unused*/,
-    SC_DX_OutputType* /*unused*/,
     int* /*unused*/,
     char* /*unused*/)
 {}
