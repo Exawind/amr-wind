@@ -20,11 +20,6 @@ inline constexpr int fast_strlen() { return INTERFACE_STRING_LENGTH; }
 #define ErrID_Severe 3
 #define ErrID_Fatal 4
 
-struct SC_DX_InputType
-{};
-struct SC_DX_OutputType
-{};
-
 inline constexpr int fast_strlen() { return 1025; }
 
 inline void exw_fast_output_redirect(char* /*unused*/) {}
@@ -101,6 +96,11 @@ struct OpFM_InputType
 {};
 
 struct OpFM_OutputType
+{};
+
+struct SC_DX_InputType
+{};
+struct SC_DX_OutputType
 {};
 
 inline void
