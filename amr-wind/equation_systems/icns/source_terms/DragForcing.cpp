@@ -315,7 +315,7 @@ void DragForcing::operator()(
             // BC forcing pushes nonrelative velocity toward target velocity
             bc_forcing_x = -(uxTarget - ux1) / dt;
             bc_forcing_y = -(uyTarget - uy1) / dt;
-            //! Adding horizonal drag
+            //! Adding horizontal drag
             if (drag(i, j, k) > 1) {
                 //! West
                 amrex::GpuArray<amrex::Real, 2> tmp_wind_target =
