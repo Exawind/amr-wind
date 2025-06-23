@@ -422,8 +422,9 @@ struct ReadInputsOp<W2AWaves>
         }
         // Set up plan for FFTW
         if (wdata.is_ocean) {
-            wdata.plan_vector.emplace_back(modes_hosgrid::plan_ifftw(
-                wdata.n0, wdata.n1, wdata.c_eta_mptr, plan_f));
+            wdata.plan_vector.emplace_back(
+                modes_hosgrid::plan_ifftw(
+                    wdata.n0, wdata.n1, wdata.c_eta_mptr, plan_f));
         } else {
             modes_hosgrid::plan_ifftw_nwt(
                 wdata.n0, wdata.n1, wdata.plan_vector, wdata.r_eta_mptr,
@@ -588,8 +589,10 @@ struct InitDataOp<W2AWaves>
     void
     // cppcheck-suppress constParameterReference
     operator()(
-        W2AWaves::DataType &
-            data, int level, const amrex::Geometry & geom, bool multiphase_mode)
+        W2AWaves::DataType& data,
+        int level,
+        const amrex::Geometry& geom,
+        bool multiphase_mode)
     {
 
 #ifdef AMR_WIND_USE_W2A
