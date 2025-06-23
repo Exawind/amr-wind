@@ -61,6 +61,10 @@ def main():
     sdirs = sorted(directories)
 
     max_dir = len(sdirs)-1
+    print(max_dir)
+    if (max_dir < 0):
+        print("ERROR: No matching sampling directories found, exiting!")
+        sys.exit(1)
     max_step = int(sdirs[max_dir][len(args.label):len(sdirs[max_dir])])
 
     for n in range(len(sdirs)):

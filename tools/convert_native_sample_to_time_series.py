@@ -73,6 +73,10 @@ def main():
     contents = glob.glob(args.label + "*")
     directories = [path for path in contents if os.path.isdir(path)]
     sdirs = sorted(directories)
+    n_dir = len(sdirs)
+    if (n_dir == 0):
+        print("ERROR: No matching sampling directories found, exiting!")
+        sys.exit(1)
 
     # Separate by length, then order again (because 10000 would be next to 100000)
     max_len = len(sdirs[0])
@@ -92,7 +96,6 @@ def main():
                     sdirs[idx] = sdirs_init[n]
                     idx += 1
 
-    n_dir = len(sdirs)
     max_step = int(sdirs[n_dir-1][len(args.label):len(sdirs[n_dir-1])])
 
     # Get stuff for header and array sizes using first available directory
