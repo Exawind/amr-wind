@@ -5,7 +5,6 @@
 #include "amr-wind/core/Field.H"
 #include "amr-wind/CFDSim.H"
 
-
 namespace amr_wind::terraindrag {
 
 /** Terraindrag Flow physics
@@ -56,7 +55,6 @@ private:
     IntField& m_terrain_blank;
     //! Terrain drag force term
     IntField& m_terrain_drag;
-
 
     //! Terrain file
     std::string m_terrain_file{"terrain.amrwind"};
