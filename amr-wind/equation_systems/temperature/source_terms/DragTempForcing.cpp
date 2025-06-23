@@ -6,7 +6,34 @@
 #include "AMReX_ParmParse.H"
 #include "AMReX_Gpu.H"
 #include "AMReX_Random.H"
+#include "amr-wind/utilities/constants.H"
 
+namespace{
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+compute_target_theta(
+    const amrex::Real ux,
+    const amrex::Real uy,
+    const amrex::Real theta,
+    const amrex::Real monin_obukhov_length,
+    const amrex::Real gravity_mod,
+    const amrex::Real dx,
+    const amrex::Real z0,
+    const amrex::Real kappa)
+{
+    const amrex::Real wspd = std::sqrt(ux * ux + uy * uy);
+    const amrex::Real ustar = wspd * kappa / std::log(1.5 * dx / z0);
+    const amrex::Real thetastar =
+        theta * ustar * ustar /
+        (kappa * gravity_mod * monin_obukhov_length);
+    const amrex::Real surf_temp =
+        theta -
+        thetastar / kappa * (std::log(1.5 * dx / z0));
+    const amrex::Real tTarget =
+        surf_temp +
+        thetastar / kappa * (std::log(0.5 * dx / z0));
+    return tTarget;
+}
+}
 namespace amr_wind::pde::temperature {
 
 DragTempForcing::DragTempForcing(const CFDSim& sim)
@@ -87,6 +114,7 @@ void DragTempForcing::operator()(
     const amrex::Real cd_max = 10.0;
     const amrex::Real T0 = m_soil_temperature;
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+        const int cell_drag = (drag(i,j,k)> 0) ? 1 : 0;
         const amrex::Real z0 = std::max(terrainz0(i, j, k), z0_min);
         const amrex::Real ux1 = vel(i, j, k, 0);
         const amrex::Real uy1 = vel(i, j, k, 1);
@@ -106,13 +134,31 @@ void DragTempForcing::operator()(
         const amrex::Real tTarget =
             surf_temp +
             thetastar / kappa * (std::log(0.5 * dx[2] / z0) - psi_h_cell);
-        const amrex::Real bc_forcing_t = -(tTarget - theta) / dt;
+        amrex::Real bc_forcing_t = -(tTarget - theta) / dt;
+        // //! West
+        // amrex::Real tmp_temp_target =compute_target_theta(vel(i-1,j,k,2),vel(i-1,j,k,1),theta,
+        // monin_obukhov_length, gravity_mod, dx[0],z0, kappa);
+        // bc_forcing_t += -(tmp_temp_target - theta) / dt * blank(i-1,j,k);
+        // //! East
+        // tmp_temp_target = compute_target_theta(vel(i+1,j,k,2),vel(i+1,j,k,1),theta,
+        // monin_obukhov_length, gravity_mod, dx[0],z0, kappa);
+        // bc_forcing_t += -(tmp_temp_target - theta) / dt * blank(i+1,j,k);
+        // //! South
+        // tmp_temp_target = compute_target_theta(vel(i,j-1,k,2),vel(i,j-1,k,0),theta,
+        // monin_obukhov_length, gravity_mod, dx[1],z0, kappa);
+        // bc_forcing_t += -(tmp_temp_target - theta) / dt * blank(i,j-1,k);
+        // //! North
+        // tmp_temp_target = compute_target_theta(vel(i,j+1,k,2),vel(i,j+1,k,0),theta,
+        // monin_obukhov_length, gravity_mod, dx[1],z0, kappa);
+        // bc_forcing_t += -(tmp_temp_target - theta) / dt * blank(i,j+1,k);
+        // const amrex::Real sum_blank_t =  blank(i,j,k-1)+blank(i - 1, j, k) + blank(i + 1, j, k) + blank(i, j - 1, k) + blank(i, j + 1, k);
+        // bc_forcing_t /= (sum_blank_t + amr_wind::constants::EPS);
         const amrex::Real m = std::sqrt(ux1 * ux1 + uy1 * uy1 + uz1 * uz1);
         const amrex::Real Cd =
             std::min(drag_coefficient / (m + tiny), cd_max / dx[2]);
         src_term(i, j, k, 0) -=
             (Cd * (theta - T0) * blank(i, j, k, 0) +
-             bc_forcing_t * drag(i, j, k));
+             bc_forcing_t * cell_drag);
     });
 }
 

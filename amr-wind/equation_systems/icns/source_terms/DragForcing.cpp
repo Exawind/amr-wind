@@ -10,6 +10,27 @@
 #include "amr-wind/utilities/constants.H"
 
 namespace {
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::GpuArray<amrex::Real, 2>
+compute_target_wind(
+    const amrex::Real ux,
+    const amrex::Real uy,
+    const amrex::Real dx,
+    const amrex::Real z0,
+    const amrex::Real kappa)
+{
+    const amrex::Real wspd = std::sqrt(ux * ux + uy * uy);
+    const amrex::Real ustar = wspd * kappa / std::log(1.5 * dx / z0);
+    const amrex::Real wspd_target = ustar / kappa * std::log(0.5 * dx / z0);
+    const amrex::Real wspd_target_x =
+        wspd_target * ux /
+        (amr_wind::constants::EPS + std::sqrt(ux * ux + uy * uy));
+    const amrex::Real wspd_target_y =
+        wspd_target * uy /
+        (amr_wind::constants::EPS + std::sqrt(ux * ux + uy * uy));
+    return {wspd_target_x, wspd_target_y};
+}
+
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real viscous_drag_calculations(
     amrex::Real& Dxz,
     amrex::Real& Dyz,
@@ -209,6 +230,7 @@ void DragForcing::operator()(
                   0.5 * dx[2] / m_monin_obukhov_length, m_beta_m, m_gamma_m)
             : 0.0;
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+        const int cell_drag = (drag(i, j, k) > 0) ? 1 : 0;
         const amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
         const amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
         const amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
@@ -249,7 +271,9 @@ void DragForcing::operator()(
         amrex::Real Dyz = 0.0;
         amrex::Real bc_forcing_x = 0;
         amrex::Real bc_forcing_y = 0;
+        amrex::Real bc_forcing_z = 0;
         const amrex::Real m = std::sqrt(ux1 * ux1 + uy1 * uy1 + uz1 * uz1);
+        const amrex::Real z0 = std::max(terrainz0(i, j, k), z0_min);
         if (drag(i, j, k) == 1 && (!is_laminar)) {
             // Check if close enough to interface to use current cell or below
             int k_off = -1;
@@ -273,8 +297,7 @@ void DragForcing::operator()(
             const amrex::Real uy1r = uy1 - wall_v;
             const amrex::Real ux2r = vel(i, j, k + 1, 0) - wall_u;
             const amrex::Real uy2r = vel(i, j, k + 1, 1) - wall_v;
-            const amrex::Real z0 = std::max(terrainz0(i, j, k), z0_min);
-            const amrex::Real ustar = viscous_drag_calculations(
+            amrex::Real ustar = viscous_drag_calculations(
                 Dxz, Dyz, ux1r, uy1r, ux2r, uy2r, z0, dx[2], kappa,
                 non_neutral_neighbour);
             if (model_form_drag) {
@@ -292,6 +315,48 @@ void DragForcing::operator()(
             // BC forcing pushes nonrelative velocity toward target velocity
             bc_forcing_x = -(uxTarget - ux1) / dt;
             bc_forcing_y = -(uyTarget - uy1) / dt;
+            //! Adding horizonal drag
+            if(drag(i,j,k)>1){
+            //! West
+            amrex::GpuArray<amrex::Real, 2> tmp_wind_target =
+                compute_target_wind(
+                    vel(i - 1, j, k, 2), vel(i - 1, j, k, 1), dx[0], z0, kappa);
+            bc_forcing_z +=
+                -(tmp_wind_target[0] - uz1) / dt * blank(i - 1, j, k);
+            bc_forcing_y +=
+                -(tmp_wind_target[1] - uy1) / dt * blank(i - 1, j, k);
+            //! East
+            tmp_wind_target = compute_target_wind(
+                vel(i + 1, j, k, 2), vel(i + 1, j, k, 1), dx[0], z0, kappa);
+            bc_forcing_z +=
+                -(tmp_wind_target[0] - uz1) / dt * blank(i + 1, j, k);
+            bc_forcing_y +=
+                -(tmp_wind_target[1] - uy1) / dt * blank(i + 1, j, k);
+            //! South
+            tmp_wind_target = compute_target_wind(
+                vel(i, j - 1, k, 2), vel(i, j - 1, k, 0), dx[1], z0, kappa);
+            bc_forcing_z +=
+                -(tmp_wind_target[0] - uz1) / dt * blank(i, j - 1, k);
+            bc_forcing_x +=
+                -(tmp_wind_target[1] - ux1) / dt * blank(i, j - 1, k);
+            //! North
+            tmp_wind_target = compute_target_wind(
+                vel(i, j + 1, k, 2), vel(i, j + 1, k, 0), dx[1], z0, kappa);
+            bc_forcing_z +=
+                -(tmp_wind_target[0] - uz1) / dt * blank(i, j + 1, k);
+            bc_forcing_x +=
+                -(tmp_wind_target[1] - ux1) / dt * blank(i, j + 1, k);
+            const amrex::Real sum_blank_x =
+                blank(i, j - 1, k) + blank(i, j + 1, k) + blank(i, j, k - 1);
+            bc_forcing_x /= (sum_blank_x + amr_wind::constants::EPS);
+            const amrex::Real sum_blank_y =
+                blank(i - 1, j, k) + blank(i + 1, j, k) + blank(i, j, k - 1);
+            bc_forcing_y /= (sum_blank_y + amr_wind::constants::EPS);
+            const amrex::Real sum_blank_z =
+                blank(i - 1, j, k) + blank(i + 1, j, k) + blank(i, j - 1, k) +
+                blank(i, j + 1, k);
+            bc_forcing_z /= (sum_blank_z + amr_wind::constants::EPS);
+            }
         }
         // Target velocity intended for within terrain
         amrex::Real target_u = 0.;
@@ -302,21 +367,21 @@ void DragForcing::operator()(
             target_v = target_vel_arr(i, j, k, 1);
             target_w = target_vel_arr(i, j, k, 2);
         }
-
         const amrex::Real CdM = std::min(
             Cd / (m + amr_wind::constants::EPS), cd_max / scale_factor);
         src_term(i, j, k, 0) -=
-            (CdM * m * (ux1 - target_u) * blank(i, j, k) + Dxz * drag(i, j, k) +
-             bc_forcing_x * drag(i, j, k) +
+            (CdM * m * (ux1 - target_u) * blank(i, j, k) + Dxz * cell_drag +
+             bc_forcing_x * cell_drag +
              (xstart_damping + xend_damping + ystart_damping + yend_damping) *
                  (ux1 - sponge_density * spongeVelX));
         src_term(i, j, k, 1) -=
-            (CdM * m * (uy1 - target_v) * blank(i, j, k) + Dyz * drag(i, j, k) +
-             bc_forcing_y * drag(i, j, k) +
+            (CdM * m * (uy1 - target_v) * blank(i, j, k) + Dyz * cell_drag +
+             bc_forcing_y * cell_drag +
              (xstart_damping + xend_damping + ystart_damping + yend_damping) *
                  (uy1 - sponge_density * spongeVelY));
         src_term(i, j, k, 2) -=
             (CdM * m * (uz1 - target_w) * blank(i, j, k) +
+             bc_forcing_z * cell_drag +
              (xstart_damping + xend_damping + ystart_damping + yend_damping) *
                  (uz1 - sponge_density * spongeVelZ));
     });
