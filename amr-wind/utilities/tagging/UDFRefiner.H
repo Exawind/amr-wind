@@ -30,7 +30,7 @@ public:
 private:
     const CFDSim& m_sim;
     amrex::RealBox m_bound_box;
-    amrex::ParserExecutor<(AMREX_SPACEDIM + 1)> m_udf_func;
+    amrex::Parser m_parser;
 };
 
 } // namespace amr_wind::tagging
