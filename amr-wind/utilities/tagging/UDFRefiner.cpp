@@ -8,7 +8,7 @@ UDFRefiner::UDFRefiner(const CFDSim& sim, const std::string& key)
 {
     amrex::ParmParse pp(key);
     std::string udf_str;
-    pp.query("udf", udf_str);
+    pp.get("udf", udf_str);
 
     amrex::Vector<amrex::Real> box_lo(AMREX_SPACEDIM, 0);
     amrex::Vector<amrex::Real> box_hi(AMREX_SPACEDIM, 0);
