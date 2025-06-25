@@ -1,0 +1,14 @@
+.. meta::c1a8a2084843ed2bddb6dac27769c4f3791a04dcc366ad70a5c29ad0227dfbd0def12019069287fe3ad1c1f210984e053e031f32119773d90112985b41216484
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/actuator/disk/uniform_ct_ops.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/wind\_energy/actuator/disk/uniform\_ct\_ops.H Source File
+======================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: uniform__ct__ops_8_h_source.html

@@ -1,0 +1,14 @@
+.. meta::4576d71e56340095d6cf26b52bed67049a33e1e813c47db096a14f1242fa833e38f4bd440b8fa79746e0c494e9791380c558c35013ac134295f9fadf1b5f8e04
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::icns::BoussinesqBuoyancy Class Reference
+
+BoussinesqBuoyancy Class Reference
+==================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1pde_1_1icns_1_1_boussinesq_buoyancy.html

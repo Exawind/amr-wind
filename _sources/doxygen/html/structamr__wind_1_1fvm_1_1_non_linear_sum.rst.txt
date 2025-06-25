@@ -1,0 +1,14 @@
+.. meta::a1348fc472a3a46436811b99b3c7ce248a16ed7dfd17c806956e39655afa13ffb29f41a81d0dc34bb0e78a9c1456d295f9afb4dc1d9d32a5c26f319e017a5add
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::fvm::NonLinearSum&lt; FTypeIn, FTypeOut &gt; Struct Template Reference
+
+NonLinearSum&lt; FTypeIn, FTypeOut &gt; Struct Template Reference
+=================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1fvm_1_1_non_linear_sum.html

@@ -1,0 +1,14 @@
+.. meta::3b666944a804ce4e758607db56fd3f24fb1ab08190905b87c125c0be4d829223201c762400371af68231badd3edbbf2ae8384743a2e505683e021ab4d1a0875b
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/projection/nodal_projection_ops.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/projection/nodal\_projection\_ops.H Source File
+============================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: nodal__projection__ops_8_h_source.html

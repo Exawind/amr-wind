@@ -1,0 +1,14 @@
+.. meta::04db7ad4e41f7aca71a7e2890746e134a49b0fb5dfdb51a6a52486f3ea386eb8fe107385fe7b9d2cf6b5f71fe0568cc4ca6f5ed0e92c1ff41cf9adf7702753e3
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::RefinementCriteria Class Reference
+
+RefinementCriteria Class Reference
+==================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_refinement_criteria.html

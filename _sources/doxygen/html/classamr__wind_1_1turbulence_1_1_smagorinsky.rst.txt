@@ -1,0 +1,14 @@
+.. meta::5e392b401fd0347405c455025cc91750f0fb673a8ef58ee6c1ee2406b8dee2898d27ad1c05f00b314648f453fe90924f9e02633dc72704517f36d20190633dac
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::turbulence::Smagorinsky&lt; Transport &gt; Class Template Reference
+
+Smagorinsky&lt; Transport &gt; Class Template Reference
+=======================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1turbulence_1_1_smagorinsky.html

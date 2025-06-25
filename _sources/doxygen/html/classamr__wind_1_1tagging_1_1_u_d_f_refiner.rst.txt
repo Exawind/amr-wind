@@ -1,0 +1,14 @@
+.. meta::8cf83010071fd8d6f68b92ad987dfe0a121432aa78e80ab5d9e9476dd1b604964b191fcd84c9ad1fbab8e343918d37c4e8377ba9a568e6cc8917d7a2294f4d0d
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::tagging::UDFRefiner Class Reference
+
+UDFRefiner Class Reference
+==========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1tagging_1_1_u_d_f_refiner.html

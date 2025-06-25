@@ -1,0 +1,14 @@
+.. meta::004a67ea33027c14fea5f8b6804b569aadbc208f806fad8fec0a3c2fdc61f0867fcc7687b5175a668993b89ffb890d15209b94d937430e9d0b7f362218a28f98
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::ComputeRHSOp&lt; Density, Scheme &gt; Struct Template Reference
+
+ComputeRHSOp&lt; Density, Scheme &gt; Struct Template Reference
+===============================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1pde_1_1_compute_r_h_s_op_3_01_density_00_01_scheme_01_4.html

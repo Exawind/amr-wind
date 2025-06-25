@@ -1,0 +1,14 @@
+.. meta::d44e5d148f0f46a858951e8102eaf22b2ed8880855e47f416c1ce79ecc2e711f6b4dba0274b83c7a2c1976a48b66c75608f01d80d2136229a560bc2fb4ebede4
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ib::IBDataHolder&lt; IBTrait &gt; Class Template Reference
+
+IBDataHolder&lt; IBTrait &gt; Class Template Reference
+======================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1ib_1_1_i_b_data_holder.html

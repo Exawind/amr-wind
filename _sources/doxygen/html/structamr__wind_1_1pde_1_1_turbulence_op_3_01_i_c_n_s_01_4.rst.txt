@@ -1,0 +1,14 @@
+.. meta::ebd8423106f6a776fd89d872b4cc54608f06b25274cfae42931652a7cd7585c5a67dc7e5690896fec21953cdcac0ec323b14e7eff20cd1d697f91d652082bc18
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::TurbulenceOp&lt; ICNS &gt; Struct Reference
+
+TurbulenceOp&lt; ICNS &gt; Struct Reference
+===========================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1pde_1_1_turbulence_op_3_01_i_c_n_s_01_4.html

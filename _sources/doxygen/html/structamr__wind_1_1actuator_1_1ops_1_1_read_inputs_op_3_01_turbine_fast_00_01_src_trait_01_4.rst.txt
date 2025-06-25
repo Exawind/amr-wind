@@ -1,0 +1,14 @@
+.. meta::c0ef8b0f00067abfd08fca3810bb03c91523b9f42f874096b491b6351ce9886f0fdc13371adc1d9a49ac78d1f72902a719099bcf866897057cb605da300c2f8c
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::ReadInputsOp&lt; TurbineFast, SrcTrait &gt; Struct Template Reference
+
+ReadInputsOp&lt; TurbineFast, SrcTrait &gt; Struct Template Reference
+=====================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1ops_1_1_read_inputs_op_3_01_turbine_fast_00_01_src_trait_01_4.html

@@ -1,0 +1,14 @@
+.. meta::c51cf0448d229788c09c4faea4d57fdedf9e0dd4cbf135c2247dae4c9e223c5ba914f50fd2b898d07a9496c682d2bfe0871985de4c0c38458952eb4c4bb65c2a
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::ActSrcOp&lt; ActTrait, ActSrcDisk, std::enable_if_t&lt; std::is_base_of_v&lt; DiskType, ActTrait &gt; &gt; &gt; Class Template Reference
+
+is\_base\_of\_v&lt; DiskType, ActTrait &gt; &gt; &gt; Class Template Reference
+==============================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1actuator_1_1ops_1_1_act_src_op_3_01_act_trait_00_01_act_src_disk_00_01std_1_1ee04fecc6798ca46a0b66f2d324e1595e.html

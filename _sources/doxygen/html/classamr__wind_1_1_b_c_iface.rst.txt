@@ -1,0 +1,14 @@
+.. meta::6447220f2696f85162e0e06e19a03765e418a184aed74b272545d4e40a04cdea64a65aea914abf534b020c1c3e0fe359b3541ed409a9d072098896bdedaf7cd7
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::BCIface Class Reference
+
+BCIface Class Reference
+=======================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_b_c_iface.html

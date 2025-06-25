@@ -1,0 +1,14 @@
+.. meta::64daf1a71a1a3572b928e6551bc29a30934d798b236ef96097a63dd2252d058fa031c87704873bda267bd2ff98b0023b422509efd1fc5e5543d145104faad608
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/actuator/disk/disk_spreading.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/wind\_energy/actuator/disk/disk\_spreading.H File Reference
+========================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: disk__spreading_8_h.html

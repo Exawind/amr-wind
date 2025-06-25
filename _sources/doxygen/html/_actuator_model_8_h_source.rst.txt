@@ -1,0 +1,14 @@
+.. meta::9b1de0f51dca2eb0d055a505c04a069d6049c85ce8147385354ff43e1b8176b4c80194f4837306788b520577ec6a3ff48e5f2bebf3cdd4a7a7cc3b0383de721f
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/actuator/ActuatorModel.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/wind\_energy/actuator/ActuatorModel.H Source File
+==============================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _actuator_model_8_h_source.html
