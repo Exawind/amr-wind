@@ -287,6 +287,7 @@ add_test_re(ctv_mol_mesh_map_explicit)
 add_test_re(abl_specifiedmol_neutral)
 add_test_re(abl_specifiedmol_stable)
 add_test_re(abl_specifiedmol_unstable)
+add_test_re(udf_refinement)
 
 if(AMR_WIND_ENABLE_NETCDF)
   add_test_re(abl_bndry_output)
