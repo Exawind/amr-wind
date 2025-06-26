@@ -379,9 +379,9 @@ void OversetOps::sharpen_nalu_data()
 
     // Purely for debugging via visualization, should be removed later
     // Currently set up to overwrite the levelset field (not used as time
-    // evolves) with the post-sharpening velocity magnitude
+    // evolves) with the post-sharpening vof distribution
     for (int lev = 0; lev < nlevels; ++lev) {
-        overset_ops::equate_field(levelset(lev), velocity(lev));
+        overset_ops::equate_field(levelset(lev), vof(lev));
     }
     amrex::Gpu::streamSynchronize();
 }

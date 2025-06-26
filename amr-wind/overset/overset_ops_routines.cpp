@@ -643,10 +643,7 @@ void equate_field(amrex::MultiFab& mf_dest, const amrex::MultiFab& mf_src)
     const auto& src = mf_src.const_arrays();
     amrex::ParallelFor(
         mf_dest, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-            dest[nbx](i, j, k) = std::sqrt(
-                src[nbx](i, j, k, 0) * src[nbx](i, j, k, 0) +
-                src[nbx](i, j, k, 1) * src[nbx](i, j, k, 1) +
-                src[nbx](i, j, k, 2) * src[nbx](i, j, k, 2));
+            dest[nbx](i, j, k) = src[nbx](i, j, k);
         });
 }
 
