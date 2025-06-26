@@ -38,6 +38,13 @@ def main():
         default="sampling",
         type=str,
     )
+    parser.add_argument(
+        "-n",
+        "--number_of_digits",
+        help="Fixed number of digits denoting output step",
+        default=0,
+        type=int,
+    )
     args = parser.parse_args()
 
     ########## Input arguments from command line ##############
@@ -60,26 +67,46 @@ def main():
     directories = [path for path in contents if os.path.isdir(path)]
     sdirs = sorted(directories)
 
-    max_dir = len(sdirs)-1
-    print(max_dir)
+    # if fixed length is specified, prune directories that do not fit
+    skip_flag = np.zeros(len(sdirs))
+    ndir = len(sdirs)
+    max_dir = ndir - 1
+    if (args.number_of_digits > 0):
+        ndir = 0
+        max_dir = ndir - 1
+        for n in range(len(sdirs)):
+            if (int(len(sdirs[n])) != int(len(args.label) + args.number_of_digits)):
+                skip_flag[n] = 1
+            else:
+                ndir += 1
+                max_dir = n
+
+    print("Number of folders to read: " + str(ndir))
     if (max_dir < 0):
         print("ERROR: No matching sampling directories found, exiting!")
         sys.exit(1)
     max_step = int(sdirs[max_dir][len(args.label):len(sdirs[max_dir])])
 
+    samplers_printed = False
     for n in range(len(sdirs)):
+        if (skip_flag[n] == 1):
+            continue
+
         step = int(sdirs[n][len(args.label):len(sdirs[n])])
-        print(str(step) + " out of " + str(max_step))
+        if (samplers_printed):
+            print(str(step) + " out of " + str(max_step))
         pt = pfile.load(step, label=args.label, root_dir = ".")
         pt.parse_header()
         pt.parse_info()
         pt.load_binary_data()
         data = pt.df
         samplers = pt.info["samplers"]
-        if (n == 0):
-            print("sampler labels found in first step:")
+        if (not samplers_printed):
+            samplers_printed = True
+            print("Sampler labels found in first step:")
             for sampler in samplers:
                 print("   " + sampler["label"])
+            print("Reading folder " + str(step) + " out of " + str(max_step))
         
         t_str = str(pt.info["time"])
         v_str = "x y z"
