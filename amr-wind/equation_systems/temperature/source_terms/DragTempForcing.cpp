@@ -156,10 +156,10 @@ void DragTempForcing::operator()(
                 monin_obukhov_length, gravity_mod, dx[1], z0, kappa);
             bc_forcing_t +=
                 -(tmp_temp_target - theta) / dt * blank(i, j + 1, k);
-            const amrex::Real sum_blank_t =
-                blank(i, j, k - 1) + blank(i - 1, j, k) + blank(i + 1, j, k) +
-                blank(i, j - 1, k) + blank(i, j + 1, k);
-            bc_forcing_t /= (sum_blank_t + amr_wind::constants::EPS);
+            // const amrex::Real sum_blank_t =
+            //     blank(i, j, k - 1) + blank(i - 1, j, k) + blank(i + 1, j, k) +
+            //     blank(i, j - 1, k) + blank(i, j + 1, k);
+            // bc_forcing_t /= (sum_blank_t + amr_wind::constants::EPS);
         }
         const amrex::Real m = std::sqrt(ux1 * ux1 + uy1 * uy1 + uz1 * uz1);
         const amrex::Real Cd =
