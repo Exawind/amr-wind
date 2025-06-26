@@ -6,9 +6,9 @@ import os
 import argparse
 
 def main():
-    """Convert native data for a single sampler point to a time series in ASCII."""
+    """Convert native sampling data to a structured ASCII file for every output step"""
     parser = argparse.ArgumentParser(
-        description="Convert native data for a single sampler point to a time series in ASCII"
+        description="Convert native sampling data to a structured ASCII file for every output step"
     )
     parser.add_argument(
         "-aw",
