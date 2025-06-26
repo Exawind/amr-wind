@@ -6,9 +6,9 @@ import os
 import argparse
 
 def main():
-    """Convert native sampling data to a structured ASCII file for every output step"""
+    """Convert native sampling data to a structured ASCII file for every sampler and output step"""
     parser = argparse.ArgumentParser(
-        description="Convert native sampling data to a structured ASCII file for every output step"
+        description="Convert native sampling data to a structured ASCII file for every sampler and output step"
     )
     parser.add_argument(
         "-aw",
@@ -76,6 +76,10 @@ def main():
         pt.load_binary_data()
         data = pt.df
         samplers = pt.info["samplers"]
+        if (n == 0):
+            print("sampler labels found in first step:")
+            for sampler in samplers:
+                print("   " + sampler["label"])
         
         t_str = str(pt.info["time"])
         v_str = "x y z"
@@ -93,7 +97,7 @@ def main():
         for s in range(len(samplers)):
             np_s = 0
             for p in range(pt.num_particles):
-                if data.set_id[p] == s:
+                if data.set_id[p] == samplers[s]["index"]:
                     np_s += 1
                     pid = data.probe_id[p]
                     output[pid, 0] = data.xco[p]
