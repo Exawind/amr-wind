@@ -433,22 +433,27 @@ amrex::Real calculate_pseudo_dt_flux(
     const amrex::MultiFab& mf_fy,
     const amrex::MultiFab& mf_fz,
     const amrex::MultiFab& mf_vof,
+    const amrex::iMultiFab& mf_iblank,
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dx,
     const amrex::Real tol)
 {
     // Get the maximum flux magnitude, but just for vof fluxes
     const amrex::Real pdt_fx = amrex::ReduceMin(
-        mf_fx, mf_vof, 0,
+        mf_fx, mf_vof, mf_iblank, 0,
         [=] AMREX_GPU_HOST_DEVICE(
             amrex::Box const& bx, amrex::Array4<amrex::Real const> const& fx,
-            amrex::Array4<amrex::Real const> const& vof) -> amrex::Real {
+            amrex::Array4<amrex::Real const> const& vof,
+            amrex::Array4<int const> const& iblank) -> amrex::Real {
             amrex::Real pdt_fab = 1.0;
             amrex::Loop(bx, [=, &pdt_fab](int i, int j, int k) noexcept {
                 amrex::Real pdt_lim = 1.0;
-                if (fx(i, j, k, 0) > tol && vof(i, j, k) > tol) {
+                if (fx(i, j, k, 0) > tol && vof(i, j, k) > tol &&
+                    iblank(i, j, k) == -1) {
                     // VOF is removed from cell i
                     pdt_lim = vof(i, j, k) * dx[0] / fx(i, j, k, 0);
-                } else if (fx(i, j, k, 0) < -tol && vof(i - 1, j, k) > tol) {
+                } else if (
+                    fx(i, j, k, 0) < -tol && vof(i - 1, j, k) > tol &&
+                    iblank(i - 1, j, k) == -1) {
                     // VOF is removed from cell i-1
                     pdt_lim = vof(i - 1, j, k) * dx[0] / -fx(i, j, k, 0);
                 }
@@ -457,17 +462,21 @@ amrex::Real calculate_pseudo_dt_flux(
             return pdt_fab;
         });
     const amrex::Real pdt_fy = amrex::ReduceMin(
-        mf_fy, mf_vof, 0,
+        mf_fy, mf_vof, mf_iblank, 0,
         [=] AMREX_GPU_HOST_DEVICE(
             amrex::Box const& bx, amrex::Array4<amrex::Real const> const& fy,
-            amrex::Array4<amrex::Real const> const& vof) -> amrex::Real {
+            amrex::Array4<amrex::Real const> const& vof,
+            amrex::Array4<int const> const& iblank) -> amrex::Real {
             amrex::Real pdt_fab = 1.0;
             amrex::Loop(bx, [=, &pdt_fab](int i, int j, int k) noexcept {
                 amrex::Real pdt_lim = 1.0;
-                if (fy(i, j, k, 0) > tol && vof(i, j, k) > tol) {
+                if (fy(i, j, k, 0) > tol && vof(i, j, k) > tol &&
+                    iblank(i, j, k) == -1) {
                     // VOF is removed from cell j
                     pdt_lim = vof(i, j, k) * dx[1] / fy(i, j, k, 0);
-                } else if (fy(i, j, k, 0) < -tol && vof(i, j - 1, k) > tol) {
+                } else if (
+                    fy(i, j, k, 0) < -tol && vof(i, j - 1, k) > tol &&
+                    iblank(i, j - 1, k) == -1) {
                     // VOF is removed from cell j-1
                     pdt_lim = vof(i, j - 1, k) * dx[1] / -fy(i, j, k, 0);
                 }
@@ -476,17 +485,21 @@ amrex::Real calculate_pseudo_dt_flux(
             return pdt_fab;
         });
     const amrex::Real pdt_fz = amrex::ReduceMin(
-        mf_fz, mf_vof, 0,
+        mf_fz, mf_vof, mf_iblank, 0,
         [=] AMREX_GPU_HOST_DEVICE(
             amrex::Box const& bx, amrex::Array4<amrex::Real const> const& fz,
-            amrex::Array4<amrex::Real const> const& vof) -> amrex::Real {
+            amrex::Array4<amrex::Real const> const& vof,
+            amrex::Array4<int const> const& iblank) -> amrex::Real {
             amrex::Real pdt_fab = 1.0;
             amrex::Loop(bx, [=, &pdt_fab](int i, int j, int k) noexcept {
                 amrex::Real pdt_lim = 1.0;
-                if (fz(i, j, k, 0) > tol && vof(i, j, k) > tol) {
+                if (fz(i, j, k, 0) > tol && vof(i, j, k) > tol &&
+                    iblank(i, j, k) == -1) {
                     // VOF is removed from cell k
                     pdt_lim = vof(i, j, k) * dx[2] / fz(i, j, k, 0);
-                } else if (fz(i, j, k, 0) < -tol && vof(i, j, k - 1) > tol) {
+                } else if (
+                    fz(i, j, k, 0) < -tol && vof(i, j, k - 1) > tol &&
+                    iblank(i, j, k - 1) == -1) {
                     // VOF is removed from cell k-1
                     pdt_lim = vof(i, j, k - 1) * dx[2] / -fz(i, j, k, 0);
                 }

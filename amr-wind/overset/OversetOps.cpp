@@ -335,8 +335,8 @@ void OversetOps::sharpen_nalu_data()
             // Compare vof fluxes to vof in source cells
             // Convergence tolerance determines what size of fluxes matter
             const amrex::Real ptfac_lev = overset_ops::calculate_pseudo_dt_flux(
-                (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), vof(lev), dx,
-                m_convg_tol);
+                (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), vof(lev),
+                iblank_cell(lev), dx, m_convg_tol);
             ptfac = amrex::min(ptfac, ptfac_lev);
         }
         amrex::Gpu::streamSynchronize();
@@ -370,7 +370,8 @@ void OversetOps::sharpen_nalu_data()
 
         if (m_verbose > 0) {
             amrex::Print() << "OversetOps: sharpen step " << n << "  conv. err "
-                           << err << "  tol " << m_convg_tol << std::endl;
+                           << err << "  tol " << m_convg_tol
+                           << " pseudo-time dt " << ptfac << std::endl;
         }
     }
 
