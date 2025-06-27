@@ -6,6 +6,21 @@
 #include "amr-wind/wind_energy/MOData.H"
 #include "amr-wind/utilities/linear_interpolation.H"
 #include "amr-wind/utilities/constants.H"
+
+namespace {
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real compute_target_ustar(
+    const amrex::Real ux,
+    const amrex::Real uy,
+    const amrex::Real dx,
+    const amrex::Real z0,
+    const amrex::Real kappa)
+{
+    const amrex::Real wspd = std::sqrt(ux * ux + uy * uy);
+    const amrex::Real ustar = wspd * kappa / std::log(1.5 * dx / z0);
+    return ustar;
+}
+} // namespace
 namespace amr_wind::pde::tke {
 
 KransAxell::KransAxell(const CFDSim& sim)
@@ -164,16 +179,17 @@ void KransAxell::operator()(
         const auto& terrainz0 = (*m_terrainz0)(lev).const_array(mfi);
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                const int cell_drag = (drag_arr(i, j, k) > 0) ? 1 : 0;
                 const amrex::Real cell_z0 =
-                    drag_arr(i, j, k) * std::max(terrainz0(i, j, k), z0_min) +
-                    (1 - drag_arr(i, j, k)) * z0;
+                    cell_drag * std::max(terrainz0(i, j, k), z0_min) +
+                    (1 - cell_drag) * z0;
                 amrex::Real terrainforcing = 0;
                 amrex::Real dragforcing = 0;
                 amrex::Real ux = vel(i, j, k + 1, 0);
                 amrex::Real uy = vel(i, j, k + 1, 1);
                 amrex::Real z = 0.5 * dx[2];
                 amrex::Real m = std::sqrt(ux * ux + uy * uy);
-                const amrex::Real ustar =
+                amrex::Real ustar =
                     m * kappa / (std::log(3 * z / cell_z0) - psi_m);
                 const amrex::Real T0 = ref_theta_arr(i, j, k);
                 const amrex::Real hf = std::abs(gravity[2]) / T0 * heat_flux;
@@ -183,6 +199,42 @@ void KransAxell::operator()(
                 terrainforcing =
                     (ustar * ustar / (Cmu * Cmu) + rans_b - tke_arr(i, j, k)) /
                     dt;
+                if (cell_drag > 1) {
+                    //! West
+                    ustar = compute_target_ustar(
+                        vel(i - 1, j, k, 2), vel(i - 1, j, k, 1), dx[0], z0,
+                        kappa);
+                    terrainforcing +=
+                        (ustar * ustar / (Cmu * Cmu) - tke_arr(i, j, k)) / dt *
+                        blank_arr(i - 1, j, k);
+                    //! East
+                    ustar = compute_target_ustar(
+                        vel(i + 1, j, k, 2), vel(i + 1, j, k, 1), dx[0], z0,
+                        kappa);
+                    terrainforcing +=
+                        (ustar * ustar / (Cmu * Cmu) - tke_arr(i, j, k)) / dt *
+                        blank_arr(i + 1, j, k);
+                    //! South
+                    ustar = compute_target_ustar(
+                        vel(i, j - 1, k, 2), vel(i, j - 1, k, 0), dx[1], z0,
+                        kappa);
+                    terrainforcing +=
+                        (ustar * ustar / (Cmu * Cmu) - tke_arr(i, j, k)) / dt *
+                        blank_arr(i, j - 1, k);
+                    //! North
+                    ustar = compute_target_ustar(
+                        vel(i, j + 1, k, 2), vel(i, j + 1, k, 0), dx[1], z0,
+                        kappa);
+                    terrainforcing +=
+                        (ustar * ustar / (Cmu * Cmu) - tke_arr(i, j, k)) / dt *
+                        blank_arr(i, j + 1, k);
+                    // const amrex::Real sum_blank_tke =
+                    //     blank_arr(i, j, k - 1) + blank_arr(i - 1, j, k) +
+                    //     blank_arr(i + 1, j, k) + blank_arr(i, j - 1, k) +
+                    //     blank_arr(i, j + 1, k);
+                    // terrainforcing /=
+                    //     (sum_blank_tke + amr_wind::constants::EPS);
+                }
                 amrex::Real bcforcing = 0;
                 if (k == 0) {
                     bcforcing = (1 - blank_arr(i, j, k)) * terrainforcing;
@@ -211,7 +263,7 @@ void KransAxell::operator()(
                     1.0 / dt * (tke_arr(i, j, k) - ref_tke);
                 src_term(i, j, k) =
                     (1 - blank_arr(i, j, k)) * src_term(i, j, k) +
-                    drag_arr(i, j, k) * terrainforcing +
+                    cell_drag * terrainforcing +
                     blank_arr(i, j, k) * dragforcing -
                     static_cast<int>(has_terrain) *
                         (sponge_forcing - bcforcing);
