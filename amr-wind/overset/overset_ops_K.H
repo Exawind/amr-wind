@@ -109,13 +109,13 @@ void AMREX_GPU_DEVICE AMREX_FORCE_INLINE velocity_face(
     uface = 0.5 * (u_ + u_nb);
     vface = 0.5 * (v_ + v_nb);
     wface = 0.5 * (w_ + w_nb);
-    // Use simple upwinding
-    if (gphi > 0.0) {
+    // Use simple upwinding but consider overset interface
+    if ((gphi > 0.0 && std::abs(gibl) < 2) || gibl == 2) {
         uface = u_nb;
         vface = v_nb;
         wface = w_nb;
     }
-    if (gphi < 0.0) {
+    if ((gphi < 0.0 && std::abs(gibl) < 2) || gibl == -2) {
         uface = u_;
         vface = v_;
         wface = w_;
@@ -143,6 +143,9 @@ void AMREX_GPU_DEVICE AMREX_FORCE_INLINE gp_rho_face(
     // Gradient of phi normal to interface
     const amrex::Real gphi = (vof(iv) - vof(ivm));
 
+    // Gradient of iblank
+    const amrex::Real gibl = (ibl(iv) - ibl(ivm));
+
     // Get velocities on both sides
     const amrex::Real u_ = gp(iv, 0) / rho(iv);
     const amrex::Real v_ = gp(iv, 1) / rho(iv);
@@ -154,13 +157,13 @@ void AMREX_GPU_DEVICE AMREX_FORCE_INLINE gp_rho_face(
     uface = 0.5 * (u_ + u_nb);
     vface = 0.5 * (v_ + v_nb);
     wface = 0.5 * (w_ + w_nb);
-    // Use simple upwinding
-    if (gphi > 0.0) {
+    // Use simple upwinding but consider overset interface
+    if ((gphi > 0.0 && std::abs(gibl) < 2) || gibl == 2) {
         uface = u_nb;
         vface = v_nb;
         wface = w_nb;
     }
-    if (gphi < 0.0) {
+    if ((gphi < 0.0 && std::abs(gibl) < 2) || gibl == -2) {
         uface = u_;
         vface = v_;
         wface = w_;
