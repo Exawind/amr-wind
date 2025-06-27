@@ -86,23 +86,9 @@ youngs_finite_difference_normal_neumann(
     amrex::Real& my,
     amrex::Real& mz) noexcept
 {
-    // Do neumann condition via indices
-
-    /*amrex::Real dvf_x{0.}, dvf_y{0.}, dvf_z{0.};
-    int ct_x{0}, ct_y{0}, ct_z{0};
-    for (int ii = i - 1; ii <= i + 1; ++ii) {
-        for (int jj = j - 1; jj <= j + 1; ++jj) {
-            for (int nk = -1; nk <= 0; ++nk) {
-                if (iblank(ii, jj, k + nk + 1) == iblank(ii, jj, k + nk) &&
-                    iblank(ii, jj, k) == ibl_c) {
-                    dvf_z +=
-                        volfrac(ii, jj, k + nk + 1) - volfrac(ii, jj, k + nk);
-                    ct_z++;
-                }
-            }
-        }
-    }*/
-
+    // Do neumann condition using iblank array
+    // Cells that are not iblank == -1 get calculated with extrapolation using
+    // the average of all valid (relying only on iblank == -1 cells) gradients
     const int ibl_c = iblank(i, j, k);
     amrex::Vector<amrex::Real> dvf{0., 0., 0.};
     amrex::Vector<int> ct{0, 0, 0};
