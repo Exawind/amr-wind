@@ -654,13 +654,14 @@ amrex::Real measure_target_convergence(
 }
 
 // Set levelset field to another quantity to view in plotfile for debugging
-void equate_field(amrex::MultiFab& mf_dest, const amrex::MultiFab& mf_src)
+void equate_field(
+    amrex::MultiFab& mf_dest, const amrex::MultiFab& mf_src, const int icomp)
 {
     const auto& dest = mf_dest.arrays();
     const auto& src = mf_src.const_arrays();
     amrex::ParallelFor(
         mf_dest, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-            dest[nbx](i, j, k) = src[nbx](i, j, k);
+            dest[nbx](i, j, k) = src[nbx](i, j, k, icomp);
         });
 }
 

@@ -109,7 +109,8 @@ amrex::Real measure_target_convergence(
     amrex::MultiFab& mf_vof_target, amrex::MultiFab& mf_vof);
 
 // Set levelset field to another quantity to view in plotfile for debugging
-void equate_field(amrex::MultiFab& mf_dest, const amrex::MultiFab& mf_src);
+void equate_field(
+    amrex::MultiFab& mf_dest, const amrex::MultiFab& mf_src, const int icomp);
 
 // Swap pressure gradient values in overset region
 void replace_gradp(

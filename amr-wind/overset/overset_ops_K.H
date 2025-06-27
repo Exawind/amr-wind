@@ -41,8 +41,10 @@ amrex::Real AMREX_GPU_DEVICE AMREX_FORCE_INLINE alpha_flux(
 
     // Determine which delta_phi (and multiply by normal)
     // The sign depends on side of flux face
-    const amrex::Real dphi_ = std::abs(vof(iv) - tg_vof(iv)) * norm_;
-    const amrex::Real dphi_nb = std::abs(vof(ivm) - tg_vof(ivm)) * norm_nb;
+    amrex::Real dphi_ = tg_vof(iv) - vof(iv);
+    dphi_ *= std::min(0., (dphi_ >= 0. ? norm_ : -norm_));
+    amrex::Real dphi_nb = tg_vof(ivm) - vof(ivm);
+    dphi_nb *= std::max(0., (dphi_nb >= 0. ? norm_nb : -norm_nb));
     // Average value used across the interface
     amrex::Real dphi_eval = 0.5 * (dphi_ + dphi_nb);
     // Upwinding when on the gas side, downwinding on the liquid

@@ -288,6 +288,7 @@ void OversetOps::sharpen_nalu_data()
         bool calc_convg = n % m_calc_convg_interval == 0;
         // Zero error if being calculated this step
         err = calc_convg ? 0.0 : err;
+        target_err = calc_convg ? 0.0 : target_err;
 
         // Maximum possible value of pseudo time factor (dtau)
         amrex::Real ptfac = 1.0;
@@ -374,13 +375,14 @@ void OversetOps::sharpen_nalu_data()
         // Ensure that err is same across processors
         if (calc_convg) {
             amrex::ParallelDescriptor::ReduceRealMax(err);
+            amrex::ParallelDescriptor::ReduceRealMax(target_err);
         }
 
         if (m_verbose > 0) {
-            amrex::Print() << "OversetOps: sharpen step " << std::setw(2) << n << "  conv. err "
-                           << std::scientific << std::setprecision(4) << err
-                           << " targ_err " << target_err << " p-dt " << ptfac
-                           << std::endl;
+            amrex::Print() << "OversetOps: sharpen step " << std::setw(2) << n
+                           << "  conv. err " << std::scientific
+                           << std::setprecision(4) << err << " targ_err "
+                           << target_err << " p-dt " << ptfac << std::endl;
         }
     }
 
@@ -392,7 +394,7 @@ void OversetOps::sharpen_nalu_data()
     // evolves) with the post-sharpening vof distribution
     field_ops::lincomb(*target_vof, 1., *target_vof, 0, -1., vof, 0, 0, 1, 0);
     for (int lev = 0; lev < nlevels; ++lev) {
-        overset_ops::equate_field(levelset(lev), (*target_vof)(lev));
+        overset_ops::equate_field(levelset(lev), (*target_vof)(lev), 0);
     }
     amrex::Gpu::streamSynchronize();
 }
