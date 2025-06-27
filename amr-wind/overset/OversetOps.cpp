@@ -22,6 +22,7 @@ void OversetOps::initialize(CFDSim& sim)
     pp.query("reinit_rlscale", m_relative_length_scale);
     pp.query("reinit_upw_margin", m_upw_margin);
     pp.query("reinit_target_cutoff", m_target_cutoff);
+    pp.query("reinit_pseudo_CFL", m_pCFL);
 
     // Queries for coupling options
     pp.query("replace_gradp_postsolve", m_replace_gradp_postsolve);
@@ -181,7 +182,8 @@ void OversetOps::parameter_output() const
                        << "---- Relative length scale: "
                        << m_relative_length_scale << std::endl
                        << "---- Upwinding VOF margin : " << m_upw_margin
-                       << std::endl;
+                       << std::endl
+                       << "---- Pseudo CFL: " << m_pCFL << std::endl;
         if (m_verbose > 1) {
             // Less important or less used parameters
             amrex::Print() << "---- Calc. conv. interval : "
@@ -292,8 +294,6 @@ void OversetOps::sharpen_nalu_data()
 
         // Maximum possible value of pseudo time factor (dtau)
         amrex::Real ptfac = 1.0;
-        // Maximum pseudoCFL, 0.5 seems to work well
-        const amrex::Real pCFL = 0.5;
 
         for (int lev = 0; lev < nlevels; ++lev) {
             // Populate normal vector
@@ -345,7 +345,7 @@ void OversetOps::sharpen_nalu_data()
         amrex::ParallelDescriptor::ReduceRealMin(ptfac);
 
         // Conform pseudo dt (dtau) to pseudo CFL
-        ptfac = pCFL * ptfac;
+        ptfac = m_pCFL * ptfac;
 
         // Apply fluxes
         for (int lev = 0; lev < nlevels; ++lev) {
