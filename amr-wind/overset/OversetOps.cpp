@@ -22,6 +22,7 @@ void OversetOps::initialize(CFDSim& sim)
     pp.query("reinit_rlscale", m_relative_length_scale);
     pp.query("reinit_upw_margin", m_upw_margin);
     pp.query("reinit_target_cutoff", m_target_cutoff);
+    pp.query("reinit_pseudo_CFL", m_pCFL);
 
     // Queries for coupling options
     pp.query("replace_gradp_postsolve", m_replace_gradp_postsolve);
@@ -181,7 +182,8 @@ void OversetOps::parameter_output() const
                        << "---- Relative length scale: "
                        << m_relative_length_scale << std::endl
                        << "---- Upwinding VOF margin : " << m_upw_margin
-                       << std::endl;
+                       << std::endl
+                       << "---- Pseudo CFL: " << m_pCFL << std::endl;
         if (m_verbose > 1) {
             // Less important or less used parameters
             amrex::Print() << "---- Calc. conv. interval : "
@@ -199,8 +201,9 @@ void OversetOps::sharpen_nalu_data()
     const auto nlevels = repo.num_active_levels();
     const auto geom = m_sim_ptr->mesh().Geom();
 
-    // Get blanking for cells
+    // Get blanking for cells and nodes
     const auto& iblank_cell = repo.get_int_field("iblank_cell");
+    const auto& iblank_node = repo.get_int_field("iblank_node");
 
     // Get fields that will be modified
     auto& vof = repo.get_field("vof");
@@ -280,17 +283,17 @@ void OversetOps::sharpen_nalu_data()
 
     // Pseudo-time loop
     amrex::Real err = 100.0 * m_convg_tol;
+    amrex::Real target_err = err;
     int n = 0;
     while (n < m_n_iterations && err > m_convg_tol) {
         ++n;
         bool calc_convg = n % m_calc_convg_interval == 0;
         // Zero error if being calculated this step
         err = calc_convg ? 0.0 : err;
+        target_err = calc_convg ? 0.0 : target_err;
 
         // Maximum possible value of pseudo time factor (dtau)
         amrex::Real ptfac = 1.0;
-        // Maximum pseudoCFL, 0.5 seems to work well
-        const amrex::Real pCFL = 0.5;
 
         for (int lev = 0; lev < nlevels; ++lev) {
             // Populate normal vector
@@ -299,10 +302,10 @@ void OversetOps::sharpen_nalu_data()
 
             // Sharpening fluxes for vof, density, and momentum
             overset_ops::populate_sharpen_fluxes(
-                (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), vof(lev),
-                (*target_vof)(lev), (*normal_vec)(lev), velocity(lev), gp(lev),
-                rho(lev), pvscale, m_upw_margin, m_mphase->rho1(),
-                m_mphase->rho2());
+                (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev),
+                iblank_cell(lev), vof(lev), (*target_vof)(lev),
+                (*normal_vec)(lev), velocity(lev), gp(lev), rho(lev), pvscale,
+                m_upw_margin, m_mphase->rho1(), m_mphase->rho2());
 
             // Process fluxes
             overset_ops::process_fluxes_calc_src(
@@ -313,7 +316,7 @@ void OversetOps::sharpen_nalu_data()
             if (calc_convg) {
                 // Update error at specified interval of steps
                 const amrex::Real err_lev =
-                    overset_ops::measure_convergence(
+                    overset_ops::measure_flux_convergence(
                         (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev)) /
                     pvscale;
                 err = amrex::max(err, err_lev);
@@ -334,15 +337,15 @@ void OversetOps::sharpen_nalu_data()
             // Compare vof fluxes to vof in source cells
             // Convergence tolerance determines what size of fluxes matter
             const amrex::Real ptfac_lev = overset_ops::calculate_pseudo_dt_flux(
-                (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), vof(lev), dx,
-                m_convg_tol);
+                (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), vof(lev),
+                iblank_cell(lev), dx, m_convg_tol);
             ptfac = amrex::min(ptfac, ptfac_lev);
         }
         amrex::Gpu::streamSynchronize();
         amrex::ParallelDescriptor::ReduceRealMin(ptfac);
 
         // Conform pseudo dt (dtau) to pseudo CFL
-        ptfac = pCFL * ptfac;
+        ptfac = m_pCFL * ptfac;
 
         // Apply fluxes
         for (int lev = 0; lev < nlevels; ++lev) {
@@ -350,12 +353,19 @@ void OversetOps::sharpen_nalu_data()
 
             overset_ops::apply_fluxes(
                 (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), (*p_src)(lev),
-                vof(lev), rho(lev), velocity(lev), gp(lev), p(lev), dx, ptfac,
-                m_vof_tol);
+                iblank_cell(lev), iblank_node(lev), vof(lev), rho(lev),
+                velocity(lev), gp(lev), p(lev), dx, ptfac, m_vof_tol);
 
             vof(lev).FillBoundary(geom[lev].periodicity());
             velocity(lev).FillBoundary(geom[lev].periodicity());
             gp(lev).FillBoundary(geom[lev].periodicity());
+
+            if (calc_convg) {
+                const amrex::Real target_err_lev =
+                    overset_ops::measure_target_convergence(
+                        (*target_vof)(lev), vof(lev));
+                target_err = amrex::max(target_err, target_err_lev);
+            }
         }
         amrex::Gpu::streamSynchronize();
 
@@ -365,11 +375,14 @@ void OversetOps::sharpen_nalu_data()
         // Ensure that err is same across processors
         if (calc_convg) {
             amrex::ParallelDescriptor::ReduceRealMax(err);
+            amrex::ParallelDescriptor::ReduceRealMax(target_err);
         }
 
         if (m_verbose > 0) {
-            amrex::Print() << "OversetOps: sharpen step " << n << "  conv. err "
-                           << err << "  tol " << m_convg_tol << std::endl;
+            amrex::Print() << "OversetOps: sharpen step " << std::setw(2) << n
+                           << "  conv. err " << std::scientific
+                           << std::setprecision(4) << err << " targ_err "
+                           << target_err << " p-dt " << ptfac << std::endl;
         }
     }
 
@@ -378,9 +391,10 @@ void OversetOps::sharpen_nalu_data()
 
     // Purely for debugging via visualization, should be removed later
     // Currently set up to overwrite the levelset field (not used as time
-    // evolves) with the post-sharpening velocity magnitude
+    // evolves) with the post-sharpening vof distribution
+    field_ops::lincomb(*target_vof, 1., *target_vof, 0, -1., vof, 0, 0, 1, 0);
     for (int lev = 0; lev < nlevels; ++lev) {
-        overset_ops::equate_field(levelset(lev), velocity(lev));
+        overset_ops::equate_field(levelset(lev), (*target_vof)(lev), 0);
     }
     amrex::Gpu::streamSynchronize();
 }
