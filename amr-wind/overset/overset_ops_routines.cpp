@@ -608,7 +608,7 @@ void apply_fluxes(
 }
 
 // Get the size of the smallest VOF flux to quantify convergence
-amrex::Real measure_convergence(
+amrex::Real measure_flux_convergence(
     amrex::MultiFab& mf_fx, amrex::MultiFab& mf_fy, amrex::MultiFab& mf_fz)
 {
     // Get the maximum flux magnitude, but just for vof fluxes
@@ -647,6 +647,25 @@ amrex::Real measure_convergence(
         });
     const amrex::Real err = amrex::max(err_fx, amrex::max(err_fy, err_fz));
     return err;
+}
+
+// Get the difference between current vof and target
+amrex::Real measure_target_convergence(
+    amrex::MultiFab& mf_vof_target, amrex::MultiFab& mf_vof)
+{
+    // Get the maximum flux magnitude, but just for vof fluxes
+    return amrex::ReduceMax(
+        mf_vof, mf_vof_target, 0,
+        [=] AMREX_GPU_HOST_DEVICE(
+            amrex::Box const& bx, amrex::Array4<amrex::Real const> const& vof,
+            amrex::Array4<amrex::Real const> const& targ) -> amrex::Real {
+            amrex::Real err_fab = -1.0;
+            amrex::Loop(bx, [=, &err_fab](int i, int j, int k) noexcept {
+                err_fab =
+                    amrex::max(err_fab, std::abs(vof(i, j, k) - targ(i, j, k)));
+            });
+            return err_fab;
+        });
 }
 
 // Set levelset field to another quantity to view in plotfile for debugging

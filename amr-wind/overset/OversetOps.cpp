@@ -281,6 +281,7 @@ void OversetOps::sharpen_nalu_data()
 
     // Pseudo-time loop
     amrex::Real err = 100.0 * m_convg_tol;
+    amrex::Real target_err = err;
     int n = 0;
     while (n < m_n_iterations && err > m_convg_tol) {
         ++n;
@@ -314,7 +315,7 @@ void OversetOps::sharpen_nalu_data()
             if (calc_convg) {
                 // Update error at specified interval of steps
                 const amrex::Real err_lev =
-                    overset_ops::measure_convergence(
+                    overset_ops::measure_flux_convergence(
                         (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev)) /
                     pvscale;
                 err = amrex::max(err, err_lev);
@@ -357,6 +358,13 @@ void OversetOps::sharpen_nalu_data()
             vof(lev).FillBoundary(geom[lev].periodicity());
             velocity(lev).FillBoundary(geom[lev].periodicity());
             gp(lev).FillBoundary(geom[lev].periodicity());
+
+            if (calc_convg) {
+                const amrex::Real target_err_lev =
+                    overset_ops::measure_target_convergence(
+                        (*target_vof)(lev), vof(lev));
+                target_err = amrex::max(target_err, target_err_lev);
+            }
         }
         amrex::Gpu::streamSynchronize();
 
@@ -369,9 +377,10 @@ void OversetOps::sharpen_nalu_data()
         }
 
         if (m_verbose > 0) {
-            amrex::Print() << "OversetOps: sharpen step " << n << "  conv. err "
-                           << err << "  tol " << m_convg_tol
-                           << " pseudo-time dt " << ptfac << std::endl;
+            amrex::Print() << "OversetOps: sharpen step " << std::setw(2) << n << "  conv. err "
+                           << std::scientific << std::setprecision(4) << err
+                           << " targ_err " << target_err << " p-dt " << ptfac
+                           << std::endl;
         }
     }
 
@@ -381,8 +390,9 @@ void OversetOps::sharpen_nalu_data()
     // Purely for debugging via visualization, should be removed later
     // Currently set up to overwrite the levelset field (not used as time
     // evolves) with the post-sharpening vof distribution
+    field_ops::lincomb(*target_vof, 1., *target_vof, 0, -1., vof, 0, 0, 1, 0);
     for (int lev = 0; lev < nlevels; ++lev) {
-        overset_ops::equate_field(levelset(lev), vof(lev));
+        overset_ops::equate_field(levelset(lev), (*target_vof)(lev));
     }
     amrex::Gpu::streamSynchronize();
 }
