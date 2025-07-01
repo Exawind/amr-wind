@@ -199,7 +199,7 @@ void KransAxell::operator()(
                 terrainforcing =
                     (ustar * ustar / (Cmu * Cmu) + rans_b - tke_arr(i, j, k)) /
                     dt;
-                if (cell_drag > 1) {
+                if (drag(i, j, k) > 1) {
                     //! West
                     ustar = compute_target_ustar(
                         vel(i - 1, j, k, 2), vel(i - 1, j, k, 1), dx[0], z0,
@@ -228,12 +228,6 @@ void KransAxell::operator()(
                     terrainforcing +=
                         (ustar * ustar / (Cmu * Cmu) - tke_arr(i, j, k)) / dt *
                         blank_arr(i, j + 1, k);
-                    // const amrex::Real sum_blank_tke =
-                    //     blank_arr(i, j, k - 1) + blank_arr(i - 1, j, k) +
-                    //     blank_arr(i + 1, j, k) + blank_arr(i, j - 1, k) +
-                    //     blank_arr(i, j + 1, k);
-                    // terrainforcing /=
-                    //     (sum_blank_tke + amr_wind::constants::EPS);
                 }
                 amrex::Real bcforcing = 0;
                 if (k == 0) {

@@ -347,18 +347,6 @@ void DragForcing::operator()(
                     -(tmp_wind_target[0] - uz1) / dt * blank(i, j + 1, k);
                 bc_forcing_x +=
                     -(tmp_wind_target[1] - ux1) / dt * blank(i, j + 1, k);
-                // const amrex::Real sum_blank_x = blank(i, j - 1, k) +
-                //                                 blank(i, j + 1, k) +
-                //                                 blank(i, j, k - 1);
-                // bc_forcing_x /= (sum_blank_x + amr_wind::constants::EPS);
-                // const amrex::Real sum_blank_y = blank(i - 1, j, k) +
-                //                                 blank(i + 1, j, k) +
-                //                                 blank(i, j, k - 1);
-                // bc_forcing_y /= (sum_blank_y + amr_wind::constants::EPS);
-                // const amrex::Real sum_blank_z =
-                //     blank(i - 1, j, k) + blank(i + 1, j, k) +
-                //     blank(i, j - 1, k) + blank(i, j + 1, k);
-                // bc_forcing_z /= (sum_blank_z + amr_wind::constants::EPS);
             }
         }
         // Target velocity intended for within terrain

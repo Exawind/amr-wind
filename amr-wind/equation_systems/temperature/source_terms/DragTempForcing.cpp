@@ -131,7 +131,7 @@ void DragTempForcing::operator()(
             surf_temp +
             thetastar / kappa * (std::log(0.5 * dx[2] / z0) - psi_h_cell);
         amrex::Real bc_forcing_t = -(tTarget - theta) / dt;
-        if (cell_drag > 1) {
+        if (drag(i, j, k) > 1) {
             //! West
             amrex::Real tmp_temp_target = compute_target_theta(
                 vel(i - 1, j, k, 2), vel(i - 1, j, k, 1), theta,
@@ -156,10 +156,6 @@ void DragTempForcing::operator()(
                 monin_obukhov_length, gravity_mod, dx[1], z0, kappa);
             bc_forcing_t +=
                 -(tmp_temp_target - theta) / dt * blank(i, j + 1, k);
-            // const amrex::Real sum_blank_t =
-            //     blank(i, j, k - 1) + blank(i - 1, j, k) + blank(i + 1, j, k) +
-            //     blank(i, j - 1, k) + blank(i, j + 1, k);
-            // bc_forcing_t /= (sum_blank_t + amr_wind::constants::EPS);
         }
         const amrex::Real m = std::sqrt(ux1 * ux1 + uy1 * uy1 + uz1 * uz1);
         const amrex::Real Cd =
