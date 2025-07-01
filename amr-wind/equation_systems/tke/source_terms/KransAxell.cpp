@@ -199,7 +199,7 @@ void KransAxell::operator()(
                 terrainforcing =
                     (ustar * ustar / (Cmu * Cmu) + rans_b - tke_arr(i, j, k)) /
                     dt;
-                if (drag(i, j, k) > 1) {
+                if (drag_arr(i, j, k) > 1) {
                     //! West
                     ustar = compute_target_ustar(
                         vel(i - 1, j, k, 2), vel(i - 1, j, k, 1), dx[0], z0,
