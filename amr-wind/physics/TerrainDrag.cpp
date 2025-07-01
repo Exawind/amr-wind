@@ -162,11 +162,11 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
                 levelBlanking[nbx](i, j, k - 1, 0) -
                 levelBlanking[nbx](i, j, k, 0));
             levelDrag[nbx](i, j, k, 0) =
-                ((k == 0 && levelBlanking[nbx](i, j, k, 0) == 1) )
+                ((k == 0 && levelBlanking[nbx](i, j, k, 0) == 1))
                     ? 0
-                    : (blankxp + blankxm + blankyp + blankym + blankzp + blankzm);
-            }
-        );
+                    : (blankxp + blankxm + blankyp + blankym + blankzp +
+                       blankzm);
+        });
     amrex::Gpu::streamSynchronize();
 }
 
