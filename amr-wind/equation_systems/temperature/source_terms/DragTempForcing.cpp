@@ -131,8 +131,8 @@ void DragTempForcing::operator()(
             surf_temp +
             thetastar / kappa * (std::log(0.5 * dx[2] / z0) - psi_h_cell);
         amrex::Real bc_forcing_t = -(tTarget - theta) / dt;
+        //! West
         if (drag(i, j, k) > 1) {
-            //! West
             amrex::Real tmp_temp_target = compute_target_theta(
                 vel(i - 1, j, k, 2), vel(i - 1, j, k, 1), theta,
                 monin_obukhov_length, gravity_mod, dx[0], z0, kappa);
