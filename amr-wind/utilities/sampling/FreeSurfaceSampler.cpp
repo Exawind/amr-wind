@@ -573,14 +573,17 @@ bool FreeSurfaceSampler::update_sampling_locations()
                                     // Distances from cell center to probe loc
                                     const amrex::Real dist_0 = loc0 - xm[gc0];
                                     const amrex::Real dist_1 = loc1 - xm[gc1];
-                                    // Central slopes for when sign of distance
+                                    // Slopes on either side
+                                    const amrex::Real slope_dir_r =
+                                        dir == 0 ? dv_xr
+                                                 : (dir == 1 ? dv_yr : dv_zr);
+                                    const amrex::Real slope_dir_l =
+                                        dir == 0 ? dv_xl
+                                                 : (dir == 1 ? dv_yl : dv_zl);
+                                    // Central slope for when sign of distance
                                     // to interface is unknown
                                     amrex::Real slope_dir =
-                                        dir == 0
-                                            ? 0.5 * (dv_xl + dv_xr)
-                                            : (dir == 1
-                                                   ? 0.5 * (dv_yl + dv_yr)
-                                                   : 0.5 * (dv_zl + dv_zr));
+                                        0.5 * (slope_dir_r + slope_dir_l);
                                     // One-sided slopes for when sign of
                                     // distance to interface is known
                                     amrex::Real slope_0 =
@@ -593,11 +596,26 @@ bool FreeSurfaceSampler::update_sampling_locations()
                                     slope_dir *= dxi[dir];
                                     slope_0 *= dxi[gc0];
                                     slope_1 *= dxi[gc1];
-                                    // Trilinear interpolation
-                                    ht = (0.5 + slope_dir * xm[dir] -
+                                    // Trilinear interpolation: central slope
+                                    ht = xm[dir] +
+                                         (0.5 -
                                           (vof_arr(i, j, k) + slope_0 * dist_0 +
                                            slope_1 * dist_1)) /
-                                         slope_dir;
+                                             (slope_dir + constants::EPS);
+                                    // Choose slope based on signed distance
+                                    slope_dir = ht - xm[dir] > 0 ? slope_dir_r
+                                                                 : slope_dir_l;
+                                    slope_dir *= dxi[dir];
+                                    // Trilinear interpolation: one-sided slope
+                                    ht = xm[dir] +
+                                         (0.5 -
+                                          (vof_arr(i, j, k) + slope_0 * dist_0 +
+                                           slope_1 * dist_1)) /
+                                             (slope_dir + constants::EPS);
+                                    // This way, neighboring cells will agree on
+                                    // the reconstruction, avoiding the
+                                    // possibility of neither one containing the
+                                    // interface
                                 }
 
                                 if (calc_flag || calc_flag_diffuse) {
@@ -608,9 +626,11 @@ bool FreeSurfaceSampler::update_sampling_locations()
                                     }
                                     // If interface is above upper
                                     // bound, limit it
+                                    // Ignore it in the diffuse case
                                     if (ht > xm[dir] +
                                                  0.5 * dx[dir] * (1.0 + 1e-8)) {
-                                        ht = xm[dir] + 0.5 * dx[dir];
+                                        ht = calc_flag ? xm[dir] + 0.5 * dx[dir]
+                                                       : plo[dir];
                                     }
                                     // Save interface location by atomic max
                                     amrex::Gpu::Atomic::Max(&dout_ptr[idx], ht);
