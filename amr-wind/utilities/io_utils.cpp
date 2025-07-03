@@ -24,22 +24,36 @@ void read_flat_grid_file(
 
     size_t nx = 0;
     size_t ny = 0;
-    file >> nx;
-    file >> ny;
-    AMREX_ALWAYS_ASSERT(nx > 0);
-    AMREX_ALWAYS_ASSERT(ny > 0);
+    if (!(file >> nx)) {
+        amrex::Abort("Failed to read grid dimension nx");
+    }
+    if (!(file >> ny)) {
+        amrex::Abort("Failed to read grid dimension ny");
+    }
+
+    AMREX_ALWAYS_ASSERT_WITH_MESSAGE(nx > 0, "nx must be > 0");
+    AMREX_ALWAYS_ASSERT_WITH_MESSAGE(ny > 0, "ny must be > 0");
+
     xs.resize(nx);
     ys.resize(ny);
     zs.resize(nx * ny);
+
     for (size_t n = 0; n < nx; n++) {
-        file >> xs[n];
+        if (!(file >> xs[n])) {
+            amrex::Abort("Failed to read xs[" + std::to_string(n) + "]");
+        }
     }
     for (size_t n = 0; n < ny; n++) {
-        file >> ys[n];
+        if (!(file >> ys[n])) {
+            amrex::Abort("Failed to read ys[" + std::to_string(n) + "]");
+        }
     }
     for (size_t n = 0; n < nx * ny; n++) {
-        file >> zs[n];
+        if (!(file >> zs[n])) {
+            amrex::Abort("Failed to read zs[" + std::to_string(n) + "]");
+        }
     }
+
     file.close();
 }
 } // namespace amr_wind::ioutils

@@ -63,9 +63,19 @@ public:
         pp.query("enforce_output_time_dt", m_enforce_dt);
         pp.query("enforce_output_time_dt_reltol", m_enforce_dt_tol);
 
-        if (!pp.contains("output_interval")) {
-            pp.query("output_frequency", m_out_interval);
-            if (m_out_interval > 0) {
+        // Check for presence of arguments
+        const bool has_interval = pp.contains("output_interval");
+        const bool has_time_int = pp.contains("output_time_interval");
+        const bool has_frequency = pp.contains("output_frequency");
+
+        if (has_frequency) {
+            if (has_interval) {
+                amrex::Print()
+                    << "WARNING: output_interval and output_frequency "
+                       "(legacy argument) are both specified; "
+                       "output_frequency will be ignored.\n";
+            } else {
+                pp.get("output_frequency", m_out_interval);
                 amrex::Print()
                     << "WARNING: legacy input argument of output_frequency has "
                        "been specified; the code will function as normal, but "
@@ -74,7 +84,24 @@ public:
             }
         }
 
-        if (m_out_interval > 0 && m_out_time_interval > 0.0) {
+        // Because of default, interval is valid unless turned off;
+        // time_interval is invalid unless turned on
+        const bool has_valid_interval =
+            (has_interval || has_frequency) ? m_out_interval > 0 : true;
+        const bool has_valid_interval_present =
+            (has_interval || has_frequency) ? m_out_interval > 0 : false;
+        const bool has_valid_time_int =
+            has_time_int ? m_out_time_interval > 0. : false;
+
+        if (!(has_valid_interval || has_valid_time_int)) {
+            amrex::Abort(
+                "post_processing output timing parameters are specified, but "
+                "none are valid. Please specify an output_interval (or "
+                "output_frequency) greater than 0 or an output_time_interval "
+                "greater than 0.0, or rely on the default output_interval.");
+        }
+
+        if (has_valid_interval_present && has_valid_time_int) {
             amrex::Abort(
                 "output_interval (or output_frequency) and "
                 "output_time_interval are both specified. timestep- and "
@@ -82,15 +109,7 @@ public:
                 "please only specify one.");
         }
 
-        if (m_out_interval <= 0 && m_out_time_interval <= 0.0) {
-            amrex::Abort(
-                "output_interval (or output_frequency) and "
-                "output_time_interval are both not specified. please specify "
-                "one of these input arguments so that this postprocessing tool "
-                "can output data.");
-        }
-
-        if (m_out_time_interval <= 0.0 && m_enforce_dt) {
+        if (!has_valid_time_int && m_enforce_dt) {
             amrex::Abort(
                 "enforce_output_time_dt is true, but output_time_interval "
                 "has not been specified.");
@@ -129,7 +148,7 @@ public:
 
 protected:
     //! Time step interval for output
-    int m_out_interval{-1};
+    int m_out_interval{10};
     //! Time interval for output
     amrex::Real m_out_time_interval{-1.};
     //! Time step delay for output

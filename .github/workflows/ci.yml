@@ -18,12 +18,12 @@ jobs:
     - name: Clone
       uses: actions/checkout@v4
     - name: Check formatting
-      uses: DoozyX/clang-format-lint-action@v0.18.2
+      uses: DoozyX/clang-format-lint-action@v0.20
       with:
         source: './amr-wind ./unit_tests ./tools/utilities'
         exclude: '.'
         extensions: 'H,h,cpp'
-        clangFormatVersion: 18
+        clangFormatVersion: 20
   CPU:
     needs: Formatting
     runs-on: ${{matrix.os}}
@@ -535,7 +535,7 @@ jobs:
         run: |
           /bin/bash -c " \
             source ${EXAWIND_MANAGER}/start.sh && spack-start && \
-            quick-create-dev -n my-env -s amr-wind+hypre+netcdf@main && \
+            quick-create-dev -n my-env -s amr-wind@main && \
             cd ${EXAWIND_MANAGER}/environments/my-env && \
             rm -rf amr-wind && \
             ln -s ${GITHUB_WORKSPACE} amr-wind && \

@@ -122,7 +122,8 @@ Refinement using geometry
 
 This section controls refinement using pre-defined geometric shapes. Currently,
 two options are supported: 1. ``box`` -- refines the region inside a hexahedral
-block, and 2. ``cylinder`` -- refines the region inside a cylindrical block.
+block, 2. ``cylinder`` -- refines the region inside a cylindrical block, and
+3. ``udf`` -- refines along an analytical function depending on time and spatial coordinate.
 
 .. input_param:: tagging.GeometryRefinement.shapes
 
@@ -181,11 +182,21 @@ Example::
   tagging.g2.c1.outer_radius = 300.0
   tagging.g2.c1.inner_radius = 275.0
 
+  tagging.g3.type = GeometryRefinement
+  tagging.g3.shapes = udf0
+  tagging.g3.level = 0
+  tagging.g3.udf0.type = udf
+  tagging.g3.udf0.udf = "if(x > 500, 1.0, 0.0)"
+  tagging.g3.udf0.box_lo = 0.0 0.0 0.0
+  tagging.g3.udf0.box_hi = 1000.0 1000.0 500.0
 
-This example defines two different refinement definitions acting on level 0 and
-1 respectively. The refinement at level 0 (``g1``) contains two box regions,
-whereas the refinement at level 1 (``g2``) only contains one cylinder
-definition.
+
+This example defines three different refinement definitions acting on
+levels 0, 1 and 0 respectively. The first refinement at level 0
+(``g1``) contains two box regions, whereas the refinement at level 1
+(``g2``) only contains one cylinder definition. The second refinement
+at level 0 (``g3``) uses a user defined function (UDF) to specify a
+geometrical refinement region.
 
 **Refinement using hexahedral block definitions**
 
@@ -211,6 +222,41 @@ The axis and the extents along the axis are defined by two position vectors
 ``start`` and ``end``. The radial extent is specified by ``outer_radius``. An
 optional ``inner_radius`` can be specified to restrict tagging to an annulus
 between the inner and outer radii.
+
+**Refinement using a user specified function**
+
+The UDF uses AMReX's Parser class to parse a string in the input file,
+``udf`` key in the input file. For more information on the AMReX
+Parser and supported functions, consult the `AMReX Parser
+documentation
+<https://amrex-codes.github.io/amrex/docs_html/Basics.html#parser>`_.
+The UDF can be (almost) arbitrarily complex, leveraging standard
+functions, boolean operators, local variables, etc. The following
+assumptions are imposed on the UDF: 1. it must evaluate to 0 (tagging
+off) or 1 (tagging on) (the return value of the UDF is cast to a
+boolean and that is used to set the tags), 2. the allowed variables
+are ``t``, ``x``, ``y``, and ``z``.
+
+.. input_param:: tagging.GeometryRefinement.UDFRefiner.udf
+
+   **type:** String, required
+
+   String specifying the user defined function.
+
+.. input_param:: tagging.GeometryRefinement.UDFRefiner.box_lo
+
+   **type:** Vector<Real>, optional
+
+   List of the low corner values for a bounding box where the tagging
+   will be active. By default the bounding box will span the entire domain.
+
+.. input_param:: tagging.GeometryRefinement.UDFRefiner.box_hi
+
+   **type:** Vector<Real>, optional
+
+   List of the high corner values for a bounding box where the tagging
+   will be active. By default the bounding box will span the entire domain.
+
 
 Refinement using Q-Criterion
 `````````````````````````````````````
