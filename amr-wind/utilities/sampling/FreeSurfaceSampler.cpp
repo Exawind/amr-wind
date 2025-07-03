@@ -480,7 +480,7 @@ bool FreeSurfaceSampler::update_sampling_locations()
                         xm[1] = plo[1] + (j + 0.5) * dx[1];
                         xm[2] = plo[2] + (k + 0.5) * dx[2];
                         bool linear_on =
-                            use_linear && (xm[0] > xhi - lx_linear);
+                            use_linear && (xm[0] >= xhi - lx_linear);
                         // Loop number of components
                         for (int n = 0; n < ncomp; ++n) {
                             // Get index of current component and cell

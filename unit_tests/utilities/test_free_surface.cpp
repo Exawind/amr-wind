@@ -706,7 +706,7 @@ TEST_F(FreeSurfaceTest, point_outliers)
     setup_grid_0d(1);
     {
         amrex::ParmParse pp("freesurface");
-        pp.add("linear_interp_extent_from_xhi", 100);
+        pp.add("linear_interp_extent_from_xhi", 66.1);
     }
 
     amrex::Real water_lev = 61.5;
@@ -719,7 +719,8 @@ TEST_F(FreeSurfaceTest, point_outliers)
 
     // Linear interpolation will get different value
     amrex::Real local_vof = (water_lev - 60.) / 2.0;
-    amrex::Real water_lev_linear = 61. + (0.5 - local_vof) * (2. / (0.1 - local_vof));
+    amrex::Real water_lev_linear =
+        61. + (0.5 - local_vof) * (2. / (0.1 - local_vof));
 
     // Check output value
     int nout = tool.check_output("~", water_lev_linear);
