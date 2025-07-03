@@ -754,4 +754,32 @@ TEST_F(FreeSurfaceTest, point_outliers)
     ASSERT_EQ(nsloc, 1);
 }
 
+TEST_F(FreeSurfaceTest, point_outliers_off)
+{
+    initialize_mesh();
+    auto& repo = sim().repo();
+    auto& vof = repo.declare_field("vof", 1, 2);
+    setup_grid_0d(1);
+    {
+        amrex::ParmParse pp("freesurface");
+        pp.add("linear_interp_extent_from_xhi", 64);
+    }
+
+    amrex::Real water_lev = 61.5;
+    // Sets up field with multiphase cells above interface
+    init_vof_outliers(vof, water_lev, true);
+    auto& m_sim = sim();
+    FreeSurfaceImpl tool(m_sim);
+    tool.initialize("freesurface");
+    tool.update_sampling_locations();
+
+    // Because linear interpolation is off and there are multiphase cells all
+    // the way above the interface, it will get a bad value, middle of top cell
+    const amrex::Real water_lev_geom = 123.;
+
+    // Check output value
+    int nout = tool.check_output("~", water_lev_geom);
+    ASSERT_EQ(nout, 1);
+}
+
 } // namespace amr_wind_tests
