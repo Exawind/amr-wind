@@ -27,6 +27,10 @@ void FreeSurfaceSampler::initialize(const std::string& key)
         pp.query("search_direction", m_coorddir);
         pp.query("num_instances", m_ninst);
         pp.query("max_sample_points_per_cell", m_ncmax);
+        m_use_linear = pp.contains("linear_interp_extent_from_xhi");
+        if (m_use_linear) {
+            pp.get("linear_interp_extent_from_xhi", m_lx_linear);
+        }
         AMREX_ALWAYS_ASSERT(static_cast<int>(m_start.size()) == AMREX_SPACEDIM);
         AMREX_ALWAYS_ASSERT(static_cast<int>(m_end.size()) == AMREX_SPACEDIM);
         AMREX_ALWAYS_ASSERT(static_cast<int>(m_npts_dir.size()) == 2);
@@ -436,6 +440,8 @@ bool FreeSurfaceSampler::update_sampling_locations()
     const int gc1 = m_gc1;
     const int ncomp = m_ncomp;
 
+    bool use_linear = m_use_linear;
+    const amrex::Real lx_linear = m_lx_linear;
     bool has_overset = m_sim.has_overset();
     amr_wind::IntField* iblank_ptr{nullptr};
     if (has_overset) {
@@ -455,6 +461,7 @@ bool FreeSurfaceSampler::update_sampling_locations()
                 geom.InvCellSizeArray();
             const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> plo =
                 geom.ProbLoArray();
+            const amrex::Real xhi = geom.ProbHi(0);
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (false)
 #endif
@@ -472,6 +479,8 @@ bool FreeSurfaceSampler::update_sampling_locations()
                         xm[0] = plo[0] + (i + 0.5) * dx[0];
                         xm[1] = plo[1] + (j + 0.5) * dx[1];
                         xm[2] = plo[2] + (k + 0.5) * dx[2];
+                        bool linear_on =
+                            use_linear && (xm[0] > xhi - lx_linear);
                         // Loop number of components
                         for (int n = 0; n < ncomp; ++n) {
                             // Get index of current component and cell
@@ -515,8 +524,9 @@ bool FreeSurfaceSampler::update_sampling_locations()
                                 // Multiphase cell case
                                 if (vof_arr(i, j, k) < (1.0 - 1e-12) &&
                                     vof_arr(i, j, k) > 1e-12) {
-                                    if (!has_overset ||
-                                        ibl_arr(i, j, k) != -1) {
+                                    if ((!has_overset ||
+                                         ibl_arr(i, j, k) != -1) &&
+                                        !linear_on) {
                                         // Planar reconstruction
                                         calc_flag = true;
                                         multiphase::fit_plane(

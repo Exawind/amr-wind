@@ -147,6 +147,37 @@ void init_vof_diffuse(amr_wind::Field& vof_fld, amrex::Real water_level)
     amrex::Gpu::streamSynchronize();
 }
 
+void init_vof_outliers(
+    amr_wind::Field& vof_fld, amrex::Real water_level, bool distort_above)
+{
+    const auto& mesh = vof_fld.repo().mesh();
+    const int nlevels = vof_fld.repo().num_active_levels();
+
+    // Since VOF is cell centered
+    amrex::Real offset = 0.5;
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+        const auto& dx = mesh.Geom(lev).CellSizeArray();
+        const auto& problo = mesh.Geom(lev).ProbLoArray();
+        const auto& farrs = vof_fld(lev).arrays();
+
+        amrex::ParallelFor(
+            vof_fld(lev), vof_fld.num_grow(),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                const amrex::Real z = problo[2] + (k + offset) * dx[2];
+                if (std::abs(water_level - z) < 0.5 * dx[2]) {
+                    farrs[nbx](i, j, k) =
+                        (water_level - (z - 0.5 * dx[2])) / dx[2];
+                } else if (z > water_level) {
+                    farrs[nbx](i, j, k) = distort_above ? 0.1 : 0.0;
+                } else {
+                    farrs[nbx](i, j, k) = !distort_above ? 0.9 : 1.0;
+                }
+            });
+    }
+    amrex::Gpu::streamSynchronize();
+}
+
 //! Custom mesh class to be able to refine like a simulation would
 //  - combination of AmrTestMesh and incflo classes
 //  - with ability to initialize the refiner and regrid
@@ -665,6 +696,62 @@ TEST_F(FreeSurfaceTest, point_diffuse)
     // Check output value
     nout = tool.check_output("~", water_lev_diffuse);
     ASSERT_EQ(nout, 1);
+}
+
+TEST_F(FreeSurfaceTest, point_outliers)
+{
+    initialize_mesh();
+    auto& repo = sim().repo();
+    auto& vof = repo.declare_field("vof", 1, 2);
+    setup_grid_0d(1);
+    {
+        amrex::ParmParse pp("freesurface");
+        pp.add("linear_interp_extent_from_xhi", 100);
+    }
+
+    amrex::Real water_lev = 61.5;
+    // Sets up field with multiphase cells above interface
+    init_vof_outliers(vof, water_lev, true);
+    auto& m_sim = sim();
+    FreeSurfaceImpl tool(m_sim);
+    tool.initialize("freesurface");
+    tool.update_sampling_locations();
+
+    // Linear interpolation will get different value
+    amrex::Real local_vof = (water_lev - 60.) / 2.0;
+    amrex::Real water_lev_linear = 61. + (0.5 - local_vof) * (2. / (0.1 - local_vof));
+
+    // Check output value
+    int nout = tool.check_output("~", water_lev_linear);
+    ASSERT_EQ(nout, 1);
+    // Check sampling locations
+    int nsloc = tool.check_sloc("~");
+    ASSERT_EQ(nsloc, 1);
+
+    // Now distort VOF field below interface
+    init_vof_outliers(vof, water_lev, false);
+    tool.update_sampling_locations();
+    water_lev_linear = 61. + (0.5 - local_vof) * (2. / (0. - local_vof));
+    nout = tool.check_output("~", water_lev_linear);
+    ASSERT_EQ(nout, 1);
+    nsloc = tool.check_sloc("~");
+    ASSERT_EQ(nsloc, 1);
+
+    // Repeat with target cell having 0 < vof < 0.5
+    water_lev = 60.5;
+    init_vof_outliers(vof, water_lev, true);
+    tool.update_sampling_locations();
+    local_vof = (water_lev - 60.) / 2.0;
+    water_lev_linear = 61. - (0.5 - local_vof) * (2. / (1.0 - local_vof));
+    nout = tool.check_output("~", water_lev_linear);
+    ASSERT_EQ(nout, 1);
+    init_vof_outliers(vof, water_lev, false);
+    tool.update_sampling_locations();
+    water_lev_linear = 61. - (0.5 - local_vof) * (2. / (0.9 - local_vof));
+    nout = tool.check_output("~", water_lev_linear);
+    ASSERT_EQ(nout, 1);
+    nsloc = tool.check_sloc("~");
+    ASSERT_EQ(nsloc, 1);
 }
 
 } // namespace amr_wind_tests
