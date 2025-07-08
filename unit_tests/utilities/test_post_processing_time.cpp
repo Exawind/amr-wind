@@ -261,4 +261,43 @@ TEST_F(PostProcTimeTest, time_output_end)
     }
 }
 
+TEST_F(PostProcTimeTest, conflict_fails)
+{
+    populate_parameters();
+    initialize_mesh();
+
+    auto& m_sim = sim();
+    amr_wind::PostProcessManager& post_manager = m_sim.post_manager();
+    auto& time = sim().time();
+    post_manager.pre_init_actions();
+    // Confirm no fail with default arguments
+    post_manager.post_init_actions();
+    // Confirm no fail with time interval
+    {
+        amrex::ParmParse pp("fnorm");
+        pp.add("output_time_interval", 1.0);
+    }
+    post_manager.post_init_actions();
+    // Should fail when overspecified arguments
+    {
+        amrex::ParmParse pp("fnorm");
+        pp.add("output_interval", 1);
+    }
+    EXPECT_THROW(post_manager.post_init_actions(), std::runtime_error);
+    // Should fail when both invalid
+    {
+        amrex::ParmParse pp("fnorm");
+        pp.add("output_interval", -1);
+        pp.add("output_time_interval", -1.0);
+    }
+    EXPECT_THROW(post_manager.post_init_actions(), std::runtime_error);
+    // Should fail for combination of enforce and step interval
+    {
+        amrex::ParmParse pp("fnorm");
+        pp.add("output_interval", 1);
+        pp.add("enforce_output_time_dt", true);
+    }
+    EXPECT_THROW(post_manager.post_init_actions(), std::runtime_error);
+}
+
 } // namespace amr_wind_tests
