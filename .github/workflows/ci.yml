@@ -535,10 +535,12 @@ jobs:
         run: |
           /bin/bash -c " \
             source ${EXAWIND_MANAGER}/start.sh && spack-start && \
-            quick-create -n my-env -s amr-wind@main && \
-            cd ${EXAWIND_MANAGER}/environments/my-env && \
+            spack env activate e4s-build && \
+            cd ${EXAWIND_MANAGER}/environments/e4s-build && \
             ln -s ${GITHUB_WORKSPACE} amr-wind && \
             spack develop --no-clone amr-wind@=main && \
+            spack rm exawind && \
+            spack add amr-wind@main && \
             spack concretize -f && \
             spack install && \
             spack cd -b amr-wind && \
