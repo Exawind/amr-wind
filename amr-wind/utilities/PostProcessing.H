@@ -114,6 +114,12 @@ public:
                 "enforce_output_time_dt is true, but output_time_interval "
                 "has not been specified.");
         }
+
+        // Because of default, turn off step interval when time interval is
+        // meant to replace it
+        if (has_valid_time_int && !(has_interval || has_frequency)) {
+            m_out_interval = -1;
+        }
     }
 
     //! Determine if output will happen this time step
