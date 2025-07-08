@@ -14,15 +14,21 @@ executable.
    $ ./amr_wind inputs.abl time.max_step=20
 
 
-The input file is a simple text file containing ``key = value`` entries for the
-input parameters. The text file can include comments, any text beginning with
-``#`` till the end of line (EOF) is interpreted as comments and ignored by the
-parser. Input file processing is handled by `AMReX ParmParse library
+The input file is a simple text file containing ``key = value``
+entries for the input parameters. The text file can include comments,
+any text beginning with ``#`` till the end of line (EOF) is
+interpreted as comments and ignored by the parser. Input file
+processing is handled by `AMReX ParmParse library
 <https://amrex-codes.github.io/amrex/docs_html/Basics.html#parmparse>`_. This
-section documents the various input file parameters and their default values (if
-available). In :program:`amr_wind`, the input file is broken into *sections*
-indicated by a namespace prefix. For example, all inputs related to the problem
-domain are prefixed with ``geometry.`` and so on. A sample input file is shown below
+section documents the common input file parameters and their default
+values (if available). The focus is on AMR-Wind specific input options
+and some common AMReX options (these are fully documented in `AMReX
+<https://amrex-codes.github.io/amrex/docs_html/RuntimeParameters.html>`_).
+
+In :program:`amr_wind`, the input file
+is broken into *sections* indicated by a namespace prefix. For
+example, all inputs related to the problem domain are prefixed with
+``geometry.`` and so on. A sample input file is shown below
 
 .. literalinclude:: ./amr_wind_inputs.txt
    :linenos:
