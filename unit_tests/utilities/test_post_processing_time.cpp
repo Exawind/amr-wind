@@ -94,11 +94,11 @@ TEST_F(PostProcTimeTest, enforce_time_interval)
     {
         amrex::ParmParse pp("time");
         pp.add("stop_time", 1.0);
-        pp.add("max_step", 10);
+        pp.add("max_step", 20);
     }
     {
         amrex::ParmParse pp("fnorm");
-        pp.add("output_time_interval", 0.5);
+        pp.add("output_time_interval", 0.45);
         pp.add("enforce_output_time_dt", true);
     }
     initialize_mesh();
@@ -136,9 +136,9 @@ TEST_F(PostProcTimeTest, enforce_time_interval)
         out_time_sum += data_time;
     }
 
-    EXPECT_EQ(out_counter, 1 + 2);
-    EXPECT_NEAR(out_time_sum, 1.5, 1e-8);
-    EXPECT_EQ(out_step_sum, 2 + 6);
+    EXPECT_EQ(out_counter, 3);
+    EXPECT_NEAR(out_time_sum, 0. + 0.45 + 2. * 0.45, 1e-8);
+    EXPECT_EQ(out_step_sum, 2 + 9);
 
     // Remove file
     if (ifh.good()) {
