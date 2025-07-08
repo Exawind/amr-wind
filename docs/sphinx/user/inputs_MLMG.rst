@@ -3,6 +3,15 @@
 Section: MLMG options
 ~~~~~~~~~~~~~~~~~~~~~
 
+.. tip::
+
+   For further information the user is directed to the `AMReX linear
+   solver documentation
+   <ttps://amrex-codes.github.io/amrex/docs_html/LinearSolvers_Chapter.html>`_
+   and other `AMReX runtime parameters
+   <https://amrex-codes.github.io/amrex/docs_html/RuntimeParameters.html>_`
+
+
 This section specifies the Multi-Level Multi-Grid (MLMG) options for each type
 of linear solve. There are three types of linear solves performed in AMR-Wind
 "diffusion" which is a cell based Helmholtz like solve to advance the momentum
@@ -12,6 +21,7 @@ determines which MLMG option is being specified. Below the diffusion options are
 described but the same options apply to "nodal_proj" and "mac_proj". It is also
 possible to specify diffusion solver options for specific equations such as
 temperature, to do that use "temperature_diffusion" as your prefix.
+
 
 **Linear operator options**
    
