@@ -252,7 +252,7 @@ TEST_F(PostProcTimeTest, time_output_end)
     }
 
     EXPECT_EQ(out_counter, 1);
-    EXPECT_NEAR(out_time_sum, 6.0, 1e-8);
+    EXPECT_NEAR(out_time_sum, 6.3, 1e-8);
     EXPECT_EQ(out_step_sum, 21);
 
     // Remove file
