@@ -110,6 +110,11 @@ private:
     //! Output coordinate
     amrex::Vector<amrex::Real> m_out;
 
+    //! Flag to use linear interpolation for surface finding in part of domain
+    bool m_use_linear{false};
+    //! Parameter for optional linear interpolation
+    amrex::Real m_lx_linear{0.};
+
     //! Max number of sample points found in a single cell
     int m_ncomp{1};
     //! Max number of sample points allowed in a single cell
