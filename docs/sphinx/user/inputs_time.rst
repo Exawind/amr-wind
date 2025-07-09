@@ -111,7 +111,10 @@ This section also addresses the time-dependent nature of checkpoint files, plot 
    **type:** Integer, optional, default = -1
 
    If this value is greater than zero, it indicates the frequency (in timesteps)
-   at which outputs (plot files) are written to disk.
+   at which outputs (plot files) are written to disk. If plotfile output is active,
+   a plotfile will be written at the end of a simulation (when
+   :input_param:`time.stop_time` or :input_param:`time.max_step` is reached), regardless
+   of the output timing parameters.
 
 .. input_param:: time.plot_time_interval
 
@@ -147,7 +150,10 @@ This section also addresses the time-dependent nature of checkpoint files, plot 
    **type:** Integer
 
    If this value is greater than zero, it indicates the frequency (in timesteps)
-   at which checkpoint (restart) files are written to disk.
+   at which checkpoint (restart) files are written to disk. If checkpoint output is active,
+   a checkpoint will be written at the end of a simulation (when
+   :input_param:`time.stop_time` or :input_param:`time.max_step` is reached), regardless
+   of the output timing parameters.
 
 .. input_param:: time.checkpoint_time_interval
 
