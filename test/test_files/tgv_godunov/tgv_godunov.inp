@@ -18,9 +18,9 @@ time.checkpoint_interval =   -1  # Steps between checkpoint files
 
 incflo.post_processing = enstrophy ke
 ke.type = KineticEnergy
-ke.output_frequency = 1
+ke.output_interval = 1
 enstrophy.type = Enstrophy
-enstrophy.output_frequency = 1
+enstrophy.output_interval = 1
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #
 #.......................................#
