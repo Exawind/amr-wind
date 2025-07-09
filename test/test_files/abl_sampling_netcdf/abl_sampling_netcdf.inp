@@ -89,7 +89,7 @@ incflo.verbose          =   0          # incflo_level
 #               SAMPLING                #
 #.......................................#
 incflo.post_processing       = volume_sampling volume_sampling2 probe_sampling plane_sampling line_sampling
-volume_sampling.output_frequency    = 1
+volume_sampling.output_interval    = 1
 volume_sampling.output_format       = netcdf
 volume_sampling.fields              = velocity
 volume_sampling.int_fields          = mask_cell
@@ -104,7 +104,7 @@ volume_sampling.volume2.lo          = 205.0 200.0 200.0
 volume_sampling.volume2.hi          = 505.0 500.0 500.0
 volume_sampling.volume2.num_points  = 30 10 10
 
-volume_sampling2.output_frequency    = 1
+volume_sampling2.output_interval    = 1
 volume_sampling2.output_format       = netcdf
 volume_sampling2.fields              = velocity
 volume_sampling2.int_fields          = mask_cell
@@ -115,7 +115,7 @@ volume_sampling2.volume1.lo          = 20.0 20.0 20.0
 volume_sampling2.volume1.hi          = 50.0 50.0 50.0
 volume_sampling2.volume1.num_points  = 5 5 5
 
-probe_sampling.output_frequency    = 1
+probe_sampling.output_interval    = 1
 probe_sampling.output_format       = netcdf
 probe_sampling.fields              = velocity
 probe_sampling.int_fields          = mask_cell
@@ -125,7 +125,7 @@ probe_sampling.probe1.probe_location_file = "probe_locations.txt"
 probe_sampling.probe1.offset_vector = 0.0 1.0 1.0
 probe_sampling.probe1.offsets   = 0.0 200.0 400.0 600.0
 
-plane_sampling.output_frequency     = 1
+plane_sampling.output_interval     = 1
 plane_sampling.output_format        = netcdf
 plane_sampling.fields               = velocity
 plane_sampling.labels               = plane1 plane2 plane3
@@ -153,7 +153,7 @@ plane_sampling.plane3.num_points    = 10 10
 plane_sampling.plane3.offset_vector = 0.0 1.0 1.0
 plane_sampling.plane3.offsets       = 0.0 20.0 30.0 200.0
 
-line_sampling.output_frequency     = 1
+line_sampling.output_interval     = 1
 line_sampling.output_format        = netcdf
 line_sampling.fields               = velocity
 line_sampling.labels               = line1
