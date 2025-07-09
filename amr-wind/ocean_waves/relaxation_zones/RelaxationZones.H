@@ -27,6 +27,8 @@ struct RelaxZonesBaseData
     amrex::Real beach_length{8.0};
     amrex::Real beach_length_factor{1.0};
 
+    amrex::Real current{0.0};
+
     bool init_wave_field{false};
 
     bool has_ramp{false};
@@ -34,7 +36,7 @@ struct RelaxZonesBaseData
     bool has_beach{true};
     bool has_outprofile{false};
 
-    amrex::Real ramp_period{2.0};
+    amrex::Real ramp_period;
 
     bool regrid_occurred{false};
 };

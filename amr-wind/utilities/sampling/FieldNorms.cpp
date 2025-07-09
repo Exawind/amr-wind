@@ -20,7 +20,7 @@ void FieldNorms::initialize()
 
     {
         amrex::ParmParse pp(m_label);
-        pp.query("output_frequency", m_out_freq);
+        populate_output_parameters(pp);
         pp.query("mask_redundant_grids", m_use_mask);
     }
 
@@ -34,8 +34,8 @@ void FieldNorms::initialize()
     prepare_ascii_file();
 }
 
-amrex::Real
-FieldNorms::l2_norm(amr_wind::Field& field, const int comp, const bool use_mask)
+amrex::Real FieldNorms::l2_norm(
+    const amr_wind::Field& field, const int comp, const bool use_mask)
 {
     amrex::Real nrm = 0.0;
 
@@ -106,15 +106,9 @@ void FieldNorms::process_field_norms()
     }
 }
 
-void FieldNorms::post_advance_work()
+void FieldNorms::output_actions()
 {
-    BL_PROFILE("amr-wind::FieldNorms::post_advance_work");
-    const auto& time = m_sim.time();
-    const int tidx = time.time_index();
-    // Skip processing if it is not an output timestep
-    if (!(tidx % m_out_freq == 0)) {
-        return;
-    }
+    BL_PROFILE("amr-wind::FieldNorms::output_actions");
 
     process_field_norms();
     write_ascii();

@@ -12,9 +12,9 @@ class CFDSim;
 
 namespace ib {
 
-/** Abstract representation of an immersed boundary in the flowfield.
+/** Abstract representation of an immersed boundary in the flow field.
  *
- *  \ingroup immersed boundary
+ *  \ingroup immersed_boundary
  *
  * This class is intended to represent a single object (e.g., floating
  * platform, tower complex terrain) that exists in the computational domain. A
@@ -55,7 +55,7 @@ public:
 
 /** Concrete implementation of the IBModel for different geometry types.
  *
- *  \ingroup IB
+ *  \ingroup immersed_boundary
  *
  * \tparam GeomTrait A geometry type trait that defines the behavior of the
  * different actions (initialization, velocity update, force computation)

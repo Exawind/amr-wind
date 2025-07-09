@@ -156,8 +156,9 @@ amrex::Vector<const amrex::MultiFab*> Field::vec_const_ptrs() const noexcept
     amrex::Vector<const amrex::MultiFab*> ret;
     ret.reserve(nlevels);
     for (int lev = 0; lev < nlevels; ++lev) {
-        ret.push_back(static_cast<const amrex::MultiFab*>(
-            &m_repo.get_multifab(m_id, lev)));
+        ret.push_back(
+            static_cast<const amrex::MultiFab*>(
+                &m_repo.get_multifab(m_id, lev)));
     }
     return ret;
 }
@@ -230,7 +231,8 @@ void Field::fillpatch_sibling_fields(
         }
 
         fop.fillpatch_sibling_fields(
-            lev, time, mfabs, mfabs, cfabs, ng, m_info->m_bcrec, field_state());
+            lev, time, mfabs, mfabs, cfabs, ng, m_info->m_bcrec,
+            m_info->m_bcrec, field_state());
     }
 }
 
@@ -413,7 +415,7 @@ void Field::to_uniform_space() noexcept
                     detJ[nbx](i, j, k) / fac[nbx](i, j, k, n);
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
     m_mesh_mapped = true;
 }
 
@@ -444,7 +446,7 @@ void Field::to_stretched_space() noexcept
                     fac[nbx](i, j, k, n) / detJ[nbx](i, j, k);
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
     m_mesh_mapped = false;
 }
 

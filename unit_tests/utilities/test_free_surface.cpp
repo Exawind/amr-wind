@@ -13,28 +13,24 @@ void init_vof(amr_wind::Field& vof_fld, amrex::Real water_level)
 
     // Since VOF is cell centered
     amrex::Real offset = 0.5;
-    // VOF has only one component
-    int d = 0;
 
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& dx = mesh.Geom(lev).CellSizeArray();
         const auto& problo = mesh.Geom(lev).ProbLoArray();
+        const auto& farrs = vof_fld(lev).arrays();
 
-        for (amrex::MFIter mfi(vof_fld(lev)); mfi.isValid(); ++mfi) {
-            auto bx = mfi.growntilebox();
-            const auto& farr = vof_fld(lev).array(mfi);
-
-            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+        amrex::ParallelFor(
+            vof_fld(lev), vof_fld.num_grow(),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 const amrex::Real z = problo[2] + (k + offset) * dx[2];
-
-                amrex::Real local_vof = amrex::min<amrex::Real>(
+                const amrex::Real local_vof = amrex::min<amrex::Real>(
                     1.0,
                     amrex::max<amrex::Real>(
                         0.0, (water_level - (z - offset * dx[2])) / dx[2]));
-                farr(i, j, k, d) = local_vof;
+                farrs[nbx](i, j, k) = local_vof;
             });
-        }
     }
+    amrex::Gpu::streamSynchronize();
 }
 
 void init_vof_multival(
@@ -49,18 +45,15 @@ void init_vof_multival(
 
     // Since VOF is cell centered
     amrex::Real offset = 0.5;
-    // VOF has only one component
-    int d = 0;
 
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& dx = mesh.Geom(lev).CellSizeArray();
         const auto& problo = mesh.Geom(lev).ProbLoArray();
+        const auto& farrs = vof_fld(lev).arrays();
 
-        for (amrex::MFIter mfi(vof_fld(lev)); mfi.isValid(); ++mfi) {
-            auto bx = mfi.growntilebox();
-            const auto& farr = vof_fld(lev).array(mfi);
-
-            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+        amrex::ParallelFor(
+            vof_fld(lev), vof_fld.num_grow(),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 const amrex::Real z = problo[2] + (k + offset) * dx[2];
                 amrex::Real local_vof;
                 // Above wl1
@@ -83,10 +76,10 @@ void init_vof_multival(
                                 0.0, (wl2 - (z - offset * dx[2])) / dx[2]));
                     }
                 }
-                farr(i, j, k, d) = local_vof;
+                farrs[nbx](i, j, k) = local_vof;
             });
-        }
     }
+    amrex::Gpu::streamSynchronize();
 }
 
 void init_vof_slope(
@@ -101,34 +94,57 @@ void init_vof_slope(
     // The interface has a slope in x and y and intersects the center of the
     // domain at the designated water level Since VOF is cell centered
     amrex::Real offset = 0.5;
-    // VOF has only one component
-    int d = 0;
 
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& dx = mesh.Geom(lev).CellSizeArray();
         const auto& problo = mesh.Geom(lev).ProbLoArray();
+        const auto& farrs = vof_fld(lev).arrays();
 
-        for (amrex::MFIter mfi(vof_fld(lev)); mfi.isValid(); ++mfi) {
-            auto bx = mfi.growntilebox();
-            const auto& farr = vof_fld(lev).array(mfi);
-
-            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+        amrex::ParallelFor(
+            vof_fld(lev), vof_fld.num_grow(),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 const amrex::Real x = problo[0] + (i + offset) * dx[0];
                 const amrex::Real y = problo[1] + (j + offset) * dx[1];
                 const amrex::Real z = problo[2] + (k + offset) * dx[2];
 
                 // Find height of interface at current x, y
-                amrex::Real local_ht = water_level +
-                                       slope * (x - 0.5 * domain_length) +
-                                       slope * (y - 0.5 * domain_length);
+                const amrex::Real local_ht = water_level +
+                                             slope * (x - 0.5 * domain_length) +
+                                             slope * (y - 0.5 * domain_length);
 
-                amrex::Real local_vof = amrex::min<amrex::Real>(
+                const amrex::Real local_vof = amrex::min<amrex::Real>(
                     1.0, amrex::max<amrex::Real>(
                              0.0, (local_ht - (z - offset * dx[2])) / dx[2]));
-                farr(i, j, k, d) = local_vof;
+                farrs[nbx](i, j, k) = local_vof;
             });
-        }
     }
+    amrex::Gpu::streamSynchronize();
+}
+
+void init_vof_diffuse(amr_wind::Field& vof_fld, amrex::Real water_level)
+{
+    const auto& mesh = vof_fld.repo().mesh();
+    const int nlevels = vof_fld.repo().num_active_levels();
+
+    // Since VOF is cell centered
+    amrex::Real offset = 0.5;
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+        const auto& dx = mesh.Geom(lev).CellSizeArray();
+        const auto& problo = mesh.Geom(lev).ProbLoArray();
+        const auto& farrs = vof_fld(lev).arrays();
+
+        amrex::ParallelFor(
+            vof_fld(lev), vof_fld.num_grow(),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                const amrex::Real z = problo[2] + (k + offset) * dx[2];
+                const amrex::Real local_vof = amrex::min<amrex::Real>(
+                    1.0, amrex::max<amrex::Real>(
+                             0.0, 0.5 + 0.25 * (water_level - z) / dx[2]));
+                farrs[nbx](i, j, k) = local_vof;
+            });
+    }
+    amrex::Gpu::streamSynchronize();
 }
 
 //! Custom mesh class to be able to refine like a simulation would
@@ -298,13 +314,14 @@ int FreeSurfaceImpl::check_sloc(const std::string& op)
 {
     // Get number of points and sampling locations array
     auto npts_tot = num_points();
-    amrex::Vector<amrex::Array<amrex::Real, AMREX_SPACEDIM>> locs;
-    output_locations(locs);
+    amr_wind::sampling::SampleLocType sample_locs;
+    output_locations(sample_locs);
     // Get locations from other functions
     auto gridlocs = grid_locations();
     auto out = heights();
     // Loop through grid points and check output
     int icheck = 0;
+    const auto& locs = sample_locs.locations();
     for (int n = 0; n < npts_tot; ++n) {
         if (op == "=") {
             EXPECT_EQ(locs[n][0], gridlocs[n][0]);
@@ -356,7 +373,7 @@ protected:
     void setup_grid_0d(int ninst, const std::string& fsname)
     {
         amrex::ParmParse pp(fsname);
-        pp.add("output_frequency", 1);
+        pp.add("output_interval", 1);
         pp.add("num_instances", ninst);
         pp.addarr("plane_num_points", amrex::Vector<int>{1, 1});
         pp.addarr("plane_start", m_pt_coord);
@@ -366,7 +383,7 @@ protected:
     void setup_grid_2d(int ninst)
     {
         amrex::ParmParse pp("freesurface");
-        pp.add("output_frequency", 1);
+        pp.add("output_interval", 1);
         pp.add("num_instances", ninst);
         pp.addarr("plane_num_points", amrex::Vector<int>{npts, npts});
         pp.addarr("plane_start", m_pl_start);
@@ -375,7 +392,7 @@ protected:
     void setup_grid_2d_narrow(const std::string& fsname)
     {
         amrex::ParmParse pp(fsname);
-        pp.add("output_frequency", 1);
+        pp.add("output_interval", 1);
         pp.add("num_instances", 1);
         pp.addarr("plane_num_points", amrex::Vector<int>{npts, npts});
         pp.addarr("plane_start", m_plnarrow_s);
@@ -596,6 +613,58 @@ TEST_F(FreeSurfaceTest, regrid)
     // Check that result is unchanged on new mesh
     tool.update_sampling_locations();
     tool.check_output("~", m_water_level1);
+}
+
+TEST_F(FreeSurfaceTest, point_diffuse)
+{
+    initialize_mesh();
+    sim().activate_overset();
+    auto& repo = sim().repo();
+    auto& vof = repo.declare_field("vof", 1, 2);
+    auto& iblank = repo.get_int_field("iblank_cell");
+    iblank.setVal(-1);
+    setup_grid_0d(1);
+
+    // -- Chosen to be cell center --
+    amrex::Real water_lev_diffuse = 61.;
+    init_vof_diffuse(vof, water_lev_diffuse);
+    auto& m_sim = sim();
+    FreeSurfaceImpl tool(m_sim);
+    tool.initialize("freesurface");
+    tool.update_sampling_locations();
+
+    // Check number of points
+    auto ngp = tool.num_gridpoints();
+    EXPECT_EQ(ngp, 1);
+    // Check location after being read
+    int npos = tool.check_pos(0, "=", m_pt_coord[0]);
+    ASSERT_EQ(npos, 1);
+    npos = tool.check_pos(1, "=", m_pt_coord[1]);
+    ASSERT_EQ(npos, 1);
+    // Check output value
+    int nout = tool.check_output("~", water_lev_diffuse);
+    ASSERT_EQ(nout, 1);
+    // Check sampling locations
+    int nsloc = tool.check_sloc("~");
+    ASSERT_EQ(nsloc, 1);
+
+    // -- Chosen to be cell edge --
+    water_lev_diffuse = 62.;
+    init_vof_diffuse(vof, water_lev_diffuse);
+    tool.update_sampling_locations();
+
+    // Check output value
+    nout = tool.check_output("~", water_lev_diffuse);
+    ASSERT_EQ(nout, 1);
+
+    // -- Chosen to be neither cell center nor edge --
+    water_lev_diffuse = 61.5;
+    init_vof_diffuse(vof, water_lev_diffuse);
+    tool.update_sampling_locations();
+
+    // Check output value
+    nout = tool.check_output("~", water_lev_diffuse);
+    ASSERT_EQ(nout, 1);
 }
 
 } // namespace amr_wind_tests

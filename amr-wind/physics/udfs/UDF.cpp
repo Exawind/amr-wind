@@ -46,16 +46,15 @@ void UDFImpl<T>::operator()(int level, const amrex::Geometry& geom)
     const amrex::Real time = 0.0;
     const auto ncomp = m_field.num_comp();
     const auto& dop = m_op.device_instance();
-    for (amrex::MFIter mfi(mfab); mfi.isValid(); ++mfi) {
-        const auto& bx = mfi.tilebox();
-        const auto& marr = mfab.array(mfi);
+    const auto& marrs = mfab.arrays();
 
-        amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+    amrex::ParallelFor(
+        mfab, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
             for (int n = 0; n < ncomp; ++n) {
-                dop({i, j, k}, marr, geomData, time, {}, n, 0, 0);
+                dop({i, j, k}, marrs[nbx], geomData, time, {}, n, 0, 0);
             }
         });
-    }
+    amrex::Gpu::streamSynchronize();
 }
 
 template class UDFImpl<LinearProfile>;

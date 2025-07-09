@@ -4,7 +4,6 @@
 #include "amr-wind/equation_systems/AdvOp_Godunov.H"
 #include "amr-wind/equation_systems/AdvOp_MOL.H"
 #include "amr-wind/equation_systems/icns/icns.H"
-#include "amr-wind/equation_systems/vof/vof_momentum_flux.H"
 #include "amr-wind/core/Physics.H"
 
 #include "AMReX_MultiFabUtil.H"
@@ -56,6 +55,10 @@ private:
     FieldRepo& m_repo;
     PhysicsMgr& m_phy_mgr;
     std::unique_ptr<Hydro::MacProjector> m_mac_proj;
+#ifdef AMR_WIND_USE_FFT
+    std::unique_ptr<Hydro::FFTMacProjector> m_fft_mac_proj;
+    bool m_use_fft{true}; // use fft if possible
+#endif
     MLMGOptions m_options;
     bool m_has_overset{false};
     bool m_need_init{true};
@@ -144,6 +147,10 @@ struct AdvectionOp<ICNS, fvm::Godunov>
 
         // Get copy of verbose
         pp.query("verbose", m_verbose);
+
+        amrex::ParmParse pp_eq("ICNS");
+        pp_eq.query(
+            "allow_inflow_at_pressure_outflow", m_allow_inflow_on_outflow);
     }
 
     void preadvect(
@@ -156,12 +163,6 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         const auto& src_term = fields.src_term;
         const auto& dof_field = fields.field.state(fstate);
         auto bcrec_device = dof_field.bcrec_device();
-
-        for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
-            u_mac(lev).setBndry(0.0);
-            v_mac(lev).setBndry(0.0);
-            w_mac(lev).setBndry(0.0);
-        }
 
         //
         // Predict
@@ -185,16 +186,16 @@ struct AdvectionOp<ICNS, fvm::Godunov>
             } else {
                 limiter_type = PPM::default_limiter;
             }
-            if ((godunov_scheme == godunov::scheme::WENOZ) ||
-                (godunov_scheme == godunov::scheme::WENO_JS)) {
-                m_allow_inflow_on_outflow = true;
-            }
 
+            // if state is NPH, then n and n+1 are known, and only
+            // spatial extrapolation is performed
+            const amrex::Real dt_extrap =
+                (fstate == FieldState::NPH) ? 0.0 : dt;
             for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
                 HydroUtils::ExtrapVelToFaces(
                     dof_field(lev), src_term(lev), u_mac(lev), v_mac(lev),
                     w_mac(lev), dof_field.bcrec(), bcrec_device.data(),
-                    repo.mesh().Geom(lev), dt, godunov_use_ppm,
+                    repo.mesh().Geom(lev), dt_extrap, godunov_use_ppm,
                     godunov_use_forces_in_trans, premac_advection_type,
                     limiter_type, m_allow_inflow_on_outflow);
             }
@@ -207,7 +208,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         }
 
         // Populate boundaries (valid cells) using velocity BCs
-        m_macproj_op.set_inflow_velocity(time + 0.5 * dt);
+        m_macproj_op.set_inflow_velocity(time);
 
         // MAC projection
         m_macproj_op(fstate, dt);
@@ -216,8 +217,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         if (fvm::Godunov::nghost_state > 0) {
             amrex::Array<Field*, AMREX_SPACEDIM> mac_vel = {
                 AMREX_D_DECL(&u_mac, &v_mac, &w_mac)};
-            dof_field.fillpatch_sibling_fields(
-                time + 0.5 * dt, u_mac.num_grow(), mac_vel);
+            dof_field.fillpatch_sibling_fields(time, u_mac.num_grow(), mac_vel);
         }
 
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
@@ -240,6 +240,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         // cppcheck-suppress constVariableReference
         auto& conv_term = fields.conv_term;
         const auto& dof_field = fields.field.state(fstate);
+        const auto& dof_nph = fields.field.state(amr_wind::FieldState::NPH);
 
         auto flux_x =
             repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::XFACE);
@@ -256,6 +257,8 @@ struct AdvectionOp<ICNS, fvm::Godunov>
 
         const auto& rho_o =
             repo.get_field("density").state(amr_wind::FieldState::Old);
+        const auto& rho_nph =
+            repo.get_field("density").state(amr_wind::FieldState::NPH);
 
         const bool mphase_vof = repo.field_exists("vof");
 
@@ -276,23 +279,28 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                 ICNS::ndim, fvm::Godunov::nghost_src);
             amrex::MultiFab::Copy(
                 fq, src_term(lev), 0, 0, ICNS::ndim, fvm::Godunov::nghost_src);
+            // form multifab for time-correct boundary condition of variable
+            amrex::MultiFab q_nph(
+                dof_field(lev).boxArray(), dof_field(lev).DistributionMap(),
+                ICNS::ndim, fvm::Godunov::nghost_state);
+            amrex::MultiFab::Copy(
+                q_nph, dof_nph(lev), 0, 0, ICNS::ndim,
+                fvm::Godunov::nghost_state);
 
             // Calculate fluxes using momentum directly
             if (!mphase_vof) {
-                amrex::MultiFab::Multiply(
-                    q, rho_o(lev), 0, 0, 1, fvm::Godunov::nghost_state);
-                amrex::MultiFab::Multiply(
-                    q, rho_o(lev), 0, 1, 1, fvm::Godunov::nghost_state);
-                amrex::MultiFab::Multiply(
-                    q, rho_o(lev), 0, 2, 1, fvm::Godunov::nghost_state);
-                // Source terms are at old state during calculation of advection
-                // terms
-                amrex::MultiFab::Multiply(
-                    fq, rho_o(lev), 0, 0, 1, fvm::Godunov::nghost_src);
-                amrex::MultiFab::Multiply(
-                    fq, rho_o(lev), 0, 1, 1, fvm::Godunov::nghost_src);
-                amrex::MultiFab::Multiply(
-                    fq, rho_o(lev), 0, 2, 1, fvm::Godunov::nghost_src);
+
+                for (int idim = 0; idim < dof_field.num_comp(); ++idim) {
+                    amrex::MultiFab::Multiply(
+                        q, rho_o(lev), 0, idim, 1, fvm::Godunov::nghost_state);
+                    // Source terms at old state during advection calculation
+                    amrex::MultiFab::Multiply(
+                        fq, rho_o(lev), 0, idim, 1, fvm::Godunov::nghost_src);
+
+                    amrex::MultiFab::Multiply(
+                        q_nph, rho_nph(lev), 0, idim, 1,
+                        fvm::Godunov::nghost_state);
+                }
             }
 
             amrex::MFItInfo mfi_info;
@@ -324,36 +332,36 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                     limiter_type = PPM::default_limiter;
                 }
 
-                if ((godunov_scheme == godunov::scheme::WENOZ) ||
-                    (godunov_scheme == godunov::scheme::WENO_JS)) {
-                    m_allow_inflow_on_outflow = true;
-                }
-
+                // if state is NPH, then n and n+1 are known, and only
+                // spatial extrapolation is performed
+                const amrex::Real dt_extrap =
+                    (fstate == FieldState::NPH) ? 0.0 : dt;
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
                 for (amrex::MFIter mfi(dof_field(lev), mfi_info); mfi.isValid();
                      ++mfi) {
                     const auto& bx = mfi.tilebox();
-                    amrex::FArrayBox tmpfab(amrex::grow(bx, 1), 1);
+                    amrex::FArrayBox tmpfab(
+                        amrex::grow(bx, 1), 1, amrex::The_Async_Arena());
                     tmpfab.setVal<amrex::RunOn::Device>(0.0);
                     const auto& divu = tmpfab.array();
                     HydroUtils::ComputeFluxesOnBoxFromState(
                         bx, ICNS::ndim, mfi, q.const_array(mfi),
-                        (*flux_x)(lev).array(mfi), (*flux_y)(lev).array(mfi),
-                        (*flux_z)(lev).array(mfi), (*face_x)(lev).array(mfi),
-                        (*face_y)(lev).array(mfi), (*face_z)(lev).array(mfi),
-                        known_edge_state, u_mac(lev).const_array(mfi),
+                        q_nph.const_array(mfi), (*flux_x)(lev).array(mfi),
+                        (*flux_y)(lev).array(mfi), (*flux_z)(lev).array(mfi),
+                        (*face_x)(lev).array(mfi), (*face_y)(lev).array(mfi),
+                        (*face_z)(lev).array(mfi), known_edge_state,
+                        u_mac(lev).const_array(mfi),
                         v_mac(lev).const_array(mfi),
                         w_mac(lev).const_array(mfi), divu, fq.const_array(mfi),
-                        geom[lev], dt, dof_field.bcrec(),
+                        geom[lev], dt_extrap, dof_field.bcrec(),
                         dof_field.bcrec_device().data(), iconserv.data(),
                         godunov_use_ppm, godunov_use_forces_in_trans,
                         is_velocity, fluxes_are_area_weighted,
                         postmac_advection_type, limiter_type,
                         m_allow_inflow_on_outflow);
                 }
-                amrex::Gpu::streamSynchronize();
             } else {
                 amrex::Abort("Invalid godunov scheme");
             }
@@ -364,10 +372,10 @@ struct AdvectionOp<ICNS, fvm::Godunov>
             // Loop levels
             multiphase::hybrid_fluxes(
                 repo, ICNS::ndim, iconserv, (*flux_x), (*flux_y), (*flux_z),
-                dof_field, src_term, rho_o, u_mac, v_mac, w_mac,
-                dof_field.bcrec(), dof_field.bcrec_device().data(),
+                dof_field, dof_nph, src_term, rho_o, rho_nph, u_mac, v_mac,
+                w_mac, dof_field.bcrec(), dof_field.bcrec_device().data(),
                 rho_o.bcrec(), rho_o.bcrec_device().data(), dt, mflux_scheme,
-                godunov_use_forces_in_trans);
+                m_allow_inflow_on_outflow, godunov_use_forces_in_trans);
         }
 
         amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>> fluxes(

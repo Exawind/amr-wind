@@ -1,6 +1,6 @@
 # AMR-Wind 
 
-[User manual](https://exawind.github.io/amr-wind) | [API docs](https://exawind.github.io/amr-wind/api_docs) | [Nightly test dashboard](http://my.cdash.org/index.php?project=Exawind) 
+[Documentation](https://exawind.github.io/amr-wind) | [Nightly test dashboard](http://my.cdash.org/index.php?project=Exawind) 
 
 [![Powered by AMReX](https://amrex-codes.github.io/badges/powered%20by-AMReX-red.svg)](https://amrex-codes.github.io/amrex/) [![Build Status](https://github.com/Exawind/amr-wind/workflows/AMR-Wind-CI/badge.svg)](https://github.com/Exawind/amr-wind/actions) [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/9284/badge)](https://www.bestpractices.dev/projects/9284)
 
@@ -32,17 +32,56 @@ objectives:
   models for modeling wind farm flow physics at various fidelities that are
   backed by a comprehensive verification and validation (V&V) process;
 
-- be capable of performing the highest-fidelity simulations of flowfields within
+- be capable of performing the highest-fidelity simulations of flow fields within
   wind farms; and 
 
-- be able to leverage the high-performance leadership class computating
+- be able to leverage the high-performance leadership class computing
   facilities available at DOE national laboratories.
+
+## Part of the WETO Stack
+
+AMR-Wind is primarily developed with the support of the U.S. Department of Energy and is part of the [WETO Software Stack](https://nrel.github.io/WETOStack). For more information and other integrated modeling software, see:
+- [Portfolio Overview](https://nrel.github.io/WETOStack/portfolio_analysis/overview.html)
+- [Entry Guide](https://nrel.github.io/WETOStack/_static/entry_guide/index.html)
+- [High-Fidelity Modeling Workshop](https://nrel.github.io/WETOStack/workshops/user_workshops_2024.html#high-fidelity-modeling)
+
+## References
+To cite AMR-Wind and to learn more about the methodology, use the following [journal article](https://doi.org/10.1002/we.70010) as well as the [ExaWind reference](https://doi.org/10.1002/we.2886):
+
+```
+@article{amrwind2025,
+    author = {Kuhn, Michael B. and {Henry de Frahan}, Marc T. and Mohan, Prakash and Deskos, Georgios and Churchfield, Matthew and Cheung, Lawrence and Sharma, Ashesh and Almgren, Ann and Ananthan, Shreyas and Brazell, Michael J. and {Martinez-Tossas} Luis A. and Thedin, Regis and Rood, Jon and Sakievich, Philip and Vijayakumar, Ganesh and Zhang, Weiqun and Sprague, Michael A.},
+    title = {AMR-Wind: A performance-portable, high-fidelity flow solver for wind farm simulations},
+    journal = {Wind Energy},
+    volume = {28},
+    number = {5},
+    pages = {-},
+    doi = {10.1002/we.70010},
+    url = {https://onlinelibrary.wiley.com/doi/full/10.1002/we.70010},
+    eprint = {},
+    year = {2025}
+}
+
+@article{exawind2024,
+    author = {Sharma, Ashesh and Brazell, Michael J. and Vijayakumar, Ganesh and Ananthan, Shreyas and Cheung, Lawrence and deVelder, Nathaniel and {Henry de Frahan}, Marc T. and Matula, Neil and Mullowney, Paul and Rood, Jon and Sakievich, Philip and Almgren, Ann and Crozier, Paul S. and Sprague, Michael},
+    title = {ExaWind: Open-source CFD for hybrid-RANS/LES geometry-resolved wind turbine simulations in atmospheric flows},
+    journal = {Wind Energy},
+    volume = {27},
+    number = {3},
+    pages = {225-257},
+    doi = {10.1002/we.2886},
+    url = {https://onlinelibrary.wiley.com/doi/abs/10.1002/we.2886},
+    eprint = {https://onlinelibrary.wiley.com/doi/pdf/10.1002/we.2886},
+    year = {2024}
+}
+```
 
 ## Documentation
 
-Documentation is organized into a [user manual](https://exawind.github.io/amr-wind)
-and a developer-focused [API
-documentation](https://exawind.github.io/amr-wind). You can either
+Documentation is available at https://exawind.github.io/amr-wind, which 
+includes a walkthrough tutorial, a user manual, notes on theory,
+and tips for developers. We also provide a developer-focused API
+documentation at the same link. You can either
 browse the docs online by following the links, or you can generate them locally
 after downloading the code. Please follow the instructions in user manual to
 build documentation locally.
@@ -68,6 +107,25 @@ enhancements, documentation updates, etc. All contributions are processed
 through pull-requests on GitHub. Please refer to the 
 [coding guidelines](https://exawind.github.io/amr-wind/developer/coding_guidelines.html) as
 a reference for the best practices currently used to develop AMR-Wind.
+
+To pass the code format checking, use this command with a new version of `clang-format`:
+```
+find amr-wind unit_tests \( -name "*.cpp" -o -name "*.H" -o -name "*.h" \) -exec clang-format -i {} +
+```
+
+Please acknowledge as a publication co-author any developer that has
+significantly contributed to implementing or improving specific
+capability that was used for that publication.
+
+### User discussion, feedback, and community support
+
+The development team manages a mailing list for AMR-Wind users. Invites for quarterly user meetings,
+along with occasional announcements, are sent to this list.
+Quarterly meetings provide development updates and a forum for discussion and feedback.
+If you would like to join this mailing list, please send a request to amr-wind-maintainers@groups.nrel.gov,
+and we will be happy to add your email address. Our maintainers email is also available for direct
+inquiries about AMR-Wind, but the GitHub page (issues, discussions, pull requests) is preferred
+for the majority of questions.
 
 ## Versioning and tags
 

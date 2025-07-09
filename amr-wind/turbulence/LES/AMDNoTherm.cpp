@@ -50,20 +50,19 @@ void AMDNoTherm<Transport>::update_turbulent_viscosity(
         const auto& geom = geom_vec[lev];
 
         const auto& dx = geom.CellSizeArray();
-        for (amrex::MFIter mfi(mu_turb(lev)); mfi.isValid(); ++mfi) {
-            const auto& bx = mfi.tilebox();
-            const auto& gradVel_arr = (*gradVel)(lev).array(mfi);
-            const auto& mu_arr = mu_turb(lev).array(mfi);
-            const auto& rho_arr = den(lev).const_array(mfi);
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real rho = rho_arr(i, j, k);
-                    mu_arr(i, j, k) =
-                        rho *
-                        amd_base_muvel(i, j, k, dx, C_poincare, gradVel_arr);
-                });
-        }
+        const auto& gradVel_arrs = (*gradVel)(lev).const_arrays();
+        const auto& mu_arrs = mu_turb(lev).arrays();
+        const auto& rho_arrs = den(lev).const_arrays();
+        amrex::ParallelFor(
+            mu_turb(lev),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                const amrex::Real rho = rho_arrs[nbx](i, j, k);
+                mu_arrs[nbx](i, j, k) =
+                    rho *
+                    amd_base_muvel(i, j, k, dx, C_poincare, gradVel_arrs[nbx]);
+            });
     }
+    amrex::Gpu::streamSynchronize();
 
     mu_turb.fillpatch(this->m_sim.time().current_time());
 }

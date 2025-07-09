@@ -21,7 +21,7 @@ namespace utils {
  *  intersections with a bounding box ``rbox``.
  *
  *  \param mesh AMReX mesh instance
- *  \param rbox The bounding box that defines the region of influence of a
+ *  \param rbx The bounding box that defines the region of influence of a
  * turbine
  */
 std::set<int> determine_influenced_procs(
@@ -39,7 +39,7 @@ void determine_root_proc(
  *
  *  \return Gaussian smearing factor in 3D
  */
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
 gaussian3d(const vs::Vector& dist, const vs::Vector& eps)
 {
     const vs::Vector rr{
@@ -64,7 +64,7 @@ gaussian3d(const vs::Vector& dist, const vs::Vector& eps)
  *
  *  \return Gaussian smearing factor in 1D
  */
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
 gaussian1d(const amrex::Real& dist, const amrex::Real& eps)
 {
     const amrex::Real fac = 0.5641895835477563;
@@ -76,10 +76,10 @@ gaussian1d(const amrex::Real& dist, const amrex::Real& eps)
 
 /** Compute distance between two points
  *
- * @param origin Origin for the cylindrical coordinate system
- * @param normal Normal  relative to origin (defines cylinder orientation)
- * @param point1 location of the first point in Cartesian coordinates
- * @param point2 location of second point in Cartesian coordinates
+ * \param origin Origin for the cylindrical coordinate system
+ * \param normal Normal  relative to origin (defines cylinder orientation)
+ * \param point1 location of the first point in Cartesian coordinates
+ * \param point2 location of second point in Cartesian coordinates
  * @return distance between points in cylindrical coordinates
  * (angle is in radians)
  */
@@ -118,11 +118,11 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE vs::Vector delta_pnts_cyl(
 /** Compute weighting for a normalized linear interpolant
  *
  *
- * @param distance distance between sample location and the reference points
- * @param dX spacing between reference points
+ * \param distance distance between sample location and the reference points
+ * \param dX spacing between reference points
  * @return normalized integration weight at the sample location
  */
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
 linear_basis_1d(const amrex::Real distance, const amrex::Real dX)
 {
     return amrex::max(0.0, 1.0 - distance / dX) / dX;

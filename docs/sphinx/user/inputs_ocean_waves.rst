@@ -76,7 +76,7 @@ This section is for setting up wave forcing and relaxation zones.
 
 .. input_param:: OceanWaves.label.timeramp_period
 
-   **type:** Real, optional, default = 2.0
+   **type:** Real, optional
 
    An initial ramp-up period for the wave forcing. Without specifying a period, the wave 
    forcing will begin at full strength.
@@ -88,6 +88,14 @@ This section is for setting up wave forcing and relaxation zones.
    By default, the domain will be initialized with a flat interface; if this option
    is turned on, the wave profile will be initialized over the entire domain. If there is a specified
    relax_zone_out_length, this option is automatically turned on.
+
+.. input_param:: OceanWaves.label.current
+
+   **type:** Real, optional, default = 0.0
+
+   Flow speed of a uniform current in the x-direction to be added to the wave forcing. This option is
+   currently only compatible with the LinearWaves wave type and the numerical beach. If a nonzero current is
+   specified for a case with nonlinear waves, the code will abort.
 
 The following input arguments are only valid for the LinearWaves and StokesWave wave types:
 
@@ -104,6 +112,25 @@ The following input arguments are only valid for the LinearWaves and StokesWave 
 
    The amplitude of the wave profile
 
+.. input_param:: OceanWaves.label.wave_phase_offset_radians
+
+   **type** Real, optional, default = 0.
+
+   This specifies a phase offset to the target wave profile.
+   It is in terms of phase (radians) relative to the wave, not
+   in terms of time. Note that this argument should be retained
+   when restarting a simulation so that the phase of the wave forcing
+   is consistent with the preceding simulation.
+
+.. input_param:: OceanWaves.label.wave_phase_offset_degrees
+
+   **type** Real, optional, default = 0.
+
+   This specifies a phase offset to the target wave profile
+   in terms of degrees. If the offset is specified in both radians
+   and degrees, the code will abort; only one of these arguments
+   can be used at a time.
+
 The following input arguments are only valid for the StokesWave wave type:
 
 .. input_param:: OceanWaves.label.order
@@ -112,7 +139,7 @@ The following input arguments are only valid for the StokesWave wave type:
 
    The order of the Stokes wave formula being used. All Stokes wave theory (wave profile and
    dispersion relation) is applied from `Fenton (1985)
-   <https://ascelibrary.org/doi/10.1061/%28ASCE%290733-950X%281985%29111%3A2%28216%29>`.
+   <https://ascelibrary.org/doi/10.1061/%28ASCE%290733-950X%281985%29111%3A2%28216%29>`_.
    The minimum order is 2, and the maximum order is 5.
 
 .. input_param:: OceanWaves.label.wave_period
@@ -149,7 +176,14 @@ The following input arguments are only valid for the W2AWaves wave type:
 
    **type:** String, mandatory
 
-   The name of the modes file, output by HOS-Ocean, in the SWENSE format.
+   The name of the modes file, output by HOS-Ocean or HOS-NWT, in the SWENSE format.
+
+.. input_param:: OceanWaves.label.HOS_simulation_is_ocean
+
+   **type:** Boolean, optional, default = true
+
+   Specify whether the modes file is from HOS-Ocean or HOS-NWT. If this is specified incorrectly,
+   the code will abort by detecting mismatched parameters in the modes file.
 
 .. input_param:: OceanWaves.label.HOS_init_timestep
 
@@ -164,6 +198,24 @@ The following input arguments are only valid for the W2AWaves wave type:
    The physical time in the modes file for the AMR-Wind simulation to start at.
    This argument is only active if HOS_init_timestep is omitted. AMR-Wind will pick the
    time step in the modes closest to the specified time.
+
+.. input_param:: OceanWaves.label.HOS_domain_offset_x
+
+   **type:** Real, optional, default = 0.
+
+   A physical space offset for mapping between the HOS domain and the AMR-Wind domain.
+   The coordinates of the HOS domain always start at (x,y) = (0,0), but often the setup
+   of an AMR-Wind domain is not constrained in this way, and also the AMR-Wind domain
+   may only represent a portion of the HOS domain. This parameter, :math:`x_textrm{off}`, 
+   contributes to the mapping such that :math:`x_\textrm{AMR-Wind} = x_\textrm{HOS} + x_\textrm{off}`.
+
+.. input_param:: OceanWaves.label.HOS_domain_offset_y
+
+   **type:** Real, optional, default = 0.
+
+   A physical space offset for mapping between the HOS domain and the AMR-Wind domain.
+   This parameter, :math:`y_textrm{off}`, contributes to the mapping such that
+   :math:`y_\textrm{AMR-Wind} = y_\textrm{HOS} + y_\textrm{off}`.
 
 .. input_param:: OceanWaves.label.fftw_planner_flag
 
@@ -201,5 +253,5 @@ The following input arguments are only valid for the W2AWaves wave type:
    **type:** Integer, optional, default = 1
 
    The number of points placed above the mean water surface for the velocity transformation process. The spacing
-   between the points above the surface is equal to the interp_spacing_at_surface. When setting this value, the wave height
+   between the points above the surface is equal to the ``interp_spacing_at_surface``. When setting this value, the wave height
    should be considered so that velocity can be accurately computed for portions of the waves above the mean surface.

@@ -4,6 +4,7 @@
 #include "AMReX_Gpu.H"
 #include "AMReX_ParmParse.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
+#include "amr-wind/utilities/index_operations.H"
 #include <AMReX_PlotFileUtil.H>
 
 #include <sstream>
@@ -164,7 +165,8 @@ void ABLModulatedPowerLaw::set_velocity(
 
     for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
         auto ori = oit();
-        if (bctype[ori] != BC::mass_inflow) {
+        if ((bctype[ori] != BC::mass_inflow) &&
+            (bctype[ori] != BC::mass_inflow_outflow)) {
             continue;
         }
 
@@ -172,12 +174,13 @@ void ABLModulatedPowerLaw::set_velocity(
         const auto& dbx = ori.isLow() ? amrex::adjCellLo(domain, idir, nghost)
                                       : amrex::adjCellHi(domain, idir, nghost);
 
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (false)
+#endif
         for (amrex::MFIter mfi(mfab); mfi.isValid(); ++mfi) {
             auto gbx = amrex::grow(mfi.validbox(), nghost);
-            if (!gbx.cellCentered()) {
-                gbx.enclosedCells();
-            }
-            const auto& bx = gbx & dbx;
+            const auto& bx =
+                utils::face_aware_boundary_box_intersection(gbx, dbx, ori);
             if (!bx.ok()) {
                 continue;
             }
@@ -241,7 +244,8 @@ void ABLModulatedPowerLaw::set_temperature(
 
     for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
         auto ori = oit();
-        if (bctype[ori] != BC::mass_inflow) {
+        if ((bctype[ori] != BC::mass_inflow) &&
+            (bctype[ori] != BC::mass_inflow_outflow)) {
             continue;
         }
 
@@ -249,12 +253,13 @@ void ABLModulatedPowerLaw::set_temperature(
         const auto& dbx = ori.isLow() ? amrex::adjCellLo(domain, idir, nghost)
                                       : amrex::adjCellHi(domain, idir, nghost);
 
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (false)
+#endif
         for (amrex::MFIter mfi(mfab); mfi.isValid(); ++mfi) {
             auto gbx = amrex::grow(mfi.validbox(), nghost);
-            if (!gbx.cellCentered()) {
-                gbx.enclosedCells();
-            }
-            const auto& bx = gbx & dbx;
+            const auto& bx =
+                utils::face_aware_boundary_box_intersection(gbx, dbx, ori);
             if (!bx.ok()) {
                 continue;
             }

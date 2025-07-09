@@ -12,7 +12,7 @@ template <typename ActTrait>
 class ActSrcOp<
     ActTrait,
     ActSrcDisk,
-    typename std::enable_if_t<std::is_base_of_v<TurbineType, ActTrait>>>
+    std::enable_if_t<std::is_base_of_v<TurbineType, ActTrait>>>
 {
 private:
     typename ActTrait::DataType& m_data;
@@ -42,8 +42,7 @@ template <typename ActTrait>
 void ActSrcOp<
     ActTrait,
     ActSrcDisk,
-    typename std::enable_if_t<std::is_base_of_v<TurbineType, ActTrait>>>::
-    initialize()
+    std::enable_if_t<std::is_base_of_v<TurbineType, ActTrait>>>::initialize()
 {
     const auto& meta = m_data.meta();
     m_blades.resize(meta.num_blades);
@@ -55,7 +54,7 @@ template <typename ActTrait>
 void ActSrcOp<
     ActTrait,
     ActSrcDisk,
-    typename std::enable_if_t<std::is_base_of_v<TurbineType, ActTrait>>>::
+    std::enable_if_t<std::is_base_of_v<TurbineType, ActTrait>>>::
     copy_to_device()
 {
     const auto& meta = m_data.meta();
@@ -77,11 +76,12 @@ template <typename ActTrait>
 void ActSrcOp<
     ActTrait,
     ActSrcDisk,
-    typename std::enable_if_t<std::is_base_of_v<TurbineType, ActTrait>>>::
+    std::enable_if_t<std::is_base_of_v<TurbineType, ActTrait>>>::
 operator()(const int lev, const amrex::MFIter& mfi, const amrex::Geometry& geom)
 {
-    const std::string fname = ActTrait::identifier() + ActSrcDisk::identifier();
-    BL_PROFILE("amr-wind::ActSrcOp<" + fname + ">");
+    BL_PROFILE(
+        "amr-wind::ActSrcOp<" + ActTrait::identifier() +
+        ActSrcDisk::identifier() + ">");
 
     const auto& bx = mfi.tilebox();
 

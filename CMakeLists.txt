@@ -3,7 +3,7 @@
 cmake_minimum_required (VERSION 3.20 FATAL_ERROR)
 project(AMR-Wind CXX C)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 include(amr-wind-utils)
@@ -11,10 +11,10 @@ include(amr-wind-utils)
 ########################## OPTIONS #####################################
 
 #General options for the project
-option(AMR_WIND_ENABLE_ALL_WARNINGS "Show most warnings for most compilers" ON)
 option(AMR_WIND_ENABLE_CLANG_TIDY "Compile with clang-tidy static analysis" OFF)
 option(AMR_WIND_ENABLE_CPPCHECK "Enable cppcheck static analysis target" OFF)
 option(AMR_WIND_ENABLE_FCOMPARE "Enable building fcompare when not testing" OFF)
+option(AMR_WIND_ENABLE_DOCUMENTATION "Enable documentation target" OFF)
 
 #Enabling tests overrides the executable options
 option(AMR_WIND_ENABLE_UNIT_TESTS "Enable unit testing" ON)
@@ -23,6 +23,10 @@ option(AMR_WIND_TEST_WITH_FCOMPARE "Check test plots against gold files" OFF)
 option(AMR_WIND_SAVE_GOLDS "Provide a directory in which to save golds during testing" OFF)
 option(AMR_WIND_ENABLE_FPE_TRAP_FOR_TESTS "Enable FPE trapping in tests" ON)
 option(AMR_WIND_TEST_WITH_PYTHON "Enable testing relying on python, like postprocessing" OFF)
+
+#Use internal AMReX and AMReX-Hydro by default
+option(AMR_WIND_USE_INTERNAL_AMREX "Use the AMReX submodule" ON)
+option(AMR_WIND_USE_INTERNAL_AMREX_HYDRO "Use the AMReX-Hydro submodule" ON)
 
 #Options for the executable
 option(AMR_WIND_ENABLE_MPI "Enable MPI" OFF)
@@ -34,9 +38,6 @@ option(AMR_WIND_ENABLE_TINY_PROFILE "Enable AMReX TinyProfile support" OFF)
 set(AMR_WIND_PRECISION "DOUBLE" CACHE STRING "Floating point precision SINGLE or DOUBLE")
 
 # Third party libraries
-option(AMR_WIND_USE_INTERNAL_AMREX "Add AMReX as subproject" ON)
-option(AMR_WIND_USE_INTERNAL_AMREX_HYDRO "Add AMReX-Hydro as subproject" ON)
-option(AMR_WIND_USE_INTERNAL_WAVES2AMR "Add Waves2AMR as subproject" ON)
 option(AMR_WIND_ENABLE_HDF5 "Enable HDF5 library" OFF)
 option(AMR_WIND_ENABLE_HDF5_ZFP "Enable ZFP compression in HDF5 library" OFF)
 option(AMR_WIND_ENABLE_NETCDF "Enable NetCDF library" OFF)
@@ -47,11 +48,16 @@ option(AMR_WIND_ENABLE_OPENFAST "Enable OpenFAST integration" OFF)
 option(AMR_WIND_ENABLE_ASCENT "Enable Ascent visualization library" OFF)
 option(AMR_WIND_ENABLE_UMPIRE "Enable Umpire GPU memory pools" OFF)
 option(AMR_WIND_ENABLE_W2A "Enable Waves2AMR library" OFF)
+option(AMR_WIND_ENABLE_FFT "Enable FFT solver for MAC projection" OFF)
 
 #Options for C++
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+if((AMR_WIND_ENABLE_SYCL OR AMR_WIND_ENABLE_ROCM OR AMR_WIND_ENABLE_CUDA) AND AMR_WIND_ENABLE_OPENMP)
+  message(FATAL_ERROR "Using OpenMP with a GPU backend is unsupported.")
+endif()
 
 if(AMR_WIND_ENABLE_CUDA)
   enable_language(CUDA)
@@ -123,7 +129,7 @@ add_executable(${amr_wind_exe_name})
 init_code_checks()
 if(CLANG_TIDY_EXE)
   set_target_properties(${amr_wind_lib_name} ${aw_api_lib} ${amr_wind_exe_name}
-                        PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY_EXE};--config-file=${CMAKE_SOURCE_DIR}/.clang-tidy")
+                        PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY_EXE}")
 endif()
 
 include(set_compile_flags)
@@ -171,6 +177,23 @@ if(AMR_WIND_ENABLE_OPENFAST)
   target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_USE_OPENFAST)
   target_include_directories(${amr_wind_lib_name} PUBLIC ${OpenFAST_INCLUDE_DIRS})
   target_link_libraries(${amr_wind_lib_name} PUBLIC ${OpenFAST_LIBRARIES})
+
+  set(AMR_WIND_OPENFAST_VERSION "3" CACHE STRING "OpenFAST major version")
+  if((AMR_WIND_OPENFAST_VERSION STREQUAL "master") OR (AMR_WIND_OPENFAST_VERSION STREQUAL "main") OR (AMR_WIND_OPENFAST_VERSION STREQUAL "develop"))
+    set(AMR_WIND_OPENFAST_VERSION "4.1")
+  endif()
+  if(NOT AMR_WIND_OPENFAST_VERSION VERSION_LESS "5")
+    message(FATAL_ERROR "AMR_WIND_OPENFAST_VERSION must be less than 5.")
+  endif()
+  if(AMR_WIND_OPENFAST_VERSION VERSION_GREATER_EQUAL "4" AND AMR_WIND_OPENFAST_VERSION VERSION_LESS "4.1")
+    message(FATAL_ERROR "AMR-Wind does not support OpenFAST version 4.0. Either update to 4.1 or revert to 3.")
+  endif()
+  string(REPLACE "." ";" OPENFAST_VERSION_LIST ${AMR_WIND_OPENFAST_VERSION})
+  list(LENGTH OPENFAST_VERSION_LIST OPENFAST_VERSION_LIST_LENGTH)
+  if(OPENFAST_VERSION_LIST_LENGTH GREATER_EQUAL 1)
+    list(GET OPENFAST_VERSION_LIST 0 OPENFAST_VERSION_MAJOR)
+  endif()
+  target_compile_definitions(${amr_wind_lib_name} PUBLIC OPENFAST_VERSION_MAJOR=${OPENFAST_VERSION_MAJOR})
 endif()
 
 if(AMR_WIND_ENABLE_ASCENT)
@@ -181,16 +204,20 @@ if(AMR_WIND_ENABLE_ASCENT)
   else()
     target_link_libraries(${amr_wind_lib_name} PUBLIC ascent::ascent)
   endif()
-  target_compile_definitions(${amr_wind_lib_name} PRIVATE AMR_WIND_USE_ASCENT)
+  target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_USE_ASCENT)
 endif()
 
-# Link with HELICS module 
+# Link with HELICS module
 if(AMR_WIND_ENABLE_HELICS)
   set(CMAKE_PREFIX_PATH ${HELICS_DIR} ${CMAKE_PREFIX_PATH})
   find_package(HELICS 3 REQUIRED)
   target_include_directories(${amr_wind_lib_name} PUBLIC ${HELICS_INSTALL_DIR}/include)
   target_link_libraries(${amr_wind_lib_name} PUBLIC HELICS::helicsCpp98)
-  target_compile_definitions(${amr_wind_lib_name} PRIVATE AMR_WIND_USE_HELICS)
+  target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_USE_HELICS)
+endif()
+
+if(AMR_WIND_ENABLE_FFT)
+  target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_USE_FFT)
 endif()
 
 if(AMR_WIND_TEST_WITH_PYTHON)
@@ -216,7 +243,7 @@ if(AMR_WIND_ENABLE_UNIT_TESTS OR AMR_WIND_ENABLE_TESTS)
   add_executable(${amr_wind_unit_test_exe_name})
   if(CLANG_TIDY_EXE)
     set_target_properties(${amr_wind_unit_test_exe_name}
-                          PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY_EXE};--config-file=${CMAKE_SOURCE_DIR}/.clang-tidy")
+                          PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY_EXE}")
   endif()
   add_subdirectory("submods/googletest")
   add_subdirectory("unit_tests")
@@ -235,6 +262,10 @@ if(AMR_WIND_ENABLE_TESTS)
   enable_testing()
   include(CTest)
   add_subdirectory(test)
+endif()
+
+if(AMR_WIND_ENABLE_DOCUMENTATION)
+  add_subdirectory(docs)
 endif()
 
 #Define what we want to be installed during a make install

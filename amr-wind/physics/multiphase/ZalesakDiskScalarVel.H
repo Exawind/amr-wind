@@ -5,7 +5,7 @@
 #include "amr-wind/core/Field.H"
 
 /** Multiphase Zalesak disk physics
- *  \ingroup mulitphase_physics
+ *  \ingroup multiphase_physics
  *
  */
 namespace amr_wind::zds {
@@ -13,7 +13,7 @@ namespace amr_wind::zds {
 namespace {
 struct SCexact
 {
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
         amrex::Real /*xc*/,
         amrex::Real /*yc*/,
         amrex::Real /*zc*/,

@@ -3,6 +3,7 @@
 
 #include "amr-wind/core/Factory.H"
 #include "amr-wind/utilities/PostProcessing.H"
+#include "amr-wind/utilities/constants.H"
 
 #include "AMReX_Vector.H"
 
@@ -24,7 +25,11 @@ namespace averaging {
  *  \ingroup utilities
  */
 class FieldTimeAverage
-    : public Factory<FieldTimeAverage, CFDSim&, const std::string&>
+    : public Factory<
+          FieldTimeAverage,
+          CFDSim&,
+          const std::string&,
+          const std::string&>
 {
 public:
     static std::string base_identifier() { return "FieldTimeAverage"; }
@@ -35,11 +40,14 @@ public:
      *
      *  \param time SimTime instance
      *  \param filter_width Time-averaging window specified by user
-     *
+     *  \param avg_time_interval Time interval at which averaging is performed
      *  \param elapsed_time Time elapsed since averaging was initiated
      */
-    virtual void
-    operator()(const SimTime&, const amrex::Real, const amrex::Real) = 0;
+    virtual void operator()(
+        const SimTime& time,
+        const amrex::Real filter_width,
+        const amrex::Real avg_time_interval,
+        const amrex::Real elapsed_time) = 0;
 
     virtual const std::string& average_field_name() = 0;
 };
@@ -61,6 +69,8 @@ public:
     void initialize() override;
 
     void post_advance_work() override;
+
+    void output_actions() override {}
 
     void post_regrid_actions() override {}
 
@@ -86,7 +96,13 @@ private:
     amrex::Real m_stop_time{std::numeric_limits<amrex::Real>::max()};
 
     //! Time averaging window (in seconds)
-    amrex::Real m_filter{0.0};
+    amrex::Real m_filter{amr_wind::constants::LARGE_NUM};
+
+    //! Time averaging time interval (in seconds)
+    amrex::Real m_time_interval{-1.};
+
+    //! Accumulated averaging time interval
+    amrex::Real m_accumulated_avg_time_interval{0.};
 };
 
 } // namespace averaging

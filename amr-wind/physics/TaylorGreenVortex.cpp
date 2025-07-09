@@ -32,26 +32,24 @@ void TaylorGreenVortex::initialize_fields(
     const amrex::Real Ly = probhi[1] - problo[1];
     const amrex::Real Lz = probhi[2] - problo[2];
 
-    for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
-        const auto& vbx = mfi.validbox();
-        const auto& dx = geom.CellSizeArray();
-        auto vel = velocity.array(mfi);
+    const auto& dx = geom.CellSizeArray();
+    const auto& vel_arrs = velocity.arrays();
 
-        amrex::ParallelFor(
-            vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-                const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
-                const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+    amrex::ParallelFor(
+        velocity, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+            const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
+            const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-                vel(i, j, k, 0) = std::sin(two_pi() * x / Lx) *
-                                  std::cos(two_pi() * y / Ly) *
-                                  cos(two_pi() * z / Lz);
-                vel(i, j, k, 1) = -std::cos(two_pi() * x / Lx) *
-                                  std::sin(two_pi() * y / Ly) *
-                                  cos(two_pi() * z / Lz);
-                vel(i, j, k, 2) = 0.0;
-            });
-    }
+            vel_arrs[nbx](i, j, k, 0) = std::sin(two_pi() * x / Lx) *
+                                        std::cos(two_pi() * y / Ly) *
+                                        cos(two_pi() * z / Lz);
+            vel_arrs[nbx](i, j, k, 1) = -std::cos(two_pi() * x / Lx) *
+                                        std::sin(two_pi() * y / Ly) *
+                                        cos(two_pi() * z / Lz);
+            vel_arrs[nbx](i, j, k, 2) = 0.0;
+        });
+    amrex::Gpu::streamSynchronize();
 }
 
 } // namespace amr_wind

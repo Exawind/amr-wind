@@ -42,18 +42,30 @@ struct PostSolveOp<TKE>
         const int nlevels = repo.num_active_levels();
         const auto clip_value = m_clip_value;
         for (int lev = 0; lev < nlevels; ++lev) {
-            for (amrex::MFIter mfi(field(lev)); mfi.isValid(); ++mfi) {
-                const auto& bx = mfi.tilebox();
-                const auto& field_arr = field(lev).array(mfi);
-
+            const auto& field_arrs = field(lev).arrays();
+            amrex::ParallelFor(
+                field(lev),
+                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                    field_arrs[nbx](i, j, k) = (field_arrs[nbx](i, j, k) < 0.0)
+                                                   ? clip_value
+                                                   : field_arrs[nbx](i, j, k);
+                });
+            const bool has_terrain = repo.int_field_exists("terrain_blank");
+            if (has_terrain) {
+                const IntField& m_terrain_blank =
+                    repo.get_int_field("terrain_blank");
+                const auto& blank_arrs = m_terrain_blank(lev).arrays();
                 amrex::ParallelFor(
-                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        field_arr(i, j, k) = (field_arr(i, j, k) < 0.0)
-                                                 ? clip_value
-                                                 : field_arr(i, j, k);
+                    field(lev), [=] AMREX_GPU_DEVICE(
+                                    int nbx, int i, int j, int k) noexcept {
+                        field_arrs[nbx](i, j, k) =
+                            (blank_arrs[nbx](i, j, k) == 1)
+                                ? clip_value
+                                : field_arrs[nbx](i, j, k);
                     });
             }
         }
+        amrex::Gpu::streamSynchronize();
         m_fields.field.fillpatch(time);
     }
 

@@ -20,7 +20,7 @@ struct LinearShearOp
     const amrex::Real m_vstart;
     const amrex::Real m_vstop;
 
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
     operator()(amrex::Real ht) const
     {
         amrex::Real vel =
@@ -61,7 +61,7 @@ struct PowerLawOp
     const amrex::Real m_umin;
     const amrex::Real m_umax;
 
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
     operator()(amrex::Real height) const
     {
         const amrex::Real heff = height - m_hoffset;
@@ -105,8 +105,8 @@ namespace {
  *. Initializes the dimensions and grid length, sizes in SynthTurbData. Also
  *  allocates the necessary memory for the perturbation velocities.
  *
- *. @param turbFile Information regarding NetCDF data identifiers
- *. @param turbGrid Turbulence data
+ *. \param turbFile Information regarding NetCDF data identifiers
+ *. \param turbGrid Turbulence data
  */
 void process_nc_file(const std::string& turb_filename, SynthTurbData& turb_grid)
 {
@@ -213,12 +213,12 @@ void load_turb_plane_data(
 /** Determine the left/right indices for a given point along a particular
  * direction
  *
- *  @param turb_grid Turbulence box data
- *  @param dir Direction of search (0 = x, 1 = y, 2 = z)
- *  @param xin Coordinate value in local coordinate frame corresponding to
+ *  \param turb_grid Turbulence box data
+ *  \param dir Direction of search (0 = x, 1 = y, 2 = z)
+ *  \param xin Coordinate value in local coordinate frame corresponding to
  * direction provided
- *  @param il Index of the lower bound (populated by this function)
- *  @param ir Index of the upper bound (populated by this function)
+ *  \param il Index of the lower bound (populated by this function)
+ *  \param ir Index of the upper bound (populated by this function)
  */
 void get_lr_indices(
     const SynthTurbData& turb_grid,
@@ -243,12 +243,12 @@ void get_lr_indices(
  *  This overload also populates the fractions of left/right states to be used
  *  for interpolations.
  *
- *  @param turb_grid Turbulence box data
- *  @param dir Direction of search (0 = x, 1 = y, 2 = z)
- *  @param xin Coordinate value in local coordinate frame corresponding to
+ *  \param turb_grid Turbulence box data
+ *  \param dir Direction of search (0 = x, 1 = y, 2 = z)
+ *  \param xin Coordinate value in local coordinate frame corresponding to
  *  direction provided
- *  @param il Index of the lower bound (populated by this function)
- *  @param ir Index of the upper bound (populated by this function)
+ *  \param il Index of the lower bound (populated by this function)
+ *  \param ir Index of the upper bound (populated by this function)
  */
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void get_lr_indices(
     const SynthTurbDeviceData& turb_grid,
@@ -280,7 +280,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void get_lr_indices(
  *
  *  @return True if the point is inside the 2-D box
  */
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool find_point_in_box(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE bool find_point_in_box(
     const SynthTurbDeviceData& t_grid, const vs::Vector& pt, InterpWeights& wt)
 {
     // Get y and z w.r.t. the lower corner of the grid
@@ -300,7 +300,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool find_point_in_box(
 
 /** Interpolate the perturbation velocity to a given point from the grid data
  */
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void interp_perturb_vel(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE void interp_perturb_vel(
     const SynthTurbDeviceData& t_grid, const InterpWeights& wt, vs::Vector& vel)
 {
     const int nz = t_grid.box_dims[2];
@@ -574,72 +574,70 @@ void SyntheticTurbulence::update_impl(
         const auto& gauss_scaling = m_gauss_scaling;
         const auto& epsilon = m_epsilon;
 
-        for (amrex::MFIter mfi(m_turb_force(lev)); mfi.isValid(); ++mfi) {
-            const auto& bx = mfi.tilebox();
-            const auto& turb_force_arr = m_turb_force(lev).array(mfi);
-            const auto& rho_arr = m_density(lev).array(mfi);
+        const auto& turb_force_arrs = m_turb_force(lev).arrays();
+        const auto& rho_arrs = m_density(lev).arrays();
 
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    // Position vector in local turbulence grid frame
-                    vs::Vector xyz_l;
-                    // velocity in local frame
-                    vs::Vector vel_l;
-                    // velocity in global frame
-                    vs::Vector vel_g;
+        amrex::ParallelFor(
+            m_turb_force(lev),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                // Position vector in local turbulence grid frame
+                vs::Vector xyz_l;
+                // velocity in local frame
+                vs::Vector vel_l;
+                // velocity in global frame
+                vs::Vector vel_g;
 
-                    // clang-format off
-                    vs::Vector xyz_g{problo[0] + (i + 0.5) * dx,
-                                     problo[1] + (j + 0.5) * dy,
-                                     problo[2] + (k + 0.5) * dz};
-                    // clang-format on
+                vs::Vector xyz_g{
+                    problo[0] + (i + 0.5) * dx, problo[1] + (j + 0.5) * dy,
+                    problo[2] + (k + 0.5) * dz};
 
-                    // Transform position vector from global inertial
-                    // reference frame to local reference frame attached to
-                    // the turbulence grid.
-                    xyz_l = trmat & (xyz_g - origin);
+                // Transform position vector from global inertial
+                // reference frame to local reference frame attached to
+                // the turbulence grid.
+                xyz_l = trmat & (xyz_g - origin);
 
-                    InterpWeights wts_loc = weights;
+                InterpWeights wts_loc = weights;
 
-                    // Check if the point is in the box, if not we skip this
-                    // node. The function will also populate the interpolation
-                    // weights for points that are determined to be within the
-                    // box.
-                    bool ptInBox = find_point_in_box(turb_grid, xyz_l, wts_loc);
-                    if (ptInBox) {
-                        // Interpolate perturbation velocities in the local
-                        // reference frame
-                        interp_perturb_vel(turb_grid, wts_loc, vel_l);
-                        // Transform velocity vector from local reference
-                        // frame back to the global inertial frame
-                        vel_g = vel_l & trmat;
+                // Check if the point is in the box, if not we skip this
+                // node. The function will also populate the interpolation
+                // weights for points that are determined to be within the
+                // box.
+                const bool ptInBox =
+                    find_point_in_box(turb_grid, xyz_l, wts_loc);
+                if (ptInBox) {
+                    // Interpolate perturbation velocities in the local
+                    // reference frame
+                    interp_perturb_vel(turb_grid, wts_loc, vel_l);
+                    // Transform velocity vector from local reference
+                    // frame back to the global inertial frame
+                    vel_g = vel_l & trmat;
 
-                        // Based on the equations in
-                        // http://doi.wiley.com/10.1002/we.1608
-                        // v_n in Eq. 10
-                        const amrex::Real v_mag = vs::mag(vel_g);
-                        // (V_n + 1/2 v_n) in Eq. 10
-                        const amrex::Real v_mag_total =
-                            (velfunc(xyz_g[sdir]) + 0.5 * v_mag);
+                    // Based on the equations in
+                    // http://doi.wiley.com/10.1002/we.1608
+                    // v_n in Eq. 10
+                    const amrex::Real v_mag = vs::mag(vel_g);
+                    // (V_n + 1/2 v_n) in Eq. 10
+                    const amrex::Real v_mag_total =
+                        (velfunc(xyz_g[sdir]) + 0.5 * v_mag);
 
-                        // Smearing factor (see Eq. 11). The normal direction to
-                        // the grid is the x-axis of the local reference frame
-                        // by construction
-                        const amrex::Real term1 = xyz_l[0] / epsilon;
-                        const amrex::Real eta =
-                            std::exp(-(term1 * term1)) * gauss_scaling;
-                        const amrex::Real factor = v_mag_total * eta;
+                    // Smearing factor (see Eq. 11). The normal direction to
+                    // the grid is the x-axis of the local reference frame
+                    // by construction
+                    const amrex::Real term1 = xyz_l[0] / epsilon;
+                    const amrex::Real eta =
+                        std::exp(-(term1 * term1)) * gauss_scaling;
+                    const amrex::Real factor = v_mag_total * eta;
 
-                        turb_force_arr(i, j, k, 0) =
-                            rho_arr(i, j, k) * vel_g[0] * factor;
-                        turb_force_arr(i, j, k, 1) =
-                            rho_arr(i, j, k) * vel_g[1] * factor;
-                        turb_force_arr(i, j, k, 2) =
-                            rho_arr(i, j, k) * vel_g[2] * factor;
-                    }
-                });
-        }
+                    turb_force_arrs[nbx](i, j, k, 0) =
+                        rho_arrs[nbx](i, j, k) * vel_g[0] * factor;
+                    turb_force_arrs[nbx](i, j, k, 1) =
+                        rho_arrs[nbx](i, j, k) * vel_g[1] * factor;
+                    turb_force_arrs[nbx](i, j, k, 2) =
+                        rho_arrs[nbx](i, j, k) * vel_g[2] * factor;
+                }
+            });
     }
+    amrex::Gpu::streamSynchronize();
 }
 
 } // namespace amr_wind

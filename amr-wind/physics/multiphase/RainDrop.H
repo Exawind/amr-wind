@@ -5,7 +5,7 @@
 #include "amr-wind/core/Field.H"
 
 /** Multiphase falling raindrop physics
- *  \ingroup mulitphase_physics
+ *  \ingroup multiphase_physics
  *
  */
 

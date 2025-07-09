@@ -25,7 +25,7 @@ namespace {
  *  -10.0 10.0 0.0 10.0 20.0 250.0  // T004
  *  ```
  *
- *  @param is Valid open input stream
+ *  \param is Valid open input stream
  *  @return Vector containing RealBox instances for each bounding box
  */
 amrex::Vector<amrex::RealBox> read_real_boxes(std::istream& is)

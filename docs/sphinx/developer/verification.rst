@@ -5,7 +5,7 @@ Verification
 
 Verification of AMR-WIND uses `MASA
 <https://github.com/manufactured-solutions/MASA>`_ and
-auto-differention tools to implement the Method of Manufactured
+auto-differentiation tools to implement the Method of Manufactured
 Solutions. MMS verification has been performed for both CPU and GPU
 architectures.
 
@@ -164,7 +164,7 @@ rearranging
 .. math::
    V = \hat{B} e^{-z/D_E} e^{i \left(\phi-z/D_E \right)} + u_g
    
-using Eulers identity :math:`e^{i\theta} = \cos(\theta) + i \sin(\theta)` we can split this into real and imaginary parts
+using Euler's identity :math:`e^{i\theta} = \cos(\theta) + i \sin(\theta)` we can split this into real and imaginary parts
 
 .. math::
    V = \hat{B} e^{-z/D_E} \left [ \cos(\phi-z/D_E ) + i \sin(\phi-z/D_E ) \right ] + u_g

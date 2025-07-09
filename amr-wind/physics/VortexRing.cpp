@@ -9,7 +9,7 @@
 
 namespace amr_wind {
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real FatCore::operator()(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real FatCore::operator()(
     const amrex::Real r,
     const amrex::Real /*unused*/,
     const amrex::Real z,
@@ -31,7 +31,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real FatCore::operator()(
     return 0.0;
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real CollidingRings::operator()(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real CollidingRings::operator()(
     const amrex::Real r,
     const amrex::Real theta,
     const amrex::Real z,
@@ -164,6 +164,9 @@ void VortexRing::initialize_velocity(const VortexRingType& vorticity_theta)
 
         const auto& problo = m_repo.mesh().Geom(level).ProbLoArray();
 
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
         for (amrex::MFIter mfi(m_velocity(level)); mfi.isValid(); ++mfi) {
             const auto& dx = m_repo.mesh().Geom(level).CellSizeArray();
             const auto& nbx = mfi.nodaltilebox();
@@ -192,7 +195,8 @@ void VortexRing::initialize_velocity(const VortexRingType& vorticity_theta)
 
     amrex::MLNodeLaplacian linop(
         mesh.Geom(0, mesh.finestLevel()), mesh.boxArray(0, mesh.finestLevel()),
-        mesh.DistributionMap(0, mesh.finestLevel()), info, {}, 1.0);
+        mesh.DistributionMap(0, mesh.finestLevel()), info,
+        amrex::Vector<amrex::FabFactory<amrex::FArrayBox> const*>{}, 1.0);
 
     amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM> bclo;
     amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM> bchi;
@@ -203,28 +207,24 @@ void VortexRing::initialize_velocity(const VortexRingType& vorticity_theta)
             bclo[dir] = amrex::LinOpBCType::Periodic;
             bchi[dir] = amrex::LinOpBCType::Periodic;
         } else {
-
-            switch (bctype[amrex::Orientation(dir, amrex::Orientation::low)]) {
-            case BC::pressure_inflow:
-            case BC::pressure_outflow: {
-                bclo[dir] = amrex::LinOpBCType::Dirichlet;
-                break;
+            {
+                auto bc =
+                    bctype[amrex::Orientation(dir, amrex::Orientation::low)];
+                if (bc == BC::pressure_outflow) {
+                    bclo[dir] = amrex::LinOpBCType::Dirichlet;
+                } else {
+                    bclo[dir] = amrex::LinOpBCType::Neumann;
+                }
             }
-            default:
-                bclo[dir] = amrex::LinOpBCType::Neumann;
-                break;
-            };
-
-            switch (bctype[amrex::Orientation(dir, amrex::Orientation::high)]) {
-            case BC::pressure_inflow:
-            case BC::pressure_outflow: {
-                bchi[dir] = amrex::LinOpBCType::Dirichlet;
-                break;
+            {
+                auto bc =
+                    bctype[amrex::Orientation(dir, amrex::Orientation::high)];
+                if (bc == BC::pressure_outflow) {
+                    bchi[dir] = amrex::LinOpBCType::Dirichlet;
+                } else {
+                    bchi[dir] = amrex::LinOpBCType::Neumann;
+                }
             }
-            default:
-                bchi[dir] = amrex::LinOpBCType::Neumann;
-                break;
-            };
         }
     }
 
@@ -250,61 +250,77 @@ void VortexRing::initialize_velocity(const VortexRingType& vorticity_theta)
     for (int level = 0; level <= m_repo.mesh().finestLevel(); ++level) {
         auto& velocity = m_velocity(level);
 
-        for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
-            const auto& vbx = mfi.validbox();
+        const auto& dxinv = m_repo.mesh().Geom(level).InvCellSizeArray();
+        const auto& vel_arrs = velocity.arrays();
+        const auto& psi_arrs = (*vectorpotential)(level).const_arrays();
+        const amrex::Real facx = amrex::Real(0.25) * dxinv[0];
+        const amrex::Real facy = amrex::Real(0.25) * dxinv[1];
+        const amrex::Real facz = amrex::Real(0.25) * dxinv[2];
 
-            const auto& dxinv = m_repo.mesh().Geom(level).InvCellSizeArray();
-            auto vel = velocity.array(mfi);
-            auto psi = (*vectorpotential)(level).array(mfi);
-            const amrex::Real facx = amrex::Real(0.25) * dxinv[0];
-            const amrex::Real facy = amrex::Real(0.25) * dxinv[1];
-            const amrex::Real facz = amrex::Real(0.25) * dxinv[2];
+        amrex::ParallelFor(
+            velocity,
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                const amrex::Real dpsix_dy =
+                    facy * (-psi_arrs[nbx](i, j, k, 0) -
+                            psi_arrs[nbx](i + 1, j, k, 0) +
+                            psi_arrs[nbx](i, j + 1, k, 0) +
+                            psi_arrs[nbx](i + 1, j + 1, k, 0) -
+                            psi_arrs[nbx](i, j, k + 1, 0) -
+                            psi_arrs[nbx](i + 1, j, k + 1, 0) +
+                            psi_arrs[nbx](i, j + 1, k + 1, 0) +
+                            psi_arrs[nbx](i + 1, j + 1, k + 1, 0));
+                const amrex::Real dpsix_dz =
+                    facz * (-psi_arrs[nbx](i, j, k, 0) -
+                            psi_arrs[nbx](i + 1, j, k, 0) -
+                            psi_arrs[nbx](i, j + 1, k, 0) -
+                            psi_arrs[nbx](i + 1, j + 1, k, 0) +
+                            psi_arrs[nbx](i, j, k + 1, 0) +
+                            psi_arrs[nbx](i + 1, j, k + 1, 0) +
+                            psi_arrs[nbx](i, j + 1, k + 1, 0) +
+                            psi_arrs[nbx](i + 1, j + 1, k + 1, 0));
+                const amrex::Real dpsiy_dx =
+                    facx * (-psi_arrs[nbx](i, j, k, 1) +
+                            psi_arrs[nbx](i + 1, j, k, 1) -
+                            psi_arrs[nbx](i, j + 1, k, 1) +
+                            psi_arrs[nbx](i + 1, j + 1, k, 1) -
+                            psi_arrs[nbx](i, j, k + 1, 1) +
+                            psi_arrs[nbx](i + 1, j, k + 1, 1) -
+                            psi_arrs[nbx](i, j + 1, k + 1, 1) +
+                            psi_arrs[nbx](i + 1, j + 1, k + 1, 1));
+                const amrex::Real dpsiy_dz =
+                    facz * (-psi_arrs[nbx](i, j, k, 1) -
+                            psi_arrs[nbx](i + 1, j, k, 1) -
+                            psi_arrs[nbx](i, j + 1, k, 1) -
+                            psi_arrs[nbx](i + 1, j + 1, k, 1) +
+                            psi_arrs[nbx](i, j, k + 1, 1) +
+                            psi_arrs[nbx](i + 1, j, k + 1, 1) +
+                            psi_arrs[nbx](i, j + 1, k + 1, 1) +
+                            psi_arrs[nbx](i + 1, j + 1, k + 1, 1));
+                const amrex::Real dpsiz_dx =
+                    facx * (-psi_arrs[nbx](i, j, k, 2) +
+                            psi_arrs[nbx](i + 1, j, k, 2) -
+                            psi_arrs[nbx](i, j + 1, k, 2) +
+                            psi_arrs[nbx](i + 1, j + 1, k, 2) -
+                            psi_arrs[nbx](i, j, k + 1, 2) +
+                            psi_arrs[nbx](i + 1, j, k + 1, 2) -
+                            psi_arrs[nbx](i, j + 1, k + 1, 2) +
+                            psi_arrs[nbx](i + 1, j + 1, k + 1, 2));
+                const amrex::Real dpsiz_dy =
+                    facy * (-psi_arrs[nbx](i, j, k, 2) -
+                            psi_arrs[nbx](i + 1, j, k, 2) +
+                            psi_arrs[nbx](i, j + 1, k, 2) +
+                            psi_arrs[nbx](i + 1, j + 1, k, 2) -
+                            psi_arrs[nbx](i, j, k + 1, 2) -
+                            psi_arrs[nbx](i + 1, j, k + 1, 2) +
+                            psi_arrs[nbx](i, j + 1, k + 1, 2) +
+                            psi_arrs[nbx](i + 1, j + 1, k + 1, 2));
 
-            amrex::ParallelFor(
-                vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real dpsix_dy =
-                        facy *
-                        (-psi(i, j, k, 0) - psi(i + 1, j, k, 0) +
-                         psi(i, j + 1, k, 0) + psi(i + 1, j + 1, k, 0) -
-                         psi(i, j, k + 1, 0) - psi(i + 1, j, k + 1, 0) +
-                         psi(i, j + 1, k + 1, 0) + psi(i + 1, j + 1, k + 1, 0));
-                    const amrex::Real dpsix_dz =
-                        facz *
-                        (-psi(i, j, k, 0) - psi(i + 1, j, k, 0) -
-                         psi(i, j + 1, k, 0) - psi(i + 1, j + 1, k, 0) +
-                         psi(i, j, k + 1, 0) + psi(i + 1, j, k + 1, 0) +
-                         psi(i, j + 1, k + 1, 0) + psi(i + 1, j + 1, k + 1, 0));
-                    const amrex::Real dpsiy_dx =
-                        facx *
-                        (-psi(i, j, k, 1) + psi(i + 1, j, k, 1) -
-                         psi(i, j + 1, k, 1) + psi(i + 1, j + 1, k, 1) -
-                         psi(i, j, k + 1, 1) + psi(i + 1, j, k + 1, 1) -
-                         psi(i, j + 1, k + 1, 1) + psi(i + 1, j + 1, k + 1, 1));
-                    const amrex::Real dpsiy_dz =
-                        facz *
-                        (-psi(i, j, k, 1) - psi(i + 1, j, k, 1) -
-                         psi(i, j + 1, k, 1) - psi(i + 1, j + 1, k, 1) +
-                         psi(i, j, k + 1, 1) + psi(i + 1, j, k + 1, 1) +
-                         psi(i, j + 1, k + 1, 1) + psi(i + 1, j + 1, k + 1, 1));
-                    const amrex::Real dpsiz_dx =
-                        facx *
-                        (-psi(i, j, k, 2) + psi(i + 1, j, k, 2) -
-                         psi(i, j + 1, k, 2) + psi(i + 1, j + 1, k, 2) -
-                         psi(i, j, k + 1, 2) + psi(i + 1, j, k + 1, 2) -
-                         psi(i, j + 1, k + 1, 2) + psi(i + 1, j + 1, k + 1, 2));
-                    const amrex::Real dpsiz_dy =
-                        facy *
-                        (-psi(i, j, k, 2) - psi(i + 1, j, k, 2) +
-                         psi(i, j + 1, k, 2) + psi(i + 1, j + 1, k, 2) -
-                         psi(i, j, k + 1, 2) - psi(i + 1, j, k + 1, 2) +
-                         psi(i, j + 1, k + 1, 2) + psi(i + 1, j + 1, k + 1, 2));
-
-                    vel(i, j, k, 0) = -(dpsiz_dy - dpsiy_dz);
-                    vel(i, j, k, 1) = -(dpsix_dz - dpsiz_dx);
-                    vel(i, j, k, 2) = -(dpsiy_dx - dpsix_dy);
-                });
-        }
+                vel_arrs[nbx](i, j, k, 0) = -(dpsiz_dy - dpsiy_dz);
+                vel_arrs[nbx](i, j, k, 1) = -(dpsix_dz - dpsiz_dx);
+                vel_arrs[nbx](i, j, k, 2) = -(dpsiy_dx - dpsix_dy);
+            });
     }
+    amrex::Gpu::streamSynchronize();
 }
 
 } // namespace amr_wind

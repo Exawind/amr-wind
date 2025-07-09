@@ -16,7 +16,7 @@ namespace synth_turb {
 
 struct MeanVelOp
 {
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
     operator()(double /* height */) const
     {
         return m_ref_vel;

@@ -109,11 +109,12 @@ void LidarSampler::output_netcdf_data(
     // Write the coordinates every time
     std::vector<size_t> start{nt, 0, 0};
     std::vector<size_t> count{1, 0, AMREX_SPACEDIM};
-    SamplerBase::SampleLocType locs;
-    sampling_locations(locs);
+    SampleLocType sample_locs;
+    sampling_locations(sample_locs);
     auto xyz = grp.var("points");
     count[1] = num_points();
-    xyz.put(locs[0].data(), start, count);
+    const auto& locs = sample_locs.locations();
+    xyz.put(locs[0].begin(), start, count);
 }
 #else
 void LidarSampler::define_netcdf_metadata(

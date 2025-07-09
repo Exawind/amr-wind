@@ -3,6 +3,7 @@
 
 #include "amr-wind/wind_energy/ABLStatsBase.H"
 #include "amr-wind/CFDSim.H"
+#include "amr-wind/transport_models/TransportModel.H"
 #include "amr-wind/utilities/FieldPlaneAveraging.H"
 #include "amr-wind/utilities/FieldPlaneAveragingFine.H"
 #include "amr-wind/utilities/SecondMomentAveraging.H"
@@ -175,9 +176,6 @@ private:
 
     //! Von-Karman constant
     amrex::Real m_kappa{0.41};
-
-    //! Reference surface temperature
-    amrex::Real m_ref_theta{300.0};
 
     //! Variable to store capping inversion height
     amrex::Real m_zi{0.0};

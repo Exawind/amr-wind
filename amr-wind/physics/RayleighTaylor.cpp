@@ -24,8 +24,11 @@ void RayleighTaylor::initialize_fields(int level, const amrex::Geometry& geom)
 
     velocity.setVal(0.0);
 
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
     for (amrex::MFIter mfi(density); mfi.isValid(); ++mfi) {
-        const auto& vbx = mfi.validbox();
+        const auto& vbx = mfi.tilebox();
 
         (*m_field_init)(vbx, geom, density.array(mfi));
     }

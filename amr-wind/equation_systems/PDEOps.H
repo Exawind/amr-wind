@@ -97,22 +97,17 @@ struct SrcTermOpBase
         const int nlevels = fields.repo.num_active_levels();
         for (int lev = 0; lev < nlevels; ++lev) {
             auto& src_term = fields.src_term(lev);
-#ifdef AMREX_USE_OMP
-#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
-#endif
-            for (amrex::MFIter mfi(src_term, amrex::TilingIfNotGPU());
-                 mfi.isValid(); ++mfi) {
-                const auto& bx = mfi.tilebox();
-                const auto& vf = src_term.array(mfi);
-                const auto& rho = density(lev).array(mfi);
+            const auto& vf_arrs = src_term.arrays();
+            const auto& rho_arrs = density(lev).const_arrays();
 
-                amrex::ParallelFor(
-                    bx, fields.src_term.num_comp(),
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                        vf(i, j, k, n) *= rho(i, j, k);
-                    });
-            }
+            amrex::ParallelFor(
+                src_term, amrex::IntVect(0), fields.src_term.num_comp(),
+                [=] AMREX_GPU_DEVICE(
+                    int nbx, int i, int j, int k, int n) noexcept {
+                    vf_arrs[nbx](i, j, k, n) *= rho_arrs[nbx](i, j, k);
+                });
         }
+        amrex::Gpu::streamSynchronize();
     }
 
     //! Update source terms during time-integration procedure

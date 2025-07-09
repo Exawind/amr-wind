@@ -47,7 +47,8 @@ void BCIface::read_bctype()
 
         // Protect against copy/paste errors where user intended to add a BC but
         // forgot to turn off periodic in that direction, or vice versa.
-        if (geom.isPeriodic(ori.coordDir()) && bcstr != "null") {
+        if (geom.isPeriodic(ori.coordDir()) &&
+            ((bcstr != "null") && (bcstr != "periodic"))) {
             amrex::Abort(
                 "Setting " + bcstr + " BC on a periodic face " + bcid +
                 " is not allowed");
@@ -59,9 +60,7 @@ void BCIface::read_bctype()
             continue;
         }
 
-        if ((bcstr == "pressure_inflow") || (bcstr == "pi")) {
-            ibctype[ori] = BC::pressure_inflow;
-        } else if ((bcstr == "pressure_outflow") || (bcstr == "po")) {
+        if ((bcstr == "pressure_outflow") || (bcstr == "po")) {
             ibctype[ori] = BC::pressure_outflow;
         } else if ((bcstr == "mass_inflow") || (bcstr == "mi")) {
             ibctype[ori] = BC::mass_inflow;
@@ -104,8 +103,9 @@ void BCIface::set_bcfuncs()
             m_field.register_custom_bc<FixedGradientBC>(ori);
         }
 
-        if ((m_field.name() == "velocity") // only velocity for now
-            && (bct == BC::mass_inflow_outflow)) {
+        if (((m_field.name() == "velocity") ||
+             (m_field.name() == "temperature")) &&
+            (bct == BC::mass_inflow_outflow)) {
 
             m_field.register_custom_bc<MassInflowOutflowBC>(ori);
         }
@@ -202,7 +202,6 @@ void BCVelocity::set_bcrec()
             }
             break;
 
-        case BC::pressure_inflow:
         case BC::pressure_outflow:
         case BC::zero_gradient:
             if (side == amrex::Orientation::low) {
@@ -303,7 +302,6 @@ void BCScalar::set_bcrec()
             }
             break;
 
-        case BC::pressure_inflow:
         case BC::pressure_outflow:
         case BC::zero_gradient:
         case BC::symmetric_wall:
@@ -387,7 +385,7 @@ void BCPressure::read_values()
         const auto bct = bctype[ori];
 
         amrex::ParmParse pp(bcid);
-        if ((bct == BC::pressure_inflow) || (bct == BC::pressure_outflow)) {
+        if ((bct == BC::pressure_outflow)) {
             pp.queryarr(fname.c_str(), bcval[ori], 0, ndim);
         }
     }

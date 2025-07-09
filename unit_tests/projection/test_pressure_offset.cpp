@@ -1,4 +1,4 @@
-#include "aw_test_utils/AmrexTest.H"
+#include "aw_test_utils/MeshTest.H"
 #include "amr-wind/incflo.H"
 
 namespace amr_wind_tests {
@@ -10,16 +10,14 @@ void init_vel_z(amr_wind::Field& vel, const amrex::Real w_const)
     const int nlevels = vel.repo().num_active_levels();
 
     for (int lev = 0; lev < nlevels; ++lev) {
-
-        for (amrex::MFIter mfi(vel(lev)); mfi.isValid(); ++mfi) {
-            auto gbx = mfi.growntilebox();
-            const auto& varr = vel(lev).array(mfi);
-
-            amrex::ParallelFor(gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-                varr(i, j, k, 2) = w_const;
+        const auto& varrs = vel(lev).arrays();
+        const amrex::IntVect ngs = vel.num_grow();
+        amrex::ParallelFor(
+            vel(lev), ngs, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
+                varrs[nbx](i, j, k, 2) = w_const;
             });
-        }
     }
+    amrex::Gpu::streamSynchronize();
 }
 
 void init_ref_p(
@@ -33,21 +31,21 @@ void init_ref_p(
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& dx = geom[lev].CellSizeArray();
         const auto& probhi = geom[lev].ProbHiArray();
-        for (amrex::MFIter mfi(ref_p(lev)); mfi.isValid(); ++mfi) {
-            auto nbx = mfi.nodaltilebox();
-            const auto& p0_arr = ref_p(lev).array(mfi);
-
-            amrex::ParallelFor(nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+        const auto& p0_arrs = ref_p(lev).arrays();
+        const amrex::IntVect ngs(0);
+        amrex::ParallelFor(
+            ref_p(lev), ngs,
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 // Height of pressure node
                 const amrex::Real hnode = k * dx[2];
                 // Integrated density from top
                 const amrex::Real irho = rho_0 * (probhi[2] - hnode);
 
                 // Multiply with force to get hydrostatic pressure
-                p0_arr(i, j, k) = -irho * F_g;
+                p0_arrs[nbx](i, j, k) = -irho * F_g;
             });
-        }
     }
+    amrex::Gpu::streamSynchronize();
 }
 
 amrex::Real get_pbottom(amr_wind::Field& pressure)
@@ -85,9 +83,13 @@ void ptest_kernel(
     my_incflo.init_mesh();
     auto& density = my_incflo.sim().repo().get_field("density");
     auto& velocity = my_incflo.sim().repo().get_field("velocity");
+    auto& gp = my_incflo.sim().repo().get_field("gp");
     // Set uniform density
     density.setVal(rho_0);
+    // Zero pressure gradient
+    gp.setVal(0.0);
     // Set velocity as it would be with gravity forcing
+    velocity.setVal(0.0);
     init_vel_z(velocity, w_0);
 
     // If requested, form reference_pressure field
@@ -113,11 +115,13 @@ void ptest_kernel(
 
 } // namespace
 
-class ProjPerturb : public AmrexTest
+class ProjPerturb : public MeshTest
 {
 protected:
-    void populate_parameters()
+    void populate_parameters() override
     {
+        MeshTest::populate_parameters();
+
         {
             amrex::ParmParse pp("amr");
             amrex::Vector<int> ncell{{m_nx, m_ny, m_nz}};
@@ -132,10 +136,13 @@ protected:
 
             pp.addarr("prob_lo", problo);
             pp.addarr("prob_hi", probhi);
+
+            amrex::Vector<int> periodic{{0, 0, 0}};
+            pp.addarr("is_periodic", periodic);
         }
         {
             amrex::ParmParse pp("incflo");
-            pp.add("use_godunov", (int)1);
+            pp.add("use_godunov", 1);
         }
 
         // Boundary conditions
@@ -150,7 +157,7 @@ protected:
         amrex::ParmParse ppyhi("yhi");
         ppyhi.add("type", (std::string) "slip_wall");
         amrex::ParmParse ppzhi("zhi");
-        ppzhi.add("type", (std::string) "pressure_inflow");
+        ppzhi.add("type", (std::string) "pressure_outflow");
     }
 
     const amrex::Real m_rho_0 = 1.0;
@@ -164,6 +171,7 @@ TEST_F(ProjPerturb, dynamic_only)
 {
     // High-level setup
     populate_parameters();
+    initialize_mesh();
     // Test with gravity term omitted
     ptest_kernel(m_rho_0, 0.0, 0.0, (m_nx + 1) * (m_ny + 1));
 }
@@ -172,6 +180,7 @@ TEST_F(ProjPerturb, full_pressure)
 {
     // High-level setup
     populate_parameters();
+    initialize_mesh();
     // Test with gravity term included
     ptest_kernel(m_rho_0, m_Fg, -m_Fg, (m_nx + 1) * (m_ny + 1));
 }
@@ -180,9 +189,10 @@ TEST_F(ProjPerturb, full_p_perturb)
 {
     // High-level setup
     populate_parameters();
+    initialize_mesh();
     {
         amrex::ParmParse pp("ICNS");
-        pp.add("reconstruct_true_pressure", (bool)true);
+        pp.add("reconstruct_true_pressure", true);
     }
 
     // Test with gravity term omitted, then added as reference pressure

@@ -3,10 +3,10 @@
 
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/core/FieldRepo.H"
+#include "amr-wind/ocean_waves/boundary_ops/OceanWavesBoundary.H"
 
-/** \defgroup Ocean Waves module
+/** \defgroup ocean_waves Ocean Waves module
  *  Ocean Waves class
- *  \ingroup ocean_waves
  */
 
 namespace amr_wind {
@@ -19,7 +19,7 @@ class OceanWavesModel;
 
 /** ocean waves modeling
  *
- *  \ingroup ocean waves
+ *  \ingroup ocean_waves
  *
  *  This class provides an interface to model
  *
@@ -45,18 +45,23 @@ public:
 
     void pre_advance_work() override;
 
+    void pre_predictor_work() override;
+
     void post_advance_work() override;
+
+    const OceanWavesBoundary& ow_bndry() const { return *m_ow_bndry; }
 
 protected:
     virtual void prepare_outputs();
 
 private:
-    void relaxation_zones();
-
     CFDSim& m_sim;
 
     //! Unique pointer to the ocean waves model
     std::unique_ptr<OceanWavesModel> m_owm;
+
+    //! Ocean waves boundary instance
+    std::unique_ptr<OceanWavesBoundary> m_ow_bndry;
 
     //! Ocean waves target free surface levelset function
     Field& m_ow_levelset;
@@ -67,8 +72,10 @@ private:
     //! Ocean waves target velocity
     Field& m_ow_velocity;
 
-    //! Ocean waves pressure gradient
-    // Field& m_ow_pressure;
+    //! Multiphase mode forces the velocity and vof in the domain
+    //! When off, single-phase mode simply provides the target variables, and
+    //! forcing is handled in other parts of the code
+    bool m_multiphase_mode{true};
 };
 
 } // namespace ocean_waves

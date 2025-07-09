@@ -21,7 +21,7 @@ void init_field1(amr_wind::Field& fld)
                     std::sin(0.01 * i) + std::pow(k, 0.2) + std::cos(0.01 * j);
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 amrex::Real test_new_tke(
@@ -55,7 +55,7 @@ amrex::Real test_new_tke(
                      dissipation_arrs[nbx](i, j, k) +
                      diffusion_arrs[nbx](i, j, k));
             });
-        amrex::Gpu::synchronize();
+        amrex::Gpu::streamSynchronize();
 
         // Difference between tke estimate and tke calculated by the code
         error_total += amrex::ReduceSum(
@@ -89,7 +89,7 @@ void remove_nans(amr_wind::Field& field)
                                              : farrs[nbx](i, j, k, n);
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 } // namespace
 

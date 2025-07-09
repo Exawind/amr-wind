@@ -16,7 +16,6 @@ void ABLMeshTest::populate_parameters()
         pp.addarr("temperature_heights", theights);
         pp.addarr("temperature_values", tvalues);
         pp.add("perturb_ref_height", 50.0);
-        pp.add("reference_temperature", 300.0);
         pp.add("kappa", 0.41);
         pp.add("surface_roughness_z0", 0.1);
     }
@@ -42,9 +41,9 @@ void ABLMeshTest::populate_parameters()
         pp.add("angular_frequency", 1.0);
     }
 
-    // Boussinesq Buoyancy
+    // Transport
     {
-        amrex::ParmParse pp("BoussinesqBuoyancy");
+        amrex::ParmParse pp("transport");
         pp.add("reference_temperature", 300.0);
     }
 

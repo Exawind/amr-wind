@@ -21,6 +21,7 @@ void multiphase::split_advection_step(
     Field const& w_mac,
     amrex::GpuArray<BC, AMREX_SPACEDIM * 2> BCs,
     amrex::Vector<amrex::Geometry> geom,
+    amrex::Real time,
     amrex::Real dt,
     bool rm_debris)
 {
@@ -38,7 +39,8 @@ void multiphase::split_advection_step(
         for (amrex::MFIter mfi(dof_field(lev), mfi_info); mfi.isValid();
              ++mfi) {
             const auto& bx = mfi.tilebox();
-            amrex::FArrayBox tmpfab(amrex::grow(bx, 1), 2);
+            amrex::FArrayBox tmpfab(
+                amrex::grow(bx, 1), 2, amrex::The_Async_Arena());
             tmpfab.setVal<amrex::RunOn::Device>(0.0);
 
             // Compression term coefficient
@@ -55,8 +57,6 @@ void multiphase::split_advection_step(
                 (*advas[lev][1]).array(mfi), (*advas[lev][2]).array(mfi),
                 (*fluxes[lev][0]).array(mfi), (*fluxes[lev][1]).array(mfi),
                 (*fluxes[lev][2]).array(mfi), BCs, tmpfab.dataPtr(), geom, dt);
-
-            amrex::Gpu::streamSynchronize();
         }
     }
 
@@ -99,7 +99,7 @@ void multiphase::split_advection_step(
     }
 
     // Average down vof and communicate
-    dof_field.fillpatch(0.0);
+    dof_field.fillpatch(time);
 }
 
 void multiphase::split_compute_fluxes(

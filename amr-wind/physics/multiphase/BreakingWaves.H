@@ -5,7 +5,7 @@
 #include "amr-wind/core/SimTime.H"
 
 /**
- *  \defgroup Breaking Waves modeling
+ *  \defgroup breaking_waves Breaking Waves modeling
  *  Breaking Waves modeling
  *
  *  This group documents all the wave mechanics related physics models available
@@ -18,7 +18,7 @@
  *  \defgroup we_nwb NWB
  *  Numerical Wave Basin (NWB) modeling
  *
- *  \ingroup waves
+ *  \ingroup breaking_waves
  */
 
 namespace amr_wind {

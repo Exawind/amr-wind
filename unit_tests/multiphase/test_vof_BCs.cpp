@@ -21,10 +21,16 @@ void get_accuracy_vofsol(
     const int dir,
     const int vof_distr,
     const amrex::Real vof_bdyval,
-    const amr_wind::Field& vof)
+    const amr_wind::Field& vof,
+    const amrex::Real wt1 = 1.0,
+    const amrex::Real wt2 = 0.)
 {
     /* -- Check VOF boundary values from fillpatch -- */
-    for (amrex::MFIter mfi(vof(lev)); mfi.isValid(); ++mfi) {
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
+    for (amrex::MFIter mfi(vof(lev), amrex::TilingIfNotGPU()); mfi.isValid();
+         ++mfi) {
         auto err_arr = err_fld(lev).array(mfi);
         const auto& vof_arr = vof(lev).array(mfi);
         // Check lo and hi
@@ -63,11 +69,27 @@ void get_accuracy_vofsol(
                         ref_val = 1.0 - 0.1 * (ii + jj + kk);
                     }
                     // Check against reference value
-                    err_arr(i, j, k, 0) = std::abs(vof_arr(i, j, k) - ref_val);
+                    const amrex::Real wt_ref =
+                        wt1 * ref_val + wt2 * (1.0 - ref_val);
+                    err_arr(i, j, k, 0) = std::abs(vof_arr(i, j, k) - wt_ref);
                 }
             }
         });
     }
+}
+
+void get_accuracy_density(
+    amr_wind::ScratchField& err_fld,
+    const int lev,
+    const int dir,
+    const int vof_distr,
+    const amrex::Real vof_bdyval,
+    const amr_wind::Field& density,
+    const amrex::Real rho1,
+    const amrex::Real rho2)
+{
+    get_accuracy_vofsol(
+        err_fld, lev, dir, vof_distr, vof_bdyval, density, rho1, rho2);
 }
 
 void get_accuracy_advalpha(
@@ -81,7 +103,11 @@ void get_accuracy_advalpha(
     const amr_wind::Field& advalpha_f)
 {
     /* -- Check VOF boundary fluxes -- */
-    for (amrex::MFIter mfi(vof(lev)); mfi.isValid(); ++mfi) {
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
+    for (amrex::MFIter mfi(vof(lev), amrex::TilingIfNotGPU()); mfi.isValid();
+         ++mfi) {
 
         auto err_arr = err_fld(lev).array(mfi);
         const auto& af = advalpha_f(lev).array(mfi);
@@ -155,7 +181,7 @@ protected:
             amrex::ParmParse pp("incflo");
             amrex::Vector<std::string> physics{"MultiPhase"};
             pp.addarr("physics", physics);
-            pp.add("use_godunov", (int)1);
+            pp.add("use_godunov", 1);
             pp.add("godunov_type", (std::string) "weno");
         }
         {
@@ -184,7 +210,7 @@ protected:
             bc_string = "mass_inflow";
         } else if (option == 2) {
             // Slip wall
-            vof_distr = 1;        // high-order extrapolation
+            vof_distr = 2;        // first-order extrapolation
             nonzero_flux = false; // flux cannot occur
             bc_string = "slip_wall";
         } else if (option == 3) {
@@ -211,9 +237,9 @@ protected:
             if (option == 1) {
                 // Specify vof
                 pp.add("vof", m_vof_bdyval);
+                pp.add("density", m_rho1);
                 // Specify other quantities to avoid errors, not actually used
                 pp.add("levelset", 0.0);
-                pp.add("density", 1.0);
                 pp.addarr(
                     "velocity", amrex::Vector<amrex::Real>{0.0, 0.0, 0.0});
             }
@@ -223,8 +249,8 @@ protected:
             pp.add("type", bc_string);
             if (option == 1) {
                 pp.add("vof", m_vof_bdyval);
+                pp.add("density", m_rho1);
                 pp.add("levelset", 0.0);
-                pp.add("density", 1.0);
                 pp.addarr(
                     "velocity", amrex::Vector<amrex::Real>{0.0, 0.0, 0.0});
             }
@@ -283,7 +309,22 @@ protected:
 
         // Check error from first part
         constexpr amrex::Real refval_check = 0.0;
-        EXPECT_NEAR(error_fld(lev).max(0, 1), refval_check, tol);
+        const amrex::Real vof_distr_err = error_fld(lev).max(0, 1);
+        EXPECT_NEAR(vof_distr_err, refval_check, tol);
+
+        // Calculate density and fillpatch
+        auto& density = repo.get_field("density");
+        auto& multiphase = sim().physics_manager().get<amr_wind::MultiPhase>();
+        multiphase.set_density_via_vof();
+        density.fillpatch(0.);
+
+        // Compute error of density field and check
+        error_fld(lev).setVal(0.0);
+        get_accuracy_density(
+            error_fld, lev, dir, vof_distr, m_vof_bdyval, density, m_rho1,
+            m_rho2);
+        const amrex::Real density_distr_err = error_fld(lev).max(0, 1);
+        EXPECT_NEAR(density_distr_err, refval_check, tol);
 
         // Test positive and negative velocity
         for (int sign = -1; sign < 2; sign += 2) {
@@ -330,10 +371,9 @@ protected:
 };
 
 constexpr double tol1 = 1.0e-15;
-constexpr double tol2 = 6.0e-2;
 
 TEST_F(VOFBCTest, dirichletX) { testing_bc_coorddir(1, 0, tol1); }
-TEST_F(VOFBCTest, slipwallY) { testing_bc_coorddir(2, 1, tol2); }
+TEST_F(VOFBCTest, slipwallY) { testing_bc_coorddir(2, 1, tol1); }
 TEST_F(VOFBCTest, noslipwallZ) { testing_bc_coorddir(3, 2, tol1); }
 TEST_F(VOFBCTest, pressureX) { testing_bc_coorddir(4, 0, tol1); }
 

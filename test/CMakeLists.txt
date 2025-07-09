@@ -49,6 +49,9 @@ macro(setup_test)
     file(GLOB TEST_FILES "${CURRENT_TEST_SOURCE_DIR}/*")
     file(COPY ${TEST_FILES} DESTINATION "${CURRENT_TEST_BINARY_DIR}/")
     set(RUNTIME_OPTIONS "time.max_step=10 io.plot_file=plt time.plot_interval=10 amrex.the_arena_is_managed=0 amrex.abort_on_out_of_gpu_memory=1")
+    if((NOT AMR_WIND_TEST_WITH_FCOMPARE) AND (NOT AMR_WIND_SAVE_GOLDS)) #Avoid all I/O otherwise
+      set(RUNTIME_OPTIONS "${RUNTIME_OPTIONS} time.plot_interval=-1 time.checkpoint_interval=-1")
+    endif()
     if(AMR_WIND_ENABLE_FPE_TRAP_FOR_TESTS)
       set(RUNTIME_OPTIONS "${RUNTIME_OPTIONS} amrex.signal_handling=1 amrex.fpe_trap_invalid=1 amrex.fpe_trap_zero=1 amrex.fpe_trap_overflow=1")
     else()
@@ -65,7 +68,7 @@ macro(setup_test)
       set(TEST_NP 1)
       unset(MPI_COMMANDS)
     endif()
-    if(AMR_WIND_ENABLE_CUDA OR (AMR_WIND_ENABLE_HYPRE AND (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")))
+    if((AMR_WIND_ENABLE_CUDA OR AMR_WIND_ENABLE_ROCM OR AMR_WIND_ENABLE_SYCL) OR (AMR_WIND_ENABLE_HYPRE AND (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")))
       set(FCOMPARE_TOLERANCE "-r 1e-10 --abs_tol 1.0e-12")
       set(RUNTIME_OPTIONS "${RUNTIME_OPTIONS} io.skip_outputs=p gp")
     endif()
@@ -74,21 +77,21 @@ macro(setup_test)
       set(SAVE_GOLDS_COMMAND "&& cp -R ${PLOT_TEST} ${SAVED_GOLDS_DIRECTORY}/${TEST_NAME}/")
     endif()
     if(AMR_WIND_TEST_WITH_FCOMPARE AND (NOT "${TEST_NAME}" MATCHES "hdf5$"))
-      set(FCOMPARE_COMMAND "&& ${MPI_COMMANDS} ${FCOMPARE_EXE} ${FCOMPARE_TOLERANCE} ${PLOT_GOLD} ${PLOT_TEST}")
+      set(FCOMPARE_COMMAND "&& CUDA_LAUNCH_BLOCKING=1 ${FCOMPARE_EXE} ${FCOMPARE_TOLERANCE} ${PLOT_GOLD} ${PLOT_TEST}")
     endif()
 endmacro(setup_test)
 
 # Standard regression test
 function(add_test_r TEST_NAME)
     setup_test()
-    add_test(${TEST_NAME} sh -c "${MPI_COMMANDS} ${CMAKE_BINARY_DIR}/${amr_wind_exe_name} ${MPIEXEC_POSTFLAGS} ${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}.inp ${RUNTIME_OPTIONS} > ${TEST_NAME}.log ${SAVE_GOLDS_COMMAND} ${FCOMPARE_COMMAND}")
+    add_test(${TEST_NAME} bash -c "set -o pipefail && ${MPI_COMMANDS} ${CMAKE_BINARY_DIR}/${amr_wind_exe_name} ${MPIEXEC_POSTFLAGS} ${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}.inp ${RUNTIME_OPTIONS} 2>&1 | tee ${TEST_NAME}.log ${SAVE_GOLDS_COMMAND} ${FCOMPARE_COMMAND}")
     # Set properties for test
     set_tests_properties(${TEST_NAME} PROPERTIES
-                         TIMEOUT 5400
+                         TIMEOUT 14400
                          PROCESSORS ${TEST_NP}
                          WORKING_DIRECTORY "${CURRENT_TEST_BINARY_DIR}/"
                          LABELS "regression"
-                         ATTACHED_FILES_ON_FAIL "${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}.log")
+                         ATTACHED_FILES "${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}.log")
 endfunction(add_test_r)
 
 # Regression tests excluded from CI
@@ -119,14 +122,14 @@ function(add_test_v TEST_NAME LIST_OF_GRID_SIZES)
       set(RUNTIME_OPTIONS_${GRID_SIZE} "amrex.throw_exception=1 amrex.signal_handling=0 amr.n_cell=${NCELLS}")
       string(APPEND MASTER_RUN_COMMAND "cd ${CURRENT_TEST_BINARY_DIR}/${GRID_SIZE}")
       string(APPEND MASTER_RUN_COMMAND " && ")
-      string(APPEND MASTER_RUN_COMMAND "${RUN_COMMAND_${GRID_SIZE}} ${RUNTIME_OPTIONS_${GRID_SIZE}} > ${TEST_NAME}_${GRID_SIZE}.log")
+      string(APPEND MASTER_RUN_COMMAND "${RUN_COMMAND_${GRID_SIZE}} ${RUNTIME_OPTIONS_${GRID_SIZE}} 2>&1 | tee ${TEST_NAME}_${GRID_SIZE}.log")
       # Add another " && " unless we are on the last resolution in the list
       if(NOT ${GRID_SIZE} EQUAL ${LAST_GRID_SIZE_IN_LIST})
         string(APPEND MASTER_RUN_COMMAND " && ")
       endif()
     endforeach()
     list(JOIN LIST_OF_GRID_SIZES " " STRING_OF_GRID_SIZES)
-    add_test(${TEST_NAME} sh -c "${MASTER_RUN_COMMAND} && cd ${CURRENT_TEST_BINARY_DIR} && ${PYTHON_EXECUTABLE} ${CURRENT_TEST_SOURCE_DIR}/plotter.py -f ${STRING_OF_GRID_SIZES}")
+    add_test(${TEST_NAME} bash -c "set -o pipefail && ${MASTER_RUN_COMMAND} && cd ${CURRENT_TEST_BINARY_DIR} && ${PYTHON_EXECUTABLE} ${CURRENT_TEST_SOURCE_DIR}/plotter.py -f ${STRING_OF_GRID_SIZES}")
     set_tests_properties(${TEST_NAME} PROPERTIES TIMEOUT 14400 PROCESSORS ${TEST_NP} WORKING_DIRECTORY "${CURRENT_TEST_BINARY_DIR}" LABELS "verification;no_ci" ATTACHED_FILES "${CURRENT_TEST_BINARY_DIR}/plots.pdf")
 endfunction(add_test_v)
 
@@ -139,7 +142,7 @@ function(add_test_u TEST_NAME)
     else()
       unset(MPI_COMMANDS)
     endif()
-    add_test(${TEST_NAME} sh -c "${MPI_COMMANDS} ${CMAKE_BINARY_DIR}/${amr_wind_unit_test_exe_name}")
+    add_test(${TEST_NAME} bash -c "${MPI_COMMANDS} ${CMAKE_BINARY_DIR}/${amr_wind_unit_test_exe_name}")
     set_tests_properties(${TEST_NAME} PROPERTIES
                          TIMEOUT 500
                          PROCESSORS ${TEST_NP}
@@ -150,18 +153,15 @@ endfunction(add_test_u)
 # Add test that also checks post-processing scripts: sampling
 function(add_test_pps TEST_NAME FORMAT NINT NSTEPS)
     setup_test()
-    set(ADDL_RUNTIME_OPTIONS "sampling.output_format=${FORMAT} sampling.output_frequency=${NINT} time.plot_interval=-1 time.checkpoint_interval=-1 time.max_step=${NSTEPS}")
-    add_test("${TEST_NAME}_sampling_${FORMAT}" sh -c "${MPI_COMMANDS} ${CMAKE_BINARY_DIR}/${amr_wind_exe_name} ${MPIEXEC_POSTFLAGS} \
-            \ ${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}.inp ${RUNTIME_OPTIONS} ${ADDL_RUNTIME_OPTIONS} > ${TEST_NAME}_sampling_${FORMAT}.log && \
-            \ ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/sampling_${TEST_NAME}_${FORMAT}.py")
+    set(ADDL_RUNTIME_OPTIONS "sampling.output_format=${FORMAT} sampling.output_interval=${NINT} time.plot_interval=-1 time.checkpoint_interval=-1 time.max_step=${NSTEPS}")
+    add_test("${TEST_NAME}_sampling_${FORMAT}" bash -c "set -o pipefail && ${MPI_COMMANDS} ${CMAKE_BINARY_DIR}/${amr_wind_exe_name} ${MPIEXEC_POSTFLAGS} ${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}.inp ${RUNTIME_OPTIONS} ${ADDL_RUNTIME_OPTIONS} 2>&1 | tee ${TEST_NAME}_sampling_${FORMAT}.log && ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/sampling_${TEST_NAME}_${FORMAT}.py")
     # Set properties for test
     set_tests_properties("${TEST_NAME}_sampling_${FORMAT}" PROPERTIES
-                          TIMEOUT 5400
+                          TIMEOUT 14400
                           PROCESSORS ${TEST_NP}
                           WORKING_DIRECTORY "${CURRENT_TEST_BINARY_DIR}/"
                           LABELS "post_processing;no_ci"
-                          ATTACHED_FILES_ON_FAIL "${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}_sampling_${FORMAT}.log"
-                          ATTACHED_FILES "plot_sampling_${FORMAT}.pdf")
+                          ATTACHED_FILES "${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}_sampling_${FORMAT}.log;plot_sampling_${FORMAT}.pdf")
 endfunction(add_test_pps)
 
 #=============================================================================
@@ -200,12 +200,16 @@ add_test_re(abl_mol_cn)
 add_test_re(abl_mol_explicit)
 add_test_re(abl_sampling)
 add_test_re(abl_stable)
+add_test_re(abl_stable_different_roughness)
 add_test_re(abl_unstable)
 add_test_re(abl_unstable_constant_wall_model)
 add_test_re(abl_unstable_local_wall_model)
 add_test_re(abl_unstable_schumann_wall_model)
+add_test_re(abl_surf_temp_timetable)
 add_test_re(abl_anelastic)
 add_test_re(abl_multiphase_laminar)
+add_test_re(abl_multiphase_laminar_2planes)
+add_test_re(abl_waves_terrain)
 add_test_re(act_abl_joukowskydisk)
 add_test_re(act_abl_uniformctdisk)
 add_test_re(act_fixed_wing)
@@ -235,6 +239,7 @@ add_test_re(zalesak_disk_godunov)
 add_test_re(dam_break_godunov)
 #add_test_re(sloshing_tank)
 add_test_re(abl_godunov_weno)
+add_test_re(abl_godunov_wenoz_fixedpt)
 add_test_re(abl_godunov_ppm)
 add_test_re(abl_amd_wenoz)
 add_test_re(ib_ctv_godunov_weno)
@@ -249,7 +254,10 @@ add_test_re(zalesak_disk_scalar_vel)
 add_test_re(rain_drop)
 add_test_re(inertial_drop)
 add_test_re(ow_linear)
+add_test_re(ow_linear_init_waves)
 add_test_re(ow_stokes)
+add_test_re(ow_current_wing)
+add_test_re(ow_current_bathymetry)
 add_test_re(scalar_advection_uniform)
 add_test_re(scalar_advection_refined)
 add_test_re(freestream_bds)
@@ -259,30 +267,41 @@ add_test_re(linear_godunov_amr)
 add_test_re(linear_bds_amr)
 add_test_re(hbl_godunov)
 add_test_re(vortex_dipole_wall_collision)
+add_test_re(vortex_dipole_inout_refine)
 add_test_re(burggraf_flow)
 add_test_re(abl_godunov_rayleigh_damping)
 add_test_re(rankine)
 add_test_re(rankine-sym)
+add_test_re(terrain_box)
+add_test_re(terrain_box_amr)
+add_test_re(forest_drag)
 add_test_re(box_refinement)
 add_test_re(cylinder_refinement)
 add_test_re(freestream_godunov_inout)
-
-if(NOT AMR_WIND_ENABLE_CUDA)
-  add_test_re(ctv_godunov_plm)
-  add_test_re(ctv_bds)
-  add_test_re(ctv_mol_mesh_map)
-  add_test_re(ctv_mol_mesh_map_explicit)
-endif()
+add_test_re(freestream_godunov_inout_refine1)
+add_test_re(freestream_godunov_inout_refine2)
+add_test_re(ctv_godunov_plm)
+add_test_re(ctv_bds)
+add_test_re(ctv_mol_mesh_map)
+add_test_re(ctv_mol_mesh_map_explicit)
+add_test_re(abl_specifiedmol_neutral)
+add_test_re(abl_specifiedmol_stable)
+add_test_re(abl_specifiedmol_unstable)
+add_test_re(udf_refinement)
 
 if(AMR_WIND_ENABLE_NETCDF)
   add_test_re(abl_bndry_output)
   add_test_re(abl_bndry_output_amr_inflow)
+  add_test_re(abl_bndry_output_amr_upper)
   add_test_re(abl_virtual_lidar)
   add_test_re(abl_meso_input_dpa)
   add_test_re(abl_meso_input_ipa)
   add_test_re(abl_meso_tendency)
   add_test_re(abl_kosovic_neutral)
   add_test_re(abl_sampling_netcdf)
+  add_test_re(abl_kosovic_neutral_ib)
+  add_test_re(nrel_precursor)
+  add_test_re(abl_wallrans_neutral)
 endif()
 
 if(AMR_WIND_ENABLE_MASA)
@@ -292,7 +311,6 @@ if(AMR_WIND_ENABLE_MASA)
   add_test_re(mms_mol)
 endif()
 
-# TODO: Enable hypre capability on GPUs
 if(AMR_WIND_ENABLE_HYPRE)
   add_test_re(abl_godunov_hypre)
   add_test_re(channel_kwsst_hypre)
@@ -315,21 +333,83 @@ endif()
 
 if(AMR_WIND_ENABLE_W2A)
   add_test_re(ow_w2a)
+  add_test_re(ow_w2a_nwt_2d)
+  add_test_re(ow_w2a_nwt_3d)
+  add_test_re(ow_w2a_nonperiodic)
+  add_test_re(abl_multiphase_w2a)
+  add_test_red(abl_w2a_terrain abl_bndry_output_native)
 endif()
 
+if(AMR_WIND_ENABLE_OPENFAST AND AMR_WIND_OPENFAST_VERSION VERSION_LESS "4")
+  set(ACT_UNIFORM_ALM_TEST_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test_files/act_uniform_alm)
+  set(ACT_UNIFORM_ALM_TEST_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/test_files/act_uniform_alm)
+  set(RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR ${ACT_UNIFORM_ALM_TEST_BINARY_DIR}/r-test)
+  set(RTEST_TAG "v3.5.4")
+  set(5MW_BASELINE_DIR glue-codes/openfast/5MW_Baseline)
+  set(5MW_LAND_DIR glue-codes/openfast-cpp/5MW_Land_DLL_WTurb_cpp)
+  set(AERO_FILE NRELOffshrBsline5MW_Onshore_AeroDyn15.dat)
+  set(ELASTO_FILE NRELOffshrBsline5MW_Onshore_ElastoDyn.dat)
+  set(SERVO_FILE NRELOffshrBsline5MW_Onshore_ServoDyn.dat)
+  file(MAKE_DIRECTORY ${ACT_UNIFORM_ALM_TEST_BINARY_DIR})
+  if(NOT EXISTS "${RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR}")
+    execute_process(
+      COMMAND bash -c "${GIT_EXECUTABLE} clone -n --depth=1 --filter=tree:0 git@github.com:OpenFAST/r-test.git"
+      WORKING_DIRECTORY
+      "${ACT_UNIFORM_ALM_TEST_BINARY_DIR}"
+      COMMAND_ERROR_IS_FATAL ANY)
+    execute_process(
+      COMMAND bash -c "${GIT_EXECUTABLE} fetch --all --tags"
+      WORKING_DIRECTORY
+      "${RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR}"
+      COMMAND_ERROR_IS_FATAL ANY)
+    execute_process(
+      COMMAND bash -c "${GIT_EXECUTABLE} sparse-checkout set --no-cone ${5MW_BASELINE_DIR} ${5MW_LAND_DIR}"
+      WORKING_DIRECTORY
+      "${RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR}"
+      COMMAND_ERROR_IS_FATAL ANY)
+    execute_process(
+      COMMAND bash -c "${GIT_EXECUTABLE} checkout ${RTEST_TAG}"
+      WORKING_DIRECTORY
+      "${RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR}"
+      COMMAND_ERROR_IS_FATAL ANY)
+    execute_process(
+      COMMAND bash -c "${GIT_EXECUTABLE} apply ${ACT_UNIFORM_ALM_TEST_SOURCE_DIR}/custom_openfast_options.patch"
+      WORKING_DIRECTORY
+      "${RTEST_ACT_UNIFORM_ALM_TEST_BINARY_DIR}"
+      COMMAND_ERROR_IS_FATAL ANY)
+  endif()
+  add_test_re(act_uniform_alm)
+  if(AMR_WIND_ENABLE_NETCDF)
+    add_test_red(act_uniform_alm_restart act_uniform_alm)
+  endif()
+endif()
+
+if(AMR_WIND_ENABLE_FFT)
+  add_test_re(abl_godunov_nofft)
+endif()
 #=============================================================================
 # Regression tests excluded from CI with a test dependency
 #=============================================================================
-add_test_red(abl_bndry_input_native abl_bndry_output_native)
-add_test_red(abl_godunov_restart abl_godunov)
-add_test_red(abl_bndry_input_amr_native abl_bndry_output_native)
-add_test_red(abl_bndry_input_amr_native_mlbc abl_bndry_output_amr_native)
-add_test_red(abl_godunov_forcetimetable abl_godunov_timetable)
+if(AMR_WIND_TEST_WITH_FCOMPARE)
+  add_test_red(abl_bndry_input_native abl_bndry_output_native)
+  add_test_red(abl_bndry_input_native_inout abl_bndry_output_native)
+  add_test_red(abl_godunov_restart abl_godunov)
+  add_test_red(abl_bndry_input_amr_native abl_bndry_output_native)
+  add_test_red(abl_bndry_input_amr_native_xhi abl_bndry_output_native)
+  add_test_red(abl_bndry_input_amr_native_mlbc abl_bndry_output_amr_native)
+  add_test_red(abl_godunov_forcetimetable abl_godunov_timetable)
+  add_test_red(abl_multiphase_laminar_input abl_multiphase_laminar)
+  add_test_red(abl_multiphase_laminar_inout abl_multiphase_laminar_2planes)
+endif()
 
 if(AMR_WIND_ENABLE_NETCDF)
   add_test_red(abl_bndry_input abl_bndry_output)
+  add_test_red(abl_bndry_input_init abl_bndry_output)
   add_test_red(abl_bndry_input_amr abl_bndry_output)
   add_test_red(abl_bndry_input_amr_inflow abl_bndry_output_amr_inflow)
+  add_test_red(abl_bndry_input_amr_upper abl_bndry_output_amr_upper)
+  add_test_red(nrel_terrain nrel_precursor)
+  add_test_red(nrel_terrain_amr nrel_precursor)
 endif()
 
 #=============================================================================
@@ -350,7 +430,3 @@ if (AMR_WIND_TEST_WITH_PYTHON)
     add_test_pps(dam_break_godunov netcdf 30 150)
   endif()
 endif()
-
-#=============================================================================
-# Performance tests
-#=============================================================================

@@ -1,3 +1,7 @@
+.. spelling:word-list::
+
+   godunov
+
 .. _inputs_sampling_freesurface_sampler:
 
 FreeSurfaceSampler

@@ -95,6 +95,7 @@ public:
             for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
                 int scomp_curr = scomp;
                 for (const auto* fld : fields) {
+                    AMREX_ALWAYS_ASSERT(fld->num_grow() > amrex::IntVect{0});
                     const auto farr = (*fld)(lev).const_array(pti);
                     interpolate(
                         pti, farr, lev, fld->field_location(), fld->num_comp(),
@@ -126,6 +127,7 @@ public:
      *  \param pvec Vector containing particle info
      *  \param pavec Array information for the real component data
      *  \param farr Array of field data for this multifab
+     *  \param problo Problem low values
      *  \param dxi Inverse cell size array
      *  \param dx Cell size array
      *  \param offset Offsets for cell/node/face fields

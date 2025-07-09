@@ -6,6 +6,7 @@
 #include "amr-wind/utilities/FieldPlaneAveragingFine.H"
 #include "amr-wind/core/FieldBCOps.H"
 #include "amr-wind/wind_energy/MOData.H"
+#include "amr-wind/utilities/constants.H"
 
 namespace amr_wind {
 
@@ -52,7 +53,13 @@ private:
 
     amrex::Vector<amrex::Real> m_gravity{0.0, 0.0, -9.81};
 
+    //! Ability to read in a table of surface temperature versus time.
+    std::string m_surf_temp_timetable;
+    amrex::Vector<amrex::Real> m_surf_temp_time;
+    amrex::Vector<amrex::Real> m_surf_temp_value;
+
     bool m_tempflux{true};
+    bool m_temp_table{false};
     amrex::Real m_surf_temp_rate{0.0};
     amrex::Real m_surf_temp_rate_tstart{0.0};
     amrex::Real m_surf_temp_init{300.0};
@@ -82,6 +89,8 @@ public:
 private:
     const ABLWallFunction& m_wall_func;
     std::string m_wall_shear_stress_type{"moeng"};
+    std::string m_wall_het_model{"none"};
+    amrex::Real m_monin_obukhov_length{constants::LARGE_NUM};
 };
 
 class ABLTempWallFunc : public FieldBCIface
@@ -98,6 +107,8 @@ public:
 private:
     const ABLWallFunction& m_wall_func;
     std::string m_wall_shear_stress_type{"moeng"};
+    std::string m_wall_het_model{"none"};
+    amrex::Real m_monin_obukhov_length{constants::LARGE_NUM};
 };
 
 } // namespace amr_wind

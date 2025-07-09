@@ -13,6 +13,8 @@
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/overset/OversetOps.H"
 
+#include "amr-wind/wind_energy/ABLReadERFFunction.H"
+class MultiBlockContainer;
 namespace amr_wind {
 namespace pde {
 class PDEBase;
@@ -37,7 +39,7 @@ class RefineCriteriaManager;
  *  \ref incflo::InitData "initialize mesh, physics modules, etc.".
  *
  *  <li> **Time loop** Run user-defined number of timesteps \ref incflo::Evolve
- *  "in a loop" that \ref incflo::Advance "advances" the flow-field.
+ *  "in a loop" that \ref incflo::advance "advances" the flow-field.
  *
  *  </ol>
  */
@@ -96,8 +98,9 @@ public:
     bool regrid_and_update();
     void pre_advance_stage1();
     void pre_advance_stage2();
-    void do_advance();
-    void advance();
+    void prepare_time_step();
+    void do_advance(const int fixed_point_iteration);
+    void advance(const int fixed_point_iteration);
     void prescribe_advance();
     void post_advance_work();
 
@@ -129,11 +132,13 @@ public:
     amr_wind::Field& pressure() const { return m_repo.get_field("p"); }
     amr_wind::Field& grad_p() const { return m_repo.get_field("gp"); }
 
-    // for cuda
-    void ComputeDt(bool explicit_diffusion);
-    void ComputePrescribeDt();
+    void compute_dt();
+    void compute_prescribe_dt();
+    void advance_time() { m_time.advance_time(); }
 
-    void ApplyPredictor(bool incremental_projection = false);
+    void ApplyPredictor(
+        const bool incremental_projection = false,
+        const int fixed_point_iteration = 0);
     void ApplyCorrector();
     void ApplyPrescribeStep();
 
@@ -147,6 +152,12 @@ public:
     void init_physics_and_pde();
 
     void ReadCheckpointFile();
+
+    void SetMultiBlockPointer(MultiBlockContainer* mbc) { m_sim.set_mbc(mbc); }
+    void set_read_erf(ReadERFFunction fcn)
+    {
+        m_sim.set_read_erf(std::move(fcn));
+    }
 
 private:
     //
@@ -171,6 +182,12 @@ private:
 
     // Prescribe advection velocity
     bool m_prescribe_vel = false;
+
+    // Perform a dry run (0 steps, output plotfile)
+    bool m_dry_run = false;
+
+    // Fixed point iterations every timestep
+    int m_fixed_point_iterations{1};
 
     //! number of cells on all levels including covered cells
     amrex::Long m_cell_count{-1};
@@ -199,6 +216,7 @@ private:
     //
     ///////////////////////////////////////////////////////////////////////////
 
+    void CheckAndSetUpDryRun();
     void ReadParameters();
     void InitialProjection();
     void InitialIterations();

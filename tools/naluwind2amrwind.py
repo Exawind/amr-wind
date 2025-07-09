@@ -211,10 +211,7 @@ else:
 cfl               = 0.95
 
 # AMR defaults
-AMRdefaults=[
-    ['io.KE_int',        1, ''],
-    ['io.line_plot_int', 1, ''],
-]
+AMRdefaults=[]
 
 # Physics defaults
 physicsdefaults = [

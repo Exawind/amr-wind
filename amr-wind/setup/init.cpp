@@ -10,6 +10,38 @@
 
 using namespace amrex;
 
+void incflo::CheckAndSetUpDryRun()
+{
+    // Check if dry run is requested; exit if not
+    {
+        ParmParse pp("incflo");
+        pp.query("dry_run", m_dry_run);
+        if (!m_dry_run) {
+            return;
+        }
+    }
+    // Disable additional computations associated with initialization
+    {
+        ParmParse pp("incflo");
+        pp.add("initial_iterations", 0);
+        pp.add("do_initial_proj", false);
+    }
+    // Zero time steps, write plotfile and not checkpoint
+    {
+        ParmParse pp("time");
+        pp.add("max_step", 0);
+        pp.add("plot_interval", 1);
+        pp.add("checkpoint_inteval", (-1));
+    }
+    // Give prefix to plotfile
+    {
+        ParmParse pp("io");
+        std::string current_plt{"plt"};
+        pp.query("plot_file", current_plt);
+        pp.add("plot_file", (std::string) "dry_run_" + current_plt);
+    }
+}
+
 /** Parse the input file and populate parameters
  */
 void incflo::ReadParameters()
@@ -73,8 +105,7 @@ void incflo::InitialIterations()
     amrex::Print() << "Begin initial pressure iterations. Num. iters = "
                    << m_initial_iterations << std::endl;
 
-    bool explicit_diffusion = (m_diff_type == DiffusionType::Explicit);
-    ComputeDt(explicit_diffusion);
+    compute_dt();
 
     {
         auto& vel = icns().fields().field;
@@ -103,7 +134,7 @@ void incflo::InitialIterations()
             amrex::Print() << "In initial_iterations: iter = " << iter << "\n";
         }
 
-        ApplyPredictor(true);
+        ApplyPredictor(true, 0);
 
         {
             auto& vel = icns().fields().field;

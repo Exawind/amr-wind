@@ -47,21 +47,21 @@ struct FLLCData
 };
 
 /**
- * @brief Function to capture common parsing requirements for the filtered
+ * \brief Function to capture common parsing requirements for the filtered
  * lifting line correction
  *
- * @param pp Parser
- * @param data Data to be populated from parser
+ * \param pp Parser
+ * \param data Data to be populated from parser
  */
 void fllc_parse(const utils::ActParser& pp, FLLCData& data);
 
 /**
- * @brief Initialize FLLC data structure. This should be called at the end of
+ * \brief Initialize FLLC data structure. This should be called at the end of
  * the first ComputeForceOp to ensure the data is fully populated
  *
- * @param data FLLC specific data and scratch fields
- * @param view Component view that has references to the grid data
- * @param eps_chord epsilon chord
+ * \param data FLLC specific data and scratch fields
+ * \param view Component view that has references to the grid data
+ * \param eps_chord epsilon chord
  */
 void fllc_init(
     FLLCData& data, const ComponentView& view, const amrex::Real eps_chord);

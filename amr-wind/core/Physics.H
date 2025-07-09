@@ -79,6 +79,9 @@ public:
     //! Perform tasks necessary before advancing timestep
     virtual void pre_advance_work() = 0;
 
+    //! Perform tasks necessary only once per timestep, after pre_advance
+    virtual void pre_predictor_work() {}
+
     //! Perform tasks necessary after advancing timestep
     virtual void post_advance_work() = 0;
 

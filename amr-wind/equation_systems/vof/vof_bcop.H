@@ -22,6 +22,10 @@ struct BCOp<VOF>
         BCVOF bc(m_fields.field);
         bc(VOF::default_bc_value);
 
+        auto& density = m_fields.repo.get_field("density");
+        BCDensityMod bc_dens(density);
+        bc_dens(VOF::default_density_bc_value);
+
         // No source terms currently exist for VOF, so this is inconsequential
         BCSrcTerm bc_src(m_fields.src_term);
         bc_src();
@@ -31,16 +35,15 @@ struct BCOp<VOF>
     {
         amrex::IntVect ng_diff(1);
         auto& field = m_fields.field;
-        const auto bc_time = (rho_state == FieldState::Old)
-                                 ? m_time.current_time()
-                                 : m_time.new_time();
         if ((rho_state != FieldState::Old && rho_state != FieldState::New)) {
             amrex::Abort(
                 "vof_bcop.H apply_bcs(): a state other than New or Old was "
-                "used. The method of setting bc_time must be evaluated before "
+                "used. The time used for fillphysbc must be evaluated before "
                 "using a different state for this routine.");
         }
-        field.fillphysbc(bc_time, ng_diff);
+        if (rho_state == FieldState::New) {
+            field.fillphysbc(m_time.new_time(), ng_diff);
+        }
         field.apply_bc_funcs(rho_state);
     }
 

@@ -111,8 +111,10 @@ TEST_F(ABLMeshTest, abl_init_netcdf_multilevel)
             new amr_wind::CartBoxRefinement(sim()));
         box_refine->read_inputs(mesh(), ss);
 
-        mesh<RefineMesh>()->refine_criteria_vec().push_back(
-            std::move(box_refine));
+        if (mesh<RefineMesh>() != nullptr) {
+            mesh<RefineMesh>()->refine_criteria_vec().push_back(
+                std::move(box_refine));
+        }
     }
 
     // Set up mock simulation init, starting with mesh and fields
@@ -130,6 +132,9 @@ TEST_F(ABLMeshTest, abl_init_netcdf_multilevel)
     for (int lev = 0; lev < nlevels; ++lev) {
 
         // Fill base level using input file
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
         for (amrex::MFIter mfi(velocityf(lev)); mfi.isValid(); ++mfi) {
             auto vel = velocity[lev]->array(mfi);
             const auto& bx = mfi.validbox();

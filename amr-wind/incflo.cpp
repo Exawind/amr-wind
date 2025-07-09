@@ -23,8 +23,15 @@ incflo::incflo()
     // constructor. No valid BoxArray and DistributionMapping have been defined.
     // But the arrays for them have been resized.
 
+    amrex::Print() << std::endl
+                   << "Initializing AMR-Wind." << std::endl
+                   << std::endl;
+
+    // Check if dry run is requested and set up if so
+    CheckAndSetUpDryRun();
+
+    // Read top-level parameters using ParmParse
     m_time.parse_parameters();
-    // Read inputs file using ParmParse
     ReadParameters();
 
     init_physics_and_pde();
@@ -71,6 +78,14 @@ void incflo::init_mesh()
         for (int lev = finestLevel(); lev <= maxLevel(); ++lev) {
             regrid(lev, m_time.current_time());
         }
+
+        // If regrid happened, call post regrid actions
+        if (finestLevel() <= maxLevel()) {
+            for (auto& pp : m_sim.physics()) {
+                pp->post_regrid_actions();
+            }
+        }
+
         if (ParallelDescriptor::IOProcessor()) {
             amrex::Print() << "Grid summary: " << std::endl;
             printGridSummary(amrex::OutStream(), 0, finest_level);
@@ -82,13 +97,14 @@ void incflo::init_mesh()
  *
  *  Modules initialized:
  *    - Registered \ref physics classes
- *    - Registered \ref PDE systems
+ *    - Registered PDE systems
  *    - Registered post-processing classes
  */
 void incflo::init_amr_wind_modules()
 {
     BL_PROFILE("amr-wind::incflo::init_amr_wind_modules");
     if (m_sim.has_overset()) {
+        m_time.override_simulation_end_parameters();
         m_sim.overset_manager()->post_init_actions();
         m_ovst_ops.initialize(m_sim);
     } else {
@@ -109,6 +125,7 @@ void incflo::init_amr_wind_modules()
     }
 
     m_sim.pde_manager().fillpatch_state_fields(m_time.current_time());
+    m_sim.pde_manager().density_check();
     m_sim.post_manager().post_init_actions();
 }
 
@@ -124,8 +141,13 @@ void incflo::prepare_for_time_integration()
 {
     BL_PROFILE("amr-wind::incflo::prepare_for_time_integration");
     // Don't perform initial work if this is a restart
-    if (m_sim.io_manager().is_restart()) {
+    // but still need to write plot file for dry run of restart
+    if (m_sim.io_manager().is_restart() && !m_dry_run) {
         return;
+    }
+
+    if (m_initial_iterations > 0) {
+        m_sim.pde_manager().prepare_boundaries();
     }
 
     if (m_do_initial_proj) {
@@ -251,6 +273,10 @@ void incflo::post_advance_work()
     if (m_time.write_checkpoint()) {
         m_sim.io_manager().write_checkpoint_file();
     }
+
+    if (m_sim.has_overset()) {
+        m_sim.set_during_overset_advance(false);
+    }
 }
 
 /** Perform time-integration for user-defined time or timesteps.
@@ -268,15 +294,21 @@ void incflo::Evolve()
 
         if (m_prescribe_vel) {
             pre_advance_stage2();
-            ComputePrescribeDt();
+            compute_prescribe_dt();
+            pre_advance_stage1();
         } else {
+            compute_dt();
             pre_advance_stage1();
             pre_advance_stage2();
         }
 
         amrex::Real time1 = amrex::ParallelDescriptor::second();
         // Advance to time t + dt
-        do_advance();
+        for (int fixed_point_iteration = 0;
+             fixed_point_iteration < m_fixed_point_iterations;
+             ++fixed_point_iteration) {
+            do_advance(fixed_point_iteration);
+        }
 
         amrex::Print() << std::endl;
         amrex::Real time2 = amrex::ParallelDescriptor::second();
@@ -307,17 +339,23 @@ void incflo::Evolve()
     if (m_time.write_last_checkpoint()) {
         m_sim.io_manager().write_checkpoint_file();
     }
+    m_sim.post_manager().final_output();
 }
 
-void incflo::do_advance()
+void incflo::do_advance(const int fixed_point_iteration)
 {
     if (m_sim.has_overset()) {
         m_ovst_ops.pre_advance_work();
+        m_sim.set_during_overset_advance(true);
     }
-    if (m_prescribe_vel) {
+    if (m_prescribe_vel && fixed_point_iteration == 0) {
         prescribe_advance();
     } else {
-        advance();
+        if (m_fixed_point_iterations > 1) {
+            amrex::Print() << "Fixed point iteration " << fixed_point_iteration
+                           << std::endl;
+        }
+        advance(fixed_point_iteration);
     }
     if (m_sim.has_overset()) {
         m_ovst_ops.post_advance_work();
@@ -372,6 +410,11 @@ void incflo::init_physics_and_pde()
         if (activate_overset) {
             m_sim.activate_overset();
         }
+
+        pp.query("fixed_point_iterations", m_fixed_point_iterations);
+        AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+            m_fixed_point_iterations > 0,
+            "The number of fixed point iterations cannot be less than 1");
     }
 
     auto& pde_mgr = m_sim.pde_manager();
@@ -390,6 +433,7 @@ void incflo::init_physics_and_pde()
         pde_mgr.register_transport_pde("Density");
     }
 
+    m_sim.create_transport_model();
     m_sim.init_physics();
     {
         // Check for if velocity is prescribed

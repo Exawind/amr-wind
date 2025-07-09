@@ -122,7 +122,7 @@ protected:
             amrex::ParmParse pp("incflo");
             amrex::Vector<std::string> physics{"MultiPhase"};
             pp.addarr("physics", physics);
-            pp.add("use_godunov", (int)1);
+            pp.add("use_godunov", 1);
         }
         {
             amrex::ParmParse pp("time");
@@ -175,8 +175,10 @@ protected:
                 new amr_wind::CartBoxRefinement(sim()));
             box_refine->read_inputs(mesh(), ss);
 
-            mesh<RefineMesh>()->refine_criteria_vec().push_back(
-                std::move(box_refine));
+            if (mesh<RefineMesh>() != nullptr) {
+                mesh<RefineMesh>()->refine_criteria_vec().push_back(
+                    std::move(box_refine));
+            }
         }
 
         initialize_mesh();

@@ -5,6 +5,7 @@
 #include "AMReX_ParmParse.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
 #include "amr-wind/utilities/index_operations.H"
+#include "amr-wind/utilities/constants.H"
 #include <AMReX_PlotFileUtil.H>
 
 namespace amr_wind {
@@ -77,11 +78,27 @@ void InletData::read_data(
     const size_t nc = fld->num_comp();
     const int nstart = m_components[static_cast<int>(fld->id())];
 
-    const int idx = utils::closest_index(times, time);
+    const int idx = utils::closest_index(times, time, constants::LOOSE_TOL);
     const int idxp1 = idx + 1;
     m_tn = times[idx];
     m_tnp1 = times[idxp1];
-    AMREX_ALWAYS_ASSERT(((m_tn <= time) && (time <= m_tnp1)));
+    if (!((m_tn <= time + constants::LOOSE_TOL) &&
+          (time <= m_tnp1 + constants::LOOSE_TOL))) {
+        amrex::Abort(
+            "ABLBoundaryPlane.cpp InletData::read_data() check failed\n"
+            "Left time quantities should be <= right time quantities. Indices "
+            "supplied for debugging.\n"
+            "m_tn = " +
+            std::to_string(m_tn) + ", time + LOOSE_TOL = " +
+            std::to_string(time + constants::LOOSE_TOL) +
+            "\n"
+            "time = " +
+            std::to_string(time) + ", m_tnp1 + LOOSE_TOL = " +
+            std::to_string(m_tnp1 + constants::LOOSE_TOL) +
+            "\n"
+            "idx = " +
+            std::to_string(idx) + ", idxp1 = " + std::to_string(idxp1));
+    }
 
     const int normal = ori.coordDir();
     const amrex::GpuArray<int, 2> perp = utils::perpendicular_idx(normal);
@@ -91,9 +108,10 @@ void InletData::read_data(
     const size_t n0 = bx.length(perp[0]);
     const size_t n1 = bx.length(perp[1]);
 
+    // start counting at zero because of netcdf indexing
     amrex::Vector<size_t> start{
-        static_cast<size_t>(idx), static_cast<size_t>(lo[perp[0]]),
-        static_cast<size_t>(lo[perp[1]]), 0};
+        static_cast<size_t>(idx), static_cast<size_t>(0),
+        static_cast<size_t>(0), 0};
     amrex::Vector<size_t> count{1, n0, n1, nc};
     amrex::Vector<amrex::Real> buffer(n0 * n1 * nc);
     grp.var(fld->name()).get(buffer.data(), start, count);
@@ -150,7 +168,7 @@ void InletData::read_data_native(
     const int nstart =
         static_cast<int>(m_components[static_cast<int>(fld->id())]);
 
-    const int idx = utils::closest_index(times, time);
+    const int idx = utils::closest_index(times, time, constants::LOOSE_TOL);
     const int idxp1 = idx + 1;
 
     m_tn = times[idx];
@@ -158,7 +176,24 @@ void InletData::read_data_native(
 
     auto ori = oit();
 
-    AMREX_ALWAYS_ASSERT(((m_tn <= time) && (time <= m_tnp1)));
+    if (!(m_tn <= time + constants::LOOSE_TOL) ||
+        !(time <= m_tnp1 + constants::LOOSE_TOL)) {
+        amrex::Abort(
+            "ABLBoundaryPlane.cpp InletData::read_data_native() check "
+            "failed\n"
+            "Left time quantities should be <= right time quantities. Indices "
+            "supplied for debugging.\n"
+            "m_tn = " +
+            std::to_string(m_tn) + ", time + LOOSE_TOL = " +
+            std::to_string(time + constants::LOOSE_TOL) +
+            "\n"
+            "time = " +
+            std::to_string(time) + ", m_tnp1 + LOOSE_TOL = " +
+            std::to_string(m_tnp1 + constants::LOOSE_TOL) +
+            "\n"
+            "idx = " +
+            std::to_string(idx) + ", idxp1 = " + std::to_string(idxp1));
+    }
     AMREX_ALWAYS_ASSERT(fld->num_comp() == bndry_n[ori].nComp());
     AMREX_ASSERT(bndry_n[ori].boxArray() == bndry_np1[ori].boxArray());
 
@@ -170,6 +205,9 @@ void InletData::read_data_native(
         bndry_n[ori].boxArray(), bndry_n[ori].DistributionMap(),
         bndry_n[ori].nComp(), 0, amrex::MFInfo());
 
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (false)
+#endif
     for (amrex::MFIter mfi(bndry); mfi.isValid(); ++mfi) {
 
         const auto& vbx = mfi.validbox();
@@ -193,6 +231,9 @@ void InletData::read_data_native(
 
     bndry.copyTo((*m_data_n[ori])[lev], 0, nstart, static_cast<int>(nc));
 
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (false)
+#endif
     for (amrex::MFIter mfi(bndry); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
         const auto& bndry_np1_arr = bndry_np1[ori].array(mfi);
@@ -244,7 +285,11 @@ bool InletData::is_populated(amrex::Orientation ori) const
 }
 
 ABLBoundaryPlane::ABLBoundaryPlane(CFDSim& sim)
-    : m_time(sim.time()), m_repo(sim.repo()), m_mesh(sim.mesh())
+    : m_time(sim.time())
+    , m_repo(sim.repo())
+    , m_mesh(sim.mesh())
+    , m_mbc(sim.mbc())
+    , m_read_erf(sim.get_read_erf())
 {
     amrex::ParmParse pp("ABL");
     int pp_io_mode = -1;
@@ -281,7 +326,8 @@ ABLBoundaryPlane::ABLBoundaryPlane(CFDSim& sim)
     }
 #endif
 
-    if (!(m_out_fmt == "native" || m_out_fmt == "netcdf")) {
+    if (!((m_out_fmt == "native") || (m_out_fmt == "netcdf") ||
+          (m_out_fmt == "erf-multiblock"))) {
         amrex::Print() << "Warning: boundary output format not recognized, "
                           "changing to native format"
                        << std::endl;
@@ -301,7 +347,7 @@ void ABLBoundaryPlane::post_init_actions()
     write_header();
     write_file();
     read_header();
-    read_file();
+    read_file(false);
 }
 
 void ABLBoundaryPlane::pre_advance_work()
@@ -309,7 +355,15 @@ void ABLBoundaryPlane::pre_advance_work()
     if (!m_is_initialized) {
         return;
     }
-    read_file();
+    read_file(true);
+}
+
+void ABLBoundaryPlane::pre_predictor_work()
+{
+    if (!m_is_initialized) {
+        return;
+    }
+    read_file(false);
 }
 
 void ABLBoundaryPlane::post_advance_work()
@@ -335,6 +389,10 @@ void ABLBoundaryPlane::initialize_data()
             amrex::Abort(
                 "ABLBoundaryPlane: invalid variable requested: " + fname);
         }
+    }
+    if ((m_io_mode == io_mode::output) && (m_out_fmt == "erf-multiblock")) {
+        amrex::Abort(
+            "ABLBoundaryPlane: can't output data in erf-multiblock mode");
     }
 }
 
@@ -470,6 +528,95 @@ void ABLBoundaryPlane::write_header()
     }
 }
 
+void ABLBoundaryPlane::write_bndry_native_header(const std::string& chkname)
+{
+    BL_PROFILE("amr-wind::ABLBoundaryPlane::write_bndry_native_header");
+    if (m_io_mode != io_mode::output) {
+        return;
+    }
+
+#ifndef AMR_WIND_USE_NETCDF
+    if (m_out_fmt == "netcdf") {
+        amrex::Abort("This is only used in the native format pathway");
+    }
+#endif
+
+    if (amrex::ParallelDescriptor::IOProcessor()) {
+        const amrex::Real time = m_time.new_time();
+        const int nlevels = m_repo.num_active_levels();
+
+        for (auto* fld : m_fields) {
+            auto& field = *fld;
+
+            for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
+                auto ori = oit();
+                const std::string plane = m_plane_names[ori];
+
+                if (std::find(m_planes.begin(), m_planes.end(), plane) ==
+                    m_planes.end()) {
+                    continue;
+                }
+
+                amrex::VisMF::IO_Buffer io_buffer(amrex::VisMF::IO_Buffer_Size);
+                const std::string hdr_name(
+                    chkname + "/Header_" + std::to_string(ori) + "_" +
+                    field.name());
+                std::ofstream hdr;
+                hdr.rdbuf()->pubsetbuf(io_buffer.dataPtr(), io_buffer.size());
+                hdr.open(
+                    hdr_name.c_str(), std::ofstream::out |
+                                          std::ofstream::trunc |
+                                          std::ofstream::binary);
+                if (!hdr.good()) {
+                    amrex::FileOpenFailed(hdr_name);
+                }
+
+                amrex::Vector<amrex::Geometry> bndry_geoms(nlevels);
+                amrex::Vector<amrex::BoxArray> bndry_bas(nlevels);
+                amrex::Vector<int> level_steps(nlevels, m_time.time_index());
+                const int normal = ori.coordDir();
+                for (int lev = 0; lev < nlevels; ++lev) {
+                    const auto& geom = field.repo().mesh().Geom(lev);
+                    const auto& dx = geom.CellSizeArray();
+                    auto bndry_dom = geom.Domain();
+                    auto bndry_prob = geom.ProbDomain();
+                    if (ori.isLow()) {
+                        const int lo = bndry_dom.smallEnd(normal);
+                        const auto plo = geom.ProbLo(normal);
+                        bndry_dom.setSmall(normal, lo - m_out_rad);
+                        bndry_dom.setBig(normal, lo);
+                        bndry_prob.setLo(normal, plo - m_out_rad * dx[normal]);
+                        bndry_prob.setHi(normal, plo + dx[normal]);
+                    } else {
+                        const int hi = bndry_dom.bigEnd(normal);
+                        const auto phi = geom.ProbHi(normal);
+                        bndry_dom.setSmall(normal, hi);
+                        bndry_dom.setBig(normal, hi + m_out_rad);
+                        bndry_prob.setLo(normal, phi - dx[normal]);
+                        bndry_prob.setHi(normal, phi + m_out_rad * dx[normal]);
+                    }
+                    bndry_geoms[lev] = amrex::Geometry(bndry_dom, &bndry_prob);
+                    amrex::Box minBox = m_mesh.boxArray(lev).minimalBox();
+                    if (ori.isLow()) {
+                        minBox.setSmall(normal, bndry_dom.smallEnd(normal));
+                    } else {
+                        minBox.setBig(normal, bndry_dom.bigEnd(normal));
+                    }
+                    bndry_bas[lev] = amrex::BoxArray(bndry_dom & minBox);
+                }
+
+                amrex::Vector<std::string> var_names;
+                ioutils::add_var_names(
+                    var_names, field.name(), field.num_comp());
+                amrex::WriteGenericPlotfileHeader(
+                    hdr, nlevels, bndry_bas, var_names, bndry_geoms, time,
+                    level_steps, m_mesh.refRatio(), "HyperCLaw-V1.1", "Level_",
+                    field.name() + "_" + std::to_string(ori));
+            }
+        }
+    }
+}
+
 void ABLBoundaryPlane::write_file()
 {
     BL_PROFILE("amr-wind::ABLBoundaryPlane::write_file");
@@ -478,7 +625,7 @@ void ABLBoundaryPlane::write_file()
 
     // Only output data if at the desired timestep
     if ((t_step % m_write_frequency != 0) || ((m_io_mode != io_mode::output)) ||
-        (time < m_out_start_time)) {
+        (time < m_out_start_time - constants::LOOSE_TOL)) {
         return;
     }
 
@@ -540,17 +687,19 @@ void ABLBoundaryPlane::write_file()
         const int nlevels = m_repo.num_active_levels();
         const std::string level_prefix = "Level_";
         amrex::PreBuildDirectorHierarchy(chkname, level_prefix, nlevels, true);
+
+        write_bndry_native_header(chkname);
+
         for (int lev = 0; lev < nlevels; ++lev) {
             for (auto* fld : m_fields) {
-
                 auto& field = *fld;
 
                 const auto& geom = field.repo().mesh().Geom();
 
-                // note: by using the entire domain box we end up using 1
+                // note: by using one box we end up using 1
                 // processor to hold all boundaries
-                amrex::Box domain = geom[lev].Domain();
-                amrex::BoxArray ba(domain);
+                const amrex::Box& minBox = m_mesh.boxArray(lev).minimalBox();
+                amrex::BoxArray ba(minBox);
                 amrex::DistributionMapping dm{ba};
 
                 amrex::BndryRegister bndry(
@@ -610,7 +759,16 @@ void ABLBoundaryPlane::read_header()
         ncf.var("time").get(m_in_times.data());
 
         // Sanity check the input file time
-        AMREX_ALWAYS_ASSERT(m_in_times[0] <= m_time.current_time());
+        if (!(m_in_times[0] <= m_time.current_time() + constants::LOOSE_TOL)) {
+            amrex::Abort(
+                "ABLBoundaryPlane.cpp ABLBoundaryPlane::read_header() check "
+                "failed\n"
+                "Left time quantities should be <= right time quantities.\n"
+                "m_in_times[0] = " +
+                std::to_string(m_in_times[0]) +
+                ", current_time + LOOSE_TOL = " +
+                std::to_string(m_time.current_time() + constants::LOOSE_TOL));
+        }
 
         for (auto& plane_grp : ncf.all_groups()) {
             int normal, face_dir;
@@ -727,7 +885,9 @@ void ABLBoundaryPlane::read_header()
 
             if (std::all_of(
                     m_fields.begin(), m_fields.end(), [ori](const auto* fld) {
-                        return fld->bc_type()[ori] != BC::mass_inflow;
+                        return (
+                            (fld->bc_type()[ori] != BC::mass_inflow) &&
+                            (fld->bc_type()[ori] != BC::mass_inflow_outflow));
                     })) {
                 continue;
             }
@@ -748,10 +908,245 @@ void ABLBoundaryPlane::read_header()
                 m_in_data.define_level_data(ori, pbx, nc);
             }
         }
+    } else if (m_out_fmt == "erf-multiblock") {
+
+        m_in_times.push_back(-1.0e13); // create space for storing time at erf
+                                       // old and new timestep
+        m_in_times.push_back(-1.0e13);
+
+        int nc = 0;
+        for (auto* fld : m_fields) {
+            m_in_data.component(static_cast<int>(fld->id())) = nc;
+            nc += fld->num_comp();
+        }
+
+        for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
+            auto ori = oit();
+
+            if (std::all_of(
+                    m_fields.begin(), m_fields.end(), [ori](const auto* fld) {
+                        return (
+                            (fld->bc_type()[ori] != BC::mass_inflow) &&
+                            (fld->bc_type()[ori] != BC::mass_inflow_outflow));
+                    })) {
+                continue;
+            }
+
+            m_in_data.define_plane(ori);
+
+            // restrict to level 0 for now for multiblock
+            const int lev = 0;
+
+            const amrex::Box& minBox = m_mesh.boxArray(lev).minimalBox();
+
+            amrex::IntVect plo(minBox.loVect());
+            amrex::IntVect phi(minBox.hiVect());
+            const int normal = ori.coordDir();
+            plo[normal] = ori.isHigh() ? minBox.hiVect()[normal] + 1 : -1;
+            phi[normal] = ori.isHigh() ? minBox.hiVect()[normal] + 1 : -1;
+            const amrex::Box pbx(plo, phi);
+            m_in_data.define_level_data(ori, pbx, nc);
+        }
     }
 }
 
-void ABLBoundaryPlane::read_file()
+amrex::Vector<amrex::BoxArray> ABLBoundaryPlane::read_bndry_native_boxarrays(
+    const std::string& chkname, const Field& field) const
+{
+    BL_PROFILE("amr-wind::ABLBoundaryPlane::read_bndry_native_boxarrays");
+    AMREX_ALWAYS_ASSERT(m_io_mode == io_mode::input);
+
+#ifndef AMR_WIND_USE_NETCDF
+    if (m_out_fmt == "netcdf") {
+        amrex::Abort("This is only used in the native format pathway");
+    }
+#endif
+
+    const int max_bndry_levels = boundary_native_file_levels();
+    amrex::Vector<amrex::BoxArray> bndry_bas(max_bndry_levels);
+
+    // Check if there are any header files
+    bool hdr_exists = false;
+    for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
+        auto ori = oit();
+
+        if ((field.bc_type()[ori] != BC::mass_inflow) &&
+            (field.bc_type()[ori] != BC::mass_inflow_outflow)) {
+            continue;
+        }
+
+        const std::string hdr_name(
+            chkname + "/Header_" + std::to_string(ori) + "_" + field.name());
+        if (amrex::FileSystem::Exists(hdr_name)) {
+            hdr_exists = true;
+            break;
+        }
+    }
+
+    // If there are no header files, assume the entire domain is in the BoxArray
+    if (!hdr_exists) {
+        for (int ilev = 0; ilev < max_bndry_levels; ++ilev) {
+            amrex::Box domain = m_mesh.Geom(ilev).Domain();
+            bndry_bas[ilev] = amrex::BoxArray{domain};
+        }
+        return bndry_bas;
+    }
+
+    amrex::Vector<amrex::Vector<amrex::Box>> bndry_boxes(max_bndry_levels);
+    for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
+        auto ori = oit();
+
+        if ((field.bc_type()[ori] != BC::mass_inflow) &&
+            (field.bc_type()[ori] != BC::mass_inflow_outflow)) {
+            continue;
+        }
+
+        const std::string hdr_name(
+            chkname + "/Header_" + std::to_string(ori) + "_" + field.name());
+
+        if (!amrex::FileSystem::Exists(hdr_name)) {
+            continue;
+        }
+
+        amrex::Vector<char> file_char_ptr;
+        amrex::ParallelDescriptor::ReadAndBcastFile(hdr_name, file_char_ptr);
+        std::string file_char_ptr_string(file_char_ptr.dataPtr());
+        std::istringstream is(file_char_ptr_string, std::istringstream::in);
+
+        std::string line;
+
+        // Title line
+        is >> line;
+
+        // Number of components
+        int ncomp = -1;
+        is >> ncomp;
+        ioutils::goto_next_line(is);
+        AMREX_ALWAYS_ASSERT(ncomp == field.num_comp());
+
+        // Skip the names
+        for (int nc = 0; nc < ncomp; nc++) {
+            ioutils::goto_next_line(is);
+        }
+
+        int spacedim, finest_level;
+        amrex::Real time;
+        is >> spacedim >> time >> finest_level;
+        const int nlevels = finest_level + 1;
+        AMREX_ALWAYS_ASSERT(nlevels <= max_bndry_levels);
+        AMREX_ALWAYS_ASSERT(AMREX_SPACEDIM == spacedim);
+        AMREX_ALWAYS_ASSERT(finest_level >= 0);
+
+        amrex::Array<amrex::Real, AMREX_SPACEDIM> prob_lo{
+            {AMREX_D_DECL(0., 0., 0.)}};
+        amrex::Array<amrex::Real, AMREX_SPACEDIM> prob_hi{
+            {AMREX_D_DECL(1., 1., 1.)}};
+        amrex::Array<amrex::Real, AMREX_SPACEDIM> prob_size{
+            {AMREX_D_DECL(1., 1., 1.)}};
+        for (int i = 0; i < spacedim; ++i) {
+            is >> prob_lo[i];
+        }
+        for (int i = 0; i < spacedim; ++i) {
+            is >> prob_hi[i];
+            prob_size[i] = prob_hi[i] - prob_lo[i];
+        }
+
+        const int normal = ori.coordDir();
+        const amrex::GpuArray<int, 2> perp = utils::perpendicular_idx(normal);
+        AMREX_ALWAYS_ASSERT(
+            constants::is_close(
+                prob_lo[perp[0]], m_mesh.Geom(0).ProbLo(perp[0])));
+        AMREX_ALWAYS_ASSERT(
+            constants::is_close(
+                prob_lo[perp[1]], m_mesh.Geom(0).ProbLo(perp[1])));
+        AMREX_ALWAYS_ASSERT(
+            constants::is_close(
+                prob_hi[perp[0]], m_mesh.Geom(0).ProbHi(perp[0])));
+        AMREX_ALWAYS_ASSERT(
+            constants::is_close(
+                prob_hi[perp[1]], m_mesh.Geom(0).ProbHi(perp[1])));
+
+        amrex::Vector<int> ref_ratio;
+        ref_ratio.resize(nlevels, 0);
+        for (int i = 0; i < finest_level; ++i) {
+            is >> ref_ratio[i];
+        }
+        ioutils::goto_next_line(is);
+
+        amrex::Vector<amrex::Box> prob_domain(nlevels);
+        for (int i = 0; i < nlevels; ++i) {
+            is >> prob_domain[i];
+            AMREX_ALWAYS_ASSERT(
+                prob_domain[i].smallEnd(perp[0]) ==
+                m_mesh.Geom(i).Domain().smallEnd(perp[0]));
+            AMREX_ALWAYS_ASSERT(
+                prob_domain[i].smallEnd(perp[1]) ==
+                m_mesh.Geom(i).Domain().smallEnd(perp[1]));
+            AMREX_ALWAYS_ASSERT(
+                prob_domain[i].bigEnd(perp[0]) ==
+                m_mesh.Geom(i).Domain().bigEnd(perp[0]));
+            AMREX_ALWAYS_ASSERT(
+                prob_domain[i].bigEnd(perp[1]) ==
+                m_mesh.Geom(i).Domain().bigEnd(perp[1]));
+        }
+
+        amrex::Vector<int> level_steps(nlevels);
+        for (int i = 0; i < nlevels; ++i) {
+            is >> level_steps[i];
+        }
+
+        amrex::Vector<amrex::Array<amrex::Real, AMREX_SPACEDIM>> cell_size(
+            nlevels, amrex::Array<amrex::Real, AMREX_SPACEDIM>{
+                         {AMREX_D_DECL(1., 1., 1.)}});
+        for (int ilev = 0; ilev < nlevels; ++ilev) {
+            for (int idim = 0; idim < spacedim; ++idim) {
+                is >> cell_size[ilev][idim];
+            }
+        }
+
+        int m_coordsys;
+        is >> m_coordsys;
+        int bwidth;
+        is >> bwidth;
+
+        for (int ilev = 0; ilev < nlevels; ++ilev) {
+            int levtmp, ngrids, levsteptmp;
+            amrex::Real gtime;
+            is >> levtmp >> ngrids >> gtime;
+            is >> levsteptmp;
+            amrex::Array<amrex::Real, 3> glo = {0.0};
+            amrex::Array<amrex::Real, 3> ghi = {0.0};
+            AMREX_ASSERT(ngrids == 1);
+            for (int igrid = 0; igrid < ngrids; ++igrid) {
+                for (int idim = 0; idim < spacedim; ++idim) {
+                    is >> glo[idim] >> ghi[idim];
+                }
+            }
+            std::string relname;
+            is >> relname;
+            std::string mf_name = chkname + "/" + relname;
+            const auto vismf = std::make_unique<amrex::VisMF>(mf_name);
+            auto ba = vismf->boxArray();
+            if (ori.isLow()) {
+                ba.growLo(normal, -1);
+            } else {
+                ba.growHi(normal, -1);
+            }
+            AMREX_ALWAYS_ASSERT(ba.size() == 1);
+            bndry_boxes[ilev].push_back(ba[0]);
+        }
+    }
+
+    for (int ilev = 0; ilev < bndry_boxes.size(); ilev++) {
+        amrex::BoxArray ba(
+            bndry_boxes[ilev].data(),
+            static_cast<int>(bndry_boxes[ilev].size()));
+        bndry_bas[ilev] = amrex::BoxArray(ba.minimalBox());
+    }
+    return bndry_bas;
+}
+
+void ABLBoundaryPlane::read_file(const bool nph_target_time)
 {
     BL_PROFILE("amr-wind::ABLBoundaryPlane::read_file");
     if (m_io_mode != io_mode::input) {
@@ -759,8 +1154,34 @@ void ABLBoundaryPlane::read_file()
     }
 
     // populate planes and interpolate
-    const amrex::Real time = m_time.new_time();
-    AMREX_ALWAYS_ASSERT((m_in_times[0] <= time) && (time < m_in_times.back()));
+    const amrex::Real time =
+        nph_target_time ? m_time.current_time() + 0.5 * m_time.delta_t()
+                        : m_time.new_time();
+
+    if (m_out_fmt == "erf-multiblock") {
+        ReadERFFunction read_erf = *m_read_erf;
+        if (read_erf != nullptr) {
+            read_erf(time, m_in_times, m_in_data, m_fields, mbc());
+        } else {
+            amrex::Abort("read_erf function is undefined.");
+        }
+        return;
+    }
+
+    if (!(m_in_times[0] <= time + constants::LOOSE_TOL) ||
+        !(time < m_in_times.back() + constants::LOOSE_TOL)) {
+        amrex::Abort(
+            "ABLBoundaryPlane.cpp ABLBoundaryPlane::read_file() check 1"
+            "failed\n"
+            "Left time quantities should be <= or < right time quantities.\n"
+            "m_in_times[0] = " +
+            std::to_string(m_in_times[0]) + ", time + LOOSE_TOL = " +
+            std::to_string(time + constants::LOOSE_TOL) +
+            "\n"
+            "time = " +
+            std::to_string(time) + ", m_in_times.back() + LOOSE_TOL = " +
+            std::to_string(m_in_times.back() + constants::LOOSE_TOL));
+    }
 
     // return early if current data files can still be interpolated in time
     if ((m_in_data.tn() <= time) && (time < m_in_data.tnp1())) {
@@ -796,12 +1217,31 @@ void ABLBoundaryPlane::read_file()
 
     if (m_out_fmt == "native") {
 
-        const int index = utils::closest_index(m_in_times, time);
+        const int index =
+            utils::closest_index(m_in_times, time, constants::LOOSE_TOL);
         const int t_step1 = m_in_timesteps[index];
         const int t_step2 = m_in_timesteps[index + 1];
 
-        AMREX_ALWAYS_ASSERT(
-            (m_in_times[index] <= time) && (time <= m_in_times[index + 1]));
+        if (!(m_in_times[index] <= time + constants::LOOSE_TOL) ||
+            !(time <= m_in_times[index + 1] + constants::LOOSE_TOL)) {
+            amrex::Abort(
+                "ABLBoundaryPlane.cpp ABLBoundaryPlane::read_file() check 2"
+                "failed\n"
+                "Left time quantities should be <= right time quantities. "
+                "Indices supplied for debugging.\n"
+                "m_in_times[index] = " +
+                std::to_string(m_in_times[index]) + ", time + LOOSE_TOL = " +
+                std::to_string(time + constants::LOOSE_TOL) +
+                "\n"
+                "time = " +
+                std::to_string(time) +
+                ", m_in_times[index + 1] + LOOSE_TOL = " +
+                std::to_string(m_in_times[index + 1] + constants::LOOSE_TOL) +
+                "\n"
+                "index = " +
+                std::to_string(index) +
+                ", index + 1 = " + std::to_string(index + 1));
+        }
 
         const std::string chkname1 =
             m_filename + amrex::Concatenate("/bndry_output", t_step1);
@@ -811,14 +1251,13 @@ void ABLBoundaryPlane::read_file()
         const std::string level_prefix = "Level_";
 
         const int nlevels = boundary_native_file_levels();
+        const auto bndry_bas =
+            read_bndry_native_boxarrays(chkname1, *(m_fields[0]));
         for (int lev = 0; lev < nlevels; ++lev) {
             for (auto* fld : m_fields) {
-
                 auto& field = *fld;
-                const auto& geom = field.repo().mesh().Geom();
 
-                amrex::Box domain = geom[lev].Domain();
-                amrex::BoxArray ba(domain);
+                const auto& ba = bndry_bas[lev];
                 amrex::DistributionMapping dm{ba};
 
                 amrex::BndryRegister bndry1(
@@ -840,7 +1279,8 @@ void ABLBoundaryPlane::read_file()
                     auto ori = oit();
 
                     if ((!m_in_data.is_populated(ori)) ||
-                        (field.bc_type()[ori] != BC::mass_inflow)) {
+                        ((field.bc_type()[ori] != BC::mass_inflow) &&
+                         (field.bc_type()[ori] != BC::mass_inflow_outflow))) {
                         continue;
                     }
 
@@ -878,14 +1318,40 @@ void ABLBoundaryPlane::populate_data(
         return;
     }
 
-    AMREX_ALWAYS_ASSERT(
-        ((m_in_data.tn() <= time) || (time <= m_in_data.tnp1())));
-    AMREX_ALWAYS_ASSERT(std::abs(time - m_in_data.tinterp()) < 1e-12);
+    if (!(m_in_data.tn() <= time + constants::LOOSE_TOL) &&
+        !(time <= m_in_data.tnp1() + constants::LOOSE_TOL)) {
+        amrex::Abort(
+            "ABLBoundaryPlane.cpp ABLBoundaryPlane::populate_data() check 1"
+            "failed\n"
+            "Left time quantities should be <= right time quantities\n"
+            "m_in_data.tn() = " +
+            std::to_string(m_in_data.tn()) + ", time + LOOSE_TOL = " +
+            std::to_string(time + constants::LOOSE_TOL) +
+            "\n"
+            "time = " +
+            std::to_string(time) + ", m_in_data.tnp1() + LOOSE_TOL = " +
+            std::to_string(m_in_data.tnp1() + constants::LOOSE_TOL));
+    }
+    if (!(std::abs(time - m_in_data.tinterp()) < constants::LOOSE_TOL)) {
+        amrex::Abort(
+            "ABLBoundaryPlane.cpp ABLBoundaryPlane::populate_data() check 2"
+            "failed\n"
+            "Left time quantities should be < right time quantities. "
+            "Additional quantities supplied on second line for debugging.\n"
+            "std::abs(time - m_in_data.tinterp()) = " +
+            std::to_string(std::abs(time - m_in_data.tinterp())) +
+            ", LOOSE_TOL = " + std::to_string(constants::LOOSE_TOL) +
+            "\n"
+            "time = " +
+            std::to_string(time) +
+            ", m_in_data.tinterp() = " + std::to_string(m_in_data.tinterp()));
+    }
 
     for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
         auto ori = oit();
         if ((!m_in_data.is_populated(ori)) ||
-            (fld.bc_type()[ori] != BC::mass_inflow)) {
+            ((fld.bc_type()[ori] != BC::mass_inflow) &&
+             (fld.bc_type()[ori] != BC::mass_inflow_outflow))) {
             continue;
         }
 
@@ -902,11 +1368,6 @@ void ABLBoundaryPlane::populate_data(
             amrex::Abort("No inflow data at this level.");
         }
 
-        if (ori.isHigh()) {
-            amrex::Warning(
-                "We typically don't inflow boundary planes on the high side.");
-        }
-
         const size_t nc = mfab.nComp();
 
 #ifdef AMREX_USE_OMP
@@ -916,11 +1377,10 @@ void ABLBoundaryPlane::populate_data(
              ++mfi) {
 
             auto sbx = mfi.growntilebox(1);
-            if (!sbx.cellCentered()) {
-                sbx.enclosedCells();
-            }
             const auto& src = m_in_data.interpolate_data(ori, lev);
-            const auto& bx = sbx & src.box();
+            auto shift_to_cc = amrex::IntVect(0);
+            const auto& bx = utils::face_aware_boundary_box_intersection(
+                shift_to_cc, sbx, src.box(), ori);
             if (bx.isEmpty()) {
                 continue;
             }
@@ -931,8 +1391,9 @@ void ABLBoundaryPlane::populate_data(
             amrex::ParallelFor(
                 bx, nc,
                 [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                    dest(i, j, k, n + dcomp) =
-                        src_arr(i, j, k, n + nstart + orig_comp);
+                    dest(i, j, k, n + dcomp) = src_arr(
+                        i + shift_to_cc[0], j + shift_to_cc[1],
+                        k + shift_to_cc[2], n + nstart + orig_comp);
                 });
         }
     }
@@ -975,6 +1436,27 @@ void ABLBoundaryPlane::write_data(
     const auto n_buffers = m_mesh.boxArray(lev).size();
     amrex::Vector<BufferData> buffers(n_buffers);
 
+    // Compute the minimal offset from the edge of the domain (in case
+    // the refinement zones don't coincide with the low edge)
+    amrex::IntVect min_lo(std::numeric_limits<int>::max());
+    min_lo[normal] = 0;
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
+    for (amrex::MFIter mfi((*fld)(lev), false); mfi.isValid(); ++mfi) {
+
+        const auto& bx = mfi.tilebox();
+        const auto& blo = bx.loVect();
+        const auto& bhi = bx.hiVect();
+
+        if ((blo[normal] == dlo[normal] && ori.isLow()) ||
+            (bhi[normal] == dhi[normal] && ori.isHigh())) {
+            min_lo[perp[0]] = std::min(min_lo[perp[0]], blo[perp[0]]);
+            min_lo[perp[1]] = std::min(min_lo[perp[1]], blo[perp[1]]);
+        }
+    }
+    amrex::ParallelDescriptor::ReduceIntMin(min_lo.begin(), min_lo.size());
+
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
@@ -1004,8 +1486,9 @@ void ABLBoundaryPlane::write_data(
             amrex::Gpu::streamSynchronize();
 
             buffer.start = {
-                m_out_counter, static_cast<size_t>(lo[perp[0]]),
-                static_cast<size_t>(lo[perp[1]]), 0};
+                m_out_counter,
+                static_cast<size_t>(lo[perp[0]] - min_lo[perp[0]]),
+                static_cast<size_t>(lo[perp[1]] - min_lo[perp[1]]), 0};
             buffer.count = {1, n0, n1, nc};
         } else if (bhi[normal] == dhi[normal] && ori.isHigh()) {
             amrex::IntVect lo(blo);
@@ -1028,8 +1511,9 @@ void ABLBoundaryPlane::write_data(
             amrex::Gpu::streamSynchronize();
 
             buffer.start = {
-                m_out_counter, static_cast<size_t>(lo[perp[0]]),
-                static_cast<size_t>(lo[perp[1]]), 0};
+                m_out_counter,
+                static_cast<size_t>(lo[perp[0]] - min_lo[perp[0]]),
+                static_cast<size_t>(lo[perp[1]] - min_lo[perp[1]]), 0};
             buffer.count = {1, n0, n1, nc};
         }
     }
@@ -1062,12 +1546,11 @@ void ABLBoundaryPlane::impl_buffer_field(
 #endif
 
 // Count the number of levels defined by the native boundary files
-int ABLBoundaryPlane::boundary_native_file_levels()
+int ABLBoundaryPlane::boundary_native_file_levels() const
 {
     int nlevels = 0;
     const std::string chkname =
         m_filename + amrex::Concatenate("/bndry_output", m_in_timesteps[0]);
-    const std::string level_prefix = "Level_";
     for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
         const std::string levname = amrex::LevelFullPath(lev, chkname);
         if (amrex::FileExists(levname)) {
@@ -1087,7 +1570,7 @@ bool ABLBoundaryPlane::box_intersects_boundary(
     const int normal = ori.coordDir();
     amrex::IntVect plo(domBox.loVect());
     amrex::IntVect phi(domBox.hiVect());
-    plo[normal] = ori.isHigh() ? domBox.loVect()[normal] : 0;
+    plo[normal] = ori.isHigh() ? domBox.hiVect()[normal] : 0;
     phi[normal] = ori.isHigh() ? domBox.hiVect()[normal] : 0;
     const amrex::Box pbx(plo, phi);
     const auto& intersection = bx & pbx;

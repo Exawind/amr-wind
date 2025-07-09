@@ -50,20 +50,16 @@ void init_field3(amr_wind::Field& fld, amrex::Real srate)
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& dx = mesh.Geom(lev).CellSizeArray();
         const auto& problo = mesh.Geom(lev).ProbLoArray();
+        const auto& farrs = fld(lev).arrays();
 
-        for (amrex::MFIter mfi(fld(lev)); mfi.isValid(); ++mfi) {
-            auto bx = mfi.growntilebox();
-            const auto& farr = fld(lev).array(mfi);
-
-            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+        amrex::ParallelFor(
+            fld(lev), fld.num_grow(), fld.num_comp(),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
                 const amrex::Real z = problo[2] + (k + offset) * dx[2];
-
-                farr(i, j, k, 0) = z / 2.0 * srate + 2.0;
-                farr(i, j, k, 1) = z / 2.0 * srate + 2.0;
-                farr(i, j, k, 2) = z / 2.0 * srate + 2.0;
+                farrs[nbx](i, j, k, n) = z / 2.0 * srate + 2.0;
             });
-        }
     }
+    amrex::Gpu::streamSynchronize();
 }
 
 void init_field1(amr_wind::Field& fld, amrex::Real tgrad)
@@ -79,18 +75,17 @@ void init_field1(amr_wind::Field& fld, amrex::Real tgrad)
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& dx = mesh.Geom(lev).CellSizeArray();
         const auto& problo = mesh.Geom(lev).ProbLoArray();
+        const auto& farrs = fld(lev).arrays();
 
-        for (amrex::MFIter mfi(fld(lev)); mfi.isValid(); ++mfi) {
-            auto bx = mfi.growntilebox();
-            const auto& farr = fld(lev).array(mfi);
-
-            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+        amrex::ParallelFor(
+            fld(lev), fld.num_grow(),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 const amrex::Real z = problo[2] + (k + offset) * dx[2];
 
-                farr(i, j, k, 0) = z * tgrad;
+                farrs[nbx](i, j, k, 0) = z * tgrad;
             });
-        }
     }
+    amrex::Gpu::streamSynchronize();
 }
 
 } // namespace
@@ -145,7 +140,6 @@ protected:
         }
         {
             amrex::ParmParse pp("ABL");
-            pp.add("reference_temperature", m_Tref);
             amrex::Vector<amrex::Real> t_hts{0.0, 100.0, 400.0};
             pp.addarr("temperature_heights", t_hts);
             amrex::Vector<amrex::Real> t_vals{265.0, 265.0, 268.0};
@@ -154,6 +148,7 @@ protected:
         {
             amrex::ParmParse pp("transport");
             pp.add("viscosity", m_mu);
+            pp.add("reference_temperature", m_Tref);
         }
     }
     void test_calls_body(bool do_postsolve = false)
@@ -360,7 +355,8 @@ TEST_F(TurbLESTestBC, test_1eqKsgs_wallmodel_failnofillpatch)
         amrex::ParmParse pp("ABL");
         pp.add("wall_shear_stress_type", (std::string) "local");
         pp.add("kappa", kappa);
-        pp.add("surface_roughness_z0", z0);
+        pp.add("aerodynamic_roughness_length", z0);
+        pp.add("thermal_roughness_length", z0 + 0.02);
     }
     {
         // Explicit diffusion populates wall cells, doesn't update velocity

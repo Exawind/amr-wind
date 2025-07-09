@@ -69,56 +69,56 @@ void BreakingWaves::initialize_fields(int level, const amrex::Geometry& geom)
         sdr.setVal(m_sdr0);
     }
 
-    for (amrex::MFIter mfi(levelset); mfi.isValid(); ++mfi) {
-        const auto& vbx = mfi.growntilebox();
-        auto vel = velocity.array(mfi);
-        auto phi = levelset.array(mfi);
-        auto rho = density.array(mfi);
+    const auto& vel_arrs = velocity.arrays();
+    const auto& phi_arrs = levelset.arrays();
+    const auto& rho_arrs = density.arrays();
 
-        amrex::ParallelFor(
-            vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-                const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-                const amrex::Real kappa = 2.0 * utils::pi() / lambda;
-                const amrex::Real epsilon = alpha * kappa;
-                // Compute free surface amplitude
-                const amrex::Real eta =
-                    water_level +
-                    alpha * ((1.0 - 1.0 / 16.0 * epsilon * epsilon) *
-                                 std::cos(kappa * x) +
-                             0.5 * epsilon * std::cos(2.0 * kappa * x) +
-                             3.0 / 8.0 * epsilon * epsilon *
-                                 std::cos(3.0 * kappa * x));
-                phi(i, j, k) = eta - z;
-                // compute velocities
-                const amrex::Real g = 9.81;
-                const amrex::Real Omega =
-                    std::sqrt(g * kappa * (1.0 + epsilon * epsilon));
-                if (z < eta) {
-                    vel(i, j, k, 0) = Omega * alpha * std::exp(kappa * z) *
-                                      std::cos(kappa * x);
-                    vel(i, j, k, 2) = Omega * alpha * std::exp(kappa * z) *
-                                      std::sin(kappa * x);
-                } else {
-                    vel(i, j, k, 0) = vel_shear_rate * (z - eta);
-                }
-                // compute density
-                amrex::Real smooth_heaviside;
-                amrex::Real eps = std::cbrt(2. * dx[0] * dx[1] * dx[2]);
-                if (phi(i, j, k) > eps) {
-                    smooth_heaviside = 1.0;
-                } else if (phi(i, j, k) < -eps) {
-                    smooth_heaviside = 0.;
-                } else {
-                    smooth_heaviside =
-                        0.5 * (1.0 + phi(i, j, k) / eps +
-                               1.0 / utils::pi() *
-                                   std::sin(phi(i, j, k) * utils::pi() / eps));
-                }
-                rho(i, j, k) =
-                    rho1 * smooth_heaviside + rho2 * (1.0 - smooth_heaviside);
-            });
-    }
+    amrex::ParallelFor(
+        levelset, m_levelset.num_grow(),
+        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+            const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+            const amrex::Real kappa = 2.0 * utils::pi() / lambda;
+            const amrex::Real epsilon = alpha * kappa;
+            // Compute free surface amplitude
+            const amrex::Real eta =
+                water_level +
+                alpha *
+                    ((1.0 - 1.0 / 16.0 * epsilon * epsilon) *
+                         std::cos(kappa * x) +
+                     0.5 * epsilon * std::cos(2.0 * kappa * x) +
+                     3.0 / 8.0 * epsilon * epsilon * std::cos(3.0 * kappa * x));
+            phi_arrs[nbx](i, j, k) = eta - z;
+            // compute velocities
+            const amrex::Real g = 9.81;
+            const amrex::Real Omega =
+                std::sqrt(g * kappa * (1.0 + epsilon * epsilon));
+            if (z < eta) {
+                vel_arrs[nbx](i, j, k, 0) =
+                    Omega * alpha * std::exp(kappa * z) * std::cos(kappa * x);
+                vel_arrs[nbx](i, j, k, 2) =
+                    Omega * alpha * std::exp(kappa * z) * std::sin(kappa * x);
+            } else {
+                vel_arrs[nbx](i, j, k, 0) = vel_shear_rate * (z - eta);
+            }
+            // compute density
+            amrex::Real smooth_heaviside;
+            amrex::Real eps = std::cbrt(2. * dx[0] * dx[1] * dx[2]);
+            if (phi_arrs[nbx](i, j, k) > eps) {
+                smooth_heaviside = 1.0;
+            } else if (phi_arrs[nbx](i, j, k) < -eps) {
+                smooth_heaviside = 0.;
+            } else {
+                smooth_heaviside =
+                    0.5 *
+                    (1.0 + phi_arrs[nbx](i, j, k) / eps +
+                     1.0 / utils::pi() *
+                         std::sin(phi_arrs[nbx](i, j, k) * utils::pi() / eps));
+            }
+            rho_arrs[nbx](i, j, k) =
+                rho1 * smooth_heaviside + rho2 * (1.0 - smooth_heaviside);
+        });
+    amrex::Gpu::streamSynchronize();
 }
 
 } // namespace amr_wind

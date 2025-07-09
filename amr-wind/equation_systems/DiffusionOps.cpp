@@ -124,24 +124,18 @@ void DiffSolverIface<LinOp>::linsys_solve_impl()
     // Always multiply with rho since there is no diffusion term for density
     for (int lev = 0; lev < nlevels; ++lev) {
         auto& rhs = (*rhs_ptr)(lev);
+        const auto& rhs_arrs = rhs.arrays();
+        const auto& fld_arrs = field(lev).const_arrays();
+        const auto& rho_arrs = density(lev).const_arrays();
 
-#ifdef AMREX_USE_OMP
-#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
-#endif
-        for (amrex::MFIter mfi(rhs, amrex::TilingIfNotGPU()); mfi.isValid();
-             ++mfi) {
-            const auto& bx = mfi.tilebox();
-            const auto& rhs_a = rhs.array(mfi);
-            const auto& fld = field(lev).const_array(mfi);
-            const auto& rho = density(lev).const_array(mfi);
-
-            amrex::ParallelFor(
-                bx, ndim,
-                [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                    rhs_a(i, j, k, n) = rho(i, j, k) * fld(i, j, k, n);
-                });
-        }
+        amrex::ParallelFor(
+            rhs, amrex::IntVect(0), ndim,
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
+                rhs_arrs[nbx](i, j, k, n) =
+                    rho_arrs[nbx](i, j, k) * fld_arrs[nbx](i, j, k, n);
+            });
     }
+    amrex::Gpu::streamSynchronize();
 
     amrex::MLMG mlmg(*this->m_solver);
     this->setup_solver(mlmg);

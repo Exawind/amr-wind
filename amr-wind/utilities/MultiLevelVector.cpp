@@ -45,6 +45,6 @@ void MultiLevelVector::copy_to_field(Field& fld)
                 farrs[nbx](i, j, k, 0) = d_ptr[idx];
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 } // namespace amr_wind

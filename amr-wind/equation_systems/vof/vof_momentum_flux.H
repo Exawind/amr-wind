@@ -5,7 +5,7 @@
 
 namespace amr_wind::multiphase {
 
-static void hybrid_fluxes(
+static inline void hybrid_fluxes(
     const FieldRepo& repo,
     const int ncomp,
     const amrex::Gpu::DeviceVector<int>& iconserv,
@@ -13,8 +13,10 @@ static void hybrid_fluxes(
     ScratchField& flux_y,
     ScratchField& flux_z,
     const Field& dof_field,
+    const Field& dof_nph,
     const Field& src_term,
     const Field& rho_o,
+    const Field& rho_nph,
     const Field& u_mac,
     const Field& v_mac,
     const Field& w_mac,
@@ -24,7 +26,9 @@ static void hybrid_fluxes(
     amrex::BCRec const* rhobc_d,
     const amrex::Real dt,
     godunov::scheme mflux_scheme,
-    bool use_forces_in_trans)
+    bool allow_inflow_on_outflow,
+    bool use_forces_in_trans,
+    bool pre_multiplied_src_term = false)
 {
     // Get geometry
     const auto& geom = repo.mesh().Geom();
@@ -69,23 +73,31 @@ static void hybrid_fluxes(
         amrex::MultiFab::Copy(
             fq, src_term(lev), 0, 0, ncomp, fvm::Godunov::nghost_src);
 
-        amrex::MultiFab::Multiply(
-            q, rho_o(lev), 0, 0, 1, fvm::Godunov::nghost_state);
-        amrex::MultiFab::Multiply(
-            q, rho_o(lev), 0, 1, 1, fvm::Godunov::nghost_state);
-        amrex::MultiFab::Multiply(
-            q, rho_o(lev), 0, 2, 1, fvm::Godunov::nghost_state);
-        amrex::MultiFab::Multiply(
-            fq, rho_o(lev), 0, 0, 1, fvm::Godunov::nghost_src);
-        amrex::MultiFab::Multiply(
-            fq, rho_o(lev), 0, 1, 1, fvm::Godunov::nghost_src);
-        amrex::MultiFab::Multiply(
-            fq, rho_o(lev), 0, 2, 1, fvm::Godunov::nghost_src);
+        for (int idim = 0; idim < dof_field.num_comp(); ++idim) {
+            amrex::MultiFab::Multiply(
+                q, rho_o(lev), 0, idim, 1, fvm::Godunov::nghost_state);
+            if (!pre_multiplied_src_term) {
+                amrex::MultiFab::Multiply(
+                    fq, rho_o(lev), 0, idim, 1, fvm::Godunov::nghost_src);
+            }
+        }
 
         amrex::MultiFab frho(
             src_term(lev).boxArray(), src_term(lev).DistributionMap(), 1,
             fvm::Godunov::nghost_src);
         frho.setVal(0.0);
+
+        // Set up temporary arrays for NPH at boundaries
+        amrex::MultiFab q_nph(
+            dof_field(lev).boxArray(), dof_field(lev).DistributionMap(), ncomp,
+            fvm::Godunov::nghost_state);
+        amrex::MultiFab::Copy(
+            q_nph, dof_nph(lev), 0, 0, ncomp, fvm::Godunov::nghost_state);
+        // Density at NPH is fully calculated a priori
+        // Multiply to get momentum at NPH
+        for (int idim = 0; idim < dof_field.num_comp(); ++idim) {
+            amrex::MultiFab::Multiply(q_nph, rho_nph(lev), 0, idim, 1, 1);
+        }
 
         std::string advection_type = "Godunov";
         int limiter_type = PPM::UPWIND; // default
@@ -98,7 +110,6 @@ static void hybrid_fluxes(
         const bool known_edge_state = false;
         const bool godunov_use_ppm = true;
         const bool is_velocity = false;
-        const bool allow_inflow_on_outflow = true;
         const bool fluxes_are_area_weighted = false;
 
         amrex::MFItInfo mfi_info;
@@ -122,20 +133,22 @@ static void hybrid_fluxes(
             auto Fw_z = (*ftmp_z)(lev).array(mfi);
 
             // Temporary divu
-            amrex::FArrayBox divufab(amrex::grow(bx, 1), 1);
+            amrex::FArrayBox divufab(
+                amrex::grow(bx, 1), 1, amrex::The_Async_Arena());
             divufab.setVal<amrex::RunOn::Device>(0.0);
             const auto& divu = divufab.array();
 
             // Compute momentum flux quantities (multiplied by face velocity)
             HydroUtils::ComputeFluxesOnBoxFromState(
-                bx, ncomp, mfi, q.const_array(mfi), Fw_x, Fw_y, Fw_z,
-                (*face_x)(lev).array(mfi), (*face_y)(lev).array(mfi),
-                (*face_z)(lev).array(mfi), known_edge_state,
-                u_mac(lev).const_array(mfi), v_mac(lev).const_array(mfi),
-                w_mac(lev).const_array(mfi), divu, fq.const_array(mfi),
-                geom[lev], dt, velbc, velbc_d, iconserv.data(), godunov_use_ppm,
-                use_forces_in_trans, is_velocity, fluxes_are_area_weighted,
-                advection_type, limiter_type, allow_inflow_on_outflow);
+                bx, ncomp, mfi, q.const_array(mfi), q_nph.const_array(mfi),
+                Fw_x, Fw_y, Fw_z, (*face_x)(lev).array(mfi),
+                (*face_y)(lev).array(mfi), (*face_z)(lev).array(mfi),
+                known_edge_state, u_mac(lev).const_array(mfi),
+                v_mac(lev).const_array(mfi), w_mac(lev).const_array(mfi), divu,
+                fq.const_array(mfi), geom[lev], dt, velbc, velbc_d,
+                iconserv.data(), godunov_use_ppm, use_forces_in_trans,
+                is_velocity, fluxes_are_area_weighted, advection_type,
+                limiter_type, allow_inflow_on_outflow);
 
             const auto& bxg1 = amrex::grow(bx, 1);
             const auto& xbx = amrex::surroundingNodes(bx, 0);
@@ -232,8 +245,6 @@ static void hybrid_fluxes(
                         }
                     }
                 });
-
-            amrex::Gpu::streamSynchronize();
         }
     }
 }

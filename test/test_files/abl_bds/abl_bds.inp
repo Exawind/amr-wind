@@ -28,14 +28,13 @@ incflo.diffusion_type = 2
 transport.viscosity = 1.0e-5
 transport.laminar_prandtl = 0.7
 transport.turbulent_prandtl = 0.3333
+transport.reference_temperature = 300.0
 turbulence.model = Smagorinsky
 Smagorinsky_coeffs.Cs = 0.135
 
 
 incflo.physics = ABL
 ICNS.source_terms = BoussinesqBuoyancy CoriolisForcing ABLForcing
-BoussinesqBuoyancy.reference_temperature = 300.0
-ABL.reference_temperature = 300.0
 CoriolisForcing.latitude = 41.3
 ABLForcing.abl_forcing_height = 90
 
@@ -72,7 +71,6 @@ zhi.temperature = 0.003 # tracer is used to specify potential temperature gradie
 #.......................................#
 incflo.verbose          =   0          # incflo_level
 
-amrex.abort_on_out_of_memory=1
 amrex.the_arena_is_managed=1
 amrex.async_out=0
 # needed because a debug build using BDS + amrex.the_arena_is_managed=0 OOMs the GPU (problem is in incflo as well)

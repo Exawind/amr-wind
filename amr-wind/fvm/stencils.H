@@ -52,8 +52,8 @@ namespace impl {
  *
  *  \param [in] bx The box whose layers are being considered
  *  \param [in] geom The amrex::Geometry object
- *  \param [in] Direction in which the first cell adjacent to the boundary is
- * desired
+ *  \param [in] idir Direction in which the first cell adjacent to the boundary
+ * is desired
  *
  *  \return A box with a single layer of cells adjacent to the boundary or empty
  */
@@ -83,8 +83,8 @@ box_lo(const amrex::Box& bx, const amrex::Geometry& geom, const int idir)
  *
  *  \param [in] bx The box whose layers are being considered
  *  \param [in] geom The amrex::Geometry object
- *  \param [in] Direction in which the first cell adjacent to the boundary is
- * desired
+ *  \param [in] idir Direction in which the first cell adjacent to the boundary
+ * is desired
  *
  *  \return A box with a single layer of cells adjacent to the boundary or empty
  */

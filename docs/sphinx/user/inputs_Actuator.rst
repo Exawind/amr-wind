@@ -75,7 +75,7 @@ Example for ``FixedWingLine``::
 
    **type:** List of 3 real numbers, mandatory
 
-   This is the value of epsilon in the chord, thicness and spanwise directions.
+   This is the value of epsilon in the chord, thickness and spanwise directions.
 
 .. input_param:: Actuator.FixedWingLine.epsilon_chord
 
@@ -103,12 +103,14 @@ Example for ``FixedWingLine``::
 
 .. input_param:: Actuator.FixedWingLine.fllc_type
 
-  **type:** String, optional
+  **type:** String, optional, default = ``variable_chord``
 
-  This option tells whether to use the original fllc formulation as outlined in
-  `Martinez-Tossas and Meneveau (2019) <https://doi.org/10.1017/jfm.2018.994>`_
-  which assumes a constant chord length across blade (`constant_chord`), or
-  to use a new forumlation which accounts for chord variations (`variable_chord`).
+  This option tells whether to use the original fllc formulation outlined in
+  `Martinez-Tossas and Meneveau (2019) <https://doi.org/10.1017/jfm.2018.994>`_,
+  which assumes a constant chord length across blade (specified as ``constant_chord``), or
+  to use a new formulation outlined in `Martinez-Tossas et al. (2023)
+  <https://www.nrel.gov/docs/fy24osti/85343.pdf>`_, which accounts for chord
+  variations (specified as ``variable_chord``).
 
 .. input_param:: Actuator.FixedWingLine.fllc_relaxation_factor
 
@@ -156,7 +158,7 @@ Example for ``FixedWingLine``::
    **type:** List of real numbers, mandatory
 
    These are non-dimensional span locations from 0 to 1. These locations are
-   used to specify the chord values at avery span location of the blade.
+   used to specify the chord values at every span location of the blade.
 
 .. input_param:: Actuator.FixedWingLine.chord
 
@@ -259,7 +261,7 @@ Example for ``FixedWingLine``::
    **type:** Real, optional, default = -1.0
 
    This input allows the freestream velocity sampled by the actuator routines to be overwritten with
-   a user-prescribed value. This feature becomes active when the prescribed value is nonnegative.
+   a user-prescribed value. This feature becomes active when the prescribed value is non-negative.
 
 .. input_param:: Actuator.FixedWingLine.active_force_dirs
 
@@ -272,6 +274,12 @@ Example for ``FixedWingLine``::
 
 TurbineFastLine
 """""""""""""""
+
+This actuator type requires an AMR-Wind build with OpenFAST coupling
+enabled. AMR-Wind provides flow quantities at the actuator point
+locations to OpenFAST and OpenFAST provides the actuator point
+locations and forces at those points. This tight coupling happens at
+every time step.
 
 Example for ``TurbineFastLine``::
 

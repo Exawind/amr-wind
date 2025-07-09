@@ -54,6 +54,8 @@ struct ComputeRHSOp<VOF, Scheme>
         bool /*unused*/)
     {}
 
+    void improve_explicit_diff(const amrex::Real /*unused*/) {}
+
     // data members
     PDEFields& fields;
 };
@@ -70,13 +72,9 @@ struct PostSolveOp<VOF>
 
     void operator()(const amrex::Real /*unused*/)
     {
-        m_fields.field.fillpatch(m_sim.time().current_time());
+        m_fields.field.fillpatch(m_sim.time().new_time());
         auto& multiphase = m_sim.physics_manager().get<MultiPhase>();
         multiphase.set_density_via_vof();
-        // Do this for old state too if modified by vof sharpening
-        if (m_sim.repo().int_field_exists("iblank_cell")) {
-            multiphase.set_density_via_vof(amr_wind::FieldState::Old);
-        }
 
         // Calculate n+1/2 density
         multiphase.set_nph_density();

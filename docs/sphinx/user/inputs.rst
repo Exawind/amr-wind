@@ -14,19 +14,26 @@ executable.
    $ ./amr_wind inputs.abl time.max_step=20
 
 
-The input file is a simple text file containing ``key = value`` entries for the
-input parameters. The text file can include comments, any text beginning with
-``#`` till the end of line (EOF) is interpreted as comments and ignored by the
-parser. Input file processing is handled by `AMReX ParmParse library
+The input file is a simple text file containing ``key = value``
+entries for the input parameters. The text file can include comments,
+any text beginning with ``#`` till the end of line (EOF) is
+interpreted as comments and ignored by the parser. Input file
+processing is handled by `AMReX ParmParse library
 <https://amrex-codes.github.io/amrex/docs_html/Basics.html#parmparse>`_. This
-section documents the various input file parameters and their default values (if
-available). In :program:`amr_wind`, the input file is broken into *sections*
-indicated by a namespace prefix. For example, all inputs related to the problem
-domain are prefixed with ``geometry.`` and so on. A sample input file is shown below
+section documents the common input file parameters and their default
+values (if available). The focus is on AMR-Wind specific input options
+and some common AMReX options (these are fully documented in `AMReX
+<https://amrex-codes.github.io/amrex/docs_html/RuntimeParameters.html>`_).
+
+In :program:`amr_wind`, the input file
+is broken into *sections* indicated by a namespace prefix. For
+example, all inputs related to the problem domain are prefixed with
+``geometry.`` and so on. A sample input file is shown below
 
 .. literalinclude:: ./amr_wind_inputs.txt
    :linenos:
 
+.. _input-file-ref:
 
 Input file reference
 ---------------------
@@ -54,7 +61,11 @@ Section                 Description
 ``Averaging``           Time averaging and correlations
 ======================= ============================================================
 
-This section documents the parameters available within each section.
+This section documents the parameters available within each section. Please
+note that the documentation provided here is for the latest major release of
+AMR-Wind. While input file specifications rarely change, major releases of
+AMR-Wind (e.g ``2.x`` to ``3.x``) might have breaking changes and the
+documentation provided here might not work with older releases.
 
 .. note::
 
@@ -78,14 +89,19 @@ This section documents the parameters available within each section.
    inputs_transport.rst
    inputs_turbulence.rst
    inputs_Momentum_Sources.rst
+   inputs_Temperature_Sources.rst
+   inputs_TKE_Sources.rst 
    inputs_ABL.rst
    inputs_ABL_meso_forcing.rst
    inputs_SyntheticTurbulence.rst
    inputs_Boundary_conditions.rst
    inputs_MLMG.rst
+   inputs_post_processing.rst
    inputs_Sampling.rst
    inputs_Averaging.rst
    inputs_KineticEnergy.rst
    inputs_Enstrophy.rst
    inputs_Actuator.rst
+   inputs_multiphase.rst
    inputs_ocean_waves.rst
+

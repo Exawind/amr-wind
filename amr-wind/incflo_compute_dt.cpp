@@ -8,9 +8,6 @@ using namespace amrex;
 
 /** Estimate the new timestep for adaptive timestepping algorithm
  *
- *  \param explicit_diffusion Flag indicating whether user has selected explicit
- *  treatment of diffusion term.
- *
  * Compute new \f$\Delta t\f$ by using the formula derived in "A Boundary
  * Condition Capturing Method for Multiphase Incompressible Flow" by Kang et al.
  * (JCP).
@@ -32,9 +29,11 @@ using namespace amrex;
  *  is `true`).
  *
  */
-void incflo::ComputeDt(bool explicit_diffusion)
+void incflo::compute_dt()
 {
-    BL_PROFILE("amr-wind::incflo::ComputeDt");
+    BL_PROFILE("amr-wind::incflo::compute_dt");
+
+    bool explicit_diffusion = (m_diff_type == DiffusionType::Explicit);
 
     Real conv_cfl = 0.0;
     Real diff_cfl = 0.0;
@@ -46,6 +45,7 @@ void incflo::ComputeDt(bool explicit_diffusion)
         mesh_mapping
             ? &(m_repo.get_mesh_mapping_field(amr_wind::FieldLoc::CELL))
             : nullptr;
+    const auto& mask_cell = m_repo.get_int_field("mask_cell");
 
     for (int lev = 0; lev <= finest_level; ++lev) {
         auto const dxinv = geom[lev].InvCellSizeArray();
@@ -55,6 +55,7 @@ void incflo::ComputeDt(bool explicit_diffusion)
         MultiFab const& rho = den(lev);
 
         auto const& vel_arr = vel.const_arrays();
+        auto const& mask_arr = mask_cell(lev).const_arrays();
         MultiArray4<Real const> fac_arr =
             mesh_mapping ? ((*mesh_fac)(lev).const_arrays())
                          : MultiArray4<Real const>();
@@ -66,21 +67,24 @@ void incflo::ComputeDt(bool explicit_diffusion)
 
         conv_lev += amrex::ParReduce(
             TypeList<ReduceOpMax>{}, TypeList<Real>{}, vel, IntVect(0),
-            [=] AMREX_GPU_HOST_DEVICE(
+            [=] AMREX_GPU_DEVICE(
                 int box_no, int i, int j, int k) -> GpuTuple<Real> {
                 auto const& v_bx = vel_arr[box_no];
 
-                amrex::Real fac_x =
+                const amrex::Real fac_x =
                     mesh_mapping ? (fac_arr[box_no](i, j, k, 0)) : 1.0;
-                amrex::Real fac_y =
+                const amrex::Real fac_y =
                     mesh_mapping ? (fac_arr[box_no](i, j, k, 1)) : 1.0;
-                amrex::Real fac_z =
+                const amrex::Real fac_z =
                     mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0;
 
+                const auto mask =
+                    static_cast<amrex::Real>(mask_arr[box_no](i, j, k));
+
                 return amrex::max<amrex::Real>(
-                    std::abs(v_bx(i, j, k, 0)) * dxinv[0] / fac_x,
-                    std::abs(v_bx(i, j, k, 1)) * dxinv[1] / fac_y,
-                    std::abs(v_bx(i, j, k, 2)) * dxinv[2] / fac_z,
+                    mask * std::abs(v_bx(i, j, k, 0)) * dxinv[0] / fac_x,
+                    mask * std::abs(v_bx(i, j, k, 1)) * dxinv[1] / fac_y,
+                    mask * std::abs(v_bx(i, j, k, 2)) * dxinv[2] / fac_z,
                     static_cast<amrex::Real>(-1.0));
             });
 
@@ -89,7 +93,7 @@ void incflo::ComputeDt(bool explicit_diffusion)
             auto const& vof_arr = vof.const_arrays();
             mphase_conv_lev += amrex::ParReduce(
                 TypeList<ReduceOpMax>{}, TypeList<Real>{}, vel, IntVect(0),
-                [=] AMREX_GPU_HOST_DEVICE(
+                [=] AMREX_GPU_DEVICE(
                     int box_no, int i, int j, int k) -> GpuTuple<Real> {
                     auto const& v_bx = vel_arr[box_no];
                     auto const& vof_bx = vof_arr[box_no];
@@ -102,19 +106,22 @@ void incflo::ComputeDt(bool explicit_diffusion)
                     amrex::Real result = 0.0;
                     if (is_near) {
                         // Near interface, evaluate CFL by sum of velocities
-                        amrex::Real fac_x =
+                        const amrex::Real fac_x =
                             mesh_mapping ? (fac_arr[box_no](i, j, k, 0)) : 1.0;
-                        amrex::Real fac_y =
+                        const amrex::Real fac_y =
                             mesh_mapping ? (fac_arr[box_no](i, j, k, 1)) : 1.0;
-                        amrex::Real fac_z =
+                        const amrex::Real fac_z =
                             mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0;
 
                         result = std::abs(v_bx(i, j, k, 0)) * dxinv[0] / fac_x +
                                  std::abs(v_bx(i, j, k, 1)) * dxinv[1] / fac_y +
                                  std::abs(v_bx(i, j, k, 2)) * dxinv[2] / fac_z;
 
+                        const auto mask =
+                            static_cast<amrex::Real>(mask_arr[box_no](i, j, k));
+
                         // Multiply advective CFL by 2 when near interface
-                        result *= 2.0;
+                        result *= 2.0 * mask;
                         // CFL requirement to ensure vof conservation is 0.5;
                         // this is half the typical concept of a CFL (1.0)
                     }
@@ -128,16 +135,16 @@ void incflo::ComputeDt(bool explicit_diffusion)
             auto const& rho_arr = rho.const_arrays();
             diff_lev += amrex::ParReduce(
                 TypeList<ReduceOpMax>{}, TypeList<Real>{}, rho, IntVect(0),
-                [=] AMREX_GPU_HOST_DEVICE(
+                [=] AMREX_GPU_DEVICE(
                     int box_no, int i, int j, int k) -> GpuTuple<Real> {
                     auto const& mu_bx = mu_arr[box_no];
                     auto const& rho_bx = rho_arr[box_no];
 
-                    amrex::Real fac_x =
+                    const amrex::Real fac_x =
                         mesh_mapping ? (fac_arr[box_no](i, j, k, 0)) : 1.0;
-                    amrex::Real fac_y =
+                    const amrex::Real fac_y =
                         mesh_mapping ? (fac_arr[box_no](i, j, k, 1)) : 1.0;
-                    amrex::Real fac_z =
+                    const amrex::Real fac_z =
                         mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0;
 
                     const Real dxinv2 =
@@ -145,8 +152,11 @@ void incflo::ComputeDt(bool explicit_diffusion)
                                dxinv[1] / fac_y * dxinv[1] / fac_y +
                                dxinv[2] / fac_z * dxinv[2] / fac_z);
 
+                    const auto mask =
+                        static_cast<amrex::Real>(mask_arr[box_no](i, j, k));
+
                     return amrex::max<amrex::Real>(
-                        mu_bx(i, j, k) * dxinv2 / rho_bx(i, j, k), -1.0);
+                        mask * mu_bx(i, j, k) * dxinv2 / rho_bx(i, j, k), -1.0);
                 });
         }
 
@@ -156,24 +166,27 @@ void incflo::ComputeDt(bool explicit_diffusion)
             force_lev += amrex::ParReduce(
                 TypeList<ReduceOpMax>{}, TypeList<Real>{}, vel_force,
                 IntVect(0),
-                [=] AMREX_GPU_HOST_DEVICE(
+                [=] AMREX_GPU_DEVICE(
                     int box_no, int i, int j, int k) -> GpuTuple<Real> {
                     auto const& vf_bx = vf_arr[box_no];
                     auto const& rho_bx = rho_arr[box_no];
 
-                    amrex::Real fac_x =
+                    const amrex::Real fac_x =
                         mesh_mapping ? (fac_arr[box_no](i, j, k, 0)) : 1.0;
-                    amrex::Real fac_y =
+                    const amrex::Real fac_y =
                         mesh_mapping ? (fac_arr[box_no](i, j, k, 1)) : 1.0;
-                    amrex::Real fac_z =
+                    const amrex::Real fac_z =
                         mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0;
 
+                    const auto mask =
+                        static_cast<amrex::Real>(mask_arr[box_no](i, j, k));
+
                     return amrex::max<amrex::Real>(
-                        std::abs(vf_bx(i, j, k, 0)) * dxinv[0] / fac_x /
+                        mask * std::abs(vf_bx(i, j, k, 0)) * dxinv[0] / fac_x /
                             rho_bx(i, j, k),
-                        std::abs(vf_bx(i, j, k, 1)) * dxinv[1] / fac_y /
+                        mask * std::abs(vf_bx(i, j, k, 1)) * dxinv[1] / fac_y /
                             rho_bx(i, j, k),
-                        std::abs(vf_bx(i, j, k, 2)) * dxinv[2] / fac_z /
+                        mask * std::abs(vf_bx(i, j, k, 2)) * dxinv[2] / fac_z /
                             rho_bx(i, j, k),
                         static_cast<amrex::Real>(-1.0));
                 });
@@ -197,9 +210,9 @@ void incflo::ComputeDt(bool explicit_diffusion)
     m_time.set_current_cfl(conv_cfl, diff_cfl, force_cfl);
 }
 
-void incflo::ComputePrescribeDt()
+void incflo::compute_prescribe_dt()
 {
-    BL_PROFILE("amr-wind::incflo::ComputePrescribeDt");
+    BL_PROFILE("amr-wind::incflo::compute_prescribe_dt");
 
     Real conv_cfl = 0.0;
     const bool mesh_mapping = m_sim.has_mesh_mapping();
@@ -208,12 +221,14 @@ void incflo::ComputePrescribeDt()
         mesh_mapping
             ? &(m_repo.get_mesh_mapping_field(amr_wind::FieldLoc::CELL))
             : nullptr;
+    const auto& mask_cell = m_repo.get_int_field("mask_cell");
 
     for (int lev = 0; lev <= finest_level; ++lev) {
         auto const dxinv = geom[lev].InvCellSizeArray();
         auto const& uf_arr = m_repo.get_field("u_mac")(lev).const_arrays();
         auto const& vf_arr = m_repo.get_field("v_mac")(lev).const_arrays();
         auto const& wf_arr = m_repo.get_field("w_mac")(lev).const_arrays();
+        auto const& mask_arr = mask_cell(lev).const_arrays();
 
         MultiArray4<Real const> fac_arr =
             mesh_mapping ? ((*mesh_fac)(lev).const_arrays())
@@ -225,29 +240,31 @@ void incflo::ComputePrescribeDt()
         conv_lev += amrex::ParReduce(
             TypeList<ReduceOpMax>{}, TypeList<Real>{},
             icns().fields().field(lev), IntVect(0),
-            [=] AMREX_GPU_HOST_DEVICE(
+            [=] AMREX_GPU_DEVICE(
                 int box_no, int i, int j, int k) -> GpuTuple<Real> {
                 auto const& umac = uf_arr[box_no];
                 auto const& vmac = vf_arr[box_no];
                 auto const& wmac = wf_arr[box_no];
 
-                amrex::Real fac_x =
+                const amrex::Real fac_x =
                     mesh_mapping ? (fac_arr[box_no](i, j, k, 0)) : 1.0;
-                amrex::Real fac_y =
+                const amrex::Real fac_y =
                     mesh_mapping ? (fac_arr[box_no](i, j, k, 1)) : 1.0;
-                amrex::Real fac_z =
+                const amrex::Real fac_z =
                     mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0;
+                const auto mask =
+                    static_cast<amrex::Real>(mask_arr[box_no](i, j, k));
 
                 return amrex::max<amrex::Real>(
                     amrex::max<amrex::Real>(
                         std::abs(umac(i, j, k)), std::abs(umac(i + 1, j, k))) *
-                        dxinv[0] / fac_x,
+                        mask * dxinv[0] / fac_x,
                     amrex::max<amrex::Real>(
                         std::abs(vmac(i, j, k)), std::abs(vmac(i, j + 1, k))) *
-                        dxinv[1] / fac_y,
+                        mask * dxinv[1] / fac_y,
                     amrex::max<amrex::Real>(
                         std::abs(wmac(i, j, k)), std::abs(wmac(i, j, k + 1))) *
-                        dxinv[2] / fac_z,
+                        mask * dxinv[2] / fac_z,
                     static_cast<amrex::Real>(-1.0));
             });
 
@@ -257,7 +274,7 @@ void incflo::ComputePrescribeDt()
             mphase_conv_lev += amrex::ParReduce(
                 TypeList<ReduceOpMax>{}, TypeList<Real>{},
                 icns().fields().field(lev), IntVect(0),
-                [=] AMREX_GPU_HOST_DEVICE(
+                [=] AMREX_GPU_DEVICE(
                     int box_no, int i, int j, int k) -> GpuTuple<Real> {
                     auto const& vof_bx = vof_arr[box_no];
                     auto const& umac = uf_arr[box_no];
@@ -265,32 +282,34 @@ void incflo::ComputePrescribeDt()
                     auto const& wmac = wf_arr[box_no];
 
                     // Check for interface
-                    auto is_near =
+                    const auto is_near =
                         amr_wind::multiphase::interface_band(i, j, k, vof_bx);
 
                     // CFL calculation is not needed away from interface
                     amrex::Real result = 0.0;
                     if (is_near) {
                         // Near interface, evaluate CFL by sum of velocities
-                        amrex::Real fac_x =
+                        const amrex::Real fac_x =
                             mesh_mapping ? (fac_arr[box_no](i, j, k, 0)) : 1.0;
-                        amrex::Real fac_y =
+                        const amrex::Real fac_y =
                             mesh_mapping ? (fac_arr[box_no](i, j, k, 1)) : 1.0;
-                        amrex::Real fac_z =
+                        const amrex::Real fac_z =
                             mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0;
+                        const auto mask =
+                            static_cast<amrex::Real>(mask_arr[box_no](i, j, k));
 
-                        result = amrex::max(
-                                     std::abs(umac(i, j, k)),
-                                     std::abs(umac(i + 1, j, k))) *
-                                     dxinv[0] / fac_x +
-                                 amrex::max(
-                                     std::abs(vmac(i, j, k)),
-                                     std::abs(vmac(i, j + 1, k))) *
-                                     dxinv[1] / fac_y +
-                                 amrex::max(
-                                     std::abs(wmac(i, j, k)),
-                                     std::abs(wmac(i, j, k + 1))) *
-                                     dxinv[2] / fac_z;
+                        result = mask * (amrex::max(
+                                             std::abs(umac(i, j, k)),
+                                             std::abs(umac(i + 1, j, k))) *
+                                             dxinv[0] / fac_x +
+                                         amrex::max(
+                                             std::abs(vmac(i, j, k)),
+                                             std::abs(vmac(i, j + 1, k))) *
+                                             dxinv[1] / fac_y +
+                                         amrex::max(
+                                             std::abs(wmac(i, j, k)),
+                                             std::abs(wmac(i, j, k + 1))) *
+                                             dxinv[2] / fac_z);
                     }
                     return result;
                 });

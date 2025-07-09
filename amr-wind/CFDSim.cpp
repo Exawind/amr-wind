@@ -1,4 +1,5 @@
 #include "amr-wind/CFDSim.H"
+#include "amr-wind/transport_models/TransportModel.H"
 #include "amr-wind/turbulence/TurbulenceModel.H"
 #include "amr-wind/utilities/IOManager.H"
 #include "amr-wind/utilities/PostProcessing.H"
@@ -21,6 +22,17 @@ CFDSim::CFDSim(amrex::AmrCore& mesh)
 {}
 
 CFDSim::~CFDSim() = default;
+
+void CFDSim::create_transport_model()
+{
+    std::string transport_model_name = "ConstTransport";
+    {
+        amrex::ParmParse pp("transport");
+        pp.query("model", transport_model_name);
+    }
+    m_transport =
+        transport::TransportModel::create(transport_model_name, *this);
+}
 
 void CFDSim::create_turbulence_model()
 {

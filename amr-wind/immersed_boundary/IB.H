@@ -4,9 +4,8 @@
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/core/FieldRepo.H"
 
-/** \defgroup immersed boundary Immersed boundary module
+/** \defgroup immersed_boundary Immersed boundary module
  *  Immersed boundary class
- *  \ingroup immersed_boundary
  */
 
 namespace amr_wind {
@@ -19,7 +18,7 @@ class ImmersedBoundaryModel;
 
 /** Immersed boundary modeling for non-blade wind components and complex terrain
  *
- *  \ingroup immersed boundary
+ *  \ingroup immersed_boundary
  *
  *  This class provides an interface to model
  *

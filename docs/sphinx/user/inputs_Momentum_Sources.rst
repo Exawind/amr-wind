@@ -9,28 +9,12 @@ Section: Momentum Sources
    
    Activates source terms for the incompressible Navier-Stokes momentum
    equations. These strings can be entered in any order with a space between
-   each. Please consult `AMR-Wind developer documentation
-   <https://exawind.github.io/amr-wind/api_docs/group__icns__src.html>`_ for a
+   each. Please consult the :doc:`../doxygen/html/index` for a
    comprehensive list of all momentum source terms available. Note that the
    following input arguments specific to each source term will only be active
    if the corresponding source term (the root name) is listed in 
    :input_param:`ICNS.source_terms`.
 
-.. input_param:: BoussinesqBuoyancy.reference_temperature
-
-   **type:** Real, mandatory
-   
-   Reference temperature :math:`\theta_\mathrm{ref}` in Kelvin.
-   Values of the temperature field that are less than or greater than this value will 
-   cause a buoyancy force in the direction of the gravity vector.
-   
-.. input_param:: BoussinesqBuoyancy.thermal_expansion_coeff
-
-   **type:** Real, optional, default :math:`\beta = 1 / \theta_\mathrm{ref}`
-   
-   Thermal expansion coefficient, if not specified this value is set to the inverse of the
-   :input_param:`BoussinesqBuoyancy.reference_temperature` value.
-   
 .. input_param:: CoriolisForcing.latitude 
 
    **type:** Real, mandatory
@@ -49,14 +33,14 @@ Section: Momentum Sources
    **type:** List of 3 reals, optional, default = 1.0 0.0 0.0
    
    East vector that gives the orientation of the grid w.r.t. to planetary coordinate system.
-   This vector is automatically normalized within amr-wind.
+   This vector is automatically normalized within AMR-Wind.
    
 .. input_param:: CoriolisForcing.north_vector
 
    **type:** List of 3 reals, optional, default = 0.0 1.0 0.0
    
    North vector that gives the orientation of the grid w.r.t. to planetary coordinate system.
-   This vector is automatically normalized within amr-wind.
+   This vector is automatically normalized within AMR-Wind.
 
 .. input_param:: GeostrophicForcing.geostrophic_wind
 
@@ -122,6 +106,33 @@ Section: Momentum Sources
    
    The start time for writing to the forcing timetable output file. The default is 0.
 
+.. input_param:: ABLForcing.abl_forcing_off_height
+
+   **type:** Real, required for multiphase simulations with ABL
+   
+   This parameter indicates the vertical distance above the water level that the ABL
+   forcing term should be turned off. This tuning parameter is used to avoid applying 
+   the ABL forcing to ocean waves. This is not used when the volume fraction field (vof)
+   is not present in the simulation.
+
+.. input_param:: ABLForcing.abl_forcing_ramp_height
+
+   **type:** Real, required for multiphase simulations with ABL
+   
+   This parameter indicates the vertical distance above the water level and the "off height"
+   that the ABL forcing term should ramp up from zero to full strength. This is not used
+   when the volume fraction field (vof) is not present in the simulation.
+
+.. input_param:: ABLForcing.abl_forcing_band
+
+   **type:** Real, optional for multiphase simulations with ABL
+   
+   This parameter is an additional safeguard against applying ABL forcing within the waves.
+   This specifies the number of computational cells in a band around the air-water interface
+   that the ABL forcing should be deactivated. While the other arguments relate to the height coordinate
+   within the domain, this argument is relative to the actual position of water in the simulation.
+   The default value is 2.
+
 .. input_param:: BodyForce.type
 
    **type:** String, optional
@@ -161,3 +172,127 @@ Section: Momentum Sources
    the uniform_timetable body force type and is only active for the uniform_timetable type.  Note that the code 
    expects there to be a single-line header at the beginning of the uniform timetable file; if no header exists, 
    the first line of data will be ignored.
+
+.. input_param:: DragForcing.drag_coefficient
+
+   **type:** Real, optional
+
+   This value specifies the coefficient for the forcing term in the immersed boundary forcing method. It is currently
+   recommended to use the default value to avoid initial numerical stability. 
+
+.. input_param:: DragForcing.sponge_strength
+
+   **type:** Real, optional
+
+   The value of the sponge layer coefficient. It is recommended to use the default value of 1.0.  
+
+.. input_param:: DragForcing.sponge_density
+
+   **type:** Real, optional
+
+   The value of the sponge layer density. It is recommended to use the default value of 1.0.  
+
+.. input_param:: DragForcing.sponge_distance_west
+
+   **type:** Real, optional
+
+   This value is specified as a negative value when the inflow x-velocity is <=0. The default value is -1000 m and can be changed if strong 
+   reflections are observed. 
+
+.. input_param:: DragForcing.sponge_distance_east
+
+   **type:** Real, optional
+
+   This value is specified as a positive value when the inflow x-velocity is >=0. The default value is 1000 m and can be changed if strong 
+   reflections are observed. 
+
+.. input_param:: DragForcing.sponge_distance_south
+
+   **type:** Real, optional
+
+   This value is specified as a negative value when the inflow y-velocity is <=0. The default value is -1000 m and can be changed if strong 
+   reflections are observed. 
+
+.. input_param:: DragForcing.sponge_distance_north
+
+   **type:** Real, optional
+
+   This value is specified as a positive value when the inflow y-velocity is >=0. The default value is 1000 m and can be changed if strong 
+   reflections are observed. 
+
+.. input_param:: DragForcing.sponge_west
+
+   **type:** int, optional
+
+   This term turns on the sponge layer in the west (-x) boundary. The default value is 0. 
+
+.. input_param:: DragForcing.sponge_east
+
+   **type:** int, optional
+
+   This term turns on the sponge layer in the east (+x) boundary. The default value is 1. 
+
+.. input_param:: DragForcing.sponge_south
+
+   **type:** int, optional
+
+   This term turns on the sponge layer in the south (-y) boundary. The default value is 0. 
+
+.. input_param:: DragForcing.sponge_north
+
+   **type:** int, optional
+
+   This term turns on the sponge layer in the north (+y) boundary. The default value is 1. 
+
+
+.. input_param:: DragForcing.is_laminar
+
+   **type:** int, optional
+
+   This term turns off the sponge layer. This term is required for terrain simulations with periodic 
+   boundary conditions. The default value is 0. 
+
+.. input_param:: DragForcing.wave_model_inviscid_form_drag
+
+   **type:** Boolean, optional, default = false
+
+   This input file option turns on or off an inviscid model for the form drag of waves in the domain. 
+   The formulation of this model is adapted from the Moving Surface Drag (MOSD) model developed by
+   `Ayala et al (2024) <https://doi.org/10.1007/s10546-024-00884-8>`_.
+   
+   When the OceanWaves physics module is active, and the volume fraction variable ("vof") is not in the simulation,
+   DragForcing will represent ocean waves as moving terrain. This is automatic and independent of DragForcing
+   input arguments. When waves are represented as moving terrain and
+   there is sufficient mesh resolution to resolve the shape of the wave, the blanking of cells performed
+   by the DragForcing routine will naturally introduce the form drag of the waves into the flow. However,
+   when the waves are not sufficiently resolved, such as when the wave amplitude is less than the cell height,
+   the analytical model for the form drag, activated by setting this option to true, can be used to compensate
+   for the lack of resolution. Therefore, this option should remain set to false except in scenarios
+   when the form drag is known to be under-resolved.
+
+
+The following arguments are influential when ``GravityForcing`` is included in :input_param:`ICNS.source_terms`.
+
+   .. input_param:: ICNS.use_perturb_pressure
+
+   **type:** Boolean, optional, default = false
+   
+   When this option is off, the GravityForcing term is simply :math:`g`, which becomes
+   :math:`\rho g` when included in the momentum equation. By activating this option,
+   the momentum term applied by GravityForcing will become :math:`(\rho - \rho_0) g`,
+   where :math:`rho_0` is some constant reference density profile. The reference density field
+   can be created by either MultiPhase physics or anelastic ABL physics. By using the
+   reference density, the pressure field seen by the solver is represented as a
+   perturbation from a reference pressure field, enabling pressure_outflow boundary
+   conditions to better handle certain flows, e.g., those with equilibrium pressure gradients
+   parallel to the outflow plane.
+
+   .. input_param:: ICNS.reconstruct_true_pressure
+
+   **type:** Boolean, optional, default = false
+   
+   This option is only valid when the perturbational pressure form is being used, i.e.,
+   :input_param:`ICNS.use_perturb_pressure` = true. Reconstructing the true pressure
+   adds back the reference pressure profile to obtain the full pressure after the
+   pressure solve has been performed. This makes no difference to the flow evolution,
+   but it changes the field available for post-processing or coupling to overset solvers.

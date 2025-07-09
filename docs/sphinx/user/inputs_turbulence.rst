@@ -11,8 +11,8 @@ This section is for setting turbulence model parameters
 
    Specifies which turbulence model to use, by default "Laminar" is
    chosen (effectively no turbulence model).  Currently the supported
-   turbulence models are "Smagorinsky", "AMD", "Kosovic", and
-   "OneEqKsgsM84", "KOmegaSST", and "KOmegaSSTIDDES".
+   turbulence models are "Smagorinsky", "AMD", "Kosovic", 
+   "OneEqKsgsM84", "KOmegaSST", "KOmegaSSTIDDES" or "KLAxell".
 
    
 .. input_param:: Smagorinsky_coeffs.Cs

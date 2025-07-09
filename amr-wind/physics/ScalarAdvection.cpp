@@ -5,8 +5,7 @@
 
 namespace amr_wind {
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
-GaussianPulseFV::operator()(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real GaussianPulseFV::operator()(
     const amrex::Real x,
     const amrex::Real /*unused*/,
     const amrex::Real dx,
@@ -29,7 +28,7 @@ GaussianPulseFV::operator()(
     return val;
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
 TwoDimGaussianPulseFV::operator()(
     const amrex::Real x,
     const amrex::Real y,
@@ -55,7 +54,7 @@ TwoDimGaussianPulseFV::operator()(
     return val;
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real SquarePulseFV::operator()(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real SquarePulseFV::operator()(
     const amrex::Real x,
     const amrex::Real /*unused*/,
     const amrex::Real dx,
@@ -77,7 +76,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real SquarePulseFV::operator()(
     return val;
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
 GaussianWavePacketFV::operator()(
     const amrex::Real x,
     const amrex::Real /*unused*/,
@@ -107,8 +106,7 @@ GaussianWavePacketFV::operator()(
     return cell_integral / 2;
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
-GaussianWavePacket::operator()(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real GaussianWavePacket::operator()(
     const amrex::Real x,
     const amrex::Real x0,
     const amrex::Real amplitude,
@@ -162,17 +160,15 @@ void ScalarAdvection::initialize_fields(
     auto& density = m_density(level);
     density.setVal(m_rho);
 
-    for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
-        const auto& vbx = mfi.validbox();
-        auto vel = velocity.array(mfi);
+    const auto& vel_arrs = velocity.arrays();
 
-        amrex::ParallelFor(
-            vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                vel(i, j, k, 0) = u;
-                vel(i, j, k, 1) = v;
-                vel(i, j, k, 2) = 0.0;
-            });
-    }
+    amrex::ParallelFor(
+        velocity, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            vel_arrs[nbx](i, j, k, 0) = u;
+            vel_arrs[nbx](i, j, k, 1) = v;
+            vel_arrs[nbx](i, j, k, 2) = 0.0;
+        });
+    amrex::Gpu::streamSynchronize();
 }
 
 void ScalarAdvection::post_init_actions()
@@ -215,6 +211,9 @@ void ScalarAdvection::initialize_scalar(const Shape& scalar_function)
         const auto& problo = m_repo.mesh().Geom(level).ProbLoArray();
         auto& scalar = (*m_scalar)(level);
 
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
         for (amrex::MFIter mfi(scalar); mfi.isValid(); ++mfi) {
             const auto& dx = m_repo.mesh().Geom(level).CellSizeArray();
             const auto& nbx = mfi.nodaltilebox();
@@ -276,7 +275,7 @@ ScalarAdvection::compute_error(const Shape& scalar_function)
         amrex::Real err_lev = amrex::ParReduce(
             amrex::TypeList<amrex::ReduceOpSum>{},
             amrex::TypeList<amrex::Real>{}, scalar, amrex::IntVect(0),
-            [=] AMREX_GPU_HOST_DEVICE(int box_no, int i, int j, int k)
+            [=] AMREX_GPU_DEVICE(int box_no, int i, int j, int k)
                 -> amrex::GpuTuple<amrex::Real> {
                 const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                 const amrex::Real y = problo[1] + (j + 0.5) * dx[1];

@@ -94,8 +94,16 @@ public:
 
     AMROversetInfo& amr_overset_info() { return *m_amr_data; }
 
-    ScratchField& qvars_cell() { return *m_qcell_host; }
-    ScratchField& qvars_node() { return *m_qnode_host; }
+    ScratchField& qvars_cell()
+    {
+        AMREX_ALWAYS_ASSERT(m_qcell_host);
+        return *m_qcell_host;
+    }
+    ScratchField& qvars_node()
+    {
+        AMREX_ALWAYS_ASSERT(m_qnode_host);
+        return *m_qnode_host;
+    }
 
 private:
     void amr_to_tioga_mesh();
@@ -131,8 +139,6 @@ private:
 
     std::vector<std::string> m_cell_vars;
     std::vector<std::string> m_node_vars;
-
-    bool m_disable_nodal_proj{false};
 };
 
 } // namespace amr_wind

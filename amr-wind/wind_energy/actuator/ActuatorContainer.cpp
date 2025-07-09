@@ -96,6 +96,9 @@ void ActuatorContainer::initialize_particles(const int total_pts)
     bool assigned = false;
     const int nlevels = m_mesh.finestLevel() + 1;
     for (int lev = 0; ((lev < nlevels) && !assigned); ++lev) {
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (false)
+#endif
         for (auto mfi = MakeMFIter(lev); (mfi.isValid() && !assigned); ++mfi) {
             auto& ptile = GetParticles(
                 lev)[std::make_pair(mfi.index(), mfi.LocalTileIndex())];

@@ -9,6 +9,9 @@
 #include "amr-wind/core/MeshMap.H"
 #include "amr-wind/helics.H"
 
+#include "amr-wind/wind_energy/ABLReadERFFunction.H"
+class MultiBlockContainer;
+
 /** AMR-Wind
  *
  *  All C++ code in AMR-Wind is organized within the amr_wind namespace.
@@ -19,6 +22,10 @@ class PostProcessManager;
 class OversetManager;
 class ExtSolverMgr;
 class HelicsStorage;
+
+namespace transport {
+class TransportModel;
+}
 
 namespace turbulence {
 class TurbulenceModel;
@@ -58,6 +65,12 @@ public:
     SimTime& time() { return m_time; }
     const SimTime& time() const { return m_time; }
 
+    void set_mbc(MultiBlockContainer* mbc) { m_mbc = mbc; }
+    MultiBlockContainer** mbc() { return &m_mbc; }
+
+    void set_read_erf(ReadERFFunction fcn) { m_read_erf = std::move(fcn); }
+    ReadERFFunction* get_read_erf() { return &m_read_erf; }
+
     //! Return the field repository
     FieldRepo& repo() { return m_repo; }
     FieldRepo& repo() const { return m_repo; }
@@ -72,6 +85,12 @@ public:
     const PhysicsMgr::TypeVector& physics() const
     {
         return m_physics_mgr.objects();
+    }
+
+    transport::TransportModel& transport_model() { return *m_transport; }
+    const transport::TransportModel& transport_model() const
+    {
+        return *m_transport;
     }
 
     turbulence::TurbulenceModel& turbulence_model() { return *m_turbulence; }
@@ -103,6 +122,9 @@ public:
 
     bool has_overset() const;
 
+    //! Instantiate the transport model based on user inputs
+    void create_transport_model();
+
     //! Instantiate the turbulence model based on user inputs
     void create_turbulence_model();
 
@@ -117,6 +139,13 @@ public:
 
     bool has_mesh_mapping() const { return m_mesh_mapping; }
 
+    void set_during_overset_advance(const bool flag)
+    {
+        m_during_overset_advance = flag;
+    }
+
+    bool is_during_overset_advance() const { return m_during_overset_advance; }
+
     bool is_anelastic() const;
 
 private:
@@ -129,6 +158,8 @@ private:
     pde::PDEMgr m_pde_mgr;
 
     PhysicsMgr m_physics_mgr;
+
+    std::unique_ptr<transport::TransportModel> m_transport;
 
     std::unique_ptr<turbulence::TurbulenceModel> m_turbulence;
 
@@ -145,6 +176,12 @@ private:
     std::unique_ptr<HelicsStorage> m_helics;
 
     bool m_mesh_mapping{false};
+
+    // State of solver - know if during an overset timestep or not
+    bool m_during_overset_advance{false};
+
+    MultiBlockContainer* m_mbc{nullptr};
+    ReadERFFunction m_read_erf{nullptr};
 };
 
 } // namespace amr_wind

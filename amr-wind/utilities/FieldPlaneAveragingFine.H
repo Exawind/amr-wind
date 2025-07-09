@@ -34,7 +34,6 @@ public:
      *  \param field_in [in] Field to be averaged
      *  \param time [in] Time instance to determine output frequencies
      *  \param axis_in [in] Direction along which planes are computed
-     *  \param compute_deriv [in] Should the derivative of the averages be
      * computed
      */
     FPlaneAveragingFine(

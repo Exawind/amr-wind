@@ -2,6 +2,7 @@
 #define BOUSSINESQBUOYANCY_H
 
 #include "amr-wind/core/FieldRepo.H"
+#include "amr-wind/transport_models/TransportModel.H"
 #include "amr-wind/equation_systems/icns/MomentumSource.H"
 
 namespace amr_wind::pde::icns {
@@ -31,18 +32,11 @@ public:
 
 private:
     const Field& m_temperature;
-    const Field* m_vof;
 
     amrex::Vector<amrex::Real> m_gravity{0.0, 0.0, -9.81};
 
-    //! Reference temperature (Kelvin)
-    amrex::Real m_ref_theta{300.0};
-
-    //! Thermal expansion coefficient
-    amrex::Real m_beta{0.0};
-
-    //! Check for VOF
-    bool m_is_vof{false};
+    //! Transport model
+    const transport::TransportModel& m_transport;
 };
 } // namespace amr_wind::pde::icns
 

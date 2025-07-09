@@ -15,7 +15,7 @@ class CFDSim;
 
 namespace actuator {
 
-/** Abstract representation of an actuator source in the flowfield.
+/** Abstract representation of an actuator source in the flow field.
  *
  *  \ingroup actuator
  *
@@ -38,6 +38,8 @@ public:
     virtual int id() const = 0;
 
     virtual const ActInfo& info() const = 0;
+
+    virtual ActInfo& info() = 0;
 
     virtual void read_inputs(const utils::ActParser&) = 0;
 
@@ -115,6 +117,9 @@ public:
 
     //! Return the core info object for this actuator instance
     const ActInfo& info() const override { return m_data.info(); }
+
+    //! Return the core info object for this actuator instance
+    ActInfo& info() override { return m_data.info(); }
 
     //! Return the meta info object for this actuator instance
     const auto& meta() const { return m_data.meta(); }

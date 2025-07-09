@@ -166,24 +166,19 @@ public:
 
         if (!diff_for_RHS) {
             for (int lev = 0; lev < nlevels; ++lev) {
-#ifdef AMREX_USE_OMP
-#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
-#endif
-                for (amrex::MFIter mfi(divtau(lev), amrex::TilingIfNotGPU());
-                     mfi.isValid(); ++mfi) {
-                    const auto& bx = mfi.tilebox();
-                    const auto& divtau_arr = divtau(lev).array(mfi);
-                    const auto& rho_arr = density(lev).const_array(mfi);
+                const auto& divtau_arrs = divtau(lev).arrays();
+                const auto& rho_arrs = density(lev).const_arrays();
 
-                    amrex::ParallelFor(
-                        bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            amrex::Real rhoinv = 1.0 / rho_arr(i, j, k);
-                            divtau_arr(i, j, k, 0) *= rhoinv;
-                            divtau_arr(i, j, k, 1) *= rhoinv;
-                            divtau_arr(i, j, k, 2) *= rhoinv;
-                        });
-                }
+                amrex::ParallelFor(
+                    divtau(lev), [=] AMREX_GPU_DEVICE(
+                                     int nbx, int i, int j, int k) noexcept {
+                        amrex::Real rhoinv = 1.0 / rho_arrs[nbx](i, j, k);
+                        divtau_arrs[nbx](i, j, k, 0) *= rhoinv;
+                        divtau_arrs[nbx](i, j, k, 1) *= rhoinv;
+                        divtau_arrs[nbx](i, j, k, 2) *= rhoinv;
+                    });
             }
+            amrex::Gpu::streamSynchronize();
         }
     }
 
@@ -237,23 +232,19 @@ public:
         for (int lev = 0; lev < nlevels; ++lev) {
             auto& rhs = (*rhs_ptr)(lev);
 
-#ifdef AMREX_USE_OMP
-#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
-#endif
-            for (amrex::MFIter mfi(rhs, amrex::TilingIfNotGPU()); mfi.isValid();
-                 ++mfi) {
-                const auto& bx = mfi.tilebox();
-                const auto& rhs_a = rhs.array(mfi);
-                const auto& fld = field(lev).const_array(mfi);
-                const auto& rho = density(lev).const_array(mfi);
+            const auto& rhs_arrs = rhs.arrays();
+            const auto& fld_arrs = field(lev).const_arrays();
+            const auto& rho_arrs = density(lev).const_arrays();
 
-                amrex::ParallelFor(
-                    bx, ndim,
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                        rhs_a(i, j, k, n) = rho(i, j, k) * fld(i, j, k, n);
-                    });
-            }
+            amrex::ParallelFor(
+                rhs, amrex::IntVect(0), ndim,
+                [=] AMREX_GPU_DEVICE(
+                    int nbx, int i, int j, int k, int n) noexcept {
+                    rhs_arrs[nbx](i, j, k, n) =
+                        rho_arrs[nbx](i, j, k) * fld_arrs[nbx](i, j, k, n);
+                });
         }
+        amrex::Gpu::streamSynchronize();
 
         amrex::MLMG mlmg(*m_solver_scalar);
         m_options(mlmg);
@@ -398,24 +389,19 @@ public:
 
         if (!diff_for_RHS) {
             for (int lev = 0; lev < nlevels; ++lev) {
-#ifdef AMREX_USE_OMP
-#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
-#endif
-                for (amrex::MFIter mfi(divtau(lev), amrex::TilingIfNotGPU());
-                     mfi.isValid(); ++mfi) {
-                    const auto& bx = mfi.tilebox();
-                    const auto& divtau_arr = divtau(lev).array(mfi);
-                    const auto& rho_arr = density(lev).const_array(mfi);
+                const auto& divtau_arrs = divtau(lev).arrays();
+                const auto& rho_arrs = density(lev).const_arrays();
 
-                    amrex::ParallelFor(
-                        bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            amrex::Real rhoinv = 1.0 / rho_arr(i, j, k);
-                            divtau_arr(i, j, k, 0) *= rhoinv;
-                            divtau_arr(i, j, k, 1) *= rhoinv;
-                            divtau_arr(i, j, k, 2) *= rhoinv;
-                        });
-                }
+                amrex::ParallelFor(
+                    divtau(lev), [=] AMREX_GPU_DEVICE(
+                                     int nbx, int i, int j, int k) noexcept {
+                        amrex::Real rhoinv = 1.0 / rho_arrs[nbx](i, j, k);
+                        divtau_arrs[nbx](i, j, k, 0) *= rhoinv;
+                        divtau_arrs[nbx](i, j, k, 1) *= rhoinv;
+                        divtau_arrs[nbx](i, j, k, 2) *= rhoinv;
+                    });
             }
+            amrex::Gpu::streamSynchronize();
         }
     }
 
@@ -480,23 +466,19 @@ public:
         for (int lev = 0; lev < nlevels; ++lev) {
             auto& rhs = (*rhs_ptr)(lev);
 
-#ifdef AMREX_USE_OMP
-#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
-#endif
-            for (amrex::MFIter mfi(rhs, amrex::TilingIfNotGPU()); mfi.isValid();
-                 ++mfi) {
-                const auto& bx = mfi.tilebox();
-                const auto& rhs_a = rhs.array(mfi);
-                const auto& fld = field(lev).const_array(mfi);
-                const auto& rho = density(lev).const_array(mfi);
+            const auto& rhs_arrs = rhs.arrays();
+            const auto& fld_arrs = field(lev).const_arrays();
+            const auto& rho_arrs = density(lev).const_arrays();
 
-                amrex::ParallelFor(
-                    bx, ndim,
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                        rhs_a(i, j, k, n) = rho(i, j, k) * fld(i, j, k, n);
-                    });
-            }
+            amrex::ParallelFor(
+                rhs, amrex::IntVect(0), ndim,
+                [=] AMREX_GPU_DEVICE(
+                    int nbx, int i, int j, int k, int n) noexcept {
+                    rhs_arrs[nbx](i, j, k, n) =
+                        rho_arrs[nbx](i, j, k) * fld_arrs[nbx](i, j, k, n);
+                });
         }
+        amrex::Gpu::streamSynchronize();
 
         for (int i = 0; i < AMREX_SPACEDIM; ++i) {
             auto vel_comp = m_pdefields.field.subview(i);

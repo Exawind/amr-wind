@@ -56,6 +56,9 @@ struct InitDataOp<Sphere>
             const auto& problo = geom[lev].ProbLoArray();
             const auto& dx = geom[lev].CellSizeArray();
 
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
             for (amrex::MFIter mfi(levelset(lev)); mfi.isValid(); ++mfi) {
                 const auto& bx = mfi.growntilebox();
                 const auto& phi = levelset(lev).array(mfi);

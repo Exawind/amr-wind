@@ -44,7 +44,6 @@ amr.blocking_factor     =   4 4 4
 tagging.labels = vm geom
 
 tagging.vm.type = VorticityMagRefinement
-tagging.vm.nondim = true
 tagging.vm.values = 0.1 0.1 0.1 0.1
 time.regrid_interval = 10
 

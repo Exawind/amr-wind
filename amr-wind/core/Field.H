@@ -277,7 +277,8 @@ public:
      *  \param value Constant value for initialization
      *  \param start_comp Starting component index (0-based)
      *  \param num_comp Number of components from starting component to
-     * initialize \param num_ghost Number of ghost cells to include
+     * initialize
+     *  \param nghost Number of ghost cells to include
      */
     void setVal(
         amrex::Real value,

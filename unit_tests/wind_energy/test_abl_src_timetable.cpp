@@ -76,7 +76,6 @@ protected:
             pp.addarr("temperature_heights", theights);
             pp.addarr("temperature_values", tvalues);
             pp.add("perturb_ref_height", 50.0);
-            pp.add("reference_temperature", 300.0);
             pp.add("kappa", 0.41);
             pp.add("surface_roughness_z0", 0.1);
         }
@@ -93,6 +92,12 @@ protected:
         {
             amrex::ParmParse pp("time");
             pp.add("fixed_dt", 0.1);
+        }
+
+        // Transport
+        {
+            amrex::ParmParse pp("transport");
+            pp.add("reference_temperature", 300.0);
         }
     }
     std::string m_tvel_fname = "target_velocities.txt";
@@ -171,7 +176,9 @@ TEST_F(ABLSrcTimeTableTest, abl)
 
     // Advance time (twice to get to interpolation interval)
     sim().time().new_timestep();
+    sim().time().advance_time();
     sim().time().new_timestep();
+    sim().time().advance_time();
 
     // Go back to original mean values on mesh
     abl_forcing.set_mean_velocities(init_vel[0], init_vel[1]);
@@ -261,6 +268,7 @@ TEST_F(ABLSrcTimeTableTest, bodyforce)
     for (int n = 0; n < m_nsteps - 1; ++n) {
         // Advance time
         sim().time().new_timestep();
+        sim().time().advance_time();
         // Recalculate forcing and check
         src_term.setVal(0.0);
         run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
@@ -355,7 +363,9 @@ TEST_F(ABLSrcTimeTableTest, geostrophic)
 
     // Advance time (twice to get to interpolation interval)
     sim().time().new_timestep();
+    sim().time().advance_time();
     sim().time().new_timestep();
+    sim().time().advance_time();
 
     // Recalculate forcing and check
     src_term.setVal(0.0);

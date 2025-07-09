@@ -7,7 +7,7 @@
 
 namespace amr_wind::actuator {
 
-/** @brief This struct will operate on a blade/wing.
+/** \brief This struct will operate on a blade/wing.
  *  The velocity from the simulation is corrected using the
  *  Filtered Lifting Line Theory Correction from Martinez and Meneveau 2019
  *

@@ -28,6 +28,7 @@ public:
 
     void SetUp() override
     {
+        using namespace amrex::mpidatatypes;
         amrex::Initialize(m_argc, m_argv, true, MPI_COMM_WORLD, []() {
             amrex::ParmParse pp("amrex");
             if (!(pp.contains("v") || pp.contains("verbose"))) {

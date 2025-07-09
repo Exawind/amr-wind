@@ -5,23 +5,12 @@
 #include "amr-wind/utilities/IOManager.H"
 
 namespace amr_wind::averaging {
-namespace {
 
-const Field& get_field_or_error(const FieldRepo& repo, const std::string& fname)
-{
-    if (!repo.field_exists(fname)) {
-        amrex::Abort("ReAveraing: Cannot find field: " + fname);
-    }
-
-    return repo.get_field(fname);
-}
-
-} // namespace
-
-ReAveraging::ReAveraging(CFDSim& sim, const std::string& fname)
-    : m_field(get_field_or_error(sim.repo(), fname))
+ReAveraging::ReAveraging(
+    CFDSim& sim, const std::string& avgname, const std::string& fname)
+    : m_field(sim.repo().get_field(fname))
     , m_average(sim.repo().declare_field(
-          avg_name(m_field.name()),
+          avg_name(m_field.name(), avgname),
           m_field.num_comp(),
           1, // 1 ghost cell to account for sampling
           1,
@@ -45,12 +34,13 @@ const std::string& ReAveraging::average_field_name()
 void ReAveraging::operator()(
     const SimTime& time,
     const amrex::Real filter_width,
+    const amrex::Real avg_time_interval,
     const amrex::Real elapsed_time)
 {
-    const amrex::Real dt = time.delta_t();
     const amrex::Real filter =
-        amrex::max(amrex::min(filter_width, elapsed_time), dt);
-    const amrex::Real factor = amrex::max<amrex::Real>(filter - dt, 0.0);
+        amrex::max(amrex::min(filter_width, elapsed_time), avg_time_interval);
+    const amrex::Real factor =
+        amrex::max<amrex::Real>(filter - avg_time_interval, 0.0);
 
     const int ncomp = m_field.num_comp();
     const int nlevels = m_field.repo().num_active_levels();
@@ -58,27 +48,22 @@ void ReAveraging::operator()(
         const auto& ffab = m_field(lev);
         auto& afab = m_average(lev);
 
-#ifdef AMREX_USE_OMP
-#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
-#endif
-        for (amrex::MFIter mfi(ffab, amrex::TilingIfNotGPU()); mfi.isValid();
-             ++mfi) {
-            const auto& bx = mfi.tilebox();
-            const auto& fldarr = ffab.const_array(mfi);
-            const auto& avgarr = afab.array(mfi);
+        const auto& fldarrs = ffab.const_arrays();
+        const auto& avgarrs = afab.arrays();
 
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    for (int n = 0; n < ncomp; ++n) {
-                        const amrex::Real fval = fldarr(i, j, k, n);
-                        const amrex::Real aval = avgarr(i, j, k, n);
+        amrex::ParallelFor(
+            ffab, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                for (int n = 0; n < ncomp; ++n) {
+                    const amrex::Real fval = fldarrs[nbx](i, j, k, n);
+                    const amrex::Real aval = avgarrs[nbx](i, j, k, n);
 
-                        avgarr(i, j, k, n) =
-                            (aval * factor + fval * dt) / filter;
-                    }
-                });
-        }
+                    avgarrs[nbx](i, j, k, n) =
+                        (aval * factor + fval * avg_time_interval) / filter;
+                }
+            });
     }
+    amrex::Gpu::streamSynchronize();
+
     m_average.fillpatch(time.new_time());
 }
 

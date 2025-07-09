@@ -14,23 +14,35 @@ namespace amr_wind {
  * https://doi.org/10.1142/2975.
  */
 
-amrex::Real MOData::calc_psi_m(amrex::Real zeta) const
+amrex::Real MOData::calc_psi_m(
+    const amrex::Real zeta, const amrex::Real beta_m, const amrex::Real gamma_m)
 {
     if (zeta > 0) {
         return -gamma_m * zeta;
     }
-    amrex::Real x = std::sqrt(std::sqrt(1 - beta_m * zeta));
+    const amrex::Real x = std::sqrt(std::sqrt(1 - beta_m * zeta));
     return 2.0 * std::log(0.5 * (1.0 + x)) + log(0.5 * (1 + x * x)) -
            2.0 * std::atan(x) + utils::half_pi();
 }
 
-amrex::Real MOData::calc_psi_h(amrex::Real zeta) const
+amrex::Real MOData::calc_psi_m(amrex::Real zeta) const
+{
+    return calc_psi_m(zeta, beta_m, gamma_m);
+}
+
+amrex::Real MOData::calc_psi_h(
+    const amrex::Real zeta, const amrex::Real beta_h, const amrex::Real gamma_h)
 {
     if (zeta > 0) {
         return -gamma_h * zeta;
     }
-    amrex::Real x = std::sqrt(1 - beta_h * zeta);
+    const amrex::Real x = std::sqrt(1 - beta_h * zeta);
     return 2.0 * std::log(0.5 * (1 + x));
+}
+
+amrex::Real MOData::calc_psi_h(amrex::Real zeta) const
+{
+    return calc_psi_h(zeta, beta_h, gamma_h);
 }
 
 void MOData::update_fluxes(int max_iters)
@@ -49,14 +61,14 @@ void MOData::update_fluxes(int max_iters)
         utau_iter = utau;
         switch (alg_type) {
         case ThetaCalcType::HEAT_FLUX:
-            surf_temp = surf_temp_flux * (std::log(zref / z0) - psi_h) /
+            surf_temp = surf_temp_flux * (std::log(zref / z0t) - psi_h) /
                             (utau * kappa) +
                         theta_mean;
             break;
 
         case ThetaCalcType::SURFACE_TEMPERATURE:
             surf_temp_flux = -(theta_mean - surf_temp) * utau * kappa /
-                             (std::log(zref / z0) - psi_h);
+                             (std::log(zref / z0t) - psi_h);
             break;
         }
 

@@ -1,7 +1,105 @@
 #include "amr-wind/incflo.H"
 #include "diagnostics.H"
+#include "constants.H"
 
 using namespace amrex;
+
+void amr_wind::diagnostics::make_mask_addend(
+    amrex::MultiFab& mfab,
+    const amrex::MultiFab& mfab_mask,
+    const amrex::Real mask_val,
+    const amrex::Real set_val)
+{
+    const auto& arr = mfab.arrays();
+    const auto& arr_mask = mfab_mask.const_arrays();
+    amrex::ParallelFor(
+        mfab, mfab.n_grow, mfab.n_comp,
+        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
+            arr[nbx](i, j, k, n) = std::abs(arr_mask[nbx](i, j, k) - mask_val) <
+                                           constants::TIGHT_TOL
+                                       ? 0.0
+                                       : set_val;
+        });
+}
+
+void amr_wind::diagnostics::get_field_extrema(
+    amrex::Real& field_max_val,
+    amrex::Real& field_min_val,
+    const amr_wind::Field& field,
+    const int comp,
+    const int ncomp,
+    const int nghost)
+{
+    const int finest_level = field.repo().num_active_levels() - 1;
+
+    amrex::Real max_val_lev{constants::LOW_NUM};
+    amrex::Real min_val_lev{constants::LARGE_NUM};
+    field_max_val = max_val_lev;
+    field_min_val = min_val_lev;
+    for (int lev = 0; lev <= finest_level; lev++) {
+        for (int n = comp; n < comp + ncomp; ++n) {
+            max_val_lev = field(lev).max(n, nghost);
+            min_val_lev = field(lev).min(n, nghost);
+            field_min_val = amrex::min(field_min_val, min_val_lev);
+            field_max_val = amrex::max(field_max_val, max_val_lev);
+        }
+    }
+
+    amrex::ParallelDescriptor::ReduceRealMax(field_max_val);
+    amrex::ParallelDescriptor::ReduceRealMin(field_min_val);
+}
+
+bool amr_wind::diagnostics::get_field_extrema(
+    amrex::Real& field_max_val,
+    amrex::Real& field_min_val,
+    const amr_wind::Field& field,
+    const amr_wind::Field& field_mask,
+    const amrex::Real mask_val,
+    const int comp,
+    const int ncomp,
+    const int nghost)
+
+{
+    const int finest_level = field.repo().num_active_levels() - 1;
+
+    amrex::Real max_val_lev{constants::LOW_NUM};
+    amrex::Real min_val_lev{constants::LARGE_NUM};
+    amrex::Real min_mask_lev = min_val_lev;
+    amrex::Real mask_min = min_mask_lev;
+    field_max_val = max_val_lev;
+    field_min_val = min_val_lev;
+    for (int lev = 0; lev <= finest_level; lev++) {
+        amrex::MultiFab mask_addend_max(
+            field_mask(lev).boxArray(), field_mask(lev).DistributionMap(),
+            ncomp, nghost);
+        amrex::MultiFab mask_addend_min(
+            field_mask(lev).boxArray(), field_mask(lev).DistributionMap(),
+            ncomp, nghost);
+        amr_wind::diagnostics::make_mask_addend(
+            mask_addend_max, field_mask(lev), mask_val, constants::LOW_NUM);
+        amr_wind::diagnostics::make_mask_addend(
+            mask_addend_min, field_mask(lev), mask_val, constants::LARGE_NUM);
+        min_mask_lev = mask_addend_min.min(0, nghost);
+        mask_min = amrex::min(mask_min, min_mask_lev);
+        amrex::MultiFab::Add(
+            mask_addend_max, field(lev), comp, 0, ncomp, nghost);
+        amrex::MultiFab::Add(
+            mask_addend_min, field(lev), comp, 0, ncomp, nghost);
+        for (int n = 0; n < ncomp; ++n) {
+            max_val_lev = mask_addend_max.max(n, nghost);
+            min_val_lev = mask_addend_min.min(n, nghost);
+            field_min_val = amrex::min(field_min_val, min_val_lev);
+            field_max_val = amrex::max(field_max_val, max_val_lev);
+        }
+    }
+
+    amrex::ParallelDescriptor::ReduceRealMax(field_max_val);
+    amrex::ParallelDescriptor::ReduceRealMin(field_min_val);
+    amrex::ParallelDescriptor::ReduceRealMax(mask_min);
+
+    const bool found_mask_val = (mask_min < constants::TIGHT_TOL);
+    return found_mask_val;
+}
 
 amrex::Real amr_wind::diagnostics::get_vel_max(
     const amrex::MultiFab& vel,

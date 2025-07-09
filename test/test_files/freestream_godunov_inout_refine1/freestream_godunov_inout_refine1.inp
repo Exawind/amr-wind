@@ -1,0 +1,82 @@
+# This is a 2D poiseuille flow when run to steady state
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#            SIMULATION STOP            #
+#.......................................#
+time.stop_time               = 10.0     # Max (simulated) time to evolve
+time.max_step                = 10    	#-1000       # Max number of time steps
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#         TIME STEP COMPUTATION         #
+#.......................................#
+time.fixed_dt         =   0.02          # Use this constant dt if > 0
+time.cfl              =   0.95          # CFL factor
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#            INPUT AND OUTPUT           #
+#.......................................#
+time.plot_interval            =   1	    # 100   # Steps between plot files
+time.checkpoint_interval      =  -100   # Steps between checkpoint files
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#               PHYSICS                 #
+#.......................................#
+incflo.density        = 1.0             # Reference density
+incflo.use_godunov    = 1
+incflo.diffusion_type = 1
+incflo.godunov_type = "weno_z"
+
+transport.viscosity = 0.0
+turbulence.model = Laminar
+
+ICNS.source_terms = BodyForce
+BodyForce.magnitude = 0 0 0
+
+incflo.physics = FreeStream
+FreeStream.velocity_type = TwoLayer
+
+io.output_default_variables = 1
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#        ADAPTIVE MESH REFINEMENT       #
+#.......................................#
+amr.n_cell              = 16 8 16     # Grid cells at coarsest AMRlevel
+amr.blocking_factor     = 4
+amr.max_level           = 1           # Max AMR level in hierarchy
+
+tagging.labels = g0
+tagging.g0.type                          = GeometryRefinement
+tagging.g0.shapes                        = b0
+tagging.g0.level                         = 0
+tagging.g0.b0.type                       = box
+tagging.g0.b0.origin = 0.0 0.0 0.6
+tagging.g0.b0.xaxis =  0.317 0 0
+tagging.g0.b0.yaxis =  0 0.5 0
+tagging.g0.b0.zaxis = 0 0 0.25
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#              GEOMETRY                 #
+#.......................................#
+geometry.prob_lo        =   0.0 0.0 0.0  # Lo corner coordinates
+geometry.prob_hi        =   1.0 0.5 1.0  # Hi corner coordinates
+geometry.is_periodic    =   0   0   0   # Periodicity x y z (0/1)
+
+# Boundary conditions
+TwoLayer.bottom_vel   = -1.0 0.0 0.0
+TwoLayer.top_vel      =  1.0 0.0 0.0
+TwoLayer.init_perturb = 0.9
+TwoLayer.z_partition  = 0.5
+
+xlo.type = "mass_inflow_outflow"
+xlo.density = 1.0
+xlo.velocity.inflow_outflow_type = TwoLayer
+
+xhi.type = "mass_inflow_outflow"
+xhi.density = 1.0
+xhi.velocity.inflow_outflow_type = TwoLayer
+
+ylo.type =   "slip_wall"
+yhi.type =   "slip_wall"
+
+zlo.type =   "slip_wall"
+zhi.type =   "slip_wall"

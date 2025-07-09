@@ -80,6 +80,8 @@ public:
 
     void pre_advance_work() override;
 
+    void pre_predictor_work() override;
+
     void post_advance_work() override;
 
     void register_forcing_term(pde::icns::ABLForcing* forcing) const
@@ -113,6 +115,7 @@ public:
     }
 
     const ABLBoundaryPlane& bndry_plane() const { return *m_bndry_plane; }
+    ABLBoundaryPlane& bndry_plane() { return *m_bndry_plane; }
     const ABLModulatedPowerLaw& abl_mpl() const { return *m_abl_mpl; }
 
     //! Return the ABL statistics calculator

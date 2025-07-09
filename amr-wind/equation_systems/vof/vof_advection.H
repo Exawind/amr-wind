@@ -5,6 +5,7 @@
 #include "amr-wind/equation_systems/vof/vof.H"
 #include "amr-wind/equation_systems/vof/vof_hybridsolver_ops.H"
 #include "amr-wind/equation_systems/vof/SplitAdvection.H"
+#include "amr-wind/core/SimTime.H"
 
 namespace amr_wind::pde {
 
@@ -15,13 +16,14 @@ template <>
 struct AdvectionOp<VOF, fvm::Godunov>
 {
     AdvectionOp(
-        CFDSim& /* sim */,
+        CFDSim& sim,
         PDEFields& fields_in,
         bool /*unused*/,
         bool /*unused*/,
         bool /*unused*/,
         bool /*unused*/)
-        : fields(fields_in)
+        : m_time(sim.time())
+        , fields(fields_in)
         , u_mac(fields_in.repo.get_field("u_mac"))
         , v_mac(fields_in.repo.get_field("v_mac"))
         , w_mac(fields_in.repo.get_field("w_mac"))
@@ -105,15 +107,20 @@ struct AdvectionOp<VOF, fvm::Godunov>
         // Split advection step 1, with cmask calculation
         multiphase::split_advection_step(
             isweep, 0, nlevels, dof_field, fluxes, (*fluxC), advas, u_mac,
-            v_mac, w_mac, dof_field.bc_type(), geom, dt, m_rm_debris);
+            v_mac, w_mac, dof_field.bc_type(), geom, m_time.new_time(), dt,
+            m_rm_debris);
+        // (copy old boundaries to working state)
         // Split advection step 2
         multiphase::split_advection_step(
             isweep, 1, nlevels, dof_field, fluxes, (*fluxC), advas, u_mac,
-            v_mac, w_mac, dof_field.bc_type(), geom, dt, m_rm_debris);
+            v_mac, w_mac, dof_field.bc_type(), geom, m_time.new_time(), dt,
+            m_rm_debris);
+        // (copy old boundaries to working state)
         // Split advection step 3
         multiphase::split_advection_step(
             isweep, 2, nlevels, dof_field, fluxes, (*fluxC), advas, u_mac,
-            v_mac, w_mac, dof_field.bc_type(), geom, dt, m_rm_debris);
+            v_mac, w_mac, dof_field.bc_type(), geom, m_time.new_time(), dt,
+            m_rm_debris);
 
         // Replace masked cells using overset
         if (repo.int_field_exists("iblank_cell") && m_replace_mask) {
@@ -130,6 +137,7 @@ struct AdvectionOp<VOF, fvm::Godunov>
         }
     }
 
+    const SimTime& m_time;
     PDEFields& fields;
     Field& u_mac;
     Field& v_mac;

@@ -8,6 +8,8 @@
 
 /** Multiphase physics
  *
+ *  \defgroup multiphase_physics Multiphase physics
+ *
  * This class implements the necessary code to simulate multiphase
  * (air-water interaction) problems with AMR-Wind. It reads the
  * namespace `MultiPhase' from the input file to determine how the
@@ -61,7 +63,7 @@ public:
 
     amrex::Real momentum_sum(int n);
 
-    InterfaceCapturingMethod interface_capturing_method();
+    InterfaceCapturingMethod interface_capturing_method() const;
 
     amrex::Real rho1() const { return m_rho1; }
 

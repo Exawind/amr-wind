@@ -15,6 +15,7 @@ class Field;
  *  tagging/t1.field_name = density
  *  # Tagging based on field's gradient magnitude value
  *  # tagging/t1.values = 10.0 10.0
+ *  ```
  */
 class GradientMagRefinement
     : public RefinementCriteria::Register<GradientMagRefinement>

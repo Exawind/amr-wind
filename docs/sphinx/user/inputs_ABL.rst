@@ -15,7 +15,23 @@ This section is for setting atmospheric boundary layer parameters.
 
    **type:** Real, optional, default = 0.1
 
-   Wall model surface roughness.
+   Wall model surface roughness length (in meters). When specified, this sets both the aerodynamic 
+   (pertaining to velocity) and thermal (pertaining to temperature) roughness lengths.
+   These roughness lengths can be set separately using the two parameters listed below; however,
+   if this parameter (which sets both) is used with either of the roughness parameters below,
+   the code will abort to prevent using conflicting parameters.
+
+.. input_param:: ABL.aerodynamic_roughness_length
+
+   **type:** Real, optional, default = 0.1
+
+   Wall model surface roughness length (in meters) for aerodynamic processes, i.e., the wall momentum flux/shear stress model.
+
+.. input_param:: ABL.thermal_roughness_length
+
+   **type:** Real, optional, default = 0.1
+
+   Wall model surface roughness length (in meters) for thermal processes, i.e., the wall temperature flux model.
 
 .. input_param:: ABL.normal_direction
 
@@ -34,6 +50,43 @@ This section is for setting atmospheric boundary layer parameters.
    If this parameter is set to a number the log law is evaluated at a fixed height.
    Note: currently the fluctuating velocity terms in the shear stress model are only
    available at the first cell center above the wall. This limitation will be removed soon.
+
+.. input_param:: ABL.surface_temp_flux
+
+   **type:** Real, optional
+
+   Surface temperature flux setting for the ABL wall function. Specifies a constant temperature flux
+   at the wall-modeled boundary. This is not a required argument because there are other options for
+   setting up the surface temperature condition.
+
+.. input_param:: ABL.surface_temp_timetable
+
+   **type:** String, optional
+
+   File name of surface temperature time table, allowing the surface temperature
+   to change with time without specifying a surface temperature rate.
+
+.. input_param:: ABL.surface_temp_rate
+
+   **type:** Real, optional
+
+   Constant rate at which the surface temperature changes.
+
+.. input_param:: ABL.surface_temp_init
+
+   **type:** Real, optional
+
+   Initial temperature of the wall-modeled surface. This parameter is only active
+   when the surface temperature rate is specified. If this parameter is active but not
+   specified, the initial temperature will be set to the reference temperature of the simulation.
+
+.. input_param:: ABL.surface_temp_rate_tstart
+
+   **type:** Real, optional
+
+   Start time of the surface temperature rate of change. Prior to this time,
+   the surface temperature remains at the initial value. This parameter is only
+   active when the surface temperature rate is specified. The default start time is 0.
 
 
 .. input_param:: ABL.temperature_heights
@@ -164,6 +217,12 @@ This section is for setting atmospheric boundary layer parameters.
    Wall shear stress model: options include
    "constant", "local", "Schumann", and "Moeng"
 
+.. input_param:: ABL.bndry_output_format
+
+   **type:** String, optional, default = "native"
+
+   Output of boundary plane files. Valid values are ``netcdf`` and ``native``.
+
 .. input_param:: ABL.initial_condition_input_file
 
    **type:** String, optional, default= ""
@@ -186,3 +245,49 @@ This section is for setting atmospheric boundary layer parameters.
    **type:** Real, optional, default = 1.01325e5
 
    Reference pressure at the bottom of the domain. Used for anelastic ABL.
+
+.. input_param:: ABL.initial_wind_profile 
+
+   **type:** Boolean, optional, default= false
+
+   Activates the reading of wind speed profile from a file. Recommended for 
+   RANS models and also for wind conditions input from climate model.
+
+.. input_param:: ABL.rans_1dprofile_file 
+
+   **type:** String, optional, default = ""
+
+   This input is required when the ABL.initial_wind_profile is set to True. 
+
+.. input_param:: ABL.meso_sponge_start 
+
+   **type:** Real, optional, default = 650
+
+   Approximate height of the planetary boundary layer height to enable the forcing 
+   in the free atmosphere. Recommended for use with RANS model and optionally to run 
+   LES with non canonical flow conditions. The method is enabled by default for turbulent 
+   kinetic energy. To enable this option for temperature and velocity, the following flags
+   have to be added to the input file. 
+   
+   `Temperature.source_terms  = TemperatureFreeAtmosphereForcing`
+
+   `ICNS.source_terms  = VelocityFreeAtmosphereForcing`
+
+.. input_param:: ABL.wall_het_model
+
+   **type:** String, optional, default = "none"
+
+   Allows the use of different surface model options for the Monin-Obukhov length. Currently supports two options:
+   (i) "none" - original model in the code and (ii) "mol" - Monin-Obukhov length is constant while heat-flux varies 
+
+.. input_param:: ABL.monin_obukhov_length
+
+   **type:** Real, optional, default = -1e30 
+
+   Used in conjunction with `ABL.wall_het_model`. The default value runs a neutral boundary layer. 
+
+.. input_param:: ABL.terrain_aligned_profile 
+
+   **type:** Boolean, optional, default= false
+
+   Used in conjunction with immersed forcing for terrain. This option allows the user to align the wind, temperature and turbulence profiles to be aligned with the terrain.

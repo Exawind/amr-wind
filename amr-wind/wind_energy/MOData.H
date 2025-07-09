@@ -25,7 +25,8 @@ struct MOData
     };
 
     amrex::Real zref{0.0};           ///< Reference height (m)
-    amrex::Real z0{0.1};             ///< Roughness height (m)
+    amrex::Real z0{0.1};             ///< Aerodynamic roughness height (m)
+    amrex::Real z0t{z0};             ///< Thermal roughness height (m)
     amrex::Real utau;                ///< Friction velocity (m/s)
     amrex::Real kappa{0.41};         ///< von Karman constant
     amrex::Real gravity{9.81};       ///< Acceleration due to gravity (m/s^2)
@@ -39,7 +40,6 @@ struct MOData
 
     amrex::Real surf_temp_flux{0.0}; ///< Heat flux
     amrex::Real surf_temp;           ///< Instantaneous surface temperature
-    amrex::Real ref_temp;            ///< Reference temperature
 
     amrex::Real gamma_m{5.0};
     amrex::Real gamma_h{5.0};
@@ -60,16 +60,24 @@ struct MOData
 
     amrex::Real phi_h() const
     {
-        return std::log(zref / z0) - calc_psi_h(zref / obukhov_len);
+        return std::log(zref / z0t) - calc_psi_h(zref / obukhov_len);
     }
 
     amrex::Real phi_h(amrex::Real z) const
     {
-        return std::log(z / z0) - calc_psi_h(z / obukhov_len);
+        return std::log(z / z0t) - calc_psi_h(z / obukhov_len);
     }
 
     amrex::Real calc_psi_m(amrex::Real zeta) const;
+    static amrex::Real calc_psi_m(
+        const amrex::Real zeta,
+        const amrex::Real beta_m,
+        const amrex::Real gamma_m);
     amrex::Real calc_psi_h(amrex::Real zeta) const;
+    static amrex::Real calc_psi_h(
+        const amrex::Real zeta,
+        const amrex::Real beta_h,
+        const amrex::Real gamma_h);
     void update_fluxes(int max_iters = 25);
 };
 

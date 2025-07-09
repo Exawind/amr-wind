@@ -25,11 +25,21 @@ public:
 
     void initialize(const std::string& key) override;
 
-    void sampling_locations(SampleLocType& /*locs*/) const override;
+    //! Check and fix the bounds of the sampler so the probes are in the domain
+    void check_bounds() override;
 
-    void output_locations(SampleLocType& locs) const override
+    //! Populate the vector with coordinates of the sampling locations
+    void sampling_locations(SampleLocType& /*sample_locs*/) const override;
+
+    //! Populate the vector with coordinates of the sampling locations inside
+    //! a box
+    void sampling_locations(
+        SampleLocType& /*sample_locs*/,
+        const amrex::Box& /*box*/) const override;
+
+    void output_locations(SampleLocType& sample_locs) const override
     {
-        return sampling_locations(locs);
+        sampling_locations(sample_locs);
     }
 
     void
@@ -46,7 +56,11 @@ public:
     long num_output_points() const override { return m_npts; }
 
 private:
+    const CFDSim& m_sim;
     SampleLocType m_probes;
+
+    amrex::Vector<amrex::Real> m_offset_vector{0.0, 0.0, 0.0};
+    amrex::Vector<amrex::Real> m_poffsets;
 
     std::string m_label;
     int m_id{-1};

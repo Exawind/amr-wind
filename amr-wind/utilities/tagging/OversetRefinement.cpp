@@ -31,33 +31,32 @@ void OversetRefinement::operator()(
     const bool tag_fringe = m_tag_fringe;
     const bool tag_hole = m_tag_hole;
 
-#ifdef AMREX_USE_OMP
-#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
-#endif
-    for (amrex::MFIter mfi(ibfab, amrex::TilingIfNotGPU()); mfi.isValid();
-         ++mfi) {
-        const auto& bx = mfi.tilebox();
-        const auto& ibarr = ibfab.const_array(mfi);
-        const auto& tag = tags.array(mfi);
+    const auto& ibarrs = ibfab.const_arrays();
+    const auto& tag_arrs = tags.arrays();
 
-        amrex::ParallelFor(
-            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                const int axp = std::abs(ibarr(i + 1, j, k) - ibarr(i, j, k));
-                const int ayp = std::abs(ibarr(i, j + 1, k) - ibarr(i, j, k));
-                const int azp = std::abs(ibarr(i, j, k + 1) - ibarr(i, j, k));
-                const int axm = std::abs(ibarr(i - 1, j, k) - ibarr(i, j, k));
-                const int aym = std::abs(ibarr(i, j - 1, k) - ibarr(i, j, k));
-                const int azm = std::abs(ibarr(i, j, k - 1) - ibarr(i, j, k));
-                const int ax = amrex::max(axp, axm);
-                const int ay = amrex::max(ayp, aym);
-                const int az = amrex::max(azp, azm);
-                if (amrex::max(ax, ay, az) > 1 ||
-                    (tag_fringe && ibarr(i, j, k) == -1) ||
-                    (tag_hole && ibarr(i, j, k) == 0)) {
-                    tag(i, j, k) = amrex::TagBox::SET;
-                }
-            });
-    }
+    amrex::ParallelFor(
+        ibfab, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            const int axp =
+                std::abs(ibarrs[nbx](i + 1, j, k) - ibarrs[nbx](i, j, k));
+            const int ayp =
+                std::abs(ibarrs[nbx](i, j + 1, k) - ibarrs[nbx](i, j, k));
+            const int azp =
+                std::abs(ibarrs[nbx](i, j, k + 1) - ibarrs[nbx](i, j, k));
+            const int axm =
+                std::abs(ibarrs[nbx](i - 1, j, k) - ibarrs[nbx](i, j, k));
+            const int aym =
+                std::abs(ibarrs[nbx](i, j - 1, k) - ibarrs[nbx](i, j, k));
+            const int azm =
+                std::abs(ibarrs[nbx](i, j, k - 1) - ibarrs[nbx](i, j, k));
+            const int ax = amrex::max(axp, axm);
+            const int ay = amrex::max(ayp, aym);
+            const int az = amrex::max(azp, azm);
+            if (amrex::max(ax, ay, az) > 1 ||
+                (tag_fringe && ibarrs[nbx](i, j, k) == -1) ||
+                (tag_hole && ibarrs[nbx](i, j, k) == 0)) {
+                tag_arrs[nbx](i, j, k) = amrex::TagBox::SET;
+            }
+        });
 }
 
 } // namespace amr_wind

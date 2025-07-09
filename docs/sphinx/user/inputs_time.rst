@@ -41,9 +41,32 @@ This section also addresses the time-dependent nature of checkpoint files, plot 
 
    Initial timestep size (in seconds) used to initialize the simulation. 
    Only activated if :input_param:`time.fixed_dt` is negative 
-   (signalling CFL controlled time stepping) and if ``time.initial_dt`` is positive.
+   (signaling CFL controlled time stepping) and if :input_param:`time.initial_dt` is positive.
    This parameter can be useful for starting CFL-controlled simulations like 
    Rayleigh-Taylor flow that initialize with zero velocity.
+
+.. input_param:: time.max_dt
+
+   **type:** Real number
+
+   Maximum timestep size (in seconds) used to limit CFL-controlled time stepping. 
+   Only activated if :input_param:`time.max_dt` is positive and fixed time stepping is disabled. 
+   This parameter can be useful if CFL-controlled timestepping is desired but there
+   are additional constraints to the timestep size considerations.
+
+.. input_param:: time.min_dt
+
+   **type:** Real number
+
+   Minimum timestep size (in seconds) used to limit CFL-controlled time stepping by stopping
+   a simulation when the timestep size has become too small. 
+   Only activated if :input_param:`time.min_dt` is positive and fixed time stepping is disabled.
+   This parameter is more useful in the development context when running simulations that are not
+   reliably stable. If a simulation's velocity values dramatically grow, i.e., they blow up,
+   CFL-controlled timestepping would make the timestep size unrealistically small, often allowing
+   the simulation to continue to run indefinitely with an nonphysical flow field. When this parameter
+   is active, the code will abort when the timestep size becomes smaller than the specified minimum,
+   preventing the simulation from continuing to run wastefully.
 
 .. input_param:: time.cfl
 
@@ -88,7 +111,10 @@ This section also addresses the time-dependent nature of checkpoint files, plot 
    **type:** Integer, optional, default = -1
 
    If this value is greater than zero, it indicates the frequency (in timesteps)
-   at which outputs (plot files) are written to disk.
+   at which outputs (plot files) are written to disk. If plotfile output is active,
+   a plotfile will be written at the end of a simulation (when
+   :input_param:`time.stop_time` or :input_param:`time.max_step` is reached), regardless
+   of the output timing parameters.
 
 .. input_param:: time.plot_time_interval
 
@@ -124,7 +150,10 @@ This section also addresses the time-dependent nature of checkpoint files, plot 
    **type:** Integer
 
    If this value is greater than zero, it indicates the frequency (in timesteps)
-   at which checkpoint (restart) files are written to disk.
+   at which checkpoint (restart) files are written to disk. If checkpoint output is active,
+   a checkpoint will be written at the end of a simulation (when
+   :input_param:`time.stop_time` or :input_param:`time.max_step` is reached), regardless
+   of the output timing parameters.
 
 .. input_param:: time.checkpoint_time_interval
 
@@ -159,21 +188,21 @@ This section also addresses the time-dependent nature of checkpoint files, plot 
 
   **type:** Integer, optional, default = 0; default = start index upon restart
 
-  This user-specified parameter sets the base timestep onwards which the mesh is adaptively
+  This user-specified parameter sets the base timestep onward which the mesh is adaptively
   refined.
 
 .. input_param:: time.plot_start
 
   **type:** Integer, optional, default = 0; default = start index upon restart
 
-  This user-specified parameter sets the base timestep onwards which the output (plot files)
+  This user-specified parameter sets the base timestep onward which the output (plot files)
   are written to the disk. This parameter is specifically for offsetting the index following a restart.
 
 .. input_param:: time.checkpoint_start
 
   **type:** Integer, optional, default = 0; default = start index upon restart
 
-  This user-specified parameter sets the base timestep onwards which the checkpoint (restart) 
+  This user-specified parameter sets the base timestep onward which the checkpoint (restart) 
   files are written to the disk. This parameter is specifically for offsetting the index following a restart.
 
 .. input_param:: time.use_force_cfl

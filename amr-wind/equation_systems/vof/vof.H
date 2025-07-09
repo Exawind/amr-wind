@@ -9,6 +9,10 @@
 
 namespace amr_wind::pde {
 
+/** \defgroup vof Volume of fluid
+ *
+ */
+
 struct VOF : ScalarTransport
 {
     using MLDiffOp = amrex::MLABecLaplacian;
@@ -23,6 +27,7 @@ struct VOF : ScalarTransport
     static constexpr bool need_nph_state = true;
 
     static constexpr amrex::Real default_bc_value = 0.0;
+    static constexpr amrex::Real default_density_bc_value = 1.0;
 };
 
 } // namespace amr_wind::pde

@@ -3,6 +3,7 @@
 
 #include <AMReX_FArrayBox.H>
 #include <cmath>
+#include "amr-wind/utilities/constants.H"
 
 namespace amr_wind::multiphase {
 
@@ -494,7 +495,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool interface_band(
     const int k,
     amrex::Array4<amrex::Real const> const& volfrac,
     const int n_band = 1,
-    const amrex::Real tiny = 1e-12) noexcept
+    const amrex::Real tiny = constants::TIGHT_TOL) noexcept
 {
     // n_band must be <= number of vof ghost cells (3)
 

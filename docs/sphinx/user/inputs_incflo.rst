@@ -3,7 +3,7 @@
 Section: incflo
 ~~~~~~~~~~~~~~~
 
-This section deals with parameters that mostly determine how amr-wind is run such 
+This section deals with parameters that mostly determine how AMR-Wind is run such 
 as initial conditions and discretization options.
 
 .. input_param:: incflo.physics
@@ -14,6 +14,8 @@ as initial conditions and discretization options.
    Physics is additive and more than one type of physics may be used.
    Current implemented physics include FreeStream, SyntheticTurbulence, ABL, Actuator, RayleighTaylor, BoussinesqBubble, TaylorGreenVortex, and ScalarAdvection (which is an example of using a passive scalar advection).
    For multiphase simulations, the MultiPhase physics must be specified, and for forcing wave profiles into the domain, the OceanWaves physics must be specified as well.
+   For immersed boundary forcing method TerrainDrag must be specified and the folder should include a terrain file (default name: `terrain.amrwind`, user control is `TerrainDrag.terrain_file`) file.
+   For including forested regions ForestDrag must be specified and the folder should include a forest file (default name: `forest.amrwind`, user control is `ForestDrag.forest_file`) file.
    
 .. input_param:: incflo.density
 
@@ -22,6 +24,13 @@ as initial conditions and discretization options.
    Specify reference density. 
    For the most part if :input_param:`incflo.constant_density` = true then `incflo.density` sets a constant density everywhere.
    Refer to the field initializer for your chosen :input_param:`incflo.physics` for how `incflo.density` is used.
+
+.. input_param:: incflo.gravity
+
+   **type:** List of three Real numbers, optional, default = 0 0 -9.81
+
+   Acceleration due to gravity in m/s\ :sup:`2` \. This constant vector is used by all parts
+   of the solver related to gravity.
    
 .. input_param:: incflo.velocity
 
@@ -68,6 +77,16 @@ as initial conditions and discretization options.
    Godunov the default approach and has many advantages over the method of lines (MOL): better accuracy,
    stability at larger CFL numbers, and greater computational efficiency. Setting this argument to false is 
    not recommended, and active use or development relying on the method of lines (MOL) is very sparse.
+
+.. input_param:: incflo.dry_run
+
+   **type** Boolean, optional, default = false
+
+   Setting this option to true enables a "dry run" of the code. This is intended for checking if an input
+   file is set up properly and for investigating the initial state of a simulation. A dry run will make sure
+   that initial iterations and the initial projection are skipped, and it will complete no time steps. This is
+   to minimize the computational demands of such a run. A plot file with the prefix ``dry_run`` will be output
+   regardless of whether the simulation restarts from a checkpoint file or from scratch.
    
 .. _inputs_incflo_advection:
 
@@ -89,7 +108,7 @@ as initial conditions and discretization options.
 
 .. input_param:: incflo.diffusion_type
 
-   **type:** Integer, optional, default = 2
+   **type:** Integer, optional, default = 1
 
    Determines how the diffusion term is handled when updating the momentum equations. 
    A value of 0 is explicit diffusion and all diffusion terms are moved to the right hand side 
@@ -104,13 +123,15 @@ as initial conditions and discretization options.
    When present, this parameter contains list of sections to be read with
    specific post-postprocessing actions. Currently, the code supports
    :ref:`Sampling <inputs_sampling>`, :ref:`KineticEnergy <inputs_ke>`,
-   :ref:`Enstrophy <inputs_enst>` and :ref:`Averaging <inputs_averaging>`
+   :ref:`Enstrophy <inputs_enst>` and :ref:`Averaging <inputs_averaging>`.
+   Post-processing routines have a shared set of output parameters,
+   which are detailed :ref:`here <inputs_post_processing>`.
 
    ::
 
      incflo.post_processing     = sampling ke enst
      sampling.type              = Sampling
-     sampling.output_frequency  = 5
+     sampling.output_interval   = 5
      sampling.labels            = line1 line2
      sampling.fields            = velocity
      sampling.line1.type        = LineSampler
@@ -122,8 +143,11 @@ as initial conditions and discretization options.
      sampling.line2.start       = 500.0 500.0 10.0
      sampling.line2.end         = 500.0 500.0 210.0
      ke.type                    = KineticEnergy
-     ke.output_frequency        = 2
+     ke.output_interval         = 2
 
-   In the above example, the code will read the parameters with keyword
+   In the above example, the code will read the parameters with the keyword
    ``sampling`` to initialize user-defined probes.
+   The names of the ``post_processing`` labels need not be related to the type of post-processing;
+   the kind of post-processing routine is specified as the ``type`` under the
+   designated label.
    

@@ -7,7 +7,7 @@
 namespace amr_wind::field_norms {
 
 /** field norm object
- *  \ingroup Field Norm
+ *  \ingroup sampling
  *
  *  A concrete implementation of the post-processing interface that deals with
  *  norms of fields. FIXME: need to update this
@@ -28,14 +28,15 @@ public:
     //! Read user inputs and create the different data probe instances
     void initialize() override;
 
-    //! Interpolate fields at a given timestep and output to disk
-    void post_advance_work() override;
+    void post_advance_work() override {};
+
+    void output_actions() override;
 
     void post_regrid_actions() override {}
 
     //! calculate the L2 norm of a given field and component
     static amrex::Real
-    l2_norm(amr_wind::Field& field, const int comp, const bool use_mask);
+    l2_norm(const amr_wind::Field& field, const int comp, const bool use_mask);
 
     const amrex::Vector<std::string>& var_names() const { return m_var_names; }
 
@@ -69,9 +70,6 @@ private:
 
     //! filename for ASCII output
     std::string m_out_fname;
-
-    //! Frequency of data sampling and output
-    int m_out_freq{10};
 
     //! width in ASCII output
     int m_width{18};

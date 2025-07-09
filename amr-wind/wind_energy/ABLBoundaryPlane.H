@@ -5,8 +5,11 @@
 #include "amr-wind/CFDSim.H"
 #include "AMReX_Gpu.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
+#include "amr-wind/utilities/io_utils.H"
 #include <AMReX_BndryRegister.H>
 
+#include "amr-wind/wind_energy/ABLReadERFFunction.H"
+class MultiBlockContainer;
 namespace amr_wind {
 
 enum struct io_mode { output, input, undefined };
@@ -118,17 +121,24 @@ public:
 
     void pre_advance_work();
 
+    void pre_predictor_work();
+
     void post_advance_work();
 
     void initialize_data();
 
     void write_header();
 
+    void write_bndry_native_header(const std::string& chkname);
+
     void write_file();
 
     void read_header();
 
-    void read_file();
+    amrex::Vector<amrex::BoxArray> read_bndry_native_boxarrays(
+        const std::string& chkname, const Field& field) const;
+
+    void read_file(const bool /* nph_target_time*/);
 
     void populate_data(
         const int /*lev*/,
@@ -156,12 +166,34 @@ public:
         const int /*lev*/,
         const amrex::Orientation /*ori*/) const;
 
+    bool is_data_newer_than(const amrex::Real time) const
+    {
+        return (m_in_data.tinterp() - time > 1e-12);
+    }
+
     io_mode mode() const { return m_io_mode; }
+
+    MultiBlockContainer* mbc()
+    {
+        // Make sure that the double pointer m_mbc
+        // does not point to a nullptr
+        // before passing *m_mbc for use
+        if ((*m_mbc) == nullptr) {
+            amrex::Abort("Passing a null pointer for use!");
+        }
+        return *m_mbc;
+    }
 
 private:
     const amr_wind::SimTime& m_time;
     const FieldRepo& m_repo;
     const amrex::AmrCore& m_mesh;
+
+    // pointer to pointer : when ABL boundary plane gets initialized, amr-wind
+    // CFDsim does not yet have the up to date pointer to the mbc or the
+    // read_erf function, hence the use of double pointers
+    MultiBlockContainer** m_mbc;
+    ReadERFFunction* m_read_erf{nullptr};
 
 #ifdef AMR_WIND_USE_NETCDF
     void write_data(
@@ -170,7 +202,7 @@ private:
         const int /*lev*/,
         const Field* /*fld*/);
 #endif
-    int boundary_native_file_levels();
+    int boundary_native_file_levels() const;
 
     std::string m_title{"ABL boundary planes"};
 

@@ -80,9 +80,6 @@ private:
     //! Gravity vector (m/s^2)
     amrex::Vector<amrex::Real> m_gravity{0.0, 0.0, -9.81};
 
-    //! Reference temperature (Kelvin)
-    amrex::Real m_ref_theta{300.0};
-
     //! Hybrid RANS-LES with Nalu-wind
     bool m_hybrid_rl{false};
     Field* m_sdr;

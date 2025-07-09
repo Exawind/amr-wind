@@ -3,6 +3,7 @@
 
 #include "amr-wind/utilities/sampling/Sampling.H"
 #include "amr-wind/utilities/sampling/SamplingContainer.H"
+#include "amr-wind/utilities/sampling/ProbeSampler.H"
 #include "amr-wind/utilities/sampling/PlaneSampler.H"
 #include "amr-wind/utilities/sampling/VolumeSampler.H"
 #include "amr-wind/utilities/sampling/DTUSpinnerSampler.H"
@@ -41,7 +42,7 @@ void init_field(amr_wind::Field& fld)
                 farrs[nbx](i, j, k, n) = x + y + z;
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 void init_int_field(amr_wind::IntField& fld)
@@ -58,7 +59,18 @@ void init_int_field(amr_wind::IntField& fld)
                 farrs[nbx](i, j, k, n) = i + j + k;
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
+}
+
+void write_probe_sampler_file(const std::string& fname)
+{
+    std::ofstream os(fname);
+    // Total number of points
+    os << "3\n";
+    // Coordinates
+    os << "0.0\t0.0\t0.0\n";
+    os << "60.0\t2.0\t3.0\n";
+    os << "100.0\t8.0\t5.0\n";
 }
 
 class SamplingImpl : public amr_wind::sampling::Sampling
@@ -198,7 +210,7 @@ TEST_F(SamplingTest, sampling)
 
     {
         amrex::ParmParse pp("sampling");
-        pp.add("output_frequency", 1);
+        pp.add("output_interval", 1);
         pp.addarr("labels", amrex::Vector<std::string>{"line1"});
         pp.addarr(
             "fields",
@@ -217,7 +229,7 @@ TEST_F(SamplingTest, sampling)
 
     SamplingImpl probes(sim(), "sampling");
     probes.initialize();
-    probes.post_advance_work();
+    probes.output_actions();
 
     EXPECT_TRUE(probes.write_flag);
 }
@@ -237,7 +249,7 @@ TEST_F(SamplingTest, sampling_timing)
 
     {
         amrex::ParmParse pp("sampling");
-        pp.add("output_frequency", 1);
+        pp.add("output_interval", 1);
         pp.add("output_delay", 1);
         pp.addarr("labels", amrex::Vector<std::string>{"line1"});
         pp.addarr(
@@ -257,11 +269,66 @@ TEST_F(SamplingTest, sampling_timing)
 
     SamplingImpl probes(sim(), "sampling");
     probes.initialize();
-    probes.post_advance_work();
+    if (probes.do_output_now(
+            sim().time().time_index(), sim().time().new_time(),
+            sim().time().delta_t(), 1.0)) {
+        probes.output_actions();
+    }
     EXPECT_FALSE(probes.write_flag);
     sim().time().new_timestep();
-    probes.post_advance_work();
+    if (probes.do_output_now(
+            sim().time().time_index(), sim().time().new_time(),
+            sim().time().delta_t(), 1.0)) {
+        probes.output_actions();
+    }
     EXPECT_TRUE(probes.write_flag);
+}
+
+TEST_F(SamplingTest, probe_sampler)
+{
+    initialize_mesh();
+
+    constexpr amrex::Real tol = 1.0e-12;
+    std::string fname = "probes.txt";
+    // Write file
+    write_probe_sampler_file(fname);
+
+    {
+        amrex::ParmParse pp("cloud");
+        pp.add("probe_location_file", fname);
+        pp.addarr("offsets", amrex::Vector<double>{1.0, 2.5});
+        pp.addarr("offset_vector", amrex::Vector<double>{0.2, 0.5, 1.0});
+    }
+
+    amr_wind::sampling::ProbeSampler cloud(sim());
+    cloud.initialize("cloud");
+    amr_wind::sampling::SampleLocType sample_locs;
+    cloud.sampling_locations(sample_locs);
+
+    ASSERT_EQ(sample_locs.locations().size(), 3 * 2);
+    const amrex::Vector<amrex::Real> xprobe_golds{0.2, 60.2, 100.2,
+                                                  0.5, 60.5, 100.5};
+    const amrex::Vector<amrex::Real> yprobe_golds{0.5,  2.5,  8.5,
+                                                  1.25, 3.25, 9.25};
+    const amrex::Vector<amrex::Real> zprobe_golds{1.0, 4.0, 6.0, 2.5, 5.5, 7.5};
+    const auto& locs = sample_locs.locations();
+    for (int n = 0; n < locs.size(); ++n) {
+        EXPECT_NEAR(locs[n][0], xprobe_golds[n], tol);
+        EXPECT_NEAR(locs[n][1], yprobe_golds[n], tol);
+        EXPECT_NEAR(locs[n][2], zprobe_golds[n], tol);
+    }
+
+    // Remove file
+    const char* fname_char = fname.c_str();
+    {
+        std::ifstream f(fname_char);
+        if (f.good()) {
+            remove(fname_char);
+        }
+        // Check that file is removed
+        std::ifstream ff(fname_char);
+        EXPECT_FALSE(ff.good());
+    }
 }
 
 TEST_F(SamplingTest, plane_sampler)
@@ -272,18 +339,18 @@ TEST_F(SamplingTest, plane_sampler)
         amrex::ParmParse pp("plane");
         pp.addarr("axis1", amrex::Vector<double>{0.0, 1.0, 0.0});
         pp.addarr("axis2", amrex::Vector<double>{0.0, 0.0, 1.0});
-        pp.addarr("origin", amrex::Vector<double>{0.0, 0.0, 0.0});
+        pp.addarr("origin", amrex::Vector<double>{1.0, 1.0, 1.0});
         pp.addarr("num_points", amrex::Vector<int>{3, 3});
-        pp.addarr("offsets", amrex::Vector<double>{-1.0, 1.0});
+        pp.addarr("offsets", amrex::Vector<double>{2.0, 10.0});
         pp.addarr("offset_vector", amrex::Vector<double>{1.0, 0.0, 0.0});
     }
 
     amr_wind::sampling::PlaneSampler plane(sim());
     plane.initialize("plane");
-    amr_wind::sampling::PlaneSampler::SampleLocType locs;
-    plane.sampling_locations(locs);
+    amr_wind::sampling::SampleLocType sample_locs;
+    plane.sampling_locations(sample_locs);
 
-    ASSERT_EQ(locs.size(), 3 * 3 * 2);
+    ASSERT_EQ(sample_locs.locations().size(), 3 * 3 * 2);
 }
 
 TEST_F(SamplingTest, volume_sampler)
@@ -296,10 +363,10 @@ TEST_F(SamplingTest, volume_sampler)
 
     amr_wind::sampling::VolumeSampler volume(sim());
     volume.initialize("volume");
-    amr_wind::sampling::VolumeSampler::SampleLocType locs;
-    volume.sampling_locations(locs);
+    amr_wind::sampling::SampleLocType sample_locs;
+    volume.sampling_locations(sample_locs);
 
-    ASSERT_EQ(locs.size(), 3 * 5 * 5);
+    ASSERT_EQ(sample_locs.locations().size(), 3 * 5 * 5);
 }
 
 TEST_F(SamplingTest, spinner_sampler)
@@ -327,10 +394,10 @@ TEST_F(SamplingTest, spinner_sampler)
 
     amr_wind::sampling::DTUSpinnerSampler spinner(sim());
     spinner.initialize("spinner");
-    amr_wind::sampling::DTUSpinnerSampler::SampleLocType locs;
-    spinner.sampling_locations(locs);
+    amr_wind::sampling::SampleLocType sample_locs;
+    spinner.sampling_locations(sample_locs);
 
-    ASSERT_EQ(locs.size(), 21600);
+    ASSERT_EQ(sample_locs.locations().size(), 21600);
 }
 
 TEST_F(SamplingTest, radar_sampler)
@@ -359,10 +426,10 @@ TEST_F(SamplingTest, radar_sampler)
 
     amr_wind::sampling::RadarSampler radar(sim());
     radar.initialize("radar");
-    amr_wind::sampling::RadarSampler::SampleLocType locs;
-    radar.sampling_locations(locs);
+    amr_wind::sampling::SampleLocType sample_locs;
+    radar.sampling_locations(sample_locs);
 
-    ASSERT_EQ(locs.size(), 193536);
+    ASSERT_EQ(sample_locs.locations().size(), 193536);
 }
 
 TEST_F(SamplingTest, sampling_utils)

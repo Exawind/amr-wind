@@ -1,12 +1,13 @@
 #include <limits>
 
 #include "amr-wind/utilities/sampling/PlaneSampler.H"
-
+#include "amr-wind/CFDSim.H"
+#include "amr-wind/utilities/index_operations.H"
 #include "AMReX_ParmParse.H"
 
 namespace amr_wind::sampling {
 
-PlaneSampler::PlaneSampler(const CFDSim& /*unused*/) {}
+PlaneSampler::PlaneSampler(const CFDSim& sim) : m_sim(sim) {}
 
 PlaneSampler::~PlaneSampler() = default;
 
@@ -39,6 +40,8 @@ void PlaneSampler::initialize(const std::string& key)
         m_poffsets.push_back(0.0);
     }
 
+    check_bounds();
+
     // Update total number of points
     const size_t tmp = m_poffsets.size() * m_npts_dir[0] * m_npts_dir[1];
     if (tmp > static_cast<size_t>(std::numeric_limits<int>::max())) {
@@ -49,9 +52,78 @@ void PlaneSampler::initialize(const std::string& key)
     m_npts = static_cast<int>(tmp);
 }
 
-void PlaneSampler::sampling_locations(SampleLocType& locs) const
+void PlaneSampler::check_bounds()
 {
-    locs.resize(m_npts);
+    const int lev = 0;
+    const auto* prob_lo = m_sim.mesh().Geom(lev).ProbLo();
+    const auto* prob_hi = m_sim.mesh().Geom(lev).ProbHi();
+
+    // Do the checks based on a small fraction of the minimum dx
+    const auto& fine_geom = m_sim.mesh().Geom(m_sim.mesh().finestLevel());
+    amrex::Real min_dx = fine_geom.CellSize(0);
+    for (int d = 1; d < AMREX_SPACEDIM; ++d) {
+        min_dx = std::min(fine_geom.CellSize(d), min_dx);
+    }
+    const auto tol = std::max(1e-10 * min_dx, bounds_tol);
+
+    // First fix the origin so that it is within bounds, if it is close enough
+    for (int d = 0; d < AMREX_SPACEDIM; ++d) {
+        if (amrex::Math::abs(m_origin[d] - prob_lo[d]) < tol) {
+            m_origin[d] = prob_lo[d] + tol;
+        }
+        if (amrex::Math::abs(m_origin[d] - prob_hi[d]) < tol) {
+            m_origin[d] = prob_hi[d] - tol;
+        }
+    }
+
+    // Fix the axis so that it is within bounds, if it is close enough
+    for (int d = 0; d < AMREX_SPACEDIM; ++d) {
+        if (amrex::Math::abs(m_origin[d] + m_axis1[d] - prob_lo[d]) < 2 * tol) {
+            m_axis1[d] = prob_lo[d] - m_origin[d] + 2 * tol;
+        }
+        if (amrex::Math::abs(m_origin[d] + m_axis1[d] - prob_hi[d]) < 2 * tol) {
+            m_axis1[d] = prob_hi[d] - m_origin[d] - 2 * tol;
+        }
+        if (amrex::Math::abs(m_origin[d] + m_axis2[d] - prob_lo[d]) < 2 * tol) {
+            m_axis2[d] = prob_lo[d] - m_origin[d] + 2 * tol;
+        }
+        if (amrex::Math::abs(m_origin[d] + m_axis2[d] - prob_hi[d]) < 2 * tol) {
+            m_axis2[d] = prob_hi[d] - m_origin[d] - 2 * tol;
+        }
+    }
+
+    const int nplanes = static_cast<int>(m_poffsets.size());
+    for (int k = 0; k < nplanes; ++k) {
+        for (int d = 0; d < AMREX_SPACEDIM; ++d) {
+            const auto point = m_origin[d] + m_poffsets[k] * m_offset_vector[d];
+            const amrex::Vector<amrex::Real> points = {
+                point, point + m_axis1[d], point + m_axis2[d]};
+            for (const auto& pt : points) {
+                if ((pt < prob_lo[d]) || (pt >= prob_hi[d])) {
+                    amrex::Abort(
+                        "PlaneSampler: Point out of domain. Redefine your "
+                        "planes so they are completely inside the domain.");
+                }
+            }
+        }
+    }
+}
+
+void PlaneSampler::sampling_locations(SampleLocType& sample_locs) const
+{
+    AMREX_ALWAYS_ASSERT(sample_locs.locations().empty());
+
+    const int lev = 0;
+    const auto domain = m_sim.mesh().Geom(lev).Domain();
+    sampling_locations(sample_locs, domain);
+
+    AMREX_ALWAYS_ASSERT(sample_locs.locations().size() == num_points());
+}
+
+void PlaneSampler::sampling_locations(
+    SampleLocType& sample_locs, const amrex::Box& box) const
+{
+    AMREX_ALWAYS_ASSERT(sample_locs.locations().empty());
 
     amrex::Array<amrex::Real, AMREX_SPACEDIM> dx;
     amrex::Array<amrex::Real, AMREX_SPACEDIM> dy;
@@ -63,12 +135,19 @@ void PlaneSampler::sampling_locations(SampleLocType& locs) const
 
     int idx = 0;
     const int nplanes = static_cast<int>(m_poffsets.size());
+    const int lev = 0;
+    const auto& dxinv = m_sim.mesh().Geom(lev).InvCellSizeArray();
+    const auto& plo = m_sim.mesh().Geom(lev).ProbLoArray();
     for (int k = 0; k < nplanes; ++k) {
         for (int j = 0; j < m_npts_dir[1]; ++j) {
             for (int i = 0; i < m_npts_dir[0]; ++i) {
+                amrex::RealVect loc;
                 for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-                    locs[idx][d] = m_origin[d] + dx[d] * i + dy[d] * j +
-                                   m_poffsets[k] * m_offset_vector[d];
+                    loc[d] = m_origin[d] + dx[d] * i + dy[d] * j +
+                             m_poffsets[k] * m_offset_vector[d];
+                }
+                if (utils::contains(box, loc, plo, dxinv)) {
+                    sample_locs.push_back(loc, idx);
                 }
                 ++idx;
             }

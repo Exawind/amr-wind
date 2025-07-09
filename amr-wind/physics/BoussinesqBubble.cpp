@@ -32,8 +32,11 @@ void BoussinesqBubble::initialize_fields(int level, const amrex::Geometry& geom)
     auto& density = m_density(level);
     auto& scalars = (*m_temperature)(level);
 
+#ifdef AMREX_USE_OMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
     for (amrex::MFIter mfi(density); mfi.isValid(); ++mfi) {
-        const auto& vbx = mfi.validbox();
+        const auto& vbx = mfi.tilebox();
 
         (*m_field_init)(
             vbx, geom, velocity.array(mfi), density.array(mfi),

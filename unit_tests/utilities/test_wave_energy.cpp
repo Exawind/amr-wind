@@ -23,7 +23,7 @@ void init_velocity(amr_wind::Field& fld)
                 farrs[nbx](i, j, k, 2) = i;
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 void init_vof(amr_wind::Field& fld)
@@ -52,7 +52,7 @@ void init_vof(amr_wind::Field& fld)
                 }
             });
     }
-    amrex::Gpu::synchronize();
+    amrex::Gpu::streamSynchronize();
 }
 
 class WaveEnergyImpl : public amr_wind::wave_energy::WaveEnergy
@@ -92,7 +92,7 @@ protected:
         }
         {
             amrex::ParmParse pp("waveenergy");
-            pp.add("output_frequency", 1);
+            pp.add("output_interval", 1);
             pp.add("water_level", m_wlev);
         }
         {
@@ -136,7 +136,7 @@ TEST_F(WaveEnergyTest, checkoutput)
     // Initialize postprocessing tool
     WaveEnergyImpl tool(sim(), "waveenergy");
     tool.initialize();
-    tool.post_advance_work();
+    tool.output_actions();
 
     // Get answers
     amrex::Real ke = 0.0;
