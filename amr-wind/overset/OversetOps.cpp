@@ -89,13 +89,6 @@ void OversetOps::pre_advance_work()
                     (m_gp_copy)->num_grow());
             }
         }
-        if (!m_disable_nodal_proj) {
-            // Calculate vof-dependent node mask
-            const auto& iblank = m_sim_ptr->repo().get_int_field("iblank_node");
-            const auto& vof = m_sim_ptr->repo().get_field("vof");
-            auto& mask = m_sim_ptr->repo().get_int_field("mask_node");
-            overset_ops::iblank_to_mask_vof(iblank, vof, mask);
-        }
     }
 
     // Pre advance work for plane was skipped for overset solver, do it here
