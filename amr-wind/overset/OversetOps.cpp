@@ -265,12 +265,19 @@ void OversetOps::sharpen_nalu_data()
     }
     amrex::Gpu::streamSynchronize();
 
-    // Replace vof with original values in amr domain
+    amrex::Real target_err0 = 0.;
     for (int lev = 0; lev < nlevels; ++lev) {
+        // Replace vof with original values in amr domain
         overset_ops::harmonize_vof(
             (*target_vof)(lev), vof(lev), iblank_cell(lev));
+        // Get initial error from target field
+        const amrex::Real target_err_lev =
+            overset_ops::measure_target_convergence(
+                (*target_vof)(lev), vof(lev));
+        target_err0 += target_err_lev;
     }
     amrex::Gpu::streamSynchronize();
+    amrex::ParallelDescriptor::ReduceRealSum(target_err0);
 
     // Put fluxes in vector for averaging down during iterations
     amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>> fluxes(
@@ -348,6 +355,9 @@ void OversetOps::sharpen_nalu_data()
         ptfac = m_pCFL * ptfac;
 
         // Apply fluxes
+        if (calc_convg) {
+            target_err = 0.;
+        }
         for (int lev = 0; lev < nlevels; ++lev) {
             const auto dx = (geom[lev]).CellSizeArray();
 
@@ -364,7 +374,7 @@ void OversetOps::sharpen_nalu_data()
                 const amrex::Real target_err_lev =
                     overset_ops::measure_target_convergence(
                         (*target_vof)(lev), vof(lev));
-                target_err = amrex::max(target_err, target_err_lev);
+                target_err += target_err_lev;
             }
         }
         amrex::Gpu::streamSynchronize();
@@ -375,14 +385,16 @@ void OversetOps::sharpen_nalu_data()
         // Ensure that err is same across processors
         if (calc_convg) {
             amrex::ParallelDescriptor::ReduceRealMax(err);
-            amrex::ParallelDescriptor::ReduceRealMax(target_err);
+            amrex::ParallelDescriptor::ReduceRealSum(target_err);
         }
 
         if (m_verbose > 0) {
             amrex::Print() << "OversetOps: sharpen step " << std::setw(2) << n
                            << "  conv. err " << std::scientific
                            << std::setprecision(4) << err << " targ_err "
-                           << target_err << " p-dt " << ptfac << std::endl;
+                           << target_err << " "
+                           << target_err / target_err0
+                           << " p-dt " << ptfac << std::endl;
         }
     }
 

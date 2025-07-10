@@ -639,15 +639,14 @@ amrex::Real measure_target_convergence(
     amrex::MultiFab& mf_vof_target, amrex::MultiFab& mf_vof)
 {
     // Get the maximum flux magnitude, but just for vof fluxes
-    return amrex::ReduceMax(
+    return amrex::ReduceSum(
         mf_vof, mf_vof_target, 0,
         [=] AMREX_GPU_HOST_DEVICE(
             amrex::Box const& bx, amrex::Array4<amrex::Real const> const& vof,
             amrex::Array4<amrex::Real const> const& targ) -> amrex::Real {
-            amrex::Real err_fab = -1.0;
+            amrex::Real err_fab = 0.0;
             amrex::Loop(bx, [=, &err_fab](int i, int j, int k) noexcept {
-                err_fab =
-                    amrex::max(err_fab, std::abs(vof(i, j, k) - targ(i, j, k)));
+                err_fab += std::abs(vof(i, j, k) - targ(i, j, k));
             });
             return err_fab;
         });
