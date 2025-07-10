@@ -70,6 +70,12 @@ void MOData::update_fluxes(int max_iters)
             surf_temp_flux = -(theta_mean - surf_temp) * utau * kappa /
                              (std::log(zref / z0t) - psi_h);
             break;
+
+        case ThetaCalcType::NEAR_SURFACE_TEMPERATURE:
+            amrex::Print()
+                << "To be implemented..."
+                << std::endl;
+            break;
         }
 
         if (std::abs(surf_temp_flux) > eps) {

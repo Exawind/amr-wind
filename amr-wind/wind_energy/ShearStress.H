@@ -216,6 +216,11 @@ struct ShearStressDonelan
         case amr_wind::MOData::ThetaCalcType::SURFACE_TEMPERATURE:
             flux = 0.0012 * wspd_mean * (theta_surface - theta_mean);
             break;
+        case amr_wind::MOData::ThetaCalcType::NEAR_SURFACE_TEMPERATURE:
+            amrex::Print()
+                << "To be implemented..."
+                << std::endl;
+            break;
         }
         return flux;
     };
