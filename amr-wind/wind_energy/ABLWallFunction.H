@@ -59,9 +59,9 @@ private:
     amrex::Vector<amrex::Real> m_surf_temp_value;
 
     //! Ability to read in a table of near-surface temperature verus time.
-    std::string m_near_surf_temp_timetable;
-    amrex::Vector<amrex::Real> m_near_surf_temp_time;
-    amrex::Vector<amrex::Real> m_near_surf_temp_value;
+    std::string m_nearsurf_temp_timetable;
+    amrex::Vector<amrex::Real> m_nearsurf_temp_time;
+    amrex::Vector<amrex::Real> m_nearsurf_temp_value;
 
     bool m_temp_flux{true};
     bool m_surf_temp{false};

@@ -52,8 +52,8 @@ void MOData::update_fluxes(int max_iters)
     amrex::Real utau_iter = 0.0;
 
     // Initialize variables
-    amrex::Real psi_m = 0.0;
-    amrex::Real psi_h = 0.0;
+    amrex::Real psi_m_zref = 0.0;
+    amrex::Real psi_h_zref = 0.0;
     utau = kappa * vmag_mean / (std::log(zref / z0));
 
     int iter = 0;
@@ -61,20 +61,28 @@ void MOData::update_fluxes(int max_iters)
         utau_iter = utau;
         switch (alg_type) {
         case ThetaCalcType::HEAT_FLUX:
-            surf_temp = surf_temp_flux * (std::log(zref / z0t) - psi_h) /
+            surf_temp = alpha_h * surf_temp_flux * (std::log(zref / z0t) - psi_h_zref) /
                             (utau * kappa) +
                         theta_mean;
             break;
 
         case ThetaCalcType::SURFACE_TEMPERATURE:
             surf_temp_flux = -(theta_mean - surf_temp) * utau * kappa /
-                             (std::log(zref / z0t) - psi_h);
+                             (alpha_h * (std::log(zref / z0t) - psi_h_zref));
             break;
 
         case ThetaCalcType::NEAR_SURFACE_TEMPERATURE:
-            amrex::Print()
-                << "To be implemented..."
-                << std::endl;
+            amrex::Real psi_h_zNearSurf = calc_psi_h(zNearSurf / obukhov_len);
+            amrex::Real a11 = 1.0;
+            amrex::Real a12 = -(alpha_h / (kappa * utau)) * (std::log(zref / z0t) - psi_h_zref);
+            amrex::Real a21 = 1.0;
+            amrex::Real a22 = -(alpha_h / (kappa * utau)) * (std::log(zNearSurf / z0t) - psi_h_zNearSurf);
+
+            amrex::Real coeff = 1.0 / (a11*a21 - a12*a21);
+
+            surf_temp = coeff * (a22*theta_mean - a12*near_surf_temp);
+            surf_temp_flux = coeff * (-a21*theta_mean + a11*near_surf_temp);
+
             break;
         }
 
@@ -88,9 +96,9 @@ void MOData::update_fluxes(int max_iters)
             obukhov_len = std::numeric_limits<amrex::Real>::max();
             zeta = 0.0;
         }
-        psi_m = calc_psi_m(zeta);
-        psi_h = calc_psi_h(zeta);
-        utau = kappa * vmag_mean / (std::log(zref / z0) - psi_m);
+        psi_m_zref = calc_psi_m(zeta);
+        psi_h_zref = calc_psi_h(zeta);
+        utau = kappa * vmag_mean / (std::log(zref / z0) - psi_m_zref);
         ++iter;
     } while ((std::abs(utau_iter - utau) > 1e-5) && iter <= max_iters);
 
@@ -98,8 +106,8 @@ void MOData::update_fluxes(int max_iters)
         amrex::Print()
             << "MOData::update_fluxes: Convergence criteria not met after "
             << max_iters << " iterations\nObuhov length = " << obukhov_len
-            << " zeta = " << zeta << "\npsi_m = " << psi_m
-            << " psi_h = " << psi_h << "\nutau = " << utau
+            << " zeta = (z_ref/L) = " << zeta << "\npsi_m(z_ref/L) = " << psi_m_zref
+            << " psi_h(z_ref/L) = " << psi_h_zref << "\nutau = " << utau
             << " Tsurf = " << surf_temp << " q = " << surf_temp_flux
             << std::endl;
     }

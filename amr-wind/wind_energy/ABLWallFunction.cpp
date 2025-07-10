@@ -26,6 +26,7 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
 
     amrex::ParmParse pp("ABL");
     pp.query("kappa", m_mo.kappa);
+    pp.query("mo_alpha_h", m_mo.alpha_h);
     pp.query("mo_gamma_m", m_mo.gamma_m);
     pp.query("mo_gamma_h", m_mo.gamma_h);
     pp.query("mo_beta_m", m_mo.beta_m);
@@ -92,26 +93,26 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
                 "specifying near-surface temperature.");
         }
 
-        pp.query("near_surface_temp_timetable", m_near_surf_temp_timetable);
+        pp.query("near_surface_temp_timetable", m_nearsurf_temp_timetable);
 
         amrex::Print() << "ABLWallFunction: Near-surface temperature time table "
                           "mode is selected."
                        << std::endl;
 
         if (!m_nearsurf_temp_timetable.empty()) {
-            std::ifstream ifh(m_surf_temp_timetable, std::ios::in);
+            std::ifstream ifh(m_nearsurf_temp_timetable, std::ios::in);
             if (!ifh.good()) {
                 amrex::Abort(
-                    "Cannot find surface_temp_timetable file: " +
-                    m_surf_temp_timetable);
+                    "Cannot find near_surface_temp_timetable file: " +
+                    m_nearsurf_temp_timetable);
             }
             amrex::Real data_time;
             amrex::Real data_value;
             ifh.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             while (ifh >> data_time) {
                 ifh >> data_value;
-                m_surf_temp_time.push_back(data_time);
-                m_surf_temp_value.push_back(data_value);
+                m_nearsurf_temp_time.push_back(data_time);
+                m_nearsurf_temp_value.push_back(data_value);
             }
         }
 
@@ -122,7 +123,7 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
         m_surf_temp = true;
         m_nearsurf_temp = false;
 
-        if (pp.contains("surface_temp_timetable") {
+        if (pp.contains("surface_temp_timetable")) {
             m_surf_temp_use_table = true;
             m_surf_temp_use_rate = false;
 
@@ -215,7 +216,7 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
     } else if (m_nearsurf_temp) {
         m_mo.alg_type = MOData::ThetaCalcType::NEAR_SURFACE_TEMPERATURE;
     } else {
-        m_mo.alg_type = MODATA::ThetaCalcType::HEAT_FLUX;
+        m_mo.alg_type = MOData::ThetaCalcType::HEAT_FLUX;
     }
 
 

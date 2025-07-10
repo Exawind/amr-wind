@@ -20,10 +20,10 @@ namespace amr_wind {
 struct MOData
 {
     enum class ThetaCalcType {
-        HEAT_FLUX = 0,      ///< Heat-flux specified
-        SURFACE_TEMPERATURE ///< Surface temperature specified
-        NEAR_SURFACE_TEMPERATURE = 0, ///< Temperature specified above but 
-                                      ///< near the surface
+        HEAT_FLUX = 0,                ///< Heat-flux specified
+        SURFACE_TEMPERATURE = 1,      ///< Surface temperature specified
+        NEAR_SURFACE_TEMPERATURE = 2, ///< Temperature specified above but 
+                                      //   near the surface
     };
 
     amrex::Real zref{0.0};           ///< Reference height (m)
@@ -45,6 +45,7 @@ struct MOData
     amrex::Real surf_temp;           ///< Instantaneous surface temperature
     amrex::Real near_surf_temp;      ///< Instantaneous near-surface temperature (at zNearSurf).
 
+    amrex::Real alpha_h{1.0};
     amrex::Real gamma_m{5.0};
     amrex::Real gamma_h{5.0};
     amrex::Real beta_m{16.0};
