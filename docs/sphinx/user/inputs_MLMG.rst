@@ -7,7 +7,7 @@ Section: MLMG options
 
    For further information the user is directed to the `AMReX linear
    solver documentation
-   <ttps://amrex-codes.github.io/amrex/docs_html/LinearSolvers_Chapter.html>`_
+   <https://amrex-codes.github.io/amrex/docs_html/LinearSolvers_Chapter.html>`_
    and other `AMReX runtime parameters
    <https://amrex-codes.github.io/amrex/docs_html/RuntimeParameters.html>_`
 
