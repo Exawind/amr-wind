@@ -1,0 +1,14 @@
+.. meta::e5c02ce509528673c29908a721380d705ece4052af0e870336442a58773fd94041af96ba587d3929b1e19179b368e72408c93236156dab138f94f1db9e3a073a
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/actuator/turbine/turbine_utils.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/wind\_energy/actuator/turbine/turbine\_utils.cpp File Reference
+============================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: turbine__utils_8cpp.html

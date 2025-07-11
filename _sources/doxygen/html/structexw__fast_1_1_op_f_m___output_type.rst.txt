@@ -1,0 +1,14 @@
+.. meta::bd98bf20877aa5b3c3d552cd20470f931aad986616a2cb53149d153f1589522059c9c24a2e2b3e3ebbecef148bdb1ae03f8917753c86bfbc92237ef7391eb6a0
+
+:orphan:
+
+.. title:: AMR-Wind API: exw_fast::OpFM_OutputType Struct Reference
+
+OpFM\_OutputType Struct Reference
+=================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structexw__fast_1_1_op_f_m___output_type.html

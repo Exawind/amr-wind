@@ -1,0 +1,14 @@
+.. meta::ca61dc57cd6d9699711f9f341d7ac314fb4627ae0fa008409e90849c8db3d5642a56c85cef618d28af5b6b2f0c0f24cdab6e36cbaf9a9ab2d4b24d7e69ceb793
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::CurvatureRefinement Class Reference
+
+CurvatureRefinement Class Reference
+===================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_curvature_refinement.html

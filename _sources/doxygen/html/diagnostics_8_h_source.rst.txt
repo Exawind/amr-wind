@@ -1,0 +1,14 @@
+.. meta::cd7e888a15fa7bf8822ff8eddd97191a95587b75ed05039a721cfde6bd6543af9d56377677a5971e122c26a0b224a4e7988d593ba2de11f0cb19b50ff762812d
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/diagnostics.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/diagnostics.H Source File
+================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: diagnostics_8_h_source.html

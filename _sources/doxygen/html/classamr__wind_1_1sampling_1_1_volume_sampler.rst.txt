@@ -1,0 +1,14 @@
+.. meta::942c2eadc6f055038c6e83ea1780c6f7142b957db82f7efbc11596572135a1238a3926b8a7bad0ad10a398eed4d560617c03563c4b4174dd312b08ce6837c64d
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::sampling::VolumeSampler Class Reference
+
+VolumeSampler Class Reference
+=============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1sampling_1_1_volume_sampler.html

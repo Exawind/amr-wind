@@ -1,0 +1,14 @@
+.. meta::73ff51bcc3b09d85d09add8c9d98a5cda5c78e03a9b8789f655d20a11b35a728c3d0d189c917f635ad385d337f185013a508462d051d35561b7784f5e0eaa759
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::udf::CustomScalar Struct Reference
+
+CustomScalar Struct Reference
+=============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1udf_1_1_custom_scalar.html

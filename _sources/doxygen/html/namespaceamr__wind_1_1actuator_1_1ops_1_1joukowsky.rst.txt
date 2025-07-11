@@ -1,0 +1,14 @@
+.. meta::10c3da9c0e22c2e290abf213e6cd84f89994d21179bec5bb23fab5df3d52049d79bb6eef39d7fd14f11e6b2dba766e1fded2ad88c4750b41cd9089964ac00107
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::joukowsky Namespace Reference
+
+joukowsky Namespace Reference
+=============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: namespaceamr__wind_1_1actuator_1_1ops_1_1joukowsky.html
