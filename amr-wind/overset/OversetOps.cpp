@@ -299,9 +299,6 @@ void OversetOps::sharpen_nalu_data()
         err = calc_convg ? 0.0 : err;
         target_err = calc_convg ? 0.0 : target_err;
 
-        // Maximum possible value of pseudo time factor (dtau)
-        amrex::Real ptfac = 1.0;
-
         for (int lev = 0; lev < nlevels; ++lev) {
             // Populate normal vector
             overset_ops::populate_normal_vector(
@@ -338,23 +335,6 @@ void OversetOps::sharpen_nalu_data()
                 repo.mesh().refRatio(lev - 1), geom[lev - 1]);
         }
 
-        // Get pseudo dt (dtau)
-        for (int lev = 0; lev < nlevels; ++lev) {
-            const auto dx = (geom[lev]).CellSizeArray();
-            // Compare vof fluxes to vof in source cells
-            // Convergence tolerance determines what size of fluxes matter
-            const amrex::Real ptfac_lev = overset_ops::calculate_pseudo_dt_flux(
-                (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), vof(lev),
-                iblank_cell(lev), dx, m_convg_tol);
-            ptfac = amrex::min(ptfac, ptfac_lev);
-        }
-        amrex::Gpu::streamSynchronize();
-        amrex::ParallelDescriptor::ReduceRealMin(ptfac);
-
-        // Conform pseudo dt (dtau) to pseudo CFL
-        ptfac = m_pCFL * ptfac;
-        // pseudo dt should be unnecessary now!!
-
         // Apply fluxes
         const amrex::Real target_err_last = target_err;
         if (calc_convg) {
@@ -366,7 +346,7 @@ void OversetOps::sharpen_nalu_data()
             overset_ops::apply_fluxes(
                 (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), (*p_src)(lev),
                 iblank_cell(lev), iblank_node(lev), vof(lev), rho(lev),
-                velocity(lev), gp(lev), p(lev), dx, ptfac, m_vof_tol);
+                velocity(lev), gp(lev), p(lev), dx, m_pCFL, m_vof_tol);
 
             vof(lev).FillBoundary(geom[lev].periodicity());
             velocity(lev).FillBoundary(geom[lev].periodicity());
@@ -395,7 +375,7 @@ void OversetOps::sharpen_nalu_data()
                            << "  conv. err " << std::scientific
                            << std::setprecision(4) << err << " targ_err "
                            << target_err << " " << target_err / target_err0
-                           << " p-dt " << ptfac << std::endl;
+                           << std::endl;
         }
         if (target_err > target_err_last * (1.0 - constants::LOOSE_TOL)) {
             amrex::Print() << "OversetOps: WARNING, target error increased "
