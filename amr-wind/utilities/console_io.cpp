@@ -21,6 +21,8 @@
 #ifdef AMR_WIND_USE_ASCENT
 #include "ascent_config.h"
 #endif
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
 
 namespace amrex {
 const char* buildInfoGetBuildDate();
@@ -194,7 +196,9 @@ void print_tpls(std::ostream& out)
     tpls.push_back(std::string("HYPRE     ") + HYPRE_RELEASE_VERSION);
 #endif
 #ifdef AMR_WIND_USE_OPENFAST
-    tpls.push_back(std::string("OpenFAST  "));
+    std::string of_version =
+        TOSTRING(OPENFAST_VERSION_MAJOR) "." TOSTRING(OPENFAST_VERSION_MINOR);
+    tpls.push_back(std::string("OpenFAST  ") + of_version);
 #endif
 #ifdef AMR_WIND_USE_MASA
     tpls.push_back(std::string("MASA      ") + MASA_LIB_VERSION);
