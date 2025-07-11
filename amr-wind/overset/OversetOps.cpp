@@ -353,8 +353,10 @@ void OversetOps::sharpen_nalu_data()
 
         // Conform pseudo dt (dtau) to pseudo CFL
         ptfac = m_pCFL * ptfac;
+        // pseudo dt should be unnecessary now!!
 
         // Apply fluxes
+        const amrex::Real target_err_last = target_err;
         if (calc_convg) {
             target_err = 0.;
         }
@@ -392,9 +394,13 @@ void OversetOps::sharpen_nalu_data()
             amrex::Print() << "OversetOps: sharpen step " << std::setw(2) << n
                            << "  conv. err " << std::scientific
                            << std::setprecision(4) << err << " targ_err "
-                           << target_err << " "
-                           << target_err / target_err0
+                           << target_err << " " << target_err / target_err0
                            << " p-dt " << ptfac << std::endl;
+        }
+        if (target_err > target_err_last * (1.0 - constants::LOOSE_TOL)) {
+            amrex::Print() << "OversetOps: WARNING, target error increased "
+                           << target_err_last << " -> " << target_err
+                           << std::endl;
         }
     }
 
