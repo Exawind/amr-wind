@@ -46,6 +46,7 @@ void populate_sharpen_fluxes(
     amrex::MultiFab& mf_fx,
     amrex::MultiFab& mf_fy,
     amrex::MultiFab& mf_fz,
+    const amrex::iMultiFab& mf_iblank_cell,
     const amrex::MultiFab& mf_vof,
     const amrex::MultiFab& mf_target_vof,
     const amrex::MultiFab& mf_norm,
@@ -78,6 +79,7 @@ amrex::Real calculate_pseudo_dt_flux(
     const amrex::MultiFab& mf_fy,
     const amrex::MultiFab& mf_fz,
     const amrex::MultiFab& mf_vof,
+    const amrex::iMultiFab& mf_iblank,
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dx,
     const amrex::Real tol);
 
@@ -87,6 +89,8 @@ void apply_fluxes(
     const amrex::MultiFab& mf_fy,
     const amrex::MultiFab& mf_fz,
     const amrex::MultiFab& mf_psource,
+    const amrex::iMultiFab& mf_iblank_cell,
+    const amrex::iMultiFab& mf_iblank_node,
     amrex::MultiFab& mf_vof,
     amrex::MultiFab& mf_dens,
     amrex::MultiFab& mf_vel,
@@ -97,11 +101,16 @@ void apply_fluxes(
     const amrex::Real vof_tol);
 
 // Get the size of the smallest VOF flux to quantify convergence
-amrex::Real measure_convergence(
+amrex::Real measure_flux_convergence(
     amrex::MultiFab& mf_fx, amrex::MultiFab& mf_fy, amrex::MultiFab& mf_fz);
 
+// Get the difference between the current vof and the target vof
+amrex::Real measure_target_convergence(
+    amrex::MultiFab& mf_vof_target, amrex::MultiFab& mf_vof);
+
 // Set levelset field to another quantity to view in plotfile for debugging
-void equate_field(amrex::MultiFab& mf_dest, const amrex::MultiFab& mf_src);
+void equate_field(
+    amrex::MultiFab& mf_dest, const amrex::MultiFab& mf_src, const int icomp);
 
 // Swap pressure gradient values in overset region
 void replace_gradp(
