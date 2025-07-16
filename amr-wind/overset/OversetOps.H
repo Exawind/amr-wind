@@ -27,6 +27,10 @@ private:
     // Check for multiphase sim
     bool m_vof_exists{false};
 
+    // Option to turn off all multiphase-specific treatments (for testing and
+    // comparison)
+    bool m_disable_mphase_ops{false};
+
     // Coupling options
     bool m_replace_gradp_postsolve{true};
 

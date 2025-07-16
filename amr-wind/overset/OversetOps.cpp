@@ -28,8 +28,11 @@ void OversetOps::initialize(CFDSim& sim)
     pp.query("replace_gradp_postsolve", m_replace_gradp_postsolve);
     pp.query("verbose", m_verbose);
 
+    // Option to turn it all off
+    pp.query("disable_mphase_ops", m_disable_mphase_ops);
+
     m_vof_exists = m_sim_ptr->repo().field_exists("vof");
-    if (m_vof_exists) {
+    if (m_vof_exists && !m_disable_mphase_ops) {
         m_mphase = &m_sim_ptr->physics_manager().get<MultiPhase>();
 
         // Check combination of pressure options
@@ -68,7 +71,7 @@ void OversetOps::pre_advance_work()
     // Update pressure gradient using updated overset pressure field
     update_gradp();
 
-    if (m_vof_exists) {
+    if (m_vof_exists && !m_disable_mphase_ops) {
         // Reinitialize fields
         sharpen_nalu_data();
         // Update pressure gradient using sharpened pressure field
@@ -153,7 +156,7 @@ void OversetOps::update_gradp()
 void OversetOps::post_advance_work()
 {
     // Replace and reapply pressure gradient if requested
-    if (m_vof_exists && m_replace_gradp_postsolve) {
+    if (m_vof_exists && m_replace_gradp_postsolve && !m_disable_mphase_ops) {
         replace_masked_gradp();
     }
 }
@@ -166,30 +169,37 @@ void OversetOps::parameter_output() const
 {
     // Print the details
     if (m_verbose > 0 && m_vof_exists) {
-        // Important parameters
-        amrex::Print() << "\nOverset Coupling Parameters: \n"
-                       << "---- Replace overset pres grad: "
-                       << m_replace_gradp_postsolve << std::endl;
-        amrex::Print() << "---- Perturbational pressure  : "
-                       << m_mphase->perturb_pressure() << std::endl
-                       << "---- Reconstruct true pressure: "
-                       << m_mphase->reconstruct_true_pressure() << std::endl;
-        amrex::Print() << "Overset Reinitialization Parameters:\n"
-                       << "---- Maximum iterations   : " << m_n_iterations
-                       << std::endl
-                       << "---- Convergence tolerance: " << m_convg_tol
-                       << std::endl
-                       << "---- Relative length scale: "
-                       << m_relative_length_scale << std::endl
-                       << "---- Upwinding VOF margin : " << m_upw_margin
-                       << std::endl
-                       << "---- Pseudo CFL: " << m_pCFL << std::endl;
-        if (m_verbose > 1) {
-            // Less important or less used parameters
-            amrex::Print() << "---- Calc. conv. interval : "
-                           << m_calc_convg_interval << std::endl
-                           << "---- Target field cutoff  : " << m_target_cutoff
+        if (m_disable_mphase_ops) {
+            amrex::Print()
+                << "\nOverset Coupling: multiphase operations are disabled\n";
+        } else {
+            // Important parameters
+            amrex::Print() << "\nOverset Coupling Parameters: \n"
+                           << "---- Replace overset pres grad: "
+                           << m_replace_gradp_postsolve << std::endl;
+            amrex::Print() << "---- Perturbational pressure  : "
+                           << m_mphase->perturb_pressure() << std::endl
+                           << "---- Reconstruct true pressure: "
+                           << m_mphase->reconstruct_true_pressure()
                            << std::endl;
+            amrex::Print() << "Overset Reinitialization Parameters:\n"
+                           << "---- Maximum iterations   : " << m_n_iterations
+                           << std::endl
+                           << "---- Convergence tolerance: " << m_convg_tol
+                           << std::endl
+                           << "---- Relative length scale: "
+                           << m_relative_length_scale << std::endl
+                           << "---- Upwinding VOF margin : " << m_upw_margin
+                           << std::endl
+                           << "---- Pseudo CFL: " << m_pCFL << std::endl;
+            if (m_verbose > 1) {
+                // Less important or less used parameters
+                amrex::Print()
+                    << "---- Calc. conv. interval : " << m_calc_convg_interval
+                    << std::endl
+                    << "---- Target field cutoff  : " << m_target_cutoff
+                    << std::endl;
+            }
         }
         amrex::Print() << std::endl;
     }
