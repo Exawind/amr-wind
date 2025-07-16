@@ -17,6 +17,8 @@ SloshingTank::SloshingTank(CFDSim& sim)
     pp.query("peak_enhance", m_kappa);
     pp.query("water_level", m_waterlevel);
 
+    pp.query("initialize_pressure", m_init_p);
+
     const auto& mphase = sim.physics_manager().get<MultiPhase>();
     m_rho1 = mphase.rho1();
     m_rho2 = mphase.rho2();
@@ -46,8 +48,8 @@ void SloshingTank::initialize_fields(int level, const amrex::Geometry& geom)
     const amrex::Real rho2 = m_rho2;
     const amrex::Real grav_z = m_gravity[2];
 
-    auto phi = levelset.arrays();
-    auto p = pressure.arrays();
+    const auto& phi_arrs = levelset.arrays();
+    const auto& p = pressure.arrays();
 
     amrex::ParallelFor(
         levelset, amrex::IntVect(0),
@@ -86,6 +88,33 @@ void SloshingTank::initialize_fields(int level, const amrex::Geometry& geom)
             // Add term to reference pressure
             p[nbx](i, j, k) = -irho * grav_z;
         });
+
+    if (m_init_p) {
+        amrex::ParallelFor(
+            pressure, amrex::IntVect(0),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                // For pressure nodes, no offset
+                const amrex::Real x = problo[0] + i * dx[0];
+                const amrex::Real y = problo[1] + j * dx[1];
+                const amrex::Real z = problo[2] + k * dx[2];
+                const amrex::Real z0 =
+                    water_level +
+                    Amp * std::exp(
+                              -kappa * (std::pow(x - problo[0] - 0.5 * Lx, 2) +
+                                        std::pow(y - problo[1] - 0.5 * Ly, 2)));
+                // Integrated (top-down in z) phase heights to pressure node
+                amrex::Real ih_g =
+                    amrex::max(0.0, amrex::min(probhi[2] - z0, probhi[2] - z));
+                amrex::Real ih_l =
+                    amrex::max(0.0, amrex::min(z0 - z, z0 - problo[2]));
+                // Integrated rho at pressure node
+                const amrex::Real irho = rho1 * ih_l + rho2 * ih_g;
+
+                // Add term to reference pressure
+                p[nbx](i, j, k) = -irho * grav_z;
+            });
+    }
+    amrex::Gpu::streamSynchronize();
 }
 
 } // namespace amr_wind
