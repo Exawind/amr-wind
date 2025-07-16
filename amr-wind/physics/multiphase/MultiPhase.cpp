@@ -145,7 +145,8 @@ void MultiPhase::post_init_actions()
         // Initialize rho0 field for perturbational density, pressure
         auto& p = m_sim.repo().get_field("p");
         hydrostatic::define_p0(
-            p, m_rho1, m_rho2, m_water_level0, m_gravity[2], m_sim.mesh().Geom());
+            p, m_rho1, m_rho2, m_water_level0, m_gravity[2],
+            m_sim.mesh().Geom());
     }
 }
 
