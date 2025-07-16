@@ -84,6 +84,7 @@ void SloshingTank::initialize_fields(int level, const amrex::Geometry& geom)
             // Add term to reference pressure
             p[nbx](i, j, k) = -irho * grav_z;
         });
+    amrex::Gpu::streamSynchronize();
 }
 
 } // namespace amr_wind
