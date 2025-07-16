@@ -233,24 +233,10 @@ void populate_normal_vector(
     amrex::ParallelFor(
         mf_normvec, mf_normvec.n_grow - amrex::IntVect(1),
         [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-            // Neumann condition across nalu bdy
-            int ibdy =
-                (iblank[nbx](i, j, k) != iblank[nbx](i - 1, j, k)) ? -1 : 0;
-            int jbdy =
-                (iblank[nbx](i, j, k) != iblank[nbx](i, j - 1, k)) ? -1 : 0;
-            int kbdy =
-                (iblank[nbx](i, j, k) != iblank[nbx](i, j, k - 1)) ? -1 : 0;
-            // no cell should be isolated such that -1 and 1 are needed
-            ibdy =
-                (iblank[nbx](i, j, k) != iblank[nbx](i + 1, j, k)) ? +1 : ibdy;
-            jbdy =
-                (iblank[nbx](i, j, k) != iblank[nbx](i, j + 1, k)) ? +1 : jbdy;
-            kbdy =
-                (iblank[nbx](i, j, k) != iblank[nbx](i, j, k + 1)) ? +1 : kbdy;
             // Calculate normal
             amrex::Real mx, my, mz, mmag;
             multiphase::youngs_finite_difference_normal_neumann(
-                i, j, k, ibdy, jbdy, kbdy, vof[nbx], mx, my, mz);
+                i, j, k, iblank[nbx], vof[nbx], mx, my, mz);
             // Normalize normal
             mmag = std::sqrt(mx * mx + my * my + mz * mz + 1e-20);
             // Save normal
@@ -415,74 +401,65 @@ amrex::Real calculate_pseudo_velocity_scale(
                                     : pvmax;
 }
 
-// Calculate a type of CFL by measuring how much % VOF is being removed per cell
+// Calculate a type of CFL using bounds of VOF
 amrex::Real calculate_pseudo_dt_flux(
     const amrex::MultiFab& mf_fx,
     const amrex::MultiFab& mf_fy,
     const amrex::MultiFab& mf_fz,
     const amrex::MultiFab& mf_vof,
+    amrex::MultiFab& mf_dvof,
+    const amrex::iMultiFab& mf_iblank,
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dx,
     const amrex::Real tol)
 {
-    // Get the maximum flux magnitude, but just for vof fluxes
-    const amrex::Real pdt_fx = amrex::ReduceMin(
-        mf_fx, mf_vof, 0,
+    const auto& fx = mf_fx.const_arrays();
+    const auto& fy = mf_fy.const_arrays();
+    const auto& fz = mf_fz.const_arrays();
+    const auto& ibc = mf_iblank.const_arrays();
+    const auto& vof = mf_vof.const_arrays();
+    auto dvof = mf_dvof.arrays();
+
+    // Apply VOF fluxes fully
+    amrex::ParallelFor(
+        mf_vof, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            const amrex::Real ibfac = ibc[nbx](i, j, k) == -1 ? 1.0 : 0.0;
+            dvof[nbx](i, j, k) =
+                ibfac *
+                ((fx[nbx](i + 1, j, k, 0) - fx[nbx](i, j, k, 0)) / dx[0] +
+                 (fy[nbx](i, j + 1, k, 0) - fy[nbx](i, j, k, 0)) / dx[1] +
+                 (fz[nbx](i, j, k + 1, 0) - fz[nbx](i, j, k, 0)) / dx[2]);
+        });
+    // Get get pseudo-dt based on overshoots, undershoots
+    const amrex::Real pdt = amrex::ReduceMin(
+        mf_vof, mf_dvof, mf_iblank, 0,
         [=] AMREX_GPU_HOST_DEVICE(
-            amrex::Box const& bx, amrex::Array4<amrex::Real const> const& fx,
-            amrex::Array4<amrex::Real const> const& vof) -> amrex::Real {
+            amrex::Box const& bx, amrex::Array4<amrex::Real const> const& vof,
+            amrex::Array4<amrex::Real const> const& dvof,
+            amrex::Array4<int const> const& iblank) -> amrex::Real {
             amrex::Real pdt_fab = 1.0;
             amrex::Loop(bx, [=, &pdt_fab](int i, int j, int k) noexcept {
                 amrex::Real pdt_lim = 1.0;
-                if (fx(i, j, k, 0) > tol && vof(i, j, k) > tol) {
-                    // VOF is removed from cell i
-                    pdt_lim = vof(i, j, k) * dx[0] / fx(i, j, k, 0);
-                } else if (fx(i, j, k, 0) < -tol && vof(i - 1, j, k) > tol) {
-                    // VOF is removed from cell i-1
-                    pdt_lim = vof(i - 1, j, k) * dx[0] / -fx(i, j, k, 0);
+                if (iblank(i, j, k) == -1) {
+                    const amrex::Real pdt_lim_old = pdt_lim;
+                    pdt_lim =
+                        vof(i, j, k) + dvof(i, j, k) < -constants::EPS
+                            ? amrex::min(
+                                  -vof(i, j, k) /
+                                      (dvof(i, j, k) - constants::EPS),
+                                  pdt_lim)
+                            : pdt_lim;
+                    pdt_lim =
+                        vof(i, j, k) + dvof(i, j, k) > 1. + constants::EPS
+                            ? amrex::min(
+                                  (1. - vof(i, j, k)) /
+                                      (dvof(i, j, k) + constants::EPS),
+                                  pdt_lim)
+                            : pdt_lim;
                 }
                 pdt_fab = amrex::min(pdt_fab, pdt_lim);
             });
             return pdt_fab;
         });
-    const amrex::Real pdt_fy = amrex::ReduceMin(
-        mf_fy, mf_vof, 0,
-        [=] AMREX_GPU_HOST_DEVICE(
-            amrex::Box const& bx, amrex::Array4<amrex::Real const> const& fy,
-            amrex::Array4<amrex::Real const> const& vof) -> amrex::Real {
-            amrex::Real pdt_fab = 1.0;
-            amrex::Loop(bx, [=, &pdt_fab](int i, int j, int k) noexcept {
-                amrex::Real pdt_lim = 1.0;
-                if (fy(i, j, k, 0) > tol && vof(i, j, k) > tol) {
-                    // VOF is removed from cell j
-                    pdt_lim = vof(i, j, k) * dx[1] / fy(i, j, k, 0);
-                } else if (fy(i, j, k, 0) < -tol && vof(i, j - 1, k) > tol) {
-                    // VOF is removed from cell j-1
-                    pdt_lim = vof(i, j - 1, k) * dx[1] / -fy(i, j, k, 0);
-                }
-                pdt_fab = amrex::min(pdt_fab, pdt_lim);
-            });
-            return pdt_fab;
-        });
-    const amrex::Real pdt_fz = amrex::ReduceMin(
-        mf_fz, mf_vof, 0,
-        [=] AMREX_GPU_HOST_DEVICE(
-            amrex::Box const& bx, amrex::Array4<amrex::Real const> const& fz,
-            amrex::Array4<amrex::Real const> const& vof) -> amrex::Real {
-            amrex::Real pdt_fab = 1.0;
-            amrex::Loop(bx, [=, &pdt_fab](int i, int j, int k) noexcept {
-                amrex::Real pdt_lim = 1.0;
-                if (fz(i, j, k, 0) > tol && vof(i, j, k) > tol) {
-                    // VOF is removed from cell k
-                    pdt_lim = vof(i, j, k) * dx[2] / fz(i, j, k, 0);
-                } else if (fz(i, j, k, 0) < -tol && vof(i, j, k - 1) > tol) {
-                    // VOF is removed from cell k-1
-                    pdt_lim = vof(i, j, k - 1) * dx[2] / -fz(i, j, k, 0);
-                }
-                pdt_fab = amrex::min(pdt_fab, pdt_lim);
-            });
-            return pdt_fab;
-        });
-    const amrex::Real pdt = amrex::min(pdt_fx, amrex::min(pdt_fy, pdt_fz));
     return pdt;
 }
 
@@ -577,7 +554,7 @@ void apply_fluxes(
 }
 
 // Get the size of the smallest VOF flux to quantify convergence
-amrex::Real measure_convergence(
+amrex::Real measure_flux_convergence(
     amrex::MultiFab& mf_fx, amrex::MultiFab& mf_fy, amrex::MultiFab& mf_fz)
 {
     // Get the maximum flux magnitude, but just for vof fluxes
@@ -618,17 +595,33 @@ amrex::Real measure_convergence(
     return err;
 }
 
+// Get the difference between current vof and target
+amrex::Real measure_target_convergence(
+    amrex::MultiFab& mf_vof_target, amrex::MultiFab& mf_vof)
+{
+    // Get the maximum flux magnitude, but just for vof fluxes
+    return amrex::ReduceSum(
+        mf_vof, mf_vof_target, 0,
+        [=] AMREX_GPU_HOST_DEVICE(
+            amrex::Box const& bx, amrex::Array4<amrex::Real const> const& vof,
+            amrex::Array4<amrex::Real const> const& targ) -> amrex::Real {
+            amrex::Real err_fab = 0.0;
+            amrex::Loop(bx, [=, &err_fab](int i, int j, int k) noexcept {
+                err_fab += std::abs(vof(i, j, k) - targ(i, j, k));
+            });
+            return err_fab;
+        });
+}
+
 // Set levelset field to another quantity to view in plotfile for debugging
-void equate_field(amrex::MultiFab& mf_dest, const amrex::MultiFab& mf_src)
+void equate_field(
+    amrex::MultiFab& mf_dest, const amrex::MultiFab& mf_src, const int icomp)
 {
     const auto& dest = mf_dest.arrays();
     const auto& src = mf_src.const_arrays();
     amrex::ParallelFor(
         mf_dest, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-            dest[nbx](i, j, k) = std::sqrt(
-                src[nbx](i, j, k, 0) * src[nbx](i, j, k, 0) +
-                src[nbx](i, j, k, 1) * src[nbx](i, j, k, 1) +
-                src[nbx](i, j, k, 2) * src[nbx](i, j, k, 2));
+            dest[nbx](i, j, k) = src[nbx](i, j, k, icomp);
         });
 }
 

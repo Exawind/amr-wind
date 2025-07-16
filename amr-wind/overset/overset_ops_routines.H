@@ -72,12 +72,14 @@ amrex::Real calculate_pseudo_velocity_scale(
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx,
     const amrex::Real pvmax);
 
-// Calculate a type of CFL by measuring how much % VOF is being removed per cell
+// Calculate a type of CFL using fluxes and bounds of vof
 amrex::Real calculate_pseudo_dt_flux(
     const amrex::MultiFab& mf_fx,
     const amrex::MultiFab& mf_fy,
     const amrex::MultiFab& mf_fz,
     const amrex::MultiFab& mf_vof,
+    amrex::MultiFab& mf_dvof,
+    const amrex::iMultiFab& mf_iblank,
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dx,
     const amrex::Real tol);
 
@@ -97,11 +99,16 @@ void apply_fluxes(
     const amrex::Real vof_tol);
 
 // Get the size of the smallest VOF flux to quantify convergence
-amrex::Real measure_convergence(
+amrex::Real measure_flux_convergence(
     amrex::MultiFab& mf_fx, amrex::MultiFab& mf_fy, amrex::MultiFab& mf_fz);
 
+// Get the difference between the current vof and the target vof
+amrex::Real measure_target_convergence(
+    amrex::MultiFab& mf_vof_target, amrex::MultiFab& mf_vof);
+
 // Set levelset field to another quantity to view in plotfile for debugging
-void equate_field(amrex::MultiFab& mf_dest, const amrex::MultiFab& mf_src);
+void equate_field(
+    amrex::MultiFab& mf_dest, const amrex::MultiFab& mf_src, const int icomp);
 
 // Swap pressure gradient values in overset region
 void replace_gradp(

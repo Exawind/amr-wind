@@ -40,6 +40,8 @@ private:
     amrex::Real m_relative_length_scale = 1.5;
     amrex::Real m_upw_margin = 0.1;
     amrex::Real m_target_cutoff = 0.0; // proc_tgvof_tol
+    // Maximum pseudoCFL
+    amrex::Real m_pCFL = 1.0;
 
     // Tolerance for VOF-related bound checks
     const amrex::Real m_vof_tol = 1e-12;
