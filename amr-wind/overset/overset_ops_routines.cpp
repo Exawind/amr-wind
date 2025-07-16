@@ -440,7 +440,6 @@ amrex::Real calculate_pseudo_dt_flux(
             amrex::Loop(bx, [=, &pdt_fab](int i, int j, int k) noexcept {
                 amrex::Real pdt_lim = 1.0;
                 if (iblank(i, j, k) == -1) {
-                    const amrex::Real pdt_lim_old = pdt_lim;
                     pdt_lim = vof(i, j, k) + dvof(i, j, k) < -constants::EPS
                                   ? amrex::min(
                                         -vof(i, j, k) /
