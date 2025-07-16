@@ -25,7 +25,6 @@ SloshingTank::SloshingTank(CFDSim& sim)
 
 /** Initialize the velocity and levelset fields at the beginning of the
  *  simulation.
- *
  */
 void SloshingTank::initialize_fields(int level, const amrex::Geometry& geom)
 {
@@ -46,12 +45,11 @@ void SloshingTank::initialize_fields(int level, const amrex::Geometry& geom)
     const amrex::Real rho2 = m_rho2;
     const amrex::Real grav_z = m_gravity[2];
 
-    auto phi = levelset.arrays();
-    auto p = pressure.arrays();
+    const auto& phi_arrs = levelset.arrays();
+    const auto& p = pressure.arrays();
 
     amrex::ParallelFor(
-        levelset, amrex::IntVect(0),
-        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+        levelset, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
             const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
             const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
             const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
@@ -60,7 +58,7 @@ void SloshingTank::initialize_fields(int level, const amrex::Geometry& geom)
                 Amp * std::exp(
                           -kappa * (std::pow(x - problo[0] - 0.5 * Lx, 2) +
                                     std::pow(y - problo[1] - 0.5 * Ly, 2)));
-            phi[nbx](i, j, k) = z0 - z;
+            phi_arrs[nbx](i, j, k) = z0 - z;
         });
 
     amrex::ParallelFor(
