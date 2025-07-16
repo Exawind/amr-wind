@@ -27,7 +27,6 @@ SloshingTank::SloshingTank(CFDSim& sim)
 
 /** Initialize the velocity and levelset fields at the beginning of the
  *  simulation.
- *
  */
 void SloshingTank::initialize_fields(int level, const amrex::Geometry& geom)
 {
@@ -52,8 +51,7 @@ void SloshingTank::initialize_fields(int level, const amrex::Geometry& geom)
     const auto& p = pressure.arrays();
 
     amrex::ParallelFor(
-        levelset, amrex::IntVect(0),
-        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+        levelset, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
             const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
             const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
             const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
@@ -62,31 +60,7 @@ void SloshingTank::initialize_fields(int level, const amrex::Geometry& geom)
                 Amp * std::exp(
                           -kappa * (std::pow(x - problo[0] - 0.5 * Lx, 2) +
                                     std::pow(y - problo[1] - 0.5 * Ly, 2)));
-            phi[nbx](i, j, k) = z0 - z;
-        });
-
-    amrex::ParallelFor(
-        pressure, amrex::IntVect(0),
-        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-            // For pressure nodes, no offset
-            const amrex::Real x = problo[0] + i * dx[0];
-            const amrex::Real y = problo[1] + j * dx[1];
-            const amrex::Real z = problo[2] + k * dx[2];
-            const amrex::Real z0 =
-                water_level +
-                Amp * std::exp(
-                          -kappa * (std::pow(x - problo[0] - 0.5 * Lx, 2) +
-                                    std::pow(y - problo[1] - 0.5 * Ly, 2)));
-            // Integrated (top-down in z) phase heights to pressure node
-            amrex::Real ih_g =
-                amrex::max(0.0, amrex::min(probhi[2] - z0, probhi[2] - z));
-            amrex::Real ih_l =
-                amrex::max(0.0, amrex::min(z0 - z, z0 - problo[2]));
-            // Integrated rho at pressure node
-            const amrex::Real irho = rho1 * ih_l + rho2 * ih_g;
-
-            // Add term to reference pressure
-            p[nbx](i, j, k) = -irho * grav_z;
+            phi_arrs[nbx](i, j, k) = z0 - z;
         });
 
     if (m_init_p) {
