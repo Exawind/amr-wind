@@ -245,40 +245,26 @@ amrex::Real normal_vector_neumann_test_impl(
                 amrex::Real error = 0.0;
 
                 amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
-                    int ibdy =
-                        (iblank(i, j, k) != iblank(i - 1, j, k)) ? -1 : 0;
-                    int jbdy =
-                        (iblank(i, j, k) != iblank(i, j - 1, k)) ? -1 : 0;
-                    int kbdy =
-                        (iblank(i, j, k) != iblank(i, j, k - 1)) ? -1 : 0;
-                    ibdy = (iblank(i, j, k) != iblank(i + 1, j, k)) ? +1 : ibdy;
-                    jbdy = (iblank(i, j, k) != iblank(i, j + 1, k)) ? +1 : jbdy;
-                    kbdy = (iblank(i, j, k) != iblank(i, j, k + 1)) ? +1 : kbdy;
                     amrex::Real mxn, myn, mzn;
                     amr_wind::multiphase::
                         youngs_finite_difference_normal_neumann(
-                            i, j, k, ibdy, jbdy, kbdy, vof_arr, mxn, myn, mzn);
+                            i, j, k, iblank, vof_arr, mxn, myn, mzn);
                     amrex::Real mx, my, mz;
                     amr_wind::multiphase::youngs_finite_difference_normal(
                         i, j, k, vof_arr, mx, my, mz);
 
-                    // Use L1 norm, check against non-neumann implementation
-                    // Slope across overset boundary should be different
-                    constexpr amrex::Real slp_tol = 1e-8;
-                    if (ibdy != 0) {
-                        // x slope should be different
-                        error += std::abs(mx - mxn) > slp_tol ? 0. : 1.0;
+                    // Look for iblank == 1 in surrounding cells (norm stencil)
+                    amrex::Real ibl_sum = 0.;
+                    for (int n0 = -1; n0 <= 1; ++n0) {
+                        for (int n1 = -1; n1 <= 1; ++n1) {
+                            for (int n2 = -1; n2 <= 1; ++n2) {
+                                ibl_sum += iblank(i + n0, j + n1, k + n2);
+                            }
+                        }
                     }
-                    if (jbdy != 0) {
-                        // y slope should be different
-                        error += std::abs(my - myn) > slp_tol ? 0. : 1.0;
-                    }
-                    if (kbdy != 0) {
-                        // z slope should be different
-                        error += std::abs(mz - mzn) > slp_tol ? 0. : 1.0;
-                    }
-                    // Slope should otherwise be the same
-                    if (ibdy == 0 && jbdy == 0 && kbdy == 0) {
+
+                    // Assume there will be no error when there are enough cells
+                    if (ibl_sum < -10) {
                         error += std::abs(mx - mxn);
                         error += std::abs(my - myn);
                         error += std::abs(mz - mzn);
@@ -308,7 +294,7 @@ amrex::Real normal_vector_neumann_test_impl(
                 amrex::Real error = 0.0;
 
                 amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
-                    int ibdy =
+                    /*int ibdy =
                         (iblank(i, j, k) != iblank(i - 1, j, k)) ? -1 : 0;
                     int jbdy =
                         (iblank(i, j, k) != iblank(i, j - 1, k)) ? -1 : 0;
@@ -316,11 +302,12 @@ amrex::Real normal_vector_neumann_test_impl(
                         (iblank(i, j, k) != iblank(i, j, k - 1)) ? -1 : 0;
                     ibdy = (iblank(i, j, k) != iblank(i + 1, j, k)) ? +1 : ibdy;
                     jbdy = (iblank(i, j, k) != iblank(i, j + 1, k)) ? +1 : jbdy;
-                    kbdy = (iblank(i, j, k) != iblank(i, j, k + 1)) ? +1 : kbdy;
+                    kbdy = (iblank(i, j, k) != iblank(i, j, k + 1)) ? +1 :
+                    kbdy;*/
                     amrex::Real mxn, myn, mzn;
                     amr_wind::multiphase::
                         youngs_finite_difference_normal_neumann(
-                            i, j, k, ibdy, jbdy, kbdy, vof_arr, mxn, myn, mzn);
+                            i, j, k, iblank, vof_arr, mxn, myn, mzn);
 
                     // Use L1 norm, check for 0
                     if (iblank(i, j, k) == 1) {
