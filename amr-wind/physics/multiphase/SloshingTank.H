@@ -46,6 +46,8 @@ private:
     //! Initial zero-level free-surface water depth
     amrex::Real m_waterlevel{0.0};
 
+    bool m_init_p{false};
+
     //! Stuff to get from MultiPhase physics
     amrex::Real m_rho1{1000.};
     amrex::Real m_rho2{1.};
