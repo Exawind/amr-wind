@@ -233,10 +233,24 @@ void populate_normal_vector(
     amrex::ParallelFor(
         mf_normvec, mf_normvec.n_grow - amrex::IntVect(1),
         [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            // Neumann condition across nalu bdy
+            int ibdy =
+                (iblank[nbx](i, j, k) != iblank[nbx](i - 1, j, k)) ? -1 : 0;
+            int jbdy =
+                (iblank[nbx](i, j, k) != iblank[nbx](i, j - 1, k)) ? -1 : 0;
+            int kbdy =
+                (iblank[nbx](i, j, k) != iblank[nbx](i, j, k - 1)) ? -1 : 0;
+            // no cell should be isolated such that -1 and 1 are needed
+            ibdy =
+                (iblank[nbx](i, j, k) != iblank[nbx](i + 1, j, k)) ? +1 : ibdy;
+            jbdy =
+                (iblank[nbx](i, j, k) != iblank[nbx](i, j + 1, k)) ? +1 : jbdy;
+            kbdy =
+                (iblank[nbx](i, j, k) != iblank[nbx](i, j, k + 1)) ? +1 : kbdy;
             // Calculate normal
             amrex::Real mx, my, mz, mmag;
             multiphase::youngs_finite_difference_normal_neumann(
-                i, j, k, iblank[nbx], vof[nbx], mx, my, mz);
+                i, j, k, ibdy, jbdy, kbdy, vof[nbx], mx, my, mz);
             // Normalize normal
             mmag = std::sqrt(mx * mx + my * my + mz * mz + 1e-20);
             // Save normal
