@@ -930,7 +930,6 @@ TEST_F(VOFOversetOps, pseudo_vscale_dt)
     auto& iblank = repo.declare_int_field("iblank_cell", 1, nghost);
     iblank.setVal(-1);
     constexpr amrex::Real margin = 0.1;
-    constexpr amrex::Real convg_tol = 1e-8;
     // With vof and target_vof arrays, resulting alpha flux means dt is limited
     // in cell of index 2, with initial of of 0.2, fluxes of -(0.1 + 0.04) / dx
     constexpr amrex::Real pdt_answer = (0.2 / (0.1 + 0.04) * 8) / 8.;
@@ -973,7 +972,7 @@ TEST_F(VOFOversetOps, pseudo_vscale_dt)
         const amrex::Real ptfac_lev =
             amr_wind::overset_ops::calculate_pseudo_dt_flux(
                 flux_x(lev), flux_y(lev), flux_z(lev), vof(lev), dvof(lev),
-                iblank(lev), dx_lev0, convg_tol) /
+                iblank(lev), dx_lev0) /
             pvscale;
         ptfac = amrex::min(ptfac, ptfac_lev);
     }
@@ -994,7 +993,7 @@ TEST_F(VOFOversetOps, pseudo_vscale_dt)
         const amrex::Real ptfac_lev =
             amr_wind::overset_ops::calculate_pseudo_dt_flux(
                 flux_x(lev), flux_y(lev), flux_z(lev), vof(lev), dvof(lev),
-                iblank(lev), dx_lev0, convg_tol) /
+                iblank(lev), dx_lev0) /
             pvscale;
         ptfac = amrex::min(ptfac, ptfac_lev);
     }
@@ -1015,7 +1014,7 @@ TEST_F(VOFOversetOps, pseudo_vscale_dt)
         const amrex::Real ptfac_lev =
             amr_wind::overset_ops::calculate_pseudo_dt_flux(
                 flux_x(lev), flux_y(lev), flux_z(lev), vof(lev), dvof(lev),
-                iblank(lev), dx_lev0, convg_tol) /
+                iblank(lev), dx_lev0) /
             pvscale;
         ptfac = amrex::min(ptfac, ptfac_lev);
     }
@@ -1028,7 +1027,7 @@ TEST_F(VOFOversetOps, pseudo_vscale_dt)
         const amrex::Real ptfac_lev =
             amr_wind::overset_ops::calculate_pseudo_dt_flux(
                 flux_x(lev), flux_y(lev), flux_z(lev), vof(lev), dvof(lev),
-                iblank(lev), dx_lev0, convg_tol) /
+                iblank(lev), dx_lev0) /
             pvscale;
         ptfac = amrex::min(ptfac, ptfac_lev);
     }
