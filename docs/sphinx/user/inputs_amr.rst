@@ -7,10 +7,10 @@ Section: AMReX and AMR
 
    The user is encouraged to refer to the full list of `AMReX runtime
    parameters
-   <https://amrex-codes.github.io/amrex/docs_html/RuntimeParameters.html>_`
+   <https://amrex-codes.github.io/amrex/docs_html/RuntimeParameters.html>`_
    for more advanced usage. Another section of particular interest is
    the `description of AMReX grid creation
-   <https://amrex-codes.github.io/amrex/docs_html/GridCreation.html#sec-grid-creation>_`.
+   <https://amrex-codes.github.io/amrex/docs_html/GridCreation.html#sec-grid-creation>`_.
 
 This section contains some of the common input parameters used by the
 core AMReX mesh data structure ``AmrCore`` to determine the base mesh
@@ -25,11 +25,9 @@ specified through :ref:`inputs_tagging`.
 
 .. input_param:: amr.max_level
 
-   **type:** Integer, optional, default: 0
+   **type:** Integer, mandatory
 
-   The maximum AMR level in the refinement hierarchy. Default value is ``0``
-   indicating a single mesh level with uniform resolution in the three
-   directions.
+   The maximum AMR level in the refinement hierarchy.
 
 .. input_param:: amr.max_grid_size
 
