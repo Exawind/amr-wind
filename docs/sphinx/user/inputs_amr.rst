@@ -7,10 +7,10 @@ Section: AMReX and AMR
 
    The user is encouraged to refer to the full list of `AMReX runtime
    parameters
-   <https://amrex-codes.github.io/amrex/docs_html/RuntimeParameters.html>_`
+   <https://amrex-codes.github.io/amrex/docs_html/RuntimeParameters.html>`_
    for more advanced usage. Another section of particular interest is
    the `description of AMReX grid creation
-   <https://amrex-codes.github.io/amrex/docs_html/GridCreation.html#sec-grid-creation>_`.
+   <https://amrex-codes.github.io/amrex/docs_html/GridCreation.html#sec-grid-creation>`_.
 
 This section contains some of the common input parameters used by the
 core AMReX mesh data structure ``AmrCore`` to determine the base mesh
