@@ -355,7 +355,7 @@ void OversetOps::sharpen_nalu_data()
             // Convergence tolerance determines what size of fluxes matter
             const amrex::Real ptfac_lev = overset_ops::calculate_pseudo_dt_flux(
                 (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), vof(lev),
-                (*delta_vof)(lev), iblank_cell(lev), dx, m_convg_tol);
+                (*delta_vof)(lev), iblank_cell(lev), dx);
             ptfac = amrex::min(ptfac, ptfac_lev);
         }
         amrex::Gpu::streamSynchronize();

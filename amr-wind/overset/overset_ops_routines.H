@@ -80,8 +80,7 @@ amrex::Real calculate_pseudo_dt_flux(
     const amrex::MultiFab& mf_vof,
     amrex::MultiFab& mf_dvof,
     const amrex::iMultiFab& mf_iblank,
-    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dx,
-    const amrex::Real tol);
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dx);
 
 // Apply reinitialization fluxes to modify fields
 void apply_fluxes(
