@@ -90,7 +90,7 @@ youngs_finite_difference_normal_neumann(
     // Cells that are not iblank == -1 get calculated with extrapolation using
     // the average of all valid (relying only on iblank == -1 cells) gradients
     const int ibl_c = iblank(i, j, k);
-    amrex::Gpu::DeviceVector<amrex::Real> dvf{0., 0., 0., 0., 0., 0.};
+    amrex::GpuArray<amrex::Real, 6> dvf{0., 0., 0., 0., 0., 0.};
     const amrex::IntVect iv{i, j, k};
     for (int ddir = 0; ddir < 3; ++ddir) {
         int ct_0 = 0;
@@ -120,7 +120,8 @@ youngs_finite_difference_normal_neumann(
         dvf[ddir + 3] /= (amrex::Real)ct_1 + constants::EPS;
     }
 
-    amrex::Gpu::DeviceVector<amrex::Real> vf(27, 0.);
+    amrex::GpuArray<amrex::Real, 27> vf;
+    vf.fill(0.);
     for (int n0 = -1; n0 <= 1; ++n0) {
         for (int n1 = -1; n1 <= 1; ++n1) {
             for (int n2 = -1; n2 <= 1; ++n2) {
