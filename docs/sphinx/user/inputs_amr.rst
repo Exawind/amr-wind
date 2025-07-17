@@ -25,11 +25,9 @@ specified through :ref:`inputs_tagging`.
 
 .. input_param:: amr.max_level
 
-   **type:** Integer, optional, default: 0
+   **type:** Integer, mandatory
 
-   The maximum AMR level in the refinement hierarchy. Default value is ``0``
-   indicating a single mesh level with uniform resolution in the three
-   directions.
+   The maximum AMR level in the refinement hierarchy.
 
 .. input_param:: amr.max_grid_size
 
