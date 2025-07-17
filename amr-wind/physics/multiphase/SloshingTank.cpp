@@ -34,7 +34,6 @@ void SloshingTank::initialize_fields(int level, const amrex::Geometry& geom)
     velocity.setVal(0.0);
 
     auto& levelset = m_levelset(level);
-    auto& pressure = m_pressure(level);
     const auto& dx = geom.CellSizeArray();
     const auto& problo = geom.ProbLoArray();
     const auto& probhi = geom.ProbHiArray();
@@ -43,12 +42,8 @@ void SloshingTank::initialize_fields(int level, const amrex::Geometry& geom)
     const amrex::Real water_level = m_waterlevel;
     const amrex::Real Lx = probhi[0] - problo[0];
     const amrex::Real Ly = probhi[1] - problo[1];
-    const amrex::Real rho1 = m_rho1;
-    const amrex::Real rho2 = m_rho2;
-    const amrex::Real grav_z = m_gravity[2];
 
     const auto& phi_arrs = levelset.arrays();
-    const auto& p = pressure.arrays();
 
     amrex::ParallelFor(
         levelset, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
@@ -64,6 +59,11 @@ void SloshingTank::initialize_fields(int level, const amrex::Geometry& geom)
         });
 
     if (m_init_p) {
+        const auto& pressure = m_pressure(level);
+        const auto& p = pressure.arrays();
+        const amrex::Real rho1 = m_rho1;
+        const amrex::Real rho2 = m_rho2;
+        const amrex::Real grav_z = m_gravity[2];
         amrex::ParallelFor(
             pressure, amrex::IntVect(0),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
@@ -77,9 +77,9 @@ void SloshingTank::initialize_fields(int level, const amrex::Geometry& geom)
                               -kappa * (std::pow(x - problo[0] - 0.5 * Lx, 2) +
                                         std::pow(y - problo[1] - 0.5 * Ly, 2)));
                 // Integrated (top-down in z) phase heights to pressure node
-                amrex::Real ih_g =
+                const amrex::Real ih_g =
                     amrex::max(0.0, amrex::min(probhi[2] - z0, probhi[2] - z));
-                amrex::Real ih_l =
+                const amrex::Real ih_l =
                     amrex::max(0.0, amrex::min(z0 - z, z0 - problo[2]));
                 // Integrated rho at pressure node
                 const amrex::Real irho = rho1 * ih_l + rho2 * ih_g;
