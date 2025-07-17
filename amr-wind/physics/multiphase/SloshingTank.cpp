@@ -59,7 +59,7 @@ void SloshingTank::initialize_fields(int level, const amrex::Geometry& geom)
         });
 
     if (m_init_p) {
-        const auto& pressure = m_pressure(level);
+        auto& pressure = m_pressure(level);
         const auto& p = pressure.arrays();
         const amrex::Real rho1 = m_rho1;
         const amrex::Real rho2 = m_rho2;
