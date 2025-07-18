@@ -3,6 +3,8 @@
 This directory contains a collection of helpful preprocessing and
 postprocessing utilities.
 
+Remove everything below?
+
 ## Preprocessing scripts
 
 ### naluwind2amrwind.py
