@@ -18,10 +18,6 @@ folder within ``tools/utilities/`` there.
 Python scripts
 --------------
 
-.. input_param:: abl_plots_compare.py
-
-    Plots quantities from ABL statistics file (when in NetCDF format). Also relies on an averages.csv file. *Deprecate?*
-
 .. input_param:: amrex_particle.py
 
     Contains helpful routines for manipulating AMReX particle data.
@@ -33,10 +29,6 @@ Python scripts
 .. input_param:: amrex_utils.py
 
     Contains helpful routines for interacting with AMReX data structures.
-
-.. input_param:: avg_lines.py
-
-    Reads in a line plot file and writes flow statistics to a CSV file. *Deprecate?*
 
 .. input_param:: calc_inflowoutflow_stats.py
 
@@ -74,21 +66,9 @@ Python scripts
 
     Modifies HDF5 attributes of files in order to be read into yt.
 
-.. input_param:: naluwind2amrwind.py
-
-    Script to convert from a Nalu-wind YAML file to an AMR-wind input file. *Deprecate?*
-
 .. input_param:: native_boundary_plane.py
 
     Contains helpful routines for manipulating native boundary plane data.
-
-.. input_param:: plot_lines.py
-
-    Reads in CSV file and generates line plots. *Deprecate?*
-
-.. input_param:: postproamrwind.py
-
-    Tools for post-processing amr-wind data (specifically line plot) *Deprecate?*
 
 .. input_param:: refine_native_boundary_plane.py
 
