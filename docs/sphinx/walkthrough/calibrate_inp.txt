@@ -91,7 +91,7 @@ Actuator.T0.use_root_correction          = true
 #---- postprocessing defs ----
 incflo.post_processing                   = sampling            
 sampling.type                            = Sampling            
-sampling.output_frequency                = 100                 
+sampling.output_interval                = 100                 
 sampling.fields                          = velocity            
 
 #---- sample defs ----
