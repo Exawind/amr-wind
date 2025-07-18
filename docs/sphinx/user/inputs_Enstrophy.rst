@@ -14,7 +14,7 @@ The prefix is the label set in ``incflo.post_processing``. For example
 
    To use enstrophy output specify with keyword ``Enstrophy``
    
-.. input_param:: enst.output_frequency
+.. input_param:: enst.output_interval
 
    **type:** Integer, optional, default = 10
 

@@ -153,7 +153,7 @@ endfunction(add_test_u)
 # Add test that also checks post-processing scripts: sampling
 function(add_test_pps TEST_NAME FORMAT NINT NSTEPS)
     setup_test()
-    set(ADDL_RUNTIME_OPTIONS "sampling.output_format=${FORMAT} sampling.output_frequency=${NINT} time.plot_interval=-1 time.checkpoint_interval=-1 time.max_step=${NSTEPS}")
+    set(ADDL_RUNTIME_OPTIONS "sampling.output_format=${FORMAT} sampling.output_interval=${NINT} time.plot_interval=-1 time.checkpoint_interval=-1 time.max_step=${NSTEPS}")
     add_test("${TEST_NAME}_sampling_${FORMAT}" bash -c "set -o pipefail && ${MPI_COMMANDS} ${CMAKE_BINARY_DIR}/${amr_wind_exe_name} ${MPIEXEC_POSTFLAGS} ${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}.inp ${RUNTIME_OPTIONS} ${ADDL_RUNTIME_OPTIONS} 2>&1 | tee ${TEST_NAME}_sampling_${FORMAT}.log && ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/sampling_${TEST_NAME}_${FORMAT}.py")
     # Set properties for test
     set_tests_properties("${TEST_NAME}_sampling_${FORMAT}" PROPERTIES
@@ -287,6 +287,7 @@ add_test_re(ctv_mol_mesh_map_explicit)
 add_test_re(abl_specifiedmol_neutral)
 add_test_re(abl_specifiedmol_stable)
 add_test_re(abl_specifiedmol_unstable)
+add_test_re(udf_refinement)
 
 if(AMR_WIND_ENABLE_NETCDF)
   add_test_re(abl_bndry_output)

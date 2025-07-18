@@ -149,7 +149,7 @@ protected:
     static void setup_fnorm(bool levelmask_flag)
     {
         amrex::ParmParse pp("fieldnorm");
-        pp.add("output_frequency", 1);
+        pp.add("output_interval", 1);
         if (!levelmask_flag) {
             pp.add("mask_redundant_grids", false);
         }

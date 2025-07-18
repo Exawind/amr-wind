@@ -89,7 +89,7 @@ ABLMeanBoussinesq.temperature_profile_filename = avg_theta.dat
 incflo.post_processing                   = sampling averaging
 
 # --- Sampling parameters ---
-sampling.output_frequency                = 100
+sampling.output_interval                = 100
 sampling.fields                          = velocity temperature
 
 #---- sample defs ----
