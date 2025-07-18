@@ -296,9 +296,10 @@ void OversetOps::sharpen_nalu_data()
     }
 
     // Pseudo-time loop
-    amrex::Real err = 100.0 * m_convg_tol;
+    amrex::Real err = target_err0;
     amrex::Real target_err = err;
     int n = 0;
+    // Will skip if there is little difference between target and current
     while (n < m_n_iterations && err > m_convg_tol) {
         ++n;
         bool calc_convg = n % m_calc_convg_interval == 0;
