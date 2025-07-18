@@ -52,7 +52,7 @@ ABL.surface_roughness_z0 = 0.15
 #
 incflo.post_processing = sampling
 sampling.output_format= netcdf
-sampling.output_frequency = 1
+sampling.output_interval = 1
 sampling.labels = lidar spinner
 sampling.fields = velocity
 
