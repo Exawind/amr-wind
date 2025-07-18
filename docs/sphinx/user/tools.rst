@@ -1,5 +1,9 @@
-.. _tools:
+.. spelling:word-list::
 
+   fcompare
+   csv
+
+.. _tools:
 
 Tools reference
 ===============
