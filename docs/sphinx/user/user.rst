@@ -14,3 +14,4 @@ User Manual
    faq.rst
    post_processing_examples.rst
    compression
+   tools.rst
