@@ -15,6 +15,10 @@ are compiled as separate executables when AMR-Wind is compiled, are saved in ``t
 After compilation, these executables can be found in the build directory, where each has its own 
 folder within ``tools/utilities/`` there.
 
+These capabilities are not meant to be exhaustive and are not maintained as actively as the
+solver source code. More tools for interacting with AMR-Wind data (pre- and post-processing)
+can be found in `amr-wind-frontend <https://github.com/Exawind/amr-wind-frontend>`_.
+
 Python scripts
 --------------
 
