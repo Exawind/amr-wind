@@ -1,0 +1,14 @@
+.. meta::66292731874ed645ce0e293eed3363801f886a873caeace2a1c5c500c831ce3561e3d59957c3f081f7c4b180d71437f5157bcb3c0d09b1b89a0f80563291273e
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::derived::Laplacian Struct Reference
+
+Laplacian Struct Reference
+==========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1derived_1_1_laplacian.html

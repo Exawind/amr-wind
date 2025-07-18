@@ -1,0 +1,13 @@
+<map id="amr_wind::actuator::ActDataHolder&lt; ActTrait &gt;" name="amr_wind::actuator::ActDataHolder&lt; ActTrait &gt;">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,133,209,173"/>
+<area shape="rect" id="Node000002" href="$classamr__wind_1_1actuator_1_1_act_data_holder.html" title=" " alt="" coords="372,5,595,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="147,123,187,99,232,78,302,55,371,39,372,44,303,60,234,82,190,104,150,128"/>
+<area shape="rect" id="Node000003" href="$classamr__wind_1_1actuator_1_1_act_data_holder.html" title=" " alt="" coords="372,69,595,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="206,128,233,123,371,101,372,106,234,128,207,133"/>
+<area shape="rect" id="Node000004" href="$classamr__wind_1_1actuator_1_1_act_data_holder.html" title=" " alt="" coords="369,133,597,173"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="223,151,369,151,369,156,223,156"/>
+<area shape="rect" id="Node000005" href="$classamr__wind_1_1actuator_1_1_act_data_holder.html" title=" " alt="" coords="372,197,595,237"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="207,173,234,179,372,201,371,206,233,184,206,179"/>
+<area shape="rect" id="Node000006" href="$classamr__wind_1_1actuator_1_1_act_data_holder.html" title=" " alt="" coords="377,261,590,301"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="150,179,190,204,234,226,306,248,377,264,376,269,304,253,232,230,187,209,147,184"/>
+</map>

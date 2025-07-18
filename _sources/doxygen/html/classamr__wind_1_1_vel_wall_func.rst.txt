@@ -1,0 +1,14 @@
+.. meta::d22836ffd4164d972ad6c95db7b4f7bfb286b45749b639a0eef7362702596deb8cfe1656a16a5176cf695bc025d7c4a7c02df5207caec49cff89c1bb3fc305af
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::VelWallFunc Class Reference
+
+VelWallFunc Class Reference
+===========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_vel_wall_func.html

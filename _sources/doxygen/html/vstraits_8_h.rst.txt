@@ -1,0 +1,14 @@
+.. meta::89b5a0420782b94fd7029a33bc02a87d3d4d35ff037b1b8a227b7baac2bd72d90f73493850f444f457155a4e3dd7b0bb39e9fae83dc0b86e6ff9f2deb1bfb64e
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/core/vs/vstraits.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/core/vs/vstraits.H File Reference
+==============================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: vstraits_8_h.html

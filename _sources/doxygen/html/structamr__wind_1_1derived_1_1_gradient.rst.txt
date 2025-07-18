@@ -1,0 +1,14 @@
+.. meta::7db4c86040dbe2803e46efb7071e3eab44f01c57ed1d7c190a22c442cb6cd831195cee1a2b211166de705c6651a812577999f3a399bae2ea2c50bcd3b2b6cf8c
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::derived::Gradient Struct Reference
+
+Gradient Struct Reference
+=========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1derived_1_1_gradient.html

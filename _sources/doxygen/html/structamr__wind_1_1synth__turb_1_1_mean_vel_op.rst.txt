@@ -1,0 +1,14 @@
+.. meta::0d081de7e02073c4e023a93015fa235126432df8eeb8aad9bcc1ee96200b6ed79e8014fdc7cdeee04671988b976679254c4de8c9326afedf707bf0d5e24e48ab
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::synth_turb::MeanVelOp Struct Reference
+
+MeanVelOp Struct Reference
+==========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1synth__turb_1_1_mean_vel_op.html

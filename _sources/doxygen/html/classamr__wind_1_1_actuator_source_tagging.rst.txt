@@ -1,0 +1,14 @@
+.. meta::d5f001d85b280a7b17b194b35078836526a5a868ae0fc438132e5bc6e4b928feab8b82f991290bf78e0180f5ec95de348b86c6e7ad32960e2a1e3751c90f74a3
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ActuatorSourceTagging Class Reference
+
+ActuatorSourceTagging Class Reference
+=====================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_actuator_source_tagging.html

@@ -1,0 +1,14 @@
+.. meta::b547c5145f990f8cffaea1a3778177e525834fa04deeacee014c13e0ff8b8ba0735a8cbb7ae1a3cedfa401491827b67c7906b801c90a8e3dc40c54bfcdaecbca
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::scalar_bc Namespace Reference
+
+scalar\_bc Namespace Reference
+==============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: namespaceamr__wind_1_1scalar__bc.html

@@ -1,0 +1,14 @@
+.. meta::4abedb72a6c36ea3ce7303e46406fc7d24ec9065482ea5caf0f1c651f5387a5aa322c84a36d0c9d45bfc55751e3b343bc347feed6f0d8bb59fb4cccbfd1137ce
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::tagging::CylinderRefiner Class Reference
+
+CylinderRefiner Class Reference
+===============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1tagging_1_1_cylinder_refiner.html

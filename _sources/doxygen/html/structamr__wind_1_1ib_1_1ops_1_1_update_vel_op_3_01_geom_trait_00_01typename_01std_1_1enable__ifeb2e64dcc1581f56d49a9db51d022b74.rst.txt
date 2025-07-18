@@ -1,0 +1,14 @@
+.. meta::6195239a3fa5f45e457a034834d651ca728588f70c1b8d3e31993503411b96464263e10613cae7721c8eb999a45dfda17d62591b4fa19f9712740c0cc64eefb1
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ib::ops::UpdateVelOp&lt; GeomTrait, typename std::enable_if_t&lt; std::is_base_of_v&lt; BluffBodyType, GeomTrait &gt; &gt; &gt; Struct Template Reference
+
+is\_base\_of\_v&lt; BluffBodyType, GeomTrait &gt; &gt; &gt; Struct Template Reference
+=====================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ib_1_1ops_1_1_update_vel_op_3_01_geom_trait_00_01typename_01std_1_1enable__ifeb2e64dcc1581f56d49a9db51d022b74.html
