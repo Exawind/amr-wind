@@ -727,7 +727,7 @@ struct InitDataOp<W2AWaves>
                             (vel_tmp[nbx](i, j, k, n) -
                              vel_tmp[nbx](i, j, k - 1, n)) *
                                 ((z_liq_center - z_cell_below) /
-                                 (z_cell - z_cell_below));
+                                 (z_cell - z_cell_below + constants::EPS));
                     }
                 }
             });
