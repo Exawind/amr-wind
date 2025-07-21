@@ -584,16 +584,12 @@ bool FreeSurfaceSampler::update_sampling_locations()
                                     const amrex::Real dist_0 = loc0 - xm[gc0];
                                     const amrex::Real dist_1 = loc1 - xm[gc1];
                                     // Slopes on either side
-                                    const amrex::Real slope_dir_r =
+                                    amrex::Real slope_dir_r =
                                         dir == 0 ? dv_xr
                                                  : (dir == 1 ? dv_yr : dv_zr);
-                                    const amrex::Real slope_dir_l =
+                                    amrex::Real slope_dir_l =
                                         dir == 0 ? dv_xl
                                                  : (dir == 1 ? dv_yl : dv_zl);
-                                    // Central slope for when sign of distance
-                                    // to interface is unknown
-                                    amrex::Real slope_dir =
-                                        0.5 * (slope_dir_r + slope_dir_l);
                                     // One-sided slopes for when sign of
                                     // distance to interface is known
                                     amrex::Real slope_0 =
@@ -603,29 +599,36 @@ bool FreeSurfaceSampler::update_sampling_locations()
                                         dist_1 > 0 ? (dir == 2 ? dv_yr : dv_zr)
                                                    : (dir == 2 ? dv_yl : dv_zl);
                                     // Turn finite differences into true slopes
-                                    slope_dir *= dxi[dir];
+                                    slope_dir_r *= dxi[dir];
+                                    slope_dir_l *= dxi[dir];
                                     slope_0 *= dxi[gc0];
                                     slope_1 *= dxi[gc1];
-                                    // Trilinear interpolation: central slope
-                                    ht = xm[dir] +
-                                         (0.5 -
-                                          (vof_arr(i, j, k) + slope_0 * dist_0 +
-                                           slope_1 * dist_1)) /
-                                             (slope_dir + constants::EPS);
-                                    // Choose slope based on signed distance
-                                    slope_dir = ht - xm[dir] > 0 ? slope_dir_r
-                                                                 : slope_dir_l;
-                                    slope_dir *= dxi[dir];
-                                    // Trilinear interpolation: one-sided slope
-                                    ht = xm[dir] +
-                                         (0.5 -
-                                          (vof_arr(i, j, k) + slope_0 * dist_0 +
-                                           slope_1 * dist_1)) /
-                                             (slope_dir + constants::EPS);
-                                    // This way, neighboring cells will agree on
-                                    // the reconstruction, avoiding the
-                                    // possibility of neither one containing the
-                                    // interface
+                                    // Trilinear interpolation for vof
+                                    const amrex::Real vof_c = vof_arr(i, j, k) +
+                                                              slope_0 * dist_0 +
+                                                              slope_1 * dist_1;
+                                    const amrex::Real vof_r =
+                                        vof_c + 0.5 * slope_dir_r * dx[dir];
+                                    const amrex::Real vof_l =
+                                        vof_c - 0.5 * slope_dir_l * dx[dir];
+                                    // Check for intersect with 0.5
+                                    if ((vof_c - 0.5) * (vof_r - 0.5) <= 0.) {
+                                        ht = xm[dir] +
+                                             (0.5 - (vof_arr(i, j, k) +
+                                                     slope_0 * dist_0 +
+                                                     slope_1 * dist_1)) /
+                                                 (slope_dir_r + constants::EPS);
+                                    } else if (
+                                        (vof_c - 0.5) * (vof_l - 0.5) <= 0.) {
+                                        ht = xm[dir] +
+                                             (0.5 - (vof_arr(i, j, k) +
+                                                     slope_0 * dist_0 +
+                                                     slope_1 * dist_1)) /
+                                                 (slope_dir_l + constants::EPS);
+                                    } else {
+                                        // Skip if no intersection
+                                        ht = plo[dir];
+                                    }
                                 }
 
                                 if (calc_flag || calc_flag_diffuse) {
