@@ -404,7 +404,7 @@ protected:
     void setup_grid_0d(int ninst, const std::string& fsname)
     {
         amrex::ParmParse pp(fsname);
-        pp.add("output_frequency", 1);
+        pp.add("output_interval", 1);
         pp.add("num_instances", ninst);
         pp.addarr("plane_num_points", amrex::Vector<int>{1, 1});
         pp.addarr("plane_start", m_pt_coord);
@@ -414,7 +414,7 @@ protected:
     void setup_grid_2d(int ninst)
     {
         amrex::ParmParse pp("freesurface");
-        pp.add("output_frequency", 1);
+        pp.add("output_interval", 1);
         pp.add("num_instances", ninst);
         pp.addarr("plane_num_points", amrex::Vector<int>{npts, npts});
         pp.addarr("plane_start", m_pl_start);
@@ -423,7 +423,7 @@ protected:
     void setup_grid_2d_narrow(const std::string& fsname)
     {
         amrex::ParmParse pp(fsname);
-        pp.add("output_frequency", 1);
+        pp.add("output_interval", 1);
         pp.add("num_instances", 1);
         pp.addarr("plane_num_points", amrex::Vector<int>{npts, npts});
         pp.addarr("plane_start", m_plnarrow_s);
