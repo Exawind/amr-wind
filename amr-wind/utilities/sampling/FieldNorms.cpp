@@ -53,37 +53,65 @@ amrex::Real FieldNorms::l2_norm(
                                      geom[lev].CellSize()[1] *
                                      geom[lev].CellSize()[2];
 
-        amrex::iMultiFab level_mask;
+        auto index_type = field(lev).boxArray().ixType();
+        int it_sum = 0;
+        int node_dir = 0;
+        for (int ix = 0; ix < AMREX_SPACEDIM; ++ix) {
+            it_sum += index_type[ix];
+            node_dir = index_type[ix] == 1 ? ix : node_dir;
+        }
+
+        amrex::MultiFab level_mask;
         if (use_mask) {
             if (lev < finest_level) {
                 level_mask = makeFineMask(
                     mesh.boxArray(lev), mesh.DistributionMap(lev),
-                    mesh.boxArray(lev + 1), mesh.refRatio(lev), 1, 0);
+                    mesh.boxArray(lev + 1), mesh.refRatio(lev), 1., 0.);
             } else {
                 level_mask.define(
                     mesh.boxArray(lev), mesh.DistributionMap(lev), 1, 0,
                     amrex::MFInfo());
-                level_mask.setVal(1);
+                level_mask.setVal(1.);
             }
         } else {
             // Always on
             level_mask.define(
                 mesh.boxArray(lev), mesh.DistributionMap(lev), 1, 0,
                 amrex::MFInfo());
-            level_mask.setVal(1);
+            level_mask.setVal(1.);
         }
 
         nrm += amrex::ReduceSum(
-            field(lev), level_mask, nghost,
+            level_mask, field(lev), nghost,
             [=] AMREX_GPU_HOST_DEVICE(
                 amrex::Box const& bx,
-                amrex::Array4<amrex::Real const> const& field_arr,
-                amrex::Array4<int const> const& mask_arr) -> amrex::Real {
+                amrex::Array4<amrex::Real const> const& mask_arr,
+                amrex::Array4<amrex::Real const> const& field_arr)
+                -> amrex::Real {
                 amrex::Real nrm_fab = 0.0;
 
-                amrex::Loop(bx, [=, &nrm_fab](int i, int j, int k) noexcept {
-                    nrm_fab += cell_vol * field_arr(i, j, k, comp) *
-                               field_arr(i, j, k, comp) * mask_arr(i, j, k);
+                const auto& fbx =
+                    it_sum == 1
+                        ? amrex::surroundingNodes(bx, node_dir)
+                        : (it_sum > 1 ? amrex::surroundingNodes(bx) : bx);
+
+                amrex::Loop(fbx, [=, &nrm_fab](int i, int j, int k) noexcept {
+                    const amrex::IntVect iv{i, j, k};
+                    amrex::IntVect iv_cc = iv;
+                    // adjust volume for different data locations
+                    amrex::Real data_vol = cell_vol;
+                    for (int nn = 0; nn < AMREX_SPACEDIM; ++nn) {
+                        const bool at_node_dir =
+                            index_type[nn] == 1 && (iv[nn] == fbx.bigEnd(nn) ||
+                                                    iv[nn] == fbx.smallEnd(nn));
+                        data_vol *= at_node_dir ? 0.5 : 1.0;
+                        // limit mask array indices to cell-centered
+                        iv_cc[nn] = amrex::min(
+                            bx.bigEnd(nn),
+                            amrex::max(bx.smallEnd(nn), iv_cc[nn]));
+                    }
+                    nrm_fab += data_vol * field_arr(iv, comp) *
+                               field_arr(iv, comp) * mask_arr(iv_cc);
                 });
                 return nrm_fab;
             });

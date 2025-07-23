@@ -101,6 +101,7 @@ public:
     {}
     void check_output(
         amrex::Real check_val0, amrex::Real check_val1, amrex::Real check_val2);
+    void check_output(amrex::Real check_val);
 
 protected:
     // No file output during test
@@ -117,10 +118,24 @@ void FieldNormsImpl::check_output(
     EXPECT_EQ(var_names()[1], (std::string) "velocityy");
     EXPECT_EQ(var_names()[2], (std::string) "velocityz");
     // Loop through norm values and check them
-    const amrex::Real tiny = std::numeric_limits<amrex::Real>::epsilon();
-    EXPECT_NEAR(field_norms()[0], check_val0, 500 * tiny);
-    EXPECT_NEAR(field_norms()[1], check_val1, 500 * tiny);
-    EXPECT_NEAR(field_norms()[2], check_val2, 500 * tiny);
+    const amrex::Real tol = amr_wind::constants::TIGHT_TOL;
+    EXPECT_NEAR(field_norms()[0], check_val0, tol);
+    EXPECT_NEAR(field_norms()[1], check_val1, tol);
+    EXPECT_NEAR(field_norms()[2], check_val2, tol);
+}
+
+void FieldNormsImpl::check_output(amrex::Real check_val)
+{
+    // Get variable names and check
+    EXPECT_EQ(var_names()[0], (std::string) "pressure");
+    EXPECT_EQ(var_names()[1], (std::string) "u_mac");
+    EXPECT_EQ(var_names()[2], (std::string) "v_mac");
+    EXPECT_EQ(var_names()[3], (std::string) "w_mac");
+    // Loop through norm values and check them
+    const amrex::Real tol = amr_wind::constants::TIGHT_TOL;
+    for (int n = 0; n < 4; ++n) {
+        EXPECT_NEAR(field_norms()[n], check_val, tol * check_val * 0.1);
+    }
 }
 
 } // namespace
@@ -471,6 +486,68 @@ TEST_F(FieldNormsTest, levelmask_on_int_refinement)
     wnorm =
         std::sqrt(m_ncell0 * m_cv0 * lev0_fac * lev0_fac * m_w * m_w / m_dv);
     tool.check_output(unorm, vnorm, wnorm);
+}
+
+TEST_F(FieldNormsTest, levelmask_not_cc)
+{
+    bool levelmask = true;
+    // Set up parameters for domain
+    populate_parameters();
+    // Set up parameters for refinement
+    setup_fieldrefinement();
+    // Set up parameters for sampler
+    setup_fnorm(levelmask);
+    // Create mesh and initialize
+    reset_prob_domain();
+    auto rmesh = FNRefinemesh();
+    rmesh.initialize_mesh(0.0);
+
+    // Repo and fields
+    auto& repo = rmesh.field_repo();
+    auto& pressure = repo.declare_nd_field("pressure", 1, 1);
+    auto& u_mac = repo.declare_xf_field("u_mac", 1, 1);
+    auto& v_mac = repo.declare_yf_field("v_mac", 1, 1);
+    auto& w_mac = repo.declare_zf_field("w_mac", 1, 1);
+    auto& flag = repo.declare_field(m_fname, 1, 1);
+
+    // Set up scalar for determining refinement - all fine level
+    flag.setVal(2.0 * m_fref_val);
+
+    // Initialize mesh refiner and remesh
+    rmesh.init_refiner();
+    rmesh.remesh();
+
+    // Initialize pressure distribution and access sim
+    const amrex::Real fval = 10000.3;
+    pressure.setVal(fval);
+    u_mac.setVal(fval);
+    v_mac.setVal(fval);
+    w_mac.setVal(fval);
+    auto& rsim = rmesh.sim();
+
+    // Initialize IOManager because FieldNorms relies on it
+    auto& io_mgr = rsim.io_manager();
+    // Set up output (plot) variables
+    io_mgr.register_output_var("pressure");
+    io_mgr.register_output_var("u_mac");
+    io_mgr.register_output_var("v_mac");
+    io_mgr.register_output_var("w_mac");
+    io_mgr.initialize_io();
+
+    // Initialize sampler and check result on initial mesh
+    FieldNormsImpl tool(rsim, "fieldnorm");
+    tool.initialize();
+    tool.output_actions();
+    // Only highest level will be counted
+    tool.check_output(fval);
+
+    // Turn off refinements
+    flag.setVal(0.0);
+    rmesh.remesh();
+
+    // Check again
+    tool.output_actions();
+    tool.check_output(fval);
 }
 
 } // namespace amr_wind_tests
