@@ -34,9 +34,12 @@ public:
 
     void post_regrid_actions() override {}
 
-    //! calculate the L2 norm of a given field and component
-    static amrex::Real
-    l2_norm(const amr_wind::Field& field, const int comp, const bool use_mask);
+    static amrex::Real get_norm(
+        const amr_wind::Field& field,
+        const int comp,
+        const int ncomp,
+        const int norm_type,
+        const bool use_mask);
 
     const amrex::Vector<std::string>& var_names() const { return m_var_names; }
 
@@ -77,8 +80,14 @@ private:
     //! precision in ASCII output
     int m_precision{12};
 
+    //! Type of norm
+    int m_norm_type{2};
+
     //! Mask redundant grids (finest available grid only)
     bool m_use_mask{true};
+
+    //! Consider vector magnitude, not separate vector components
+    bool m_use_vector_magnitude{false};
 };
 
 } // namespace amr_wind::field_norms
