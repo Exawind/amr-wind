@@ -1,7 +1,7 @@
 .. _inputs_fieldnorms:
 
 Section: FieldNorms
-~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
 
 This section controls field norms post-processing. Field norms
 output the global norm of every plot variable to a text file, writing
