@@ -24,7 +24,7 @@ void FieldNorms::initialize()
         populate_output_parameters(pp);
         pp.query("mask_redundant_grids", m_use_mask);
         pp.query("use_vector_magnitude", m_use_vector_magnitude);
-        std::string norm_type("2");
+        std::string norm_type(std::to_string(m_norm_type));
         pp.query("norm_type", norm_type);
         if (norm_type == "2") {
             m_norm_type = 2;
