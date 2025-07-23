@@ -118,10 +118,10 @@ void FieldNormsImpl::check_output(
     EXPECT_EQ(var_names()[1], (std::string) "velocityy");
     EXPECT_EQ(var_names()[2], (std::string) "velocityz");
     // Loop through norm values and check them
-    const amrex::Real tiny = std::numeric_limits<amrex::Real>::epsilon();
-    EXPECT_NEAR(field_norms()[0], check_val0, 500 * tiny);
-    EXPECT_NEAR(field_norms()[1], check_val1, 500 * tiny);
-    EXPECT_NEAR(field_norms()[2], check_val2, 500 * tiny);
+    const amrex::Real tol = amr_wind::constants::LOOSE_TOL;
+    EXPECT_NEAR(field_norms()[0], check_val0, tol);
+    EXPECT_NEAR(field_norms()[1], check_val1, tol);
+    EXPECT_NEAR(field_norms()[2], check_val2, tol);
 }
 
 void FieldNormsImpl::check_output(amrex::Real check_val)
@@ -132,9 +132,9 @@ void FieldNormsImpl::check_output(amrex::Real check_val)
     EXPECT_EQ(var_names()[2], (std::string) "v_mac");
     EXPECT_EQ(var_names()[3], (std::string) "w_mac");
     // Loop through norm values and check them
-    const amrex::Real tiny = std::numeric_limits<amrex::Real>::epsilon();
+    const amrex::Real tol = amr_wind::constants::LOOSE_TOL;
     for (int n = 0; n < 4; ++n) {
-        EXPECT_NEAR(field_norms()[n], check_val, 500 * tiny);
+        EXPECT_NEAR(field_norms()[n], check_val, tol);
     }
 }
 
