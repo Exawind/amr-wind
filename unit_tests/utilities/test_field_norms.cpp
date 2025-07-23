@@ -134,7 +134,7 @@ void FieldNormsImpl::check_output(amrex::Real check_val)
     // Loop through norm values and check them
     const amrex::Real tol = amr_wind::constants::TIGHT_TOL;
     for (int n = 0; n < 4; ++n) {
-        EXPECT_NEAR(field_norms()[n], check_val, tol);
+        EXPECT_NEAR(field_norms()[n], check_val, tol * check_val * 0.1);
     }
 }
 
@@ -511,7 +511,7 @@ TEST_F(FieldNormsTest, levelmask_not_cc)
     auto& flag = repo.declare_field(m_fname, 1, 1);
 
     // Set up scalar for determining refinement - all fine level
-    flag.setVal(0.0); // 2.0 * m_fref_val);
+    flag.setVal(2.0 * m_fref_val);
 
     // Initialize mesh refiner and remesh
     rmesh.init_refiner();
@@ -519,7 +519,7 @@ TEST_F(FieldNormsTest, levelmask_not_cc)
 
     // Initialize pressure distribution and access sim
     const amrex::Real lev0_fac = 1.5;
-    const amrex::Real fval = 1e1;
+    const amrex::Real fval = 10000.3;
     pressure.setVal(fval);
     u_mac.setVal(fval);
     v_mac.setVal(fval);
@@ -540,6 +540,14 @@ TEST_F(FieldNormsTest, levelmask_not_cc)
     tool.initialize();
     tool.output_actions();
     // Only highest level will be counted
+    tool.check_output(fval);
+
+    // Turn off refinements
+    flag.setVal(0.0);
+    rmesh.remesh();
+
+    // Check again
+    tool.output_actions();
     tool.check_output(fval);
 }
 
