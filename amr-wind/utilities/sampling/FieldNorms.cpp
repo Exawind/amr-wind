@@ -57,7 +57,7 @@ amrex::Real FieldNorms::l2_norm(
         int it_sum = 0;
         int node_dir = 0;
         for (int ix = 0; ix < AMREX_SPACEDIM; ++ix) {
-            it_sum += (int)index_type[ix];
+            it_sum += index_type[ix];
             node_dir = index_type[ix] == 1 ? ix : node_dir;
         }
 
