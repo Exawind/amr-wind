@@ -518,7 +518,6 @@ TEST_F(FieldNormsTest, levelmask_not_cc)
     rmesh.remesh();
 
     // Initialize pressure distribution and access sim
-    const amrex::Real lev0_fac = 1.5;
     const amrex::Real fval = 10000.3;
     pressure.setVal(fval);
     u_mac.setVal(fval);
