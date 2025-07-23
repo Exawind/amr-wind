@@ -612,7 +612,6 @@ TEST_F(FieldNormsTest, norm_types)
 
     const amrex::Real l2_factor = std::sqrt(
         0.5 * ((1. - factor) * (1. - factor) + (1. + factor) * (1. + factor)));
-    std::cout << "l2_factor " << l2_factor << std::endl;
     amrex::Real unorm = m_u * l2_factor;
     amrex::Real vnorm = m_v * l2_factor;
     amrex::Real wnorm = m_w * l2_factor;
