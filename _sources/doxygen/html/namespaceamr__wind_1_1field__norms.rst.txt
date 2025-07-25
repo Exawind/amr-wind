@@ -1,0 +1,14 @@
+.. meta::3c7b6dcc64a4cb415378041da0f860c94b1853056d3b7f67ebdd93bf4e86677de41b3c319d9e8009b1319fd28294cafa302ae5460e6546cd5317c5290c8da96a
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::field_norms Namespace Reference
+
+field\_norms Namespace Reference
+================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: namespaceamr__wind_1_1field__norms.html

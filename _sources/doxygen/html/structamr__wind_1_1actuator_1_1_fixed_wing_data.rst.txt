@@ -1,0 +1,14 @@
+.. meta::22ea385660077edd8e75d3704425f180aab275de895ae7cb8c8c0bc6be36d23536eabc710e5204b274ea551332e34156b580eeb56fa0b607768af0c9e084d511
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::FixedWingData Struct Reference
+
+FixedWingData Struct Reference
+==============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1_fixed_wing_data.html

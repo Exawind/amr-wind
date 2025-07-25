@@ -1,0 +1,14 @@
+.. meta::affcc0fde3e00391659534b5550f0c8d141cb445af1be0d7a1b3f94ba536747b6fc3a67030eb799d7ed82dfec3a9c3631f5e2f5a2b548f438cec5143182721f6
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::OversetRefinement Class Reference
+
+OversetRefinement Class Reference
+=================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_overset_refinement.html

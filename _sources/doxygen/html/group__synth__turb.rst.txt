@@ -1,0 +1,14 @@
+.. meta::754a1cf8189ece6bf0db614bb8c9ffac49f88f3fb285441c2ddee37be808a9b2aaeb958ec367972eafedc522c5b3ba17e4ed12159268156af8705ac9cd1a5006
+
+:orphan:
+
+.. title:: AMR-Wind API: Synthetic Turbulence
+
+Synthetic Turbulence
+====================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: group__synth__turb.html

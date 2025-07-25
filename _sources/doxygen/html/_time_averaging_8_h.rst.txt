@@ -1,0 +1,14 @@
+.. meta::6b36a3b3fef3560f8d8765450ff4bb24244e298cf6084fbc8ac25e13362d06a30ce2e8be9768935b8ae943f4e2762118838beb82981e5e5a511152e292bc675a
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/averaging/TimeAveraging.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/averaging/TimeAveraging.H File Reference
+===============================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _time_averaging_8_h.html

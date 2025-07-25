@@ -1,0 +1,14 @@
+.. meta::a114bdd39d1f9772a55b661bd6303bb5f808c65fc791a97e7473065e945c9dbf85257b4a6aa9d9ca410955f11d481fbd2817ec7a8b634dd6d56c56f98965e6d3
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::AdvectionOp&lt; ICNS, fvm::Godunov &gt; Struct Reference
+
+Godunov &gt; Struct Reference
+=============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1pde_1_1_advection_op_3_01_i_c_n_s_00_01fvm_1_1_godunov_01_4.html

@@ -1,0 +1,14 @@
+.. meta::68c5b04fcf3e5f86e49753e6fa093d7007a3685968ceaf05170b4a83a76fca6767eb189b1ae35dd621da1f0d7b5ab4eb1b99eef2cc6e7758abec53b7aab74a48
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems -&gt; diffusion Relation
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/equation\_systems -&gt; diffusion Relation
+=======================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: dir_000017_000012.html

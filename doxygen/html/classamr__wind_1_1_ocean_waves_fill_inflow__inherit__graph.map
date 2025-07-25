@@ -1,0 +1,10 @@
+<map id="amr_wind::OceanWavesFillInflow" name="amr_wind::OceanWavesFillInflow">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,295,203,335"/>
+<area shape="rect" id="Node000002" href="$classamr__wind_1_1_field_fill_patch_ops.html" title=" " alt="" coords="13,205,195,245"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="107,259,107,295,101,295,101,259"/>
+<area shape="rect" id="Node000003" href="$classamr__wind_1_1_field_fill_patch_ops_base.html" title=" " alt="" coords="9,5,188,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="102,59,106,205,101,205,97,59"/>
+<area shape="rect" id="Node000004" href="$classamr__wind_1_1_field_fill_patch_ops.html" title=" " alt="" coords="120,95,299,135"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="135,52,187,92,184,97,132,56"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="183,147,124,207,121,203,179,143"/>
+</map>

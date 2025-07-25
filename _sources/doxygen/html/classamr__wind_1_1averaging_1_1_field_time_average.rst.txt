@@ -1,0 +1,14 @@
+.. meta::898fedc9356e2fb3628856cc16e900cf38d9aeeeaa5bb7cd4582deac79089afa062b30f01c7e7dd1ff7f0f185750d17a1d61d4f1a4724027014fa923dfff1d81
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::averaging::FieldTimeAverage Class Reference
+
+FieldTimeAverage Class Reference
+================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1averaging_1_1_field_time_average.html

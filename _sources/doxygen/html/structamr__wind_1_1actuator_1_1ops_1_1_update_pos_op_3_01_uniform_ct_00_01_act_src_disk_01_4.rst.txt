@@ -1,0 +1,14 @@
+.. meta::914ae39cb18aeaec07a3b9f762c6d23fb9b961ef58bf336a31b3e8e961f6f3a8d3111ab0537f457c293229fe3c8946a8c1e57a28547bfed12b6503aeb563be16
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::UpdatePosOp&lt; UniformCt, ActSrcDisk &gt; Struct Reference
+
+UpdatePosOp&lt; UniformCt, ActSrcDisk &gt; Struct Reference
+===========================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1ops_1_1_update_pos_op_3_01_uniform_ct_00_01_act_src_disk_01_4.html

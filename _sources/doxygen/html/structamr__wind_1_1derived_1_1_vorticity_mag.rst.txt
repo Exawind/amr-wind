@@ -1,0 +1,14 @@
+.. meta::d6a5a87e90e4be49f759f2a8ccb1de16e218e2e8f3c0fa81eade04132657432965e091384f63687c6f5961f975a5efb68fc586348fc2244a607773ac426c5ae1
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::derived::VorticityMag Struct Reference
+
+VorticityMag Struct Reference
+=============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1derived_1_1_vorticity_mag.html

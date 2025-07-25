@@ -1,0 +1,14 @@
+.. meta::5168d929f772a98c7a8adcbdc4c2348f7ec85c3f3dc6224343ee79c76d6419903c8199b8c90ddbc4cc7ec63f7015c2866aedefaadd2528e8a1bce3c53b411169
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::GaussianWavePacket Struct Reference
+
+GaussianWavePacket Struct Reference
+===================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1_gaussian_wave_packet.html
