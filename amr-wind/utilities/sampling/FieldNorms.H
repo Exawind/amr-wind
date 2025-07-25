@@ -78,7 +78,7 @@ private:
     int m_width{18};
 
     //! precision in ASCII output
-    int m_precision{12};
+    int m_precision{10};
 
     //! Type of norm
     int m_norm_type{2};
