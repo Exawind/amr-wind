@@ -44,8 +44,10 @@ then used as a boundary condition.
 
 The log law:
 
-.. math:: u_{\mathrm{mag}} = u_\tau \left(\frac{1}{\kappa}\log\left(\frac{u_\tau z}{\nu}\right) + B\right). 
+.. math::
     :label: loglaw
+
+    u_{\mathrm{mag}} = u_\tau \left(\frac{1}{\kappa}\log\left(\frac{u_\tau z}{\nu}\right) + B\right). 
 
 Given a horizontal velocity magnitude
 :math:`u_{\mathrm{mag}} = \sqrt{u^2 + v^2}` at
