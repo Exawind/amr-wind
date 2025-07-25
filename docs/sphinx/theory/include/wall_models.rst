@@ -44,12 +44,13 @@ then used as a boundary condition.
 
 The log law:
 
-.. math:: u_{\mathrm{mag}} = u_\tau \left(\frac{1}{\kappa}\log\left(\frac{u_\tau z}{\nu}\right) + B\right). \label{eq:loglaw}
+.. math:: u_{\mathrm{mag}} = u_\tau \left(\frac{1}{\kappa}\log\left(\frac{u_\tau z}{\nu}\right) + B\right). 
+    :label: loglaw
 
 Given a horizontal velocity magnitude
 :math:`u_{\mathrm{mag}} = \sqrt{u^2 + v^2}` at
 :math:`z = z_{\mathrm{ref}}`, :math:`u_\tau` can be computed using a
-non-linear solve to satisfy `[eq:loglaw] <#eq:loglaw>`__.
+non-linear solve to satisfy equation :eq:`loglaw`.
 
 In AMR-Wind Newton-Raphson iterations are used with a convergence
 criterion of :math:`\lvert u_\tau^{n+1} - u_\tau^n \rvert < 10^{-5}`.
