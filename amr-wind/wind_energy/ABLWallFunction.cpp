@@ -34,6 +34,7 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
     const char* z0_same = "surface_roughness_z0";
     const char* z0_aero = "aerodynamic_roughness_length";
     const char* z0_therm = "thermal_roughness_length";
+
     pp.query(z0_same, m_mo.z0);
     if (!pp.contains(z0_same)) {
         pp.query(z0_aero, m_mo.z0);
@@ -113,6 +114,11 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
                 ifh >> data_value;
                 m_nearsurf_temp_time.push_back(data_time);
                 m_nearsurf_temp_value.push_back(data_value);
+            }
+            
+            for (int i =0; i < m_nearsurf_temp_time.size(); i++)
+            {
+                amrex::Print() << i << "   " <<  m_nearsurf_temp_time[i] << "   " << m_nearsurf_temp_value[i] << std::endl;
             }
         }
 

@@ -56,6 +56,8 @@ void MOData::update_fluxes(int max_iters)
     amrex::Real psi_h_zref = 0.0;
     utau = kappa * vmag_mean / (std::log(zref / z0));
 
+    amrex::Print() << "Using z0 = " << z0 << ",  z0t = " << z0t << std::endl;
+
     int iter = 0;
     do {
         utau_iter = utau;
@@ -78,7 +80,7 @@ void MOData::update_fluxes(int max_iters)
             amrex::Real a21 = 1.0;
             amrex::Real a22 = -(alpha_h / (kappa * utau)) * (std::log(zNearSurf / z0t) - psi_h_zNearSurf);
 
-            amrex::Real coeff = 1.0 / (a11*a21 - a12*a21);
+            amrex::Real coeff = 1.0 / (a11*a22 - a12*a21);
 
             surf_temp = coeff * (a22*theta_mean - a12*near_surf_temp);
             surf_temp_flux = coeff * (-a21*theta_mean + a11*near_surf_temp);
@@ -100,6 +102,11 @@ void MOData::update_fluxes(int max_iters)
         psi_h_zref = calc_psi_h(zeta);
         utau = kappa * vmag_mean / (std::log(zref / z0) - psi_m_zref);
         ++iter;
+
+        amrex::Print() << "iteration: " << iter << ", T(" << zNearSurf << " m) = " << near_surf_temp 
+                       << " K, T(" << zref << " m) = " << theta_mean << "K ,  L = " << obukhov_len 
+                       << " m,  uStar = " << utau << "m/s,  Qs = " << surf_temp_flux 
+                       << " K-m/s,  theta_0 = " << surf_temp << " K" << std::endl;
     } while ((std::abs(utau_iter - utau) > 1e-5) && iter <= max_iters);
 
     if (iter >= max_iters) {
