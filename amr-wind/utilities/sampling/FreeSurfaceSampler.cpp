@@ -27,6 +27,10 @@ void FreeSurfaceSampler::initialize(const std::string& key)
         pp.query("search_direction", m_coorddir);
         pp.query("num_instances", m_ninst);
         pp.query("max_sample_points_per_cell", m_ncmax);
+        m_use_linear = pp.contains("linear_interp_extent_from_xhi");
+        if (m_use_linear) {
+            pp.get("linear_interp_extent_from_xhi", m_lx_linear);
+        }
         AMREX_ALWAYS_ASSERT(static_cast<int>(m_start.size()) == AMREX_SPACEDIM);
         AMREX_ALWAYS_ASSERT(static_cast<int>(m_end.size()) == AMREX_SPACEDIM);
         AMREX_ALWAYS_ASSERT(static_cast<int>(m_npts_dir.size()) == 2);
@@ -436,6 +440,8 @@ bool FreeSurfaceSampler::update_sampling_locations()
     const int gc1 = m_gc1;
     const int ncomp = m_ncomp;
 
+    bool use_linear = m_use_linear;
+    const amrex::Real lx_linear = m_lx_linear;
     bool has_overset = m_sim.has_overset();
     amr_wind::IntField* iblank_ptr{nullptr};
     if (has_overset) {
@@ -455,6 +461,7 @@ bool FreeSurfaceSampler::update_sampling_locations()
                 geom.InvCellSizeArray();
             const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> plo =
                 geom.ProbLoArray();
+            const amrex::Real xhi = geom.ProbHi(0);
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (false)
 #endif
@@ -472,6 +479,8 @@ bool FreeSurfaceSampler::update_sampling_locations()
                         xm[0] = plo[0] + (i + 0.5) * dx[0];
                         xm[1] = plo[1] + (j + 0.5) * dx[1];
                         xm[2] = plo[2] + (k + 0.5) * dx[2];
+                        bool linear_on =
+                            use_linear && (xm[0] >= xhi - lx_linear);
                         // Loop number of components
                         for (int n = 0; n < ncomp; ++n) {
                             // Get index of current component and cell
@@ -515,8 +524,9 @@ bool FreeSurfaceSampler::update_sampling_locations()
                                 // Multiphase cell case
                                 if (vof_arr(i, j, k) < (1.0 - 1e-12) &&
                                     vof_arr(i, j, k) > 1e-12) {
-                                    if (!has_overset ||
-                                        ibl_arr(i, j, k) != -1) {
+                                    if ((!has_overset ||
+                                         ibl_arr(i, j, k) != -1) &&
+                                        !linear_on) {
                                         // Planar reconstruction
                                         calc_flag = true;
                                         multiphase::fit_plane(
@@ -573,14 +583,13 @@ bool FreeSurfaceSampler::update_sampling_locations()
                                     // Distances from cell center to probe loc
                                     const amrex::Real dist_0 = loc0 - xm[gc0];
                                     const amrex::Real dist_1 = loc1 - xm[gc1];
-                                    // Central slopes for when sign of distance
-                                    // to interface is unknown
-                                    amrex::Real slope_dir =
-                                        dir == 0
-                                            ? 0.5 * (dv_xl + dv_xr)
-                                            : (dir == 1
-                                                   ? 0.5 * (dv_yl + dv_yr)
-                                                   : 0.5 * (dv_zl + dv_zr));
+                                    // Slopes on either side
+                                    amrex::Real slope_dir_r =
+                                        dir == 0 ? dv_xr
+                                                 : (dir == 1 ? dv_yr : dv_zr);
+                                    amrex::Real slope_dir_l =
+                                        dir == 0 ? dv_xl
+                                                 : (dir == 1 ? dv_yl : dv_zl);
                                     // One-sided slopes for when sign of
                                     // distance to interface is known
                                     amrex::Real slope_0 =
@@ -590,14 +599,36 @@ bool FreeSurfaceSampler::update_sampling_locations()
                                         dist_1 > 0 ? (dir == 2 ? dv_yr : dv_zr)
                                                    : (dir == 2 ? dv_yl : dv_zl);
                                     // Turn finite differences into true slopes
-                                    slope_dir *= dxi[dir];
+                                    slope_dir_r *= dxi[dir];
+                                    slope_dir_l *= dxi[dir];
                                     slope_0 *= dxi[gc0];
                                     slope_1 *= dxi[gc1];
-                                    // Trilinear interpolation
-                                    ht = (0.5 + slope_dir * xm[dir] -
-                                          (vof_arr(i, j, k) + slope_0 * dist_0 +
-                                           slope_1 * dist_1)) /
-                                         slope_dir;
+                                    // Trilinear interpolation for vof
+                                    const amrex::Real vof_c = vof_arr(i, j, k) +
+                                                              slope_0 * dist_0 +
+                                                              slope_1 * dist_1;
+                                    const amrex::Real vof_r =
+                                        vof_c + 0.5 * slope_dir_r * dx[dir];
+                                    const amrex::Real vof_l =
+                                        vof_c - 0.5 * slope_dir_l * dx[dir];
+                                    // Check for intersect with 0.5
+                                    if ((vof_c - 0.5) * (vof_r - 0.5) <= 0.) {
+                                        ht = xm[dir] +
+                                             (0.5 - (vof_arr(i, j, k) +
+                                                     slope_0 * dist_0 +
+                                                     slope_1 * dist_1)) /
+                                                 (slope_dir_r + constants::EPS);
+                                    } else if (
+                                        (vof_c - 0.5) * (vof_l - 0.5) <= 0.) {
+                                        ht = xm[dir] +
+                                             (0.5 - (vof_arr(i, j, k) +
+                                                     slope_0 * dist_0 +
+                                                     slope_1 * dist_1)) /
+                                                 (slope_dir_l + constants::EPS);
+                                    } else {
+                                        // Skip if no intersection
+                                        ht = plo[dir];
+                                    }
                                 }
 
                                 if (calc_flag || calc_flag_diffuse) {
@@ -608,9 +639,11 @@ bool FreeSurfaceSampler::update_sampling_locations()
                                     }
                                     // If interface is above upper
                                     // bound, limit it
+                                    // Ignore it in the diffuse case
                                     if (ht > xm[dir] +
                                                  0.5 * dx[dir] * (1.0 + 1e-8)) {
-                                        ht = xm[dir] + 0.5 * dx[dir];
+                                        ht = calc_flag ? xm[dir] + 0.5 * dx[dir]
+                                                       : plo[dir];
                                     }
                                     // Save interface location by atomic max
                                     amrex::Gpu::Atomic::Max(&dout_ptr[idx], ht);
