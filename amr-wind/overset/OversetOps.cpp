@@ -225,9 +225,11 @@ void OversetOps::sharpen_nalu_data()
             repo.mesh().refRatio(lev - 1));
         velocity(lev - 1).FillBoundary(geom[lev - 1].periodicity());
         amrex::average_down(
-            vof(lev), vof(lev - 1), 0, AMREX_SPACEDIM,
-            repo.mesh().refRatio(lev - 1));
+            vof(lev), vof(lev - 1), 0, 1, repo.mesh().refRatio(lev - 1));
         vof(lev - 1).FillBoundary(geom[lev - 1].periodicity());
+        amrex::average_down(
+            rho(lev), rho(lev - 1), 0, 1, repo.mesh().refRatio(lev - 1));
+        rho(lev - 1).FillBoundary(geom[lev - 1].periodicity());
         amrex::average_down(
             gp_noghost(lev), gp_noghost(lev - 1), 0, AMREX_SPACEDIM,
             repo.mesh().refRatio(lev - 1));
