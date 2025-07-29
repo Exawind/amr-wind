@@ -548,7 +548,7 @@ void apply_fluxes(
         });
 }
 
-// Get the size of the smallest VOF flux to quantify convergence
+// Get the size of the largest VOF flux to quantify convergence
 amrex::Real measure_flux_convergence(
     amrex::MultiFab& mf_fx, amrex::MultiFab& mf_fy, amrex::MultiFab& mf_fz)
 {
