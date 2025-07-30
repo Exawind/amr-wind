@@ -62,6 +62,11 @@ MacProjOp::MacProjOp(
         pp.query("use_fft", m_use_fft);
     }
 #endif
+
+    // Always off for single-phase flows, this can turn off multiphase overset
+    // operations for all cases
+    amrex::ParmParse pp_o("Overset");
+    pp_o.query("disable_mphase_ops", m_disable_mphase_overset_ops);
 }
 
 void MacProjOp::enforce_inout_solvability(
@@ -78,7 +83,7 @@ void MacProjOp::enforce_inout_solvability(
 void MacProjOp::init_projector(const MacProjOp::FaceFabPtrVec& beta) noexcept
 {
     // Prepare masking for projection
-    if (m_has_overset) {
+    if (m_has_overset && !m_disable_mphase_overset_ops) {
         amr_wind::overset_ops::prepare_mask_cell_for_mac(m_repo);
     }
 
@@ -107,7 +112,7 @@ void MacProjOp::init_projector(const MacProjOp::FaceFabPtrVec& beta) noexcept
 void MacProjOp::init_projector(const amrex::Real beta) noexcept
 {
     // Prepare masking for projection
-    if (m_has_overset) {
+    if (m_has_overset && !m_disable_mphase_overset_ops) {
         amr_wind::overset_ops::prepare_mask_cell_for_mac(m_repo);
     }
 
@@ -365,7 +370,7 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
     }
 
     // Prepare masking for remainder of algorithm
-    if (m_has_overset) {
+    if (m_has_overset && !m_disable_mphase_overset_ops) {
         amr_wind::overset_ops::revert_mask_cell_after_mac(m_repo);
     }
 
