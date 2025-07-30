@@ -23,10 +23,6 @@ incflo::incflo()
     // constructor. No valid BoxArray and DistributionMapping have been defined.
     // But the arrays for them have been resized.
 
-    amrex::Print() << std::endl
-                   << "Initializing AMR-Wind." << std::endl
-                   << std::endl;
-
     // Check if dry run is requested and set up if so
     CheckAndSetUpDryRun();
 
@@ -287,6 +283,8 @@ void incflo::Evolve()
 {
     BL_PROFILE("amr-wind::incflo::Evolve()");
 
+    amrex::Real init_time = amrex::ParallelDescriptor::second();
+
     while (m_time.new_timestep()) {
         amrex::Real time0 = amrex::ParallelDescriptor::second();
 
@@ -315,18 +313,27 @@ void incflo::Evolve()
         post_advance_work();
         amrex::Real time3 = amrex::ParallelDescriptor::second();
 
-        amrex::Print() << "WallClockTime: " << m_time.time_index()
-                       << " Pre: " << std::setprecision(3) << (time1 - time0)
+        amrex::Print() << "WallClockTime in Evolve() for step "
+                       << m_time.time_index()
+                       << ": Pre: " << std::setprecision(3) << (time1 - time0)
                        << " Solve: " << std::setprecision(4) << (time2 - time1)
                        << " Post: " << std::setprecision(3) << (time3 - time2)
                        << " Total: " << std::setprecision(4) << (time3 - time0)
                        << std::endl;
-
-        amrex::Print() << "Solve time per cell: " << std::setprecision(4)
-                       << amrex::ParallelDescriptor::NProcs() *
-                              (time2 - time1) /
-                              static_cast<amrex::Real>(m_cell_count)
+        amrex::Print() << "Cumulative WallClockTime in Evolve(): "
+                       << std::setprecision(4) << (time3 - init_time)
                        << std::endl;
+
+        if (m_time.output_profiling_info()) {
+            amrex::Print() << "\nCumulative times reported by TinyProfiler:";
+            amrex::TinyProfiler::Finalize(true);
+        }
+
+        // amrex::Print() << "Solve time per cell: " << std::setprecision(4)
+        //                << amrex::ParallelDescriptor::NProcs() *
+        //                       (time2 - time1) /
+        //                       static_cast<amrex::Real>(m_cell_count)
+        //                << std::endl;
     }
     amrex::Print() << "\n======================================================"
                       "========================\n"
