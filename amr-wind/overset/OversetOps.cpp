@@ -367,13 +367,25 @@ void OversetOps::sharpen_nalu_data()
         // Get pseudo dt (dtau)
         amrex::Real ptfac = 1.0;
         for (int lev = 0; lev < nlevels; ++lev) {
+            amrex::iMultiFab level_mask;
+            if (lev < nlevels - 1) {
+                level_mask = makeFineMask(
+                    repo.mesh().boxArray(lev), repo.mesh().DistributionMap(lev),
+                    repo.mesh().boxArray(lev + 1), repo.mesh().refRatio(lev), 1,
+                    0);
+            } else {
+                level_mask.define(
+                    repo.mesh().boxArray(lev), repo.mesh().DistributionMap(lev),
+                    1, 0, amrex::MFInfo());
+                level_mask.setVal(1);
+            }
             const auto dx = (geom[lev]).CellSizeArray();
             (*delta_vof)(lev).setVal(0.);
             // Compare vof fluxes to vof in source cells
             // Convergence tolerance determines what size of fluxes matter
             const amrex::Real ptfac_lev = overset_ops::calculate_pseudo_dt_flux(
                 (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), vof(lev),
-                (*delta_vof)(lev), iblank_cell(lev), dx);
+                (*delta_vof)(lev), iblank_cell(lev), level_mask, dx);
             ptfac = amrex::min(ptfac, ptfac_lev);
         }
         amrex::Gpu::streamSynchronize();
@@ -402,7 +414,7 @@ void OversetOps::sharpen_nalu_data()
         }
         amrex::Gpu::streamSynchronize();
 
-        // Follow with consistency across levels
+        /*// Follow with consistency across levels
         for (int lev = nlevels - 1; lev > 0; --lev) {
             amrex::average_down(
                 gp(lev), gp(lev - 1), 0, AMREX_SPACEDIM,
@@ -417,7 +429,7 @@ void OversetOps::sharpen_nalu_data()
             vof(lev - 1).FillBoundary(geom[lev - 1].periodicity());
             amrex::average_down_nodal(
                 p(lev), p(lev - 1), repo.mesh().refRatio(lev - 1));
-        }
+        }*/
 
         // Update density (fillpatch built in)
         m_mphase->set_density_via_vof();

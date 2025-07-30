@@ -409,20 +409,23 @@ amrex::Real calculate_pseudo_dt_flux(
     const amrex::MultiFab& mf_vof,
     amrex::MultiFab& mf_dvof,
     const amrex::iMultiFab& mf_iblank,
+    const amrex::iMultiFab& mf_lmask,
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dx)
 {
     const auto& fx = mf_fx.const_arrays();
     const auto& fy = mf_fy.const_arrays();
     const auto& fz = mf_fz.const_arrays();
     const auto& ibc = mf_iblank.const_arrays();
+    const auto& lmsk = mf_lmask.const_arrays();
     auto dvof_arrs = mf_dvof.arrays();
 
     // Apply VOF fluxes fully
     amrex::ParallelFor(
         mf_vof, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
             const amrex::Real ibfac = ibc[nbx](i, j, k) == -1 ? 1.0 : 0.0;
+            const amrex::Real lmfac = lmsk[nbx](i, j, k) == 1 ? 1.0 : 0.0;
             dvof_arrs[nbx](i, j, k) =
-                ibfac *
+                ibfac * lmfac *
                 ((fx[nbx](i + 1, j, k, 0) - fx[nbx](i, j, k, 0)) / dx[0] +
                  (fy[nbx](i, j + 1, k, 0) - fy[nbx](i, j, k, 0)) / dx[1] +
                  (fz[nbx](i, j, k + 1, 0) - fz[nbx](i, j, k, 0)) / dx[2]);
