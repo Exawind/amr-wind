@@ -415,6 +415,8 @@ void OversetOps::sharpen_nalu_data()
         amrex::average_down(
             rho(lev), rho(lev - 1), 0, 1, repo.mesh().refRatio(lev - 1));
         rho(lev - 1).FillBoundary(geom[lev - 1].periodicity());
+        amrex::average_down_nodal(
+            p(lev), p(lev - 1), repo.mesh().refRatio(lev - 1));
     }
 
     // Fillpatch for pressure to make sure pressure stencil has all points
