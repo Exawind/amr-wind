@@ -1,0 +1,14 @@
+.. meta::5ea72dea46d50fa1e8808191c33233185c6cf3abcd6cf17c14d9f6afb830267b5c628c14da68f78b67af87ab3681e40f446279705056c69851212f506c558547
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/SyntheticTurbulence.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/physics/SyntheticTurbulence.H Source File
+======================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _synthetic_turbulence_8_h_source.html

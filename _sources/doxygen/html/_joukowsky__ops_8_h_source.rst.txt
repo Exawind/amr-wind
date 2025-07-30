@@ -1,0 +1,14 @@
+.. meta::3a89d22155fdbe97d19bb621afb66dcff46ed381a8effd33e0b7e5452964a6d2cfcd8512c66aa17ae8f700ad4006da316adacfec5e16b94d3a9b8dbdfecb315b
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/actuator/disk/Joukowsky_ops.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/wind\_energy/actuator/disk/Joukowsky\_ops.H Source File
+====================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _joukowsky__ops_8_h_source.html

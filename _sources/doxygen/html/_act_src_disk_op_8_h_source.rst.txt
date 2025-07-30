@@ -1,0 +1,14 @@
+.. meta::f170559e2e89e1bc97c0042d8e8bc47ae22f1237fe849d0442d2583e1168d0d4d057d7637cee703b8e5278da26470f608e7ec429a8d98d5f8bc1a3b49e690a16
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/actuator/disk/ActSrcDiskOp.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/wind\_energy/actuator/disk/ActSrcDiskOp.H Source File
+==================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _act_src_disk_op_8_h_source.html

@@ -1,0 +1,14 @@
+.. meta::a581a105e347f5a3ef599d1d641cc5d8f2393ecb0a7feec676b34bb29744b4d2e5c62a1d3a1a07acbd51e346a6ac6d6048835074a948888ff15a726e54777516
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::ComputeRHSOp&lt; PDE, Scheme &gt; Struct Template Reference
+
+ComputeRHSOp&lt; PDE, Scheme &gt; Struct Template Reference
+===========================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1pde_1_1_compute_r_h_s_op.html

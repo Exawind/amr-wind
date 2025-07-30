@@ -1,0 +1,14 @@
+.. meta::86d604d06bcb7f5d00ecbe279a098560ca1982a5f32c1e1c209221a7d17c08a0606df5e2d3bf4527a7a6cb27f70650f57c512a392ddbffa054a7fa08e75671ff
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/turbulence/LaminarModel.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/turbulence/LaminarModel.cpp File Reference
+=======================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _laminar_model_8cpp.html

@@ -1,0 +1,14 @@
+.. meta::5ad4b9806194204f0ce357bac66567a4dc8bd672cdb973b9adfada1d9f5a45d0c0287e43ef364d19acf06a9c44650796b98ae6661b831c1c5beb028cbf5dd99b
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::ReadInputsOp&lt; ActTrait, SrcTrait, typename &gt; Struct Template Reference
+
+ReadInputsOp&lt; ActTrait, SrcTrait, typename &gt; Struct Template Reference
+============================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1ops_1_1_read_inputs_op.html

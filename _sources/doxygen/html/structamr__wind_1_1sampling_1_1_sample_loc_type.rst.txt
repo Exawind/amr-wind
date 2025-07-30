@@ -1,0 +1,14 @@
+.. meta::e41b78e37be4c065ce9817abfc0aa3c5f1ea99f6c9091e21b228650f51c13083d890d2ec591d6e2ad23713424fe2b43bc0e4fd5b4be86ee220b3dee8b9e01a1a
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::sampling::SampleLocType Struct Reference
+
+SampleLocType Struct Reference
+==============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1sampling_1_1_sample_loc_type.html
