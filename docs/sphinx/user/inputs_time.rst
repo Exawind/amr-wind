@@ -263,3 +263,12 @@ This section also addresses the time-dependent nature of checkpoint files, plot 
    When :input_param:`time.enforce_checkpoint_time_dt` is true, a tolerance is needed to determine when
    it is necessary to shrink the time step size. This tolerance is relative to the checkpoint time interval.
    In most cases, this parameter need not be modified, but it can be changed by the user.
+
+.. input_param:: time.profiling_interval
+
+   **type:** Integer, optional, default = -1
+
+   If this value is greater than zero, it indicates the frequency (in
+   timesteps) at which profiling information is written to the log
+   file. This will only work if the code was compiled with
+   ``AMR_WIND_ENABLE_TINY_PROFILE`` set to ``ON``.
