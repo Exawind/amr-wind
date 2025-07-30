@@ -353,6 +353,13 @@ void OversetOps::sharpen_nalu_data()
         }
         amrex::Gpu::streamSynchronize();
 
+        // Average down fluxes across levels for consistency
+        for (int lev = nlevels - 1; lev > 0; --lev) {
+            amrex::average_down_faces(
+                GetArrOfConstPtrs(fluxes[lev]), fluxes[lev - 1],
+                repo.mesh().refRatio(lev - 1), geom[lev - 1]);
+        }
+
         if (calc_convg) {
             target_err = 0.;
         }
