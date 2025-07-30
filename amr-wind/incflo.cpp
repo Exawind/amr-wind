@@ -324,10 +324,12 @@ void incflo::Evolve()
                        << std::setprecision(4) << (time3 - init_time)
                        << std::endl;
 
+#ifdef AMREX_TINY_PROFILING
         if (m_time.output_profiling_info()) {
             amrex::Print() << "\nCumulative times reported by TinyProfiler:";
             amrex::TinyProfiler::Finalize(true);
         }
+#endif
     }
     amrex::Print() << "\n======================================================"
                       "========================\n"
