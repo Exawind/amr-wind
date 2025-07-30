@@ -283,10 +283,10 @@ void incflo::Evolve()
 {
     BL_PROFILE("amr-wind::incflo::Evolve()");
 
-    amrex::Real init_time = amrex::ParallelDescriptor::second();
+    const amrex::Real init_time = amrex::ParallelDescriptor::second();
 
     while (m_time.new_timestep()) {
-        amrex::Real time0 = amrex::ParallelDescriptor::second();
+        const amrex::Real time0 = amrex::ParallelDescriptor::second();
 
         regrid_and_update();
 
@@ -300,7 +300,7 @@ void incflo::Evolve()
             pre_advance_stage2();
         }
 
-        amrex::Real time1 = amrex::ParallelDescriptor::second();
+        const amrex::Real time1 = amrex::ParallelDescriptor::second();
         // Advance to time t + dt
         for (int fixed_point_iteration = 0;
              fixed_point_iteration < m_fixed_point_iterations;
@@ -309,9 +309,9 @@ void incflo::Evolve()
         }
 
         amrex::Print() << std::endl;
-        amrex::Real time2 = amrex::ParallelDescriptor::second();
+        const amrex::Real time2 = amrex::ParallelDescriptor::second();
         post_advance_work();
-        amrex::Real time3 = amrex::ParallelDescriptor::second();
+        const amrex::Real time3 = amrex::ParallelDescriptor::second();
 
         amrex::Print() << "WallClockTime in Evolve() for step "
                        << m_time.time_index()
@@ -328,12 +328,6 @@ void incflo::Evolve()
             amrex::Print() << "\nCumulative times reported by TinyProfiler:";
             amrex::TinyProfiler::Finalize(true);
         }
-
-        // amrex::Print() << "Solve time per cell: " << std::setprecision(4)
-        //                << amrex::ParallelDescriptor::NProcs() *
-        //                       (time2 - time1) /
-        //                       static_cast<amrex::Real>(m_cell_count)
-        //                << std::endl;
     }
     amrex::Print() << "\n======================================================"
                       "========================\n"
