@@ -218,23 +218,6 @@ void OversetOps::sharpen_nalu_data()
     auto& gp_noghost = repo.get_field("gp");
     auto& p = repo.get_field("p");
 
-    // Finish with consistency across levels
-    for (int lev = nlevels - 1; lev > 0; --lev) {
-        amrex::average_down(
-            gp_noghost(lev), gp_noghost(lev - 1), 0, AMREX_SPACEDIM,
-            repo.mesh().refRatio(lev - 1));
-        amrex::average_down(
-            velocity(lev), velocity(lev - 1), 0, AMREX_SPACEDIM,
-            repo.mesh().refRatio(lev - 1));
-        velocity(lev - 1).FillBoundary(geom[lev - 1].periodicity());
-        amrex::average_down(
-            vof(lev), vof(lev - 1), 0, 1, repo.mesh().refRatio(lev - 1));
-        vof(lev - 1).FillBoundary(geom[lev - 1].periodicity());
-        amrex::average_down(
-            rho(lev), rho(lev - 1), 0, 1, repo.mesh().refRatio(lev - 1));
-        rho(lev - 1).FillBoundary(geom[lev - 1].periodicity());
-    }
-
     // 9 components are vof, density, 3 of velocity, 3 of gp, and psource flag
     auto flux_x = repo.create_scratch_field(9, 1, amr_wind::FieldLoc::XFACE);
     auto flux_y = repo.create_scratch_field(9, 1, amr_wind::FieldLoc::YFACE);
@@ -413,23 +396,6 @@ void OversetOps::sharpen_nalu_data()
             }
         }
         amrex::Gpu::streamSynchronize();
-
-        /*// Follow with consistency across levels
-        for (int lev = nlevels - 1; lev > 0; --lev) {
-            amrex::average_down(
-                gp(lev), gp(lev - 1), 0, AMREX_SPACEDIM,
-                repo.mesh().refRatio(lev - 1));
-            gp(lev - 1).FillBoundary(geom[lev - 1].periodicity());
-            amrex::average_down(
-                velocity(lev), velocity(lev - 1), 0, AMREX_SPACEDIM,
-                repo.mesh().refRatio(lev - 1));
-            velocity(lev - 1).FillBoundary(geom[lev - 1].periodicity());
-            amrex::average_down(
-                vof(lev), vof(lev - 1), 0, 1, repo.mesh().refRatio(lev - 1));
-            vof(lev - 1).FillBoundary(geom[lev - 1].periodicity());
-            amrex::average_down_nodal(
-                p(lev), p(lev - 1), repo.mesh().refRatio(lev - 1));
-        }*/
 
         // Update density (fillpatch built in)
         m_mphase->set_density_via_vof();
