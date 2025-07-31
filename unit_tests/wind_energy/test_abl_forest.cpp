@@ -76,7 +76,7 @@ TEST_F(ForestTest, forest)
 
     constexpr amrex::Real expected_norm_drag = 0.0030635155406915832;
     const auto norm_drag =
-        amr_wind::field_norms::FieldNorms::l2_norm(f_drag, 0, false);
+        amr_wind::field_norms::FieldNorms::get_norm(f_drag, 0, 1, 2, false);
     EXPECT_NEAR(norm_drag, expected_norm_drag, amr_wind::constants::TIGHT_TOL);
 }
 
