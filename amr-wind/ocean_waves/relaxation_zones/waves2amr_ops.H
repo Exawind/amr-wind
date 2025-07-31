@@ -813,6 +813,8 @@ struct UpdateTargetFieldsOp<W2AWaves>
                 bool flag_z = false;
                 bool flag_xlo = false;
                 bool flag_xhi = false;
+                bool flag_ylo = false;
+                bool flag_yhi = false;
                 // Get heights for this processor, check overlap in z
                 flag_z =
                     (interp_to_mfab::get_local_height_indices(
@@ -821,17 +823,27 @@ struct UpdateTargetFieldsOp<W2AWaves>
                 // No overlap from heights definitely means no interp
 
                 // Check lateral bounds (in x)
-                const int dir = 0;
                 flag_xlo =
                     (interp_to_mfab::check_lateral_overlap_lo(
-                         wdata.gen_length, dir, ow_velocity.vec_ptrs(), geom) ==
+                         wdata.gen_length, 0, ow_velocity.vec_ptrs(), geom) ==
                      1);
                 // No overlap with gen region means no interp, unless ...
                 if (wdata.has_outprofile) {
                     // ... if overlap exists here, needing interp
                     flag_xhi =
                         (interp_to_mfab::check_lateral_overlap_hi(
-                             wdata.beach_length, dir, ow_velocity.vec_ptrs(),
+                             wdata.beach_length, 0, ow_velocity.vec_ptrs(),
+                             geom) == 1);
+                }
+                // Then in y, if y zones are present
+                if (wdata.zone_length_y > constants::EPS) {
+                    flag_ylo =
+                        (interp_to_mfab::check_lateral_overlap_lo(
+                             wdata.zone_length_y, 1, ow_velocity.vec_ptrs(),
+                             geom) == 1);
+                    flag_yhi =
+                        (interp_to_mfab::check_lateral_overlap_hi(
+                             wdata.zone_length_y, 1, ow_velocity.vec_ptrs(),
                              geom) == 1);
                 }
 
@@ -842,7 +854,7 @@ struct UpdateTargetFieldsOp<W2AWaves>
                     flag_xhi = true;
                 }
 
-                if (flag_z && (flag_xlo || flag_xhi)) {
+                if (flag_z && (flag_xlo || flag_xhi || flag_ylo || flag_yhi)) {
                     // Interpolation is needed
                     wdata.do_interp = true;
                     // Do resizing
