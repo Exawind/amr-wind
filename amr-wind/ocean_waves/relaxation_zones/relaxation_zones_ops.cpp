@@ -167,7 +167,7 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                     Gamma_ylo =
                         utils::gamma_generate(y - problo[1], zone_length_y);
                     Gamma_yhi = utils::gamma_absorb(
-                        y - (problo[1] - zone_length_y), zone_length_y, 1.0);
+                        y - (probhi[1] - zone_length_y), zone_length_y, 1.0);
                 }
                 const amrex::Real Gamma = std::min(
                     std::min(Gamma_xhi, Gamma_xlo),
