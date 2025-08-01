@@ -153,6 +153,7 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
                     m_surf_temp_value.push_back(data_value);
                 }
             }
+        // - Specified surface temperature rate mode:
         } else if (pp.contains("surface_temp_rate")) {
             m_surf_temp_use_table = false;
             m_surf_temp_use_rate = true;
