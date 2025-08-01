@@ -174,7 +174,7 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                     std::min(Gamma_yhi, Gamma_ylo));
 
                 // Skip if Gamma is close enough to 1
-                bool outside_zones = Gamma + constants::EPS > 1.;
+                bool outside_zones = Gamma + constants::EPS >= 1.;
 
                 if (!(outside_zones || in_or_near_terrain)) {
                     // Create wave vector for generation, numerical beach
