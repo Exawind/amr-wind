@@ -196,4 +196,40 @@ TEST_F(WaveUtilsTest, harmonize_profiles)
     }
 }
 
+// Proof of concept test for multiple gammas in x and y
+TEST_F(WaveUtilsTest, gamma_xy)
+{
+    constexpr amrex::Real tol = 1e-12;
+    constexpr amrex::Real zone_length = 0.25;
+
+    const amrex::Vector<const amrex::Real> x{
+        0., 1., 0.5, 0.5, zone_length, zone_length, 0.5 * zone_length};
+    const amrex::Vector<const amrex::Real> y{
+        0.5, 0.5, 0., 1., zone_length, 0.5, 0.5 * zone_length};
+    const amrex::Real gm =
+        1.0 -
+        (std::exp(std::pow(1. - x[x.size() - 1] / zone_length, 3.5)) - 1.0) /
+            (std::exp(1.0) - 1.0);
+    const amrex::Vector<const amrex::Real> gold_gamma{0., 0., 0., 0.,
+                                                      1., 1., gm};
+
+    for (int n = 0; n < x.size(); ++n) {
+        const amrex::Real gamma_xlo =
+            amr_wind::ocean_waves::utils::gamma_generate(
+                x[n] - 0., zone_length);
+        const amrex::Real gamma_xhi =
+            amr_wind::ocean_waves::utils::gamma_absorb(
+                x[n] - (1. - zone_length), zone_length, 1.);
+        const amrex::Real gamma_ylo =
+            amr_wind::ocean_waves::utils::gamma_generate(
+                y[n] - 0., zone_length);
+        const amrex::Real gamma_yhi =
+            amr_wind::ocean_waves::utils::gamma_absorb(
+                y[n] - (1. - zone_length), zone_length, 1.);
+        const amrex::Real gamma = std::min(
+            std::min(gamma_xhi, gamma_xlo), std::min(gamma_yhi, gamma_ylo));
+        EXPECT_NEAR(gamma, gold_gamma[n], tol);
+    }
+}
+
 } // namespace amr_wind_tests
