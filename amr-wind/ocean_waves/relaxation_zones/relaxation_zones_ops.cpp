@@ -25,7 +25,6 @@ void read_inputs(
     pp.query("relax_zone_gen_length", wdata.gen_length);
     if (pp.contains("relax_zone_out_length")) {
         wdata.has_beach = false;
-        wdata.has_outprofile = true;
         wdata.init_wave_field = true;
         pp.query("relax_zone_out_length", wdata.beach_length);
     } else {
@@ -126,7 +125,6 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
         const amrex::Real zsl = wdata.zsl;
         const amrex::Real current = wdata.current;
         const bool has_beach = wdata.has_beach;
-        const bool has_outprofile = wdata.has_outprofile;
 
         amrex::ParallelFor(
             velocity(lev), amrex::IntVect(0),

@@ -828,7 +828,7 @@ struct UpdateTargetFieldsOp<W2AWaves>
                          wdata.gen_length, 0, ow_velocity.vec_ptrs(), geom) ==
                      1);
                 // No overlap with gen region means no interp, unless ...
-                if (wdata.has_outprofile) {
+                if (!wdata.has_beach) {
                     // ... if overlap exists here, needing interp
                     flag_xhi =
                         (interp_to_mfab::check_lateral_overlap_hi(

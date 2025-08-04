@@ -36,7 +36,6 @@ struct RelaxZonesBaseData
     bool has_ramp{false};
 
     bool has_beach{true};
-    bool has_outprofile{false};
 
     amrex::Real ramp_period;
 
