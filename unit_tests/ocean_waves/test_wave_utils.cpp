@@ -202,16 +202,15 @@ TEST_F(WaveUtilsTest, gamma_xy)
     constexpr amrex::Real tol = 1e-12;
     constexpr amrex::Real zone_length = 0.25;
 
-    const amrex::Vector<const amrex::Real> x{
+    const amrex::Vector<amrex::Real> x{
         0., 1., 0.5, 0.5, zone_length, zone_length, 0.5 * zone_length};
-    const amrex::Vector<const amrex::Real> y{
+    const amrex::Vector<amrex::Real> y{
         0.5, 0.5, 0., 1., zone_length, 0.5, 0.5 * zone_length};
     const amrex::Real gm =
         1.0 -
         (std::exp(std::pow(1. - x[x.size() - 1] / zone_length, 3.5)) - 1.0) /
             (std::exp(1.0) - 1.0);
-    const amrex::Vector<const amrex::Real> gold_gamma{0., 0., 0., 0.,
-                                                      1., 1., gm};
+    const amrex::Vector<amrex::Real> gold_gamma{0., 0., 0., 0., 1., 1., gm};
 
     for (int n = 0; n < x.size(); ++n) {
         const amrex::Real gamma_xlo =
