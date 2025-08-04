@@ -67,20 +67,54 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
 
     // Check for type of surface heating and read in data.
     // - Specified surface temperature flux mode:
-    if (pp.contains("surface_temp_flux")) {
-        m_temp_flux = true;
+    if ((pp.contains("surface_temp_flux")) ||
+        (pp.contains("surface_temp_flux_timetable"))) {
+        m_surf_temp_flux = true;
         m_surf_temp = false;
         m_nearsurf_temp = false;
 
-        pp.query("surface_temp_flux", m_mo.surf_temp_flux);
+        // - Fixed, time-invariant surface temperature flux mode:
+        if (pp.contains("surface_temp_flux")) {
+            m_surf_temp_flux_use_table = false;
 
-        amrex::Print()
-            << "ABLWallFunction: Surface temperature flux mode is selected."
-            << std::endl;
+            pp.query("surface_temp_flux", m_mo.surf_temp_flux);
+
+            amrex::Print()
+                << "ABLWallFunction: Fixed, time-invariant surface temperature "
+                   "flux mode is selected."
+                << std::endl;
+        }
+        // - surface temperature flux from time-table mode:
+        else if (pp.contains("surface_temp_flux_timetable")) {
+            m_surf_temp_flux_use_table = true;
+
+            pp.query("surface_temp_flux_timetable", m_surf_temp_flux_timetable);
+
+            amrex::Print()
+                << "ABLWallFunction: Surface temperature flux time table "
+                   "mode is selected."
+                << std::endl; 
+            if (!m_surf_temp_flux_timetable.empty()) {
+                std::ifstream ifh(m_surf_temp_flux_timetable, std::ios::in);
+                if (!ifh.good()) {
+                    amrex::Abort(
+                        "Cannot find surface_temp_flux_timetable file: " +
+                        m_surf_temp_flux_timetable);
+                }
+                amrex::Real data_time;
+                amrex::Real data_value;
+                ifh.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                while (ifh >> data_time) {
+                    ifh >> data_value;
+                    m_surf_temp_flux_time.push_back(data_time);
+                    m_surf_temp_flux_value.push_back(data_value);
+                }
+            }
+        }
 
     // - Specified near-surface temperature mode:
     } else if (pp.contains("near_surface_temp_timetable")) {
-        m_temp_flux = false;
+        m_surf_temp_flux = false;
         m_surf_temp = false;
         m_nearsurf_temp = true;
 
@@ -125,7 +159,7 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
     // - Specified surface temperature mode:
     } else if ((pp.contains("surface_temp_timetable")) || 
                (pp.contains("surface_temp_rate"))) {
-        m_temp_flux = false;
+        m_surf_temp_flux = false;
         m_surf_temp = true;
         m_nearsurf_temp = false;
 
@@ -216,7 +250,7 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
 
 
     // Set the Monin-Obukhov algorith type.
-    if (m_temp_flux) {
+    if (m_surf_temp_flux) {
         m_mo.alg_type = MOData::ThetaCalcType::HEAT_FLUX;
     } else if (m_surf_temp) {
         m_mo.alg_type = MOData::ThetaCalcType::SURFACE_TEMPERATURE;
@@ -247,6 +281,12 @@ void ABLWallFunction::update_umean(
     const auto& time = m_sim.time();
 
     // If not using a constant heat flux...
+    if (m_surf_temp_flux && m_surf_temp_flux_use_table) {
+        m_mo.surf_temp_flux = amr_wind::interp::linear(
+            m_surf_temp_flux_time, m_surf_temp_flux_value, time.current_time());
+        amrex::Print() << "Current surface temperature flux: " << m_mo.surf_temp_flux
+                       << std::endl;
+    }
     // - if specifying surface temperature
     if (m_surf_temp) {
         if (m_surf_temp_use_rate) {
