@@ -294,16 +294,6 @@ amrex::Real normal_vector_neumann_test_impl(
                 amrex::Real error = 0.0;
 
                 amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
-                    /*int ibdy =
-                        (iblank(i, j, k) != iblank(i - 1, j, k)) ? -1 : 0;
-                    int jbdy =
-                        (iblank(i, j, k) != iblank(i, j - 1, k)) ? -1 : 0;
-                    int kbdy =
-                        (iblank(i, j, k) != iblank(i, j, k - 1)) ? -1 : 0;
-                    ibdy = (iblank(i, j, k) != iblank(i + 1, j, k)) ? +1 : ibdy;
-                    jbdy = (iblank(i, j, k) != iblank(i, j + 1, k)) ? +1 : jbdy;
-                    kbdy = (iblank(i, j, k) != iblank(i, j, k + 1)) ? +1 :
-                    kbdy;*/
                     amrex::Real mxn, myn, mzn;
                     amr_wind::multiphase::
                         youngs_finite_difference_normal_neumann(
