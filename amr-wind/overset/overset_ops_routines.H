@@ -65,7 +65,8 @@ void process_fluxes_calc_src(
     amrex::MultiFab& mf_fz,
     amrex::MultiFab& mf_psource,
     const amrex::MultiFab& mf_vof,
-    const amrex::iMultiFab& mf_iblank);
+    const amrex::iMultiFab& mf_iblank_cell,
+    const amrex::iMultiFab& mf_iblank_node);
 
 amrex::Real calculate_pseudo_velocity_scale(
     const amrex::iMultiFab& mf_iblank,

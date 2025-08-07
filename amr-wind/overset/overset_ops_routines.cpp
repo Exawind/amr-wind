@@ -348,14 +348,16 @@ void process_fluxes_calc_src(
     amrex::MultiFab& mf_fz,
     amrex::MultiFab& mf_psource,
     const amrex::MultiFab& mf_vof,
-    const amrex::iMultiFab& mf_iblank)
+    const amrex::iMultiFab& mf_iblank_cell,
+    const amrex::iMultiFab& mf_iblank_node)
 {
     const auto& fx = mf_fx.arrays();
     const auto& fy = mf_fy.arrays();
     const auto& fz = mf_fz.arrays();
     const auto& sp = mf_psource.arrays();
     const auto& vof = mf_vof.const_arrays();
-    const auto& iblank = mf_iblank.const_arrays();
+    const auto& iblank = mf_iblank_cell.const_arrays();
+    const auto& ibl_nd = mf_iblank_node.const_arrays();
     constexpr amrex::Real tiny = std::numeric_limits<amrex::Real>::epsilon();
     // Zero fluxes based on iblank array
     amrex::ParallelFor(
@@ -384,9 +386,13 @@ void process_fluxes_calc_src(
         mf_psource,
         [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
             sp[nbx](i, j, k) =
-                gp_flux_tensor(i, j, k, fx[nbx], fy[nbx], fz[nbx], tiny) &&
-                normal_reinit_tensor(
-                    i, j, k, fx[nbx], fy[nbx], fz[nbx], vof[nbx], tiny);
+                ibl_nd[nbx](i, j, k) == -1
+                    ? gp_flux_tensor(
+                          i, j, k, fx[nbx], fy[nbx], fz[nbx], tiny) &&
+                          normal_reinit_tensor(
+                              i, j, k, fx[nbx], fy[nbx], fz[nbx], vof[nbx],
+                              tiny)
+                    : 0.;
         });
 }
 

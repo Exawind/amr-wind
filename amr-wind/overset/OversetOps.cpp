@@ -207,8 +207,9 @@ void OversetOps::sharpen_nalu_data()
     const auto nlevels = repo.num_active_levels();
     const auto geom = m_sim_ptr->mesh().Geom();
 
-    // Get blanking for cells
+    // Get blanking for cells and nodes
     const auto& iblank_cell = repo.get_int_field("iblank_cell");
+    const auto& iblank_node = repo.get_int_field("iblank_node");
 
     // Get fields that will be modified
     auto& vof = repo.get_field("vof");
@@ -322,7 +323,7 @@ void OversetOps::sharpen_nalu_data()
             // Process fluxes
             overset_ops::process_fluxes_calc_src(
                 (*flux_x)(lev), (*flux_y)(lev), (*flux_z)(lev), (*p_src)(lev),
-                vof(lev), iblank_cell(lev));
+                vof(lev), iblank_cell(lev), iblank_node(lev));
 
             // Measure convergence to determine if loop can stop
             if (calc_convg) {
