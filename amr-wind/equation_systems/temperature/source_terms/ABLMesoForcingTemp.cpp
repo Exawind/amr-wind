@@ -57,10 +57,6 @@ void ABLMesoForcingTemp::mean_temperature_init(
     m_nht = tavg.ncell_line();
 
     m_axis = tavg.axis();
-    // The implementation depends the assumption that the ABL statistics class
-    // computes statistics at the cell-centeres only on level 0. If this
-    // assumption changes in future, the implementation will break... so put in
-    // a check here to catch this.
 
     m_zht.resize(m_nht);
     m_theta_ht.resize(m_nht);
