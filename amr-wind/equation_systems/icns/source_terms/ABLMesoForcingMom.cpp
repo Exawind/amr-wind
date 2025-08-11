@@ -64,7 +64,6 @@ void ABLMesoForcingMom::mean_velocity_init(
     // computes statistics at the cell-centeres only on level 0. If this
     // assumption changes in future, the implementation will break... so put in
     // a check here to catch this.
-    AMREX_ALWAYS_ASSERT(m_mesh.Geom(0).Domain().length(m_axis) == m_nht);
 
     m_zht.resize(m_nht);
     m_vavg_ht.resize(m_nht);
