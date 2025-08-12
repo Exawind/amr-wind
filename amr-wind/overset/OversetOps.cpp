@@ -241,6 +241,9 @@ void OversetOps::sharpen_nalu_data()
 
     // Prep things that do not change with iterations
     for (int lev = 0; lev < nlevels; ++lev) {
+        // Ensure vof is bounded after interpolation from nalu-wind
+        overset_ops::process_vof(vof(lev), 0.);
+
         // Thickness used here is user parameter, whatever works best
         const auto dx = (geom[lev]).CellSizeArray();
         const amrex::Real i_th =
@@ -267,7 +270,6 @@ void OversetOps::sharpen_nalu_data()
 
     // Process target vof for tiny margins from single-phase
     for (int lev = 0; lev < nlevels; ++lev) {
-        // A tolerance of 0 should do nothing
         overset_ops::process_vof((*target_vof)(lev), m_target_cutoff);
     }
     amrex::Gpu::streamSynchronize();
@@ -375,6 +377,7 @@ void OversetOps::sharpen_nalu_data()
         amrex::Gpu::streamSynchronize();
         amrex::ParallelDescriptor::ReduceRealMin(ptfac);
         ptfac *= m_pCFL;
+        ptfac = amrex::max(0., ptfac);
 
         // Apply fluxes
         for (int lev = 0; lev < nlevels; ++lev) {
