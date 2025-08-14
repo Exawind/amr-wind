@@ -411,6 +411,17 @@ protected:
         pp.addarr("plane_end", m_pt_coord);
     }
     void setup_grid_0d(int ninst) { setup_grid_0d(ninst, "freesurface"); }
+    void setup_grid_0d(int ninst, amrex::Real xy_sample)
+    {
+        amrex::ParmParse pp("freesurface");
+        pp.add("output_interval", 1);
+        pp.add("num_instances", ninst);
+        pp.addarr("plane_num_points", amrex::Vector<int>{1, 1});
+        const amrex::Vector<amrex::Real> pt_coord{
+            xy_sample, xy_sample, m_pt_coord[2]};
+        pp.addarr("plane_start", pt_coord);
+        pp.addarr("plane_end", pt_coord);
+    }
     void setup_grid_2d(int ninst)
     {
         amrex::ParmParse pp("freesurface");
@@ -780,6 +791,33 @@ TEST_F(FreeSurfaceTest, point_outliers_off)
 
     // Check output value
     int nout = tool.check_output("~", water_lev_geom);
+    ASSERT_EQ(nout, 1);
+}
+
+TEST_F(FreeSurfaceTest, point_diffuse_in_single_phase)
+{
+    initialize_mesh();
+    sim().activate_overset();
+    auto& repo = sim().repo();
+    auto& vof = repo.declare_field("vof", 1, 2);
+    auto& iblank = repo.get_int_field("iblank_cell");
+    iblank.setVal(-1);
+    // Set up sampler to be on lateral edge of cell
+    setup_grid_0d(1, 64. - 0.1);
+
+    // Set up water level to be just below bottom edge of cell
+    const amrex::Real water_lev_diffuse = 60. - 0.1;
+    const amrex::Real vof_slope = 0.1;
+    // Set up vof with nonzero slope but 0 in current cell
+    init_vof_slope(vof, water_lev_diffuse, vof_slope, 124.);
+    auto& m_sim = sim();
+    FreeSurfaceImpl tool(m_sim);
+    tool.initialize("freesurface");
+    tool.update_sampling_locations();
+
+    // Check output value
+    const amrex::Real ht = water_lev_diffuse + vof_slope * (2. + 1.);
+    int nout = tool.check_output("~", ht);
     ASSERT_EQ(nout, 1);
 }
 
