@@ -507,10 +507,19 @@ bool FreeSurfaceSampler::update_sampling_locations()
                                 // is not single-phase)
                                 bool calc_flag = false;
                                 bool calc_flag_diffuse = false;
-                                if ((ni % 2 == 0 &&
+                                const bool single_phase_below_interface =
+                                    (ni % 2 == 0 &&
                                      vof_arr(i, j, k) >= 1.0 - 1e-12) ||
-                                    (ni % 2 != 0 &&
-                                     vof_arr(i, j, k) <= 1e-12)) {
+                                    (ni % 2 != 0 && vof_arr(i, j, k) <= 1e-12);
+                                const bool multiphase =
+                                    vof_arr(i, j, k) < (1.0 - 1e-12) &&
+                                    vof_arr(i, j, k) > 1e-12;
+                                const bool use_linear_interp =
+                                    (has_overset && ibl_arr(i, j, k) == -1) ||
+                                    linear_on;
+                                const bool single_phase_above_interface = !(
+                                    multiphase || single_phase_below_interface);
+                                if (single_phase_below_interface) {
                                     // put bdy at top
                                     alpha = 1.0;
                                     if (ni % 2 != 0) {
@@ -522,11 +531,8 @@ bool FreeSurfaceSampler::update_sampling_locations()
                                     calc_flag = true;
                                 }
                                 // Multiphase cell case
-                                if (vof_arr(i, j, k) < (1.0 - 1e-12) &&
-                                    vof_arr(i, j, k) > 1e-12) {
-                                    if ((!has_overset ||
-                                         ibl_arr(i, j, k) != -1) &&
-                                        !linear_on) {
+                                if (multiphase) {
+                                    if (!use_linear_interp) {
                                         // Planar reconstruction
                                         calc_flag = true;
                                         multiphase::fit_plane(
@@ -536,6 +542,31 @@ bool FreeSurfaceSampler::update_sampling_locations()
                                         // Interpolation (later)
                                         calc_flag_diffuse = true;
                                     }
+                                }
+                                // Single-phase cell bordering other phase, does
+                                // not fit into other categories
+                                if (single_phase_above_interface &&
+                                    use_linear_interp) {
+                                    // With linear interp, interface can show up
+                                    // in single-phase cell
+                                    const amrex::IntVect iv{i, j, k};
+                                    amrex::IntVect iv_p = iv;
+                                    amrex::IntVect iv_m = iv;
+                                    iv_p[dir] += 1;
+                                    iv_m[dir] -= 1;
+                                    // Check for 0.5 intersect
+                                    const bool intersect_above =
+                                        (vof_arr(iv_p) - 0.5) *
+                                            (vof_arr(iv) - 0.5) <=
+                                        0;
+                                    const bool intersect_below =
+                                        (vof_arr(iv) - 0.5) *
+                                            (vof_arr(iv_m) - 0.5) <=
+                                        0;
+                                    calc_flag_diffuse =
+                                        calc_flag_diffuse || intersect_above;
+                                    calc_flag_diffuse =
+                                        calc_flag_diffuse || intersect_below;
                                 }
 
                                 // Initialize height measurement
@@ -639,11 +670,9 @@ bool FreeSurfaceSampler::update_sampling_locations()
                                     }
                                     // If interface is above upper
                                     // bound, limit it
-                                    // Ignore it in the diffuse case
                                     if (ht > xm[dir] +
                                                  0.5 * dx[dir] * (1.0 + 1e-8)) {
-                                        ht = calc_flag ? xm[dir] + 0.5 * dx[dir]
-                                                       : plo[dir];
+                                        ht = xm[dir] + 0.5 * dx[dir];
                                     }
                                     // Save interface location by atomic max
                                     amrex::Gpu::Atomic::Max(&dout_ptr[idx], ht);
