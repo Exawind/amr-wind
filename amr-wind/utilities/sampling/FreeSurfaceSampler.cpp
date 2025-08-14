@@ -645,16 +645,12 @@ bool FreeSurfaceSampler::update_sampling_locations()
                                     // Check for intersect with 0.5
                                     if ((vof_c - 0.5) * (vof_r - 0.5) <= 0.) {
                                         ht = xm[dir] +
-                                             (0.5 - (vof_arr(i, j, k) +
-                                                     slope_0 * dist_0 +
-                                                     slope_1 * dist_1)) /
+                                             (0.5 - vof_c) /
                                                  (slope_dir_r + constants::EPS);
                                     } else if (
                                         (vof_c - 0.5) * (vof_l - 0.5) <= 0.) {
                                         ht = xm[dir] +
-                                             (0.5 - (vof_arr(i, j, k) +
-                                                     slope_0 * dist_0 +
-                                                     slope_1 * dist_1)) /
+                                             (0.5 - vof_c) /
                                                  (slope_dir_l + constants::EPS);
                                     } else {
                                         // Skip if no intersection
