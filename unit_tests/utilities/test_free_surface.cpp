@@ -816,9 +816,20 @@ TEST_F(FreeSurfaceTest, point_diffuse_in_single_phase)
     tool.update_sampling_locations();
 
     // Check output value
-    const amrex::Real ht = water_lev_diffuse + vof_slope * (2. + 1.);
+    const amrex::Real vof_cell = 0.;
+    const amrex::Real vof_mz = (water_lev_diffuse - 58.) / 2.;
+    const amrex::Real vof_pxy = (water_lev_diffuse + 4. * vof_slope - 60.) / 2.;
+    const amrex::Real vof_c =
+        vof_cell + 2. * (vof_pxy - vof_cell) / 4.0 * (2.0 - 0.1);
+    const amrex::Real slope_z = (vof_cell - vof_mz) / 2.;
+    const amrex::Real ht =
+        61. + (0.5 - vof_c) / (slope_z + amr_wind::constants::EPS);
+    const amrex::Real ht_est =
+        water_lev_diffuse + 2.0 * vof_slope * (2.0 - 0.1);
     int nout = tool.check_output("~", ht);
     ASSERT_EQ(nout, 1);
+    // The linear interpolation answer should be close to the naive calc
+    EXPECT_NEAR(ht, ht_est, 5e-2);
 }
 
 } // namespace amr_wind_tests
