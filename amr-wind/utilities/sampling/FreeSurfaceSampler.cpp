@@ -638,10 +638,14 @@ bool FreeSurfaceSampler::update_sampling_locations()
                                     const amrex::Real vof_c = vof_arr(i, j, k) +
                                                               slope_0 * dist_0 +
                                                               slope_1 * dist_1;
+                                    // Extrapolate to cell edge (0.5) plus a
+                                    // factor of safety (0.1) because
+                                    // reconstruction is not identical in
+                                    // neighboring cells
                                     const amrex::Real vof_r =
-                                        vof_c + 0.5 * slope_dir_r * dx[dir];
+                                        vof_c + 0.6 * slope_dir_r * dx[dir];
                                     const amrex::Real vof_l =
-                                        vof_c - 0.5 * slope_dir_l * dx[dir];
+                                        vof_c - 0.6 * slope_dir_l * dx[dir];
                                     // Check for intersect with 0.5
                                     if ((vof_c - 0.5) * (vof_r - 0.5) <= 0.) {
                                         ht = xm[dir] +
