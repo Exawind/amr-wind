@@ -1,0 +1,14 @@
+.. meta::737343f6da728ad9b5eb07861ebf20b481d0c6d475cb407e8e10b6ef8dd8213ab543d8f437a37825998641c80b239626924652bcb5235bb15c69702e235ae7ce
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ocean_waves::ops::ReadInputsOp&lt; WaveTheoryTrait, typename &gt; Struct Template Reference
+
+ReadInputsOp&lt; WaveTheoryTrait, typename &gt; Struct Template Reference
+=========================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ocean__waves_1_1ops_1_1_read_inputs_op.html

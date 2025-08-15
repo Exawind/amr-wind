@@ -1,0 +1,14 @@
+.. meta::0a2194c585d4b34211b0b1eff13ea57d225530cccdf91ec0ae3cdb892b01b77965f3834ced57b456bf801cd5945e3eb684bdf8a78110c8d8f37ef50fb718a34c
+
+:orphan:
+
+.. title:: AMR-Wind API: diffusion Namespace Reference
+
+diffusion Namespace Reference
+=============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: namespacediffusion.html

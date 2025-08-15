@@ -1,0 +1,14 @@
+.. meta::893202415dbdbd4b8b536eaa24d416d86f0099c92205d87634bc52c28340240e168a621947c8fcfff00f3c29b855cb4f92c5090c9337e21041c06afd97c2659e
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::icns::RayleighDamping Class Reference
+
+RayleighDamping Class Reference
+===============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1pde_1_1icns_1_1_rayleigh_damping.html

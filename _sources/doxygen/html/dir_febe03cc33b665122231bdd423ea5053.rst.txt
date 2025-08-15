@@ -1,0 +1,14 @@
+.. meta::75d1d525b4c0db80c6de09c9950eeb1a2e5525c3ce0a5259f4465aa9f03aae6cf7606ebad49bb8bf7055ebf02d69177ae65c48093c3578127f016d3d4abb9ba9
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/temperature Directory Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/equation\_systems/temperature Directory Reference
+==============================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: dir_febe03cc33b665122231bdd423ea5053.html

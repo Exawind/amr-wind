@@ -1,0 +1,14 @@
+.. meta::21033643cbe8ebe6d6805883a27777abd7b65e0458a068a5b888622dfd96679dbe0ae459f9bf1c1fa4e2bec51d02216f5c8080ff0060631f27396b2e8d8e4efe
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ib Namespace Reference
+
+ib Namespace Reference
+======================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: namespaceamr__wind_1_1ib.html

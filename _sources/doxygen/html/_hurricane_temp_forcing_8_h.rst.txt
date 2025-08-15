@@ -1,0 +1,14 @@
+.. meta::c78f7d617048677728b5bd3209196717dff3e180d422ef567bc4e77066a0969889aff4ce16c287ae4e1e0ebe083ebe9bdb62bbb35fb33be9317c10979bb3ce41
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/temperature/source_terms/HurricaneTempForcing.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/equation\_systems/temperature/source\_terms/HurricaneTempForcing.H File Reference
+==============================================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _hurricane_temp_forcing_8_h.html

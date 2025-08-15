@@ -1,0 +1,14 @@
+.. meta::9006df69cd3dbc5ddb8c58a410d642892424f61af0616bff9b0da9b808f5f172779fb78aeb65545fd588b0284b4c565eeec64b5728a8b8f99487a0314849bbee
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::AirfoilLoader Class Reference
+
+AirfoilLoader Class Reference
+=============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1actuator_1_1_airfoil_loader.html

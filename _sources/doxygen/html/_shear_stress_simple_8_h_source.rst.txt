@@ -1,0 +1,14 @@
+.. meta::63a96b1b8e93ac68f80e8c6df4a3ef8391416c87c22587990d5396ed65fc4b589d027f132e9f2f5ccd409c94546fd6175e35d9deb3910ae91c59c959cdc2aa96
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/boundary_conditions/wall_models/ShearStressSimple.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/boundary\_conditions/wall\_models/ShearStressSimple.H Source File
+==============================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _shear_stress_simple_8_h_source.html

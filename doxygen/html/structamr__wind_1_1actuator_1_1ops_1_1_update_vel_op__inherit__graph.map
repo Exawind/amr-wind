@@ -1,0 +1,9 @@
+<map id="amr_wind::actuator::ops::UpdateVelOp&lt; ActTrait, SrcTrait, typename &gt;" name="amr_wind::actuator::ops::UpdateVelOp&lt; ActTrait, SrcTrait, typename &gt;">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,219,163,288"/>
+<area shape="rect" id="Node000002" href="$structamr__wind_1_1actuator_1_1ops_1_1_update_vel_op_3_01_act_trait_00_01_act_src_disk_00_01std_ac0afd645ab4a7d11cdd744730f85d34.html" title=" " alt="" coords="437,51,629,149"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="108,205,141,162,162,143,185,127,247,103,313,90,378,85,437,86,437,91,378,90,314,95,249,108,188,132,165,147,145,166,113,209"/>
+<area shape="rect" id="Node000003" href="$structamr__wind_1_1actuator_1_1ops_1_1_update_vel_op_3_01_act_trait_00_01_act_src_line_00_01typecd00946bec51c16e675a8172b8998e6d.html" title=" " alt="" coords="424,189,643,317"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="177,251,424,251,424,256,177,256"/>
+<area shape="rect" id="Node000004" href="$structamr__wind_1_1actuator_1_1ops_1_1_update_vel_op_3_01_turbine_fast_00_01_src_trait_01_4.html" title=" " alt="" coords="448,342,619,397"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="177,276,187,279,448,346,447,351,186,284,175,281"/>
+</map>
