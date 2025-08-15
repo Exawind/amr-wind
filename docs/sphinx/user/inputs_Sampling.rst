@@ -199,11 +199,23 @@ direction, specified by ``search_direction``, and the other coordinates are
 determined by the ``plane_`` parameters. The default search direction parameter
 is 2, indicating the samplers will search for the interface along the z-direction.
 Due to this design, it is best to specify a plane that is normal to the intended
-search direction. Another optional parameter is ``num_instances``, which is available
+search direction.
+
+Another optional parameter is ``num_instances``, which is available
 for cases where the interface location is multi-valued along the search direction,
 such as during wave breaking. This parameter defaults to 1, and the sampler will
 automatically select the highest position along the search direction when the interface
 location is multi-valued.
+
+The free surface location is calculated with
+a geometric approach using the reconstruction of the interface in a computational
+cell. However, within the numerical beach of a wave simulation, the volume fraction distribution
+can become noisy, and the geometric approach produce noisy results. To avoid this,
+there is an option to use a linear interpolation approach instead within the beach,
+which helps to reduce the noise. This can be turned on using the argument
+``linear_interp_extent_from_xhi``, which specifies the extent from the upper domain boundary (in x)
+where linear interpolation should be used instead of the standard geometric approach. This 
+input parameter should be set to the length of the numerical beach.
 
 Example::
 
