@@ -5,6 +5,7 @@
 #include "amr-wind/core/SimTime.H"
 #include "amr-wind/utilities/trig_ops.H"
 #include "amr-wind/utilities/linear_interpolation.H"
+#include "amr-wind/utilities/FieldPlaneAveraging.H"
 
 namespace amr_wind::pde::icns {
 
@@ -29,10 +30,20 @@ public:
         const FieldState fstate,
         const amrex::Array4<amrex::Real>& src_term) const override;
 
+    void mean_velocity_init(const VelPlaneAveraging& /*vavg*/);
+
+    void mean_velocity_update(const VelPlaneAveraging& /*vavg*/);
+
     inline void set_target_velocities(amrex::Real ux, amrex::Real uy)
     {
         m_target_vel[0] = ux;
         m_target_vel[1] = uy;
+    }
+
+    inline void set_boundary_layer_height(amrex::Real zi)
+    {
+        m_zi = zi;
+        amrex::Print() << "z_i = " << zi << std::endl;
     }
 
     inline void set_mean_velocities(amrex::Real ux, amrex::Real uy)
@@ -62,6 +73,15 @@ public:
         m_abl_forcing[0] = (m_target_vel[0] - m_mean_vel[0]) / dt;
         m_abl_forcing[1] = (m_target_vel[1] - m_mean_vel[1]) / dt;
 
+        amrex::Print() << "U(zRef), V(zRef) = " << m_mean_vel[0] << " " << 
+                                                   m_mean_vel[1] << std::endl;
+        amrex::Print() << "dt = " << dt << std::endl;
+        amrex::Print() << "f_c = " << m_coriolis_factor << std::endl;
+        amrex::Print() << "Sx, Sy = " << m_abl_forcing[0] << " " <<
+                                         m_abl_forcing[1] << std::endl;
+        amrex::Print() << "Ug, Vg = " << m_abl_forcing[1]/m_coriolis_factor << " " <<
+                                        -m_abl_forcing[0]/m_coriolis_factor << std::endl;
+
         if (m_write_force_timetable &&
             amrex::ParallelDescriptor::IOProcessor() &&
             (t_step % m_force_outfreq == 0) &&
@@ -83,8 +103,35 @@ private:
     const SimTime& m_time;
     const amrex::AmrCore& m_mesh;
 
+    amrex::Gpu::DeviceVector<amrex::Real> m_vel_ht;
+    amrex::Gpu::DeviceVector<amrex::Real> m_vel_vals;
+
+    //! Axis over which averages are computed.
+    int m_axis{2};
+
     //! Activated when water is present in domain
     bool m_use_phase_ramp{false};
+
+    //! Activate free-atmosphere damping
+    bool m_fa_damping{false};
+
+    //! Detect free-atmosphere base height (set to zi from ABLStats).
+    bool m_fa_detect_height{false};
+
+    //! Free-atmosphere base height.
+    amrex::Real m_fa_height{750.0};
+
+    //! Start time for free-atmosphere damping.
+    amrex::Real m_fa_time_start{0.0};
+
+    //! End time for free-atmosphere damping.
+    amrex::Real m_fa_time_end{1.0E9};
+
+    //! Time scale for free-atmosphere damping.
+    amrex::Real m_fa_tau{100.0};
+
+    //! Coriolis factor used for free-atmosphere damping.
+    amrex::Real m_coriolis_factor;
 
     //! Number of cells in band to prevent forcing near liquid
     int m_n_band{2};
@@ -97,10 +144,13 @@ private:
 
     //! Bool for writing forcing time table
     bool m_write_force_timetable{false};
+
     //! File name for forcing time table output
     std::string m_force_timetable;
+
     //! Output frequency for forces
     int m_force_outfreq{1};
+
     //! Output start time for force
     amrex::Real m_force_outstart{0.0};
 
@@ -129,6 +179,9 @@ private:
 
     //! Local storage of interface location
     amrex::Real m_water_level;
+
+    //! boundary layer height.
+    amrex::Real m_zi;
 
     //! VOF field, to avoid forcing on liquid above force-off height
     const Field* m_vof;

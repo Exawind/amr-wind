@@ -173,6 +173,8 @@ void ABL::post_regrid_actions() { m_abl_anelastic->post_regrid_actions(); }
  */
 void ABL::pre_advance_work()
 {
+    const auto& zi = m_stats->zi();
+    amrex::Print() << "in ABL.H: zi = " << zi << std::endl;
     const auto& vel_pa = m_stats->vel_profile();
     m_abl_wall_func.update_umean(
         m_stats->vel_profile(), m_stats->theta_profile_fine());
@@ -201,6 +203,10 @@ void ABL::pre_advance_work()
 #endif
 
         m_abl_forcing->set_mean_velocities(vx, vy);
+        m_abl_forcing->set_boundary_layer_height(zi);
+
+        m_abl_forcing->mean_velocity_update(
+            m_stats->vel_profile_coarse());
     }
 
     if (m_abl_mean_bous != nullptr) {

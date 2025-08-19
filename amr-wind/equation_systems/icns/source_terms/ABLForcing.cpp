@@ -57,6 +57,33 @@ ABLForcing::ABLForcing(const CFDSim& sim)
         }
     }
 
+    // If free-atmosphere damping is used, read these inputs.
+    pp_abl.query("free_atmosphere_damping", m_fa_damping);
+    if (m_fa_damping) {
+        pp_abl.query("detect_free_atmosphere_height", m_fa_detect_height);
+        if (! m_fa_detect_height) {
+            pp_abl.get("free_atmosphere_height", m_fa_height);
+        }
+        pp_abl.query("free_atmosphere_damping_start_time", m_fa_time_start);
+        pp_abl.query("free_atmosphere_damping_end_time", m_fa_time_end);
+        pp_abl.query("free_atmosphere_damping_time_scale", m_fa_tau);
+
+        amrex::ParmParse pp_coriolis("CoriolisForcing");
+        amrex::Real rot_time_period = 86164.091;
+        pp_coriolis.query("rotational_time_period", rot_time_period);
+
+        amrex::Real omega = utils::two_pi() / rot_time_period;
+        
+        amrex::Real latitude = 90.0;
+        pp_coriolis.query("latitude", latitude);
+        latitude = utils::radians(latitude);
+        amrex::Real sinphi = std::sin(latitude);
+
+        m_coriolis_factor = 2.0 * omega * sinphi;
+    }
+    amrex::Print() << "free atmosphere damping = " << m_fa_damping << std::endl;
+    
+
     for (int i = 0; i < AMREX_SPACEDIM; ++i) {
         m_mean_vel[i] = m_target_vel[i];
     }
@@ -80,6 +107,8 @@ ABLForcing::ABLForcing(const CFDSim& sim)
         // Point to something, will not be used
         m_vof = &sim.repo().get_field("velocity");
     }
+
+    mean_velocity_init(abl.abl_statistics().vel_profile_coarse());
 }
 
 ABLForcing::~ABLForcing() = default;
@@ -95,6 +124,20 @@ void ABLForcing::operator()(
     const amrex::Real dudt = m_abl_forcing[0];
     const amrex::Real dvdt = m_abl_forcing[1];
 
+    const bool fa_damping = m_fa_damping;
+    const bool fa_detect_height = m_fa_detect_height;
+    const amrex::Real fa_height = fa_detect_height ? m_zi : m_fa_height;
+    amrex::AllPrint() << "fa_height = " << fa_height << " fa_detect_height = " << fa_detect_height << " m_zi = " << m_zi << std::endl;
+    const amrex::Real fa_time_start = m_fa_time_start;
+    const amrex::Real fa_time_end  = m_fa_time_end;
+    const amrex::Real fa_tau = m_fa_tau;
+    const amrex::Real fa_u =  dvdt / m_coriolis_factor;
+    const amrex::Real fa_v = -dudt / m_coriolis_factor;
+
+    const auto& current_time = m_time.current_time();
+    const auto& new_time = m_time.new_time();
+    const auto& nph_time = 0.5 * (current_time + new_time);
+
     const bool ph_ramp = m_use_phase_ramp;
     const int n_band = m_n_band;
     const amrex::Real wlev = m_water_level;
@@ -103,11 +146,31 @@ void ABLForcing::operator()(
     const auto& problo = m_mesh.Geom(lev).ProbLoArray();
     const auto& dx = m_mesh.Geom(lev).CellSizeArray();
 
+    const int idir = m_axis;
+    const amrex::Real* heights = m_vel_ht.data();
+    const amrex::Real* heights_end = m_vel_ht.end();
+    const amrex::Real* vals = m_vel_vals.data();
+
     const auto& vof = (*m_vof)(lev).const_array(mfi);
+
+
+  //amrex::Print() << "fa_height = " << fa_height << std::endl;
+  //amrex::Print() << "Sx, Sy = " << dudt << ", " << dvdt << std::endl;
+  //amrex::Print() << "Ug, Vg = " << fa_u << ", " << fa_v << std::endl;
+        
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+        amrex::IntVect iv(i, j, k);
+        const amrex::Real z = problo[idir] + (iv[idir] + 0.5) * dx[idir];
+
+        const amrex::Real umean =
+            amr_wind::interp::linear(heights, heights_end, vals, z, 3, 0);
+        const amrex::Real vmean =
+            amr_wind::interp::linear(heights, heights_end, vals, z, 3, 1);
+
+        // This part deals with air and water phase and only masks ABL forcing
+        // on the water phase.
         amrex::Real fac = 1.0;
         if (ph_ramp) {
-            const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
             if (z - wlev < wrht0 + wrht1) {
                 if (z - wlev < wrht0) {
                     // Apply no forcing within first interval
@@ -127,11 +190,60 @@ void ABLForcing::operator()(
                 fac = 0.0;
             }
         }
-        src_term(i, j, k, 0) += fac * dudt;
-        src_term(i, j, k, 1) += fac * dvdt;
 
-        // No forcing in z-direction
+        // This part applies the free atmosphere damping, which nudges
+        // the solution in the free atmosphere toward geostrophic as
+        // computed by the wind speed controller. (i.e., the wind speed
+        // controller computes a forcing term that is really a driving
+        // pressure gradient, so there is a corresponding geostrophic
+        // wind. Nudge the free atmosphere toward that geostrophic wind.)
+        amrex::Real src_fa_damping_x = 0.0;
+        amrex::Real src_fa_damping_y = 0.0;
+        if (fa_damping && 
+            ((nph_time >= fa_time_start) && 
+             (nph_time <= fa_time_end)) &&
+            (z >= fa_height)) {
+            src_fa_damping_x = (1.0/fa_tau) * (fa_u - umean);
+            src_fa_damping_y = (1.0/fa_tau) * (fa_v - vmean);
+        }
+
+        amrex::AllPrint() << "z = " << z << ", fa_u = " << fa_u << ", umean = " << umean << ", src_fa_damping_x = " << src_fa_damping_x << ", dpdx = " << fac*dudt << std::endl;
+        amrex::AllPrint() << "z = " << z << ", fa_v = " << fa_v << ", vmean = " << vmean << ", src_fa_damping_y = " << src_fa_damping_y << ", dpdy = " << fac*dvdt << std::endl;
+
+        // Sum up the source term
+        src_term(i, j, k, 0) += (fac * dudt) + src_fa_damping_x;
+        src_term(i, j, k, 1) += (fac * dvdt) + src_fa_damping_y;
+        src_term(i, j, k, 2) += 0.0;
     });
+}
+
+void ABLForcing::mean_velocity_init(const VelPlaneAveraging& vavg)
+{
+    m_axis = vavg.axis();
+
+    // The implementation depends the assumption that the ABL statistics class
+    // computes statistics at the cell-centeres only on level 0. If this
+    // assumption changes in future, the implementation will break... so put in
+    // a check here to catch this.
+    AMREX_ALWAYS_ASSERT(
+        m_mesh.Geom(0).Domain().length(m_axis) ==
+        static_cast<int>(vavg.line_centroids().size()));
+
+    m_vel_ht.resize(vavg.line_centroids().size());
+    m_vel_vals.resize(vavg.line_average().size());
+
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, vavg.line_centroids().begin(),
+        vavg.line_centroids().end(), m_vel_ht.begin());
+
+    mean_velocity_update(vavg);
+}
+
+void ABLForcing::mean_velocity_update(const VelPlaneAveraging& vavg)
+{
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, vavg.line_average().begin(),
+        vavg.line_average().end(), m_vel_vals.begin());
 }
 
 } // namespace amr_wind::pde::icns
