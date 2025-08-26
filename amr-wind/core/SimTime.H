@@ -200,7 +200,7 @@ private:
     amrex::Real m_stop_time{-1.0};
 
     //! Maximum CFL constraint
-    amrex::Real m_max_cfl{0.5};
+    amrex::Real m_max_cfl{1.0};
 
     //! Fixed delta_t indicated by user
     amrex::Real m_fixed_dt{-1.0};
