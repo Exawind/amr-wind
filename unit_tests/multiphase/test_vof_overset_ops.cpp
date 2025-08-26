@@ -924,14 +924,17 @@ TEST_F(VOFOversetOps, pseudo_vscale_dt)
     auto& repo = sim().repo();
     const int nghost = 3;
     auto& vof = repo.declare_field("vof", 1, nghost);
+    auto& dvof = repo.declare_field("dvof", 1, 0);
     auto& tg_vof = repo.declare_field("target_vof", 1, nghost);
     auto& norm = repo.declare_field("int_normal", 3, nghost);
     auto& iblank = repo.declare_int_field("iblank_cell", 1, nghost);
+    auto& level_mask = repo.declare_int_field("level_mask", 1, nghost);
     iblank.setVal(-1);
+    level_mask.setVal(1);
     constexpr amrex::Real margin = 0.1;
-    constexpr amrex::Real convg_tol = 1e-8;
-    // With vof and target_vof arrays, max vof removed is 50%, doubling pdt
-    constexpr amrex::Real pdt_answer = 2.0;
+    // With vof and target_vof arrays, resulting alpha flux means dt is limited
+    // in cell of index 2, with initial of of 0.2, fluxes of -(0.1 + 0.04) / dx
+    constexpr amrex::Real pdt_answer = (0.2 / (0.1 + 0.04) * 8) / 8.;
     // With a single level, pseudo velocity scale should be dx of lev 0
     const auto dx_lev0 = repo.mesh().Geom(0).CellSizeArray();
     const amrex::Real pvs_answer =
@@ -970,8 +973,8 @@ TEST_F(VOFOversetOps, pseudo_vscale_dt)
     for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
         const amrex::Real ptfac_lev =
             amr_wind::overset_ops::calculate_pseudo_dt_flux(
-                flux_x(lev), flux_y(lev), flux_z(lev), vof(lev), dx_lev0,
-                convg_tol) /
+                flux_x(lev), flux_y(lev), flux_z(lev), vof(lev), dvof(lev),
+                iblank(lev), level_mask(lev), dx_lev0) /
             pvscale;
         ptfac = amrex::min(ptfac, ptfac_lev);
     }
@@ -991,8 +994,8 @@ TEST_F(VOFOversetOps, pseudo_vscale_dt)
     for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
         const amrex::Real ptfac_lev =
             amr_wind::overset_ops::calculate_pseudo_dt_flux(
-                flux_x(lev), flux_y(lev), flux_z(lev), vof(lev), dx_lev0,
-                convg_tol) /
+                flux_x(lev), flux_y(lev), flux_z(lev), vof(lev), dvof(lev),
+                iblank(lev), level_mask(lev), dx_lev0) /
             pvscale;
         ptfac = amrex::min(ptfac, ptfac_lev);
     }
@@ -1012,8 +1015,8 @@ TEST_F(VOFOversetOps, pseudo_vscale_dt)
     for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
         const amrex::Real ptfac_lev =
             amr_wind::overset_ops::calculate_pseudo_dt_flux(
-                flux_x(lev), flux_y(lev), flux_z(lev), vof(lev), dx_lev0,
-                convg_tol) /
+                flux_x(lev), flux_y(lev), flux_z(lev), vof(lev), dvof(lev),
+                iblank(lev), level_mask(lev), dx_lev0) /
             pvscale;
         ptfac = amrex::min(ptfac, ptfac_lev);
     }
@@ -1025,8 +1028,8 @@ TEST_F(VOFOversetOps, pseudo_vscale_dt)
     for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
         const amrex::Real ptfac_lev =
             amr_wind::overset_ops::calculate_pseudo_dt_flux(
-                flux_x(lev), flux_y(lev), flux_z(lev), vof(lev), dx_lev0,
-                convg_tol) /
+                flux_x(lev), flux_y(lev), flux_z(lev), vof(lev), dvof(lev),
+                iblank(lev), level_mask(lev), dx_lev0) /
             pvscale;
         ptfac = amrex::min(ptfac, ptfac_lev);
     }
