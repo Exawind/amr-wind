@@ -47,13 +47,15 @@ ABLForcing::ABLForcing(const CFDSim& sim)
 
     m_write_force_timetable = pp_abl.contains("forcing_timetable_output_file");
     if (m_write_force_timetable) {
+        amrex::Print() << "Here!!!!" << std::endl;
         pp_abl.get("forcing_timetable_output_file", m_force_timetable);
         pp_abl.query("forcing_timetable_frequency", m_force_outfreq);
         pp_abl.query("forcing_timetable_start_time", m_force_outstart);
         if (amrex::ParallelDescriptor::IOProcessor()) {
+            amrex::Print() << m_force_timetable << std::endl;
             std::ofstream outfile;
             outfile.open(m_force_timetable, std::ios::out);
-            outfile << "time\tfx\tfy\tfz\n";
+            outfile << "time\tfx\tfy\tfz\tUgx\tUgy\tzi\n";
         }
     }
 
@@ -81,7 +83,6 @@ ABLForcing::ABLForcing(const CFDSim& sim)
 
         m_coriolis_factor = 2.0 * omega * sinphi;
     }
-    amrex::Print() << "free atmosphere damping = " << m_fa_damping << std::endl;
     
 
     for (int i = 0; i < AMREX_SPACEDIM; ++i) {
@@ -127,7 +128,6 @@ void ABLForcing::operator()(
     const bool fa_damping = m_fa_damping;
     const bool fa_detect_height = m_fa_detect_height;
     const amrex::Real fa_height = fa_detect_height ? m_zi : m_fa_height;
-    amrex::AllPrint() << "fa_height = " << fa_height << " fa_detect_height = " << fa_detect_height << " m_zi = " << m_zi << std::endl;
     const amrex::Real fa_time_start = m_fa_time_start;
     const amrex::Real fa_time_end  = m_fa_time_end;
     const amrex::Real fa_tau = m_fa_tau;
@@ -154,10 +154,6 @@ void ABLForcing::operator()(
     const auto& vof = (*m_vof)(lev).const_array(mfi);
 
 
-  //amrex::Print() << "fa_height = " << fa_height << std::endl;
-  //amrex::Print() << "Sx, Sy = " << dudt << ", " << dvdt << std::endl;
-  //amrex::Print() << "Ug, Vg = " << fa_u << ", " << fa_v << std::endl;
-        
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         amrex::IntVect iv(i, j, k);
         const amrex::Real z = problo[idir] + (iv[idir] + 0.5) * dx[idir];
@@ -206,9 +202,6 @@ void ABLForcing::operator()(
             src_fa_damping_x = (1.0/fa_tau) * (fa_u - umean);
             src_fa_damping_y = (1.0/fa_tau) * (fa_v - vmean);
         }
-
-        amrex::AllPrint() << "z = " << z << ", fa_u = " << fa_u << ", umean = " << umean << ", src_fa_damping_x = " << src_fa_damping_x << ", dpdx = " << fac*dudt << std::endl;
-        amrex::AllPrint() << "z = " << z << ", fa_v = " << fa_v << ", vmean = " << vmean << ", src_fa_damping_y = " << src_fa_damping_y << ", dpdy = " << fac*dvdt << std::endl;
 
         // Sum up the source term
         src_term(i, j, k, 0) += (fac * dudt) + src_fa_damping_x;

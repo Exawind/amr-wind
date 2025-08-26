@@ -101,13 +101,11 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
                         "Cannot find surface_temp_flux_timetable file: " +
                         m_surf_temp_flux_timetable);
                 }
-                amrex::Real data_time;
-                amrex::Real data_value;
-                ifh.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                amrex::Real data_time, data_value;
                 while (ifh >> data_time) {
-                    ifh >> data_value;
                     m_surf_temp_flux_time.push_back(data_time);
                     m_surf_temp_flux_value.push_back(data_value);
+                    ifh.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 }
             }
         }
@@ -141,18 +139,11 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
                     "Cannot find near_surface_temp_timetable file: " +
                     m_nearsurf_temp_timetable);
             }
-            amrex::Real data_time;
-            amrex::Real data_value;
-            ifh.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            while (ifh >> data_time) {
-                ifh >> data_value;
+            amrex::Real data_time, data_value;
+            while (ifh >> data_time >> data_value) {
                 m_nearsurf_temp_time.push_back(data_time);
                 m_nearsurf_temp_value.push_back(data_value);
-            }
-            
-            for (int i =0; i < m_nearsurf_temp_time.size(); i++)
-            {
-                amrex::Print() << i << "   " <<  m_nearsurf_temp_time[i] << "   " << m_nearsurf_temp_value[i] << std::endl;
+                ifh.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             }
         }
 
@@ -178,13 +169,11 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
                         "Cannot find surface_temp_timetable file: " +
                         m_surf_temp_timetable);
                 }
-                amrex::Real data_time;
-                amrex::Real data_value;
-                ifh.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                while (ifh >> data_time) {
-                    ifh >> data_value;
+                amrex::Real data_time, data_value;
+                while (ifh >> data_time >> data_value) {
                     m_surf_temp_time.push_back(data_time);
                     m_surf_temp_value.push_back(data_value);
+                    ifh.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 }
             }
         // - Specified surface temperature rate mode:

@@ -43,7 +43,6 @@ public:
     inline void set_boundary_layer_height(amrex::Real zi)
     {
         m_zi = zi;
-        amrex::Print() << "z_i = " << zi << std::endl;
     }
 
     inline void set_mean_velocities(amrex::Real ux, amrex::Real uy)
@@ -73,15 +72,6 @@ public:
         m_abl_forcing[0] = (m_target_vel[0] - m_mean_vel[0]) / dt;
         m_abl_forcing[1] = (m_target_vel[1] - m_mean_vel[1]) / dt;
 
-        amrex::Print() << "U(zRef), V(zRef) = " << m_mean_vel[0] << " " << 
-                                                   m_mean_vel[1] << std::endl;
-        amrex::Print() << "dt = " << dt << std::endl;
-        amrex::Print() << "f_c = " << m_coriolis_factor << std::endl;
-        amrex::Print() << "Sx, Sy = " << m_abl_forcing[0] << " " <<
-                                         m_abl_forcing[1] << std::endl;
-        amrex::Print() << "Ug, Vg = " << m_abl_forcing[1]/m_coriolis_factor << " " <<
-                                        -m_abl_forcing[0]/m_coriolis_factor << std::endl;
-
         if (m_write_force_timetable &&
             amrex::ParallelDescriptor::IOProcessor() &&
             (t_step % m_force_outfreq == 0) &&
@@ -91,7 +81,9 @@ public:
             outfile.open(m_force_timetable, std::ios::out | std::ios::app);
             outfile << std::setprecision(17) << nph_time << "\t"
                     << m_abl_forcing[0] << "\t" << m_abl_forcing[1] << "\t"
-                    << 0.0 << std::endl;
+                    << 0.0 << "\t" << m_abl_forcing[1] / m_coriolis_factor 
+                    << "\t" << -m_abl_forcing[0] / m_coriolis_factor 
+                    << "\t" << m_zi << std::endl;
         }
     }
 

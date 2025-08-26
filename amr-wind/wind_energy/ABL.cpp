@@ -174,7 +174,6 @@ void ABL::post_regrid_actions() { m_abl_anelastic->post_regrid_actions(); }
 void ABL::pre_advance_work()
 {
     const auto& zi = m_stats->zi();
-    amrex::Print() << "in ABL.H: zi = " << zi << std::endl;
     const auto& vel_pa = m_stats->vel_profile();
     m_abl_wall_func.update_umean(
         m_stats->vel_profile(), m_stats->theta_profile_fine());

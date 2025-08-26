@@ -66,11 +66,17 @@ void MOData::update_fluxes(int max_iters)
             surf_temp = alpha_h * surf_temp_flux * (std::log(zref / z0t) - psi_h_zref) /
                             (utau * kappa) +
                         theta_mean;
+            near_surf_temp = alpha_h * surf_temp_flux * (std::log(2.0 / z0t) - psi_h_zref) /
+                            (utau * kappa) +
+                        theta_mean;
             break;
 
         case ThetaCalcType::SURFACE_TEMPERATURE:
             surf_temp_flux = -(theta_mean - surf_temp) * utau * kappa /
                              (alpha_h * (std::log(zref / z0t) - psi_h_zref));
+            near_surf_temp = alpha_h * surf_temp_flux * (std::log(2.0 / z0t) - psi_h_zref) /
+                            (utau * kappa) +
+                        theta_mean;
             break;
 
         case ThetaCalcType::NEAR_SURFACE_TEMPERATURE:
