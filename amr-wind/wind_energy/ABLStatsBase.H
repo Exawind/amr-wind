@@ -32,6 +32,8 @@ public:
     //! Flag indicating ABL simulation mode
     virtual ABLStatsMode abl_mode() const = 0;
 
+    virtual amrex::Real zi() const = 0;
+
     //! Interpolating object for vertical velocity profile
     virtual const VelPlaneAveraging& vel_profile_coarse() const = 0;
     virtual const VelPlaneAveragingFine& vel_profile() const = 0;

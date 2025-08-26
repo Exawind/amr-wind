@@ -230,13 +230,29 @@ void ABLStats::post_advance_work()
 
 void ABLStats::compute_zi()
 {
+    // This finds the location of the capping inversion (z_i) using the
+    // method of Sullivan et al. in "Structure of the entrainment zone
+    // capping the convective atmospheric boundary layer," JAS, Vol. 55,
+    // 1998.
+    // 
+    // In this method, for every x,y location in the computational domain,
+    // the maximum d(\theta)/dz is found.  You then have an x,y array
+    // of x,y local z_i.  z_i is then averaged over the x,y array to give
+    // <z_i>.
 
+    // Compute the potential temperature gradient.
     auto gradT = (this->m_sim.repo())
                      .create_scratch_field(3, m_temperature.num_grow()[0]);
     fvm::gradient(*gradT, m_temperature);
 
     // Only compute zi using coarsest level
     const int lev = 0;
+
+    // Using the AMReX ReduceToPlane function, find the maximum
+    // d(\theta)/dz over the mesh along lines in the normal direction,
+    // which typically would be z (if z is up).  We end up with this
+    // 2D "planar" array of max d(\theta)/dz over the horizontal
+    // extent of the domain.
     const int dir = m_normal_dir;
     const auto& geom = (this->m_sim.repo()).mesh().Geom(lev);
     auto const& domain_box = geom.Domain();
@@ -260,11 +276,21 @@ void ABLStats::compute_zi()
     auto& pinned_tg_fab = device_tg_fab;
 #endif
 
+    // Because of the parallel decomposition, there may be multiple
+    // of these 2D "planar" arrays local to different processes handling
+    // boxes of mesh at different heights.  So, we need to parallel
+    // reduce these by picking the max value at each x,y location to get
+    // the final resultant planar array of max temperature gradient values.
+    // This final array is collected only to the IO processor.
     amrex::ParallelReduce::Max(
         pinned_tg_fab.dataPtr(), static_cast<int>(pinned_tg_fab.size()),
         amrex::ParallelDescriptor::IOProcessorNumber(),
         amrex::ParallelDescriptor::Communicator());
 
+    // To get the planar average over the non-normal directions (typically
+    // x and y), we sum up all the max temperature gradient values.  Again,
+    // this only happens on the IO processor.  Once we have the sum, divide
+    // by the number of coarse grid points in x and y.
     if (amrex::ParallelDescriptor::IOProcessor()) {
         const auto dnval = m_dn;
         auto* p = pinned_tg_fab.dataPtr();
@@ -276,6 +302,10 @@ void ABLStats::compute_zi()
             0.0);
         m_zi /= static_cast<amrex::Real>(pinned_tg_fab.size());
     }
+
+    // It is necessary for other processors to know <z_i>, so broadcast
+    // it back out to all processors.
+    amrex::ParallelDescriptor::Bcast(&m_zi, 1, amrex::ParallelDescriptor::IOProcessorNumber());
 }
 
 void ABLStats::process_output()
