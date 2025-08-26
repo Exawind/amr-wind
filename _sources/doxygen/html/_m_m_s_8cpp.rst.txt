@@ -1,0 +1,14 @@
+.. meta::500e2b356a32c47c82f31ba929a27838dbe8ba8b9dce215694ea40f74e135ec19e1a780e09ab5b00d628eb01d3fb68a80969e24f64f52d78a2ede9ed7872a013
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/mms/MMS.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/physics/mms/MMS.cpp File Reference
+===============================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _m_m_s_8cpp.html

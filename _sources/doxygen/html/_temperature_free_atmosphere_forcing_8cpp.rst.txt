@@ -1,0 +1,14 @@
+.. meta::af89de4656922545870604f7442048100fb3d8e353a937d098ca92cf03922d43823bdeae3b8cd99cbffaa7d13c7f64175a523ea540e0d94515d7b564faa6a03c
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/temperature/source_terms/TemperatureFreeAtmosphereForcing.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/equation\_systems/temperature/source\_terms/TemperatureFreeAtmosphereForcing.cpp File Reference
+============================================================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _temperature_free_atmosphere_forcing_8cpp.html

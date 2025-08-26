@@ -1,0 +1,5 @@
+<map id="amr_wind::terraindrag::TerrainDrag" name="amr_wind::terraindrag::TerrainDrag">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,108,172,148"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="7,5,171,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="91,74,91,108,86,108,86,74"/>
+</map>

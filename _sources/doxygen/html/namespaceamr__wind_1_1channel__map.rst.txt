@@ -1,0 +1,14 @@
+.. meta::ad5d89f722a33a62bea89054fa3a517b86d3b9e7a930ee65280c711c286c72d8c66c7a11ba35487cde9526583fe46babdcc0481449f029e90f176fe445022d90
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::channel_map Namespace Reference
+
+channel\_map Namespace Reference
+================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: namespaceamr__wind_1_1channel__map.html

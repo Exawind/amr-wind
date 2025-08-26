@@ -1,0 +1,14 @@
+.. meta::9fc7804d7a7067e872c482e519c022fc3e1d83a5735bbd20f9bfd9997250f03377c1fbf3315ce46c5819a97aec06bec0bd3d7af3935b15735dea9c4482aa7ffb
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::icns::mms::MMSForcing Class Reference
+
+MMSForcing Class Reference
+==========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1pde_1_1icns_1_1mms_1_1_m_m_s_forcing.html

@@ -1,0 +1,14 @@
+.. meta::755c5a7e4f5e3840ad56084899492b2b21e046cfa8b07180f22a891f642b7a85ca9eea944615a62e8cba656e59a1b1766972d80bf22056f7b13cb7ebbe61c62d
+
+:orphan:
+
+.. title:: AMR-Wind API: Member List
+
+Member List
+===========
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ocean__waves_1_1ops_1_1_read_inputs_op_3_01_stokes_waves_01_4-members.html

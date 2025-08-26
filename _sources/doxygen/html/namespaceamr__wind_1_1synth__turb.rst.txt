@@ -1,0 +1,14 @@
+.. meta::bbb78059d744d615dd7e976b0522fe2afc49e5a4ac98f101ebf89ce6a9e92061f0211ed7cd7e771145ff43958a0daa5f211556d69776a48ebf38d9ea1a880e55
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::synth_turb Namespace Reference
+
+synth\_turb Namespace Reference
+===============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: namespaceamr__wind_1_1synth__turb.html

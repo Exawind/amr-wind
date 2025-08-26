@@ -1,0 +1,14 @@
+.. meta::9c7311aa1e1bad36bc531ef095af1f93a9e0cda0645f0e16695bf85491a41a2cfe222cb58c4a65ba20f5ad5b7b4111d9f904b830bf327c4260f368c17d68132e
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/tagging/RefinementCriteria.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/tagging/RefinementCriteria.cpp File Reference
+====================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _refinement_criteria_8cpp.html
