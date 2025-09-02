@@ -290,7 +290,11 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
                     (f_z * ddata.normal_vec + f_theta * theta_vec) *
                     ddata.density * uInfSqr * dArea;
 
-                const amrex::Real f_awc = ddata.awc_amplitude * std::cos( ddata.awc_angular_frequency * current_time - ddata.awc_n * theta_angle + ddata.awc_phi_clock );
+                const amrex::Real f_awc =
+                    ddata.awc_amplitude *
+                    std::cos(
+                        ddata.awc_angular_frequency * current_time -
+                        ddata.awc_n * theta_angle + ddata.awc_phi_clock);
                 ddata.disk_force = ddata.disk_force + grid.force[ip];
             }
         }

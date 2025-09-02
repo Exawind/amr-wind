@@ -37,7 +37,7 @@ struct JoukowskyData : public DiskBaseData
     vs::Vector disk_force{0.0, 0.0, 0.0};
     bool use_tip_correction{true};
     bool use_root_correction{true};
-    //TODO: These might have to live in a different struct
+    // TODO: These might have to live in a different struct
     amrex::Real awc_amplitude{0.0};
     amrex::Real awc_angular_frequency{0.0};
     amrex::Real awc_n{0.0};
