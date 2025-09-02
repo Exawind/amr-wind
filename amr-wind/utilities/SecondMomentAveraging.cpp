@@ -146,6 +146,8 @@ void SecondMomentAveraging::compute_average(
     const int ncomp2 = m_plane_average2.ncomp();
     const int nmoments = m_num_moments;
 
+      BL_PROFILE_VAR("amr-wind::SecondMomentAveraging::compute_average_a", ab);
+
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
@@ -197,6 +199,7 @@ void SecondMomentAveraging::compute_average(
                 }
             });
     }
+    BL_PROFILE_VAR_STOP(ab);
 
     lfluc.copyToHost(
         m_second_moments_line.data(), m_second_moments_line.size());
