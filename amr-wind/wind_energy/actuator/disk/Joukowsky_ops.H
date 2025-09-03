@@ -247,7 +247,7 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
         int ip = 0;
 
         const auto dTheta = amr_wind::utils::two_pi() / ddata.num_vel_pts_t;
-        const auto current_time = data.sim().time();
+        const auto current_time = data.sim().time().current_time();
 
         for (int i = 0; i < ddata.num_vel_pts_r; i++) {
             const amrex::Real& F = ddata.tip_correction[i];
