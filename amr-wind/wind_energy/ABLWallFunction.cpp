@@ -238,7 +238,7 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
         }
     }
 
-    // Set the Monin-Obukhov algorith type.
+    // Set the Monin-Obukhov algorithm type.
     if (m_surf_temp_flux) {
         m_mo.alg_type = MOData::ThetaCalcType::HEAT_FLUX;
     } else if (m_surf_temp) {
