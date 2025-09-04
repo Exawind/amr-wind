@@ -99,7 +99,7 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
                         m_surf_temp_flux_timetable);
                 }
                 amrex::Real data_time, data_value;
-                while (ifh >> data_time) {
+                while (ifh >> data_time >> data_value) {
                     m_surf_temp_flux_time.push_back(data_time);
                     m_surf_temp_flux_value.push_back(data_value);
                     ifh.ignore(
