@@ -63,7 +63,7 @@ ABLForcing::ABLForcing(const CFDSim& sim)
     pp_abl.query("free_atmosphere_damping", m_fa_damping);
     if (m_fa_damping) {
         pp_abl.query("detect_free_atmosphere_height", m_fa_detect_height);
-        if (! m_fa_detect_height) {
+        if (!m_fa_detect_height) {
             pp_abl.get("free_atmosphere_height", m_fa_height);
         }
         pp_abl.query("free_atmosphere_damping_start_time", m_fa_time_start);
@@ -75,7 +75,7 @@ ABLForcing::ABLForcing(const CFDSim& sim)
         pp_coriolis.query("rotational_time_period", rot_time_period);
 
         amrex::Real omega = utils::two_pi() / rot_time_period;
-        
+
         amrex::Real latitude = 90.0;
         pp_coriolis.query("latitude", latitude);
         latitude = utils::radians(latitude);
@@ -83,7 +83,6 @@ ABLForcing::ABLForcing(const CFDSim& sim)
 
         m_coriolis_factor = 2.0 * omega * sinphi;
     }
-    
 
     for (int i = 0; i < AMREX_SPACEDIM; ++i) {
         m_mean_vel[i] = m_target_vel[i];
@@ -129,9 +128,9 @@ void ABLForcing::operator()(
     const bool fa_detect_height = m_fa_detect_height;
     const amrex::Real fa_height = fa_detect_height ? m_zi : m_fa_height;
     const amrex::Real fa_time_start = m_fa_time_start;
-    const amrex::Real fa_time_end  = m_fa_time_end;
+    const amrex::Real fa_time_end = m_fa_time_end;
     const amrex::Real fa_tau = m_fa_tau;
-    const amrex::Real fa_u =  dvdt / m_coriolis_factor;
+    const amrex::Real fa_u = dvdt / m_coriolis_factor;
     const amrex::Real fa_v = -dudt / m_coriolis_factor;
 
     const auto& current_time = m_time.current_time();
@@ -152,7 +151,6 @@ void ABLForcing::operator()(
     const amrex::Real* vals = m_vel_vals.data();
 
     const auto& vof = (*m_vof)(lev).const_array(mfi);
-
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         amrex::IntVect iv(i, j, k);
@@ -195,12 +193,11 @@ void ABLForcing::operator()(
         // wind. Nudge the free atmosphere toward that geostrophic wind.)
         amrex::Real src_fa_damping_x = 0.0;
         amrex::Real src_fa_damping_y = 0.0;
-        if (fa_damping && 
-            ((nph_time >= fa_time_start) && 
-             (nph_time <= fa_time_end)) &&
+        if (fa_damping &&
+            ((nph_time >= fa_time_start) && (nph_time <= fa_time_end)) &&
             (z >= fa_height)) {
-            src_fa_damping_x = (1.0/fa_tau) * (fa_u - umean);
-            src_fa_damping_y = (1.0/fa_tau) * (fa_v - vmean);
+            src_fa_damping_x = (1.0 / fa_tau) * (fa_u - umean);
+            src_fa_damping_y = (1.0 / fa_tau) * (fa_v - vmean);
         }
 
         // Sum up the source term

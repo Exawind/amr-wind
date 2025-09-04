@@ -204,8 +204,7 @@ void ABL::pre_advance_work()
         m_abl_forcing->set_mean_velocities(vx, vy);
         m_abl_forcing->set_boundary_layer_height(zi);
 
-        m_abl_forcing->mean_velocity_update(
-            m_stats->vel_profile_coarse());
+        m_abl_forcing->mean_velocity_update(m_stats->vel_profile_coarse());
     }
 
     if (m_abl_mean_bous != nullptr) {

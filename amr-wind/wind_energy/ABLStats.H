@@ -58,10 +58,7 @@ public:
     //! Compute height of capping inversion
     void compute_zi();
 
-    amrex::Real zi() const override
-    {
-        return m_zi;
-    };
+    amrex::Real zi() const override { return m_zi; };
 
     //! Return vel plane averaging instance
     const VelPlaneAveragingFine& vel_profile() const override

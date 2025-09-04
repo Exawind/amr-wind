@@ -234,7 +234,7 @@ void ABLStats::compute_zi()
     // method of Sullivan et al. in "Structure of the entrainment zone
     // capping the convective atmospheric boundary layer," JAS, Vol. 55,
     // 1998.
-    // 
+    //
     // In this method, for every x,y location in the computational domain,
     // the maximum d(\theta)/dz is found.  You then have an x,y array
     // of x,y local z_i.  z_i is then averaged over the x,y array to give
@@ -305,7 +305,8 @@ void ABLStats::compute_zi()
 
     // It is necessary for other processors to know <z_i>, so broadcast
     // it back out to all processors.
-    amrex::ParallelDescriptor::Bcast(&m_zi, 1, amrex::ParallelDescriptor::IOProcessorNumber());
+    amrex::ParallelDescriptor::Bcast(
+        &m_zi, 1, amrex::ParallelDescriptor::IOProcessorNumber());
 }
 
 void ABLStats::process_output()

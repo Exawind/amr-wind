@@ -40,10 +40,7 @@ public:
         m_target_vel[1] = uy;
     }
 
-    inline void set_boundary_layer_height(amrex::Real zi)
-    {
-        m_zi = zi;
-    }
+    inline void set_boundary_layer_height(amrex::Real zi) { m_zi = zi; }
 
     inline void set_mean_velocities(amrex::Real ux, amrex::Real uy)
     {
@@ -81,9 +78,9 @@ public:
             outfile.open(m_force_timetable, std::ios::out | std::ios::app);
             outfile << std::setprecision(17) << nph_time << "\t"
                     << m_abl_forcing[0] << "\t" << m_abl_forcing[1] << "\t"
-                    << 0.0 << "\t" << m_abl_forcing[1] / m_coriolis_factor 
-                    << "\t" << -m_abl_forcing[0] / m_coriolis_factor 
-                    << "\t" << m_zi << std::endl;
+                    << 0.0 << "\t" << m_abl_forcing[1] / m_coriolis_factor
+                    << "\t" << -m_abl_forcing[0] / m_coriolis_factor << "\t"
+                    << m_zi << std::endl;
         }
     }
 

@@ -61,33 +61,38 @@ void MOData::update_fluxes(int max_iters)
         utau_iter = utau;
         switch (alg_type) {
         case ThetaCalcType::HEAT_FLUX:
-            surf_temp = alpha_h * surf_temp_flux * (std::log(zref / z0t) - psi_h_zref) /
+            surf_temp = alpha_h * surf_temp_flux *
+                            (std::log(zref / z0t) - psi_h_zref) /
                             (utau * kappa) +
                         theta_mean;
-            near_surf_temp = alpha_h * surf_temp_flux * (std::log(2.0 / z0t) - psi_h_zref) /
-                            (utau * kappa) +
-                        theta_mean;
+            near_surf_temp = alpha_h * surf_temp_flux *
+                                 (std::log(2.0 / z0t) - psi_h_zref) /
+                                 (utau * kappa) +
+                             theta_mean;
             break;
 
         case ThetaCalcType::SURFACE_TEMPERATURE:
             surf_temp_flux = -(theta_mean - surf_temp) * utau * kappa /
                              (alpha_h * (std::log(zref / z0t) - psi_h_zref));
-            near_surf_temp = alpha_h * surf_temp_flux * (std::log(2.0 / z0t) - psi_h_zref) /
-                            (utau * kappa) +
-                        theta_mean;
+            near_surf_temp = alpha_h * surf_temp_flux *
+                                 (std::log(2.0 / z0t) - psi_h_zref) /
+                                 (utau * kappa) +
+                             theta_mean;
             break;
 
         case ThetaCalcType::NEAR_SURFACE_TEMPERATURE:
             amrex::Real psi_h_zNearSurf = calc_psi_h(zNearSurf / obukhov_len);
             amrex::Real a11 = 1.0;
-            amrex::Real a12 = -(alpha_h / (kappa * utau)) * (std::log(zref / z0t) - psi_h_zref);
+            amrex::Real a12 = -(alpha_h / (kappa * utau)) *
+                              (std::log(zref / z0t) - psi_h_zref);
             amrex::Real a21 = 1.0;
-            amrex::Real a22 = -(alpha_h / (kappa * utau)) * (std::log(zNearSurf / z0t) - psi_h_zNearSurf);
+            amrex::Real a22 = -(alpha_h / (kappa * utau)) *
+                              (std::log(zNearSurf / z0t) - psi_h_zNearSurf);
 
-            amrex::Real coeff = 1.0 / (a11*a22 - a12*a21);
+            amrex::Real coeff = 1.0 / (a11 * a22 - a12 * a21);
 
-            surf_temp = coeff * (a22*theta_mean - a12*near_surf_temp);
-            surf_temp_flux = coeff * (-a21*theta_mean + a11*near_surf_temp);
+            surf_temp = coeff * (a22 * theta_mean - a12 * near_surf_temp);
+            surf_temp_flux = coeff * (-a21 * theta_mean + a11 * near_surf_temp);
 
             break;
         }
@@ -107,17 +112,21 @@ void MOData::update_fluxes(int max_iters)
         utau = kappa * vmag_mean / (std::log(zref / z0) - psi_m_zref);
         ++iter;
 
-        amrex::Print() << "iteration: " << iter << ", T(" << zNearSurf << " m) = " << near_surf_temp 
-                       << " K, T(" << zref << " m) = " << theta_mean << "K ,  L = " << obukhov_len 
-                       << " m,  uStar = " << utau << "m/s,  Qs = " << surf_temp_flux 
-                       << " K-m/s,  theta_0 = " << surf_temp << " K" << std::endl;
+        amrex::Print() << "iteration: " << iter << ", T(" << zNearSurf
+                       << " m) = " << near_surf_temp << " K, T(" << zref
+                       << " m) = " << theta_mean << "K ,  L = " << obukhov_len
+                       << " m,  uStar = " << utau
+                       << "m/s,  Qs = " << surf_temp_flux
+                       << " K-m/s,  theta_0 = " << surf_temp << " K"
+                       << std::endl;
     } while ((std::abs(utau_iter - utau) > 1e-5) && iter <= max_iters);
 
     if (iter >= max_iters) {
         amrex::Print()
             << "MOData::update_fluxes: Convergence criteria not met after "
             << max_iters << " iterations\nObuhov length = " << obukhov_len
-            << " zeta = (z_ref/L) = " << zeta << "\npsi_m(z_ref/L) = " << psi_m_zref
+            << " zeta = (z_ref/L) = " << zeta
+            << "\npsi_m(z_ref/L) = " << psi_m_zref
             << " psi_h(z_ref/L) = " << psi_h_zref << "\nutau = " << utau
             << " Tsurf = " << surf_temp << " q = " << surf_temp_flux
             << std::endl;

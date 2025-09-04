@@ -22,17 +22,17 @@ struct MOData
     enum class ThetaCalcType {
         HEAT_FLUX = 0,                ///< Heat-flux specified
         SURFACE_TEMPERATURE = 1,      ///< Surface temperature specified
-        NEAR_SURFACE_TEMPERATURE = 2, ///< Temperature specified above but 
+        NEAR_SURFACE_TEMPERATURE = 2, ///< Temperature specified above but
                                       //   near the surface
     };
 
-    amrex::Real zref{0.0};           ///< Reference height (m)
-    amrex::Real zNearSurf{2.0};      ///< Near-surface temperature driving height (m)
-    amrex::Real z0{0.1};             ///< Aerodynamic roughness height (m)
-    amrex::Real z0t{z0};             ///< Thermal roughness height (m)
-    amrex::Real utau;                ///< Friction velocity (m/s)
-    amrex::Real kappa{0.41};         ///< von Karman constant
-    amrex::Real gravity{9.81};       ///< Acceleration due to gravity (m/s^2)
+    amrex::Real zref{0.0};      ///< Reference height (m)
+    amrex::Real zNearSurf{2.0}; ///< Near-surface temperature driving height (m)
+    amrex::Real z0{0.1};        ///< Aerodynamic roughness height (m)
+    amrex::Real z0t{z0};        ///< Thermal roughness height (m)
+    amrex::Real utau;           ///< Friction velocity (m/s)
+    amrex::Real kappa{0.41};    ///< von Karman constant
+    amrex::Real gravity{9.81};  ///< Acceleration due to gravity (m/s^2)
     amrex::Real obukhov_len{1.0e16}; ///< Non-dimensional Obukhov length
 
     amrex::RealArray vel_mean; ///< Mean velocity (at zref)
@@ -43,7 +43,8 @@ struct MOData
 
     amrex::Real surf_temp_flux{0.0}; ///< Heat flux
     amrex::Real surf_temp;           ///< Instantaneous surface temperature
-    amrex::Real near_surf_temp;      ///< Instantaneous near-surface temperature (at zNearSurf).
+    amrex::Real near_surf_temp; ///< Instantaneous near-surface temperature (at
+                                ///< zNearSurf).
 
     amrex::Real alpha_h{1.0};
     amrex::Real gamma_m{5.0};
