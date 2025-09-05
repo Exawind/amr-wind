@@ -40,8 +40,8 @@ struct JoukowskyData : public DiskBaseData
     // TODO: These might have to live in a different struct
     amrex::Real awc_amplitude{0.0};
     amrex::Real awc_angular_frequency{0.0};
-    amrex::Real awc_n{0.0};
-    amrex::Real awc_phi_clock{0.0};
+    amrex::Real awc_azimuthal_mode{0.0};
+    amrex::Real awc_clocking_angle{0.0};
 };
 
 struct Joukowsky : public DiskType

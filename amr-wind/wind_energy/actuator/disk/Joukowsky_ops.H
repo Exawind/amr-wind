@@ -290,7 +290,7 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
                     ddata.awc_amplitude *
                     std::cos(
                         ddata.awc_angular_frequency * current_time -
-                        ddata.awc_n * theta_angle + ddata.awc_phi_clock);
+                        ddata.awc_azimuthal_mode * theta_angle + ddata.awc_clocking_angle);
 
                 grid.force[ip] =
                     ((f_z + f_awc) * ddata.normal_vec + f_theta * theta_vec) *
