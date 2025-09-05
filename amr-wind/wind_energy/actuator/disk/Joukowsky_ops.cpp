@@ -30,7 +30,6 @@ void optional_parameters(JoukowskyData& meta, const utils::ActParser& pp)
     pp.query("ct_region2", meta.Ct_rated);
     pp.query("S0_alpha1", meta.S0_alpha1);
     pp.query("S0_alpha2", meta.S0_alpha2);
-    // TODO: read AWC parameters in a separate function?
     pp.query("awc_amplitude", meta.awc_amplitude);
     pp.query("awc_azimuthal_mode", meta.awc_azimuthal_mode);
     pp.query("awc_angular_frequency", meta.awc_angular_frequency);
