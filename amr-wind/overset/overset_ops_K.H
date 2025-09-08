@@ -58,6 +58,9 @@ amrex::Real AMREX_GPU_DEVICE AMREX_FORCE_INLINE alpha_flux(
                                                                     : dphi_eval;
         }
     }
+    // Limit vof fluxes based on neighbors
+    dphi_eval = std::min(vof(iv), std::max(-vof(ivm), dphi_eval));
+    dphi_eval = std::min(1. - vof(ivm), std::max(-(1. - vof(iv)), dphi_eval));
     return dphi_eval;
 }
 
