@@ -39,7 +39,7 @@ Actuator.JoukowskyDisk.num_points_t = 3
 
 #----  AWC Params  ----
 Actuator.WTG01.awc_angular_frequency = 0.08
-Actuator.WTG01.awc_amplitude = 0.018
+Actuator.WTG01.awc_amplitude = 0.05
 Actuator.WTG01.awc_azimuthal_mode = 1
 Actuator.WTG01.awc_clocking_angle = 0.2
 
