@@ -39,7 +39,7 @@ struct JoukowskyData : public DiskBaseData
     bool use_root_correction{true};
     amrex::Real awc_amplitude{0.0};
     amrex::Real awc_angular_frequency{0.0};
-    amrex::Real awc_azimuthal_mode{0.0};
+    int awc_azimuthal_mode{0};
     amrex::Real awc_clocking_angle{0.0};
 };
 
