@@ -293,9 +293,9 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
                         ddata.awc_azimuthal_mode * theta_angle +
                         ddata.awc_clocking_angle);
 
-                grid.force[ip] =
-                    ((1 + f_awc) * f_z * ddata.normal_vec + f_theta * theta_vec) *
-                    ddata.density * uInfSqr * dArea;
+                grid.force[ip] = ((1 + f_awc) * f_z * ddata.normal_vec +
+                                  f_theta * theta_vec) *
+                                 ddata.density * uInfSqr * dArea;
 
                 ddata.disk_force = ddata.disk_force + grid.force[ip];
             }
