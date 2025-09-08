@@ -413,12 +413,12 @@ the Joukowsky disk model. The current implementation follows `Cheung et. al (202
 
    **type:** Real, optional, default=0
 
-   Sets the amplitude of the forcing term in AWC
+   Sets the amplitude of the forcing term in AWC relative to the axial force
 
 
 .. input_param:: Actuator.WTG01.awc_azimuthal_mode
 
-   **type:** Real, optional, default=0
+   **type:** Int, optional, default=0
 
    Sets the azimuthal mode for the AWC (e.g. 0 denotes a pulse mode, 1 denotes a helical mode)
 
