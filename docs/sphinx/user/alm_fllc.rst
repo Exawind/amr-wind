@@ -15,11 +15,11 @@ To enable the ALM with OpenFAST coupling, ``Actuator`` should be added to ``incf
     Actuator.TurbineFastLine.fllc_nonuniform = 1
     Actuator.TurbineFastLine.fllc_type = variable_chord
 
-When selecting the ``Actuator.TurbineFastLine.fllc_nonuniform`` as ``1``, a new distribution of points is calculated internally, based on the ``Actuator.TurbineFastLine.num_points_blade`` and ``Actuator.TurbineFastLine.fllc_eps_dr_ratio`` entries. The ``Actuator.TurbineFastLine.fllc_eps_dr_ratio`` value should be at least 1 with a maximum value of 3. It is recommended to use the value 3. This parameter controls the distribution of points, and its value should be selected based on the desired accuracy of the correction, according to Table 1 given in :cite:`MartinezFLLCimpl`.
+When selecting the ``Actuator.TurbineFastLine.fllc_nonuniform`` as ``1``, a new distribution of points is calculated internally, based on the ``Actuator.TurbineFastLine.num_points_blade`` and ``Actuator.TurbineFastLine.fllc_epsilon_dr_ratio`` entries. The ``Actuator.TurbineFastLine.fllc_epsilon_dr_ratio`` value should be at least 1 with a maximum value of 3. It is recommended to use the value 3. This parameter controls the distribution of points, and its value should be selected based on the desired accuracy of the correction, according to Table 1 given in :cite:`MartinezFLLCimpl`.
 
 .. code-block:: none
 
-    Actuator.TurbineFastLine.fllc_eps_dr_ratio = 3
+    Actuator.TurbineFastLine.fllc_epsilon_dr_ratio = 3
 
 .. note::
 

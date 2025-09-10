@@ -37,6 +37,10 @@ struct JoukowskyData : public DiskBaseData
     vs::Vector disk_force{0.0, 0.0, 0.0};
     bool use_tip_correction{true};
     bool use_root_correction{true};
+    amrex::Real awc_amplitude{0.0};
+    amrex::Real awc_angular_frequency{0.0};
+    int awc_azimuthal_mode{0};
+    amrex::Real awc_clocking_angle{0.0};
 };
 
 struct Joukowsky : public DiskType
