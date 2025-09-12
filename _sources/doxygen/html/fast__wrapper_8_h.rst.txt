@@ -1,0 +1,14 @@
+.. meta::466136989973db842769dcf73a80d376f55f8947eb846c64cab25bb122c61f7183ba4b4d85394f267cee1105004d8b1886348c1060b50cb2238c1680d3ba7a71
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/actuator/turbine/fast/fast_wrapper.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/wind\_energy/actuator/turbine/fast/fast\_wrapper.H File Reference
+==============================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: fast__wrapper_8_h.html

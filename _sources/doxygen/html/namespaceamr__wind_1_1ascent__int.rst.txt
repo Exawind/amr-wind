@@ -1,0 +1,14 @@
+.. meta::daaa85a53bf6a9463552f79e48f8115083d7622acf1afa8b28c65dc3ccb638d75fb692a47aaed3028b52f73cbf2beea686a1a94a9d8cd90e3b13c903a63b61de
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ascent_int Namespace Reference
+
+ascent\_int Namespace Reference
+===============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: namespaceamr__wind_1_1ascent__int.html

@@ -1,0 +1,14 @@
+.. meta::6b694672be4cc23ef5276a2624ac74f24026db1028f25797864c7fbba8f69fa343226262c584172b672536f5b008e525929c094fcd581cbf49d473b339bcc0fe
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::channel_flow::ChannelFlow Class Reference
+
+ChannelFlow Class Reference
+===========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1channel__flow_1_1_channel_flow.html

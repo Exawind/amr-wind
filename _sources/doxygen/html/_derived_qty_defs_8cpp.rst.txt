@@ -1,0 +1,14 @@
+.. meta::0523f8aa1cde90ad6226f2f73b57ac383952ce465cf77b2574bb8fb03ba036a5812841c9740a29df249617a6696b5c8d3678943b9dbf8d6cd1bff57c4099df7e
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/DerivedQtyDefs.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/DerivedQtyDefs.cpp File Reference
+========================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _derived_qty_defs_8cpp.html

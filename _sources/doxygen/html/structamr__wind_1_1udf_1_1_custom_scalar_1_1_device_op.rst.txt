@@ -1,0 +1,14 @@
+.. meta::61002591bd484705cf83f6403bf3c4b225c3bbd8aaebb9314fd4a49943fa2b03c97a07246ab04f07fcdb46f74e03f0e551e465502f63fc96d79871cb5d387b68
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::udf::CustomScalar::DeviceOp Struct Reference
+
+DeviceOp Struct Reference
+=========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1udf_1_1_custom_scalar_1_1_device_op.html

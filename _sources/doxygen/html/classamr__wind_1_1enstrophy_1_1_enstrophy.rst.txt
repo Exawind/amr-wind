@@ -1,0 +1,14 @@
+.. meta::c80bd53b9049d4fabbc9a79d31b330bc7a15cec90d8269e001ce8e7e7657ac1c18256dffe40f8cc37cd78bba23c7af31d2c6b1bf914d64487877c3c7103a08a8
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::enstrophy::Enstrophy Class Reference
+
+Enstrophy Class Reference
+=========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1enstrophy_1_1_enstrophy.html

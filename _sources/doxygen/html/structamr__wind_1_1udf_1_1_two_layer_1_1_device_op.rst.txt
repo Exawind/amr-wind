@@ -1,0 +1,14 @@
+.. meta::0370528f4a90d18be291186bd6984bf7ee838e4b6435ee98ff7c3da07927c5338e202d31eee4ecb86f288d5b348bf8255978e7ec222d5dca599ff568c6ae68ed
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::udf::TwoLayer::DeviceOp Struct Reference
+
+DeviceOp Struct Reference
+=========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1udf_1_1_two_layer_1_1_device_op.html

@@ -1,0 +1,14 @@
+.. meta::c426cda646a8a98f298f6b843a4af2d69259ce7951f84b962ef28372f3588d1777588f03c26c7a512387db9d45e0e68add3131a1e18355d9dc5f01b7de69449a
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::ActSrcOp&lt; ActTrait, SrcTrait, typename &gt; Class Template Reference
+
+ActSrcOp&lt; ActTrait, SrcTrait, typename &gt; Class Template Reference
+=======================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1actuator_1_1ops_1_1_act_src_op.html

@@ -1,0 +1,14 @@
+.. meta::6418084f0c5f2613a1aa84e645f93d4ebdd6e99ef3bb53400e59b258246e8eb8b4f85addb2f4c197a85b96c161504b7b19d347057a13aaa512161fe646fb1dc2
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::UpdatePosOp&lt; ActTrait, SrcTrait, typename &gt; Struct Template Reference
+
+UpdatePosOp&lt; ActTrait, SrcTrait, typename &gt; Struct Template Reference
+===========================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1ops_1_1_update_pos_op.html

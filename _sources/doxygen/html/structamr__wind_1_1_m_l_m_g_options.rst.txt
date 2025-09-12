@@ -1,0 +1,14 @@
+.. meta::ee00599b58eaf03833bcee8040145f4f67b729b3bd41a88d88abe66e5cecc7d3bb4cdc0c820f254baa40cabe9faea46f03b9a9b0b5e64e18f71b44e651cfad1b
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::MLMGOptions Struct Reference
+
+MLMGOptions Struct Reference
+============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1_m_l_m_g_options.html

@@ -1,0 +1,14 @@
+.. meta::4e705d10717e6807e4270c59c9f0a89233fd32e495e9e33d07fd54118ddc68ecf7440bc376d4e8252e03e28abb3f8ea62860ea30e634e24dca9a15fedf51a605
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::enstrophy Namespace Reference
+
+enstrophy Namespace Reference
+=============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: namespaceamr__wind_1_1enstrophy.html

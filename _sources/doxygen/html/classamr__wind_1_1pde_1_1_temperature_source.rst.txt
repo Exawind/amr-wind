@@ -1,0 +1,14 @@
+.. meta::beaea5bd12d7bd0a016eb42c528b306a0cfcf95a081193f0c09e76cccdab1ff808d9242c2561e13661258aae45b2ee289431beb71656e04fc5558911d9c2e2ea
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::TemperatureSource Class Reference
+
+TemperatureSource Class Reference
+=================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1pde_1_1_temperature_source.html

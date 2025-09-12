@@ -1,0 +1,7 @@
+<map id="amr_wind::DerivedQty" name="amr_wind::DerivedQty">
+<area shape="rect" id="Node000001" title=" " alt="" coords="40,260,208,285"/>
+<area shape="rect" id="Node000002" href="$structamr__wind_1_1_factory.html" title=" " alt="" coords="5,156,243,211"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="127,224,127,260,121,260,121,224"/>
+<area shape="rect" id="Node000003" href="$structamr__wind_1_1_factory.html" title=" " alt="" coords="48,5,200,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="127,59,127,156,121,156,121,59"/>
+</map>
