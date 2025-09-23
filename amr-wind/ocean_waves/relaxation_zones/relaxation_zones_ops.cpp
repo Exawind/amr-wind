@@ -25,7 +25,6 @@ void read_inputs(
     pp.query("relax_zone_gen_length", wdata.gen_length);
     if (pp.contains("relax_zone_out_length")) {
         wdata.has_beach = false;
-        wdata.has_outprofile = true;
         wdata.init_wave_field = true;
         pp.query("relax_zone_out_length", wdata.beach_length);
     } else {
@@ -34,6 +33,7 @@ void read_inputs(
         pp.query("numerical_beach_length_factor", wdata.beach_length_factor);
         pp.query("initialize_wave_field", wdata.init_wave_field);
     }
+    pp.query("relax_zone_length_y", wdata.zone_length_y);
 
     pp.query("current", wdata.current);
 
@@ -120,10 +120,11 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
         const amrex::Real gen_length = wdata.gen_length;
         const amrex::Real beach_length = wdata.beach_length;
         const amrex::Real beach_length_factor = wdata.beach_length_factor;
+        const amrex::Real zone_length_y = wdata.zone_length_y;
+        const bool has_zone_y = zone_length_y > constants::EPS;
         const amrex::Real zsl = wdata.zsl;
         const amrex::Real current = wdata.current;
         const bool has_beach = wdata.has_beach;
-        const bool has_outprofile = wdata.has_outprofile;
 
         amrex::ParallelFor(
             velocity(lev), amrex::IntVect(0),
@@ -131,6 +132,9 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                 const amrex::Real x = amrex::min(
                     amrex::max(problo[0] + (i + 0.5) * dx[0], problo[0]),
                     probhi[0]);
+                const amrex::Real y = amrex::min(
+                    amrex::max(problo[1] + (j + 0.5) * dx[1], problo[1]),
+                    probhi[1]);
                 const amrex::Real z = amrex::min(
                     amrex::max(problo[2] + (k + 0.5) * dx[2], problo[2]),
                     probhi[2]);
@@ -141,6 +145,7 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                 const auto target_volfrac = target_volfrac_arrs[nbx];
                 const auto target_vel = target_vel_arrs[nbx];
 
+                // Skip if in or near terrain
                 bool in_or_near_terrain{false};
                 if (terrain_exists) {
                     in_or_near_terrain =
@@ -148,21 +153,60 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                          terrain_drag_flags[nbx](i, j, k) == 1);
                 }
 
-                // Generation region
-                if (x <= problo[0] + gen_length && !in_or_near_terrain) {
-                    const amrex::Real Gamma =
-                        utils::gamma_generate(x - problo[0], gen_length);
-                    // Get bounded new vof, incorporate with increment
+                // Get gamma for each possible direction
+                const amrex::Real Gamma_xlo =
+                    utils::gamma_generate(x - problo[0], gen_length);
+                const amrex::Real Gamma_xhi = utils::gamma_absorb(
+                    x - (probhi[0] - beach_length), beach_length,
+                    beach_length_factor);
+                amrex::Real Gamma_ylo = 1.;
+                amrex::Real Gamma_yhi = 1.;
+                if (has_zone_y) {
+                    Gamma_ylo =
+                        utils::gamma_generate(y - problo[1], zone_length_y);
+                    Gamma_yhi = utils::gamma_absorb(
+                        y - (probhi[1] - zone_length_y), zone_length_y, 1.0);
+                }
+                const amrex::Real Gamma = std::min(
+                    std::min(Gamma_xhi, Gamma_xlo),
+                    std::min(Gamma_yhi, Gamma_ylo));
+
+                // Skip if Gamma is close enough to 1
+                bool outside_zones = Gamma + constants::EPS >= 1.;
+
+                if (!(outside_zones || in_or_near_terrain)) {
+                    // Create wave vector for generation, numerical beach
+                    const utils::WaveVec wave_sol{
+                        target_vel(i, j, k, 0), target_vel(i, j, k, 1),
+                        target_vel(i, j, k, 2), target_volfrac(i, j, k)};
+                    const utils::WaveVec quiescent{
+                        current, 0.0, 0.0,
+                        utils::free_surface_to_vof(zsl, z, dx[2])};
+                    const auto outlet = has_beach ? quiescent : wave_sol;
+
+                    // Check for in beach, needed for velocity forcing
+                    const bool in_beach =
+                        has_beach && x + beach_length >= probhi[0];
+
+                    // Harmonize between inlet/bulk profile and outlet profile
+                    const auto target_profile = utils::harmonize_profiles_1d(
+                        x, problo[0], gen_length, probhi[0], beach_length,
+                        wave_sol, wave_sol, outlet);
+
+                    // Nudge solution toward target
                     amrex::Real new_vof = utils::combine_linear(
-                        Gamma, target_volfrac(i, j, k), volfrac(i, j, k));
+                        Gamma, target_profile[3], volfrac(i, j, k));
                     new_vof = (new_vof > 1. - vof_tiny)
                                   ? 1.0
                                   : (new_vof < vof_tiny ? 0.0 : new_vof);
                     const amrex::Real dvf = new_vof - volfrac(i, j, k);
                     volfrac(i, j, k) += rampf * dvf;
-                    // Force liquid velocity only if target vof present
-                    const amrex::Real fvel_liq =
+                    // Liquid velocity forced only where velocity is known
+                    //  - in most of domain, that is where target vof is nonzero
+                    //  - in numerical beach, that is anywhere
+                    amrex::Real fvel_liq =
                         (target_volfrac(i, j, k) > vof_tiny) ? 1.0 : 0.0;
+                    fvel_liq = in_beach ? 1.0 : fvel_liq;
                     amrex::Real rho_ = rho1 * volfrac(i, j, k) +
                                        rho2 * (1.0 - volfrac(i, j, k));
                     for (int n = 0; n < vel.ncomp; ++n) {
@@ -170,7 +214,7 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                         amrex::Real vel_liq = vel(i, j, k, n);
                         const amrex::Real dvel_liq =
                             utils::combine_linear(
-                                Gamma, target_vel(i, j, k, n), vel_liq) -
+                                Gamma, target_profile[n], vel_liq) -
                             vel_liq;
                         vel_liq += rampf * fvel_liq * dvel_liq;
                         // If liquid was added, that liquid has target_vel
@@ -178,91 +222,19 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                             volfrac(i, j, k) * vel_liq;
                         integrated_vel_liq +=
                             rampf * fvel_liq * amrex::max(0.0, dvf) *
-                            (target_vel(i, j, k, n) - vel(i, j, k, n));
+                            (target_profile[n] - vel(i, j, k, n));
                         // Update overall velocity using momentum
                         vel(i, j, k, n) =
                             (rho1 * integrated_vel_liq +
                              rho2 * (1. - volfrac(i, j, k)) * vel(i, j, k, n)) /
                             rho_;
                     }
-                }
-                // Outlet region
-                if (x + beach_length >= probhi[0] && !in_or_near_terrain) {
-                    const amrex::Real Gamma = utils::gamma_absorb(
-                        x - (probhi[0] - beach_length), beach_length,
-                        beach_length_factor);
-                    // Numerical beach (sponge layer)
-                    if (has_beach) {
-                        // Get bounded new vof, save increment
-                        amrex::Real new_vof = utils::combine_linear(
-                            Gamma, utils::free_surface_to_vof(zsl, z, dx[2]),
-                            volfrac(i, j, k));
-                        new_vof = (new_vof > 1. - vof_tiny)
-                                      ? 1.0
-                                      : (new_vof < vof_tiny ? 0.0 : new_vof);
-                        const amrex::Real dvf = new_vof - volfrac(i, j, k);
-                        volfrac(i, j, k) = new_vof;
-                        // Conserve momentum when density changes
-                        amrex::Real rho_ = rho1 * volfrac(i, j, k) +
-                                           rho2 * (1.0 - volfrac(i, j, k));
-                        // Target vel is current, 0, 0
-                        amrex::Real out_vel{0.0};
-                        for (int n = 0; n < vel.ncomp; ++n) {
-                            if (n == 0) {
-                                out_vel = current;
-                            } else {
-                                out_vel = 0.0;
-                            }
-                            const amrex::Real vel_liq = utils::combine_linear(
-                                Gamma, out_vel, vel(i, j, k, n));
-                            amrex::Real integrated_vel_liq =
-                                volfrac(i, j, k) * vel_liq;
-                            integrated_vel_liq += amrex::max(0.0, dvf) *
-                                                  (out_vel - vel(i, j, k, n));
-                            vel(i, j, k, n) = (rho1 * integrated_vel_liq +
-                                               rho2 * (1. - volfrac(i, j, k)) *
-                                                   vel(i, j, k, n)) /
-                                              rho_;
-                        }
-                    }
-                    // Forcing to wave profile instead
-                    if (has_outprofile) {
-                        // Same steps as in wave generation region
-                        amrex::Real new_vof = utils::combine_linear(
-                            Gamma, target_volfrac(i, j, k), volfrac(i, j, k));
-                        new_vof = (new_vof > 1. - vof_tiny)
-                                      ? 1.0
-                                      : (new_vof < vof_tiny ? 0.0 : new_vof);
-                        const amrex::Real dvf = new_vof - volfrac(i, j, k);
-                        volfrac(i, j, k) += dvf;
-                        const amrex::Real fvel_liq =
-                            (target_volfrac(i, j, k) > vof_tiny) ? 1.0 : 0.0;
-                        amrex::Real rho_ = rho1 * volfrac(i, j, k) +
-                                           rho2 * (1.0 - volfrac(i, j, k));
-                        for (int n = 0; n < vel.ncomp; ++n) {
-                            amrex::Real vel_liq = vel(i, j, k, n);
-                            const amrex::Real dvel_liq =
-                                utils::combine_linear(
-                                    Gamma, target_vel(i, j, k, n), vel_liq) -
-                                vel_liq;
-                            vel_liq += rampf * fvel_liq * dvel_liq;
-                            amrex::Real integrated_vel_liq =
-                                volfrac(i, j, k) * vel_liq;
-                            integrated_vel_liq +=
-                                rampf * fvel_liq * amrex::max(0.0, dvf) *
-                                (target_vel(i, j, k, n) - vel(i, j, k, n));
-                            vel(i, j, k, n) = (rho1 * integrated_vel_liq +
-                                               rho2 * (1. - volfrac(i, j, k)) *
-                                                   vel(i, j, k, n)) /
-                                              rho_;
-                        }
-                    }
-                }
 
-                // Make sure that density is updated before entering the
-                // solution
-                rho(i, j, k) =
-                    rho1 * volfrac(i, j, k) + rho2 * (1. - volfrac(i, j, k));
+                    // Make sure that density is updated before entering the
+                    // solution
+                    rho(i, j, k) = rho1 * volfrac(i, j, k) +
+                                   rho2 * (1. - volfrac(i, j, k));
+                }
             });
     }
     amrex::Gpu::streamSynchronize();

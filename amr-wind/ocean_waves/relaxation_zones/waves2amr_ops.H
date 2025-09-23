@@ -652,6 +652,16 @@ struct InitDataOp<W2AWaves>
         const bool has_beach = wdata.has_beach && multiphase_mode;
         const bool init_wave_field = wdata.init_wave_field || !multiphase_mode;
 
+        amrex::MultiFab phi_tmp_fab(
+            velocity(level).boxArray(), velocity(level).DistributionMap(), 1,
+            3);
+        amrex::MultiFab vel_tmp_fab(
+            velocity(level).boxArray(), velocity(level).DistributionMap(),
+            AMREX_SPACEDIM, 3);
+
+        const auto& phi_tmp = phi_tmp_fab.arrays();
+        const auto& vel_tmp = vel_tmp_fab.arrays();
+
         amrex::ParallelFor(
             velocity(level), amrex::IntVect(3),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
@@ -673,17 +683,13 @@ struct InitDataOp<W2AWaves>
                     x, problo[0], gen_length, probhi[0], beach_length, wave_sol,
                     bulk, outlet);
 
-                const amrex::Real phi = local_profile[3] - z;
-                const amrex::Real cell_length_2D =
-                    std::sqrt(dx[0] * dx[0] + dx[2] * dx[2]);
-                if (phi + cell_length_2D >= 0) {
-                    vel[nbx](i, j, k, 0) = local_profile[0];
-                    vel[nbx](i, j, k, 1) = local_profile[1];
-                    vel[nbx](i, j, k, 2) = local_profile[2];
-                }
+                phi_tmp[nbx](i, j, k) = local_profile[3] - z;
+                vel_tmp[nbx](i, j, k, 0) = local_profile[0];
+                vel_tmp[nbx](i, j, k, 1) = local_profile[1];
+                vel_tmp[nbx](i, j, k, 2) = local_profile[2];
 
                 if (multiphase_mode) {
-                    phi_arrs[nbx](i, j, k) = phi;
+                    phi_arrs[nbx](i, j, k) = phi_tmp[nbx](i, j, k);
                 }
 
                 // Default w2a values matter for where no updates happen
@@ -691,6 +697,39 @@ struct InitDataOp<W2AWaves>
                 w2a_vel[nbx](i, j, k, 0) = quiescent[0];
                 w2a_vel[nbx](i, j, k, 1) = quiescent[0];
                 w2a_vel[nbx](i, j, k, 2) = quiescent[0];
+            });
+        amrex::Gpu::streamSynchronize();
+
+        amrex::ParallelFor(
+            velocity(level), amrex::IntVect(2),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                const amrex::Real eps = 2. * std::cbrt(dx[0] * dx[1] * dx[2]);
+                const amrex::Real vof_local =
+                    multiphase::levelset_to_vof(i, j, k, eps, phi_tmp[nbx]);
+
+                if (vof_local > 1. - constants::TIGHT_TOL) {
+                    // Entire cell is liquid
+                    vel[nbx](i, j, k, 0) = vel_tmp[nbx](i, j, k, 0);
+                    vel[nbx](i, j, k, 1) = vel_tmp[nbx](i, j, k, 1);
+                    vel[nbx](i, j, k, 2) = vel_tmp[nbx](i, j, k, 2);
+                } else if (vof_local > 1e-3) {
+                    // Velocity of liquid becomes velocity of entire cell
+                    // Interpolate using cell-centered values to liquid centroid
+                    // Consider only z-direction to find centroid
+                    const amrex::Real z_cell = problo[2] + (k + 0.5) * dx[2];
+                    const amrex::Real z_cell_below = z_cell - dx[2];
+                    const amrex::Real z_cell_bottom = z_cell - 0.5 * dx[2];
+                    const amrex::Real z_liq_center =
+                        z_cell_bottom + 0.5 * vof_local * dx[2];
+                    for (int n = 0; n < AMREX_SPACEDIM; ++n) {
+                        vel[nbx](i, j, k, n) =
+                            vel_tmp[nbx](i, j, k - 1, n) +
+                            (vel_tmp[nbx](i, j, k, n) -
+                             vel_tmp[nbx](i, j, k - 1, n)) *
+                                ((z_liq_center - z_cell_below) /
+                                 (z_cell - z_cell_below + constants::EPS));
+                    }
+                }
             });
         amrex::Gpu::streamSynchronize();
 #else
@@ -774,6 +813,8 @@ struct UpdateTargetFieldsOp<W2AWaves>
                 bool flag_z = false;
                 bool flag_xlo = false;
                 bool flag_xhi = false;
+                bool flag_ylo = false;
+                bool flag_yhi = false;
                 // Get heights for this processor, check overlap in z
                 flag_z =
                     (interp_to_mfab::get_local_height_indices(
@@ -782,17 +823,27 @@ struct UpdateTargetFieldsOp<W2AWaves>
                 // No overlap from heights definitely means no interp
 
                 // Check lateral bounds (in x)
-                const int dir = 0;
                 flag_xlo =
                     (interp_to_mfab::check_lateral_overlap_lo(
-                         wdata.gen_length, dir, ow_velocity.vec_ptrs(), geom) ==
+                         wdata.gen_length, 0, ow_velocity.vec_ptrs(), geom) ==
                      1);
                 // No overlap with gen region means no interp, unless ...
-                if (wdata.has_outprofile) {
+                if (!wdata.has_beach) {
                     // ... if overlap exists here, needing interp
                     flag_xhi =
                         (interp_to_mfab::check_lateral_overlap_hi(
-                             wdata.beach_length, dir, ow_velocity.vec_ptrs(),
+                             wdata.beach_length, 0, ow_velocity.vec_ptrs(),
+                             geom) == 1);
+                }
+                // Then in y, if y zones are present
+                if (wdata.zone_length_y > constants::EPS) {
+                    flag_ylo =
+                        (interp_to_mfab::check_lateral_overlap_lo(
+                             wdata.zone_length_y, 1, ow_velocity.vec_ptrs(),
+                             geom) == 1);
+                    flag_yhi =
+                        (interp_to_mfab::check_lateral_overlap_hi(
+                             wdata.zone_length_y, 1, ow_velocity.vec_ptrs(),
                              geom) == 1);
                 }
 
@@ -803,7 +854,7 @@ struct UpdateTargetFieldsOp<W2AWaves>
                     flag_xhi = true;
                 }
 
-                if (flag_z && (flag_xlo || flag_xhi)) {
+                if (flag_z && (flag_xlo || flag_xhi || flag_ylo || flag_yhi)) {
                     // Interpolation is needed
                     wdata.do_interp = true;
                     // Do resizing

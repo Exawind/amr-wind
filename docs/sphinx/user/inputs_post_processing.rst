@@ -13,6 +13,11 @@ actual keyword is determined by the labels provided to
 ``incflo.post_processing = my_postproc``, then the options must be prefixed with
 ``my_postproc.``.
 
+For post-processing If plotfile output is active,
+   a plotfile will be written at the end of a simulation (when
+   :input_param:`time.stop_time` or :input_param:`time.max_step` is reached), regardless
+   of the output timing parameters.
+
 .. input_param:: postproc.type
 
    **type:** String, optional, default = Sampling
@@ -24,7 +29,10 @@ data via fields that are output to plotfiles; therefore, these types do
 not have specific outputs to files in the post_processing directory. However,
 for the rest of these routines, which do output data to post-processing files,
 there are general input arguments to designate when to write these files,
-and these arguments are described below.
+and these arguments are described below. Note that for these post-processing types,
+output will automatically occur at the end of a simulation (when
+:input_param:`time.stop_time` or :input_param:`time.max_step` is reached), regardless
+of the output timing parameters.
 
 .. input_param:: postproc.output_interval
 
@@ -33,7 +41,7 @@ and these arguments are described below.
    Specify the output interval (in time steps) when post-processing is performed
    and output to disk. This quantity can instead be specified as ``output_frequency``,
    which was the legacy input argument. Because ``output_interval`` is a more
-   accurate name, this is the preferred input argument.
+   accurate name, this is the preferred input argument. 
 
 .. input_param:: postproc.output_time_interval
 

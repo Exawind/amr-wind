@@ -20,7 +20,7 @@ io.output_hdf5_plotfile       =  true
 
 incflo.post_processing = averaging ke
 ke.type                    = KineticEnergy
-ke.output_frequency        = 100
+ke.output_interval        = 100
 averaging.type = TimeAveraging
 averaging.labels = means stress
 averaging.averaging_window = 10.0              # this is seconds of simulation

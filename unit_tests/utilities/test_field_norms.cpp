@@ -33,6 +33,30 @@ void init_velocity(
     amrex::Gpu::streamSynchronize();
 }
 
+void init_velocity(
+    const amrex::Real var_f,
+    amr_wind::Field& vel_fld,
+    const amrex::Real u,
+    const amrex::Real v,
+    const amrex::Real w)
+{
+    const int nlevels = vel_fld.repo().num_active_levels();
+    const amrex::GpuArray<amrex::Real, 3> vels = {u, v, w};
+    for (int lev = 0; lev < nlevels; ++lev) {
+
+        const auto& farrs = vel_fld(lev).arrays();
+
+        amrex::ParallelFor(
+            vel_fld(lev), vel_fld.num_grow(), vel_fld.num_comp(),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
+                // Mix positive and negative as check on L2 norm
+                farrs[nbx](i, j, k, n) =
+                    (i % 2 == 0 ? 1. - var_f : 1. + var_f) * vels[n];
+            });
+    }
+    amrex::Gpu::streamSynchronize();
+}
+
 //! Custom mesh class to be able to refine like a simulation would
 //  - combination of AmrTestMesh and incflo classes
 //  - with ability to initialize the refiner and regrid
@@ -101,6 +125,8 @@ public:
     {}
     void check_output(
         amrex::Real check_val0, amrex::Real check_val1, amrex::Real check_val2);
+    void check_output(amrex::Real check_val);
+    void check_output4(amrex::Real check_val);
 
 protected:
     // No file output during test
@@ -117,10 +143,31 @@ void FieldNormsImpl::check_output(
     EXPECT_EQ(var_names()[1], (std::string) "velocityy");
     EXPECT_EQ(var_names()[2], (std::string) "velocityz");
     // Loop through norm values and check them
-    const amrex::Real tiny = std::numeric_limits<amrex::Real>::epsilon();
-    EXPECT_NEAR(field_norms()[0], check_val0, 500 * tiny);
-    EXPECT_NEAR(field_norms()[1], check_val1, 500 * tiny);
-    EXPECT_NEAR(field_norms()[2], check_val2, 500 * tiny);
+    const amrex::Real tol = amr_wind::constants::TIGHT_TOL;
+    EXPECT_NEAR(field_norms()[0], check_val0, tol);
+    EXPECT_NEAR(field_norms()[1], check_val1, tol);
+    EXPECT_NEAR(field_norms()[2], check_val2, tol);
+}
+
+void FieldNormsImpl::check_output(amrex::Real check_val)
+{
+    // Get variable names and check
+    EXPECT_EQ(var_names()[0], (std::string) "velocity");
+    EXPECT_NEAR(field_norms()[0], check_val, amr_wind::constants::TIGHT_TOL);
+}
+
+void FieldNormsImpl::check_output4(amrex::Real check_val)
+{
+    // Get variable names and check
+    EXPECT_EQ(var_names()[0], (std::string) "pressure");
+    EXPECT_EQ(var_names()[1], (std::string) "u_mac");
+    EXPECT_EQ(var_names()[2], (std::string) "v_mac");
+    EXPECT_EQ(var_names()[3], (std::string) "w_mac");
+    // Loop through norm values and check them
+    const amrex::Real tol = amr_wind::constants::TIGHT_TOL;
+    for (int n = 0; n < 4; ++n) {
+        EXPECT_NEAR(field_norms()[n], check_val, tol * check_val * 0.1);
+    }
 }
 
 } // namespace
@@ -149,7 +196,7 @@ protected:
     static void setup_fnorm(bool levelmask_flag)
     {
         amrex::ParmParse pp("fieldnorm");
-        pp.add("output_frequency", 1);
+        pp.add("output_interval", 1);
         if (!levelmask_flag) {
             pp.add("mask_redundant_grids", false);
         }
@@ -471,6 +518,196 @@ TEST_F(FieldNormsTest, levelmask_on_int_refinement)
     wnorm =
         std::sqrt(m_ncell0 * m_cv0 * lev0_fac * lev0_fac * m_w * m_w / m_dv);
     tool.check_output(unorm, vnorm, wnorm);
+}
+
+TEST_F(FieldNormsTest, levelmask_not_cc)
+{
+    bool levelmask = true;
+    // Set up parameters for domain
+    populate_parameters();
+    // Set up parameters for refinement
+    setup_fieldrefinement();
+    // Set up parameters for sampler
+    setup_fnorm(levelmask);
+    // Create mesh and initialize
+    reset_prob_domain();
+    auto rmesh = FNRefinemesh();
+    rmesh.initialize_mesh(0.0);
+
+    // Repo and fields
+    auto& repo = rmesh.field_repo();
+    auto& pressure = repo.declare_nd_field("pressure", 1, 1);
+    auto& u_mac = repo.declare_xf_field("u_mac", 1, 1);
+    auto& v_mac = repo.declare_yf_field("v_mac", 1, 1);
+    auto& w_mac = repo.declare_zf_field("w_mac", 1, 1);
+    auto& flag = repo.declare_field(m_fname, 1, 1);
+
+    // Set up scalar for determining refinement - all fine level
+    flag.setVal(2.0 * m_fref_val);
+
+    // Initialize mesh refiner and remesh
+    rmesh.init_refiner();
+    rmesh.remesh();
+
+    // Initialize pressure distribution and access sim
+    const amrex::Real fval = 10000.3;
+    pressure.setVal(fval);
+    u_mac.setVal(fval);
+    v_mac.setVal(fval);
+    w_mac.setVal(fval);
+    auto& rsim = rmesh.sim();
+
+    // Initialize IOManager because FieldNorms relies on it
+    auto& io_mgr = rsim.io_manager();
+    // Set up output (plot) variables
+    io_mgr.register_output_var("pressure");
+    io_mgr.register_output_var("u_mac");
+    io_mgr.register_output_var("v_mac");
+    io_mgr.register_output_var("w_mac");
+    io_mgr.initialize_io();
+
+    // Initialize sampler and check result on initial mesh
+    FieldNormsImpl tool(rsim, "fieldnorm");
+    tool.initialize();
+    tool.output_actions();
+    // Only highest level will be counted
+    tool.check_output4(fval);
+
+    // Turn off refinements
+    flag.setVal(0.0);
+    rmesh.remesh();
+
+    // Check again
+    tool.output_actions();
+    tool.check_output4(fval);
+}
+
+TEST_F(FieldNormsTest, norm_types)
+{
+    bool levelmask = true;
+    // Set up parameters for domain
+    populate_parameters();
+    // Set up parameters for refinement
+    setup_intfieldrefinement();
+    // Set up parameters for sampler
+    setup_fnorm(levelmask);
+    // Create mesh and initialize
+    reset_prob_domain();
+    auto rmesh = FNRefinemesh();
+    rmesh.initialize_mesh(0.0);
+
+    // Repo and fields
+    auto& repo = rmesh.field_repo();
+    auto& velocity = repo.declare_field("velocity", 3, 2);
+
+    // Initialize velocity distribution and access sim
+    const amrex::Real factor = 0.1;
+    init_velocity(factor, velocity, m_u, m_v, m_w);
+    auto& rsim = rmesh.sim();
+
+    // Initialize IOManager because FieldNorms relies on it
+    auto& io_mgr = rsim.io_manager();
+    // Set up velocity as an output (plot) variable
+    io_mgr.register_output_var("velocity");
+    io_mgr.initialize_io();
+
+    // Initialize sampler and check result
+    FieldNormsImpl tool_l2(rsim, "fieldnorm");
+    amrex::ParmParse pp("fieldnorm");
+    pp.add("norm_type", (std::string) "2");
+    tool_l2.initialize();
+    tool_l2.output_actions();
+
+    const amrex::Real l2_factor = std::sqrt(
+        0.5 * ((1. - factor) * (1. - factor) + (1. + factor) * (1. + factor)));
+    amrex::Real unorm = m_u * l2_factor;
+    amrex::Real vnorm = m_v * l2_factor;
+    amrex::Real wnorm = m_w * l2_factor;
+    tool_l2.check_output(unorm, vnorm, wnorm);
+
+    FieldNormsImpl tool_l1(rsim, "fieldnorm");
+    pp.add("norm_type", (std::string) "1");
+    tool_l1.initialize();
+    tool_l1.output_actions();
+
+    const amrex::Real l1_factor = 0.5 * ((1. - factor) + (1. + factor));
+    unorm = m_u * l1_factor;
+    vnorm = m_v * l1_factor;
+    wnorm = m_w * l1_factor;
+    tool_l1.check_output(unorm, vnorm, wnorm);
+
+    FieldNormsImpl tool_linf(rsim, "fieldnorm");
+    pp.add("norm_type", (std::string) "infinity");
+    tool_linf.initialize();
+    tool_linf.output_actions();
+
+    const amrex::Real linf_factor = (1. + factor);
+    unorm = m_u * linf_factor;
+    vnorm = m_v * linf_factor;
+    wnorm = m_w * linf_factor;
+    tool_linf.check_output(unorm, vnorm, wnorm);
+}
+
+TEST_F(FieldNormsTest, norm_vector_magnitude)
+{
+    bool levelmask = true;
+    // Set up parameters for domain
+    populate_parameters();
+    // Set up parameters for refinement
+    setup_intfieldrefinement();
+    // Set up parameters for sampler
+    setup_fnorm(levelmask);
+    // Create mesh and initialize
+    reset_prob_domain();
+    auto rmesh = FNRefinemesh();
+    rmesh.initialize_mesh(0.0);
+
+    // Repo and fields
+    auto& repo = rmesh.field_repo();
+    auto& velocity = repo.declare_field("velocity", 3, 2);
+
+    // Initialize velocity distribution and access sim
+    const amrex::Real factor = 0.1;
+    init_velocity(factor, velocity, m_u, m_v, m_w);
+    auto& rsim = rmesh.sim();
+
+    // Initialize IOManager because FieldNorms relies on it
+    auto& io_mgr = rsim.io_manager();
+    // Set up velocity as an output (plot) variable
+    io_mgr.register_output_var("velocity");
+    io_mgr.initialize_io();
+
+    // Initialize sampler and check result
+    FieldNormsImpl tool_l2(rsim, "fieldnorm");
+    amrex::ParmParse pp("fieldnorm");
+    pp.add("norm_type", (std::string) "2");
+    pp.add("use_vector_magnitude", true);
+    tool_l2.initialize();
+    tool_l2.output_actions();
+
+    const amrex::Real l2_factor = std::sqrt(
+        0.5 * ((1. - factor) * (1. - factor) + (1. + factor) * (1. + factor)));
+    const amrex::Real vmag = std::sqrt(m_u * m_u + m_v * m_v + m_w * m_w);
+    amrex::Real vmag_norm = vmag * l2_factor;
+    tool_l2.check_output(vmag_norm);
+
+    FieldNormsImpl tool_l1(rsim, "fieldnorm");
+    pp.add("norm_type", (std::string) "1");
+    tool_l1.initialize();
+    tool_l1.output_actions();
+
+    const amrex::Real l1_factor = 0.5 * ((1. - factor) + (1. + factor));
+    vmag_norm = vmag * l1_factor;
+    tool_l1.check_output(vmag_norm);
+
+    FieldNormsImpl tool_linf(rsim, "fieldnorm");
+    pp.add("norm_type", (std::string) "infinity");
+    tool_linf.initialize();
+    tool_linf.output_actions();
+
+    const amrex::Real linf_factor = (1. + factor);
+    vmag_norm = vmag * linf_factor;
+    tool_linf.check_output(vmag_norm);
 }
 
 } // namespace amr_wind_tests

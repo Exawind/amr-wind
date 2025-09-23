@@ -177,6 +177,11 @@ public:
         m_stop_time = -1.;
     }
 
+    /** Return true if TinyProfiler output should be sent to the log file at
+     * this timestep
+     */
+    bool output_profiling_info() const;
+
 private:
     //! Timestep sizes
     amrex::Vector<amrex::Real> m_dt =
@@ -195,7 +200,7 @@ private:
     amrex::Real m_stop_time{-1.0};
 
     //! Maximum CFL constraint
-    amrex::Real m_max_cfl{0.5};
+    amrex::Real m_max_cfl{1.0};
 
     //! Fixed delta_t indicated by user
     amrex::Real m_fixed_dt{-1.0};
@@ -286,6 +291,9 @@ private:
 
     //! Time interval for regridding
     int m_regrid_interval{-1};
+
+    //! Time step interval for profiling output
+    int m_profiling_interval{-1};
 
     //! Verbosity
     int m_verbose{0};

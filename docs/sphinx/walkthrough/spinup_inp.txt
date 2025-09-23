@@ -62,7 +62,7 @@ ABL.surface_temp_flux                    = 0.05  # Surface temperature flux [K-m
 incflo.post_processing                   = sampling
 
 # --- Sampling parameters ---
-sampling.output_frequency                = 900
+sampling.output_interval                = 900
 sampling.fields                          = velocity temperature
 
 #---- sample defs ----
