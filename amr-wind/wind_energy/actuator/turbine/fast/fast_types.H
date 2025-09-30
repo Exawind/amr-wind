@@ -10,7 +10,7 @@ namespace exw_fast {
 
 /** Representation of a turbine for exchanging data with FAST
  */
-struct FastTurbine : public exw_ext_turb::ExternalTurbine
+struct FastTurbine : public exw_fast::ExternalTurbine
 {
     /** Variables exclusive to OpenFAST turbine type
      */

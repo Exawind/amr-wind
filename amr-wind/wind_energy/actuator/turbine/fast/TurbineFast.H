@@ -3,7 +3,8 @@
 
 #include "amr-wind/wind_energy/actuator/turbine/turbine_types.H"
 #include "amr-wind/wind_energy/actuator/turbine/fast/fast_types.H"
-#include "amr-wind/wind_energy/actuator/turbine/fast/FastIface.H"
+// #include "amr-wind/wind_energy/actuator/turbine/fast/FastIface.H"
+#include "amr-wind/wind_energy/actuator/turbine/external/ExtTurbIface.H"
 #include "amr-wind/core/ExtSolver.H"
 
 namespace amr_wind::actuator {
@@ -13,7 +14,7 @@ struct TurbineFastData : public TurbineBaseData
     amrex::Real density{1.0};
 
     ::exw_fast::FastTurbine fast_data;
-    ::exw_fast::FastIface* fast{nullptr};
+    ::exw_fast::ExtTurbIface<::exw_fast::FastTurbine>* fast{nullptr};
 
     MPI_Comm tcomm{MPI_COMM_NULL};
 };

@@ -50,13 +50,13 @@ struct ReadInputsOp<TurbineFast, SrcTrait>
         pp.query("openfast_sim_mode", sim_mode);
 
         if (sim_mode == "init") {
-            tf.sim_mode = ::exw_ext_turb::SimMode::init;
+            tf.sim_mode = ::exw_fast::SimMode::init;
             amrex::Print() << "Initializing turbine:" << tf.tlabel << std::endl;
         } else if (sim_mode == "replay") {
-            tf.sim_mode = ::exw_ext_turb::SimMode::replay;
+            tf.sim_mode = ::exw_fast::SimMode::replay;
             amrex::Print() << "Replaying turbine:" << tf.tlabel << std::endl;
         } else if (sim_mode == "restart") {
-            tf.sim_mode = ::exw_ext_turb::SimMode::restart;
+            tf.sim_mode = ::exw_fast::SimMode::restart;
             amrex::Print() << "Restarting turbine:" << tf.tlabel << std::endl;
         } else {
             amrex::Abort(
@@ -65,7 +65,7 @@ struct ReadInputsOp<TurbineFast, SrcTrait>
 
         // If we are using OpenFAST restart file, require that the user provide
         // the path to the checkpoint file.
-        if (tf.sim_mode == ::exw_ext_turb::SimMode::restart) {
+        if (tf.sim_mode == ::exw_fast::SimMode::restart) {
             pp.get("openfast_restart_file", tf.checkpoint_file);
         } else {
             pp.get("openfast_input_file", tf.input_file);
@@ -218,7 +218,7 @@ inline void determine_root_proc<TurbineFast>(
         auto& tdata = data.meta();
         auto& ext_mgr = data.sim().ext_solver_manager();
         ext_mgr.create("OpenFAST", data.sim());
-        tdata.fast = &(ext_mgr.get<::exw_fast::FastIface>());
+        tdata.fast = &(ext_mgr.get<::exw_fast::ExtTurbIface<::exw_fast::FastTurbine>>());
         tdata.fast->register_turbine(tdata.fast_data);
     }
 }

@@ -1,7 +1,8 @@
 #include "aw_test_utils/MeshTest.H"
 #include "aw_test_utils/pp_utils.H"
 
-#include "amr-wind/wind_energy/actuator/turbine/fast/FastIface.H"
+#include "amr-wind/wind_energy/actuator/turbine/external/ExtTurbIface.H"
+#include "amr-wind/wind_energy/actuator/turbine/fast/fast_types.H"
 
 #include <algorithm>
 
@@ -61,7 +62,7 @@ TEST_F(FastIfaceTest, fast_init)
     fi.start_time = 0.0;
     fi.stop_time = 0.625;
 
-    ::exw_fast::FastIface fast(sim());
+    ::exw_fast::ExtTurbIface<::exw_fast::FastTurbine> fast(sim());
     fast.parse_inputs(sim(), "OpenFAST");
     fast.register_turbine(fi);
 
@@ -113,9 +114,9 @@ TEST_F(FastIfaceTest, fast_replay)
     fi.start_time = 0.125;
     fi.stop_time = 0.625;
     fi.dt_cfd = 0.0625;
-    fi.sim_mode = ::exw_ext_turb::SimMode::replay;
+    fi.sim_mode = ::exw_fast::SimMode::replay;
 
-    ::exw_fast::FastIface fast(sim());
+    ::exw_fast::ExtTurbIface<::exw_fast::FastTurbine> fast(sim());
     fast.parse_inputs(sim(), "OpenFAST");
     fast.register_turbine(fi);
 

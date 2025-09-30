@@ -1,9 +1,8 @@
-#ifndef FASTIFACE_H
-#define FASTIFACE_H
+#ifndef EXTTURBIFACE_H
+#define EXTTURBIFACE_H
 
 #include "amr-wind/core/ExtSolver.H"
-#include "amr-wind/wind_energy/actuator/turbine/fast/fast_wrapper.H"
-#include "amr-wind/wind_energy/actuator/turbine/fast/fast_types.H"
+#include "amr-wind/wind_energy/actuator/turbine/external/external_base_types.H"
 #include <map>
 #include <vector>
 
@@ -17,19 +16,20 @@ class CFDSim;
 
 namespace exw_fast {
 
-class FastIface : public ::amr_wind::ExtSolver::Register<FastIface>
+template <typename SolverTurbine>
+class ExtTurbIface : public ::amr_wind::ExtSolver::Register<ExtTurbIface<SolverTurbine>>
 {
 public:
     static std::string identifier() { return "OpenFAST"; }
 
-    explicit FastIface(const ::amr_wind::CFDSim& sim);
+    explicit ExtTurbIface(const ::amr_wind::CFDSim& sim);
 
-    ~FastIface() override;
+    ~ExtTurbIface() override;
 
     void parse_inputs(
         const amr_wind::CFDSim& /*sim*/, const std::string& /*inp_name*/);
 
-    int register_turbine(FastTurbine& data);
+    int register_turbine(SolverTurbine& data);
 
     void init_turbine(const int local_id);
 
@@ -49,25 +49,25 @@ public:
 protected:
     void allocate_fast_turbines();
 
-    void fast_init_turbine(FastTurbine& /*fi*/);
+    void fast_init_turbine(SolverTurbine& /*fi*/);
 
-    void fast_restart_turbine(FastTurbine& /*fi*/);
+    void fast_restart_turbine(SolverTurbine& /*fi*/);
 
-    void fast_replay_turbine(FastTurbine& /*fi*/);
+    void fast_replay_turbine(SolverTurbine& /*fi*/);
 
-    void prepare_netcdf_file(FastTurbine& /*unused*/);
+    void prepare_netcdf_file(SolverTurbine& /*unused*/);
 
-    void write_velocity_data(const FastTurbine& /*unused*/);
+    void write_velocity_data(const SolverTurbine& /*unused*/);
 
     static void read_velocity_data(
-        FastTurbine& /*unused*/,
+        SolverTurbine& /*unused*/,
         const ncutils::NCFile& /*unused*/,
         const size_t tid);
 
     //! Global to local index lookup map
     std::map<int, int> m_turbine_map;
 
-    std::vector<FastTurbine*> m_turbine_data;
+    std::vector<SolverTurbine*> m_turbine_data;
 
     std::string m_output_dir{"fast_velocity_data"};
 
@@ -94,4 +94,4 @@ protected:
 
 } // namespace exw_fast
 
-#endif /* FASTIFACE_H */
+#endif /* EXTTURBIFACE_H */

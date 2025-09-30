@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace exw_ext_turb {
+namespace exw_fast {
 
 enum class SimMode : int {
     init = 0, ///< Clean start
@@ -80,6 +80,6 @@ struct ExternalTurbine
     int chkpt_interval;
 };
 
-} // namespace exw_ext_turb
+} // namespace exw_fast
 
 #endif /* EXTERNAL_BASE_TYPES_H */
