@@ -86,14 +86,14 @@ void FastIface::parse_inputs(
     AMREX_ALWAYS_ASSERT(m_stop_time > (cfd_stop - 1.0e-6));
 
     if (m_start_time > 0.0) {
-        m_sim_mode = SimMode::replay;
+        m_sim_mode = ::exw_ext_turb::SimMode::replay;
 
         std::string sim_mode{"replay"};
         pp.query("openfast_sim_mode", sim_mode);
         if (sim_mode == "replay") {
-            m_sim_mode = SimMode::replay;
+            m_sim_mode = ::exw_ext_turb::SimMode::replay;
         } else if (sim_mode == "restart") {
-            m_sim_mode = SimMode::restart;
+            m_sim_mode = ::exw_ext_turb::SimMode::restart;
         } else {
             amrex::Abort(
                 "Invalid simulation mode when start time > 0 provided: " +
@@ -188,19 +188,19 @@ void FastIface::init_turbine(const int local_id)
     auto& fi = *m_turbine_data[local_id];
 
     switch (fi.sim_mode) {
-    case SimMode::init: {
+    case ::exw_ext_turb::SimMode::init: {
         fast_init_turbine(fi);
         prepare_netcdf_file(fi);
         break;
     }
 
-    case SimMode::replay: {
+    case ::exw_ext_turb::SimMode::replay: {
         fast_init_turbine(fi);
         fast_replay_turbine(fi);
         break;
     }
 
-    case SimMode::restart: {
+    case ::exw_ext_turb::SimMode::restart: {
         fast_restart_turbine(fi);
         prepare_netcdf_file(fi);
         break;

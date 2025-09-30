@@ -113,7 +113,7 @@ TEST_F(FastIfaceTest, fast_replay)
     fi.start_time = 0.125;
     fi.stop_time = 0.625;
     fi.dt_cfd = 0.0625;
-    fi.sim_mode = ::exw_fast::SimMode::replay;
+    fi.sim_mode = ::exw_ext_turb::SimMode::replay;
 
     ::exw_fast::FastIface fast(sim());
     fast.parse_inputs(sim(), "OpenFAST");
