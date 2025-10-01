@@ -120,7 +120,7 @@ int ExtTurbIface<FastTurbine>::register_turbine(FastTurbine& data)
 }
 
 template <>
-void ExtTurbIface<FastTurbine>::allocate_fast_turbines()
+void ExtTurbIface<FastTurbine>::allocate_ext_turbines()
 {
     BL_PROFILE("amr-wind::FastIface::allocate_turbines");
     int nturbines = static_cast<int>(m_turbine_data.size());
@@ -282,7 +282,7 @@ void ExtTurbIface<FastTurbine>::write_turbine_checkpoint(int& tid)
 }
 
 template <>
-void ExtTurbIface<FastTurbine>::fast_init_turbine(FastTurbine& fi)
+void ExtTurbIface<FastTurbine>::ext_init_turbine(FastTurbine& fi)
 {
     BL_PROFILE("amr-wind::FastIface::init_turbine");
 
@@ -346,7 +346,7 @@ void ExtTurbIface<FastTurbine>::fast_init_turbine(FastTurbine& fi)
 // cppcheck-suppress constParameterReference
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 template <>
-void ExtTurbIface<FastTurbine>::fast_replay_turbine(FastTurbine& fi)
+void ExtTurbIface<FastTurbine>::ext_replay_turbine(FastTurbine& fi)
 {
 #ifdef AMR_WIND_USE_NETCDF
     BL_PROFILE("amr-wind::FastIface::replay_turbine");
@@ -394,7 +394,7 @@ void ExtTurbIface<FastTurbine>::fast_replay_turbine(FastTurbine& fi)
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 template <>
-void ExtTurbIface<FastTurbine>::fast_restart_turbine(FastTurbine& fi)
+void ExtTurbIface<FastTurbine>::ext_restart_turbine(FastTurbine& fi)
 {
     BL_PROFILE("amr-wind::FastIface::restart_turbine");
 
@@ -447,36 +447,6 @@ void ExtTurbIface<FastTurbine>::fast_restart_turbine(FastTurbine& fi)
         amrex::Abort(
             "FastIFace: OpenFAST timestep is not an integral "
             "multiple of CFD timestep");
-    }
-}
-
-template <>
-void ExtTurbIface<FastTurbine>::init_turbine(const int local_id)
-{
-    AMREX_ALWAYS_ASSERT(local_id < static_cast<int>(m_turbine_data.size()));
-    if (!m_is_initialized) {
-        allocate_fast_turbines();
-    }
-    auto& fi = *m_turbine_data[local_id];
-
-    switch (fi.sim_mode) {
-    case ::exw_fast::SimMode::init: {
-        fast_init_turbine(fi);
-        prepare_netcdf_file(fi);
-        break;
-    }
-
-    case ::exw_fast::SimMode::replay: {
-        fast_init_turbine(fi);
-        fast_replay_turbine(fi);
-        break;
-    }
-
-    case ::exw_fast::SimMode::restart: {
-        fast_restart_turbine(fi);
-        prepare_netcdf_file(fi);
-        break;
-    }
     }
 }
 

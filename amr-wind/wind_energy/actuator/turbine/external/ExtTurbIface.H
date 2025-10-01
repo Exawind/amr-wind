@@ -52,13 +52,13 @@ public:
     }
 
 protected:
-    void allocate_fast_turbines();
+    void allocate_ext_turbines();
 
-    void fast_init_turbine(SolverTurbine& /*fi*/);
+    void ext_init_turbine(SolverTurbine& /*fi*/);
 
-    void fast_restart_turbine(SolverTurbine& /*fi*/);
+    void ext_restart_turbine(SolverTurbine& /*fi*/);
 
-    void fast_replay_turbine(SolverTurbine& /*fi*/);
+    void ext_replay_turbine(SolverTurbine& /*fi*/);
 
     void prepare_netcdf_file(SolverTurbine& /*unused*/);
 
@@ -132,6 +132,36 @@ void ExtTurbIface<SolverTurbine>::advance_turbine(const int local_id)
     if (fi.chkpt_interval > 0 &&
         (fi.time_index / fi.num_substeps) % fi.chkpt_interval == 0) {
         write_turbine_checkpoint(fi.tid_local);
+    }
+}
+
+template <typename SolverTurbine>
+void ExtTurbIface<SolverTurbine>::init_turbine(const int local_id)
+{
+    AMREX_ALWAYS_ASSERT(local_id < static_cast<int>(m_turbine_data.size()));
+    if (!m_is_initialized) {
+        allocate_ext_turbines();
+    }
+    auto& fi = *m_turbine_data[local_id];
+
+    switch (fi.sim_mode) {
+    case ::exw_fast::SimMode::init: {
+        ext_init_turbine(fi);
+        prepare_netcdf_file(fi);
+        break;
+    }
+
+    case ::exw_fast::SimMode::replay: {
+        ext_init_turbine(fi);
+        ext_replay_turbine(fi);
+        break;
+    }
+
+    case ::exw_fast::SimMode::restart: {
+        ext_restart_turbine(fi);
+        prepare_netcdf_file(fi);
+        break;
+    }
     }
 }
 
