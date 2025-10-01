@@ -16,9 +16,10 @@ class CFDSim;
 
 namespace exw_fast {
 
-template <typename SolverTurbine>
+template <typename SolverTurbine, typename SolverData>
 class ExtTurbIface
-    : public ::amr_wind::ExtSolver::Register<ExtTurbIface<SolverTurbine>>
+    : public ::amr_wind::ExtSolver::Register<
+          ExtTurbIface<SolverTurbine, SolverData>>
 {
 public:
     static std::string identifier() { return "OpenFAST"; }
@@ -75,8 +76,6 @@ protected:
 
     std::vector<SolverTurbine*> m_turbine_data;
 
-    std::string m_output_dir{"fast_velocity_data"};
-
     double m_dt_cfd{0.0};
 
     // Not using amrex::Real. Instead use explicit types from FAST API
@@ -84,27 +83,20 @@ protected:
     double m_stop_time{-1.0};
     ::exw_fast::SimMode m_sim_mode{::exw_fast::SimMode::init};
 
-    int m_num_sc_inputs{0};
-    int m_num_sc_outputs{0};
-
-#if OPENFAST_VERSION_MAJOR == 4
-    int m_inflow_type{2};
-#endif
-
-    int m_num_sc_inputs_glob{0};
-    float m_init_sc_inputs_glob{0.0};
-    float m_init_sc_inputs_turbine{0.0};
+    SolverData m_solver_data;
 
     bool m_is_initialized{false};
 };
 
 // General implementations of some functions
-template <typename SolverTurbine>
-ExtTurbIface<SolverTurbine>::ExtTurbIface(const amr_wind::CFDSim& /*unused*/)
+template <typename SolverTurbine, typename SolverData>
+ExtTurbIface<SolverTurbine, SolverData>::ExtTurbIface(
+    const amr_wind::CFDSim& /*unused*/)
 {}
 
-template <typename SolverTurbine>
-int ExtTurbIface<SolverTurbine>::register_turbine(SolverTurbine& data)
+template <typename SolverTurbine, typename SolverData>
+int ExtTurbIface<SolverTurbine, SolverData>::register_turbine(
+    SolverTurbine& data)
 {
     BL_PROFILE("amr-wind::FastIface::register_turbine");
     AMREX_ALWAYS_ASSERT(!m_is_initialized);
@@ -117,8 +109,8 @@ int ExtTurbIface<SolverTurbine>::register_turbine(SolverTurbine& data)
     return local_id;
 }
 
-template <typename SolverTurbine>
-void ExtTurbIface<SolverTurbine>::init_turbine(const int local_id)
+template <typename SolverTurbine, typename SolverData>
+void ExtTurbIface<SolverTurbine, SolverData>::init_turbine(const int local_id)
 {
     AMREX_ALWAYS_ASSERT(local_id < static_cast<int>(m_turbine_data.size()));
     if (!m_is_initialized) {
@@ -147,9 +139,9 @@ void ExtTurbIface<SolverTurbine>::init_turbine(const int local_id)
     }
 }
 
-
-template <typename SolverTurbine>
-void ExtTurbIface<SolverTurbine>::advance_turbine(const int local_id)
+template <typename SolverTurbine, typename SolverData>
+void ExtTurbIface<SolverTurbine, SolverData>::advance_turbine(
+    const int local_id)
 {
     BL_PROFILE("amr-wind::FastIface::advance_turbine");
     AMREX_ASSERT(local_id < static_cast<int>(m_turbine_data.size()));

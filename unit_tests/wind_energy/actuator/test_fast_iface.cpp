@@ -62,7 +62,9 @@ TEST_F(FastIfaceTest, fast_init)
     fi.start_time = 0.0;
     fi.stop_time = 0.625;
 
-    ::exw_fast::ExtTurbIface<::exw_fast::FastTurbine> fast(sim());
+    ::exw_fast::ExtTurbIface<
+        ::exw_fast::FastTurbine, ::exw_fast::FastSolverData>
+        fast(sim());
     fast.parse_inputs(sim(), "OpenFAST");
     fast.register_turbine(fi);
 
@@ -116,7 +118,9 @@ TEST_F(FastIfaceTest, fast_replay)
     fi.dt_cfd = 0.0625;
     fi.sim_mode = ::exw_fast::SimMode::replay;
 
-    ::exw_fast::ExtTurbIface<::exw_fast::FastTurbine> fast(sim());
+    ::exw_fast::ExtTurbIface<
+        ::exw_fast::FastTurbine, ::exw_fast::FastSolverData>
+        fast(sim());
     fast.parse_inputs(sim(), "OpenFAST");
     fast.register_turbine(fi);
 

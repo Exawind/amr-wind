@@ -44,7 +44,7 @@ inline void copy_filename(const std::string& inp, char* out)
 } // namespace
 
 template <>
-ExtTurbIface<FastTurbine>::~ExtTurbIface()
+ExtTurbIface<FastTurbine,FastSolverData>::~ExtTurbIface()
 {
     int ierr = ErrID_None;
     amrex::Array<char, fast_strlen()> err_msg;
@@ -57,7 +57,7 @@ ExtTurbIface<FastTurbine>::~ExtTurbIface()
 }
 
 template <>
-void ExtTurbIface<FastTurbine>::parse_inputs(
+void ExtTurbIface<FastTurbine,FastSolverData>::parse_inputs(
     const amr_wind::CFDSim& sim, const std::string& inp_name)
 {
     amrex::ParmParse pp(inp_name);
@@ -105,7 +105,7 @@ void ExtTurbIface<FastTurbine>::parse_inputs(
 }
 
 template <>
-void ExtTurbIface<FastTurbine>::allocate_ext_turbines()
+void ExtTurbIface<FastTurbine,FastSolverData>::allocate_ext_turbines()
 {
     BL_PROFILE("amr-wind::FastIface::allocate_turbines");
     int nturbines = static_cast<int>(m_turbine_data.size());
@@ -114,7 +114,7 @@ void ExtTurbIface<FastTurbine>::allocate_ext_turbines()
 }
 
 template <>
-void ExtTurbIface<FastTurbine>::init_solution(const int local_id)
+void ExtTurbIface<FastTurbine,FastSolverData>::init_solution(const int local_id)
 {
     BL_PROFILE("amr-wind::FastIface::init_solution");
     AMREX_ALWAYS_ASSERT(local_id < static_cast<int>(m_turbine_data.size()));
@@ -126,7 +126,7 @@ void ExtTurbIface<FastTurbine>::init_solution(const int local_id)
 }
 
 template <>
-void ExtTurbIface<FastTurbine>::get_hub_stats(const int local_id)
+void ExtTurbIface<FastTurbine,FastSolverData>::get_hub_stats(const int local_id)
 {
     BL_PROFILE("amr-wind::FastIface::get_hub_stats");
 
@@ -140,15 +140,15 @@ void ExtTurbIface<FastTurbine>::get_hub_stats(const int local_id)
 #ifdef AMR_WIND_USE_OPENFAST
 
 template <>
-void ExtTurbIface<FastTurbine>::prepare_netcdf_file(FastTurbine& fi)
+void ExtTurbIface<FastTurbine,FastSolverData>::prepare_netcdf_file(FastTurbine& fi)
 {
 #ifdef AMR_WIND_USE_NETCDF
     BL_PROFILE("amr-wind::FastIface::prepare_netcdf_file");
-    if (!amrex::UtilCreateDirectory(m_output_dir, 0755)) {
-        amrex::CreateDirectoryFailed(m_output_dir);
+    if (!amrex::UtilCreateDirectory(m_solver_data.m_output_dir, 0755)) {
+        amrex::CreateDirectoryFailed(m_solver_data.m_output_dir);
     }
 
-    const std::string fname = m_output_dir + "/" + fi.tlabel + ".nc";
+    const std::string fname = m_solver_data.m_output_dir + "/" + fi.tlabel + ".nc";
 
     // Don't overwrite existing
     if (amrex::FileSystem::Exists(fname)) {
@@ -193,11 +193,11 @@ void ExtTurbIface<FastTurbine>::prepare_netcdf_file(FastTurbine& fi)
 }
 
 template <>
-void ExtTurbIface<FastTurbine>::write_velocity_data(const FastTurbine& fi)
+void ExtTurbIface<FastTurbine,FastSolverData>::write_velocity_data(const FastTurbine& fi)
 {
 #ifdef AMR_WIND_USE_NETCDF
     BL_PROFILE("amr-wind::FastIface::write_velocity_data");
-    const std::string fname = m_output_dir + "/" + fi.tlabel + ".nc";
+    const std::string fname = m_solver_data.m_output_dir + "/" + fi.tlabel + ".nc";
     auto ncf = ncutils::NCFile::open(fname, NC_WRITE);
     const std::string nt_name = "num_time_steps";
     const size_t nt = ncf.dim(nt_name).len();
@@ -215,7 +215,7 @@ void ExtTurbIface<FastTurbine>::write_velocity_data(const FastTurbine& fi)
 }
 
 template <>
-void ExtTurbIface<FastTurbine>::read_velocity_data(
+void ExtTurbIface<FastTurbine,FastSolverData>::read_velocity_data(
     FastTurbine& fi, const ncutils::NCFile& ncf, const size_t tid)
 {
 #ifdef AMR_WIND_USE_NETCDF
@@ -237,14 +237,14 @@ void ExtTurbIface<FastTurbine>::read_velocity_data(
 #else
 
 template <>
-void ExtTurbIface<FastTurbine>::prepare_netcdf_file(FastTurbine& /*unused*/)
+void ExtTurbIface<FastTurbine,FastSolverData>::prepare_netcdf_file(FastTurbine& /*unused*/)
 {}
 template <>
-void ExtTurbIface<FastTurbine>::write_velocity_data(
+void ExtTurbIface<FastTurbine,FastSolverData>::write_velocity_data(
     const FastTurbine& /*unused*/)
 {}
 template <>
-void ExtTurbIface<FastTurbine>::read_velocity_data(
+void ExtTurbIface<FastTurbine,FastSolverData>::read_velocity_data(
     FastTurbine& /*unused*/,
     const ncutils::NCFile& /*unused*/,
     const size_t /*unused*/)
@@ -253,13 +253,13 @@ void ExtTurbIface<FastTurbine>::read_velocity_data(
 #endif
 
 template <>
-void ExtTurbIface<FastTurbine>::do_turbine_step(int& tid)
+void ExtTurbIface<FastTurbine,FastSolverData>::do_turbine_step(int& tid)
 {
     fast_func(FAST_Step, &tid);
 }
 
 template <>
-void ExtTurbIface<FastTurbine>::write_turbine_checkpoint(int& tid)
+void ExtTurbIface<FastTurbine,FastSolverData>::write_turbine_checkpoint(int& tid)
 {
     amrex::Array<char, fast_strlen()> rst_file;
     copy_filename(" ", rst_file.begin());
@@ -267,7 +267,7 @@ void ExtTurbIface<FastTurbine>::write_turbine_checkpoint(int& tid)
 }
 
 template <>
-void ExtTurbIface<FastTurbine>::ext_init_turbine(FastTurbine& fi)
+void ExtTurbIface<FastTurbine,FastSolverData>::ext_init_turbine(FastTurbine& fi)
 {
     BL_PROFILE("amr-wind::FastIface::init_turbine");
 
@@ -285,13 +285,13 @@ void ExtTurbIface<FastTurbine>::ext_init_turbine(FastTurbine& fi)
         FAST_ExtInfw_Init, &fi.tid_local, &fi.stop_time, inp_file.begin(),
         &fi.tid_global, out_file, &fi.num_pts_blade, &fi.num_pts_tower,
         fi.base_pos.begin(), &abort_lev, &fi.dt_cfd, &fi.dt_fast,
-        &m_inflow_type, &fi.num_blades, &fi.num_blade_elem, &fi.num_tower_elem,
+        &m_solver_data.m_inflow_type, &fi.num_blades, &fi.num_blade_elem, &fi.num_tower_elem,
         &fi.chord_cluster_type, &fi.to_cfd, &fi.from_cfd);
 #else
     fast_func(
         FAST_OpFM_Init, &fi.tid_local, &fi.stop_time, inp_file.begin(),
-        &fi.tid_global, &m_num_sc_inputs_glob, &m_num_sc_inputs,
-        &m_num_sc_outputs, &m_init_sc_inputs_glob, &m_init_sc_inputs_turbine,
+        &fi.tid_global, &m_solver_data.m_num_sc_inputs_glob, &m_solver_data.m_num_sc_inputs,
+        &m_solver_data.m_num_sc_outputs, &m_solver_data.m_init_sc_inputs_glob, &m_solver_data.m_init_sc_inputs_turbine,
         &fi.num_pts_blade, &fi.num_pts_tower, fi.base_pos.begin(), &abort_lev,
         &fi.dt_fast, &fi.num_blades, &fi.num_blade_elem, &fi.chord_cluster_type,
         &fi.to_cfd, &fi.from_cfd, &fi.to_sc, &fi.from_sc);
@@ -331,7 +331,7 @@ void ExtTurbIface<FastTurbine>::ext_init_turbine(FastTurbine& fi)
 // cppcheck-suppress constParameterReference
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 template <>
-void ExtTurbIface<FastTurbine>::ext_replay_turbine(FastTurbine& fi)
+void ExtTurbIface<FastTurbine,FastSolverData>::ext_replay_turbine(FastTurbine& fi)
 {
 #ifdef AMR_WIND_USE_NETCDF
     BL_PROFILE("amr-wind::FastIface::replay_turbine");
@@ -344,7 +344,7 @@ void ExtTurbIface<FastTurbine>::ext_replay_turbine(FastTurbine& fi)
 
     // Ensure that the NetCDF file exists and contains the required number of
     // timesteps for restart.
-    const std::string fname = m_output_dir + "/" + fi.tlabel + ".nc";
+    const std::string fname = m_solver_data.m_output_dir + "/" + fi.tlabel + ".nc";
     AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
         amrex::FileSystem::Exists(fname),
         "FastIface: Cannot find OpenFAST velocity data file: " + fname);
@@ -379,7 +379,7 @@ void ExtTurbIface<FastTurbine>::ext_replay_turbine(FastTurbine& fi)
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 template <>
-void ExtTurbIface<FastTurbine>::ext_restart_turbine(FastTurbine& fi)
+void ExtTurbIface<FastTurbine,FastSolverData>::ext_restart_turbine(FastTurbine& fi)
 {
     BL_PROFILE("amr-wind::FastIface::restart_turbine");
 
@@ -435,6 +435,6 @@ void ExtTurbIface<FastTurbine>::ext_restart_turbine(FastTurbine& fi)
     }
 }
 
-template class ExtTurbIface<FastTurbine>;
+template class ExtTurbIface<FastTurbine,FastSolverData>;
 
 } // namespace exw_fast
