@@ -17,7 +17,8 @@ class CFDSim;
 namespace exw_fast {
 
 template <typename SolverTurbine>
-class ExtTurbIface : public ::amr_wind::ExtSolver::Register<ExtTurbIface<SolverTurbine>>
+class ExtTurbIface
+    : public ::amr_wind::ExtSolver::Register<ExtTurbIface<SolverTurbine>>
 {
 public:
     static std::string identifier() { return "OpenFAST"; }
@@ -91,6 +92,11 @@ protected:
 
     bool m_is_initialized{false};
 };
+
+// General implementations of some functions
+template <typename SolverTurbine>
+ExtTurbIface<SolverTurbine>::ExtTurbIface(const amr_wind::CFDSim& /*unused*/)
+{}
 
 } // namespace exw_fast
 

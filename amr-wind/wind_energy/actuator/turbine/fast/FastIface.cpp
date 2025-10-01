@@ -1,6 +1,7 @@
 // #include "amr-wind/wind_energy/actuator/turbine/fast/FastIface.H"
 #include "amr-wind/wind_energy/actuator/turbine/external/ExtTurbIface.H"
 #include "amr-wind/wind_energy/actuator/turbine/fast/fast_types.H"
+#include "amr-wind/wind_energy/actuator/turbine/fast/fast_wrapper.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/core/SimTime.H"
 #include "amr-wind/utilities/io_utils.H"
@@ -44,9 +45,6 @@ inline void copy_filename(const std::string& inp, char* out)
 }
 
 } // namespace
-
-template<>
-ExtTurbIface<FastTurbine>::ExtTurbIface(const amr_wind::CFDSim& /*unused*/) {}
 
 template<>
 ExtTurbIface<FastTurbine>::~ExtTurbIface()
