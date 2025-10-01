@@ -218,7 +218,8 @@ inline void determine_root_proc<TurbineFast>(
         auto& tdata = data.meta();
         auto& ext_mgr = data.sim().ext_solver_manager();
         ext_mgr.create("OpenFAST", data.sim());
-        tdata.fast = &(ext_mgr.get<::exw_fast::ExtTurbIface<::exw_fast::FastTurbine>>());
+        tdata.fast =
+            &(ext_mgr.get<::exw_fast::ExtTurbIface<::exw_fast::FastTurbine>>());
         tdata.fast->register_turbine(tdata.fast_data);
     }
 }

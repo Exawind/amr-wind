@@ -14,8 +14,6 @@
 #include <algorithm>
 #include <cmath>
 
-template class exw_fast::ExtTurbIface<exw_fast::FastTurbine>;
-
 namespace exw_fast {
 namespace {
 
@@ -46,7 +44,7 @@ inline void copy_filename(const std::string& inp, char* out)
 
 } // namespace
 
-template<>
+template <>
 ExtTurbIface<FastTurbine>::~ExtTurbIface()
 {
     int ierr = ErrID_None;
@@ -59,7 +57,7 @@ ExtTurbIface<FastTurbine>::~ExtTurbIface()
     }
 }
 
-template<>
+template <>
 void ExtTurbIface<FastTurbine>::parse_inputs(
     const amr_wind::CFDSim& sim, const std::string& inp_name)
 {
@@ -107,7 +105,7 @@ void ExtTurbIface<FastTurbine>::parse_inputs(
     }
 }
 
-template<>
+template <>
 int ExtTurbIface<FastTurbine>::register_turbine(FastTurbine& data)
 {
     BL_PROFILE("amr-wind::FastIface::register_turbine");
@@ -121,9 +119,8 @@ int ExtTurbIface<FastTurbine>::register_turbine(FastTurbine& data)
     return local_id;
 }
 
-template<>
-void
-ExtTurbIface<FastTurbine>::allocate_fast_turbines()
+template <>
+void ExtTurbIface<FastTurbine>::allocate_fast_turbines()
 {
     BL_PROFILE("amr-wind::FastIface::allocate_turbines");
     int nturbines = static_cast<int>(m_turbine_data.size());
@@ -131,7 +128,7 @@ ExtTurbIface<FastTurbine>::allocate_fast_turbines()
     m_is_initialized = true;
 }
 
-template<>
+template <>
 void ExtTurbIface<FastTurbine>::init_solution(const int local_id)
 {
     BL_PROFILE("amr-wind::FastIface::init_solution");
@@ -143,7 +140,7 @@ void ExtTurbIface<FastTurbine>::init_solution(const int local_id)
     fi.is_solution0 = false;
 }
 
-template<>
+template <>
 void ExtTurbIface<FastTurbine>::get_hub_stats(const int local_id)
 {
     BL_PROFILE("amr-wind::FastIface::get_hub_stats");
@@ -157,7 +154,7 @@ void ExtTurbIface<FastTurbine>::get_hub_stats(const int local_id)
 
 #ifdef AMR_WIND_USE_OPENFAST
 
-template<>
+template <>
 void ExtTurbIface<FastTurbine>::prepare_netcdf_file(FastTurbine& fi)
 {
 #ifdef AMR_WIND_USE_NETCDF
@@ -210,7 +207,7 @@ void ExtTurbIface<FastTurbine>::prepare_netcdf_file(FastTurbine& fi)
 #endif
 }
 
-template<>
+template <>
 void ExtTurbIface<FastTurbine>::write_velocity_data(const FastTurbine& fi)
 {
 #ifdef AMR_WIND_USE_NETCDF
@@ -232,7 +229,7 @@ void ExtTurbIface<FastTurbine>::write_velocity_data(const FastTurbine& fi)
 #endif
 }
 
-template<>
+template <>
 void ExtTurbIface<FastTurbine>::read_velocity_data(
     FastTurbine& fi, const ncutils::NCFile& ncf, const size_t tid)
 {
@@ -254,11 +251,14 @@ void ExtTurbIface<FastTurbine>::read_velocity_data(
 
 #else
 
-template<>
-void ExtTurbIface<FastTurbine>::prepare_netcdf_file(FastTurbine& /*unused*/) {}
-template<>
-void ExtTurbIface<FastTurbine>::write_velocity_data(const FastTurbine& /*unused*/) {}
-template<>
+template <>
+void ExtTurbIface<FastTurbine>::prepare_netcdf_file(FastTurbine& /*unused*/)
+{}
+template <>
+void ExtTurbIface<FastTurbine>::write_velocity_data(
+    const FastTurbine& /*unused*/)
+{}
+template <>
 void ExtTurbIface<FastTurbine>::read_velocity_data(
     FastTurbine& /*unused*/,
     const ncutils::NCFile& /*unused*/,
@@ -267,42 +267,21 @@ void ExtTurbIface<FastTurbine>::read_velocity_data(
 
 #endif
 
-template<>
-void ExtTurbIface<FastTurbine>::advance_turbine(const int local_id)
+template <>
+void ExtTurbIface<FastTurbine>::do_turbine_step(int& tid)
 {
-    BL_PROFILE("amr-wind::FastIface::advance_turbine");
-    AMREX_ASSERT(local_id < static_cast<int>(m_turbine_data.size()));
-
-    auto& fi = *m_turbine_data[local_id];
-    AMREX_ASSERT(!fi.is_solution0);
-    {
-        const auto& tmax = fi.stop_time;
-        const auto& telapsed = (fi.time_index + fi.num_substeps) * fi.dt_fast;
-        if (telapsed > (tmax + 1.0e-8)) {
-            // clang-format off
-            amrex::OutStream()
-                << "\nWARNING: FastIface:\n"
-                << "  Elapsed simulation time will exceed max "
-                << "time set for OpenFAST"
-                << std::endl << std::endl;
-            // clang-format on
-        }
-    }
-
-    write_velocity_data(fi);
-    for (int i = 0; i < fi.num_substeps; ++i, ++fi.time_index) {
-        fast_func(FAST_Step, &fi.tid_local);
-    }
-
-    if (fi.chkpt_interval > 0 &&
-        (fi.time_index / fi.num_substeps) % fi.chkpt_interval == 0) {
-        amrex::Array<char, fast_strlen()> rst_file;
-        copy_filename(" ", rst_file.begin());
-        fast_func(FAST_CreateCheckpoint, &fi.tid_local, rst_file.begin());
-    }
+    fast_func(FAST_Step, &tid);
 }
 
-template<>
+template <>
+void ExtTurbIface<FastTurbine>::write_turbine_checkpoint(int& tid)
+{
+    amrex::Array<char, fast_strlen()> rst_file;
+    copy_filename(" ", rst_file.begin());
+    fast_func(FAST_CreateCheckpoint, &tid, rst_file.begin());
+}
+
+template <>
 void ExtTurbIface<FastTurbine>::fast_init_turbine(FastTurbine& fi)
 {
     BL_PROFILE("amr-wind::FastIface::init_turbine");
@@ -366,7 +345,7 @@ void ExtTurbIface<FastTurbine>::fast_init_turbine(FastTurbine& fi)
 
 // cppcheck-suppress constParameterReference
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-template<>
+template <>
 void ExtTurbIface<FastTurbine>::fast_replay_turbine(FastTurbine& fi)
 {
 #ifdef AMR_WIND_USE_NETCDF
@@ -414,7 +393,7 @@ void ExtTurbIface<FastTurbine>::fast_replay_turbine(FastTurbine& fi)
 }
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-template<>
+template <>
 void ExtTurbIface<FastTurbine>::fast_restart_turbine(FastTurbine& fi)
 {
     BL_PROFILE("amr-wind::FastIface::restart_turbine");
@@ -471,7 +450,7 @@ void ExtTurbIface<FastTurbine>::fast_restart_turbine(FastTurbine& fi)
     }
 }
 
-template<>
+template <>
 void ExtTurbIface<FastTurbine>::init_turbine(const int local_id)
 {
     AMREX_ALWAYS_ASSERT(local_id < static_cast<int>(m_turbine_data.size()));
@@ -500,5 +479,7 @@ void ExtTurbIface<FastTurbine>::init_turbine(const int local_id)
     }
     }
 }
+
+template class ExtTurbIface<FastTurbine>;
 
 } // namespace exw_fast
