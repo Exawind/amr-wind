@@ -136,6 +136,20 @@ void ExtTurbIface<SolverTurbine>::advance_turbine(const int local_id)
 }
 
 template <typename SolverTurbine>
+int ExtTurbIface<SolverTurbine>::register_turbine(SolverTurbine& data)
+{
+    BL_PROFILE("amr-wind::FastIface::register_turbine");
+    AMREX_ALWAYS_ASSERT(!m_is_initialized);
+    const int local_id = static_cast<int>(m_turbine_data.size());
+    const int gid = data.tid_global;
+    m_turbine_map[gid] = local_id;
+    data.tid_local = local_id;
+    m_turbine_data.emplace_back(&data);
+
+    return local_id;
+}
+
+template <typename SolverTurbine>
 void ExtTurbIface<SolverTurbine>::init_turbine(const int local_id)
 {
     AMREX_ALWAYS_ASSERT(local_id < static_cast<int>(m_turbine_data.size()));

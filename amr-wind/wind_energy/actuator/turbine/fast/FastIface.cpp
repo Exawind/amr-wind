@@ -106,20 +106,6 @@ void ExtTurbIface<FastTurbine>::parse_inputs(
 }
 
 template <>
-int ExtTurbIface<FastTurbine>::register_turbine(FastTurbine& data)
-{
-    BL_PROFILE("amr-wind::FastIface::register_turbine");
-    AMREX_ALWAYS_ASSERT(!m_is_initialized);
-    const int local_id = static_cast<int>(m_turbine_data.size());
-    const int gid = data.tid_global;
-    m_turbine_map[gid] = local_id;
-    data.tid_local = local_id;
-    m_turbine_data.emplace_back(&data);
-
-    return local_id;
-}
-
-template <>
 void ExtTurbIface<FastTurbine>::allocate_ext_turbines()
 {
     BL_PROFILE("amr-wind::FastIface::allocate_turbines");
