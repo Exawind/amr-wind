@@ -1,4 +1,3 @@
-// #include "amr-wind/wind_energy/actuator/turbine/fast/FastIface.H"
 #include "amr-wind/wind_energy/actuator/turbine/external/ExtTurbIface.H"
 #include "amr-wind/wind_energy/actuator/turbine/fast/fast_types.H"
 #include "amr-wind/wind_energy/actuator/turbine/fast/fast_wrapper.H"

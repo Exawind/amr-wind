@@ -25,31 +25,32 @@ public:
 
     explicit ExtTurbIface(const ::amr_wind::CFDSim& sim);
 
-    ~ExtTurbIface() override;
-
-    void parse_inputs(
-        const amr_wind::CFDSim& /*sim*/, const std::string& /*inp_name*/);
-
+    /* -- General for all external turbines -- */
     int register_turbine(SolverTurbine& data);
 
     void init_turbine(const int local_id);
 
-    void init_solution(const int local_id);
-
-    void get_hub_stats(const int local_id);
-
     void advance_turbine(const int local_id);
-
-    void do_turbine_step(int& tid);
-
-    void write_turbine_checkpoint(int& tid);
-
-    void save_restart(const int local_id);
 
     int num_local_turbines() const
     {
         return static_cast<int>(m_turbine_data.size());
     }
+
+    /* -- Specific to each type of external turbine -- */
+
+    ~ExtTurbIface() override;
+
+    void parse_inputs(
+        const amr_wind::CFDSim& /*sim*/, const std::string& /*inp_name*/);
+
+    void init_solution(const int local_id);
+
+    void get_hub_stats(const int local_id);
+
+    void do_turbine_step(int& tid);
+
+    void write_turbine_checkpoint(int& tid);
 
 protected:
     void allocate_ext_turbines();
@@ -103,39 +104,6 @@ ExtTurbIface<SolverTurbine>::ExtTurbIface(const amr_wind::CFDSim& /*unused*/)
 {}
 
 template <typename SolverTurbine>
-void ExtTurbIface<SolverTurbine>::advance_turbine(const int local_id)
-{
-    BL_PROFILE("amr-wind::FastIface::advance_turbine");
-    AMREX_ASSERT(local_id < static_cast<int>(m_turbine_data.size()));
-
-    auto& fi = *m_turbine_data[local_id];
-    AMREX_ASSERT(!fi.is_solution0);
-    {
-        const auto& tmax = fi.stop_time;
-        const auto& telapsed = (fi.time_index + fi.num_substeps) * fi.dt_fast;
-        if (telapsed > (tmax + 1.0e-8)) {
-            // clang-format off
-            amrex::OutStream()
-                << "\nWARNING: FastIface:\n"
-                << "  Elapsed simulation time will exceed max "
-                << "time set for OpenFAST"
-                << std::endl << std::endl;
-            // clang-format on
-        }
-    }
-
-    write_velocity_data(fi);
-    for (int i = 0; i < fi.num_substeps; ++i, ++fi.time_index) {
-        do_turbine_step(fi.tid_local);
-    }
-
-    if (fi.chkpt_interval > 0 &&
-        (fi.time_index / fi.num_substeps) % fi.chkpt_interval == 0) {
-        write_turbine_checkpoint(fi.tid_local);
-    }
-}
-
-template <typename SolverTurbine>
 int ExtTurbIface<SolverTurbine>::register_turbine(SolverTurbine& data)
 {
     BL_PROFILE("amr-wind::FastIface::register_turbine");
@@ -176,6 +144,40 @@ void ExtTurbIface<SolverTurbine>::init_turbine(const int local_id)
         prepare_netcdf_file(fi);
         break;
     }
+    }
+}
+
+
+template <typename SolverTurbine>
+void ExtTurbIface<SolverTurbine>::advance_turbine(const int local_id)
+{
+    BL_PROFILE("amr-wind::FastIface::advance_turbine");
+    AMREX_ASSERT(local_id < static_cast<int>(m_turbine_data.size()));
+
+    auto& fi = *m_turbine_data[local_id];
+    AMREX_ASSERT(!fi.is_solution0);
+    {
+        const auto& tmax = fi.stop_time;
+        const auto& telapsed = (fi.time_index + fi.num_substeps) * fi.dt_fast;
+        if (telapsed > (tmax + 1.0e-8)) {
+            // clang-format off
+            amrex::OutStream()
+                << "\nWARNING: FastIface:\n"
+                << "  Elapsed simulation time will exceed max "
+                << "time set for OpenFAST"
+                << std::endl << std::endl;
+            // clang-format on
+        }
+    }
+
+    write_velocity_data(fi);
+    for (int i = 0; i < fi.num_substeps; ++i, ++fi.time_index) {
+        do_turbine_step(fi.tid_local);
+    }
+
+    if (fi.chkpt_interval > 0 &&
+        (fi.time_index / fi.num_substeps) % fi.chkpt_interval == 0) {
+        write_turbine_checkpoint(fi.tid_local);
     }
 }
 
