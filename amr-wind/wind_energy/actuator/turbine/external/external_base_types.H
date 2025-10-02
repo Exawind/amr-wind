@@ -8,7 +8,7 @@ namespace exw_fast {
 enum class SimMode : int {
     init = 0, ///< Clean start
     replay,   ///< Replay using velocities stored in file
-    restart   ///< Restart using FAST checkpoint files
+    restart   ///< Restart using external checkpoint files
 };
 
 /** Representation of a turbine for exchanging data with external solver
@@ -68,7 +68,7 @@ struct ExternalTurbine
     double dt_cfd;
 
     //! Timestep for external turbine solver
-    double dt_fast; // ext;
+    double dt_ext;
 
     //! Number of sub-steps of external solver per CFD timestep
     int num_substeps;
@@ -76,7 +76,7 @@ struct ExternalTurbine
     //! Time step index for external
     int time_index{0};
 
-    //! Checkpoint interval for FAST
+    //! Checkpoint interval for external
     int chkpt_interval;
 
     //! Data access functions that have to be defined for each type

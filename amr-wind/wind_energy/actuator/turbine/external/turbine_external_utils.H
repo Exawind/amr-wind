@@ -128,7 +128,7 @@ void check_fast_sim_time(datatype& data)
 {
     const auto& time = data.sim().time();
 
-    // Set OpenFAST end time to be at least as long as the CFD time. User
+    // Set OpenFAST solver end time to be at least as long as the CFD time. User
     // can choose a longer duration in input file.
     const amrex::Real stop1 = time.stop_time() > 0.0
                                   ? time.stop_time()
@@ -141,7 +141,7 @@ void check_fast_sim_time(datatype& data)
     const amrex::Real cfd_sim = cfd_stop - cfd_start - 1.0e-6;
 
     // Ensure that the user specified stop_time is not shorter than CFD sim
-    const auto& tf = data.meta().fast_data;
+    const auto& tf = data.meta().ext_data;
     const amrex::Real fast_sim = tf.stop_time - tf.start_time;
     AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
         fast_sim > cfd_sim,
@@ -158,7 +158,7 @@ void compute_nacelle_force(datatype& data)
     const auto& cd = data.meta().nacelle_cd;
     const auto& area = data.meta().nacelle_area;
     const auto& cd_area = cd * area;
-    const auto& ext_tdata = data.meta().fast_data;
+    const auto& ext_tdata = data.meta().ext_data;
     const auto& rho = data.meta().density;
 
     const auto& eps = data.grid().epsilon[0].x();
@@ -180,21 +180,21 @@ void compute_nacelle_force(datatype& data)
 }
 
 template<typename datatype>
-void fast_step(datatype& data)
+void ext_step(datatype& data)
 {
     if (!data.info().is_root_proc) {
         return;
     }
 
     auto& meta = data.meta();
-    auto& tf = data.meta().fast_data;
+    auto& tf = data.meta().ext_data;
     if (tf.is_solution0) {
-        meta.fast->init_solution(tf.tid_local);
+        meta.ext_ptr->init_solution(tf.tid_local);
     } else {
-        meta.fast->advance_turbine(tf.tid_local);
+        meta.ext_ptr->advance_turbine(tf.tid_local);
     }
 
-    meta.fast->get_hub_stats(tf.tid_local);
+    meta.ext_ptr->get_hub_stats(tf.tid_local);
 
     // Populate nacelle force into the OpenFAST data structure so that it
     // gets broadcasted to all influenced processes in subsequent scattering
@@ -219,8 +219,8 @@ void scatter_data(datatype& data)
     // Copy data into MPI send/recv buffer from the OpenFAST data structure.
     // Note, other procs do not have a valid data in those pointers.
     if (data.info().is_root_proc) {
-        BL_PROFILE("amr-wind::actuator::ComputeForceOp<TurbineFast>::scatter1");
-        const auto& ext_tdata = data.meta().fast_data;
+        BL_PROFILE("amr-wind::actuator::external::compute_force_op::scatter1");
+        const auto& ext_tdata = data.meta().ext_data;
         auto it = buf.begin();
         for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
             std::copy(
@@ -247,7 +247,7 @@ void scatter_data(datatype& data)
     const auto& procs = data.info().procs;
     const int tag = 1001;
     if (data.info().is_root_proc) {
-        BL_PROFILE("amr-wind::actuator::ComputeForceOp<TurbineFast>::scatter2");
+        BL_PROFILE("amr-wind::actuator::external::compute_force_op::scatter2");
         for (const int ip : procs) {
             if (ip == data.info().root_proc) {
                 continue;
@@ -257,7 +257,7 @@ void scatter_data(datatype& data)
                 buf.data(), dsize, ip, tag, data.meta().tcomm);
         }
     } else {
-        BL_PROFILE("amr-wind::actuator::ComputeForceOp<TurbineFast>::scatter2");
+        BL_PROFILE("amr-wind::actuator::external::compute_force_op::scatter2");
         amrex::ParallelDescriptor::Recv(
             buf.data(), dsize, data.info().root_proc, tag, data.meta().tcomm);
     }
@@ -265,7 +265,7 @@ void scatter_data(datatype& data)
     // Populate the actuator grid data structures with data from the MPI
     // send/recv buffer.
     {
-        BL_PROFILE("amr-wind::actuator::ComputeForceOp<TurbineFast>::scatter3");
+        BL_PROFILE("amr-wind::actuator::external::compute_force_op::scatter3");
         const auto& bp = data.info().base_pos;
         auto& grid = data.grid();
         const auto& npts = grid.pos.size();

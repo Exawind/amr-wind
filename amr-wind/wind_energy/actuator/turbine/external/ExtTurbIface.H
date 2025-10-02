@@ -22,7 +22,7 @@ class ExtTurbIface
           ExtTurbIface<SolverTurbine, SolverData>>
 {
 public:
-    static std::string identifier() { return "OpenFAST"; }
+    static std::string identifier() { return "ExternalTurbineSolver"; }
 
     explicit ExtTurbIface(const ::amr_wind::CFDSim& sim);
 
@@ -77,8 +77,6 @@ protected:
     std::vector<SolverTurbine*> m_turbine_data;
 
     double m_dt_cfd{0.0};
-
-    // Not using amrex::Real. Instead use explicit types from FAST API
     double m_start_time{0.0};
     double m_stop_time{-1.0};
     ::exw_fast::SimMode m_sim_mode{::exw_fast::SimMode::init};
@@ -98,7 +96,7 @@ template <typename SolverTurbine, typename SolverData>
 int ExtTurbIface<SolverTurbine, SolverData>::register_turbine(
     SolverTurbine& data)
 {
-    BL_PROFILE("amr-wind::FastIface::register_turbine");
+    BL_PROFILE("amr-wind::ExtTurbIface::register_turbine");
     AMREX_ALWAYS_ASSERT(!m_is_initialized);
     const int local_id = static_cast<int>(m_turbine_data.size());
     const int gid = data.tid_global;
@@ -143,20 +141,20 @@ template <typename SolverTurbine, typename SolverData>
 void ExtTurbIface<SolverTurbine, SolverData>::advance_turbine(
     const int local_id)
 {
-    BL_PROFILE("amr-wind::FastIface::advance_turbine");
+    BL_PROFILE("amr-wind::ExtTurbIface::advance_turbine");
     AMREX_ASSERT(local_id < static_cast<int>(m_turbine_data.size()));
 
     auto& fi = *m_turbine_data[local_id];
     AMREX_ASSERT(!fi.is_solution0);
     {
         const auto& tmax = fi.stop_time;
-        const auto& telapsed = (fi.time_index + fi.num_substeps) * fi.dt_fast;
+        const auto& telapsed = (fi.time_index + fi.num_substeps) * fi.dt_ext;
         if (telapsed > (tmax + 1.0e-8)) {
             // clang-format off
             amrex::OutStream()
-                << "\nWARNING: FastIface:\n"
+                << "\nWARNING: ExtTurbIface:\n"
                 << "  Elapsed simulation time will exceed max "
-                << "time set for OpenFAST"
+                << "time set for External Turbine Solver"
                 << std::endl << std::endl;
             // clang-format on
         }

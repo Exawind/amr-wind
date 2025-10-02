@@ -12,8 +12,8 @@ struct TurbineExternalData : public TurbineBaseData
 {
     amrex::Real density{1.0}; 
 
-    SolverTurbine fast_data;
-    ::exw_fast::ExtTurbIface<SolverTurbine,SolverData>* fast{nullptr};
+    SolverTurbine ext_data;
+    ::exw_fast::ExtTurbIface<SolverTurbine,SolverData>* ext_ptr{nullptr};
 
     MPI_Comm tcomm{MPI_COMM_NULL};
 };
@@ -27,7 +27,7 @@ struct TurbineFromExtSolver : public TurbineType
     using DataType = ActDataHolder<TurbineFromExtSolver<SolverTurbine,SolverData>>;
 
     // !!!! update how identifier is set !!!!!
-    static std::string identifier() { return "TurbineFast"; }
+    static std::string identifier() { return "TurbineFromExtSolver"; }
 };
 
 } // namespace amr_wind::actuator

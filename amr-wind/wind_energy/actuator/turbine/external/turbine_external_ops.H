@@ -25,7 +25,7 @@ void read_ops(datatype& data, const utils::ActParser& pp)
 
     // Initialize OpenFAST specific data
     const auto& tinfo = data.info();
-    auto& tf = data.meta().fast_data;
+    auto& tf = data.meta().ext_data;
     for (int i = 0; i < AMREX_SPACEDIM; ++i) {
         tf.base_pos[i] = static_cast<float>(tinfo.base_pos[i]);
     }
@@ -109,10 +109,10 @@ external_determine_root_proc(datatype& data, amrex::Vector<int>& act_proc_count)
     if (info.is_root_proc) {
         auto& tdata = data.meta();
         auto& ext_mgr = data.sim().ext_solver_manager();
-        ext_mgr.create("OpenFAST", data.sim());
-        tdata.fast = &(ext_mgr.template get<
+        ext_mgr.create("ExternalTurbineSolver", data.sim());
+        tdata.ext_ptr = &(ext_mgr.template get<
                        ::exw_fast::ExtTurbIface<SolverTurbine, SolverData>>());
-        tdata.fast->register_turbine(tdata.fast_data);
+        tdata.ext_ptr->register_turbine(tdata.ext_data);
     }
 }
 
@@ -133,9 +133,9 @@ void init_data_op(datatype& data)
 
     amrex::Array<int, 5> sz_info = {0, 0, 0, 0, 0};
     if (info.is_root_proc) {
-        tdata.fast->init_turbine(tdata.fast_data.tid_local);
+        tdata.ext_ptr->init_turbine(tdata.ext_data.tid_local);
 
-        const auto& tf = tdata.fast_data;
+        const auto& tf = tdata.ext_data;
         sz_info[0] = tf.num_blades;
         sz_info[1] = tf.length_force(0);
         sz_info[2] = tf.length_fluid_velocity(0);
@@ -164,7 +164,7 @@ void init_data_op(datatype& data)
         int npts = sz_info[1];
         for (int i = 0; i < npts; ++i) {
             tdata.chord[i] =
-                static_cast<amrex::Real>(tdata.fast_data.chord_at_force()[i]);
+                static_cast<amrex::Real>(tdata.ext_data.chord_at_force()[i]);
         }
     }
 
@@ -188,9 +188,9 @@ void update_pos_op(datatype& data)
 
     const auto& tdata = data.meta();
     const auto& bp = data.info().base_pos;
-    const auto& pxvel = tdata.fast_data.position_at_vel(0);
-    const auto& pyvel = tdata.fast_data.position_at_vel(1);
-    const auto& pzvel = tdata.fast_data.position_at_vel(2);
+    const auto& pxvel = tdata.ext_data.position_at_vel(0);
+    const auto& pyvel = tdata.ext_data.position_at_vel(1);
+    const auto& pzvel = tdata.ext_data.position_at_vel(2);
     auto& vel_pos = data.grid().vel_pos;
     for (int i = 0; i < vel_pos.size(); ++i) {
         vel_pos[i].x() = static_cast<amrex::Real>(pxvel[i]) + bp.x();
@@ -211,16 +211,16 @@ void update_vel_op(datatype& data)
     }
     auto& tdata = data.meta();
 
-    const auto& uvel = tdata.fast_data.fluid_velocity(0);
-    const auto& vvel = tdata.fast_data.fluid_velocity(1);
-    const auto& wvel = tdata.fast_data.fluid_velocity(2);
+    const auto& uvel = tdata.ext_data.fluid_velocity(0);
+    const auto& vvel = tdata.ext_data.fluid_velocity(1);
+    const auto& wvel = tdata.ext_data.fluid_velocity(2);
     const auto& vel = data.grid().vel;
 
     if (!tdata.fllc.empty()) {
         // Compute the relative velocity needed for the FLLC
-        const auto& xdot = tdata.fast_data.solid_velocity(0);
-        const auto& ydot = tdata.fast_data.solid_velocity(1);
-        const auto& zdot = tdata.fast_data.solid_velocity(2);
+        const auto& xdot = tdata.ext_data.solid_velocity(0);
+        const auto& ydot = tdata.ext_data.solid_velocity(1);
+        const auto& zdot = tdata.ext_data.solid_velocity(2);
         for (int i = 0; i < tdata.vel_rel.size(); ++i) {
             tdata.vel_rel[i][0] = uvel[i] - static_cast<amrex::Real>(xdot[i]);
             tdata.vel_rel[i][1] = vvel[i] - static_cast<amrex::Real>(ydot[i]);
@@ -232,7 +232,7 @@ void update_vel_op(datatype& data)
         }
     }
 
-    for (int i = 0; i < tdata.fast_data.length_fluid_velocity(0); ++i) {
+    for (int i = 0; i < tdata.ext_data.length_fluid_velocity(0); ++i) {
         uvel[i] = static_cast<float>(vel[i].x());
         vvel[i] = static_cast<float>(vel[i].y());
         wvel[i] = static_cast<float>(vel[i].z());
@@ -242,8 +242,8 @@ void update_vel_op(datatype& data)
 template <typename datatype>
 void compute_force_op(datatype& data)
 {
-    // Advance OpenFAST by specified number of sub-steps
-    fast_step<datatype>(data);
+    // Advance external solver by specified number of sub-steps
+    ext_step<datatype>(data);
     // Broadcast data to all the processes that contain patches influenced
     // by this turbine
     scatter_data<datatype>(data);

@@ -203,7 +203,7 @@ void ExtTurbIface<FastTurbine,FastSolverData>::write_velocity_data(const FastTur
     const size_t nt = ncf.dim(nt_name).len();
     const auto npts = static_cast<size_t>(fi.from_cfd.u_Len);
 
-    const double time = fi.time_index * fi.dt_fast;
+    const double time = fi.time_index * fi.dt_ext;
     ncf.var("time").put(&time, {nt}, {1});
     const auto& uu = fi.from_cfd;
     ncf.var("uvel").put(uu.u, {nt, 0}, {1, npts});
@@ -284,7 +284,7 @@ void ExtTurbIface<FastTurbine,FastSolverData>::ext_init_turbine(FastTurbine& fi)
     fast_func(
         FAST_ExtInfw_Init, &fi.tid_local, &fi.stop_time, inp_file.begin(),
         &fi.tid_global, out_file, &fi.num_pts_blade, &fi.num_pts_tower,
-        fi.base_pos.begin(), &abort_lev, &fi.dt_cfd, &fi.dt_fast,
+        fi.base_pos.begin(), &abort_lev, &fi.dt_cfd, &fi.dt_ext,
         &m_solver_data.m_inflow_type, &fi.num_blades, &fi.num_blade_elem, &fi.num_tower_elem,
         &fi.chord_cluster_type, &fi.to_cfd, &fi.from_cfd);
 #else
@@ -293,7 +293,7 @@ void ExtTurbIface<FastTurbine,FastSolverData>::ext_init_turbine(FastTurbine& fi)
         &fi.tid_global, &m_solver_data.m_num_sc_inputs_glob, &m_solver_data.m_num_sc_inputs,
         &m_solver_data.m_num_sc_outputs, &m_solver_data.m_init_sc_inputs_glob, &m_solver_data.m_init_sc_inputs_turbine,
         &fi.num_pts_blade, &fi.num_pts_tower, fi.base_pos.begin(), &abort_lev,
-        &fi.dt_fast, &fi.num_blades, &fi.num_blade_elem, &fi.chord_cluster_type,
+        &fi.dt_ext, &fi.num_blades, &fi.num_blade_elem, &fi.chord_cluster_type,
         &fi.to_cfd, &fi.from_cfd, &fi.to_sc, &fi.from_sc);
 #endif
 
@@ -314,13 +314,13 @@ void ExtTurbIface<FastTurbine,FastSolverData>::ext_init_turbine(FastTurbine& fi)
     }
 
     // Determine the number of substeps for FAST per CFD timestep
-    fi.num_substeps = static_cast<int>(std::floor(fi.dt_cfd / fi.dt_fast));
+    fi.num_substeps = static_cast<int>(std::floor(fi.dt_cfd / fi.dt_ext));
 
     AMREX_ALWAYS_ASSERT(fi.num_substeps > 0);
     // Check that the time step sizes are consistent and FAST advances at an
     // integral multiple of CFD timestep
     double dt_err =
-        fi.dt_cfd / (static_cast<double>(fi.num_substeps) * fi.dt_fast) - 1.0;
+        fi.dt_cfd / (static_cast<double>(fi.num_substeps) * fi.dt_ext) - 1.0;
     if (dt_err > 1.0e-12) {
         amrex::Abort(
             "FastIFace: OpenFAST timestep is not an integral "
@@ -338,7 +338,7 @@ void ExtTurbIface<FastTurbine,FastSolverData>::ext_replay_turbine(FastTurbine& f
 
     // Determine the number of timesteps we should advance this turbine
     const auto num_steps =
-        static_cast<int>(std::floor(fi.start_time / fi.dt_fast));
+        static_cast<int>(std::floor(fi.start_time / fi.dt_ext));
     // Compute the number of CFD steps to read velocity data
     const auto num_cfd_steps = num_steps / fi.num_substeps;
 
@@ -395,12 +395,12 @@ void ExtTurbIface<FastTurbine,FastSolverData>::ext_restart_turbine(FastTurbine& 
 #if OPENFAST_VERSION_MAJOR == 4
     fast_func(
         FAST_ExtInfw_Restart, &fi.tid_local, chkpt_file.begin(), &abort_lev,
-        &fi.dt_fast, &fi.num_blades, &fi.num_blade_elem, &fi.num_tower_elem,
+        &fi.dt_ext, &fi.num_blades, &fi.num_blade_elem, &fi.num_tower_elem,
         &fi.time_index, &fi.to_cfd, &fi.from_cfd);
 #else
     fast_func(
         FAST_OpFM_Restart, &fi.tid_local, chkpt_file.begin(), &abort_lev,
-        &fi.dt_fast, &fi.num_blades, &fi.num_blade_elem, &fi.time_index,
+        &fi.dt_ext, &fi.num_blades, &fi.num_blade_elem, &fi.time_index,
         &fi.to_cfd, &fi.from_cfd, &fi.to_sc, &fi.from_sc);
 #endif
 
@@ -421,13 +421,13 @@ void ExtTurbIface<FastTurbine,FastSolverData>::ext_restart_turbine(FastTurbine& 
     }
 
     // Determine the number of substeps for FAST per CFD timestep
-    fi.num_substeps = static_cast<int>(std::floor(fi.dt_cfd / fi.dt_fast));
+    fi.num_substeps = static_cast<int>(std::floor(fi.dt_cfd / fi.dt_ext));
 
     AMREX_ALWAYS_ASSERT(fi.num_substeps > 0);
     // Check that the time step sizes are consistent and FAST advances at an
     // integral multiple of CFD timestep
     double dt_err =
-        fi.dt_cfd / (static_cast<double>(fi.num_substeps) * fi.dt_fast) - 1.0;
+        fi.dt_cfd / (static_cast<double>(fi.num_substeps) * fi.dt_ext) - 1.0;
     if (dt_err > 1.0e-4) {
         amrex::Abort(
             "FastIFace: OpenFAST timestep is not an integral "

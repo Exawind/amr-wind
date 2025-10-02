@@ -72,7 +72,7 @@ TEST_F(FastIfaceTest, fast_init)
 
 #if AW_ENABLE_OPENFAST_UTEST
     fast.init_turbine(fi.tid_local);
-    EXPECT_NEAR(fi.dt_fast, 0.00625, 1.0e-12);
+    EXPECT_NEAR(fi.dt_ext, 0.00625, 1.0e-12);
     EXPECT_EQ(fi.num_substeps, 10);
     EXPECT_EQ(fi.num_blades, 3);
     EXPECT_TRUE(fi.is_solution0);
