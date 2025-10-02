@@ -177,11 +177,11 @@ void ExtTurbIface<FastTurbine,FastSolverData>::prepare_netcdf_file(FastTurbine& 
     {
         const auto npts = static_cast<size_t>(fi.from_cfd.u_Len);
         auto xco = ncf.var("xco");
-        xco.put(fi.to_cfd.pxVel, {0}, {npts});
+        xco.put(fi.position_at_vel(0), {0}, {npts});
         auto yco = ncf.var("yco");
-        yco.put(fi.to_cfd.pyVel, {0}, {npts});
+        yco.put(fi.position_at_vel(1), {0}, {npts});
         auto zco = ncf.var("zco");
-        zco.put(fi.to_cfd.pzVel, {0}, {npts});
+        zco.put(fi.position_at_vel(2), {0}, {npts});
     }
 #else
     amrex::ignore_unused(fi);

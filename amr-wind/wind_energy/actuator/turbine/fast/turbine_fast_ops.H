@@ -219,7 +219,8 @@ inline void determine_root_proc<TurbineFast>(
         auto& ext_mgr = data.sim().ext_solver_manager();
         ext_mgr.create("OpenFAST", data.sim());
         tdata.fast =
-            &(ext_mgr.get<::exw_fast::ExtTurbIface<::exw_fast::FastTurbine,::exw_fast::FastSolverData>>());
+            &(ext_mgr.get<::exw_fast::ExtTurbIface<
+                  ::exw_fast::FastTurbine, ::exw_fast::FastSolverData>>());
         tdata.fast->register_turbine(tdata.fast_data);
     }
 }
@@ -249,8 +250,8 @@ struct InitDataOp<TurbineFast, SrcTrait>
 
             const auto& tf = tdata.fast_data;
             sz_info[0] = tf.num_blades;
-            sz_info[1] = tf.to_cfd.fx_Len;
-            sz_info[2] = tf.from_cfd.u_Len;
+            sz_info[1] = tf.length_force(0);
+            sz_info[2] = tf.length_fluid_velocity(0);
             sz_info[3] = tf.num_pts_tower;
             sz_info[4] = tf.num_blade_elem;
         }
@@ -274,9 +275,9 @@ struct InitDataOp<TurbineFast, SrcTrait>
         if (info.is_root_proc) {
             // copy chord data
             int npts = sz_info[1];
-            const auto& fchord = tdata.fast_data.to_cfd.forceNodesChord;
             for (int i = 0; i < npts; ++i) {
-                tdata.chord[i] = static_cast<amrex::Real>(fchord[i]);
+                tdata.chord[i] = static_cast<amrex::Real>(
+                    tdata.fast_data.chord_at_force()[i]);
             }
         }
 
@@ -442,9 +443,9 @@ struct UpdatePosOp<TurbineFast, SrcTrait>
 
         const auto& tdata = data.meta();
         const auto& bp = data.info().base_pos;
-        const auto& pxvel = tdata.fast_data.to_cfd.pxVel;
-        const auto& pyvel = tdata.fast_data.to_cfd.pyVel;
-        const auto& pzvel = tdata.fast_data.to_cfd.pzVel;
+        const auto& pxvel = tdata.fast_data.position_at_vel(0);
+        const auto& pyvel = tdata.fast_data.position_at_vel(1);
+        const auto& pzvel = tdata.fast_data.position_at_vel(2);
         auto& vel_pos = data.grid().vel_pos;
         for (int i = 0; i < vel_pos.size(); ++i) {
             vel_pos[i].x() = static_cast<amrex::Real>(pxvel[i]) + bp.x();
@@ -469,24 +470,23 @@ struct UpdateVelOp<TurbineFast, SrcTrait>
         BL_PROFILE("amr-wind::actuator::UpdateVelOp<TurbineFast>");
         auto& tdata = data.meta();
 
-        auto& from_cfd = tdata.fast_data.from_cfd;
-        auto& uvel = from_cfd.u;
-        auto& vvel = from_cfd.v;
-        auto& wvel = from_cfd.w;
+        const auto& uvel = tdata.fast_data.fluid_velocity(0);
+        const auto& vvel = tdata.fast_data.fluid_velocity(1);
+        const auto& wvel = tdata.fast_data.fluid_velocity(2);
         const auto& vel = data.grid().vel;
 
         if (!tdata.fllc.empty()) {
             // Compute the relative velocity needed for the FLLC
+            const auto& xdot = tdata.fast_data.solid_velocity(0);
+            const auto& ydot = tdata.fast_data.solid_velocity(1);
+            const auto& zdot = tdata.fast_data.solid_velocity(2);
             for (int i = 0; i < tdata.vel_rel.size(); ++i) {
                 tdata.vel_rel[i][0] =
-                    uvel[i] - static_cast<amrex::Real>(
-                                  tdata.fast_data.to_cfd.xdotForce[i]);
+                    uvel[i] - static_cast<amrex::Real>(xdot[i]);
                 tdata.vel_rel[i][1] =
-                    vvel[i] - static_cast<amrex::Real>(
-                                  tdata.fast_data.to_cfd.ydotForce[i]);
+                    vvel[i] - static_cast<amrex::Real>(ydot[i]);
                 tdata.vel_rel[i][2] =
-                    wvel[i] - static_cast<amrex::Real>(
-                                  tdata.fast_data.to_cfd.zdotForce[i]);
+                    wvel[i] - static_cast<amrex::Real>(zdot[i]);
             }
             // Loop through each blade and apply the FLLC
             for (int i = 0; i < tdata.num_blades; ++i) {
@@ -494,7 +494,7 @@ struct UpdateVelOp<TurbineFast, SrcTrait>
             }
         }
 
-        for (int i = 0; i < from_cfd.u_Len; ++i) {
+        for (int i = 0; i < tdata.fast_data.length_fluid_velocity(0); ++i) {
             uvel[i] = static_cast<float>(vel[i].x());
             vvel[i] = static_cast<float>(vel[i].y());
             wvel[i] = static_cast<float>(vel[i].z());
@@ -559,12 +559,13 @@ struct ComputeForceOp<TurbineFast, SrcTrait>
         const auto& cd = data.meta().nacelle_cd;
         const auto& area = data.meta().nacelle_area;
         const auto& cd_area = cd * area;
-        const auto& fcfd = data.meta().fast_data.from_cfd;
-        const auto& tcfd = data.meta().fast_data.to_cfd;
+        const auto& ext_tdata = data.meta().fast_data;
         const auto& rho = data.meta().density;
 
         const auto& eps = data.grid().epsilon[0].x();
-        vs::Vector vel{fcfd.u[0], fcfd.v[0], fcfd.w[0]};
+        vs::Vector vel{
+            ext_tdata.fluid_velocity(0)[0], ext_tdata.fluid_velocity(1)[0],
+            ext_tdata.fluid_velocity(2)[0]};
         amrex::Real correction = 0.0;
         if (eps > 0.0) {
             amrex::Real fac =
@@ -575,9 +576,9 @@ struct ComputeForceOp<TurbineFast, SrcTrait>
         amrex::Real coeff =
             0.5 * rho * cd_area * vs::mag(vel) * correction * correction;
 
-        tcfd.fx[0] = static_cast<float>(coeff * fcfd.u[0]);
-        tcfd.fy[0] = static_cast<float>(coeff * fcfd.v[0]);
-        tcfd.fz[0] = static_cast<float>(coeff * fcfd.w[0]);
+        for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
+            ext_tdata.force(dir)[0] = static_cast<float>(coeff * vel[dir]);
+        }
     }
 
     void scatter_data(typename TurbineFast::DataType& data)
@@ -598,25 +599,26 @@ struct ComputeForceOp<TurbineFast, SrcTrait>
         if (data.info().is_root_proc) {
             BL_PROFILE(
                 "amr-wind::actuator::ComputeForceOp<TurbineFast>::scatter1");
-            const auto& tocfd = data.meta().fast_data.to_cfd;
+            const auto& ext_tdata = data.meta().fast_data;
             auto it = buf.begin();
-            std::copy(tocfd.fx, tocfd.fx + tocfd.fx_Len, it);
-            std::advance(it, tocfd.fx_Len);
-            std::copy(tocfd.fy, tocfd.fy + tocfd.fy_Len, it);
-            std::advance(it, tocfd.fy_Len);
-            std::copy(tocfd.fz, tocfd.fz + tocfd.fz_Len, it);
-            std::advance(it, tocfd.fz_Len);
-
-            std::copy(tocfd.pxForce, tocfd.pxForce + tocfd.pxForce_Len, it);
-            std::advance(it, tocfd.pxForce_Len);
-            std::copy(tocfd.pyForce, tocfd.pyForce + tocfd.pyForce_Len, it);
-            std::advance(it, tocfd.pyForce_Len);
-            std::copy(tocfd.pzForce, tocfd.pzForce + tocfd.pzForce_Len, it);
-            std::advance(it, tocfd.pzForce_Len);
+            for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
+                std::copy(
+                    ext_tdata.force(dir),
+                    ext_tdata.force(dir) + ext_tdata.length_force(dir), it);
+                std::advance(it, ext_tdata.length_force(dir));
+            }
+            for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
+                std::copy(
+                    ext_tdata.position_at_force(dir),
+                    ext_tdata.position_at_force(dir) +
+                        ext_tdata.length_position_at_force(dir),
+                    it);
+                std::advance(it, ext_tdata.length_position_at_force(dir));
+            }
 
             // clang-format off
-            std::copy(tocfd.pOrientation,
-                      tocfd.pOrientation + tocfd.pOrientation_Len, it);
+            std::copy(ext_tdata.orientation(),
+                      ext_tdata.orientation() + ext_tdata.length_orientation(), it);
             // clang-format on
         }
 
