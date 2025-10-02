@@ -26,6 +26,7 @@ struct TurbineFromExtSolver : public TurbineType
     using MetaType = TurbineExternalData<SolverTurbine,SolverData>;
     using DataType = ActDataHolder<TurbineFromExtSolver<SolverTurbine,SolverData>>;
 
+    // !!!! update how identifier is set !!!!!
     static std::string identifier() { return "TurbineFast"; }
 };
 

@@ -6,7 +6,6 @@
  
 namespace amr_wind::actuator {
 
-using TurbineFastData = TurbineExternalData<::exw_fast::FastTurbine,::exw_fast::FastSolverData>;
 using TurbineFast = TurbineFromExtSolver<::exw_fast::FastTurbine,::exw_fast::FastSolverData>;
 
 } // namespace amr_wind::actuator
