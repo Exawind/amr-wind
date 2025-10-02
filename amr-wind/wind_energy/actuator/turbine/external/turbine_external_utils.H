@@ -124,31 +124,6 @@ void init_epsilon(datatype& data)
 }
 
 template<typename datatype>
-void check_fast_sim_time(datatype& data)
-{
-    const auto& time = data.sim().time();
-
-    // Set OpenFAST solver end time to be at least as long as the CFD time. User
-    // can choose a longer duration in input file.
-    const amrex::Real stop1 = time.stop_time() > 0.0
-                                  ? time.stop_time()
-                                  : std::numeric_limits<amrex::Real>::max();
-    const amrex::Real stop2 = time.stop_time_index() > -1
-                                  ? time.stop_time_index() * time.delta_t()
-                                  : std::numeric_limits<amrex::Real>::max();
-    const amrex::Real cfd_stop = amrex::min(stop1, stop2);
-    const amrex::Real cfd_start = time.current_time();
-    const amrex::Real cfd_sim = cfd_stop - cfd_start - 1.0e-6;
-
-    // Ensure that the user specified stop_time is not shorter than CFD sim
-    const auto& tf = data.meta().ext_data;
-    const amrex::Real fast_sim = tf.stop_time - tf.start_time;
-    AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
-        fast_sim > cfd_sim,
-        "OpenFAST simulation time is shorter than AMR-Wind duration");
-}
-
-template<typename datatype>
 void compute_nacelle_force(datatype& data)
 {
     if (!data.info().is_root_proc) {

@@ -119,10 +119,6 @@ external_determine_root_proc(datatype& data, amrex::Vector<int>& act_proc_count)
 template <typename datatype>
 void init_data_op(datatype& data)
 {
-    // Ensure that FAST simulation time is set properly before doing any
-    // initialization tasks. We perform this check here to account for
-    // restart which is only known after reading the checkpoint file.
-    check_fast_sim_time<datatype>(data);
 
     const auto& info = data.info();
     auto& tdata = data.meta();
