@@ -13,7 +13,7 @@ struct TurbineExternalData : public TurbineBaseData
     amrex::Real density{1.0}; 
 
     SolverTurbine ext_data;
-    ::exw_fast::ExtTurbIface<SolverTurbine,SolverData>* ext_ptr{nullptr};
+    ::ext_turb::ExtTurbIface<SolverTurbine,SolverData>* ext_ptr{nullptr};
 
     MPI_Comm tcomm{MPI_COMM_NULL};
 };

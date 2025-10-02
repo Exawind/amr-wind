@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace exw_fast {
+namespace ext_turb {
 
 enum class SimMode : int {
     init = 0, ///< Clean start
@@ -95,6 +95,6 @@ struct ExternalTurbine
 
 };
 
-} // namespace exw_fast
+} // namespace ext_turb
 
 #endif /* EXTERNAL_BASE_TYPES_H */

@@ -6,11 +6,11 @@
 
 #include <string>
 
-namespace exw_fast {
+namespace ext_turb {
 
 /** Representation of a turbine for exchanging data with FAST
  */
-struct FastTurbine : public exw_fast::ExternalTurbine
+struct FastTurbine : public ext_turb::ExternalTurbine
 {
     /** Variables exclusive to OpenFAST turbine type
      */
@@ -90,6 +90,6 @@ struct FastSolverData
     float m_init_sc_inputs_turbine{0.0};
 };
 
-} // namespace exw_fast
+} // namespace ext_turb
 
 #endif /* FAST_TYPES_H */

@@ -48,7 +48,7 @@ TEST_F(FastIfaceTest, fast_init)
     sim().time().parse_parameters();
 
     const int iproc = amrex::ParallelDescriptor::MyProc();
-    ::exw_fast::FastTurbine fi;
+    ::ext_turb::FastTurbine fi;
     fi.tlabel = "T001";
     fi.tid_local = -1;
     fi.tid_global = iproc;
@@ -62,8 +62,8 @@ TEST_F(FastIfaceTest, fast_init)
     fi.start_time = 0.0;
     fi.stop_time = 0.625;
 
-    ::exw_fast::ExtTurbIface<
-        ::exw_fast::FastTurbine, ::exw_fast::FastSolverData>
+    ::ext_turb::ExtTurbIface<
+        ::ext_turb::FastTurbine, ::ext_turb::FastSolverData>
         fast(sim());
     fast.parse_inputs(sim(), "OpenFAST");
     fast.register_turbine(fi);
@@ -103,7 +103,7 @@ TEST_F(FastIfaceTest, fast_replay)
     sim().time().parse_parameters();
 
     const int iproc = amrex::ParallelDescriptor::MyProc();
-    ::exw_fast::FastTurbine fi;
+    ::ext_turb::FastTurbine fi;
     fi.tlabel = "T001";
     fi.tid_local = -1;
     fi.tid_global = iproc;
@@ -116,10 +116,10 @@ TEST_F(FastIfaceTest, fast_replay)
     fi.start_time = 0.125;
     fi.stop_time = 0.625;
     fi.dt_cfd = 0.0625;
-    fi.sim_mode = ::exw_fast::SimMode::replay;
+    fi.sim_mode = ::ext_turb::SimMode::replay;
 
-    ::exw_fast::ExtTurbIface<
-        ::exw_fast::FastTurbine, ::exw_fast::FastSolverData>
+    ::ext_turb::ExtTurbIface<
+        ::ext_turb::FastTurbine, ::ext_turb::FastSolverData>
         fast(sim());
     fast.parse_inputs(sim(), "OpenFAST");
     fast.register_turbine(fi);

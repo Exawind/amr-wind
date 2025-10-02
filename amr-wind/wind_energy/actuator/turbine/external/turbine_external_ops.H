@@ -44,13 +44,13 @@ void read_ops(datatype& data, const utils::ActParser& pp)
     pp.query("openfast_sim_mode", sim_mode);
 
     if (sim_mode == "init") {
-        tf.sim_mode = ::exw_fast::SimMode::init;
+        tf.sim_mode = ::ext_turb::SimMode::init;
         amrex::Print() << "Initializing turbine:" << tf.tlabel << std::endl;
     } else if (sim_mode == "replay") {
-        tf.sim_mode = ::exw_fast::SimMode::replay;
+        tf.sim_mode = ::ext_turb::SimMode::replay;
         amrex::Print() << "Replaying turbine:" << tf.tlabel << std::endl;
     } else if (sim_mode == "restart") {
-        tf.sim_mode = ::exw_fast::SimMode::restart;
+        tf.sim_mode = ::ext_turb::SimMode::restart;
         amrex::Print() << "Restarting turbine:" << tf.tlabel << std::endl;
     } else {
         amrex::Abort("Actuator: Invalid OpenFAST simulation mode: " + sim_mode);
@@ -58,7 +58,7 @@ void read_ops(datatype& data, const utils::ActParser& pp)
 
     // If we are using OpenFAST restart file, require that the user provide
     // the path to the checkpoint file.
-    if (tf.sim_mode == ::exw_fast::SimMode::restart) {
+    if (tf.sim_mode == ::ext_turb::SimMode::restart) {
         pp.get("openfast_restart_file", tf.checkpoint_file);
     } else {
         pp.get("openfast_input_file", tf.input_file);
@@ -111,7 +111,7 @@ external_determine_root_proc(datatype& data, amrex::Vector<int>& act_proc_count)
         auto& ext_mgr = data.sim().ext_solver_manager();
         ext_mgr.create("ExternalTurbineSolver", data.sim());
         tdata.ext_ptr = &(ext_mgr.template get<
-                       ::exw_fast::ExtTurbIface<SolverTurbine, SolverData>>());
+                       ::ext_turb::ExtTurbIface<SolverTurbine, SolverData>>());
         tdata.ext_ptr->register_turbine(tdata.ext_data);
     }
 }

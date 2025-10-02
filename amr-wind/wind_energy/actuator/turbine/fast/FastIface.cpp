@@ -13,7 +13,9 @@
 #include <algorithm>
 #include <cmath>
 
-namespace exw_fast {
+using namespace exw_fast;
+
+namespace ext_turb {
 namespace {
 
 template <typename FType, class... Args>
@@ -88,14 +90,14 @@ void ExtTurbIface<FastTurbine,FastSolverData>::parse_inputs(
     AMREX_ALWAYS_ASSERT(m_stop_time > (cfd_stop - 1.0e-6));
 
     if (m_start_time > 0.0) {
-        m_sim_mode = ::exw_fast::SimMode::replay;
+        m_sim_mode = ::ext_turb::SimMode::replay;
 
         std::string sim_mode{"replay"};
         pp.query("openfast_sim_mode", sim_mode);
         if (sim_mode == "replay") {
-            m_sim_mode = ::exw_fast::SimMode::replay;
+            m_sim_mode = ::ext_turb::SimMode::replay;
         } else if (sim_mode == "restart") {
-            m_sim_mode = ::exw_fast::SimMode::restart;
+            m_sim_mode = ::ext_turb::SimMode::restart;
         } else {
             amrex::Abort(
                 "Invalid simulation mode when start time > 0 provided: " +
@@ -437,4 +439,4 @@ void ExtTurbIface<FastTurbine,FastSolverData>::ext_restart_turbine(FastTurbine& 
 
 template class ExtTurbIface<FastTurbine,FastSolverData>;
 
-} // namespace exw_fast
+} // namespace ext_turb

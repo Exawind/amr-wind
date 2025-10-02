@@ -132,8 +132,8 @@ inline void determine_root_proc<TurbineFast>(
     typename TurbineFast::DataType& data, amrex::Vector<int>& act_proc_count)
 {
     external_determine_root_proc<
-        TurbineFast::DataType, ::exw_fast::FastTurbine,
-        ::exw_fast::FastSolverData>(data, act_proc_count);
+        TurbineFast::DataType, ::ext_turb::FastTurbine,
+        ::ext_turb::FastSolverData>(data, act_proc_count);
 }
 
 template <typename SrcTrait>

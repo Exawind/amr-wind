@@ -14,7 +14,7 @@ namespace amr_wind {
 class CFDSim;
 }
 
-namespace exw_fast {
+namespace ext_turb {
 
 template <typename SolverTurbine, typename SolverData>
 class ExtTurbIface
@@ -79,7 +79,7 @@ protected:
     double m_dt_cfd{0.0};
     double m_start_time{0.0};
     double m_stop_time{-1.0};
-    ::exw_fast::SimMode m_sim_mode{::exw_fast::SimMode::init};
+    ::ext_turb::SimMode m_sim_mode{::ext_turb::SimMode::init};
 
     SolverData m_solver_data;
 
@@ -117,19 +117,19 @@ void ExtTurbIface<SolverTurbine, SolverData>::init_turbine(const int local_id)
     auto& fi = *m_turbine_data[local_id];
 
     switch (fi.sim_mode) {
-    case ::exw_fast::SimMode::init: {
+    case ::ext_turb::SimMode::init: {
         ext_init_turbine(fi);
         prepare_netcdf_file(fi);
         break;
     }
 
-    case ::exw_fast::SimMode::replay: {
+    case ::ext_turb::SimMode::replay: {
         ext_init_turbine(fi);
         ext_replay_turbine(fi);
         break;
     }
 
-    case ::exw_fast::SimMode::restart: {
+    case ::ext_turb::SimMode::restart: {
         ext_restart_turbine(fi);
         prepare_netcdf_file(fi);
         break;
@@ -171,6 +171,6 @@ void ExtTurbIface<SolverTurbine, SolverData>::advance_turbine(
     }
 }
 
-} // namespace exw_fast
+} // namespace ext_turb
 
 #endif /* EXTTURBIFACE_H */
