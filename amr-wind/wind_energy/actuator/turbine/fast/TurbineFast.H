@@ -1,32 +1,13 @@
 #ifndef TURBINEFAST_H
 #define TURBINEFAST_H
 
-#include "amr-wind/wind_energy/actuator/turbine/turbine_types.H"
+#include "amr-wind/wind_energy/actuator/turbine/external/TurbineExternal.H"
 #include "amr-wind/wind_energy/actuator/turbine/fast/fast_types.H"
-#include "amr-wind/wind_energy/actuator/turbine/external/ExtTurbIface.H"
-#include "amr-wind/core/ExtSolver.H"
-
+ 
 namespace amr_wind::actuator {
 
-struct TurbineFastData : public TurbineBaseData
-{
-    amrex::Real density{1.0};
-
-    ::exw_fast::FastTurbine fast_data;
-    ::exw_fast::ExtTurbIface<::exw_fast::FastTurbine,::exw_fast::FastSolverData>* fast{nullptr};
-
-    MPI_Comm tcomm{MPI_COMM_NULL};
-};
-
-struct TurbineFast : public TurbineType
-{
-    using InfoType = TurbineInfo;
-    using GridType = ActGrid;
-    using MetaType = TurbineFastData;
-    using DataType = ActDataHolder<TurbineFast>;
-
-    static std::string identifier() { return "TurbineFast"; }
-};
+using TurbineFastData = TurbineExternalData<::exw_fast::FastTurbine,::exw_fast::FastSolverData>;
+using TurbineFast = TurbineFromExtSolver<::exw_fast::FastTurbine,::exw_fast::FastSolverData>;
 
 } // namespace amr_wind::actuator
 
