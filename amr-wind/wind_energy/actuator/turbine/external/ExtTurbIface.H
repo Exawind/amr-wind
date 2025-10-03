@@ -22,7 +22,7 @@ class ExtTurbIface
           ExtTurbIface<SolverTurbine, SolverData>>
 {
 public:
-    static std::string identifier() { return "ExternalTurbineSolver"; }
+    static std::string identifier() { return ext_id<SolverData>(); }
 
     explicit ExtTurbIface(const ::amr_wind::CFDSim& sim);
 

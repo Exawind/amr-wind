@@ -10,10 +10,10 @@ namespace amr_wind::actuator {
 template <typename SolverTurbine, typename SolverData>
 struct TurbineExternalData : public TurbineBaseData
 {
-    amrex::Real density{1.0}; 
+    amrex::Real density{1.0};
 
     SolverTurbine ext_data;
-    ::ext_turb::ExtTurbIface<SolverTurbine,SolverData>* ext_ptr{nullptr};
+    ::ext_turb::ExtTurbIface<SolverTurbine, SolverData>* ext_ptr{nullptr};
 
     MPI_Comm tcomm{MPI_COMM_NULL};
 };
@@ -23,11 +23,11 @@ struct TurbineFromExtSolver : public TurbineType
 {
     using InfoType = TurbineInfo;
     using GridType = ActGrid;
-    using MetaType = TurbineExternalData<SolverTurbine,SolverData>;
-    using DataType = ActDataHolder<TurbineFromExtSolver<SolverTurbine,SolverData>>;
+    using MetaType = TurbineExternalData<SolverTurbine, SolverData>;
+    using DataType =
+        ActDataHolder<TurbineFromExtSolver<SolverTurbine, SolverData>>;
 
-    // !!!! update how identifier is set !!!!!
-    static std::string identifier() { return "TurbineFromExtSolver"; }
+    static std::string identifier() { return ext_turb::ext_id<SolverTurbine>(); }
 };
 
 } // namespace amr_wind::actuator

@@ -109,7 +109,7 @@ external_determine_root_proc(datatype& data, amrex::Vector<int>& act_proc_count)
     if (info.is_root_proc) {
         auto& tdata = data.meta();
         auto& ext_mgr = data.sim().ext_solver_manager();
-        ext_mgr.create("ExternalTurbineSolver", data.sim());
+        ext_mgr.create(::ext_turb::ext_id<SolverData>(), data.sim());
         tdata.ext_ptr = &(ext_mgr.template get<
                        ::ext_turb::ExtTurbIface<SolverTurbine, SolverData>>());
         tdata.ext_ptr->register_turbine(tdata.ext_data);
