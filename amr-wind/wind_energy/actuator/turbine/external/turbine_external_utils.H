@@ -18,7 +18,7 @@ inline void swap_epsilon(vs::Vector& eps)
     eps.y() = x;
 }
 
-template<typename datatype>
+template <typename datatype>
 void make_component_views(datatype& data)
 {
     auto& grid = data.grid();
@@ -78,7 +78,7 @@ void make_component_views(datatype& data)
     }
 }
 
-template<typename datatype>
+template <typename datatype>
 void init_epsilon(datatype& data)
 {
     auto& tdata = data.meta();
@@ -123,7 +123,7 @@ void init_epsilon(datatype& data)
     }
 }
 
-template<typename datatype>
+template <typename datatype>
 void compute_nacelle_force(datatype& data)
 {
     if (!data.info().is_root_proc) {
@@ -154,7 +154,7 @@ void compute_nacelle_force(datatype& data)
     }
 }
 
-template<typename datatype>
+template <typename datatype>
 void ext_step(datatype& data)
 {
     if (!data.info().is_root_proc) {
@@ -177,7 +177,7 @@ void ext_step(datatype& data)
     compute_nacelle_force<datatype>(data);
 }
 
-template<typename datatype>
+template <typename datatype>
 void scatter_data(datatype& data)
 {
     if (!data.info().actuator_in_proc) {

@@ -24,49 +24,62 @@ struct FastTurbine : public ext_turb::ExternalTurbine
     exw_fast::OfInputType to_cfd;
     exw_fast::OfOutputType from_cfd;
 
-    float* position_at_vel(int dir) const override {
-        return (dir == 0 ? to_cfd.pxVel : (dir == 1 ? to_cfd.pyVel : to_cfd.pzVel));
+    float* position_at_vel(int dir) const override
+    {
+        return (
+            dir == 0 ? to_cfd.pxVel : (dir == 1 ? to_cfd.pyVel : to_cfd.pzVel));
     }
 
-    float* solid_velocity(int dir) const override {
-        return (dir == 0 ? to_cfd.xdotForce : (dir == 1 ? to_cfd.ydotForce : to_cfd.zdotForce));
+    float* solid_velocity(int dir) const override
+    {
+        return (
+            dir == 0 ? to_cfd.xdotForce
+                     : (dir == 1 ? to_cfd.ydotForce : to_cfd.zdotForce));
     }
 
-    float * fluid_velocity(int dir) const override {
+    float* fluid_velocity(int dir) const override
+    {
         return (dir == 0 ? from_cfd.u : (dir == 1 ? from_cfd.v : from_cfd.w));
     }
 
-    float* force(int dir) const override {
+    float* force(int dir) const override
+    {
         return (dir == 0 ? to_cfd.fx : (dir == 1 ? to_cfd.fy : to_cfd.fz));
     }
 
-    float* position_at_force(int dir) const override {
-        return (dir == 0 ? to_cfd.pxForce : (dir == 1 ? to_cfd.pyForce : to_cfd.pzForce));
+    float* position_at_force(int dir) const override
+    {
+        return (
+            dir == 0 ? to_cfd.pxForce
+                     : (dir == 1 ? to_cfd.pyForce : to_cfd.pzForce));
     }
 
-    float* chord_at_force() const override {
-        return to_cfd.forceNodesChord;
+    float* chord_at_force() const override { return to_cfd.forceNodesChord; }
+
+    float* orientation() const override { return to_cfd.pOrientation; }
+
+    int length_fluid_velocity(int dir) const override
+    {
+        return (
+            dir == 0 ? from_cfd.u_Len
+                     : (dir == 1 ? from_cfd.v_Len : from_cfd.w_Len));
     }
 
-    float* orientation() const override {
-        return to_cfd.pOrientation;
+    int length_force(int dir) const override
+    {
+        return (
+            dir == 0 ? to_cfd.fx_Len
+                     : (dir == 1 ? to_cfd.fy_Len : to_cfd.fz_Len));
     }
 
-    int length_fluid_velocity(int dir) const override {
-        return (dir == 0 ? from_cfd.u_Len : (dir == 1 ? from_cfd.v_Len : from_cfd.w_Len));
+    int length_position_at_force(int dir) const override
+    {
+        return (
+            dir == 0 ? to_cfd.pxForce_Len
+                     : (dir == 1 ? to_cfd.pyForce_Len : to_cfd.pzForce_Len));
     }
 
-    int length_force(int dir) const override {
-        return (dir == 0 ? to_cfd.fx_Len : (dir == 1 ? to_cfd.fy_Len : to_cfd.fz_Len));
-    }
-
-    int length_position_at_force(int dir) const override {
-        return (dir == 0 ? to_cfd.pxForce_Len : (dir == 1 ? to_cfd.pyForce_Len : to_cfd.pzForce_Len));
-    }
-
-    int length_orientation() const override {
-        return to_cfd.pOrientation_Len;
-    }
+    int length_orientation() const override { return to_cfd.pOrientation_Len; }
 
 #if OPENFAST_VERSION_MAJOR != 4
     exw_fast::SC_DX_InputType to_sc;

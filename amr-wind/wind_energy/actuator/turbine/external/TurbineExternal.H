@@ -27,7 +27,10 @@ struct TurbineFromExtSolver : public TurbineType
     using DataType =
         ActDataHolder<TurbineFromExtSolver<SolverTurbine, SolverData>>;
 
-    static std::string identifier() { return ext_turb::ext_id<SolverTurbine>(); }
+    static std::string identifier()
+    {
+        return ext_turb::ext_id<SolverTurbine>();
+    }
 };
 
 } // namespace amr_wind::actuator
