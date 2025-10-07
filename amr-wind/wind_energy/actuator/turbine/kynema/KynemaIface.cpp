@@ -13,8 +13,6 @@
 #include <algorithm>
 #include <cmath>
 
-using namespace exw_kynema;
-
 namespace ext_turb {
 
 template <>
