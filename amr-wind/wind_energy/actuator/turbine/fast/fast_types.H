@@ -18,9 +18,6 @@ struct FastTurbine : public ext_turb::ExternalTurbine
     //! Node cluster type for the chord
     int chord_cluster_type{0};
 
-    //! Does FAST need solution0
-    bool is_solution0{true};
-
     exw_fast::OfInputType to_cfd;
     exw_fast::OfOutputType from_cfd;
 

@@ -61,6 +61,8 @@ struct ExternalTurbine
     //! Total number of elements along the tower
     int num_tower_elem;
 
+    bool is_solution0{true};
+
     //! Start time for this turbine
     double start_time{0.0};
 

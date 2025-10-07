@@ -385,6 +385,10 @@ if(AMR_WIND_ENABLE_OPENFAST AND AMR_WIND_OPENFAST_VERSION VERSION_LESS "4")
   endif()
 endif()
 
+if(AMR_WIND_ENABLE_KYNEMA)
+  add_test_re(kynema_alm)
+endif()
+
 if(AMR_WIND_ENABLE_FFT)
   add_test_re(abl_godunov_nofft)
 endif()
