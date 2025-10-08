@@ -13,12 +13,11 @@ struct ReadInputsOp<TurbineKynema, SrcTrait>
     {
         read_ops<TurbineKynema::DataType>(data, pp);
     }
-
 };
 
 template <>
-inline void
-determine_influenced_procs<TurbineKynema>(typename TurbineKynema::DataType& data)
+inline void determine_influenced_procs<TurbineKynema>(
+    typename TurbineKynema::DataType& data)
 {
     external_determine_influenced_procs<TurbineKynema::DataType>(data);
 }
@@ -40,7 +39,6 @@ struct InitDataOp<TurbineKynema, SrcTrait>
         BL_PROFILE("amr-wind::InitDataOp<TurbineKynema>");
         init_data_op<TurbineKynema::DataType>(data);
     }
-
 };
 
 template <typename SrcTrait>

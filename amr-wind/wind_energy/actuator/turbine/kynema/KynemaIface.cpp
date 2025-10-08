@@ -118,10 +118,10 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::prepare_netcdf_file(
     }
 #else
     amrex::ignore_unused(fi);
-    amrex::OutStream()
-        << "WARNING: KynemaIface: NetCDF support was not enabled during compile "
-           "time. KynemaIface cannot support restart."
-        << std::endl;
+    amrex::OutStream() << "WARNING: KynemaIface: NetCDF support was not "
+                          "enabled during compile "
+                          "time. KynemaIface cannot support restart."
+                       << std::endl;
 #endif
 }
 
@@ -164,7 +164,8 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::read_velocity_data(
 #else
     amrex::ignore_unused(fi);
     amrex::Abort(
-        "KynemaIface::read_velocity_data: AMR-Wind was not compiled with NetCDF "
+        "KynemaIface::read_velocity_data: AMR-Wind was not compiled with "
+        "NetCDF "
         "support");
 #endif
 }
@@ -236,7 +237,6 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::ext_replay_turbine(
 {
 
     // Do we even do this???
-    
 }
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)

@@ -6,8 +6,9 @@
 
 namespace amr_wind::actuator {
 
-using TurbineKynema =
-    TurbineFromExtSolver<::ext_turb::KynemaTurbine, ::ext_turb::KynemaSolverData>;
+using TurbineKynema = TurbineFromExtSolver<
+    ::ext_turb::KynemaTurbine,
+    ::ext_turb::KynemaSolverData>;
 
 } // namespace amr_wind::actuator
 
