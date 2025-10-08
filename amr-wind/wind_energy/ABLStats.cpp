@@ -82,10 +82,12 @@ void ABLStats::initialize()
     }
     m_dn = geom.CellSize()[m_normal_dir];
 
-    if (m_out_fmt == "netcdf") {
-        prepare_netcdf_file();
-    } else {
-        prepare_ascii_file();
+    if (m_out_freq > 0) {
+        if (m_out_fmt == "netcdf") {
+            prepare_netcdf_file();
+        } else {
+            prepare_ascii_file();
+        }
     }
 }
 
