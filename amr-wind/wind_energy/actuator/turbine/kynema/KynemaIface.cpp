@@ -14,12 +14,16 @@
 #include <cmath>
 
 namespace exw_kynema {
-void build_turbine(kynema::interfaces::TurbineInterfaceBuilder& builder, const YAML::Node wio, const int n_blade_nodes, const int n_tower_nodes)
+void build_turbine(
+    kynema::interfaces::TurbineInterfaceBuilder& builder,
+    const YAML::Node wio,
+    const int n_blades,
+    const int n_blade_nodes,
+    const int n_tower_nodes)
 {
-    constexpr auto n_blades = 3U;
     auto& turbine_builder = builder.Turbine();
 
-    for (auto blade : std::views::iota(0U, n_blades)) {
+    for (auto blade : std::views::iota(0U, static_cast<uint>(n_blades))) {
         auto& blade_builder = turbine_builder.Blade(blade)
                                   .SetElementOrder(n_blade_nodes - 1)
                                   .PrescribedRootMotion(false);
@@ -202,29 +206,34 @@ void build_turbine(kynema::interfaces::TurbineInterfaceBuilder& builder, const Y
         wio_drivetrain["elastic_properties"]["inertia_tt"]
             .as<std::vector<double>>();
 
-    turbine_builder
-        .SetYawBearingInertiaMatrix(
+    turbine_builder.SetYawBearingInertiaMatrix(
+        std::array{
+            std::array{drivetrain_mass, 0., 0., 0., 0., 0.},
+            std::array{0., drivetrain_mass, 0., 0., 0., 0.},
+            std::array{0., 0., drivetrain_mass, 0., 0., 0.},
             std::array{
-                std::array{drivetrain_mass, 0., 0., 0., 0., 0.},
-                std::array{0., drivetrain_mass, 0., 0., 0., 0.},
-                std::array{0., 0., drivetrain_mass, 0., 0., 0.},
-                std::array{
-                    0., 0., 0., drivetrain_inertia[0], drivetrain_inertia[3],
-                    drivetrain_inertia[4]},
-                std::array{
-                    0., 0., 0., drivetrain_inertia[3], drivetrain_inertia[1],
-                    drivetrain_inertia[5]},
-                std::array{
-                    0., 0., 0., drivetrain_inertia[4], drivetrain_inertia[5],
-                    drivetrain_inertia[2]}})
-        .SetHubInertiaMatrix(
+                0., 0., 0., drivetrain_inertia[0], drivetrain_inertia[3],
+                drivetrain_inertia[4]},
             std::array{
-                std::array{69131., 0., 0., 0., 0., 0.},
-                std::array{0., 69131., 0., 0., 0., 0.},
-                std::array{0., 0., 69131., 0., 0., 0.},
-                std::array{0., 0., 0., 969952. + 1836784., 0., 0.},
-                std::array{0., 0., 0., 0., 1., 0.},
-                std::array{0., 0., 0., 0., 0., 1.}});
+                0., 0., 0., drivetrain_inertia[3], drivetrain_inertia[1],
+                drivetrain_inertia[5]},
+            std::array{
+                0., 0., 0., drivetrain_inertia[4], drivetrain_inertia[5],
+                drivetrain_inertia[2]}});
+
+    // Get hub mass properties from WindIO
+    const auto hub_mass = wio_hub["elastic_properties"]["mass"].as<double>();
+    const auto hub_inertia =
+        wio_hub["elastic_properties"]["inertia"].as<std::vector<double>>();
+
+    // Set the hub inertia matrix in the turbine builder
+    turbine_builder.SetHubInertiaMatrix(
+        {{{hub_mass, 0., 0., 0., 0., 0.},
+          {0., hub_mass, 0., 0., 0., 0.},
+          {0., 0., hub_mass, 0., 0., 0.},
+          {0., 0., 0., hub_inertia[0], hub_inertia[3], hub_inertia[4]},
+          {0., 0., 0., hub_inertia[3], hub_inertia[1], hub_inertia[5]},
+          {0., 0., 0., hub_inertia[4], hub_inertia[5], hub_inertia[2]}}});
 }
 } // namespace exw_kynema
 
@@ -258,23 +267,7 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::allocate_ext_turbines()
 {
     BL_PROFILE("amr-wind::KynemaIface::allocate_turbines");
     int nturbines = static_cast<int>(m_turbine_data.size());
-    //!! Allocate stuff in Kynema
-    constexpr auto n_blade_nodes = 11U;
-    constexpr auto n_tower_nodes = 11U;
-
-    auto builder = kynema::interfaces::TurbineInterfaceBuilder{};
-    builder.Solution()
-        .EnableDynamicSolve()
-        .SetTimeStep(m_dt_cfd)
-        .SetDampingFactor(0.0)
-        .SetGravity({0., 0., -9.81})
-        .SetMaximumNonlinearIterations(6)
-        .SetAbsoluteErrorTolerance(1e-6)
-        .SetRelativeErrorTolerance(1e-4);
-
-    const YAML::Node wio = YAML::LoadFile("interfaces_test_files/IEA-15-240-RWT-aero.yaml");
-
-    exw_kynema::build_turbine(builder,wio,n_blade_nodes,n_tower_nodes);
+    //!! Do things need to be allocated separately in Kynema ??
 
     m_is_initialized = true;
 }
@@ -444,7 +437,20 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::ext_init_turbine(
         amrex::FileSystem::Exists(fi.input_file),
         "KynemaIface: Cannot find Kynema input file: " + fi.input_file);
 
-    // start up turbine
+    auto builder = kynema::interfaces::TurbineInterfaceBuilder{};
+    builder.Solution()
+        .EnableDynamicSolve()
+        .SetTimeStep(fi.dt_cfd)
+        .SetDampingFactor(0.0)
+        .SetGravity({0., 0., -9.81})
+        .SetMaximumNonlinearIterations(6)
+        .SetAbsoluteErrorTolerance(1e-6)
+        .SetRelativeErrorTolerance(1e-4);
+
+    const YAML::Node wio = YAML::LoadFile(fi.input_file);
+
+    exw_kynema::build_turbine(
+        builder, wio, fi.num_blades, fi.num_pts_blade, fi.num_pts_tower);
 
     // Determine the number of substeps for Kynema per CFD timestep
     fi.num_substeps = static_cast<int>(std::floor(fi.dt_cfd / fi.dt_ext));
