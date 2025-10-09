@@ -105,6 +105,8 @@ tagging.T1_level_3_zone.T1_level_3_zone.yaxis = -0.0 151.2 -0.0
 tagging.T1_level_3_zone.T1_level_3_zone.zaxis = 0.0 0.0 151.2       
 
 #---- actuator defs ----
+Actuator.TurbineKynemaLine.kynema_input_file = IEA-15-240-RWT-aero.yaml
+
 Actuator.labels                          = T0 T1               
 Actuator.T0.type                         = TurbineKynemaLine     
 Actuator.T0.base_position                = 0.0 -250.0 -90.0    

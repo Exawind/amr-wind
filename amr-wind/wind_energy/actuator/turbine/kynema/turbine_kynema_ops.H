@@ -15,6 +15,12 @@ struct ReadInputsOp<TurbineKynema, SrcTrait>
 
         auto& tf = data.meta().ext_data;
 
+        tf.dt_ext = -1.;
+        pp.query("dt",tf.dt_ext);
+        if (tf.dt_ext < 0.) {
+            tf.dt_ext = tf.dt_cfd;
+        }
+
         // Only one available for now
         const std::string sim_mode{"init"};
 
