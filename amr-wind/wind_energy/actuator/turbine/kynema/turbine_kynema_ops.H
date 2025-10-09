@@ -12,6 +12,31 @@ struct ReadInputsOp<TurbineKynema, SrcTrait>
     void operator()(TurbineKynema::DataType& data, const utils::ActParser& pp)
     {
         read_ops<TurbineKynema::DataType>(data, pp);
+
+        auto& tf = data.meta().ext_data;
+
+        // Only one available for now
+        const std::string sim_mode{"init"};
+
+        if (sim_mode == "init") {
+            tf.sim_mode = ::ext_turb::SimMode::init;
+            amrex::Print() << "Initializing turbine:" << tf.tlabel << std::endl;
+        } else if (sim_mode == "replay") {
+            tf.sim_mode = ::ext_turb::SimMode::replay;
+            amrex::Print() << "Replaying turbine:" << tf.tlabel << std::endl;
+        } else if (sim_mode == "restart") {
+            tf.sim_mode = ::ext_turb::SimMode::restart;
+            amrex::Print() << "Restarting turbine:" << tf.tlabel << std::endl;
+        } else {
+            amrex::Abort(
+                "Actuator: Invalid Kynema simulation mode: " + sim_mode);
+        }
+
+        if (tf.sim_mode == ::ext_turb::SimMode::restart) {
+            pp.get("kynema_restart_file", tf.checkpoint_file);
+        } else {
+            pp.get("kynema_input_file", tf.input_file);
+        }
     }
 };
 

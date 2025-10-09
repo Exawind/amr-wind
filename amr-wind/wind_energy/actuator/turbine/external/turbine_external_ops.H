@@ -37,33 +37,6 @@ void read_ops(datatype& data, const utils::ActParser& pp)
     tf.num_pts_tower = tdata.num_pts_tower;
     tf.dt_cfd = data.sim().time().delta_t();
 
-    pp.get("openfast_start_time", tf.start_time);
-    pp.get("openfast_stop_time", tf.stop_time);
-
-    std::string sim_mode = (tf.start_time > 0.0) ? "restart" : "init";
-    pp.query("openfast_sim_mode", sim_mode);
-
-    if (sim_mode == "init") {
-        tf.sim_mode = ::ext_turb::SimMode::init;
-        amrex::Print() << "Initializing turbine:" << tf.tlabel << std::endl;
-    } else if (sim_mode == "replay") {
-        tf.sim_mode = ::ext_turb::SimMode::replay;
-        amrex::Print() << "Replaying turbine:" << tf.tlabel << std::endl;
-    } else if (sim_mode == "restart") {
-        tf.sim_mode = ::ext_turb::SimMode::restart;
-        amrex::Print() << "Restarting turbine:" << tf.tlabel << std::endl;
-    } else {
-        amrex::Abort("Actuator: Invalid OpenFAST simulation mode: " + sim_mode);
-    }
-
-    // If we are using OpenFAST restart file, require that the user provide
-    // the path to the checkpoint file.
-    if (tf.sim_mode == ::ext_turb::SimMode::restart) {
-        pp.get("openfast_restart_file", tf.checkpoint_file);
-    } else {
-        pp.get("openfast_input_file", tf.input_file);
-    }
-
     const auto& time = data.sim().time();
     tf.chkpt_interval = time.chkpt_interval();
 }
