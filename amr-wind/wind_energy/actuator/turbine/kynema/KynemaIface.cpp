@@ -321,6 +321,7 @@ ExtTurbIface<KynemaTurbine, KynemaSolverData>::~ExtTurbIface()
     //! Do deallocation if necessary
 }
 
+// !! This doesn't get used by the actual code, just by unit tests !! //
 template <>
 void ExtTurbIface<KynemaTurbine, KynemaSolverData>::parse_inputs(
     const amr_wind::CFDSim& sim, const std::string& inp_name)
