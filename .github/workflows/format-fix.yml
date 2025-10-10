@@ -4,16 +4,15 @@ on:
   issue_comment:
     types: [created]
 
-permissions:
-  contents: write
-  pull-requests: read
-
 jobs:
   Format:
     if: |
       github.event.issue.pull_request != null &&
       contains(github.event.comment.body, '/style fix')
     runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
     - name: Get PR info
       id: pr
