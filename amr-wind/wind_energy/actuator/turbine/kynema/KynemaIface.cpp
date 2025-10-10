@@ -527,8 +527,6 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::ext_init_turbine(
 
     const YAML::Node wio = YAML::LoadFile(fi.input_file);
 
-    std::cout << fi.dt_ext << " before build_turbine\n";
-
     exw_kynema::build_turbine(
         builder, wio, fi.num_blades, fi.num_blade_elem, fi.num_pts_tower);
 
@@ -537,13 +535,19 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::ext_init_turbine(
     amrex::Vector<amrex::Real> aero_pts_blade{};
     aero_pts_blade.resize(fi.num_pts_blade);
     // Put loop here to create normalized spanwise positions
+    const bool uniform_distr{true};
+    if (uniform_distr) {
+        const amrex::Real dr = 1.0 / static_cast<amrex::Real>(fi.num_pts_blade);
+        //!! Is this the way openfast does it? No points exactly at the root or tip
+        aero_pts_blade[0] = 0.5 * dr;
+        for (int ir = 1; ir < fi.num_pts_blade; ++ir) {
+            aero_pts_blade[ir] = (static_cast<amrex::Real>(ir) + 0.5) * dr;
+        }
+    }
 
     exw_kynema::build_aero(builder, wio, aero_pts_blade);
 
-    std::cout << "before .Build()\n";
-    auto turbine_interface = builder.Build();
-    std::cout << "before interface pointer\n";
-    fi.interface = &turbine_interface;
+    fi.interface = std::make_unique<kynema::interfaces::TurbineInterface>(builder.Build());
 
     // Determine the number of substeps for Kynema per CFD timestep
     fi.num_substeps = static_cast<int>(std::floor(fi.dt_cfd / fi.dt_ext));

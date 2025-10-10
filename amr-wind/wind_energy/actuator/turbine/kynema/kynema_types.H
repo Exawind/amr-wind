@@ -14,7 +14,7 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
 {
     /** Variables exclusive to Kynema turbine type
      */
-    kynema::interfaces::TurbineInterface* interface;
+    std::unique_ptr<kynema::interfaces::TurbineInterface> interface;
 
     /** Data access functions needed for every turbine type */
 
@@ -32,11 +32,24 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
 
     float* orientation() const override { return nullptr; }
 
-    int length_fluid_velocity(int dir) const override { return 0; }
+    int length_fluid_velocity(int dir) const override {
+        return interface->num_aero_sections();
+    }
 
-    int length_force(int dir) const override { return 0; }
+    int length_force(int dir) const override
+    {
+        int n_nodes{0};
+        for (int n = 0; n < interface->Turbine().blades.size(); ++n) {
+            n_nodes += interface->Turbine().blades[n].nodes.size();
+        }
+        n_nodes += interface->Turbine().tower.nodes.size();
+        return n_nodes;
+    }
 
-    int length_position_at_force(int dir) const override { return 0; }
+    int length_position_at_force(int dir) const override
+    {
+        return length_force(dir);
+    }
 
     int length_orientation() const override { return 0; }
 };
