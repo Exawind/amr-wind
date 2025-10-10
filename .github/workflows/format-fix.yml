@@ -1,4 +1,4 @@
-name: Format Fix in a PR
+name: Format with comment
 
 on:
   issue_comment:
@@ -6,9 +6,9 @@ on:
 
 jobs:
   Format:
-    if: |
-      github.event.issue.pull_request != null &&
-      contains(github.event.comment.body, '/style fix')
+    if: >
+      github.event.issue.pull_request &&
+      contains(github.event.comment.body, '/format')
     runs-on: ubuntu-24.04
     permissions:
       contents: write
@@ -27,7 +27,7 @@ jobs:
         repository: ${{ github.event.issue.pull_request.head.repo.full_name }}
         token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Format
+    - name: Run formatter
       uses: DoozyX/clang-format-lint-action@v0.20
       with:
         source: './amr-wind ./unit_tests ./tools/utilities'
