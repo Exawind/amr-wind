@@ -13,7 +13,9 @@ int main(int argc, char* argv[])
 
     if (argc < 2) {
         // Print usage and exit with error code if no input file was provided.
-        amr_wind::io::print_usage(MPI_COMM_WORLD, std::cout);
+        amr_wind::io::print_usage(MPI_COMM_WORLD,
+
+                std::cout);
         amr_wind::io::print_error(
             MPI_COMM_WORLD, "No input file provided. Exiting!!");
         return 1;

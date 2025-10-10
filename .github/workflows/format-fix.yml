@@ -1,0 +1,49 @@
+name: Format Fix in a PR
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  Format:
+    if: |
+      github.event.issue.pull_request != null &&
+      contains(github.event.comment.body, '@style fix')
+    runs-on: ubuntu-24.04
+    steps:
+    - name: Get PR info
+      id: pr
+      uses: actions-ecosystem/action-get-merged-pull-request@v1
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Checkout PR branch
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.issue.pull_request.head.ref }}
+        repository: ${{ github.event.issue.pull_request.head.repo.full_name }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Format
+      uses: DoozyX/clang-format-lint-action@v0.20
+      with:
+        source: './amr-wind ./unit_tests ./tools/utilities'
+        exclude: '.'
+        extensions: 'H,h,cpp'
+        clangFormatVersion: 20
+
+    - name: Commit and push
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git add .
+        if git diff --cached --quiet; then
+          echo "No formatting changes."
+        else
+          git commit -m "style: apply clang-format"
+          git push
+        fi
