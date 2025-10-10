@@ -49,7 +49,7 @@ public:
 
     void get_hub_stats(const int local_id);
 
-    void do_turbine_step(int& tid);
+    void do_turbine_step(SolverTurbine& fi);
 
     void write_turbine_checkpoint(int& tid);
 
@@ -162,7 +162,7 @@ void ExtTurbIface<SolverTurbine, SolverData>::advance_turbine(
 
     write_velocity_data(fi);
     for (int i = 0; i < fi.num_substeps; ++i, ++fi.time_index) {
-        do_turbine_step(fi.tid_local);
+        do_turbine_step(fi);
     }
 
     if (fi.chkpt_interval > 0 &&

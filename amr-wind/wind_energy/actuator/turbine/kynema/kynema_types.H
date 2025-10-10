@@ -14,6 +14,9 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
 {
     /** Variables exclusive to Kynema turbine type
      */
+    kynema::interfaces::TurbineInterface* interface;
+
+    /** Data access functions needed for every turbine type */
 
     float* position_at_vel(int dir) const override { return nullptr; }
 

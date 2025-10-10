@@ -21,6 +21,9 @@ struct ReadInputsOp<TurbineKynema, SrcTrait>
             tf.dt_ext = tf.dt_cfd;
         }
 
+        // Number of beam elements read in from file
+        pp.get("num_struct_nodes_blade",tf.num_blade_elem);
+
         // Only one available for now
         const std::string sim_mode{"init"};
 
