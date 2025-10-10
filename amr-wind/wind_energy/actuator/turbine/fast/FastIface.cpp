@@ -264,7 +264,7 @@ void ExtTurbIface<FastTurbine, FastSolverData>::read_velocity_data(
 template <>
 void ExtTurbIface<FastTurbine, FastSolverData>::do_turbine_step(FastTurbine& fi)
 {
-    fast_func(FAST_Step, &fi.tid);
+    fast_func(FAST_Step, &fi.tid_local);
 }
 
 template <>
