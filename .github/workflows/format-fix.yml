@@ -12,7 +12,7 @@ jobs:
   Format:
     if: |
       github.event.issue.pull_request != null &&
-      contains(github.event.comment.body, 'style fix')
+      contains(github.event.comment.body, '/style fix')
     runs-on: ubuntu-24.04
     steps:
     - name: Get PR info
