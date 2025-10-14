@@ -127,8 +127,9 @@ void Kosovic<Transport>::update_turbulent_viscosity(
                          : x3;
                 const amrex::Real fmu = std::exp(-x3 / locSwitchLoc);
                 const amrex::Real phiM =
-                    (monin_obukhov_length < 0) ? std::pow(1 - 16 * x3 / monin_obukhov_length, -0.25)
-                                 : 1 + 5 * x3 / monin_obukhov_length;
+                    (monin_obukhov_length < 0)
+                        ? std::pow(1 - 16 * x3 / monin_obukhov_length, -0.25)
+                        : 1 + 5 * x3 / monin_obukhov_length;
                 const amrex::Real wall_distance =
                     (has_terrain)
                         ? std::max(
@@ -157,8 +158,7 @@ void Kosovic<Transport>::update_turbulent_viscosity(
                 const amrex::Real ustar =
                     m * kappa /
                     (std::log(1.5 * dz / local_z0) - non_neutral_neighbour);
-                const amrex::Real mut_loglaw =
-                    ustar * kappa * 0.5 * dz / phiM;
+                const amrex::Real mut_loglaw = ustar * kappa * 0.5 * dz / phiM;
                 const amrex::Real drag =
                     (has_terrain) ? drag_arrs[nbx](i, j, k, 0) : 0.0;
                 mu_arrs[nbx](i, j, k) =
