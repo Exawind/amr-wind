@@ -26,6 +26,10 @@ Kosovic<Transport>::Kosovic(CFDSim& sim)
     m_Cs = std::sqrt(8 * (1 + m_Cb) / (27 * M_PI * M_PI));
     m_C1 = std::sqrt(960) * m_Cb / (7 * (1 + m_Cb) * m_Sk);
     m_C2 = m_C1;
+    if (pp.contains("refMOL")) {
+        amrex::Abort(
+            "refMOL is deprecated. Use ABL::monin_obukhov_length instead.");
+    }
     pp.query("surfaceRANS", m_surfaceRANS);
     if (m_surfaceRANS) {
         m_surfaceFactor = 1;
