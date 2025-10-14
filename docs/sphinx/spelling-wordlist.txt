@@ -97,6 +97,7 @@ namespace
 namespaces
 netcdf
 normals
+numpy
 ok
 openfast
 overset
