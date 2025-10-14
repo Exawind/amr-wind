@@ -58,7 +58,6 @@ private:
     amrex::Real m_surfaceRANSExp{2};
     amrex::Real m_LESTurnOff{1e15};
     bool m_writeTerms{false};
-    amrex::Real m_refMOL{constants::LOW_NUM};
     const Field& m_vel;
     const Field& m_rho;
     Field& m_Nij;
