@@ -40,6 +40,13 @@ Kosovic<Transport>::Kosovic(CFDSim& sim)
         this->m_sim.io_manager().register_io_var("divNij");
     }
     pp.query("LESOff", m_LESTurnOff);
+    amrex::ParmParse pp_abl("ABL");
+    pp_abl.query("wall_het_model", m_wall_het_model);
+    pp_abl.query("monin_obukhov_length", m_monin_obukhov_length);
+    pp_abl.query("kappa", m_kappa);
+    pp_abl.query("mo_gamma_m", m_gamma_m);
+    pp_abl.query("mo_beta_m", m_beta_m);
+    pp_abl.query("surface_roughness_z0", m_surface_roughness_z0);
 }
 template <typename Transport>
 void Kosovic<Transport>::update_turbulent_viscosity(
@@ -59,6 +66,13 @@ void Kosovic<Transport>::update_turbulent_viscosity(
     const auto* m_terrain_blank =
         has_terrain ? &this->m_sim.repo().get_int_field("terrain_blank")
                     : nullptr;
+    const auto* m_terrain_drag =
+        has_terrain ? &this->m_sim.repo().get_int_field("terrain_drag")
+                    : nullptr;
+    const auto* m_terrain_height =
+        has_terrain ? &this->m_sim.repo().get_field("terrain_height") : nullptr;
+    const auto* m_terrain_z0 =
+        has_terrain ? &this->m_sim.repo().get_field("terrainz0") : nullptr;
     // Populate strainrate into the turbulent viscosity arrays to avoid creating
     // a temporary buffer
     fvm::strainrate(mu_turb, vel);
@@ -83,21 +97,46 @@ void Kosovic<Transport>::update_turbulent_viscosity(
         const amrex::Real locC1 = m_C1;
         const auto& mu_arrs = mu_turb(lev).arrays();
         const auto& rho_arrs = den(lev).const_arrays();
+        const auto& vel_arrs = vel(lev).const_arrays();
         const auto& divNij_arrs = (this->m_divNij)(lev).arrays();
         const auto& blank_arrs = has_terrain
                                      ? (*m_terrain_blank)(lev).const_arrays()
                                      : amrex::MultiArray4<const int>();
+        const auto& drag_arrs = has_terrain
+                                    ? (*m_terrain_drag)(lev).const_arrays()
+                                    : amrex::MultiArray4<const int>();
+        const auto& height_arrs = has_terrain
+                                      ? (*m_terrain_height)(lev).const_arrays()
+                                      : amrex::MultiArray4<const double>();
+        const auto& z0_arrs = has_terrain ? (*m_terrain_z0)(lev).const_arrays()
+                                          : amrex::MultiArray4<const double>();
+        const amrex::Real non_neutral_neighbour =
+            (m_wall_het_model == "mol")
+                ? MOData::calc_psi_m(
+                      1.5 * dx[2] / m_monin_obukhov_length, m_beta_m, m_gamma_m)
+                : 0.0;
+        const amrex::Real monin_obukhov_length = m_monin_obukhov_length;
+        const amrex::Real kappa = m_kappa;
+        const amrex::Real surface_roughness_z0 = m_surface_roughness_z0;
         amrex::ParallelFor(
             mu_turb(lev),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 const amrex::Real rho = rho_arrs[nbx](i, j, k);
-                const amrex::Real x3 = problo[2] + (k + 0.5) * dz;
+                amrex::Real x3 = problo[2] + (k + 0.5) * dz;
+                x3 = (has_terrain)
+                         ? std::max(x3 - height_arrs[nbx](i, j, k, 0), 0.5 * dz)
+                         : x3;
                 const amrex::Real fmu = std::exp(-x3 / locSwitchLoc);
                 const amrex::Real phiM =
                     (locMOL < 0) ? std::pow(1 - 16 * x3 / locMOL, -0.25)
                                  : 1 + 5 * x3 / locMOL;
+                const amrex::Real wall_distance =
+                    (has_terrain)
+                        ? std::max(
+                              (k + 1) * dz - height_arrs[nbx](i, j, k, 0), dz)
+                        : (k + 1) * dz;
                 const amrex::Real ransL =
-                    std::pow(0.41 * (k + 1) * dz / phiM, 2);
+                    std::pow(0.41 * wall_distance / phiM, 2);
                 amrex::Real turnOff = std::exp(-x3 / locLESTurnOff);
                 amrex::Real viscosityScale =
                     locSurfaceFactor *
@@ -108,6 +147,24 @@ void Kosovic<Transport>::update_turbulent_viscosity(
                     (has_terrain) ? 1 - blank_arrs[nbx](i, j, k, 0) : 1.0;
                 mu_arrs[nbx](i, j, k) *=
                     rho * viscosityScale * turnOff * blankTerrain;
+                // log-law
+                const amrex::Real ux = vel_arrs[nbx](i, j, k + 1, 0);
+                const amrex::Real uy = vel_arrs[nbx](i, j, k + 1, 1);
+                const amrex::Real m = std::sqrt(ux * ux + uy * uy);
+                const amrex::Real local_z0 =
+                    (has_terrain) ? std::max(z0_arrs[nbx](i, j, k, 0), 1e-4)
+                                  : surface_roughness_z0;
+                // ustar from neighbor cell above
+                const amrex::Real ustar =
+                    m * kappa /
+                    (std::log(1.5 * dz / local_z0) - non_neutral_neighbour);
+                const amrex::Real mut_loglaw =
+                    ustar * kappa * 0.5 * dz /
+                    MODData::calc_phi_m(0.5 * dz, local_z0, obukhov_len);
+                const amrex::Real drag =
+                    (has_terrain) ? drag_arrs[nbx](i, j, k, 0) : 0.0;
+                mu_arrs[nbx](i, j, k) =
+                    mu_arrs[nbx](i, j, k) * (1 - drag) + drag * mut_loglaw;
                 amrex::Real stressScale =
                     locSurfaceFactor *
                         (std::pow(1 - fmu, locSurfaceRANSExp) * smag_factor *

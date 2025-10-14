@@ -58,6 +58,12 @@ struct MOData
         return std::log(z / z0) - calc_psi_m(z / obukhov_len);
     }
 
+    amrex::Real
+    calc_phi_m(amrex::Real z, amrex::Real z0, amrex::Real obukhov_len) const
+    {
+        return std::log(z / z0) - calc_psi_m(z / obukhov_len);
+    }
+
     amrex::Real phi_h() const
     {
         return std::log(zref / z0t) - calc_psi_h(zref / obukhov_len);
