@@ -57,16 +57,18 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
                                        .chord[node_index(n)];
                 }
                 buffer_pv[idx] = (float)interface->Aerodynamics()
-                                   .bodies[body_index(n)]
-                                   .node_u[node_index(n)][dir];
+                                     .bodies[body_index(n)]
+                                     .node_u[node_index(n)][dir];
                 buffer_sv[idx] = (float)interface->Aerodynamics()
-                                   .bodies[body_index(n)]
-                                   .node_v[node_index(n)][dir];
-                // Fluid velocity (fv) is not populated here, it comes from the CFD solver
+                                     .bodies[body_index(n)]
+                                     .node_v[node_index(n)][dir];
+                // Fluid velocity (fv) is not populated here, it comes from the
+                // CFD solver
                 buffer_f[idx] = (float)interface->Aerodynamics()
-                                   .bodies[body_index(n)]
-                                   .node_f[node_index(n)][dir];
-                // Is there a distinction between the position of forces and velocities?
+                                    .bodies[body_index(n)]
+                                    .node_f[node_index(n)][dir];
+                // Is there a distinction between the position of forces and
+                // velocities?
                 buffer_pf[idx] = buffer_pv[idx];
                 ++idx;
             }

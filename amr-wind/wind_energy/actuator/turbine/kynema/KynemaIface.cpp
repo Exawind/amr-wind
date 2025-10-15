@@ -497,6 +497,8 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::do_turbine_step(
 {
     // individual turbine step
     fi.interface->Step();
+    // fill buffers with latest data
+    fi.populate_buffers();
 }
 
 template <>
@@ -539,7 +541,7 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::ext_init_turbine(
     const bool uniform_distr{true};
     if (uniform_distr) {
         const amrex::Real dr = 1.0 / static_cast<amrex::Real>(fi.num_pts_blade);
-        //!! Is this the way openfast does it? No points exactly at the root or tip
+        // Is this the way openfast does it? No points at the root or tip
         aero_pts_blade[0] = 0.5 * dr;
         for (int ir = 1; ir < fi.num_pts_blade; ++ir) {
             aero_pts_blade[ir] = (static_cast<amrex::Real>(ir) + 0.5) * dr;
@@ -548,7 +550,8 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::ext_init_turbine(
 
     exw_kynema::build_aero(builder, wio, aero_pts_blade);
 
-    fi.interface = std::make_unique<kynema::interfaces::TurbineInterface>(builder.Build());
+    fi.interface =
+        std::make_unique<kynema::interfaces::TurbineInterface>(builder.Build());
 
     // Determine the number of substeps for Kynema per CFD timestep
     fi.num_substeps = static_cast<int>(std::floor(fi.dt_cfd / fi.dt_ext));
@@ -563,6 +566,8 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::ext_init_turbine(
             "KynemaIFace: Kynema timestep is not an integral "
             "multiple of CFD timestep");
     }
+
+    fi.allocate_buffers();
 }
 
 // cppcheck-suppress constParameterReference
