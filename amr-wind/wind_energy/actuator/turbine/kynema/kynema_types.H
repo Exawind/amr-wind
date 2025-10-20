@@ -26,17 +26,17 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
         buffer_sv.resize(
             length_fluid_velocity(0) + length_fluid_velocity(1) +
             length_fluid_velocity(2));
-        ;
         buffer_fv.resize(
             length_fluid_velocity(0) + length_fluid_velocity(1) +
             length_fluid_velocity(2));
-        ;
+        buffer_fv_2idx.resize(length_fluid_velocity(0));
+
         buffer_f.resize(length_force(0) + length_force(1) + length_force(2));
-        ;
         buffer_pf.resize(
             length_position_at_force(0) + length_position_at_force(1) +
             length_position_at_force(2));
         buffer_ori.resize(length_orientation());
+
         ptr_cf = &buffer_cf[0];
         ptr_pv = &buffer_pv[0];
         ptr_sv = &buffer_sv[0];
@@ -53,11 +53,11 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
         for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
             for (int n = 0; n < length_fluid_velocity(0); ++n) {
                 buffer_pv[idx_v] = (float)interface->Aerodynamics()
-                                     .bodies[body_v_index(n)]
-                                     .node_u[node_v_index(n)][dir];
+                                       .bodies[body_v_index(n)]
+                                       .node_u[node_v_index(n)][dir];
                 buffer_sv[idx_v] = (float)interface->Aerodynamics()
-                                     .bodies[body_v_index(n)]
-                                     .node_v[node_v_index(n)][dir];
+                                       .bodies[body_v_index(n)]
+                                       .node_v[node_v_index(n)][dir];
                 // Fluid velocity (fv) is not populated here, it comes from the
                 // CFD solver. Need to add step to pass it from buffer to Kynema
                 ++idx_v;
@@ -69,8 +69,8 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
                                        .chord[node_f_index(n)];
                 }
                 buffer_f[idx_f] = (float)interface->Aerodynamics()
-                                    .bodies[body_f_index(n)]
-                                    .node_f[node_f_index(n)][dir];
+                                      .bodies[body_f_index(n)]
+                                      .loads[node_f_index(n)][dir];
                 // Is there a distinction between the position of forces and
                 // velocities?
                 buffer_pf[idx_f] = buffer_pv[idx_f];
@@ -78,18 +78,40 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
             }
         }
         // Orientation stores a 3x3 tensor (9 elements) for every point
+        std::array<float, 4> q;
         for (int n = 0; n < length_force(0); ++n) {
-            // put some conversion from node_u to orientation
+            // convert quaternions to rotation matrix
+            for (int iq = 0; iq < 4; ++iq) {
+                q[iq] = (float)interface->Aerodynamics()
+                            .bodies[body_f_index(n)]
+                            .qqr_motion_map[node_f_index(n)][iq];
+            }
             const int idx = n * 9;
-            buffer_ori[idx + 0] = 0.;
-            buffer_ori[idx + 1] = 0.;
-            buffer_ori[idx + 2] = 0.;
-            buffer_ori[idx + 3] = 0.;
-            buffer_ori[idx + 4] = 0.;
-            buffer_ori[idx + 5] = 0.;
-            buffer_ori[idx + 6] = 0.;
-            buffer_ori[idx + 7] = 0.;
-            buffer_ori[idx + 8] = 0.;
+            buffer_ori[idx + 0] =
+                q[0] * q[0] + q[1] * q[1] - q[2] * q[2] - q[3] * q[3];
+            buffer_ori[idx + 1] = 2. * (q[1] * q[2] - q[0] * q[3]);
+            buffer_ori[idx + 2] = 2. * (q[1] * q[3] + q[0] * q[2]);
+            buffer_ori[idx + 3] = 2. * (q[1] * q[2] + q[0] * q[3]);
+            buffer_ori[idx + 4] =
+                (q[0] * q[0] - q[1] * q[1] + q[2] * q[2] - q[3] * q[3]);
+            buffer_ori[idx + 5] = 2. * (q[2] * q[3] - q[0] * q[1]);
+            buffer_ori[idx + 6] = 2. * (q[1] * q[3] - q[0] * q[2]);
+            buffer_ori[idx + 7] = 2. * (q[2] * q[3] + q[0] * q[1]);
+            buffer_ori[idx + 8] =
+                (q[0] * q[0] - q[1] * q[1] - q[2] * q[2] + q[3] * q[3]);
+        }
+    }
+
+    void pass_fluid_velocity_directly()
+    {
+        int idx_v = 0;
+        for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
+            for (int n = 0; n < length_fluid_velocity(0); ++n) {
+                interface->Aerodynamics()
+                    .bodies[body_v_index(n)]
+                    .v_inflow[node_v_index(n)][dir] = buffer_pv[idx_v];
+                ++idx_v;
+            }
         }
     }
 
@@ -215,6 +237,8 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
         return length_force(0) * AMREX_SPACEDIM * AMREX_SPACEDIM;
     }
 
+    double fluid_density{1.};
+
     std::vector<float> buffer_cf;
     std::vector<float> buffer_pv;
     std::vector<float> buffer_sv;
@@ -229,6 +253,8 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
     float* ptr_f{nullptr};
     float* ptr_pf{nullptr};
     float* ptr_ori{nullptr};
+
+    std::vector<std::array<double, 3>> buffer_fv_2idx;
 };
 
 struct KynemaSolverData

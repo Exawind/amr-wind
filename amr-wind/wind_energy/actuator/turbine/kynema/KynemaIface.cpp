@@ -495,6 +495,11 @@ template <>
 void ExtTurbIface<KynemaTurbine, KynemaSolverData>::do_turbine_step(
     KynemaTurbine& fi)
 {
+    fi.interface->Aerodynamics().CalculateMotion(fi.interface->GetHostState());
+    // copy fluid velocity to turbine solver (set inflow)
+    fi.pass_fluid_velocity_directly();
+    fi.interface->Aerodynamics().CalculateAerodynamicLoads(fi.fluid_density);
+    fi.interface->Aerodynamics().CalculateNodalLoads();
     // individual turbine step
     fi.interface->Step();
     // fill buffers with latest data

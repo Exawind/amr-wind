@@ -14,6 +14,7 @@ struct ReadInputsOp<TurbineKynema, SrcTrait>
         read_ops<TurbineKynema::DataType>(data, pp);
 
         auto& tf = data.meta().ext_data;
+        tf.fluid_density = data.meta().density;
 
         tf.dt_ext = -1.;
         pp.query("dt", tf.dt_ext);
