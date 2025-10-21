@@ -358,7 +358,16 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::init_solution(
     AMREX_ALWAYS_ASSERT(m_is_initialized);
 
     auto& fi = *m_turbine_data[local_id];
-    //!! Set up initial solution
+    
+    fi.interface->Aerodynamics().CalculateMotion(fi.interface->GetHostState());
+    // copy fluid velocity to turbine solver (set inflow)
+    fi.pass_fluid_velocity_directly();
+    fi.interface->Aerodynamics().CalculateAerodynamicLoads(fi.fluid_density);
+    fi.interface->Aerodynamics().CalculateNodalLoads();
+    // fill buffers with latest data
+    fi.populate_buffers();
+
+    fi.is_solution0 = false;
 }
 
 template <>
@@ -573,6 +582,7 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::ext_init_turbine(
     }
 
     fi.allocate_buffers();
+    fi.populate_buffers();
 }
 
 // cppcheck-suppress constParameterReference
