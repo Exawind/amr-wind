@@ -71,9 +71,9 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
                 buffer_f[idx_f] = (float)interface->Aerodynamics()
                                       .bodies[body_f_index(n)]
                                       .loads[node_f_index(n)][dir];
-                // Is there a distinction between the position of forces and
-                // velocities?
-                buffer_pf[idx_f] = buffer_pv[idx_f];
+                buffer_pf[idx_f] = (float)interface->Aerodynamics()
+                                      .bodies[body_f_index(n)]
+                                      .x_motion[node_f_index(n)][dir];
                 ++idx_f;
             }
         }
