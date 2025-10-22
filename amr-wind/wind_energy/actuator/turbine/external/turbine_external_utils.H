@@ -174,7 +174,7 @@ void ext_step(datatype& data)
     // Populate nacelle force into the OpenFAST data structure so that it
     // gets broadcasted to all influenced processes in subsequent scattering
     // of data.
-    compute_nacelle_force<datatype>(data);
+    // compute_nacelle_force<datatype>(data);
 }
 
 template <typename datatype>
