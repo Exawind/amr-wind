@@ -65,10 +65,9 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
                                        .bodies[body_f_index(n)]
                                        .x_motion[node_f_index(n)][dir];
                 buffer_pv[idx_f] = buffer_pf[idx_f];
-                buffer_sv[idx_f] =
-                    (float)interface->Aerodynamics()
-                        .bodies[body_f_index(n)]
-                        .v_motion[node_f_index(n)][dir];
+                buffer_sv[idx_f] = (float)interface->Aerodynamics()
+                                       .bodies[body_f_index(n)]
+                                       .v_motion[node_f_index(n)][dir];
                 ++idx_f;
             }
         }

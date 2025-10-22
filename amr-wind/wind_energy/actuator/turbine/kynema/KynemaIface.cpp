@@ -236,10 +236,8 @@ void build_turbine(
           {0., 0., 0., hub_inertia[4], hub_inertia[5], hub_inertia[2]}}});
 }
 
-void build_aero(
-    kynema::interfaces::TurbineInterfaceBuilder& builder,
-    const YAML::Node wio,
-    const amrex::Vector<amrex::Real> vel_pt_distr)
+int build_aero(
+    kynema::interfaces::TurbineInterfaceBuilder& builder, const YAML::Node wio)
 {
     auto& aero_builder = builder.Aerodynamics()
                              .EnableAero()
@@ -250,12 +248,6 @@ void build_aero(
     auto aero_sections =
         std::vector<kynema::interfaces::components::AerodynamicSection>{};
     auto id = 0UL;
-    const auto max_id = airfoil_io.size() - 1UL;
-    long id_apos = 0;
-    long id_apos_end = id_apos;
-    // If there is another aero point before the next spanwise position,
-    // duplicate the aero section If there is no aero point in the current aero
-    // section, skip it
     for (const auto& af : airfoil_io) {
         const auto s = af["spanwise_position"].as<double>();
         const auto chord = af["chord"].as<double>();
@@ -274,42 +266,15 @@ void build_aero(
                             .as<std::vector<double>>();
         const auto cm = af["polars"][0]["re_sets"][0]["cm"]["values"]
                             .as<std::vector<double>>();
-
-        auto point_between = false;
-        const bool point_at_end = (id == max_id);
-        if (!point_at_end) {
-            const auto s_next =
-                airfoil_io[id + 1]["spanwise_position"].as<double>();
-            point_between =
-                (vel_pt_distr[id_apos] > s && vel_pt_distr[id_apos] <= s_next);
-            if (point_between) {
-                // Check for more points in between
-                id_apos_end = id_apos;
-                for (int iae = id_apos + 1; iae < vel_pt_distr.size(); ++iae) {
-                    if (vel_pt_distr[iae] <= s_next) {
-                        id_apos_end = iae;
-                    } else {
-                        break;
-                    }
-                }
-            }
-        } else {
-            // If at end, all remaining points belong to this aerodynamic
-            // section
-            id_apos_end = vel_pt_distr.size() - 1;
-        }
-
-        if (point_between || point_at_end) {
-            for (id_apos; id_apos <= id_apos_end; ++id_apos) {
-                aero_sections.emplace_back(
-                    id_apos, s, chord, section_offset_x, section_offset_y,
-                    aerodynamic_center, twist, aoa, cl, cd, cm);
-            }
-        }
+        aero_sections.emplace_back(
+            id, s, chord, section_offset_x, section_offset_y,
+            aerodynamic_center, twist, aoa, cl, cd, cm);
         ++id;
     }
 
     aero_builder.SetAirfoilSections(0UL, aero_sections);
+
+    return (int)aero_sections.size();
 }
 
 void update_turbine(::ext_turb::KynemaTurbine& fi, bool advance)
@@ -548,6 +513,7 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::ext_init_turbine(
     exw_kynema::build_turbine(
         builder, wio, fi.num_blades, fi.num_blade_elem, fi.num_pts_tower);
 
+    /*
     // Create distribution of points from base of blade to end, normalized from
     // 0 to 1
     amrex::Vector<amrex::Real> aero_pts_blade{};
@@ -562,8 +528,11 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::ext_init_turbine(
             aero_pts_blade[ir] = (static_cast<amrex::Real>(ir) + 0.5) * dr;
         }
     }
+    */
 
-    exw_kynema::build_aero(builder, wio, aero_pts_blade);
+    // aero_pts_blade not used right now, need to establish ability to
+    // interpolate
+    fi.num_pts_blade = exw_kynema::build_aero(builder, wio);
 
     fi.interface =
         std::make_unique<kynema::interfaces::TurbineInterface>(builder.Build());
