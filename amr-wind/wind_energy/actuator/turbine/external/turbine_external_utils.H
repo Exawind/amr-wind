@@ -83,7 +83,12 @@ void init_epsilon(datatype& data)
 {
     auto& tdata = data.meta();
 
-    // Swap order of epsilon based on FAST turbine orientation
+    // Swap order of epsilon based on turbine orientation
+    // Input order is (chord, span, thickness)
+    // Output order should depend on turbine type; currently ...
+    // -- this function is correct for Kynema
+    // -- this function is erroneous for OpenFAST but has been in use
+    // (Does not matter when epsilon is uniform)
     swap_epsilon(tdata.eps_inp);
     swap_epsilon(tdata.eps_min);
     swap_epsilon(tdata.eps_chord);
@@ -271,7 +276,7 @@ void scatter_data(datatype& data)
             // Copy over the orientation matrix
             //
             // Note that we transpose the orientation matrix when copying
-            // from OpenFAST to AMR-Wind Tensor data structure. This is done
+            // from external to AMR-Wind Tensor data structure. This is done
             // so that post-multiplication of vector transforms from global
             // to local reference frame.
             const auto off =
