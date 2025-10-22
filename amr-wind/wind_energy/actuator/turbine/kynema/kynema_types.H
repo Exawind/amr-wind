@@ -48,27 +48,27 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
 
     void populate_buffers()
     {
-        int idx_f = 0;
+        int idx = 0;
         for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
             // Fluid velocity (fv) is not populated here, it comes from the
             // CFD solver. Need to add step to pass it from buffer to Kynema
             for (int n = 0; n < length_force(0); ++n) {
                 if (dir == 0) {
                     buffer_cf[n] = (float)interface->Aerodynamics()
-                                       .bodies[body_f_index(n)]
-                                       .chord[node_f_index(n)];
+                                       .bodies[body_index(n)]
+                                       .chord[node_index(n)];
                 }
-                buffer_f[idx_f] = (float)interface->Aerodynamics()
-                                      .bodies[body_f_index(n)]
-                                      .loads[node_f_index(n)][dir];
-                buffer_pf[idx_f] = (float)interface->Aerodynamics()
-                                       .bodies[body_f_index(n)]
-                                       .x_motion[node_f_index(n)][dir];
-                buffer_pv[idx_f] = buffer_pf[idx_f];
-                buffer_sv[idx_f] = (float)interface->Aerodynamics()
-                                       .bodies[body_f_index(n)]
-                                       .v_motion[node_f_index(n)][dir];
-                ++idx_f;
+                buffer_f[idx] = (float)interface->Aerodynamics()
+                                      .bodies[body_index(n)]
+                                      .loads[node_index(n)][dir];
+                buffer_pf[idx] = (float)interface->Aerodynamics()
+                                       .bodies[body_index(n)]
+                                       .x_motion[node_index(n)][dir];
+                buffer_pv[idx] = buffer_pf[idx];
+                buffer_sv[idx] = (float)interface->Aerodynamics()
+                                       .bodies[body_index(n)]
+                                       .v_motion[node_index(n)][dir];
+                ++idx;
             }
         }
         // Orientation stores a 3x3 tensor (9 elements) for every point
@@ -77,8 +77,8 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
             // convert quaternions to rotation matrix
             for (int iq = 0; iq < 4; ++iq) {
                 q[iq] = (float)interface->Aerodynamics()
-                            .bodies[body_f_index(n)]
-                            .qqr_motion_map[node_f_index(n)][iq];
+                            .bodies[body_index(n)]
+                            .qqr_motion_map[node_index(n)][iq];
             }
             const int idx = n * 9;
             buffer_ori[idx + 0] =
@@ -102,15 +102,15 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
         for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
             for (int n = 0; n < length_fluid_velocity(0); ++n) {
                 interface->Aerodynamics()
-                    .bodies[body_f_index(n)]
-                    .v_inflow[node_f_index(n)][dir] = buffer_fv[idx_v];
+                    .bodies[body_index(n)]
+                    .v_inflow[node_index(n)][dir] = buffer_fv[idx_v];
                 ++idx_v;
             }
         }
     }
 
     /** Helper functions for navigating indices */
-    int body_f_index(int id) const
+    int body_index(int id) const
     {
         int b_id = 0;
         int id_diff = id;
@@ -125,7 +125,7 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
         return b_id;
     }
 
-    int node_f_index(int id) const
+    int node_index(int id) const
     {
         int n_id = 0;
         int id_diff = id;
