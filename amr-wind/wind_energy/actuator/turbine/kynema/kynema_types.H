@@ -48,20 +48,10 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
 
     void populate_buffers()
     {
-        int idx_v = 0;
         int idx_f = 0;
         for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
-            for (int n = 0; n < length_fluid_velocity(0); ++n) {
-                buffer_pv[idx_v] = (float)interface->Aerodynamics()
-                                       .bodies[body_v_index(n)]
-                                       .node_u[node_v_index(n)][dir];
-                buffer_sv[idx_v] = (float)interface->Aerodynamics()
-                                       .bodies[body_v_index(n)]
-                                       .node_v[node_v_index(n)][dir];
-                // Fluid velocity (fv) is not populated here, it comes from the
-                // CFD solver. Need to add step to pass it from buffer to Kynema
-                ++idx_v;
-            }
+            // Fluid velocity (fv) is not populated here, it comes from the
+            // CFD solver. Need to add step to pass it from buffer to Kynema
             for (int n = 0; n < length_force(0); ++n) {
                 if (dir == 0) {
                     buffer_cf[n] = (float)interface->Aerodynamics()
@@ -72,8 +62,13 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
                                       .bodies[body_f_index(n)]
                                       .loads[node_f_index(n)][dir];
                 buffer_pf[idx_f] = (float)interface->Aerodynamics()
-                                      .bodies[body_f_index(n)]
-                                      .x_motion[node_f_index(n)][dir];
+                                       .bodies[body_f_index(n)]
+                                       .x_motion[node_f_index(n)][dir];
+                buffer_pv[idx_f] = buffer_pf[idx_f];
+                buffer_sv[idx_f] =
+                    (float)interface->Aerodynamics()
+                        .bodies[body_f_index(n)]
+                        .v_motion[node_f_index(n)][dir];
                 ++idx_f;
             }
         }
@@ -108,44 +103,14 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
         for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
             for (int n = 0; n < length_fluid_velocity(0); ++n) {
                 interface->Aerodynamics()
-                    .bodies[body_v_index(n)]
-                    .v_inflow[node_v_index(n)][dir] = buffer_pv[idx_v];
+                    .bodies[body_f_index(n)]
+                    .v_inflow[node_f_index(n)][dir] = buffer_fv[idx_v];
                 ++idx_v;
             }
         }
     }
 
     /** Helper functions for navigating indices */
-    int body_v_index(int id) const
-    {
-        int b_id = 0;
-        int id_diff = id;
-        for (int b = 0; b < (int)interface->Aerodynamics().bodies.size(); ++b) {
-            id_diff -= static_cast<int>(
-                interface->Aerodynamics().bodies[b].node_ids.size());
-            if (id_diff < 0) {
-                b_id = b;
-                break;
-            }
-        }
-        return b_id;
-    }
-
-    int node_v_index(int id) const
-    {
-        int n_id = 0;
-        int id_diff = id;
-        for (int b = 0; b < (int)interface->Aerodynamics().bodies.size(); ++b) {
-            id_diff -= (int)interface->Aerodynamics().bodies[b].node_ids.size();
-            if (id_diff < 0) {
-                n_id = id_diff +
-                       (int)interface->Aerodynamics().bodies[b].node_ids.size();
-                break;
-            }
-        }
-        return n_id;
-    }
-
     int body_f_index(int id) const
     {
         int b_id = 0;
@@ -209,12 +174,7 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
 
     int length_fluid_velocity(int dir) const override
     {
-        unsigned int n_sect{0};
-        for (unsigned int n = 0; n < interface->Aerodynamics().bodies.size();
-             ++n) {
-            n_sect += interface->Aerodynamics().bodies[n].node_ids.size();
-        }
-        return static_cast<int>(n_sect);
+        return length_force(dir);
     }
 
     int length_force(int dir) const override

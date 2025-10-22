@@ -311,6 +311,21 @@ void build_aero(
 
     aero_builder.SetAirfoilSections(0UL, aero_sections);
 }
+
+void update_turbine(::ext_turb::KynemaTurbine& fi, bool advance)
+{
+    fi.interface->Aerodynamics().CalculateMotion(fi.interface->GetHostState());
+    // copy fluid velocity to turbine solver (set inflow)
+    fi.pass_fluid_velocity_directly();
+    fi.interface->Aerodynamics().CalculateAerodynamicLoads(fi.fluid_density);
+    fi.interface->Aerodynamics().CalculateNodalLoads();
+    if (advance) {
+        // individual turbine step
+        fi.interface->Step();
+    }
+    // fill buffers with latest data
+    fi.populate_buffers();
+}
 } // namespace exw_kynema
 
 namespace ext_turb {
@@ -358,14 +373,8 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::init_solution(
     AMREX_ALWAYS_ASSERT(m_is_initialized);
 
     auto& fi = *m_turbine_data[local_id];
-    
-    fi.interface->Aerodynamics().CalculateMotion(fi.interface->GetHostState());
-    // copy fluid velocity to turbine solver (set inflow)
-    fi.pass_fluid_velocity_directly();
-    fi.interface->Aerodynamics().CalculateAerodynamicLoads(fi.fluid_density);
-    fi.interface->Aerodynamics().CalculateNodalLoads();
-    // fill buffers with latest data
-    fi.populate_buffers();
+
+    ::exw_kynema::update_turbine(fi, false);
 
     fi.is_solution0 = false;
 }
@@ -504,15 +513,7 @@ template <>
 void ExtTurbIface<KynemaTurbine, KynemaSolverData>::do_turbine_step(
     KynemaTurbine& fi)
 {
-    fi.interface->Aerodynamics().CalculateMotion(fi.interface->GetHostState());
-    // copy fluid velocity to turbine solver (set inflow)
-    fi.pass_fluid_velocity_directly();
-    fi.interface->Aerodynamics().CalculateAerodynamicLoads(fi.fluid_density);
-    fi.interface->Aerodynamics().CalculateNodalLoads();
-    // individual turbine step
-    fi.interface->Step();
-    // fill buffers with latest data
-    fi.populate_buffers();
+    ::exw_kynema::update_turbine(fi, true);
 }
 
 template <>
@@ -582,7 +583,7 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::ext_init_turbine(
     }
 
     fi.allocate_buffers();
-    fi.populate_buffers();
+    ::exw_kynema::update_turbine(fi, false);
 }
 
 // cppcheck-suppress constParameterReference
