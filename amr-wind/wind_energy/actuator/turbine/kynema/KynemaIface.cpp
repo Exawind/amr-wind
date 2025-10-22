@@ -511,7 +511,8 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::ext_init_turbine(
     const YAML::Node wio = YAML::LoadFile(fi.input_file);
 
     exw_kynema::build_turbine(
-        builder, wio, fi.num_blades, fi.num_blade_elem, fi.num_pts_tower);
+        builder, wio, fi.num_blades, fi.num_blade_elem,
+        12); // fi.num_pts_tower);
 
     /*
     // Create distribution of points from base of blade to end, normalized from
