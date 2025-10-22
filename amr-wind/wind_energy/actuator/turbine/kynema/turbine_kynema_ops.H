@@ -24,7 +24,7 @@ struct ReadInputsOp<TurbineKynema, SrcTrait>
 
         // Number of beam elements read in from file
         pp.get("num_struct_nodes_blade", tf.num_blade_elem);
-        // Initial or constant angular rotation speed 
+        // Initial or constant angular rotation speed
         pp.query("rot_speed_rads", tf.rotational_speed);
         if (!pp.contains("rot_speed_rads")) {
             pp.query("rot_speed_rpm", tf.rotational_speed);

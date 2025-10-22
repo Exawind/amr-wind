@@ -58,15 +58,15 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
                                        .chord[node_index(n)];
                 }
                 buffer_f[idx] = (float)interface->Aerodynamics()
-                                      .bodies[body_index(n)]
-                                      .loads[node_index(n)][dir];
+                                    .bodies[body_index(n)]
+                                    .loads[node_index(n)][dir];
                 buffer_pf[idx] = (float)interface->Aerodynamics()
-                                       .bodies[body_index(n)]
-                                       .x_motion[node_index(n)][dir];
+                                     .bodies[body_index(n)]
+                                     .x_motion[node_index(n)][dir];
                 buffer_pv[idx] = buffer_pf[idx];
                 buffer_sv[idx] = (float)interface->Aerodynamics()
-                                       .bodies[body_index(n)]
-                                       .v_motion[node_index(n)][dir];
+                                     .bodies[body_index(n)]
+                                     .v_motion[node_index(n)][dir];
                 ++idx;
             }
         }
@@ -212,7 +212,6 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
     float* ptr_f{nullptr};
     float* ptr_pf{nullptr};
     float* ptr_ori{nullptr};
-
 };
 
 struct KynemaSolverData
