@@ -51,7 +51,7 @@ void build_turbine(
             blade_twist["values"].as<std::vector<double>>();
         for (auto i : std::views::iota(0U, twist_grid.size())) {
             blade_builder.AddRefAxisTwist(
-                twist_grid[i], twist_values[i] * std::numbers::pi / 180.);
+                twist_grid[i], -twist_values[i] * std::numbers::pi / 180.);
         }
 
         const auto k_grid = stiffness_matrix["grid"].as<std::vector<double>>();
