@@ -514,6 +514,8 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::ext_init_turbine(
         builder, wio, fi.num_blades, fi.num_blade_elem,
         12); // fi.num_pts_tower);
 
+    builder.Turbine().SetRotorSpeed(fi.rotational_speed);
+
     /*
     // Create distribution of points from base of blade to end, normalized from
     // 0 to 1

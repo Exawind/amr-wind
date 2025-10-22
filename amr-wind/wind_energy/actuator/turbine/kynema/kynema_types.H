@@ -196,6 +196,7 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
     }
 
     double fluid_density{1.};
+    double rotational_speed{0.};
 
     std::vector<float> buffer_cf;
     std::vector<float> buffer_pv;

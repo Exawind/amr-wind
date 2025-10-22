@@ -107,6 +107,7 @@ tagging.T1_level_3_zone.T1_level_3_zone.zaxis = 0.0 0.0 151.2
 #---- actuator defs ----
 Actuator.TurbineKynemaLine.kynema_input_file = IEA-15-240-RWT-aero.yaml
 Actuator.TurbineKynemaLine.num_struct_nodes_blade = 11
+Actuator.TurbineKynemaLine.rot_speed_rpm = 7.55
 
 Actuator.labels                          = T0 T1               
 Actuator.T0.type                         = TurbineKynemaLine     
