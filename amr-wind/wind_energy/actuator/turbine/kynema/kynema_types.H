@@ -29,7 +29,6 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
         buffer_fv.resize(
             length_fluid_velocity(0) + length_fluid_velocity(1) +
             length_fluid_velocity(2));
-        buffer_fv_2idx.resize(length_fluid_velocity(0));
 
         buffer_f.resize(length_force(0) + length_force(1) + length_force(2));
         buffer_pf.resize(
@@ -213,7 +212,6 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
     float* ptr_pf{nullptr};
     float* ptr_ori{nullptr};
 
-    std::vector<std::array<double, 3>> buffer_fv_2idx;
 };
 
 struct KynemaSolverData
