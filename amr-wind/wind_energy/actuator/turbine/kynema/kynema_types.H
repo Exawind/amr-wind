@@ -53,8 +53,7 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
         // Force is calculated by AMR-Wind, passed to Kynema
         // Get position directly from node information
         buffer_pf[0] = interface->Turbine().hub_node.position[0];
-        buffer_pf[length_force(0)] =
-            interface->Turbine().hub_node.position[1];
+        buffer_pf[length_force(0)] = interface->Turbine().hub_node.position[1];
         buffer_pf[2 * length_force(0)] =
             interface->Turbine().hub_node.position[2];
         buffer_pv[0] = buffer_pf[0];
@@ -62,8 +61,7 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
         buffer_pv[2 * length_force(0)] = buffer_pf[2 * length_force(0)];
         // Get solid velocity as well, not used at the moment though
         buffer_sv[0] = interface->Turbine().hub_node.velocity[0];
-        buffer_sv[length_force(0)] =
-            interface->Turbine().hub_node.velocity[1];
+        buffer_sv[length_force(0)] = interface->Turbine().hub_node.velocity[1];
         buffer_sv[2 * length_force(0)] =
             interface->Turbine().hub_node.velocity[2];
 
@@ -99,8 +97,8 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
             // convert quaternions to rotation matrix
             for (int iq = 0; iq < 4; ++iq) {
                 if (n == 0) {
-                    q[iq] = (float)interface->Turbine()
-                                .hub_node.position[iq + 3];
+                    q[iq] =
+                        (float)interface->Turbine().hub_node.position[iq + 3];
                 } else {
                     q[iq] = (float)interface->Aerodynamics()
                                 .bodies[body_index(n)]
@@ -140,8 +138,7 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
         }
         // Hub load (also called nacelle_force) does need to be passed
         interface->Turbine().hub_node.loads[0] = buffer_f[0];
-        interface->Turbine().hub_node.loads[1] =
-            buffer_f[length_force(0)];
+        interface->Turbine().hub_node.loads[1] = buffer_f[length_force(0)];
         interface->Turbine().hub_node.loads[2] =
             buffer_f[length_force(0) + length_force(1)];
     }
