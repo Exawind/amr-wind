@@ -351,6 +351,15 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::get_hub_stats(
     BL_PROFILE("amr-wind::KynemaIface::get_hub_stats");
 
     auto& fi = *m_turbine_data[local_id];
+
+    for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
+        fi.hub_abs_pos[dir] = fi.interface->Turbine().hub_node.position[dir];
+        fi.hub_rot_vel[dir] = fi.interface->Turbine().hub_node.velocity[dir + AMREX_SPACEDIM];
+    }
+    // Orientation of hub is already in turbine data as first point
+    for (int comp = 0; comp < AMREX_SPACEDIM * AMREX_SPACEDIM; ++comp) {
+        fi.hub_orient[comp] = fi.orientation()[comp];
+    }
 }
 
 #ifdef AMR_WIND_USE_KYNEMA
