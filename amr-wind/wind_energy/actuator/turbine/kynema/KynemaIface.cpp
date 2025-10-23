@@ -494,10 +494,6 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::ext_init_turbine(
 {
     BL_PROFILE("amr-wind::KynemaIface::init_turbine");
 
-    AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
-        amrex::FileSystem::Exists(fi.input_file),
-        "KynemaIface: Cannot find Kynema input file: " + fi.input_file);
-
     auto builder = kynema::interfaces::TurbineInterfaceBuilder{};
     builder.Solution()
         .EnableDynamicSolve()

@@ -11,27 +11,8 @@ struct ReadInputsOp<TurbineKynema, SrcTrait>
 {
     void operator()(TurbineKynema::DataType& data, const utils::ActParser& pp)
     {
-        read_ops<TurbineKynema::DataType>(data, pp);
-
         auto& tf = data.meta().ext_data;
-        tf.fluid_density = data.meta().density;
-
-        tf.dt_ext = -1.;
-        pp.query("dt", tf.dt_ext);
-        if (tf.dt_ext < 0.) {
-            tf.dt_ext = tf.dt_cfd;
-        }
-
-        // Number of beam elements read in from file
-        pp.get("num_struct_nodes_blade", tf.num_blade_elem);
-        // Initial or constant angular rotation speed
-        pp.query("rot_speed_rads", tf.rotational_speed);
-        if (!pp.contains("rot_speed_rads")) {
-            pp.query("rot_speed_rpm", tf.rotational_speed);
-            tf.rotational_speed *= 2.0 * M_PI / 60.;
-        }
-
-        // Only one available for now
+        // Only one mode available for now
         const std::string sim_mode{"init"};
 
         if (sim_mode == "init") {
@@ -52,6 +33,49 @@ struct ReadInputsOp<TurbineKynema, SrcTrait>
             pp.get("kynema_restart_file", tf.checkpoint_file);
         } else {
             pp.get("kynema_input_file", tf.input_file);
+        }
+
+        AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+            amrex::FileSystem::Exists(tf.input_file),
+            "turbine_kynema_ops: Cannot find Kynema input file: " +
+                tf.input_file);
+
+        // Get hub height and turbine diameter from turbine input,
+        // not AMR-Wind input file
+        const YAML::Node wio = YAML::LoadFile(tf.input_file);
+        {
+            const auto& wio_blade = wio["components"]["blade"];
+            const auto& ref_axis = wio_blade["reference_axis"];
+            const auto z_values =
+                ref_axis["z"]["values"].as<std::vector<double>>();
+            data.info().rotor_diameter = 2.0 * z_values[z_values.size() - 1];
+        }
+        {
+            const auto& wio_tower = wio["components"]["tower"];
+            const auto& tower_ref_axis = wio_tower["reference_axis"];
+            const auto z_values =
+                tower_ref_axis["z"]["values"].as<std::vector<double>>();
+            data.info().hub_height = z_values[z_values.size() - 1];
+        }
+
+        read_ops<TurbineKynema::DataType>(data, pp);
+
+        // Do AMR-Wind inputs specific to kynema turbine
+        tf.fluid_density = data.meta().density;
+
+        tf.dt_ext = -1.;
+        pp.query("dt", tf.dt_ext);
+        if (tf.dt_ext < 0.) {
+            tf.dt_ext = tf.dt_cfd;
+        }
+
+        // Number of beam elements read in from file
+        pp.get("num_struct_nodes_blade", tf.num_blade_elem);
+        // Initial or constant angular rotation speed
+        pp.query("rot_speed_rads", tf.rotational_speed);
+        if (!pp.contains("rot_speed_rads")) {
+            pp.query("rot_speed_rpm", tf.rotational_speed);
+            tf.rotational_speed *= 2.0 * M_PI / 60.;
         }
     }
 };

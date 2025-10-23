@@ -15,6 +15,8 @@ namespace amr_wind::actuator::ops {
 template <typename datatype>
 void read_ops(datatype& data, const utils::ActParser& pp)
 {
+    // Tell reading utility the name of the solver
+    data.meta().solver_name = data.meta().ext_ptr->identifier();
     // Data common to any turbine actuator simulation
     utils::read_inputs(data.meta(), data.info(), pp);
 

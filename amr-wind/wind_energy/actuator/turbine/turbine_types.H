@@ -26,6 +26,9 @@ struct TurbineInfo : public ActInfo
 using DeviceVecComponent = amrex::Gpu::DeviceVector<ComponentView>;
 struct TurbineBaseData
 {
+    //! Identifier string for turbine solver type
+    std::string solver_name{"Internal"};
+
     //! Number of blades
     int num_blades{3};
 
