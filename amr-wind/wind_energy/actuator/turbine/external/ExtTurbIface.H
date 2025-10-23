@@ -147,9 +147,10 @@ void ExtTurbIface<SolverTurbine, SolverData>::advance_turbine(
     auto& fi = *m_turbine_data[local_id];
     AMREX_ASSERT(!fi.is_solution0);
     {
+        // Default is off, unless a turbine model reads, populates stop_time
         const auto& tmax = fi.stop_time;
         const auto& telapsed = (fi.time_index + fi.num_substeps) * fi.dt_ext;
-        if (telapsed > (tmax + 1.0e-8)) {
+        if (telapsed > (tmax + 1.0e-8) && fi.stop_time > 0.) {
             // clang-format off
             amrex::OutStream()
                 << "\nWARNING: ExtTurbIface:\n"
