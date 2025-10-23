@@ -19,23 +19,52 @@ void build_turbine(
     const YAML::Node wio,
     const int n_blades,
     const int n_blade_nodes,
-    const int n_tower_nodes)
+    const int n_tower_nodes,
+    const double rotor_speed_init)
 {
+    // WindIO components
+    const auto& wio_blade = wio["components"]["blade"];
+    const auto& wio_tower = wio["components"]["tower"];
+    const auto& wio_drivetrain = wio["components"]["drivetrain"];
+    const auto& wio_hub = wio["components"]["hub"];
+    const auto& wio_yaw = wio["components"]["yaw"];
+
+    //--------------------------------------------------------------------------
+    // Build Turbine
+    //--------------------------------------------------------------------------
+
+    // Get turbine builder
     auto& turbine_builder = builder.Turbine();
+    turbine_builder.SetAzimuthAngle(0.)
+        .SetRotorApexToHub(0.)
+        .SetHubDiameter(wio_hub["diameter"].as<double>())
+        .SetConeAngle(
+            wio_hub["cone_angle"].as<double>() * std::numbers::pi / 180.)
+        .SetShaftTiltAngle(
+            wio_drivetrain["outer_shape"]["uptilt"].as<double>() *
+            std::numbers::pi / 180.)
+        .SetTowerAxisToRotorApex(
+            wio_drivetrain["outer_shape"]["overhang"].as<double>())
+        .SetTowerTopToRotorApex(
+            wio_drivetrain["outer_shape"]["distance_tt_hub"].as<double>())
+        .SetGearBoxRatio(wio_drivetrain["gearbox"]["gear_ratio"].as<double>())
+        .SetRotorSpeed(rotor_speed_init);
 
-    for (auto blade : std::views::iota(0U, static_cast<uint>(n_blades))) {
-        auto& blade_builder = turbine_builder.Blade(blade)
-                                  .SetElementOrder(n_blade_nodes - 1)
-                                  .PrescribedRootMotion(false);
+    //--------------------------------------------------------------------------
+    // Build Blades
+    //--------------------------------------------------------------------------
 
-        const auto& wio_blade = wio["components"]["blade"];
-        const auto& ref_axis = wio_blade["reference_axis"];
-        const auto& blade_twist = wio_blade["outer_shape"]["twist"];
-        const auto& inertia_matrix =
-            wio_blade["structure"]["elastic_properties"]["inertia_matrix"];
-        const auto& stiffness_matrix =
-            wio_blade["structure"]["elastic_properties"]["stiffness_matrix"];
+    // Loop through blades and set parameters
+    for (auto j : std::views::iota(0U, static_cast<uint>(n_blades))) {
+        // Get the blade builder
+        auto& blade_builder = turbine_builder.Blade(j);
 
+        // Set blade parameters
+        blade_builder.SetElementOrder(n_blade_nodes - 1)
+            .PrescribedRootMotion(false);
+
+        // Add reference axis coordinates (WindIO uses Z-axis as reference axis)
+        const auto ref_axis = wio_blade["reference_axis"];
         const auto axis_grid = ref_axis["x"]["grid"].as<std::vector<double>>();
         const auto x_values = ref_axis["x"]["values"].as<std::vector<double>>();
         const auto y_values = ref_axis["y"]["values"].as<std::vector<double>>();
@@ -46,6 +75,8 @@ void build_turbine(
                 kynema::interfaces::components::ReferenceAxisOrientation::Z);
         }
 
+        // Add reference axis twist
+        const auto blade_twist = wio_blade["outer_shape"]["twist"];
         const auto twist_grid = blade_twist["grid"].as<std::vector<double>>();
         const auto twist_values =
             blade_twist["values"].as<std::vector<double>>();
@@ -54,172 +85,195 @@ void build_turbine(
                 twist_grid[i], -twist_values[i] * std::numbers::pi / 180.);
         }
 
+        const auto inertia_matrix =
+            wio_blade["structure"]["elastic_properties"]["inertia_matrix"];
+        const auto stiffness_matrix =
+            wio_blade["structure"]["elastic_properties"]["stiffness_matrix"];
+
+        // Add blade section properties
         const auto k_grid = stiffness_matrix["grid"].as<std::vector<double>>();
         const auto m_grid = inertia_matrix["grid"].as<std::vector<double>>();
-        const auto mass = inertia_matrix["mass"].as<std::vector<double>>();
-        const auto cm_x = inertia_matrix["cm_x"].as<std::vector<double>>();
-        const auto cm_y = inertia_matrix["cm_y"].as<std::vector<double>>();
-        const auto i_cp = inertia_matrix["i_cp"].as<std::vector<double>>();
-        const auto i_edge = inertia_matrix["i_edge"].as<std::vector<double>>();
-        const auto i_flap = inertia_matrix["i_flap"].as<std::vector<double>>();
-        const auto i_plr = inertia_matrix["i_plr"].as<std::vector<double>>();
-
-        const auto K11 = stiffness_matrix["K11"].as<std::vector<double>>();
-        const auto K12 = stiffness_matrix["K12"].as<std::vector<double>>();
-        const auto K13 = stiffness_matrix["K13"].as<std::vector<double>>();
-        const auto K14 = stiffness_matrix["K14"].as<std::vector<double>>();
-        const auto K15 = stiffness_matrix["K15"].as<std::vector<double>>();
-        const auto K16 = stiffness_matrix["K16"].as<std::vector<double>>();
-        const auto K22 = stiffness_matrix["K22"].as<std::vector<double>>();
-        const auto K23 = stiffness_matrix["K23"].as<std::vector<double>>();
-        const auto K24 = stiffness_matrix["K24"].as<std::vector<double>>();
-        const auto K25 = stiffness_matrix["K25"].as<std::vector<double>>();
-        const auto K26 = stiffness_matrix["K26"].as<std::vector<double>>();
-        const auto K33 = stiffness_matrix["K33"].as<std::vector<double>>();
-        const auto K34 = stiffness_matrix["K34"].as<std::vector<double>>();
-        const auto K35 = stiffness_matrix["K35"].as<std::vector<double>>();
-        const auto K36 = stiffness_matrix["K36"].as<std::vector<double>>();
-        const auto K44 = stiffness_matrix["K44"].as<std::vector<double>>();
-        const auto K45 = stiffness_matrix["K45"].as<std::vector<double>>();
-        const auto K46 = stiffness_matrix["K46"].as<std::vector<double>>();
-        const auto K55 = stiffness_matrix["K55"].as<std::vector<double>>();
-        const auto K56 = stiffness_matrix["K56"].as<std::vector<double>>();
-        const auto K66 = stiffness_matrix["K66"].as<std::vector<double>>();
         const auto n_sections = k_grid.size();
-
-        for (auto section : std::views::iota(0U, n_sections)) {
-            if (abs(m_grid[section] - k_grid[section]) > 1e-8) {
+        if (m_grid.size() != k_grid.size()) {
+            throw std::runtime_error(
+                "stiffness and mass matrices not on same grid");
+        }
+        for (auto i : std::views::iota(0U, n_sections)) {
+            if (abs(m_grid[i] - k_grid[i]) > 1e-8) {
                 throw std::runtime_error(
                     "stiffness and mass matrices not on same grid");
             }
+            const auto mass = inertia_matrix["mass"][i].as<double>();
+            const auto cm_x = inertia_matrix["cm_x"][i].as<double>();
+            const auto cm_y = inertia_matrix["cm_y"][i].as<double>();
+            const auto i_cp = inertia_matrix["i_cp"][i].as<double>();
+            const auto i_edge = inertia_matrix["i_edge"][i].as<double>();
+            const auto i_flap = inertia_matrix["i_flap"][i].as<double>();
+            const auto i_plr = inertia_matrix["i_plr"][i].as<double>();
+
+            const auto k11 = stiffness_matrix["K11"][i].as<double>();
+            const auto k12 = stiffness_matrix["K12"][i].as<double>();
+            const auto k13 = stiffness_matrix["K13"][i].as<double>();
+            const auto k14 = stiffness_matrix["K14"][i].as<double>();
+            const auto k15 = stiffness_matrix["K15"][i].as<double>();
+            const auto k16 = stiffness_matrix["K16"][i].as<double>();
+            const auto k22 = stiffness_matrix["K22"][i].as<double>();
+            const auto k23 = stiffness_matrix["K23"][i].as<double>();
+            const auto k24 = stiffness_matrix["K24"][i].as<double>();
+            const auto k25 = stiffness_matrix["K25"][i].as<double>();
+            const auto k26 = stiffness_matrix["K26"][i].as<double>();
+            const auto k33 = stiffness_matrix["K33"][i].as<double>();
+            const auto k34 = stiffness_matrix["K34"][i].as<double>();
+            const auto k35 = stiffness_matrix["K35"][i].as<double>();
+            const auto k36 = stiffness_matrix["K36"][i].as<double>();
+            const auto k44 = stiffness_matrix["K44"][i].as<double>();
+            const auto k45 = stiffness_matrix["K45"][i].as<double>();
+            const auto k46 = stiffness_matrix["K46"][i].as<double>();
+            const auto k55 = stiffness_matrix["K55"][i].as<double>();
+            const auto k56 = stiffness_matrix["K56"][i].as<double>();
+            const auto k66 = stiffness_matrix["K66"][i].as<double>();
+
             blade_builder.AddSection(
-                m_grid[section],
-                {{{mass[section], 0., 0., 0., 0.,
-                   -mass[section] * cm_y[section]},
-                  {0., mass[section], 0., 0., 0.,
-                   mass[section] * cm_x[section]},
-                  {0., 0., mass[section], mass[section] * cm_y[section],
-                   -mass[section] * cm_x[section], 0.},
-                  {0., 0., mass[section] * cm_y[section], i_edge[section],
-                   -i_cp[section], 0.},
-                  {0., 0., -mass[section] * cm_x[section], -i_cp[section],
-                   i_flap[section], 0.},
-                  {-mass[section] * cm_y[section],
-                   mass[section] * cm_x[section], 0., 0., 0., i_plr[section]}}},
+                m_grid[i],
                 {{
-                    {K11[section], K12[section], K13[section], K14[section],
-                     K15[section], K16[section]},
-                    {K12[section], K22[section], K23[section], K24[section],
-                     K25[section], K26[section]},
-                    {K13[section], K23[section], K33[section], K34[section],
-                     K35[section], K36[section]},
-                    {K14[section], K24[section], K34[section], K44[section],
-                     K45[section], K46[section]},
-                    {K15[section], K25[section], K35[section], K45[section],
-                     K55[section], K56[section]},
-                    {K16[section], K26[section], K36[section], K46[section],
-                     K56[section], K66[section]},
+                    {mass, 0., 0., 0., 0., -mass * cm_y},
+                    {0., mass, 0., 0., 0., mass * cm_x},
+                    {0., 0., mass, mass * cm_y, -mass * cm_x, 0.},
+                    {0., 0., mass * cm_y, i_edge, -i_cp, 0.},
+                    {0., 0., -mass * cm_x, -i_cp, i_flap, 0.},
+                    {-mass * cm_y, mass * cm_x, 0., 0., 0., i_plr},
+                }},
+                {{
+                    {k11, k12, k13, k14, k15, k16},
+                    {k12, k22, k23, k24, k25, k26},
+                    {k13, k23, k33, k34, k35, k36},
+                    {k14, k24, k34, k44, k45, k46},
+                    {k15, k25, k35, k45, k55, k56},
+                    {k16, k26, k36, k46, k56, k66},
                 }},
                 kynema::interfaces::components::ReferenceAxisOrientation::Z);
         }
     }
 
-    auto& tower_builder = turbine_builder.Tower()
-                              .SetElementOrder(n_tower_nodes - 1)
-                              .PrescribedRootMotion(false);
+    //--------------------------------------------------------------------------
+    // Build Tower
+    //--------------------------------------------------------------------------
 
-    const auto& wio_tower = wio["components"]["tower"];
-    const auto& wio_tower_diameter = wio_tower["outer_shape"]["outer_diameter"];
-    const auto tower_diameter_grid =
-        wio_tower_diameter["grid"].as<std::vector<double>>();
-    const auto tower_diameter_values =
-        wio_tower_diameter["values"].as<std::vector<double>>();
-    const auto tower_wall_thickness =
-        wio_tower["structure"]["layers"][0]["thickness"]["values"]
-            .as<std::vector<double>>();
-    const auto tower_material_name =
-        wio_tower["structure"]["layers"][0]["material"].as<std::string>();
-    const auto& tower_ref_axis = wio_tower["reference_axis"];
+    // Get the tower builder
+    auto& tower_builder = turbine_builder.Tower();
 
-    const auto axis_grid =
-        tower_ref_axis["x"]["grid"].as<std::vector<double>>();
-    const auto x_values =
-        tower_ref_axis["x"]["values"].as<std::vector<double>>();
-    const auto y_values =
-        tower_ref_axis["y"]["values"].as<std::vector<double>>();
-    const auto z_values =
-        tower_ref_axis["z"]["values"].as<std::vector<double>>();
+    // Set tower parameters
+    tower_builder
+        .SetElementOrder(
+            n_tower_nodes - 1)        // Set element order to num nodes - 1
+        .PrescribedRootMotion(false); // Fix displacement of tower base node
+
+    // Add reference axis coordinates (WindIO uses Z-axis as reference axis)
+    const auto t_ref_axis = wio_tower["reference_axis"];
+    const auto axis_grid = t_ref_axis["x"]["grid"].as<std::vector<double>>();
+    const auto x_values = t_ref_axis["x"]["values"].as<std::vector<double>>();
+    const auto y_values = t_ref_axis["y"]["values"].as<std::vector<double>>();
+    const auto z_values = t_ref_axis["z"]["values"].as<std::vector<double>>();
     for (auto i : std::views::iota(0U, axis_grid.size())) {
         tower_builder.AddRefAxisPoint(
             axis_grid[i], {x_values[i], y_values[i], z_values[i]},
             kynema::interfaces::components::ReferenceAxisOrientation::Z);
     }
 
-    const auto tower_base_position = std::array<double, 7>{
-        x_values[0], y_values[0], z_values[0], 1., 0., 0., 0.};
-    turbine_builder.SetTowerBasePosition(tower_base_position);
-    tower_builder.AddRefAxisTwist(0., 0.).AddRefAxisTwist(1., 0.);
+    // Set tower base position from first reference axis point
+    turbine_builder.SetTowerBasePosition(
+        {x_values[0], y_values[0], z_values[0], 1., 0., 0., 0.});
 
-    auto tower_material =
-        std::find_if(
-            std::begin(wio["materials"]), std::end(wio["materials"]),
-            [&tower_material_name](const YAML::Node& node) {
-                return node["name"].as<std::string>() == tower_material_name;
-            })
-            ->as<YAML::Node>();
+    // Add reference axis twist (zero for tower)
+    tower_builder.AddRefAxisTwist(0.0, 0.0).AddRefAxisTwist(1.0, 0.0);
 
-    auto elastic_modulus = tower_material["E"].as<double>();
-    auto shear_modulus = tower_material["G"].as<double>();
-    auto poisson_ratio = tower_material["nu"].as<double>();
-    auto density = tower_material["rho"].as<double>();
+    // Find the tower material properties
+    const auto tower_diameter = wio_tower["outer_shape"]["outer_diameter"];
+    const auto tower_wall_thickness =
+        wio_tower["structure"]["layers"][0]["thickness"];
+    const auto tower_material_name =
+        wio_tower["structure"]["layers"][0]["material"].as<std::string>();
 
-    for (auto i : std::views::iota(0U, tower_diameter_grid.size())) {
+    YAML::Node tower_material;
+    for (const auto& m : wio["materials"]) {
+        if (m["name"] && m["name"].as<std::string>() == tower_material_name) {
+            tower_material = m.as<YAML::Node>();
+            break;
+        }
+    }
+    if (!tower_material) {
+        throw std::runtime_error(
+            "Material '" + tower_material_name +
+            "' not found in materials section");
+    }
+
+    // Add tower section properties
+    const auto elastic_modulus = tower_material["E"].as<double>();
+    const auto shear_modulus = tower_material["G"].as<double>();
+    const auto poisson_ratio = tower_material["nu"].as<double>();
+    const auto density = tower_material["rho"].as<double>();
+    for (auto i : std::views::iota(0U, tower_diameter["grid"].size())) {
+        // Create section mass and stiffness matrices
         const auto section = kynema::beams::GenerateHollowCircleSection(
-            tower_diameter_grid[i], elastic_modulus, shear_modulus, density,
-            tower_diameter_values[i], tower_wall_thickness[i], poisson_ratio);
+            tower_diameter["grid"][i].as<double>(), elastic_modulus,
+            shear_modulus, density, tower_diameter["values"][i].as<double>(),
+            tower_wall_thickness["values"][i].as<double>(), poisson_ratio);
 
+        // Add section
         tower_builder.AddSection(
-            tower_diameter_grid[i], section.M_star, section.C_star,
+            tower_diameter["grid"][i].as<double>(), section.M_star,
+            section.C_star,
             kynema::interfaces::components::ReferenceAxisOrientation::Z);
     }
 
-    const auto& wio_hub = wio["components"]["hub"];
-    turbine_builder.SetAzimuthAngle(0.)
-        .SetConeAngle(
-            wio_hub["cone_angle"].as<double>() * std::numbers::pi / 180.)
-        .SetHubDiameter(wio_hub["diameter"].as<double>())
-        .SetRotorApexToHub(0.);
+    //--------------------------------------------------------------------------
+    // Add mass elements
+    //--------------------------------------------------------------------------
 
-    const auto& wio_drivetrain = wio["components"]["drivetrain"];
-    turbine_builder
-        .SetTowerAxisToRotorApex(
-            wio_drivetrain["outer_shape"]["overhang"].as<double>())
-        .SetTowerTopToRotorApex(
-            wio_drivetrain["outer_shape"]["distance_tt_hub"].as<double>())
-        .SetShaftTiltAngle(
-            wio_drivetrain["outer_shape"]["uptilt"].as<double>() *
-            std::numbers::pi / 180.);
+    // Get nacelle mass properties from WindIO
+    const auto nacelle_props = wio_drivetrain["elastic_properties"];
+    const auto nacelle_mass = nacelle_props["mass"].as<double>();
+    const auto nacelle_inertia =
+        nacelle_props["inertia"].as<std::vector<double>>();
 
-    const auto drivetrain_mass =
-        wio_drivetrain["elastic_properties"]["mass"].as<double>();
-    const auto drivetrain_inertia =
-        wio_drivetrain["elastic_properties"]["inertia_tt"]
-            .as<std::vector<double>>();
+    // Nacelle center of mass offset from yaw bearing
+    const auto nacelle_cm_offset =
+        nacelle_props["location"].as<std::vector<double>>();
 
+    // Set the nacelle inertia matrix in the turbine builder
+    turbine_builder.SetNacelleInertiaMatrix(
+        {{{nacelle_mass, 0., 0., 0., 0., 0.},
+          {0., nacelle_mass, 0., 0., 0., 0.},
+          {0., 0., nacelle_mass, 0., 0., 0.},
+          {0., 0., 0., nacelle_inertia[0], nacelle_inertia[3],
+           nacelle_inertia[4]},
+          {0., 0., 0., nacelle_inertia[3], nacelle_inertia[1],
+           nacelle_inertia[5]},
+          {0., 0., 0., nacelle_inertia[4], nacelle_inertia[5],
+           nacelle_inertia[2]}}},
+        {nacelle_cm_offset[0], nacelle_cm_offset[1], nacelle_cm_offset[2]});
+
+    // Get yaw bearing mass properties from WindIO
+    const auto yaw_bearing_mass =
+        wio_yaw["elastic_properties"]["mass"].as<double>();
+    const auto yaw_bearing_inertia =
+        wio_yaw["elastic_properties"]["inertia"].as<std::vector<double>>();
+
+    // Set the yaw bearing inertia matrix in the turbine builder
     turbine_builder.SetYawBearingInertiaMatrix(
-        std::array{
-            std::array{drivetrain_mass, 0., 0., 0., 0., 0.},
-            std::array{0., drivetrain_mass, 0., 0., 0., 0.},
-            std::array{0., 0., drivetrain_mass, 0., 0., 0.},
-            std::array{
-                0., 0., 0., drivetrain_inertia[0], drivetrain_inertia[3],
-                drivetrain_inertia[4]},
-            std::array{
-                0., 0., 0., drivetrain_inertia[3], drivetrain_inertia[1],
-                drivetrain_inertia[5]},
-            std::array{
-                0., 0., 0., drivetrain_inertia[4], drivetrain_inertia[5],
-                drivetrain_inertia[2]}});
+        {{{yaw_bearing_mass, 0., 0., 0., 0., 0.},
+          {0., yaw_bearing_mass, 0., 0., 0., 0.},
+          {0., 0., yaw_bearing_mass, 0., 0., 0.},
+          {0., 0., 0., yaw_bearing_inertia[0], 0., 0.},
+          {0., 0., 0., 0., yaw_bearing_inertia[1], 0.},
+          {0., 0., 0., 0., 0., yaw_bearing_inertia[2]}}});
+
+    // Get generator rotational inertia and gearbox ratio from WindIO
+    const auto generator_inertia =
+        wio_drivetrain["generator"]["elastic_properties"]["inertia"]
+            .as<std::vector<double>>();
+    const auto gearbox_ratio =
+        wio_drivetrain["gearbox"]["gear_ratio"].as<double>();
 
     // Get hub mass properties from WindIO
     const auto hub_mass = wio_hub["elastic_properties"]["mass"].as<double>();
@@ -231,7 +285,8 @@ void build_turbine(
         {{{hub_mass, 0., 0., 0., 0., 0.},
           {0., hub_mass, 0., 0., 0., 0.},
           {0., 0., hub_mass, 0., 0., 0.},
-          {0., 0., 0., hub_inertia[0], hub_inertia[3], hub_inertia[4]},
+          {0., 0., 0., hub_inertia[0] + generator_inertia[0] * gearbox_ratio,
+           hub_inertia[3], hub_inertia[4]},
           {0., 0., 0., hub_inertia[3], hub_inertia[1], hub_inertia[5]},
           {0., 0., 0., hub_inertia[4], hub_inertia[5], hub_inertia[2]}}});
 }
@@ -286,7 +341,12 @@ void update_turbine(::ext_turb::KynemaTurbine& fi, bool advance)
     fi.interface->Aerodynamics().CalculateNodalLoads();
     if (advance) {
         // individual turbine step
-        fi.interface->Step();
+        bool converged = fi.interface->Step();
+        if (!converged) {
+            amrex::Abort("Kynema did not converge\n");
+        }
+        fi.interface->Aerodynamics().CalculateMotion(
+            fi.interface->GetHostState());
     }
     // fill buffers with latest data
     fi.populate_buffers();
@@ -354,7 +414,8 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::get_hub_stats(
 
     for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
         fi.hub_abs_pos[dir] = fi.interface->Turbine().hub_node.position[dir];
-        fi.hub_rot_vel[dir] = fi.interface->Turbine().hub_node.velocity[dir + AMREX_SPACEDIM];
+        fi.hub_rot_vel[dir] =
+            fi.interface->Turbine().hub_node.velocity[dir + AMREX_SPACEDIM];
     }
     // Orientation of hub is already in turbine data as first point
     for (int comp = 0; comp < AMREX_SPACEDIM * AMREX_SPACEDIM; ++comp) {
@@ -504,6 +565,7 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::ext_init_turbine(
     BL_PROFILE("amr-wind::KynemaIface::init_turbine");
 
     auto builder = kynema::interfaces::TurbineInterfaceBuilder{};
+    // Pass in gravity from elsewhere
     builder.Solution()
         .EnableDynamicSolve()
         .SetTimeStep(fi.dt_ext)
@@ -515,11 +577,13 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::ext_init_turbine(
 
     const YAML::Node wio = YAML::LoadFile(fi.input_file);
 
-    exw_kynema::build_turbine(
-        builder, wio, fi.num_blades, fi.num_blade_elem,
-        12); // fi.num_pts_tower);
+    constexpr int num_pts_tower_struct{12};
 
-    builder.Turbine().SetRotorSpeed(fi.rotational_speed);
+    // Builds turbine, including blades, nacelle, and tower
+    exw_kynema::build_turbine(
+        builder, wio, fi.num_blades, fi.num_blade_elem, num_pts_tower_struct,
+        fi.rotational_speed);
+    // fi.num_pts_tower);
 
     /*
     // Create distribution of points from base of blade to end, normalized from

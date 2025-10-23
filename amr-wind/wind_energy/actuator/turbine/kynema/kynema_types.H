@@ -144,7 +144,6 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
             buffer_f[length_force(0)];
         interface->Turbine().hub_node.loads[2] =
             buffer_f[length_force(0) + length_force(1)];
-        ;
     }
 
     /** Helper functions for navigating indices */
