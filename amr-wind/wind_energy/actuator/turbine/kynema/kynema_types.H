@@ -47,11 +47,34 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
 
     void populate_buffers()
     {
+        // Get hub information for nacelle force
+        // Chord is not used, set it to zero
+        buffer_cf[0] = 0.;
+        // Force is calculated by AMR-Wind, passed to Kynema
+        // Get position directly from node information
+        buffer_pf[0] = interface->Turbine().hub_node.position[0];
+        buffer_pf[length_force(0)] =
+            interface->Turbine().hub_node.position[1];
+        buffer_pf[2 * length_force(0)] =
+            interface->Turbine().hub_node.position[2];
+        buffer_pv[0] = buffer_pf[0];
+        buffer_pv[length_force(0)] = buffer_pf[length_force(0)];
+        buffer_pv[2 * length_force(0)] = buffer_pf[2 * length_force(0)];
+        // Get solid velocity as well, not used at the moment though
+        buffer_sv[0] = interface->Turbine().hub_node.velocity[0];
+        buffer_sv[length_force(0)] =
+            interface->Turbine().hub_node.velocity[1];
+        buffer_sv[2 * length_force(0)] =
+            interface->Turbine().hub_node.velocity[2];
+
+        // Get blade information
         int idx = 0;
         for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
+            // Skip hub node
+            ++idx;
             // Fluid velocity (fv) is not populated here, it comes from the
             // CFD solver. Need to add step to pass it from buffer to Kynema
-            for (int n = 0; n < length_force(0); ++n) {
+            for (int n = 1; n < length_force(0); ++n) {
                 if (dir == 0) {
                     buffer_cf[n] = (float)interface->Aerodynamics()
                                        .bodies[body_index(n)]
@@ -75,9 +98,14 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
         for (int n = 0; n < length_force(0); ++n) {
             // convert quaternions to rotation matrix
             for (int iq = 0; iq < 4; ++iq) {
-                q[iq] = (float)interface->Aerodynamics()
-                            .bodies[body_index(n)]
-                            .qqr_motion_map[node_index(n)][iq];
+                if (n == 0) {
+                    q[iq] = (float)interface->Turbine()
+                                .hub_node.position[iq + 3];
+                } else {
+                    q[iq] = (float)interface->Aerodynamics()
+                                .bodies[body_index(n)]
+                                .qqr_motion_map[node_index(n)][iq];
+                }
             }
             const int idx = n * 9;
             buffer_ori[idx + 0] =
@@ -95,22 +123,35 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
         }
     }
 
-    void pass_fluid_velocity_directly()
+    void pass_fluid_velocity_and_hub_load()
     {
-        int idx_v = 0;
+        // Fluid velocity at hub does not need to be passed, loads computed
+        // internally in AMR-Wind
+        int idx = 0;
         for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
-            for (int n = 0; n < length_fluid_velocity(0); ++n) {
+            // Skip hub node
+            ++idx;
+            for (int n = 1; n < length_fluid_velocity(0); ++n) {
                 interface->Aerodynamics()
                     .bodies[body_index(n)]
-                    .v_inflow[node_index(n)][dir] = buffer_fv[idx_v];
-                ++idx_v;
+                    .v_inflow[node_index(n)][dir] = buffer_fv[idx];
+                ++idx;
             }
         }
+        // Hub load (also called nacelle_force) does need to be passed
+        interface->Turbine().hub_node.loads[0] = buffer_f[0];
+        interface->Turbine().hub_node.loads[1] =
+            buffer_f[length_force(0)];
+        interface->Turbine().hub_node.loads[2] =
+            buffer_f[length_force(0) + length_force(1)];
+        ;
     }
 
     /** Helper functions for navigating indices */
     int body_index(int id) const
     {
+        // Considering hub, which is 1 node, subtract
+        id -= 1;
         int b_id = 0;
         int id_diff = id;
         for (int b = 0; b < (int)interface->Aerodynamics().bodies.size(); ++b) {
@@ -126,6 +167,8 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
 
     int node_index(int id) const
     {
+        // Considering hub, which is 1 node, subtract
+        id -= 1;
         int n_id = 0;
         int id_diff = id;
         for (int b = 0; b < (int)interface->Aerodynamics().bodies.size(); ++b) {
@@ -177,7 +220,7 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
 
     int length_force(int dir) const override
     {
-        unsigned int n_sect{0};
+        unsigned int n_sect{1};
         for (unsigned int n = 0; n < interface->Aerodynamics().bodies.size();
              ++n) {
             n_sect += interface->Aerodynamics().bodies[n].loads.size();

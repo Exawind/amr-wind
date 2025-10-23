@@ -25,7 +25,7 @@ void read_ops(datatype& data, const utils::ActParser& pp)
     // Get density value for normalization
     pp.get("density", tdata.density);
 
-    // Initialize OpenFAST specific data
+    // Copy data to external data holder
     const auto& tinfo = data.info();
     auto& tf = data.meta().ext_data;
     for (int i = 0; i < AMREX_SPACEDIM; ++i) {

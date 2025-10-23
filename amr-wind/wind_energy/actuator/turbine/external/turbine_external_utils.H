@@ -142,6 +142,7 @@ void compute_nacelle_force(datatype& data)
     const auto& rho = data.meta().density;
 
     const auto& eps = data.grid().epsilon[0].x();
+    // This assumes a static nacelle
     vs::Vector vel{
         ext_tdata.fluid_velocity(0)[0], ext_tdata.fluid_velocity(1)[0],
         ext_tdata.fluid_velocity(2)[0]};
@@ -179,7 +180,7 @@ void ext_step(datatype& data)
     // Populate nacelle force into the OpenFAST data structure so that it
     // gets broadcasted to all influenced processes in subsequent scattering
     // of data.
-    // compute_nacelle_force<datatype>(data);
+    compute_nacelle_force<datatype>(data);
 }
 
 template <typename datatype>

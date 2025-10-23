@@ -281,7 +281,7 @@ void update_turbine(::ext_turb::KynemaTurbine& fi, bool advance)
 {
     fi.interface->Aerodynamics().CalculateMotion(fi.interface->GetHostState());
     // copy fluid velocity to turbine solver (set inflow)
-    fi.pass_fluid_velocity_directly();
+    fi.pass_fluid_velocity_and_hub_load();
     fi.interface->Aerodynamics().CalculateAerodynamicLoads(fi.fluid_density);
     fi.interface->Aerodynamics().CalculateNodalLoads();
     if (advance) {
