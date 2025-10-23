@@ -67,7 +67,7 @@ struct ExternalTurbine
     double start_time{0.0};
 
     //! End time for this turbine
-    double stop_time;
+    double stop_time{-1.0};
 
     //! Timestep for CFD
     double dt_cfd;
