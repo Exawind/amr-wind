@@ -375,16 +375,12 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::parse_inputs(
         "Adaptive time-stepping not supported when Kynema is enabled");
 
     m_dt_cfd = time.delta_t();
-
-    //! Put input-reading steps here
 }
 
 template <>
 void ExtTurbIface<KynemaTurbine, KynemaSolverData>::allocate_ext_turbines()
 {
     BL_PROFILE("amr-wind::KynemaIface::allocate_turbines");
-    int nturbines = static_cast<int>(m_turbine_data.size());
-    //!! Do things need to be allocated separately in Kynema ??
 
     m_is_initialized = true;
 
