@@ -256,6 +256,12 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
 struct KynemaSolverData
 {
     std::string m_output_dir{"kynema_velocity_data"};
+
+    double damping_factor{0.};
+    int nl_iter_max{12};
+    double abs_err_tol{1e-7};
+    double rel_err_tol{1e-6};
+    amrex::Vector<amrex::Real> gravity{0.0, 0.0, -9.81};
 };
 
 } // namespace ext_turb

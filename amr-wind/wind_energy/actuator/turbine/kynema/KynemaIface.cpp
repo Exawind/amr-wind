@@ -387,6 +387,20 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::allocate_ext_turbines()
     //!! Do things need to be allocated separately in Kynema ??
 
     m_is_initialized = true;
+
+    // Get solver parameters
+    {
+        amrex::ParmParse pp("Kynema");
+        pp.query("damping_factor", m_solver_data.damping_factor);
+        pp.query("max_nonlinear_iterations", m_solver_data.nl_iter_max);
+        pp.query("abs_err_tol", m_solver_data.abs_err_tol);
+        pp.query("rel_err_tol", m_solver_data.rel_err_tol);
+    }
+
+    {
+        amrex::ParmParse pp("incflo");
+        pp.queryarr("gravity", m_solver_data.gravity);
+    }
 }
 
 template <>
@@ -565,15 +579,18 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::ext_init_turbine(
     BL_PROFILE("amr-wind::KynemaIface::init_turbine");
 
     auto builder = kynema::interfaces::TurbineInterfaceBuilder{};
-    // Pass in gravity from elsewhere
+
     builder.Solution()
         .EnableDynamicSolve()
         .SetTimeStep(fi.dt_ext)
-        .SetDampingFactor(0.0)
-        .SetGravity({0., 0., -9.81})
-        .SetMaximumNonlinearIterations(6)
-        .SetAbsoluteErrorTolerance(1e-6)
-        .SetRelativeErrorTolerance(1e-4);
+        .SetDampingFactor(m_solver_data.damping_factor)
+        .SetGravity(
+            {m_solver_data.gravity[0], m_solver_data.gravity[1],
+             m_solver_data.gravity[2]})
+        .SetMaximumNonlinearIterations(
+            static_cast<size_t>(m_solver_data.nl_iter_max))
+        .SetAbsoluteErrorTolerance(m_solver_data.abs_err_tol)
+        .SetRelativeErrorTolerance(m_solver_data.rel_err_tol);
 
     const YAML::Node wio = YAML::LoadFile(fi.input_file);
 
