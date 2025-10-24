@@ -445,12 +445,12 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::prepare_netcdf_file(
 {
 #ifdef AMR_WIND_USE_NETCDF
     BL_PROFILE("amr-wind::KynemaIface::prepare_netcdf_file");
-    if (!amrex::UtilCreateDirectory(m_solver_data.m_output_dir, 0755)) {
-        amrex::CreateDirectoryFailed(m_solver_data.m_output_dir);
+    if (!amrex::UtilCreateDirectory(m_solver_data.output_dir, 0755)) {
+        amrex::CreateDirectoryFailed(m_solver_data.output_dir);
     }
 
     const std::string fname =
-        m_solver_data.m_output_dir + "/" + fi.tlabel + ".nc";
+        m_solver_data.output_dir + "/" + fi.tlabel + ".nc";
 
     // Don't overwrite existing
     if (amrex::FileSystem::Exists(fname)) {
@@ -501,7 +501,7 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::write_velocity_data(
 #ifdef AMR_WIND_USE_NETCDF
     BL_PROFILE("amr-wind::KynemaIface::write_velocity_data");
     const std::string fname =
-        m_solver_data.m_output_dir + "/" + fi.tlabel + ".nc";
+        m_solver_data.output_dir + "/" + fi.tlabel + ".nc";
     auto ncf = ncutils::NCFile::open(fname, NC_WRITE);
     const std::string nt_name = "num_time_steps";
     const size_t nt = ncf.dim(nt_name).len();

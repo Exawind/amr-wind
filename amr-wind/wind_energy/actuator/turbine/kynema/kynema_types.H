@@ -255,7 +255,7 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
 
 struct KynemaSolverData
 {
-    std::string m_output_dir{"kynema_velocity_data"};
+    std::string output_dir{"kynema_velocity_data"};
 
     double damping_factor{0.};
     int nl_iter_max{12};

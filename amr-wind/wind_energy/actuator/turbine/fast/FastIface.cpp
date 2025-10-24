@@ -149,12 +149,12 @@ void ExtTurbIface<FastTurbine, FastSolverData>::prepare_netcdf_file(
 {
 #ifdef AMR_WIND_USE_NETCDF
     BL_PROFILE("amr-wind::FastIface::prepare_netcdf_file");
-    if (!amrex::UtilCreateDirectory(m_solver_data.m_output_dir, 0755)) {
-        amrex::CreateDirectoryFailed(m_solver_data.m_output_dir);
+    if (!amrex::UtilCreateDirectory(m_solver_data.output_dir, 0755)) {
+        amrex::CreateDirectoryFailed(m_solver_data.output_dir);
     }
 
     const std::string fname =
-        m_solver_data.m_output_dir + "/" + fi.tlabel + ".nc";
+        m_solver_data.output_dir + "/" + fi.tlabel + ".nc";
 
     // Don't overwrite existing
     if (amrex::FileSystem::Exists(fname)) {
@@ -205,7 +205,7 @@ void ExtTurbIface<FastTurbine, FastSolverData>::write_velocity_data(
 #ifdef AMR_WIND_USE_NETCDF
     BL_PROFILE("amr-wind::FastIface::write_velocity_data");
     const std::string fname =
-        m_solver_data.m_output_dir + "/" + fi.tlabel + ".nc";
+        m_solver_data.output_dir + "/" + fi.tlabel + ".nc";
     auto ncf = ncutils::NCFile::open(fname, NC_WRITE);
     const std::string nt_name = "num_time_steps";
     const size_t nt = ncf.dim(nt_name).len();
@@ -359,7 +359,7 @@ void ExtTurbIface<FastTurbine, FastSolverData>::ext_replay_turbine(
     // Ensure that the NetCDF file exists and contains the required number of
     // timesteps for restart.
     const std::string fname =
-        m_solver_data.m_output_dir + "/" + fi.tlabel + ".nc";
+        m_solver_data.output_dir + "/" + fi.tlabel + ".nc";
     AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
         amrex::FileSystem::Exists(fname),
         "FastIface: Cannot find OpenFAST velocity data file: " + fname);
