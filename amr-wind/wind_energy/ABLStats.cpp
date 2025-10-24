@@ -82,10 +82,12 @@ void ABLStats::initialize()
     }
     m_dn = geom.CellSize()[m_normal_dir];
 
-    if (m_out_fmt == "netcdf") {
-        prepare_netcdf_file();
-    } else {
-        prepare_ascii_file();
+    if (m_out_freq > 0) {
+        if (m_out_fmt == "netcdf") {
+            prepare_netcdf_file();
+        } else {
+            prepare_ascii_file();
+        }
     }
 }
 
@@ -281,12 +283,14 @@ void ABLStats::compute_zi()
 void ABLStats::process_output()
 {
 
-    if (m_out_fmt == "ascii") {
-        write_ascii();
-    } else if (m_out_fmt == "netcdf") {
-        write_netcdf();
-    } else {
-        amrex::Abort("ABLStats: Invalid output format encountered");
+    if (m_out_freq > 0) {
+        if (m_out_fmt == "ascii") {
+            write_ascii();
+        } else if (m_out_fmt == "netcdf") {
+            write_netcdf();
+        } else {
+            amrex::Abort("ABLStats: Invalid output format encountered");
+        }
     }
 }
 

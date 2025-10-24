@@ -400,7 +400,7 @@ Active Wake Control with Joukowsky Disk
 
 There is preliminary support for exploring Active Wake Control (AWC) strategies with
 the Joukowsky disk model. The current implementation follows `Cheung et. al (2024)
-<https://doi.org/10.3390/en17040865>`. The following input options allow for enabling AWC:
+<https://doi.org/10.3390/en17040865>`_. The following input options allow for enabling AWC:
 
 .. input_param:: Actuator.WTG01.awc_angular_frequency
 
