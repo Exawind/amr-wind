@@ -112,7 +112,7 @@ void init_data_op(datatype& data)
         sz_info[1] = tf.length_force(0);
         sz_info[2] = tf.length_fluid_velocity(0);
         sz_info[3] = tf.num_pts_tower;
-        sz_info[4] = tf.num_blade_elem;
+        sz_info[4] = tf.num_vel_pts_blade();
     }
 
     // Broadcast data to everyone

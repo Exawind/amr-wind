@@ -78,6 +78,8 @@ struct FastTurbine : public ext_turb::ExternalTurbine
 
     int length_orientation() const override { return to_cfd.pOrientation_Len; }
 
+    int num_vel_pts_blade() const override { return num_blade_elem; }
+
 #if OPENFAST_VERSION_MAJOR != 4
     exw_fast::SC_DX_InputType to_sc;
     exw_fast::SC_DX_OutputType from_sc;

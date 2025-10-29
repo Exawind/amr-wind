@@ -97,6 +97,7 @@ struct ExternalTurbine
     virtual int length_force(int dir) const = 0;
     virtual int length_position_at_force(int dir) const = 0;
     virtual int length_orientation() const = 0;
+    virtual int num_vel_pts_blade() const = 0;
 };
 
 } // namespace ext_turb

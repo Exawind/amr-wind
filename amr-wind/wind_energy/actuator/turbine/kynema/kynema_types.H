@@ -234,6 +234,8 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
         return length_force(0) * AMREX_SPACEDIM * AMREX_SPACEDIM;
     }
 
+    int num_vel_pts_blade() const override { return num_pts_blade; }
+
     double fluid_density{1.};
     double rotational_speed{0.};
 
