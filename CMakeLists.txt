@@ -135,11 +135,7 @@ endif()
 include(set_compile_flags)
 
 if (AMR_WIND_ENABLE_W2A)
-  # Turn on the use of the library via bool, it has already been included above
   target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_USE_W2A)
-  # Address FFTW dependencies
-  set(CMAKE_PREFIX_PATH ${FFTW_DIR} ${CMAKE_PREFIX_PATH})
-  include_directories(${FFTW_DIR}/include)
 endif()
 
 if(AMR_WIND_ENABLE_NETCDF)
