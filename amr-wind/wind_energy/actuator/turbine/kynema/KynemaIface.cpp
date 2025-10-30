@@ -61,7 +61,8 @@ void build_turbine(
 
         // Set blade parameters
         blade_builder.SetElementOrder(n_blade_nodes - 1)
-            .PrescribedRootMotion(false);
+            .PrescribedRootMotion(false)
+            .SetSectionRefinement(2);
 
         // Add reference axis coordinates (WindIO uses Z-axis as reference axis)
         const auto ref_axis = wio_blade["reference_axis"];
@@ -590,7 +591,7 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::ext_init_turbine(
 
     const YAML::Node wio = YAML::LoadFile(fi.input_file);
 
-    constexpr int num_pts_tower_struct{12};
+    constexpr int num_pts_tower_struct{11};
 
     // Builds turbine, including blades, nacelle, and tower
     exw_kynema::build_turbine(
