@@ -30,6 +30,8 @@ void make_component_views(datatype& data)
     for (int ib = 0; ib < num_blades; ++ib) {
         ComponentView cv;
 
+        // This might be another problem! for Kynema vs OpenFAST
+        // Only relevant for disks, I think. Would need to adjust start_vel
         const auto start = ib * num_pts_blade + 1;
         const auto start_vel = ib * num_vel_pts_blade;
         // clang-format off
