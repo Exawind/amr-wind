@@ -245,8 +245,6 @@ void ABLStats::compute_zi()
     const auto& geom = (this->m_sim.repo()).mesh().Geom(lev);
     auto const& domain_box = geom.Domain();
 
-    AMREX_ALWAYS_ASSERT(
-        domain_box.smallEnd() == 0); // We could relax this if necessary.
     amrex::Array<bool, AMREX_SPACEDIM> decomp{AMREX_D_DECL(true, true, true)};
     decomp[dir] = false; // no domain decompose in the dir direction.
     auto new_ba = amrex::decompose(
@@ -263,32 +261,57 @@ void ABLStats::compute_zi()
     int myproc = amrex::ParallelDescriptor::MyProc();
     if (myproc < new_mf.size()) {
         auto const& a = new_mf.const_array(myproc);
-        amrex::Box box2d = amrex::makeSlab(amrex::Box(a), dir, 0);
-        AMREX_ALWAYS_ASSERT(
-            dir == 2); // xxxxx TODO: we can support other directions later
-        // xxxxx TODO: sycl can be supported in the future.
-        // xxxxx TODO: we can support CPU later.
+        amrex::Box fabbox(a);
+#ifdef AMREX_USE_GPU
+        amrex::BoxND<AMREX_SPACEDIM-1> box2d;
+        {
+            auto dlo = fabbox.smallEnd();
+            auto dhi = fabbox.bigEnd();
+	    AMREX_ALWAYS_ASSERT(dir == 2);
+	    box2d = amrex::BoxND<2>(amrex::IntVectND<2>(dlo[0], dlo[1]),
+				    amrex::IntVectND<2>(dhi[0], dhi[1]));
+        }
+        int lendir = domain_box.length(dir);
         const int nblocks = box2d.numPts();
         constexpr int nthreads = 128;
-        const int lenx = box2d.length(0);
-        const int lenz = domain_box.length(2);
-        const int lox = box2d.smallEnd(0);
-        const int loy = box2d.smallEnd(1);
+        amrex::BoxIndexerND<2> box_indexer(box2d);
         amrex::Gpu::DeviceVector<int> tmp(nblocks);
         auto* ptmp = tmp.data();
+#ifdef AMREX_USE_SYCL
+        constexpr std::size_t shared_mem_bytes =
+                      sizeof(unsigned long long)*amrex::Gpu::Device::warp_size;
         amrex::launch<nthreads>(
-            nblocks, amrex::Gpu::gpuStream(), [=] AMREX_GPU_DEVICE() {
-                const int j = int(blockIdx.x) / lenx + loy;
-                const int i = int(blockIdx.x) - j * lenx + lox;
-                amrex::KeyValuePair<amrex::Real, int> r{
-                    std::numeric_limits<amrex::Real>::lowest(), 0};
-                for (int k = threadIdx.x; k < lenz; k += nthreads) {
-                    if (a(i, j, k) > r.first()) {
-                        r.second() = k;
-                        r.first() = a(i, j, k);
+            nblocks, shared_mem_bytes, amrex::Gpu::gpuStream(),
+            [=] AMREX_GPU_DEVICE (amrex::Gpu::Handler const& gh) {
+                amrex::Dim1 blockIdx {gh.blockIdx()};
+                amrex::Dim1 threadIdx{gh.threadIdx()};
+#else
+        amrex::launch<nthreads>(
+            nblocks, amrex::Gpu::gpuStream(), [=] AMREX_GPU_DEVICE () {
+#endif
+                auto iv2d = box_indexer.intVect(blockIdx.x);
+                amrex::IntVect iv;
+                int i2d = 0;
+                for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
+                    if (idim != dir) {
+                        iv[idim] = iv2d[i2d++];
                     }
                 }
+                amrex::KeyValuePair<amrex::Real, int> r{
+                    std::numeric_limits<amrex::Real>::lowest(), 0};
+                for (int k = threadIdx.x; k < lendir; k += nthreads) {
+                    iv[dir] = k;
+                    auto v = a(iv);
+                    if (v > r.first()) {
+                        r.first() = v;
+                        r.second() = k;
+                    }
+                }
+#ifdef AMREX_USE_SYCL
+                r = amrex::Gpu::blockReduceMax(r, gh);
+#else
                 r = amrex::Gpu::blockReduceMax<nthreads>(r);
+#endif
                 if (threadIdx.x == 0) {
                     ptmp[blockIdx.x] = r.second();
                 }
@@ -299,6 +322,27 @@ void ABLStats::compute_zi()
             nblocks, [=] AMREX_GPU_DEVICE(int iblock) {
                 return (ptmp[iblock] + amrex::Real(0.5)) * dnval;
             });
+#else
+        auto alo = amrex::lbound(fabbox);
+        auto ahi = amrex::ubound(fabbox);
+	AMREX_ALWAYS_ASSERT(dir == 2);
+#ifdef AMREX_USE_OMP
+#pragma omp parallel for collapse(2) reduction(+:zi_sum)
+#endif
+	for         (int j = alo.y; j <= ahi.y; ++j) {
+	    for     (int i = alo.x; i <= ahi.x; ++i) {
+		amrex::Real vmax = std::numeric_limits<amrex::Real>::lowest();
+		int idxmax = 0;
+		for (int k = alo.z; k <= ahi.z; ++k) {
+		    if (a(i,j,k) > vmax) {
+			vmax = a(i,j,k);
+			idxmax = i;
+		    }
+		}
+		zi_sum += (idxmax + amrex::Real(0.5)) * m_dn;
+	    }
+        }
+#endif
     }
 
     amrex::ParallelReduce::Sum(
