@@ -267,9 +267,9 @@ void ABLStats::compute_zi()
         {
             auto dlo = fabbox.smallEnd();
             auto dhi = fabbox.bigEnd();
-	    AMREX_ALWAYS_ASSERT(dir == 2);
-	    box2d = amrex::BoxND<2>(amrex::IntVectND<2>(dlo[0], dlo[1]),
-				    amrex::IntVectND<2>(dhi[0], dhi[1]));
+            AMREX_ALWAYS_ASSERT(dir == 2);
+            box2d = amrex::BoxND<2>(amrex::IntVectND<2>(dlo[0], dlo[1]),
+                                    amrex::IntVectND<2>(dhi[0], dhi[1]));
         }
         int lendir = domain_box.length(dir);
         const int nblocks = box2d.numPts();
@@ -325,22 +325,22 @@ void ABLStats::compute_zi()
 #else
         auto alo = amrex::lbound(fabbox);
         auto ahi = amrex::ubound(fabbox);
-	AMREX_ALWAYS_ASSERT(dir == 2);
+        AMREX_ALWAYS_ASSERT(dir == 2);
 #ifdef AMREX_USE_OMP
 #pragma omp parallel for collapse(2) reduction(+:zi_sum)
 #endif
-	for         (int j = alo.y; j <= ahi.y; ++j) {
-	    for     (int i = alo.x; i <= ahi.x; ++i) {
-		amrex::Real vmax = std::numeric_limits<amrex::Real>::lowest();
-		int idxmax = 0;
-		for (int k = alo.z; k <= ahi.z; ++k) {
-		    if (a(i,j,k) > vmax) {
-			vmax = a(i,j,k);
-			idxmax = i;
-		    }
-		}
-		zi_sum += (idxmax + amrex::Real(0.5)) * m_dn;
-	    }
+        for         (int j = alo.y; j <= ahi.y; ++j) {
+            for     (int i = alo.x; i <= ahi.x; ++i) {
+                amrex::Real vmax = std::numeric_limits<amrex::Real>::lowest();
+                int idxmax = 0;
+                for (int k = alo.z; k <= ahi.z; ++k) {
+                    if (a(i,j,k) > vmax) {
+                        vmax = a(i,j,k);
+                        idxmax = i;
+                    }
+                }
+                zi_sum += (idxmax + amrex::Real(0.5)) * m_dn;
+            }
         }
 #endif
     }
