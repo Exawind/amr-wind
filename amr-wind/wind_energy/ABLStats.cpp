@@ -263,13 +263,14 @@ void ABLStats::compute_zi()
         auto const& a = new_mf.const_array(myproc);
         amrex::Box fabbox(a);
 #ifdef AMREX_USE_GPU
-        amrex::BoxND<AMREX_SPACEDIM-1> box2d;
+        amrex::BoxND<AMREX_SPACEDIM - 1> box2d;
         {
             auto dlo = fabbox.smallEnd();
             auto dhi = fabbox.bigEnd();
             AMREX_ALWAYS_ASSERT(dir == 2);
-            box2d = amrex::BoxND<2>(amrex::IntVectND<2>(dlo[0], dlo[1]),
-                                    amrex::IntVectND<2>(dhi[0], dhi[1]));
+            box2d = amrex::BoxND<2>(
+                amrex::IntVectND<2>(dlo[0], dlo[1]),
+                amrex::IntVectND<2>(dhi[0], dhi[1]));
         }
         int lendir = domain_box.length(dir);
         const int nblocks = box2d.numPts();
@@ -279,15 +280,15 @@ void ABLStats::compute_zi()
         auto* ptmp = tmp.data();
 #ifdef AMREX_USE_SYCL
         constexpr std::size_t shared_mem_bytes =
-                      sizeof(unsigned long long)*amrex::Gpu::Device::warp_size;
+            sizeof(unsigned long long) * amrex::Gpu::Device::warp_size;
         amrex::launch<nthreads>(
             nblocks, shared_mem_bytes, amrex::Gpu::gpuStream(),
-            [=] AMREX_GPU_DEVICE (amrex::Gpu::Handler const& gh) {
-                amrex::Dim1 blockIdx {gh.blockIdx()};
+            [=] AMREX_GPU_DEVICE(amrex::Gpu::Handler const& gh) {
+                amrex::Dim1 blockIdx{gh.blockIdx()};
                 amrex::Dim1 threadIdx{gh.threadIdx()};
 #else
         amrex::launch<nthreads>(
-            nblocks, amrex::Gpu::gpuStream(), [=] AMREX_GPU_DEVICE () {
+            nblocks, amrex::Gpu::gpuStream(), [=] AMREX_GPU_DEVICE() {
 #endif
                 auto iv2d = box_indexer.intVect(blockIdx.x);
                 amrex::IntVect iv;
@@ -327,15 +328,15 @@ void ABLStats::compute_zi()
         auto ahi = amrex::ubound(fabbox);
         AMREX_ALWAYS_ASSERT(dir == 2);
 #ifdef AMREX_USE_OMP
-#pragma omp parallel for collapse(2) reduction(+:zi_sum)
+#pragma omp parallel for collapse(2) reduction(+ : zi_sum)
 #endif
-        for         (int j = alo.y; j <= ahi.y; ++j) {
-            for     (int i = alo.x; i <= ahi.x; ++i) {
+        for (int j = alo.y; j <= ahi.y; ++j) {
+            for (int i = alo.x; i <= ahi.x; ++i) {
                 amrex::Real vmax = std::numeric_limits<amrex::Real>::lowest();
                 int idxmax = 0;
                 for (int k = alo.z; k <= ahi.z; ++k) {
-                    if (a(i,j,k) > vmax) {
-                        vmax = a(i,j,k);
+                    if (a(i, j, k) > vmax) {
+                        vmax = a(i, j, k);
                         idxmax = i;
                     }
                 }
