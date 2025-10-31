@@ -1,13 +1,12 @@
+#include <cmath>
 #include "amr-wind/turbulence/LES/Kosovic.H"
-#include "AMReX_MultiFab.H"
-#include "AMReX_ParmParse.H"
-#include "AMReX_REAL.H"
-#include "amr-wind/fvm/divergence.H"
+#include "amr-wind/turbulence/TurbModelDefs.H"
 #include "amr-wind/fvm/nonLinearSum.H"
 #include "amr-wind/fvm/strainrate.H"
-#include "amr-wind/turbulence/TurbModelDefs.H"
-#include "amr-wind/wind_energy/ABL.H"
-#include <cmath>
+#include "amr-wind/fvm/divergence.H"
+#include "AMReX_REAL.H"
+#include "AMReX_MultiFab.H"
+#include "AMReX_ParmParse.H"
 
 namespace amr_wind {
 namespace turbulence {
@@ -166,11 +165,14 @@ void Kosovic<Transport>::update_turbulent_viscosity(
                                          (vel_arrs[nbx](i, j, k + 1, 0) -
                                           vel_arrs[nbx](i, j, k - 1, 0));
                 const amrex::Real dVdz = 0.5 / dz *
-                                         (vel_arrs[nbx](i, j, k + 1, 0) -
-                                          vel_arrs[nbx](i, j, k - 1, 0));
-                const amrex::Real dMdz = std::sqrt(dUdz * dUdz + dVdz * dVdz);
-                const amrex::Real mut_loglaw =
-                    ustar * ustar * rho / (dMdz + 1e-15);
+                                         (vel_arrs[nbx](i, j, k + 1, 1) -
+                                          vel_arrs[nbx](i, j, k - 1, 1));
+                // 0.1 m/s is used from YSU model reference
+                // Restart of a finer refinement level from a coarser level
+                // can cause MLMG to sometimes fail
+                const amrex::Real dMdz =
+                    std::max(std::sqrt(dUdz * dUdz + dVdz * dVdz), 0.1);
+                const amrex::Real mut_loglaw = ustar * ustar * rho / dMdz;
                 const amrex::Real drag =
                     (has_terrain) ? drag_arrs[nbx](i, j, k, 0) : 0.0;
                 mu_arrs[nbx](i, j, k) =
