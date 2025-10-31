@@ -324,17 +324,17 @@ void ABLStats::compute_zi()
                 return (ptmp[iblock] + amrex::Real(0.5)) * dnval;
             });
 #else
-        auto alo = amrex::lbound(fabbox);
-        auto ahi = amrex::ubound(fabbox);
+        auto lo = amrex::lbound(fabbox);
+        auto hi = amrex::ubound(fabbox);
         AMREX_ALWAYS_ASSERT(dir == 2);
 #ifdef AMREX_USE_OMP
 #pragma omp parallel for collapse(2) reduction(+ : zi_sum)
 #endif
-        for (int j = alo.y; j <= ahi.y; ++j) {
-            for (int i = alo.x; i <= ahi.x; ++i) {
+        for (int j = lo.y; j <= hi.y; ++j) {
+            for (int i = lo.x; i <= hi.x; ++i) {
                 amrex::Real vmax = std::numeric_limits<amrex::Real>::lowest();
                 int idxmax = 0;
-                for (int k = alo.z; k <= ahi.z; ++k) {
+                for (int k = lo.z; k <= hi.z; ++k) {
                     if (a(i, j, k) > vmax) {
                         vmax = a(i, j, k);
                         idxmax = i;
