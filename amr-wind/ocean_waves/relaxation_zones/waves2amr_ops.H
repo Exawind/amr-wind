@@ -406,6 +406,7 @@ struct ReadInputsOp<W2AWaves>
             wdata.av_mptr = modes_hosgrid::allocate_real(wdata.n0, 1);
             wdata.aw_mptr = modes_hosgrid::allocate_real(wdata.n0, 1);
         }
+        wdata.plan_out = modes_hosgrid::allocate_real(wdata.n0, wdata.n1);
 
         // Set up planner flag based on input
         auto plan_f = modes_hosgrid::planner_flags::estimate;
@@ -424,11 +425,12 @@ struct ReadInputsOp<W2AWaves>
         if (wdata.is_ocean) {
             wdata.plan_vector.emplace_back(
                 modes_hosgrid::plan_ifftw(
-                    wdata.n0, wdata.n1, wdata.c_eta_mptr, plan_f));
+                    wdata.n0, wdata.n1, wdata.c_eta_mptr, wdata.plan_out,
+                    plan_f));
         } else {
             modes_hosgrid::plan_ifftw_nwt(
                 wdata.n0, wdata.n1, wdata.plan_vector, wdata.r_eta_mptr,
-                plan_f);
+                wdata.plan_out, plan_f);
         }
 
         // Create height vector for velocity mode conversion before
