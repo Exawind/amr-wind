@@ -70,6 +70,61 @@ void update_target_vof(CFDSim& sim)
     amrex::Gpu::streamSynchronize();
 }
 
+void modify_target_fields_for_beach(
+    CFDSim& sim, const RelaxZonesBaseData& wdata)
+{
+    AMREX_ALWAYS_ASSERT(wdata.has_beach == true);
+    const int nlevels = sim.repo().num_active_levels();
+    auto& ow_levelset = sim.repo().get_field("ow_levelset");
+    auto& ow_vel = sim.repo().get_field("ow_velocity");
+    const auto& geom = sim.mesh().Geom();
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+        const auto& dx = geom[lev].CellSizeArray();
+        const auto& problo = geom[lev].ProbLoArray();
+        const auto& probhi = geom[lev].ProbHiArray();
+        auto target_ls_arrs = ow_levelset(lev).arrays();
+        auto target_vel_arrs = ow_vel(lev).arrays();
+
+        const amrex::Real gen_length = wdata.gen_length;
+        const amrex::Real beach_length = wdata.beach_length;
+        const amrex::Real zsl = wdata.zsl;
+        const amrex::Real current = wdata.current;
+
+        amrex::ParallelFor(
+            ow_vel(lev), amrex::IntVect(3),
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                const amrex::Real x = amrex::min(
+                    amrex::max(problo[0] + (i + 0.5) * dx[0], problo[0]),
+                    probhi[0]);
+                const amrex::Real z = amrex::min(
+                    amrex::max(problo[2] + (k + 0.5) * dx[2], problo[2]),
+                    probhi[2]);
+
+                auto target_ls = target_ls_arrs[nbx];
+                auto target_vel = target_vel_arrs[nbx];
+
+                // Create wave vector for generation, numerical beach
+                const utils::WaveVec wave_sol{
+                    target_vel(i, j, k, 0), target_vel(i, j, k, 1),
+                    target_vel(i, j, k, 2), target_ls(i, j, k)};
+                const utils::WaveVec outlet{current, 0.0, 0.0, zsl - z};
+
+                // Harmonize between inlet/bulk profile and outlet profile
+                const auto target_profile = utils::harmonize_profiles_1d(
+                    x, problo[0], gen_length, probhi[0], beach_length, wave_sol,
+                    wave_sol, outlet);
+
+                // Update target fields based on harmonization
+                for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
+                    target_vel(i, j, k, dir) = target_profile[dir];
+                }
+                target_ls(i, j, k) = target_profile[3];
+            });
+    }
+    amrex::Gpu::streamSynchronize();
+}
+
 void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
 {
     const int nlevels = sim.repo().num_active_levels();
