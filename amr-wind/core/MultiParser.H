@@ -30,8 +30,7 @@ public:
     //! Check if the keyword is present in either namespace
     bool contains(const std::string& name) const
     {
-        return m_pp.contains(name) ||
-               m_pp_default.contains(name);
+        return m_pp.contains(name) || m_pp_default.contains(name);
     }
 
     /** Get a vector from the input file

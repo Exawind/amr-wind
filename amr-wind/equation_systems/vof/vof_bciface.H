@@ -84,9 +84,9 @@ protected:
 
             amrex::ParmParse pp(bcid);
             if (bct == BC::mass_inflow || bct == BC::mass_inflow_outflow) {
-                pp.getarr(fname.c_str(), bcval[ori], 0, ndim);
+                pp.getarr(fname, bcval[ori], 0, ndim);
             } else {
-                pp.queryarr(fname.c_str(), bcval[ori], 0, ndim);
+                pp.queryarr(fname, bcval[ori], 0, ndim);
             }
         }
     }
@@ -165,9 +165,9 @@ protected:
 
             amrex::ParmParse pp(bcid);
             if (bct == BC::mass_inflow || bct == BC::mass_inflow_outflow) {
-                pp.getarr(fname.c_str(), bcval[ori], 0, ndim);
+                pp.getarr(fname, bcval[ori], 0, ndim);
             } else {
-                pp.queryarr(fname.c_str(), bcval[ori], 0, ndim);
+                pp.queryarr(fname, bcval[ori], 0, ndim);
             }
         }
     }
