@@ -278,7 +278,7 @@ TEST_F(OceanWavesW2ATest, time_interp)
     // Interpolate once in time
     amrex::Real t_sim = 0.5;
     time_interpolate_wave_fields(
-        lvs, vel, w2a_lvs, w2a_vel, t_last, t_sim, t_w2a);
+        lvs, vel, w2a_lvs, w2a_vel, lvs, vel, t_last, t_sim, t_w2a);
 
     // Record time that data has been interpolated to
     t_last = t_sim;
@@ -303,7 +303,7 @@ TEST_F(OceanWavesW2ATest, time_interp)
 
     // Interpolate again
     time_interpolate_wave_fields(
-        lvs, vel, w2a_lvs, w2a_vel, t_last, t_sim, t_w2a);
+        lvs, vel, w2a_lvs, w2a_vel, lvs, vel, t_last, t_sim, t_w2a);
 
     // Check value of levelset
     const amrex::Real fmax2 = utils::field_max(lvs);
