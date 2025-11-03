@@ -237,23 +237,14 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                 bool outside_zones = Gamma + constants::EPS >= 1.;
 
                 if (!(outside_zones || in_or_near_terrain)) {
-                    // Create wave vector for generation, numerical beach
-                    const utils::WaveVec wave_sol{
-                        target_vel(i, j, k, 0), target_vel(i, j, k, 1),
-                        target_vel(i, j, k, 2), target_volfrac(i, j, k)};
-                    const utils::WaveVec quiescent{
-                        current, 0.0, 0.0,
-                        utils::free_surface_to_vof(zsl, z, dx[2])};
-                    const auto outlet = has_beach ? quiescent : wave_sol;
-
                     // Check for in beach, needed for velocity forcing
                     const bool in_beach =
                         has_beach && x + beach_length >= probhi[0];
 
-                    // Harmonize between inlet/bulk profile and outlet profile
-                    const auto target_profile = utils::harmonize_profiles_1d(
-                        x, problo[0], gen_length, probhi[0], beach_length,
-                        wave_sol, wave_sol, outlet);
+                    // Target already harmonized: inlet/bulk with outlet profile
+                    const utils::WaveVec target_profile{
+                        target_vel(i, j, k, 0), target_vel(i, j, k, 1),
+                        target_vel(i, j, k, 2), target_volfrac(i, j, k)};
 
                     // Nudge solution toward target
                     amrex::Real new_vof = utils::combine_linear(
