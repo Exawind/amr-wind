@@ -42,7 +42,7 @@ void BCIface::read_bctype()
         amrex::ParmParse pp(bcid);
         std::string bcstr = "null";
         pp.query("type", bcstr);
-        pp.query(key.c_str(), bcstr);
+        pp.query(key, bcstr);
         bcstr = amrex::toLower(bcstr);
 
         // Protect against copy/paste errors where user intended to add a BC but
@@ -133,9 +133,9 @@ amrex::Array<const std::string, 3> BCIface::get_dirichlet_udfs()
         amrex::ParmParse pp(bcid);
 
         if (bct == BC::mass_inflow) {
-            if (pp.contains(inflow_key.c_str())) {
+            if (pp.contains(inflow_key)) {
                 std::string val;
-                pp.get(inflow_key.c_str(), val);
+                pp.get(inflow_key, val);
 
                 if (has_inflow_udf && (inflow_udf != val)) {
                     amrex::Abort(
@@ -148,9 +148,9 @@ amrex::Array<const std::string, 3> BCIface::get_dirichlet_udfs()
         }
 
         if (bct == BC::mass_inflow_outflow) {
-            if (pp.contains(inflow_outflow_key.c_str())) {
+            if (pp.contains(inflow_outflow_key)) {
                 std::string val;
-                pp.get(inflow_outflow_key.c_str(), val);
+                pp.get(inflow_outflow_key, val);
 
                 if (has_inflow_outflow_udf && (inflow_outflow_udf != val)) {
                     amrex::Abort(
@@ -164,9 +164,9 @@ amrex::Array<const std::string, 3> BCIface::get_dirichlet_udfs()
         }
 
         if (bct == BC::slip_wall) {
-            if (pp.contains(wall_key.c_str())) {
+            if (pp.contains(wall_key)) {
                 std::string val;
-                pp.get(wall_key.c_str(), val);
+                pp.get(wall_key, val);
 
                 if (has_wall_udf && (wall_udf != val)) {
                     amrex::Abort(
@@ -276,7 +276,7 @@ void BCVelocity::read_values()
         const auto bct = bctype[ori];
 
         amrex::ParmParse pp(bcid);
-        pp.queryarr(fname.c_str(), bcval[ori], 0, ndim);
+        pp.queryarr(fname, bcval[ori], 0, ndim);
         if (bct == BC::no_slip_wall) {
             // Set normal component to zero
             bcval[ori][ori.coordDir()] = 0.0;
@@ -366,9 +366,9 @@ void BCScalar::read_values()
         if (((bct == BC::mass_inflow) && (const_dirichlet_inflow)) ||
             ((bct == BC::mass_inflow_outflow) &&
              (const_dirichlet_inflow_outflow))) {
-            pp.getarr(fname.c_str(), bcval[ori], 0, ndim);
+            pp.getarr(fname, bcval[ori], 0, ndim);
         } else {
-            pp.queryarr(fname.c_str(), bcval[ori], 0, ndim);
+            pp.queryarr(fname, bcval[ori], 0, ndim);
         }
     }
 }
@@ -386,7 +386,7 @@ void BCPressure::read_values()
 
         amrex::ParmParse pp(bcid);
         if ((bct == BC::pressure_outflow)) {
-            pp.queryarr(fname.c_str(), bcval[ori], 0, ndim);
+            pp.queryarr(fname, bcval[ori], 0, ndim);
         }
     }
 }

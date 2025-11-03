@@ -101,7 +101,7 @@ public:
         amrex::ParmParse pp("transport");
         const std::string key = scalar_name + "_laminar_schmidt";
         amrex::Real lam_schmidt = 1.0;
-        pp.query(key.c_str(), lam_schmidt);
+        pp.query(key, lam_schmidt);
         return lam_schmidt;
     }
 
@@ -110,7 +110,7 @@ public:
         amrex::ParmParse pp("transport");
         const std::string key = scalar_name + "_turbulent_schmidt";
         amrex::Real turb_schmidt = 1.0;
-        pp.query(key.c_str(), turb_schmidt);
+        pp.query(key, turb_schmidt);
         return turb_schmidt;
     }
 

@@ -17,7 +17,7 @@ ConstValue::ConstValue(Field& fld) : m_field(fld)
 {
     amrex::ParmParse pp_old("incflo");
     amrex::ParmParse pp(identifier() + "." + m_field.name());
-    pp_old.queryarr(m_field.name().c_str(), m_value);
+    pp_old.queryarr(m_field.name(), m_value);
     pp.queryarr("value", m_value);
 
     if (fld.num_comp() != m_value.size()) {
