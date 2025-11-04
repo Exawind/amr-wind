@@ -97,7 +97,7 @@ struct UpdateTargetFieldsSecondaryOp<
 
         const auto& wdata = data.meta();
         auto& sim = data.sim();
-        
+
         if (wdata.has_beach && sim.repo().field_exists("vof")) {
             relaxation_zones::modify_target_fields_for_beach(sim, wdata);
         }
