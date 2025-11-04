@@ -93,6 +93,7 @@ void ABLStats::initialize()
 
 void ABLStats::calc_averages()
 {
+    BL_PROFILE("amr-wind::ABLStats::calc_averages");
     m_pa_vel();
     m_pa_temp();
     m_pa_vel_fine();
@@ -232,6 +233,7 @@ void ABLStats::post_advance_work()
 
 void ABLStats::compute_zi()
 {
+    BL_PROFILE("amr-wind::ABLStats::compute_zi");
 
     auto gradT = (this->m_sim.repo())
                      .create_scratch_field(3, m_temperature.num_grow()[0]);
@@ -242,46 +244,124 @@ void ABLStats::compute_zi()
     const int dir = m_normal_dir;
     const auto& geom = (this->m_sim.repo()).mesh().Geom(lev);
     auto const& domain_box = geom.Domain();
-    const auto& gradT_arrs = (*gradT)(lev).const_arrays();
-    auto device_tg_fab = amrex::ReduceToPlane<
-        amrex::ReduceOpMax, amrex::KeyValuePair<amrex::Real, int>>(
-        dir, domain_box, m_temperature(lev),
-        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k)
-            -> amrex::KeyValuePair<amrex::Real, int> {
-            const amrex::IntVect iv(i, j, k);
-            return {gradT_arrs[nbx](i, j, k, dir), iv[dir]};
-        });
 
+    amrex::Array<bool, AMREX_SPACEDIM> decomp{AMREX_D_DECL(true, true, true)};
+    decomp[dir] = false; // no domain decompose in the dir direction.
+    auto new_ba = amrex::decompose(
+        domain_box, amrex::ParallelDescriptor::NProcs(), decomp);
+
+    amrex::Vector<int> pmap(new_ba.size());
+    std::iota(pmap.begin(), pmap.end(), 0);
+    amrex::DistributionMapping new_dm(std::move(pmap));
+
+    amrex::MultiFab new_mf(new_ba, new_dm, 1, 0);
+    new_mf.ParallelCopy((*gradT)(lev), dir, 0, 1);
+
+    amrex::Real zi_sum = 0;
+    int myproc = amrex::ParallelDescriptor::MyProc();
+    if (myproc < new_mf.size()) {
+        auto const& a = new_mf.const_array(myproc);
+        amrex::Box fabbox(a);
 #ifdef AMREX_USE_GPU
-    amrex::BaseFab<amrex::KeyValuePair<amrex::Real, int>> pinned_tg_fab(
-        device_tg_fab.box(), device_tg_fab.nComp(), amrex::The_Pinned_Arena());
-    amrex::Gpu::dtoh_memcpy(
-        pinned_tg_fab.dataPtr(), device_tg_fab.dataPtr(),
-        pinned_tg_fab.nBytes());
+        amrex::BoxND<AMREX_SPACEDIM - 1> box2d;
+        {
+            const auto dlo = fabbox.smallEnd();
+            const auto dhi = fabbox.bigEnd();
+            AMREX_ALWAYS_ASSERT(dir == 2);
+            box2d = amrex::BoxND<2>(
+                amrex::IntVectND<2>(dlo[0], dlo[1]),
+                amrex::IntVectND<2>(dhi[0], dhi[1]));
+        }
+        const int lendir = domain_box.length(dir);
+        const int nblocks = box2d.numPts();
+        constexpr int nthreads = 128;
+        const amrex::BoxIndexerND<2> box_indexer(box2d);
+        amrex::Gpu::DeviceVector<int> tmp(nblocks);
+        auto* ptmp = tmp.data();
+#ifdef AMREX_USE_SYCL
+        constexpr std::size_t shared_mem_bytes =
+            sizeof(unsigned long long) * amrex::Gpu::Device::warp_size;
+        amrex::launch<nthreads>(
+            nblocks, shared_mem_bytes, amrex::Gpu::gpuStream(),
+            [=] AMREX_GPU_DEVICE(amrex::Gpu::Handler const& gh) {
+                const amrex::Dim1 blockIdx{gh.blockIdx()};
+                const amrex::Dim1 threadIdx{gh.threadIdx()};
 #else
-    auto& pinned_tg_fab = device_tg_fab;
+        amrex::launch<nthreads>(
+            nblocks, amrex::Gpu::gpuStream(), [=] AMREX_GPU_DEVICE() {
 #endif
+                const auto iv2d = box_indexer.intVect(blockIdx.x);
+                amrex::IntVect iv;
+                int i2d = 0;
+                for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
+                    if (idim != dir) {
+                        iv[idim] = iv2d[i2d++];
+                    }
+                }
+                amrex::KeyValuePair<amrex::Real, int> r{
+                    std::numeric_limits<amrex::Real>::lowest(), 0};
+                for (int k = threadIdx.x; k < lendir; k += nthreads) {
+                    iv[dir] = k;
+                    auto v = a(iv);
+                    if (v > r.first()) {
+                        r.first() = v;
+                        r.second() = k;
+                    }
+                }
+#ifdef AMREX_USE_SYCL
+                r = amrex::Gpu::blockReduceMax(r, gh);
+#else
+                r = amrex::Gpu::blockReduceMax<nthreads>(r);
+#endif
+                if (threadIdx.x == 0) {
+                    ptmp[blockIdx.x] = r.second();
+                }
+            });
 
-    amrex::ParallelReduce::Max(
-        pinned_tg_fab.dataPtr(), static_cast<int>(pinned_tg_fab.size()),
-        amrex::ParallelDescriptor::IOProcessorNumber(),
+        const auto dnval = m_dn;
+        zi_sum = amrex::Reduce::Sum<amrex::Real>(
+            nblocks, [=] AMREX_GPU_DEVICE(int iblock) {
+                return (ptmp[iblock] + amrex::Real(0.5)) * dnval;
+            });
+#else
+        const auto lo = amrex::lbound(fabbox);
+        const auto hi = amrex::ubound(fabbox);
+        AMREX_ALWAYS_ASSERT(dir == 2);
+#ifdef AMREX_USE_OMP
+#pragma omp parallel for collapse(2) reduction(+ : zi_sum)
+#endif
+        for (int j = lo.y; j <= hi.y; ++j) {
+            for (int i = lo.x; i <= hi.x; ++i) {
+                amrex::Real vmax = std::numeric_limits<amrex::Real>::lowest();
+                int idxmax = 0;
+                for (int k = lo.z; k <= hi.z; ++k) {
+                    if (a(i, j, k) > vmax) {
+                        vmax = a(i, j, k);
+                        idxmax = i;
+                    }
+                }
+                zi_sum += (idxmax + amrex::Real(0.5)) * m_dn;
+            }
+        }
+#endif
+    }
+
+    amrex::ParallelReduce::Sum(
+        zi_sum, amrex::ParallelDescriptor::IOProcessorNumber(),
         amrex::ParallelDescriptor::Communicator());
 
-    if (amrex::ParallelDescriptor::IOProcessor()) {
-        const auto dnval = m_dn;
-        auto* p = pinned_tg_fab.dataPtr();
-        m_zi = amrex::Reduce::Sum<amrex::Real>(
-            pinned_tg_fab.size(),
-            [=] AMREX_GPU_DEVICE(int i) noexcept -> amrex::Real {
-                return (p[i].second() + 0.5) * dnval;
-            },
-            0.0);
-        m_zi /= static_cast<amrex::Real>(pinned_tg_fab.size());
+    amrex::Long npts = 1;
+    for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
+        if (idim != dir) {
+            npts *= domain_box.length(idim);
+        }
     }
+    m_zi = zi_sum / static_cast<amrex::Real>(npts);
 }
 
 void ABLStats::process_output()
 {
+    BL_PROFILE("amr-wind::ABLStats::process_output");
 
     if (m_out_freq > 0) {
         if (m_out_fmt == "ascii") {
@@ -392,6 +472,7 @@ void ABLStats::prepare_ascii_file()
 void ABLStats::prepare_netcdf_file()
 {
 #ifdef AMR_WIND_USE_NETCDF
+    BL_PROFILE("amr-wind::ABLStats::prepare_netcdf_file");
 
     const std::string post_dir = m_sim.io_manager().post_processing_directory();
     const std::string sname =
@@ -497,6 +578,7 @@ void ABLStats::prepare_netcdf_file()
 void ABLStats::write_netcdf()
 {
 #ifdef AMR_WIND_USE_NETCDF
+    BL_PROFILE("amr-wind::ABLStats::write_netcdf");
 
     // First calculate sfs stress averages
     auto sfs_stress = m_sim.repo().create_scratch_field("sfs_stress", 3);

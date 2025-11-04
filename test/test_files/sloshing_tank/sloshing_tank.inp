@@ -1,19 +1,13 @@
 time.stop_time               =   10     # Max (simulated) time to evolve
 time.max_step                =   10    # Max number of time steps
 
-time.initial_dt       =   0.05        # Use this constant dt if > 0
+# dt when using target resolution should be 0.05
+time.initial_dt       =   0.2        # Use this constant dt if > 0
 time.cfl              =   0.95         # CFL factor
-time.plot_interval            =  10       # Steps between plot files
+time.plot_interval    =   10       # Steps between plot files
+time.use_force_cfl    =   0
 
-io.output_default_variables = 0
-io.outputs = density vof
-io.derived_outputs = "components(velocity,0,2)" "components(gp,0,2)"
-
-incflo.use_godunov = 1
-incflo.godunov_type="weno"
 transport.model = TwoPhaseTransport
-transport.laminar_prandtl = 0.7
-transport.turbulent_prandtl = 0.3333
 turbulence.model = Laminar
 
 # Case is designed based on section 4.3, Kang & Sotiropoulos (2012)
@@ -23,17 +17,20 @@ transport.viscosity_fluid2=0.0
 # Rely on default values of SloshingTank for
 # amplitude, peak_enhance, and water_level
 incflo.physics = MultiPhase SloshingTank
+SloshingTank.initialize_pressure = true
 MultiPhase.density_fluid1=1000.
 MultiPhase.density_fluid2=1.
-MultiPhase.interface_smoothing=1.
 ICNS.source_terms = GravityForcing
+incflo.do_initial_proj = false
+incflo.initial_iterations = 0
 
 # Target resolution at interface is dx = dy = 0.3125, dz = 0.125
-amr.n_cell              = 64 64 16   # Grid cells at coarsest AMRlevel
+# (requires 16 cells in z for base resolution and max_level of 2)
+amr.n_cell              = 64 64 8   # Grid cells at coarsest AMRlevel
 tagging.labels = sr
 tagging.sr.type = CartBoxRefinement
 tagging.sr.static_refinement_def = static_box.refine
-amr.max_level = 2
+amr.max_level = 1
 
 geometry.prob_lo        =   0.   0.   -1.   # Lo corner coordinates
 geometry.prob_hi        =   20.  20.   1.  # Hi corner coordinates
