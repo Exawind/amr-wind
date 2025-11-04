@@ -612,7 +612,7 @@ struct InitDataOp<W2AWaves>
         auto& w2a_velocity = sim.repo().get_field("w2a_velocity");
         // Copy current fields to old w2a fields for time interp
         auto& w2a_lvs_old = w2a_levelset.state(amr_wind::FieldState::Old);
-        auto& w2a_vel_old = w2a_levelset.state(amr_wind::FieldState::Old);
+        auto& w2a_vel_old = w2a_velocity.state(amr_wind::FieldState::Old);
 
         Field* levelset{nullptr};
         if (multiphase_mode) {
