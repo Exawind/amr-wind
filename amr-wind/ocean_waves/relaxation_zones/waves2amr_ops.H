@@ -771,7 +771,7 @@ struct UpdateTargetFieldsOp<W2AWaves>
         auto& w2a_velocity = sim.repo().get_field("w2a_velocity");
         // Old state of HOS fields used for time interpolation
         auto& w2a_lvs_old = w2a_levelset.state(amr_wind::FieldState::Old);
-        auto& w2a_vel_old = w2a_levelset.state(amr_wind::FieldState::Old);
+        auto& w2a_vel_old = w2a_velocity.state(amr_wind::FieldState::Old);
 
         // Proxy for multiphase mode of ocean waves
         bool vof_exists = sim.repo().field_exists("vof");
