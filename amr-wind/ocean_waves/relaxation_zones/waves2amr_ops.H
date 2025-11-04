@@ -179,8 +179,6 @@ void time_interpolate_wave_fields(
     amr_wind::Field& vel_field,
     const amr_wind::Field& future_lvs_field,
     const amr_wind::Field& future_vel_field,
-    const amr_wind::Field& old_lvs_field,
-    const amr_wind::Field& old_vel_field,
     const amrex::Real t_old,
     const amrex::Real t_new,
     const amrex::Real t_future)
@@ -188,11 +186,11 @@ void time_interpolate_wave_fields(
     const amrex::Real b = (t_new - t_old) / (t_future - t_old + 1e-16);
     const amrex::Real a = 1. - b;
     amr_wind::field_ops::lincomb(
-        lvs_field, a, old_lvs_field, 0, b, future_lvs_field, 0, 0, 1,
+        lvs_field, a, lvs_field, 0, b, future_lvs_field, 0, 0, 1,
         lvs_field.num_grow());
     amr_wind::field_ops::lincomb(
-        vel_field, a, old_vel_field, 0, b, future_vel_field, 0, 0,
-        AMREX_SPACEDIM, vel_field.num_grow());
+        vel_field, a, vel_field, 0, b, future_vel_field, 0, 0, AMREX_SPACEDIM,
+        vel_field.num_grow());
 }
 
 } // namespace
@@ -701,7 +699,8 @@ struct InitDataOp<W2AWaves>
                     phi_arrs[nbx](i, j, k) = phi_tmp[nbx](i, j, k);
                 }
 
-                // Start old values at w2a solution (for the sake of time interpolation)
+                // Start old values at w2a solution (for the sake of time
+                // interpolation)
                 w2a_phi_o[nbx](i, j, k) = wave_sol[3] - z;
                 w2a_vel_o[nbx](i, j, k, 0) = wave_sol[0];
                 w2a_vel_o[nbx](i, j, k, 1) = wave_sol[1];
@@ -956,8 +955,14 @@ struct UpdateTargetFieldsOp<W2AWaves>
 
         // Temporally interpolate at every timestep to get target solution
         time_interpolate_wave_fields(
-            ow_levelset, ow_velocity, w2a_levelset, w2a_velocity, w2a_lvs_old,
-            w2a_vel_old, t_last, time, wdata.t);
+            w2a_lvs_old, w2a_vel_old, w2a_levelset, w2a_velocity, t_last, time,
+            wdata.t);
+        // Copy to ow fields, which may be modified for beach
+        field_ops::copy(
+            ow_levelset, w2a_lvs_old, 0, 0, 1, ow_levelset.num_grow());
+        field_ops::copy(
+            ow_velocity, w2a_vel_old, 0, 0, AMREX_SPACEDIM,
+            ow_velocity.num_grow());
 #else
         amrex::ignore_unused(data, time);
 #endif
