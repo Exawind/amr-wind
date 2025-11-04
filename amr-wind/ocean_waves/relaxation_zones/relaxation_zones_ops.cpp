@@ -177,8 +177,6 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
         const amrex::Real beach_length_factor = wdata.beach_length_factor;
         const amrex::Real zone_length_y = wdata.zone_length_y;
         const bool has_zone_y = zone_length_y > constants::EPS;
-        const amrex::Real zsl = wdata.zsl;
-        const amrex::Real current = wdata.current;
         const bool has_beach = wdata.has_beach;
 
         amrex::ParallelFor(
@@ -190,9 +188,6 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                 const amrex::Real y = amrex::min(
                     amrex::max(problo[1] + (j + 0.5) * dx[1], problo[1]),
                     probhi[1]);
-                const amrex::Real z = amrex::min(
-                    amrex::max(problo[2] + (k + 0.5) * dx[2], problo[2]),
-                    probhi[2]);
 
                 auto vel = vel_arrs[nbx];
                 auto rho = rho_arrs[nbx];
