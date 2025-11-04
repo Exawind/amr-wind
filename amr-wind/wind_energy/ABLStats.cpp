@@ -292,7 +292,7 @@ void ABLStats::compute_zi()
 #endif
                 const auto iv2d = box_indexer.intVect(blockIdx.x);
                 amrex::IntVect iv;
-                const int i2d = 0;
+                int i2d = 0;
                 for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
                     if (idim != dir) {
                         iv[idim] = iv2d[i2d++];
