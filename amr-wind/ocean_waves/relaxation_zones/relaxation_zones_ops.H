@@ -86,7 +86,7 @@ struct ApplyRelaxZonesOp<
 };
 
 template <typename WaveTheoryTrait>
-struct UpdateTargetVolumeFractionOp<
+struct UpdateTargetFieldsSecondaryOp<
     WaveTheoryTrait,
     typename std::enable_if_t<
         std::is_base_of_v<RelaxZonesType, WaveTheoryTrait>>>
