@@ -265,17 +265,17 @@ void ABLStats::compute_zi()
 #ifdef AMREX_USE_GPU
         amrex::BoxND<AMREX_SPACEDIM - 1> box2d;
         {
-            auto dlo = fabbox.smallEnd();
-            auto dhi = fabbox.bigEnd();
+            const auto dlo = fabbox.smallEnd();
+            const auto dhi = fabbox.bigEnd();
             AMREX_ALWAYS_ASSERT(dir == 2);
             box2d = amrex::BoxND<2>(
                 amrex::IntVectND<2>(dlo[0], dlo[1]),
                 amrex::IntVectND<2>(dhi[0], dhi[1]));
         }
-        int lendir = domain_box.length(dir);
+        const int lendir = domain_box.length(dir);
         const int nblocks = box2d.numPts();
         constexpr int nthreads = 128;
-        amrex::BoxIndexerND<2> box_indexer(box2d);
+        const amrex::BoxIndexerND<2> box_indexer(box2d);
         amrex::Gpu::DeviceVector<int> tmp(nblocks);
         auto* ptmp = tmp.data();
 #ifdef AMREX_USE_SYCL
@@ -284,15 +284,15 @@ void ABLStats::compute_zi()
         amrex::launch<nthreads>(
             nblocks, shared_mem_bytes, amrex::Gpu::gpuStream(),
             [=] AMREX_GPU_DEVICE(amrex::Gpu::Handler const& gh) {
-                amrex::Dim1 blockIdx{gh.blockIdx()};
-                amrex::Dim1 threadIdx{gh.threadIdx()};
+                const amrex::Dim1 blockIdx{gh.blockIdx()};
+                const amrex::Dim1 threadIdx{gh.threadIdx()};
 #else
         amrex::launch<nthreads>(
             nblocks, amrex::Gpu::gpuStream(), [=] AMREX_GPU_DEVICE() {
 #endif
-                auto iv2d = box_indexer.intVect(blockIdx.x);
+                const auto iv2d = box_indexer.intVect(blockIdx.x);
                 amrex::IntVect iv;
-                int i2d = 0;
+                const int i2d = 0;
                 for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
                     if (idim != dir) {
                         iv[idim] = iv2d[i2d++];
@@ -324,8 +324,8 @@ void ABLStats::compute_zi()
                 return (ptmp[iblock] + amrex::Real(0.5)) * dnval;
             });
 #else
-        auto lo = amrex::lbound(fabbox);
-        auto hi = amrex::ubound(fabbox);
+        const auto lo = amrex::lbound(fabbox);
+        const auto hi = amrex::ubound(fabbox);
         AMREX_ALWAYS_ASSERT(dir == 2);
 #ifdef AMREX_USE_OMP
 #pragma omp parallel for collapse(2) reduction(+ : zi_sum)
