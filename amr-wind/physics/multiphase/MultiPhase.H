@@ -57,8 +57,6 @@ public:
 
     void levelset2vof(const IntField& iblank_cell, ScratchField& vof_scr);
 
-    void favre_filtering();
-
     amrex::Real volume_fraction_sum();
 
     amrex::Real momentum_sum(int n);
@@ -110,10 +108,6 @@ private:
     amrex::Real m_water_level0{0.0};
     // Info to reconstruct true pressure
     amrex::Vector<amrex::Real> m_gravity{0.0, 0.0, -9.81};
-
-    bool m_interface_smoothing{false};
-
-    int m_smooth_freq{10};
 
     // Multiphase model enum
     std::string m_interface_model{"vof"};

@@ -75,12 +75,6 @@ if(AMR_WIND_ENABLE_ROCM)
   endif()
 endif()
 
-if (AMR_WIND_ENABLE_UMPIRE)
-  set(CMAKE_PREFIX_PATH ${UMPIRE_DIR} ${CMAKE_PREFIX_PATH})
-  find_package(Umpire REQUIRED)
-  include_directories(SYSTEM ${UMPIRE_INCLUDE_DIRS})
-endif()
-
 if(AMR_WIND_TEST_WITH_FCOMPARE)
   set(AMR_WIND_ENABLE_FCOMPARE ON)
 endif()
@@ -100,7 +94,6 @@ init_amrex_hydro()
 
 ########################## Waves2AMR ##################################
 if (AMR_WIND_ENABLE_W2A)
-  # submodule for the code, not always compiled
   init_waves2amr()
 endif()
 
@@ -135,11 +128,8 @@ endif()
 include(set_compile_flags)
 
 if (AMR_WIND_ENABLE_W2A)
-  # Turn on the use of the library via bool, it has already been included above
   target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_USE_W2A)
-  # Address FFTW dependencies
-  set(CMAKE_PREFIX_PATH ${FFTW_DIR} ${CMAKE_PREFIX_PATH})
-  include_directories(${FFTW_DIR}/include)
+  target_link_libraries(${amr_wind_lib_name} PUBLIC Waves2AMR::Waves2AMR)
 endif()
 
 if(AMR_WIND_ENABLE_NETCDF)
@@ -147,6 +137,12 @@ if(AMR_WIND_ENABLE_NETCDF)
   find_package(NetCDF REQUIRED)
   target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_USE_NETCDF)
   target_link_libraries_system(${amr_wind_lib_name} PUBLIC NetCDF::NetCDF)
+endif()
+
+if (AMR_WIND_ENABLE_UMPIRE)
+  set(CMAKE_PREFIX_PATH ${UMPIRE_DIR} ${CMAKE_PREFIX_PATH})
+  find_package(Umpire REQUIRED)
+  include_directories(SYSTEM ${UMPIRE_INCLUDE_DIRS})
 endif()
 
 if(AMR_WIND_ENABLE_HDF5)
