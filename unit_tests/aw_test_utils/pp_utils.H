@@ -10,7 +10,7 @@ namespace amr_wind_tests::pp_utils {
 template <typename T>
 void set_default(amrex::ParmParse& pp, const std::string& key, const T& val)
 {
-    if (!pp.contains(key.data())) {
+    if (!pp.contains(key)) {
         pp.add(key.data(), val);
     }
 }
@@ -19,7 +19,7 @@ template <typename T>
 void set_default(
     amrex::ParmParse& pp, const std::string& key, const amrex::Vector<T>& val)
 {
-    if (!pp.contains(key.data())) {
+    if (!pp.contains(key)) {
         pp.addarr(key.data(), val);
     }
 }

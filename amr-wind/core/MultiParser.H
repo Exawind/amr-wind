@@ -30,8 +30,7 @@ public:
     //! Check if the keyword is present in either namespace
     bool contains(const std::string& name) const
     {
-        return m_pp.contains(name.c_str()) ||
-               m_pp_default.contains(name.c_str());
+        return m_pp.contains(name) || m_pp_default.contains(name);
     }
 
     /** Get a vector from the input file
@@ -115,10 +114,10 @@ public:
     template <typename T>
     void get(const std::string& name, T& value) const
     {
-        if (m_pp.contains(name.c_str())) {
-            m_pp.get(name.c_str(), value);
+        if (m_pp.contains(name)) {
+            m_pp.get(name, value);
         } else {
-            m_pp_default.get(name.c_str(), value);
+            m_pp_default.get(name, value);
         }
     }
 
@@ -126,10 +125,10 @@ public:
     template <typename T>
     void getarr(const std::string& name, T& value) const
     {
-        if (m_pp.contains(name.c_str())) {
-            m_pp.getarr(name.c_str(), value);
+        if (m_pp.contains(name)) {
+            m_pp.getarr(name, value);
         } else {
-            m_pp_default.getarr(name.c_str(), value);
+            m_pp_default.getarr(name, value);
         }
     }
 
@@ -137,8 +136,8 @@ public:
     template <typename T>
     void query(const std::string& name, T& value) const
     {
-        m_pp_default.query(name.c_str(), value);
-        m_pp.query(name.c_str(), value);
+        m_pp_default.query(name, value);
+        m_pp.query(name, value);
     }
 
     //! Query a vector of values for the given keyword entry from either
@@ -146,8 +145,8 @@ public:
     template <typename T>
     void queryarr(const std::string& name, T& value) const
     {
-        m_pp_default.queryarr(name.c_str(), value);
-        m_pp.queryarr(name.c_str(), value);
+        m_pp_default.queryarr(name, value);
+        m_pp.queryarr(name, value);
     }
 
 private:
