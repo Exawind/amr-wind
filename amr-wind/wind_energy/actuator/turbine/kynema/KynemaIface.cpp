@@ -335,22 +335,40 @@ int build_aero(
 
 void update_turbine(::ext_turb::KynemaTurbine& fi, bool advance)
 {
-    fi.interface->Aerodynamics().CalculateMotion(fi.interface->GetHostState());
-    // copy fluid velocity to turbine solver (set inflow)
-    fi.pass_fluid_velocity_and_hub_load();
-    fi.interface->Aerodynamics().CalculateAerodynamicLoads(fi.fluid_density);
-    fi.interface->Aerodynamics().CalculateNodalLoads();
+    ++fi.substep_counter;
+    // Operations that only need to be done once
+    if (fi.substep_counter == 1) {
+        fi.interface->Aerodynamics().CalculateMotion(
+            fi.interface->GetHostState());
+        // copy fluid velocity to turbine solver (set inflow)
+        fi.pass_fluid_velocity_and_hub_load();
+        fi.interface->Aerodynamics().CalculateAerodynamicLoads(
+            fi.fluid_density);
+        fi.interface->Aerodynamics().CalculateNodalLoads();
+    }
     if (advance) {
         // individual turbine step, do not output every step
         bool converged = fi.interface->Step(false);
         if (!converged) {
             amrex::Abort("Kynema did not converge\n");
         }
+    }
+
+    if (fi.substep_counter == fi.num_substeps) {
         fi.interface->Aerodynamics().CalculateMotion(
             fi.interface->GetHostState());
+        fi.substep_counter = 0;
+    } else if (!advance) {
+        fi.substep_counter = 0;
     }
-    // fill buffers with latest data
-    fi.populate_buffers();
+
+    if (fi.substep_counter == 0) {
+        std::cout << (fi.time_index + 1) / fi.num_substeps << " "  << fi.time_index << " " << fi.num_substeps << std::endl;
+        // Output once per amr-wind timestep
+        fi.interface->OutputNow((fi.time_index + 1) / fi.num_substeps);
+        // Populate buffers with turbine data
+        fi.populate_buffers();
+    }
 }
 } // namespace exw_kynema
 
@@ -513,7 +531,6 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::write_velocity_data(
 #else
     amrex::ignore_unused(fi);
 #endif
-    fi.interface->OutputNow(fi.time_index / fi.num_substeps);
 }
 
 template <>
