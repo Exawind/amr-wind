@@ -341,8 +341,8 @@ void update_turbine(::ext_turb::KynemaTurbine& fi, bool advance)
     fi.interface->Aerodynamics().CalculateAerodynamicLoads(fi.fluid_density);
     fi.interface->Aerodynamics().CalculateNodalLoads();
     if (advance) {
-        // individual turbine step
-        bool converged = fi.interface->Step();
+        // individual turbine step, do not output every step
+        bool converged = fi.interface->Step(false);
         if (!converged) {
             amrex::Abort("Kynema did not converge\n");
         }
@@ -513,6 +513,7 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::write_velocity_data(
 #else
     amrex::ignore_unused(fi);
 #endif
+    fi.interface->OutputNow(fi.time_index / fi.num_substeps);
 }
 
 template <>
@@ -599,29 +600,23 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::ext_init_turbine(
         fi.rotational_speed);
     // fi.num_pts_tower);
 
-    /*
-    // Create distribution of points from base of blade to end, normalized from
-    // 0 to 1
-    amrex::Vector<amrex::Real> aero_pts_blade{};
-    aero_pts_blade.resize(fi.num_pts_blade);
-    // Put loop here to create normalized spanwise positions
-    const bool uniform_distr{true};
-    if (uniform_distr) {
-        const amrex::Real dr = 1.0 / static_cast<amrex::Real>(fi.num_pts_blade);
-        // Is this the way openfast does it? No points at the root or tip
-        aero_pts_blade[0] = 0.5 * dr;
-        for (int ir = 1; ir < fi.num_pts_blade; ++ir) {
-            aero_pts_blade[ir] = (static_cast<amrex::Real>(ir) + 0.5) * dr;
-        }
-    }
-    */
+    auto n_aero_sections = exw_kynema::build_aero(builder, wio);
 
-    // aero_pts_blade not used right now, need to establish ability to
-    // interpolate
-    fi.num_pts_blade = exw_kynema::build_aero(builder, wio);
+    if (n_aero_sections != fi.num_pts_blade) {
+        amrex::Abort(
+            "KynemaIface: number of points per blade (from AMR-Wind input "
+            "file) does not match number of aerodynamic sections per blade "
+            "(from Kynema input file).");
+    }
+
+    // Create output
+    builder.Outputs().SetOutputFilePath("kynema_" + fi.tlabel);
 
     fi.interface =
         std::make_unique<kynema::interfaces::TurbineInterface>(builder.Build());
+
+    // Close file
+    fi.interface->CloseOutputFile();
 
     // Determine the number of substeps for Kynema per CFD timestep
     fi.num_substeps = static_cast<int>(std::floor(fi.dt_cfd / fi.dt_ext));
