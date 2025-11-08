@@ -225,7 +225,7 @@ endif()
 generate_version_info()
 add_subdirectory(amr-wind)
 
-target_link_libraries(${amr_wind_lib_name} PUBLIC AMReX::amrex AMReX-Hydro::amrex_hydro_api)
+target_link_libraries_system(${amr_wind_lib_name} PUBLIC AMReX::amrex AMReX-Hydro::amrex_hydro_api)
 target_link_libraries(${amr_wind_exe_name} PRIVATE ${amr_wind_lib_name} AMReX-Hydro::amrex_hydro_api)
 target_link_libraries(${aw_api_lib} PUBLIC ${amr_wind_lib_name} AMReX-Hydro::amrex_hydro_api)
 
