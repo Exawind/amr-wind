@@ -363,9 +363,10 @@ void update_turbine(::ext_turb::KynemaTurbine& fi, bool advance)
     }
 
     if (fi.substep_counter == 0) {
-        std::cout << (fi.time_index + 1) / fi.num_substeps << " "  << fi.time_index << " " << fi.num_substeps << std::endl;
         // Output once per amr-wind timestep
+        fi.interface->OpenOutputFile();
         fi.interface->OutputNow((fi.time_index + 1) / fi.num_substeps);
+        fi.interface->CloseOutputFile();
         // Populate buffers with turbine data
         fi.populate_buffers();
     }
