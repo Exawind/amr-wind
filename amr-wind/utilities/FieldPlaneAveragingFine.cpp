@@ -7,8 +7,14 @@ namespace amr_wind {
 
 template <typename FType>
 FPlaneAveragingFine<FType>::FPlaneAveragingFine(
-    const FType& field_in, const amr_wind::SimTime& time, int axis_in)
-    : m_field(field_in), m_time(time), m_axis(axis_in)
+    const FType& field_in,
+    const amr_wind::SimTime& time,
+    int axis_in,
+    bool compute_deriv)
+    : m_field(field_in)
+    , m_time(time)
+    , m_axis(axis_in)
+    , m_comp_deriv(compute_deriv)
 {
     AMREX_ALWAYS_ASSERT(m_axis >= 0 && m_axis < AMREX_SPACEDIM);
     auto geom = m_field.repo().mesh().Geom();
@@ -38,6 +44,9 @@ FPlaneAveragingFine<FType>::FPlaneAveragingFine(
     m_ncomp = m_field.num_comp();
 
     m_line_average.resize(static_cast<size_t>(m_ncell_line) * m_ncomp, 0.0);
+    if (m_comp_deriv) {
+        m_line_deriv.resize(static_cast<size_t>(m_ncell_line) * m_ncomp, 0.0);
+    }
     m_line_xcentroid.resize(m_ncell_line);
 
     for (int i = 0; i < m_ncell_line; ++i) {
@@ -182,6 +191,10 @@ void FPlaneAveragingFine<FType>::operator()()
         amrex::Abort("axis must be equal to 0, 1, or 2");
         break;
     }
+
+    if (m_comp_deriv) {
+        compute_line_derivatives();
+    }
 }
 
 template <typename FType>
@@ -323,6 +336,64 @@ void FPlaneAveragingFine<FType>::compute_averages(const IndexSelector& idxOp)
     lavg.copyToHost(m_line_average.data(), m_line_average.size());
     amrex::ParallelDescriptor::ReduceRealSum(
         m_line_average.data(), m_line_average.size());
+}
+
+template <typename FType>
+void FPlaneAveragingFine<FType>::compute_line_derivatives()
+{
+    BL_PROFILE("amr-wind::FPlaneAveragingFine::compute_line_derivatives");
+    for (int i = 0; i < m_ncell_line; ++i) {
+        for (int n = 0; n < m_ncomp; ++n) {
+            m_line_deriv[m_ncomp * i + n] =
+                line_derivative_of_average_cell(i, n);
+        }
+    }
+}
+
+template <typename FType>
+amrex::Real FPlaneAveragingFine<FType>::line_derivative_of_average_cell(
+    int ind, int comp) const
+{
+    BL_PROFILE(
+        "amr-wind::FPlaneAveragingFine::line_derivative_of_average_cell");
+
+    AMREX_ALWAYS_ASSERT(comp >= 0 && comp < m_ncomp);
+    AMREX_ALWAYS_ASSERT(ind >= 0 && ind < m_ncell_line);
+
+    amrex::Real dudx;
+
+    if (ind == 0) {
+        dudx = (m_line_average[m_ncomp * (ind + 1) + comp] -
+                m_line_average[m_ncomp * ind + comp]) /
+               m_dx;
+    } else if (ind == m_ncell_line - 1) {
+        dudx = (m_line_average[m_ncomp * (ind) + comp] -
+                m_line_average[m_ncomp * (ind - 1) + comp]) /
+               m_dx;
+    } else {
+        dudx = 0.5 *
+               (m_line_average[m_ncomp * (ind + 1) + comp] -
+                m_line_average[m_ncomp * (ind - 1) + comp]) /
+               m_dx;
+    }
+
+    return dudx;
+}
+
+template <typename FType>
+amrex::Real FPlaneAveragingFine<FType>::line_derivative_interpolated(
+    amrex::Real x, int comp) const
+{
+    BL_PROFILE("amr-wind::FPlaneAveragingFine::line_derivative_interpolated");
+
+    AMREX_ALWAYS_ASSERT(comp >= 0 && comp < m_ncomp);
+
+    int ind;
+    amrex::Real c;
+    convert_x_to_ind(x, ind, c);
+
+    return m_line_deriv[m_ncomp * ind + comp] * (1.0 - c) +
+           m_line_deriv[m_ncomp * (ind + 1) + comp] * c;
 }
 
 template class FPlaneAveragingFine<Field>;
