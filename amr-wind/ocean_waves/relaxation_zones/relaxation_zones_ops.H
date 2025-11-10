@@ -24,10 +24,6 @@ void read_inputs(
  */
 void init_data_structures(CFDSim&);
 
-/** Harmonize the target wave solution with numerical beach */
-void modify_target_fields_for_beach(
-    CFDSim& sim, const RelaxZonesBaseData& wdata);
-
 /** Set the free_surface height inside the relaxation zones
  */
 void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata);
@@ -86,7 +82,7 @@ struct ApplyRelaxZonesOp<
 };
 
 template <typename WaveTheoryTrait>
-struct UpdateTargetFieldsSecondaryOp<
+struct UpdateTargetVolumeFractionOp<
     WaveTheoryTrait,
     typename std::enable_if_t<
         std::is_base_of_v<RelaxZonesType, WaveTheoryTrait>>>
@@ -95,12 +91,7 @@ struct UpdateTargetFieldsSecondaryOp<
     {
         BL_PROFILE("amr-wind::ocean_waves::OceanWaves::update_target_vof");
 
-        const auto& wdata = data.meta();
         auto& sim = data.sim();
-
-        if (wdata.has_beach && sim.repo().field_exists("vof")) {
-            relaxation_zones::modify_target_fields_for_beach(sim, wdata);
-        }
 
         relaxation_zones::update_target_vof(sim);
     }
