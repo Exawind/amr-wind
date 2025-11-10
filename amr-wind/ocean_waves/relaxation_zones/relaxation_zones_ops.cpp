@@ -70,61 +70,6 @@ void update_target_vof(CFDSim& sim)
     amrex::Gpu::streamSynchronize();
 }
 
-void modify_target_fields_for_beach(
-    CFDSim& sim, const RelaxZonesBaseData& wdata)
-{
-    AMREX_ALWAYS_ASSERT(wdata.has_beach == true);
-    const int nlevels = sim.repo().num_active_levels();
-    auto& ow_levelset = sim.repo().get_field("ow_levelset");
-    auto& ow_vel = sim.repo().get_field("ow_velocity");
-    const auto& geom = sim.mesh().Geom();
-
-    for (int lev = 0; lev < nlevels; ++lev) {
-        const auto& dx = geom[lev].CellSizeArray();
-        const auto& problo = geom[lev].ProbLoArray();
-        const auto& probhi = geom[lev].ProbHiArray();
-        auto target_ls_arrs = ow_levelset(lev).arrays();
-        auto target_vel_arrs = ow_vel(lev).arrays();
-
-        const amrex::Real gen_length = wdata.gen_length;
-        const amrex::Real beach_length = wdata.beach_length;
-        const amrex::Real zsl = wdata.zsl;
-        const amrex::Real current = wdata.current;
-
-        amrex::ParallelFor(
-            ow_vel(lev), amrex::IntVect(3),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                const amrex::Real x = amrex::min(
-                    amrex::max(problo[0] + (i + 0.5) * dx[0], problo[0]),
-                    probhi[0]);
-                const amrex::Real z = amrex::min(
-                    amrex::max(problo[2] + (k + 0.5) * dx[2], problo[2]),
-                    probhi[2]);
-
-                auto target_ls = target_ls_arrs[nbx];
-                auto target_vel = target_vel_arrs[nbx];
-
-                // Create wave vector for generation, numerical beach
-                const utils::WaveVec wave_sol{
-                    target_vel(i, j, k, 0), target_vel(i, j, k, 1),
-                    target_vel(i, j, k, 2), target_ls(i, j, k)};
-                const utils::WaveVec outlet{current, 0.0, 0.0, zsl - z};
-
-                // Harmonize between inlet/bulk profile and outlet profile
-                const auto target_profile = utils::harmonize_profiles_1d(
-                    x, problo[0], gen_length, probhi[0], beach_length, wave_sol,
-                    wave_sol, outlet);
-
-                // Update target fields based on harmonization
-                for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
-                    target_vel(i, j, k, dir) = target_profile[dir];
-                }
-                target_ls(i, j, k) = target_profile[3];
-            });
-    }
-    amrex::Gpu::streamSynchronize();
-}
-
 void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
 {
     const int nlevels = sim.repo().num_active_levels();
@@ -177,6 +122,8 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
         const amrex::Real beach_length_factor = wdata.beach_length_factor;
         const amrex::Real zone_length_y = wdata.zone_length_y;
         const bool has_zone_y = zone_length_y > constants::EPS;
+        const amrex::Real zsl = wdata.zsl;
+        const amrex::Real current = wdata.current;
         const bool has_beach = wdata.has_beach;
 
         amrex::ParallelFor(
@@ -188,6 +135,9 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                 const amrex::Real y = amrex::min(
                     amrex::max(problo[1] + (j + 0.5) * dx[1], problo[1]),
                     probhi[1]);
+                const amrex::Real z = amrex::min(
+                    amrex::max(problo[2] + (k + 0.5) * dx[2], problo[2]),
+                    probhi[2]);
 
                 auto vel = vel_arrs[nbx];
                 auto rho = rho_arrs[nbx];
@@ -217,7 +167,8 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                     Gamma_yhi = utils::gamma_absorb(
                         y - (probhi[1] - zone_length_y), zone_length_y, 1.0);
                     const amrex::Real Gamma_y_to_xhi = utils::gamma_generate(
-                        x - (probhi[1] - 2. * beach_length), beach_length);
+                        x - (probhi[1] - 2. * beach_length),
+                        0.5 * beach_length);
                     if (has_beach) {
                         Gamma_ylo = std::max(Gamma_ylo, Gamma_y_to_xhi);
                         Gamma_yhi = std::max(Gamma_yhi, Gamma_y_to_xhi);
@@ -231,14 +182,23 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                 bool outside_zones = Gamma + constants::EPS >= 1.;
 
                 if (!(outside_zones || in_or_near_terrain)) {
+                    // Create wave vector for generation, numerical beach
+                    const utils::WaveVec wave_sol{
+                        target_vel(i, j, k, 0), target_vel(i, j, k, 1),
+                        target_vel(i, j, k, 2), target_volfrac(i, j, k)};
+                    const utils::WaveVec quiescent{
+                        current, 0.0, 0.0,
+                        utils::free_surface_to_vof(zsl, z, dx[2])};
+                    const auto outlet = has_beach ? quiescent : wave_sol;
+
                     // Check for in beach, needed for velocity forcing
                     const bool in_beach =
                         has_beach && x + beach_length >= probhi[0];
 
-                    // Target already harmonized: inlet/bulk with outlet profile
-                    const utils::WaveVec target_profile{
-                        target_vel(i, j, k, 0), target_vel(i, j, k, 1),
-                        target_vel(i, j, k, 2), target_volfrac(i, j, k)};
+                    // Harmonize between inlet/bulk profile and outlet profile
+                    const auto target_profile = utils::harmonize_profiles_1d(
+                        x, problo[0], gen_length, probhi[0], beach_length,
+                        wave_sol, wave_sol, outlet);
 
                     // Nudge solution toward target
                     amrex::Real new_vof = utils::combine_linear(

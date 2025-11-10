@@ -574,9 +574,9 @@ struct ReadInputsOp<W2AWaves>
 
         // Declare fields for HOS
         auto& w2a_levelset =
-            data.sim().repo().declare_field("w2a_levelset", 1, 3, 2);
+            data.sim().repo().declare_field("w2a_levelset", 1, 3, 1);
         auto& w2a_velocity = data.sim().repo().declare_field(
-            "w2a_velocity", AMREX_SPACEDIM, 3, 2);
+            "w2a_velocity", AMREX_SPACEDIM, 3, 1);
 
         // Extrapolation can work well when finer data is available
         w2a_levelset.set_default_fillpatch_bc(data.sim().time());
@@ -610,9 +610,6 @@ struct InitDataOp<W2AWaves>
         // Set w2a fields to default values to prep for updates
         auto& w2a_levelset = sim.repo().get_field("w2a_levelset");
         auto& w2a_velocity = sim.repo().get_field("w2a_velocity");
-        // Copy current fields to old w2a fields for time interp
-        auto& w2a_lvs_old = w2a_levelset.state(amr_wind::FieldState::Old);
-        auto& w2a_vel_old = w2a_velocity.state(amr_wind::FieldState::Old);
 
         Field* levelset{nullptr};
         if (multiphase_mode) {
@@ -649,8 +646,6 @@ struct InitDataOp<W2AWaves>
 
         const auto& w2a_phi = w2a_levelset(level).arrays();
         const auto& w2a_vel = w2a_velocity(level).arrays();
-        const auto& w2a_phi_o = w2a_lvs_old(level).arrays();
-        const auto& w2a_vel_o = w2a_vel_old(level).arrays();
 
         const amrex::Real gen_length = wdata.gen_length;
         const amrex::Real beach_length = wdata.beach_length;
@@ -699,18 +694,11 @@ struct InitDataOp<W2AWaves>
                     phi_arrs[nbx](i, j, k) = phi_tmp[nbx](i, j, k);
                 }
 
-                // Start old values at w2a solution (for the sake of time
-                // interpolation)
-                w2a_phi_o[nbx](i, j, k) = wave_sol[3] - z;
-                w2a_vel_o[nbx](i, j, k, 0) = wave_sol[0];
-                w2a_vel_o[nbx](i, j, k, 1) = wave_sol[1];
-                w2a_vel_o[nbx](i, j, k, 2) = wave_sol[2];
-
                 // Default w2a values matter for where no updates happen
                 w2a_phi[nbx](i, j, k) = quiescent[3] - z;
                 w2a_vel[nbx](i, j, k, 0) = quiescent[0];
-                w2a_vel[nbx](i, j, k, 1) = quiescent[1];
-                w2a_vel[nbx](i, j, k, 2) = quiescent[2];
+                w2a_vel[nbx](i, j, k, 1) = quiescent[0];
+                w2a_vel[nbx](i, j, k, 2) = quiescent[0];
             });
         amrex::Gpu::streamSynchronize();
 
@@ -769,9 +757,6 @@ struct UpdateTargetFieldsOp<W2AWaves>
         // Update HOS fields when necessary
         auto& w2a_levelset = sim.repo().get_field("w2a_levelset");
         auto& w2a_velocity = sim.repo().get_field("w2a_velocity");
-        // Old state of HOS fields used for time interpolation
-        auto& w2a_lvs_old = w2a_levelset.state(amr_wind::FieldState::Old);
-        auto& w2a_vel_old = w2a_velocity.state(amr_wind::FieldState::Old);
 
         // Proxy for multiphase mode of ocean waves
         bool vof_exists = sim.repo().field_exists("vof");
@@ -903,33 +888,32 @@ struct UpdateTargetFieldsOp<W2AWaves>
             t_last = (wdata.ntime - 1) * wdata.dt_modes;
 
             if (double_data == 0) {
-                // Previous W2A data needs to be copied into old fields
+                // Previous W2A data needs to be copied into ow fields
                 amr_wind::field_ops::copy(
-                    w2a_lvs_old, w2a_levelset, 0, 0, 1,
-                    w2a_levelset.num_grow());
+                    ow_levelset, w2a_levelset, 0, 0, 1, ow_levelset.num_grow());
                 amr_wind::field_ops::copy(
-                    w2a_vel_old, w2a_velocity, 0, 0, AMREX_SPACEDIM,
-                    w2a_velocity.num_grow());
+                    ow_velocity, w2a_velocity, 0, 0, AMREX_SPACEDIM,
+                    ow_velocity.num_grow());
             } else if (double_data == 1) {
-                // Previous W2A data is unknown, read into old fields
+                // Previous W2A data is unknown, read into ow fields
                 if (wdata.do_interp) {
                     populate_fields_all_levels(
-                        wdata, geom, w2a_lvs_old, w2a_vel_old, -1);
+                        wdata, geom, ow_levelset, ow_velocity, -1);
                 }
 
                 // Average down to get fine information on coarse grid where
                 // possible (may be unnecessary)
                 for (int lev = nlevels - 1; lev > 0; --lev) {
                     amrex::average_down(
-                        w2a_vel_old(lev), w2a_vel_old(lev - 1), 0,
+                        ow_velocity(lev), ow_velocity(lev - 1), 0,
                         AMREX_SPACEDIM, sim.mesh().refRatio(lev - 1));
                     amrex::average_down(
-                        w2a_lvs_old(lev), w2a_lvs_old(lev - 1), 0, 1,
+                        ow_levelset(lev), ow_levelset(lev - 1), 0, 1,
                         sim.mesh().refRatio(lev - 1));
                 }
                 // Fill patch to get correct ghost cells after average down
-                w2a_vel_old.fillpatch(sim.time().new_time());
-                w2a_lvs_old.fillpatch(sim.time().new_time());
+                ow_velocity.fillpatch(sim.time().new_time());
+                ow_levelset.fillpatch(sim.time().new_time());
             }
             // ow fields cancel when double_data == 2, no modification
 
@@ -955,14 +939,8 @@ struct UpdateTargetFieldsOp<W2AWaves>
 
         // Temporally interpolate at every timestep to get target solution
         time_interpolate_wave_fields(
-            w2a_lvs_old, w2a_vel_old, w2a_levelset, w2a_velocity, t_last, time,
+            ow_levelset, ow_velocity, w2a_levelset, w2a_velocity, t_last, time,
             wdata.t);
-        // Copy to ow fields, which may be modified for beach
-        field_ops::copy(
-            ow_levelset, w2a_lvs_old, 0, 0, 1, ow_levelset.num_grow());
-        field_ops::copy(
-            ow_velocity, w2a_vel_old, 0, 0, AMREX_SPACEDIM,
-            ow_velocity.num_grow());
 #else
         amrex::ignore_unused(data, time);
 #endif
