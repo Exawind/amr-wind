@@ -20,7 +20,7 @@ template <typename WaveTheoryTrait, typename = void>
 struct ApplyRelaxZonesOp;
 
 template <typename WaveTheoryTrait, typename = void>
-struct UpdateTargetFieldsSecondaryOp;
+struct UpdateTargetVolumeFractionOp;
 
 template <typename WaveTheoryTrait, typename = void>
 struct ProcessOutputsOp;
