@@ -13,7 +13,7 @@ std::unique_ptr<udf::UDF> process_field_func(Field& fld)
     std::string udf_name{"ConstValue"};
     amrex::ParmParse pp("FreeStream");
     const std::string key = fld.name() + "_type";
-    pp.query(key.c_str(), udf_name);
+    pp.query(key, udf_name);
 
     return udf::UDF::create(udf_name, fld);
 }
