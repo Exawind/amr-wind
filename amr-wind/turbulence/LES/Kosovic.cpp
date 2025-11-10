@@ -7,7 +7,7 @@
 #include "AMReX_REAL.H"
 #include "AMReX_MultiFab.H"
 #include "AMReX_ParmParse.H"
-#include "amr-wind/wind_energy/MOData.H"
+#include "amr-wind/wind_energy/ABL.H"
 
 namespace amr_wind {
 namespace turbulence {
@@ -26,10 +26,6 @@ Kosovic<Transport>::Kosovic(CFDSim& sim)
     m_Cs = std::sqrt(8 * (1 + m_Cb) / (27 * M_PI * M_PI));
     m_C1 = std::sqrt(960) * m_Cb / (7 * (1 + m_Cb) * m_Sk);
     m_C2 = m_C1;
-    if (pp.contains("refMOL")) {
-        amrex::Abort(
-            "refMOL is deprecated. Use ABL::monin_obukhov_length instead.");
-    }
     pp.query("surfaceRANS", m_surfaceRANS);
     if (m_surfaceRANS) {
         m_surfaceFactor = 1;
@@ -162,18 +158,14 @@ void Kosovic<Transport>::update_turbulent_viscosity(
                 const amrex::Real ustar =
                     m * kappa /
                     (std::log(1.5 * dz / local_z0) - non_neutral_neighbour);
-                const amrex::Real dUdz = 0.5 / dz *
-                                         (vel_arrs[nbx](i, j, k + 1, 0) -
-                                          vel_arrs[nbx](i, j, k - 1, 0));
-                const amrex::Real dVdz = 0.5 / dz *
-                                         (vel_arrs[nbx](i, j, k + 1, 1) -
-                                          vel_arrs[nbx](i, j, k - 1, 1));
-                // 0.1 m/s is used from YSU model reference
-                // Restart of a finer refinement level from a coarser level
-                // can cause MLMG to sometimes fail
-                const amrex::Real dMdz =
-                    std::max(std::sqrt(dUdz * dUdz + dVdz * dVdz), 0.1);
-                const amrex::Real mut_loglaw = ustar * ustar * rho / dMdz;
+                const amrex::Real ux0 = vel_arrs[nbx](i, j, k, 0);
+                const amrex::Real uy0 = vel_arrs[nbx](i, j, k, 1);
+                const amrex::Real m0 = std::sqrt(ux0 * ux0 + uy0 * uy0);
+                const amrex::Real uxm1 = vel_arrs[nbx](i, j, k - 1, 0);
+                const amrex::Real uym1 = vel_arrs[nbx](i, j, k - 1, 1);
+                const amrex::Real mm1 = std::sqrt(uxm1 * uxm1 + uym1 * uym1);
+                const amrex::Real dMdz = std::max((m0 - mm1) / dz, 0.01);
+                amrex::Real mut_loglaw = 2 * ustar * ustar * rho / dMdz;
                 const amrex::Real drag =
                     (has_terrain) ? drag_arrs[nbx](i, j, k, 0) : 0.0;
                 mu_arrs[nbx](i, j, k) =
@@ -185,11 +177,11 @@ void Kosovic<Transport>::update_turbulent_viscosity(
                          std::pow(fmu, locSurfaceRANSExp) * ransL) +
                     (1 - locSurfaceFactor) * smag_factor * 0.25 * locC1;
                 divNij_arrs[nbx](i, j, k, 0) *=
-                    rho * stressScale * turnOff * blankTerrain * (1 - drag);
+                    rho * stressScale * turnOff * blankTerrain;
                 divNij_arrs[nbx](i, j, k, 1) *=
-                    rho * stressScale * turnOff * blankTerrain * (1 - drag);
+                    rho * stressScale * turnOff * blankTerrain;
                 divNij_arrs[nbx](i, j, k, 2) *=
-                    rho * stressScale * turnOff * blankTerrain * (1 - drag);
+                    rho * stressScale * turnOff * blankTerrain;
             });
     }
     amrex::Gpu::streamSynchronize();
