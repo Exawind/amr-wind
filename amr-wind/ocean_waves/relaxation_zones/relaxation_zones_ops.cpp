@@ -94,12 +94,14 @@ void modify_target_fields_for_beach(
         amrex::ParallelFor(
             ow_vel(lev), amrex::IntVect(3),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                // x is for combining wave profiles and does not need to exceed
+                // domain limits
                 const amrex::Real x = amrex::min(
                     amrex::max(problo[0] + (i + 0.5) * dx[0], problo[0]),
                     probhi[0]);
-                const amrex::Real z = amrex::min(
-                    amrex::max(problo[2] + (k + 0.5) * dx[2], problo[2]),
-                    probhi[2]);
+                // z is for distance function and needs to exceed domain limits
+                // so norms can be calculated when converted to vof
+                const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
                 auto target_ls = target_ls_arrs[nbx];
                 auto target_vel = target_vel_arrs[nbx];
