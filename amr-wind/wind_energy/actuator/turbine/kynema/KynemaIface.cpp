@@ -348,7 +348,7 @@ void update_turbine(::ext_turb::KynemaTurbine& fi, bool advance)
     }
     if (advance) {
         // individual turbine step, do not output every step
-        bool converged = fi.interface->Step(false);
+        bool converged = fi.interface->Step();
         if (!converged) {
             amrex::Abort("Kynema did not converge\n");
         }
@@ -365,7 +365,7 @@ void update_turbine(::ext_turb::KynemaTurbine& fi, bool advance)
     if (fi.substep_counter == 0) {
         // Output once per amr-wind timestep
         fi.interface->OpenOutputFile();
-        fi.interface->OutputNow((fi.time_index + 1) / fi.num_substeps);
+        fi.interface->WriteOutput();
         fi.interface->CloseOutputFile();
         // Populate buffers with turbine data
         fi.populate_buffers();
