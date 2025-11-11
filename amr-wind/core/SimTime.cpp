@@ -16,6 +16,7 @@ void SimTime::parse_parameters()
     amrex::ParmParse pp("time");
     pp.query("stop_time", m_stop_time);
     pp.query("max_step", m_stop_time_index);
+    pp.query("delay_time", m_delay_time);
     pp.query("fixed_dt", m_fixed_dt);
     pp.query("initial_dt", m_initial_dt);
     pp.query("max_dt", m_max_dt);
@@ -248,12 +249,12 @@ void SimTime::set_current_cfl(
             dt_new = amrex::min(dt_new, m_initial_dt);
         }
 
-        m_dt[0] = dt_new;
+        m_dt[0] = (m_cur_time < m_delay_time) ? m_initial_dt : dt_new;
 
     } else {
         // Ensure that we use user-specified dt. Checkpoint restart might have
         // overridden this
-        m_dt[0] = m_fixed_dt;
+        m_dt[0] = (m_cur_time < m_delay_time) ? m_initial_dt : m_fixed_dt;
     }
 
     m_current_cfl = 0.5 * cfl_unit_time * m_dt[0];
