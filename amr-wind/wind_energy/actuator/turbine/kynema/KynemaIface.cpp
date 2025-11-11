@@ -333,6 +333,22 @@ int build_aero(
     return (int)aero_sections.size();
 }
 
+void build_controller(
+    kynema::interfaces::TurbineInterfaceBuilder& builder,
+    const std::string controller_shared_lib_path,
+    const std::string controller_input_file,
+    const std::string turbine_label)
+{
+    const auto controller_function_name = std::string{"DISCON"};
+    const auto controller_output_file = "controller_" + turbine_label;
+
+    auto controller_builder = builder.Controller()
+                                  .SetLibraryPath(controller_shared_lib_path)
+                                  .SetFunctionName(controller_function_name)
+                                  .SetInputFilePath(controller_input_file)
+                                  .SetControllerInput(controller_output_file);
+}
+
 void update_turbine(::ext_turb::KynemaTurbine& fi, bool advance)
 {
     ++fi.substep_counter;
@@ -348,6 +364,10 @@ void update_turbine(::ext_turb::KynemaTurbine& fi, bool advance)
     }
     if (advance) {
         // individual turbine step, do not output every step
+        if (fi.controller_input_file.size() > 0) {
+            const double t = fi.time_index * fi.dt_ext;
+            fi.interface->ApplyController(t);
+        }
         bool converged = fi.interface->Step();
         if (!converged) {
             amrex::Abort("Kynema did not converge\n");
@@ -625,6 +645,12 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::ext_init_turbine(
             "KynemaIface: number of points per blade (from AMR-Wind input "
             "file) does not match number of aerodynamic sections per blade "
             "(from Kynema input file).");
+    }
+
+    if (fi.controller_input_file.size() > 0) {
+        exw_kynema::build_controller(
+            builder, fi.controller_shared_lib_path,
+            fi.controller_input_file, fi.tlabel);
     }
 
     // Create output

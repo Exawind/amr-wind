@@ -40,6 +40,10 @@ struct ReadInputsOp<TurbineKynema, SrcTrait>
             "turbine_kynema_ops: Cannot find Kynema input file: " +
                 tf.input_file);
 
+        pp.query(
+            "controller_shared_library_path", tf.controller_shared_lib_path);
+        pp.query("controller_input_file", tf.controller_input_file);
+
         // Get hub height and turbine diameter from turbine input,
         // not AMR-Wind input file
         const YAML::Node wio = YAML::LoadFile(tf.input_file);

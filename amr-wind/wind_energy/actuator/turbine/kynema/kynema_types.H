@@ -240,6 +240,9 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
     double rotational_speed{0.};
     int substep_counter{0};
 
+    std::string controller_shared_lib_path{""};
+    std::string controller_input_file{""};
+
     std::vector<float> buffer_cf;
     std::vector<float> buffer_pv;
     std::vector<float> buffer_sv;
