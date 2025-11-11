@@ -39,7 +39,7 @@ transport.thermal_expansion_coefficient  = 0.003333
 turbulence.model                            = Kosovic
 Kosovic.surfaceRANS                         = false 
 Kosovic.writeTerms                          = false
-Kosovic.refMOL                              = -1e30
+Kosovic.monin_obukhov_length                = -1e30
 # Atmospheric boundary layer
 ABL.Uperiods                                = 12.0
 ABL.Vperiods                                = 12.0

@@ -22,24 +22,18 @@ if(AMR_WIND_ENABLE_MASA)
   add_subdirectory(mms)
 endif()
 
-target_compile_options(
-  ${amr_wind_unit_test_exe_name} PRIVATE
+target_compile_options(${amr_wind_unit_test_exe_name} PRIVATE
   $<$<COMPILE_LANGUAGE:CXX>:${AMR_WIND_CXX_FLAGS}>)
 target_include_directories(${amr_wind_unit_test_exe_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
-#Link our unit test executable with GoogleTest
 #target_link_libraries(${utest_exe_name} PRIVATE GTest::GTest GTest::Main)
 target_link_libraries(${amr_wind_unit_test_exe_name} PRIVATE gtest)
 target_include_directories(${amr_wind_unit_test_exe_name} SYSTEM PRIVATE
-  ${CMAKE_SOURCE_DIR}/submods/googletest/googletest/include)
+  ${PROJECT_SOURCE_DIR}/submods/googletest/googletest/include)
 
-target_link_libraries(${amr_wind_unit_test_exe_name} PUBLIC ${amr_wind_lib_name} AMReX-Hydro::amrex_hydro_api)
+target_link_libraries(${amr_wind_unit_test_exe_name} PRIVATE ${amr_wind_lib_name} AMReX-Hydro::amrex_hydro_api)
 if (AMR_WIND_ENABLE_W2A)
-  target_link_libraries(${amr_wind_unit_test_exe_name} PUBLIC Waves2AMR::waves_2_amr_api)
+  target_link_libraries(${amr_wind_unit_test_exe_name} PRIVATE Waves2AMR::Waves2AMR)
 endif()
 
-#Define what we want to be installed during a make install
-install(TARGETS ${amr_wind_unit_test_exe_name}
-        RUNTIME DESTINATION bin
-        ARCHIVE DESTINATION lib
-        LIBRARY DESTINATION lib)
+install(TARGETS ${amr_wind_unit_test_exe_name})
