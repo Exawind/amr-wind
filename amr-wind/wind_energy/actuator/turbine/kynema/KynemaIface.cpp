@@ -166,7 +166,11 @@ void build_turbine(
     // Set tower parameters
     tower_builder
         .SetElementOrder(
-            n_tower_nodes - 1)        // Set element order to num nodes - 1
+            n_tower_nodes - 1) // Set element order to num nodes - 1
+        .SetQuadratureStyle(
+            kynema::interfaces::components::BeamInput::QuadratureStyle::
+                Segmented)
+        .SetSectionRefinement(4)
         .PrescribedRootMotion(false); // Fix displacement of tower base node
 
     // Add reference axis coordinates (WindIO uses Z-axis as reference axis)
@@ -189,7 +193,6 @@ void build_turbine(
     tower_builder.AddRefAxisTwist(0.0, 0.0).AddRefAxisTwist(1.0, 0.0);
 
     // Find the tower material properties
-    const auto tower_diameter = wio_tower["outer_shape"]["outer_diameter"];
     const auto tower_wall_thickness =
         wio_tower["structure"]["layers"][0]["thickness"];
     const auto tower_material_name =
@@ -213,17 +216,24 @@ void build_turbine(
     const auto shear_modulus = tower_material["G"].as<double>();
     const auto poisson_ratio = tower_material["nu"].as<double>();
     const auto density = tower_material["rho"].as<double>();
-    for (auto i : std::views::iota(0U, tower_diameter["grid"].size())) {
+    const auto tower_diameter = wio_tower["outer_shape"]["outer_diameter"];
+    const auto tower_diameter_grid =
+        tower_diameter["grid"].as<std::vector<double>>();
+    const auto tower_diameter_values =
+        tower_diameter["values"].as<std::vector<double>>();
+    const auto tower_wall_thickness_values =
+        tower_wall_thickness["values"].as<std::vector<double>>();
+
+    for (auto i : std::views::iota(0U, tower_diameter_grid.size())) {
         // Create section mass and stiffness matrices
         const auto section = kynema::beams::GenerateHollowCircleSection(
-            tower_diameter["grid"][i].as<double>(), elastic_modulus,
-            shear_modulus, density, tower_diameter["values"][i].as<double>(),
-            tower_wall_thickness["values"][i].as<double>(), poisson_ratio);
+            tower_diameter_grid[i], elastic_modulus, shear_modulus, density,
+            tower_diameter_values[i], tower_wall_thickness_values[i],
+            poisson_ratio);
 
         // Add section
         tower_builder.AddSection(
-            tower_diameter["grid"][i].as<double>(), section.M_star,
-            section.C_star,
+            section.position, section.M_star, section.C_star,
             kynema::interfaces::components::ReferenceAxisOrientation::Z);
     }
 
@@ -233,41 +243,47 @@ void build_turbine(
 
     // Get nacelle mass properties from WindIO
     const auto nacelle_props = wio_drivetrain["elastic_properties"];
-    const auto nacelle_mass = nacelle_props["mass"].as<double>();
-    const auto nacelle_inertia =
-        nacelle_props["inertia"].as<std::vector<double>>();
-
-    // Nacelle center of mass offset from yaw bearing
-    const auto nacelle_cm_offset =
-        nacelle_props["location"].as<std::vector<double>>();
 
     // Set the nacelle inertia matrix in the turbine builder
-    turbine_builder.SetNacelleInertiaMatrix(
-        {{{nacelle_mass, 0., 0., 0., 0., 0.},
-          {0., nacelle_mass, 0., 0., 0., 0.},
-          {0., 0., nacelle_mass, 0., 0., 0.},
-          {0., 0., 0., nacelle_inertia[0], nacelle_inertia[3],
-           nacelle_inertia[4]},
-          {0., 0., 0., nacelle_inertia[3], nacelle_inertia[1],
-           nacelle_inertia[5]},
-          {0., 0., 0., nacelle_inertia[4], nacelle_inertia[5],
-           nacelle_inertia[2]}}},
-        {nacelle_cm_offset[0], nacelle_cm_offset[1], nacelle_cm_offset[2]});
+    if (nacelle_props) {
+        // Get the nacelle mass, inertia properties, and location relative to
+        // the tower top
+        const auto nacelle_mass = nacelle_props["mass"].as<double>();
+        const auto nacelle_inertia =
+            nacelle_props["inertia"].as<std::vector<double>>();
+        const auto nacelle_cm_offset =
+            nacelle_props["location"].as<std::vector<double>>();
 
-    // Get yaw bearing mass properties from WindIO
-    const auto yaw_bearing_mass =
-        wio_yaw["elastic_properties"]["mass"].as<double>();
-    const auto yaw_bearing_inertia =
-        wio_yaw["elastic_properties"]["inertia"].as<std::vector<double>>();
+        turbine_builder.SetNacelleInertiaMatrix(
+            {{{nacelle_mass, 0., 0., 0., 0., 0.},
+              {0., nacelle_mass, 0., 0., 0., 0.},
+              {0., 0., nacelle_mass, 0., 0., 0.},
+              {0., 0., 0., nacelle_inertia[0], nacelle_inertia[3],
+               nacelle_inertia[4]},
+              {0., 0., 0., nacelle_inertia[3], nacelle_inertia[1],
+               nacelle_inertia[5]},
+              {0., 0., 0., nacelle_inertia[4], nacelle_inertia[5],
+               nacelle_inertia[2]}}},
+            {nacelle_cm_offset[0], nacelle_cm_offset[1], nacelle_cm_offset[2]});
+    }
 
-    // Set the yaw bearing inertia matrix in the turbine builder
-    turbine_builder.SetYawBearingInertiaMatrix(
-        {{{yaw_bearing_mass, 0., 0., 0., 0., 0.},
-          {0., yaw_bearing_mass, 0., 0., 0., 0.},
-          {0., 0., yaw_bearing_mass, 0., 0., 0.},
-          {0., 0., 0., yaw_bearing_inertia[0], 0., 0.},
-          {0., 0., 0., 0., yaw_bearing_inertia[1], 0.},
-          {0., 0., 0., 0., 0., yaw_bearing_inertia[2]}}});
+    // Set yaw bearing inertia if yaw component exists
+    if (wio_yaw) {
+        // Get yaw bearing mass properties from WindIO
+        const auto yaw_bearing_mass =
+            wio_yaw["elastic_properties"]["mass"].as<double>();
+        const auto yaw_bearing_inertia =
+            wio_yaw["elastic_properties"]["inertia"].as<std::vector<double>>();
+
+        // Set the yaw bearing inertia matrix in the turbine builder
+        turbine_builder.SetYawBearingInertiaMatrix(
+            {{{yaw_bearing_mass, 0., 0., 0., 0., 0.},
+              {0., yaw_bearing_mass, 0., 0., 0., 0.},
+              {0., 0., yaw_bearing_mass, 0., 0., 0.},
+              {0., 0., 0., yaw_bearing_inertia[0], 0., 0.},
+              {0., 0., 0., 0., yaw_bearing_inertia[1], 0.},
+              {0., 0., 0., 0., 0., yaw_bearing_inertia[2]}}});
+    }
 
     // Get generator rotational inertia and gearbox ratio from WindIO
     const auto generator_inertia =
@@ -286,7 +302,9 @@ void build_turbine(
         {{{hub_mass, 0., 0., 0., 0., 0.},
           {0., hub_mass, 0., 0., 0., 0.},
           {0., 0., hub_mass, 0., 0., 0.},
-          {0., 0., 0., hub_inertia[0] + generator_inertia[0] * gearbox_ratio,
+          {0., 0., 0.,
+           hub_inertia[0] +
+               generator_inertia[0] * gearbox_ratio * gearbox_ratio,
            hub_inertia[3], hub_inertia[4]},
           {0., 0., 0., hub_inertia[3], hub_inertia[1], hub_inertia[5]},
           {0., 0., 0., hub_inertia[4], hub_inertia[5], hub_inertia[2]}}});
@@ -295,6 +313,10 @@ void build_turbine(
 int build_aero(
     kynema::interfaces::TurbineInterfaceBuilder& builder, const YAML::Node wio)
 {
+    //--------------------------------------------------------------------------
+    // Build Aerodynamics
+    //--------------------------------------------------------------------------
+
     auto& aero_builder = builder.Aerodynamics()
                              .EnableAero()
                              .SetNumberOfAirfoils(1UL)
@@ -636,7 +658,6 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::ext_init_turbine(
     exw_kynema::build_turbine(
         builder, wio, fi.num_blades, fi.num_blade_elem, num_pts_tower_struct,
         fi.rotational_speed);
-    // fi.num_pts_tower);
 
     auto n_aero_sections = exw_kynema::build_aero(builder, wio);
 
@@ -647,10 +668,16 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::ext_init_turbine(
             "(from Kynema input file).");
     }
 
+    if (fi.num_pts_tower != 0) {
+        amrex::Abort(
+            "KynemaIface: aerodynamic tower points not yet supported; number "
+            "of tower points in input file must be 0.");
+    }
+
     if (fi.controller_input_file.size() > 0) {
         exw_kynema::build_controller(
-            builder, fi.controller_shared_lib_path,
-            fi.controller_input_file, fi.tlabel);
+            builder, fi.controller_shared_lib_path, fi.controller_input_file,
+            fi.tlabel);
     }
 
     // Create output
