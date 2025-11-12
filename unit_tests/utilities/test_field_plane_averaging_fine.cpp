@@ -9,10 +9,7 @@
 #include "AMReX_RealBox.H"
 #include "AMReX_Vector.H"
 
-#include "amr-wind/utilities/IOManager.H"
 #include "amr-wind/utilities/FieldPlaneAveragingFine.H"
-#include "amr-wind/utilities/FieldPlaneAveraging.H"
-#include "amr-wind/utilities/trig_ops.H"
 
 namespace amr_wind_tests {
 
@@ -41,7 +38,7 @@ protected:
         }
         {
             amrex::ParmParse pp("geometry");
-            amrex::Vector<int> periodic{{1, 1, 1}};
+            amrex::Vector<int> periodic{{0, 0, 0}};
             pp.addarr("is_periodic", periodic);
         }
         // Create the "input file"
@@ -114,9 +111,6 @@ TEST_F(FieldPlaneAveragingFineTest, test_linear)
 
     constexpr int dir = 2;
     init_field_linear(velocityf, u0, dir);
-    sim().io_manager().register_io_var("velocity");
-    sim().io_manager().initialize_io();
-    sim().io_manager().write_plot_file();
 
     amr_wind::FieldPlaneAveragingFine pa_fine(velocityf, sim().time(), dir);
     pa_fine();
