@@ -386,7 +386,7 @@ if(AMR_WIND_ENABLE_OPENFAST AND AMR_WIND_OPENFAST_VERSION VERSION_LESS "4")
 endif()
 
 if(AMR_WIND_ENABLE_KYNEMA)
-  add_test_re(kynema_alm)
+  add_test_re(act_kynema_alm)
 endif()
 
 if(AMR_WIND_ENABLE_FFT)
