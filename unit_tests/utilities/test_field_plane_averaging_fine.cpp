@@ -85,10 +85,18 @@ void init_field_linear(
         amrex::ParallelFor(
             fld(lev), fld.num_grow(),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                amrex::Real off = 0.5;
+                // Set values at boundaries if outside domain
+                if (k < 0) {
+                    off += 0.5;
+                }
+                if (k > 8 * (lev + 1) - 1) {
+                    off -= 0.5;
+                }
                 const amrex::GpuArray<amrex::Real, 3> x = {
                     problo[0] + (i + 0.5) * dx[0],
                     problo[1] + (j + 0.5) * dx[1],
-                    problo[2] + (k + 0.5) * dx[2]};
+                    problo[2] + (k + off) * dx[2]};
                 farrs[nbx](i, j, k, 0) = x[dir] * a[0];
                 farrs[nbx](i, j, k, 1) = x[dir] * a[1];
                 farrs[nbx](i, j, k, 2) = x[dir] * a[2];
