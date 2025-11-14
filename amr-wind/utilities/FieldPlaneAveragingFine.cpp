@@ -321,7 +321,6 @@ void FPlaneAveragingFine<FType>::compute_averages(const IndexSelector& idxOp)
                                     const auto x_down = x_cell - dx;
                                     // Pick indices of closest neighbor
                                     auto iv_nb = iv;
-                                    auto idx_nb = idx;
                                     auto x_nb = x_cell;
                                     if (std::abs(x_up - x_targ) <
                                         std::abs(x_down - x_targ)) {

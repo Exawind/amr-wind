@@ -123,7 +123,7 @@ TEST_F(FieldPlaneAveragingFineTest, test_linear)
 
     // test along a line at n equidistant points in the fine zone
     // plus more extending into the coarse zone
-    for (int i = 0; i < 1.5 * n; ++i) {
+    for (int i = 0; i < n + n / 2; ++i) {
 
         const amrex::Real z = z_fine_lo + i * dz;
 
