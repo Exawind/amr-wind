@@ -45,7 +45,7 @@ protected:
         std::stringstream ss;
         ss << "1 // Number of levels" << std::endl;
         ss << "1 // Number of boxes at this level" << std::endl;
-        ss << "0 0 " << z_fine_lo << " 8 8 " << z_fine_hi << std::endl;
+        ss << "0 0 " << z_fine_lo_in << " 8 8 " << z_fine_hi_in << std::endl;
 
         create_mesh_instance<RefineMesh>();
         std::unique_ptr<amr_wind::CartBoxRefinement> box_refine(
@@ -64,6 +64,8 @@ public:
     void test_dir(int /*dir*/);
     const int z_fine_lo = 2;
     const int z_fine_hi = 4;
+    const int z_fine_lo_in = z_fine_lo + 0.1;
+    const int z_fine_hi_in = z_fine_hi - 0.1;
 };
 
 namespace {
@@ -120,7 +122,8 @@ TEST_F(FieldPlaneAveragingFineTest, test_linear)
     const amrex::Real dz = L / ((amrex::Real)n);
 
     // test along a line at n equidistant points in the fine zone
-    for (int i = 0; i < n; ++i) {
+    // plus more extending into the coarse zone
+    for (int i = 0; i < 1.5 * n; ++i) {
 
         const amrex::Real z = z_fine_lo + i * dz;
 
