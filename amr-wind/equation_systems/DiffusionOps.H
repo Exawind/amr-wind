@@ -87,6 +87,8 @@ public:
         }
     }
 
+    virtual void set_overset_mask(const IntField& imask);
+
 protected:
     //! Sets up the linear operator (e.g., setup BCs, etc.)
     virtual void setup_operator(

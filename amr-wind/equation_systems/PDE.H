@@ -98,6 +98,12 @@ public:
         m_post_solve_op(m_time.current_time());
     }
 
+    void post_overset_actions() override
+    {
+        const auto& imask = m_repo.get_int_field("mask_cell");
+        m_diff_op->set_overset_mask(imask);
+    }
+
     //! Return the object holding the fields necessary for solving this PDE
     PDEFields& fields() override { return m_fields; }
     const PDEFields& fields() const override { return m_fields; }
