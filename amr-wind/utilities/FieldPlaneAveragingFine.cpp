@@ -205,6 +205,8 @@ void FPlaneAveragingFine<FType>::compute_averages(const IndexSelector& idxOp)
         ((g0.ProbHi(0) - g0.ProbLo(0)) * (g0.ProbHi(1) - g0.ProbLo(1)) *
          (g0.ProbHi(2) - g0.ProbLo(2)));
 
+    const bool periodic_dir = g0.periodicity().isPeriodic(m_axis);
+
     const auto& mesh = m_field.repo().mesh();
     const int finestLevel = mesh.finestLevel();
 
@@ -216,6 +218,7 @@ void FPlaneAveragingFine<FType>::compute_averages(const IndexSelector& idxOp)
         const amrex::Real dz = geom.CellSize()[idxOp.odir2];
 
         const amrex::Real problo_x = geom.ProbLo(m_axis);
+        const amrex::Real probhi_x = geom.ProbHi(m_axis);
 
         const auto dir = m_axis;
 
@@ -316,9 +319,14 @@ void FPlaneAveragingFine<FType>::compute_averages(const IndexSelector& idxOp)
                                     const auto idx = iv[dir];
                                     const auto x_cell =
                                         problo_x + (idx + 0.5) * dx;
-                                    // Get indices of neighboring cell centers
-                                    const auto x_up = x_cell + dx;
-                                    const auto x_down = x_cell - dx;
+                                    // Get location of neighboring cell centers
+                                    auto x_up = x_cell + dx;
+                                    auto x_down = x_cell - dx;
+                                    // Bound locations by domain limits
+                                    if (!periodic_dir) {
+                                        x_up = amrex::min(probhi_x, x_up);
+                                        x_down = amrex::max(problo_x, x_down);
+                                    }
                                     // Pick indices of closest neighbor
                                     auto iv_nb = iv;
                                     auto x_nb = x_cell;
