@@ -523,7 +523,7 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::prepare_netcdf_file(
     ncf.put_attr("AMR-Wind_version", amr_wind::ioutils::amr_wind_version());
     ncf.put_attr("created_on", amr_wind::ioutils::timestamp());
     ncf.def_dim(nt_name, NC_UNLIMITED);
-    ncf.def_dim(np_name, fi.from_cfd.u_Len);
+    ncf.def_dim(np_name, fi.length_fluid_velocity(0));
     ncf.def_dim("ndim", AMREX_SPACEDIM);
     ncf.def_var("time", NC_FLOAT, {nt_name});
     ncf.def_var("xco", NC_FLOAT, {np_name});
@@ -535,7 +535,7 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::prepare_netcdf_file(
     ncf.exit_def_mode();
 
     {
-        const auto npts = static_cast<size_t>(fi.from_cfd.u_Len);
+        const auto npts = static_cast<size_t>(fi.length_fluid_velocity(0));
         auto xco = ncf.var("xco");
         xco.put(fi.position_at_vel(0), {0}, {npts});
         auto yco = ncf.var("yco");
@@ -563,14 +563,13 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::write_velocity_data(
     auto ncf = ncutils::NCFile::open(fname, NC_WRITE);
     const std::string nt_name = "num_time_steps";
     const size_t nt = ncf.dim(nt_name).len();
-    const auto npts = static_cast<size_t>(fi.from_cfd.u_Len);
+    const auto npts = static_cast<size_t>(fi.length_fluid_velocity(0));
 
     const double time = fi.time_index * fi.dt_ext;
     ncf.var("time").put(&time, {nt}, {1});
-    const auto& uu = fi.from_cfd;
-    ncf.var("uvel").put(uu.u, {nt, 0}, {1, npts});
-    ncf.var("vvel").put(uu.v, {nt, 0}, {1, npts});
-    ncf.var("wvel").put(uu.w, {nt, 0}, {1, npts});
+    ncf.var("uvel").put(fi.fluid_velocity(0), {nt, 0}, {1, npts});
+    ncf.var("vvel").put(fi.fluid_velocity(1), {nt, 0}, {1, npts});
+    ncf.var("wvel").put(fi.fluid_velocity(2), {nt, 0}, {1, npts});
 #else
     amrex::ignore_unused(fi);
 #endif
@@ -582,12 +581,11 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::read_velocity_data(
 {
 #ifdef AMR_WIND_USE_NETCDF
     const auto nt = static_cast<size_t>(tid);
-    const auto npts = static_cast<size_t>(fi.from_cfd.u_Len);
+    const auto npts = static_cast<size_t>(fi.length_fluid_velocity(0));
 
-    auto& uu = fi.from_cfd;
-    ncf.var("uvel").get(uu.u, {nt, 0}, {1, npts});
-    ncf.var("vvel").get(uu.v, {nt, 0}, {1, npts});
-    ncf.var("wvel").get(uu.w, {nt, 0}, {1, npts});
+    ncf.var("uvel").get(fi.fluid_velocity(0), {nt, 0}, {1, npts});
+    ncf.var("vvel").get(fi.fluid_velocity(1), {nt, 0}, {1, npts});
+    ncf.var("wvel").get(fi.fluid_velocity(2), {nt, 0}, {1, npts});
 #else
     amrex::ignore_unused(fi);
     amrex::Abort(
