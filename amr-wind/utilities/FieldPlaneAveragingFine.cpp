@@ -215,6 +215,10 @@ void FPlaneAveragingFine<FType>::compute_averages(const IndexSelector& idxOp)
         const amrex::Real dy = geom.CellSize()[idxOp.odir1];
         const amrex::Real dz = geom.CellSize()[idxOp.odir2];
 
+        const amrex::Real problo_x = geom.ProbLo(m_axis);
+
+        const auto dir = m_axis;
+
         amrex::iMultiFab level_mask;
         if (lev < finestLevel) {
             level_mask = makeFineMask(
@@ -304,11 +308,43 @@ void FPlaneAveragingFine<FType>::compute_averages(const IndexSelector& idxOp)
                                     deltax = amrex::min(deltax, dx);
                                     const amrex::Real vol = deltax * dy * dz;
 
+                                    // Calculate location of target
+                                    const auto x_targ =
+                                        0.5 * (line_xlo + line_xhi);
+                                    // Calculate location of cell center
+                                    const amrex::IntVect iv{i, j, k};
+                                    const auto idx = iv[dir];
+                                    const auto x_cell =
+                                        problo_x + (idx + 0.5) * dx;
+                                    // Get indices of neighboring cell centers
+                                    const auto x_up = x_cell + dx;
+                                    const auto x_down = x_cell - dx;
+                                    // Pick indices of closest neighbor
+                                    auto iv_nb = iv;
+                                    auto idx_nb = idx;
+                                    auto x_nb = x_cell;
+                                    if (std::abs(x_up - x_targ) <
+                                        std::abs(x_down - x_targ)) {
+                                        x_nb = x_up;
+                                        iv_nb[dir] += 1;
+                                    } else {
+                                        x_nb = x_down;
+                                        iv_nb[dir] -= 1;
+                                    }
+                                    // Interpolate to target location using
+                                    // closest neighbor
+                                    // (will do nothing if already at cell
+                                    // center)
                                     for (int n = 0; n < num_comps; ++n) {
+                                        const auto f_interp =
+                                            fab_arr(iv, n) +
+                                            (fab_arr(iv, n) -
+                                             fab_arr(iv_nb, n)) /
+                                                (x_cell - x_nb) *
+                                                (x_targ - x_cell);
                                         amrex::Gpu::deviceReduceSum(
                                             &line_avg[num_comps * ind + n],
-                                            mask_arr(i, j, k) *
-                                                fab_arr(i, j, k, n) * vol *
+                                            mask_arr(i, j, k) * f_interp * vol *
                                                 denom,
                                             handler);
                                     }
