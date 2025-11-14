@@ -106,7 +106,7 @@ void init_field_linear(
 }
 } // namespace
 
-TEST_F(FieldPlaneAveragingFineTest, test_linear)
+TEST_F(FieldPlaneAveragingFineTest, test_linear_fine_only)
 {
 
     constexpr double tol = 1.0e-12;
@@ -130,10 +130,51 @@ TEST_F(FieldPlaneAveragingFineTest, test_linear)
     const amrex::Real dz = L / ((amrex::Real)n);
 
     // test along a line at n equidistant points in the fine zone
-    // plus more extending into the coarse zone
-    for (int i = 0; i < n + n / 2; ++i) {
+    for (int i = 0; i < n; ++i) {
 
         const amrex::Real z = z_fine_lo + i * dz;
+
+        const amrex::Array<amrex::Real, 3> u = {
+            pa_fine.line_average_interpolated(z, 0),
+            pa_fine.line_average_interpolated(z, 1),
+            pa_fine.line_average_interpolated(z, 2)};
+
+        // test each velocity field u = u0 + u0*x
+        for (int j = 0; j < 3; ++j) {
+            EXPECT_NEAR(u0[j] * (z), u[j], tol);
+        }
+    }
+}
+
+TEST_F(FieldPlaneAveragingFineTest, test_linear)
+{
+
+    constexpr double tol = 1.0e-12;
+
+    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> u0 = {{1.0, 3.5, 5.6}};
+
+    populate_parameters();
+    initialize_mesh();
+
+    auto& frepo = mesh().field_repo();
+    auto& velocityf = frepo.declare_field("velocity", 3, 1);
+
+    constexpr int dir = 2;
+    init_field_linear(velocityf, u0, dir);
+
+    amr_wind::FieldPlaneAveragingFine pa_fine(velocityf, sim().time(), dir);
+    pa_fine();
+
+    constexpr int n = 20;
+    const amrex::Real L = z_fine_hi - z_fine_lo;
+    const amrex::Real dz = L / ((amrex::Real)n);
+    const amrex::Real half_dz_pa = 0.25;
+    const int n_more = static_cast<int>((8. - 2. * half_dz_pa) / dz);
+
+    // test along a line spanning domain, from first point to last
+    for (int i = 0; i < n_more; ++i) {
+
+        const amrex::Real z = half_dz_pa + i * dz;
 
         const amrex::Array<amrex::Real, 3> u = {
             pa_fine.line_average_interpolated(z, 0),
