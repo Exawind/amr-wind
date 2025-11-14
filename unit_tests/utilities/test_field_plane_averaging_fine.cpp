@@ -109,7 +109,7 @@ TEST_F(FieldPlaneAveragingFineTest, test_linear)
     initialize_mesh();
 
     auto& frepo = mesh().field_repo();
-    auto& velocityf = frepo.declare_field("velocity", 3);
+    auto& velocityf = frepo.declare_field("velocity", 3, 1);
 
     constexpr int dir = 2;
     init_field_linear(velocityf, u0, dir);
