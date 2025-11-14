@@ -346,9 +346,9 @@ void FPlaneAveragingFine<FType>::compute_averages(const IndexSelector& idxOp)
                                         const auto f_interp =
                                             fab_arr(iv, n) +
                                             (fab_arr(iv_nb, n) -
-                                             fab_arr(iv, n)) /
-                                                (x_nb - x_cell) *
-                                                (x_targ - x_cell);
+                                             fab_arr(iv, n)) *
+                                                ((x_targ - x_cell) /
+                                                 (x_nb - x_cell));
                                         amrex::Gpu::deviceReduceSum(
                                             &line_avg[num_comps * ind + n],
                                             mask_arr(i, j, k) * f_interp * vol *
