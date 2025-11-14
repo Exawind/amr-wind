@@ -62,10 +62,10 @@ protected:
 
 public:
     void test_dir(int /*dir*/);
-    const int z_fine_lo = 2;
-    const int z_fine_hi = 4;
-    const int z_fine_lo_in = z_fine_lo + 0.1;
-    const int z_fine_hi_in = z_fine_hi - 0.1;
+    const amrex::Real z_fine_lo = 2;
+    const amrex::Real z_fine_hi = 4;
+    const amrex::Real z_fine_lo_in = z_fine_lo + 0.1;
+    const amrex::Real z_fine_hi_in = z_fine_hi - 0.1;
 };
 
 namespace {
