@@ -87,7 +87,16 @@ public:
         }
     }
 
-    virtual void set_overset_mask(const IntField& imask);
+    void set_overset_mask(const IntField& imask)
+    {
+        auto& repo = m_pdefields.repo;
+        const int finest_level = repo.num_active_levels() - 1;
+
+        for (int lev = 0; lev <= finest_level; ++lev) {
+            m_solver->setOversetMask(lev, imask(lev));
+            m_applier->setOversetMask(lev, imask(lev));
+        }
+    }
 
 protected:
     //! Sets up the linear operator (e.g., setup BCs, etc.)
