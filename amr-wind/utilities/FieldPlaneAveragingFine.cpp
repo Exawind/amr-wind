@@ -1,4 +1,5 @@
 #include "amr-wind/utilities/FieldPlaneAveragingFine.H"
+#include "amr-wind/utilities/constants.H"
 #include "AMReX_iMultiFab.H"
 #include "AMReX_MultiFabUtil.H"
 #include <algorithm>
