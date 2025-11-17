@@ -92,7 +92,7 @@ protected:
         }
         {
             amrex::ParmParse pp("waveenergy");
-            pp.add("output_frequency", 1);
+            pp.add("output_interval", 1);
             pp.add("water_level", m_wlev);
         }
         {

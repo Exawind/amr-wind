@@ -109,7 +109,7 @@ nodal_proj.mg_atol                          = 1.0e-12
 incflo.post_processing = sampling enstrophy ke
 
 # Data probe sampling
-sampling.output_frequency = 1
+sampling.output_interval = 1
 sampling.labels = l_v11 p_h
 sampling.fields = velocity temperature
 
@@ -130,6 +130,6 @@ sampling.p_h.offsets = 0.0 50.0 150.0
 
 # kinetic energy and enstrophy integration
 ke.type = KineticEnergy
-ke.output_frequency = 1
+ke.output_interval = 1
 enstrophy.type = Enstrophy
-enstrophy.output_frequency = 1
+enstrophy.output_interval = 1

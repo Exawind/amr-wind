@@ -246,6 +246,9 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
 
         int ip = 0;
 
+        const auto dTheta = amr_wind::utils::two_pi() / ddata.num_vel_pts_t;
+        const auto current_time = data.sim().time().current_time();
+
         for (int i = 0; i < ddata.num_vel_pts_r; i++) {
             const amrex::Real& F = ddata.tip_correction[i];
             const amrex::Real& g = ddata.root_correction[i];
@@ -263,6 +266,7 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
 
             for (int j = 0; j < ddata.num_vel_pts_t; j++, ip++) {
                 const auto point_current = grid.pos[ip];
+                const auto theta_angle = j * dTheta;
 
                 // TODO add sign convention for rotation (+/- RPM)
                 // Negative sign on theta_vec means turbine is rotating
@@ -282,9 +286,16 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
                 // eq 18
                 moment += x * ddata.radius() * f_theta * dArea;
 
-                grid.force[ip] =
-                    (f_z * ddata.normal_vec + f_theta * theta_vec) *
-                    ddata.density * uInfSqr * dArea;
+                const amrex::Real f_awc =
+                    ddata.awc_amplitude *
+                    std::cos(
+                        ddata.awc_angular_frequency * current_time -
+                        ddata.awc_azimuthal_mode * theta_angle +
+                        ddata.awc_clocking_angle);
+
+                grid.force[ip] = ((1 + f_awc) * f_z * ddata.normal_vec +
+                                  f_theta * theta_vec) *
+                                 ddata.density * uInfSqr * dArea;
 
                 ddata.disk_force = ddata.disk_force + grid.force[ip];
             }

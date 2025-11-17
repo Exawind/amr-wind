@@ -25,7 +25,7 @@ turbines as actuator disks and actuator line models.
    **type:** String, mandatory
 
    This string identifies the type of actuator to use. The ones currently
-   supported are: ``TurbineFastLine``, ``TurbineFastDisk``, and
+   supported are: ``UniformCtDisk``, ``JoukowskyDisk``, ``TurbineFastLine``, ``TurbineFastDisk``, and
    ``FixedWingLine``.
 
 It is recommended to group common parameters across actuators using the ``Actuator.[type].[param]``. For example::
@@ -394,6 +394,40 @@ Example for ``TurbineFastLine``::
    **type:** String, required
 
    This is the name of the openfast input file with all the turbine information.
+
+Active Wake Control with Joukowsky Disk
+"""""""""""""""""""""""""""""""""""""""
+
+There is preliminary support for exploring Active Wake Control (AWC) strategies with
+the Joukowsky disk model. The current implementation follows `Cheung et. al (2024)
+<https://doi.org/10.3390/en17040865>`_. The following input options allow for enabling AWC:
+
+.. input_param:: Actuator.WTG01.awc_angular_frequency
+
+   **type:** Real, optional, default=0
+
+   Sets the temporal angular frequency for AWC (in radians)
+
+
+.. input_param:: Actuator.WTG01.awc_amplitude
+
+   **type:** Real, optional, default=0
+
+   Sets the amplitude of the forcing term in AWC relative to the axial force
+
+
+.. input_param:: Actuator.WTG01.awc_azimuthal_mode
+
+   **type:** Int, optional, default=0
+
+   Sets the azimuthal mode for the AWC (e.g. 0 denotes a pulse mode, 1 denotes a helical mode)
+
+
+.. input_param:: Actuator.WTG01.awc_clocking_angle
+
+   **type:** Real, optional, default=0
+
+   Sets the clocking angle to adjust the orientation of the modes in the azimuthal direction (in radians)
 
 
 ActuatorSourceTagging

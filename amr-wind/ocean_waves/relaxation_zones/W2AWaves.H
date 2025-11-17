@@ -64,7 +64,7 @@ struct W2AWavesData : public RelaxZonesBaseData
     // FFTW pointers to store modes ready for ifft
     double *r_eta_mptr = nullptr, *r_u_mptr = nullptr, *r_v_mptr = nullptr,
            *r_w_mptr = nullptr, *au_mptr = nullptr, *av_mptr = nullptr,
-           *aw_mptr = nullptr;
+           *aw_mptr = nullptr, *plan_out = nullptr;
     // ReadModes objects
     ReadModes<std::complex<double>> c_rmodes;
     ReadModes<double> r_rmodes;
@@ -119,6 +119,9 @@ struct W2AWavesData : public RelaxZonesBaseData
         }
         if (aw_mptr) {
             delete[] aw_mptr;
+        }
+        if (plan_out) {
+            delete[] plan_out;
         }
         for (int n = 0; n < (int)plan_vector.size(); ++n) {
             fftw_destroy_plan(plan_vector[n]);

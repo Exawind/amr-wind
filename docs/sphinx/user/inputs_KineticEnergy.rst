@@ -14,7 +14,7 @@ The prefix is the label set in ``incflo.post_processing``. For example
 
     To use kinetic energy post processing specify with keyword ``KineticEnergy``
 
-.. input_param:: ke.output_frequency
+.. input_param:: ke.output_interval
 
    **type:** Integer, optional, default = 10
 

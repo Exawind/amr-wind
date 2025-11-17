@@ -75,12 +75,6 @@ if(AMR_WIND_ENABLE_ROCM)
   endif()
 endif()
 
-if (AMR_WIND_ENABLE_UMPIRE)
-  set(CMAKE_PREFIX_PATH ${UMPIRE_DIR} ${CMAKE_PREFIX_PATH})
-  find_package(Umpire REQUIRED)
-  include_directories(SYSTEM ${UMPIRE_INCLUDE_DIRS})
-endif()
-
 if(AMR_WIND_TEST_WITH_FCOMPARE)
   set(AMR_WIND_ENABLE_FCOMPARE ON)
 endif()
@@ -100,13 +94,10 @@ init_amrex_hydro()
 
 ########################## Waves2AMR ##################################
 if (AMR_WIND_ENABLE_W2A)
-  # submodule for the code, not always compiled
   init_waves2amr()
 endif()
 
 ########################### AMR-Wind #####################################
-
-# General information about machine, compiler, and build type
 message(STATUS "AMR-Wind Information:")
 message(STATUS "CMAKE_SYSTEM_NAME = ${CMAKE_SYSTEM_NAME}")
 message(STATUS "CMAKE_CXX_COMPILER_ID = ${CMAKE_CXX_COMPILER_ID}")
@@ -121,7 +112,6 @@ set(amr_wind_exe_name "amr_wind")
 set(amr_wind_unit_test_exe_name "${amr_wind_exe_name}_unit_tests")
 set(aw_api_lib "amrwind_api")
 
-#Create main target executable
 add_library(${amr_wind_lib_name} OBJECT)
 add_library(${aw_api_lib})
 add_executable(${amr_wind_exe_name})
@@ -135,11 +125,8 @@ endif()
 include(set_compile_flags)
 
 if (AMR_WIND_ENABLE_W2A)
-  # Turn on the use of the library via bool, it has already been included above
   target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_USE_W2A)
-  # Address FFTW dependencies
-  set(CMAKE_PREFIX_PATH ${FFTW_DIR} ${CMAKE_PREFIX_PATH})
-  include_directories(${FFTW_DIR}/include)
+  target_link_libraries(${amr_wind_lib_name} PUBLIC Waves2AMR::Waves2AMR)
 endif()
 
 if(AMR_WIND_ENABLE_NETCDF)
@@ -147,6 +134,12 @@ if(AMR_WIND_ENABLE_NETCDF)
   find_package(NetCDF REQUIRED)
   target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_USE_NETCDF)
   target_link_libraries_system(${amr_wind_lib_name} PUBLIC NetCDF::NetCDF)
+endif()
+
+if (AMR_WIND_ENABLE_UMPIRE)
+  set(CMAKE_PREFIX_PATH ${UMPIRE_DIR} ${CMAKE_PREFIX_PATH})
+  find_package(Umpire REQUIRED)
+  target_include_directories(${amr_wind_lib_name} SYSTEM ${UMPIRE_INCLUDE_DIRS})
 endif()
 
 if(AMR_WIND_ENABLE_HDF5)
@@ -180,17 +173,25 @@ if(AMR_WIND_ENABLE_OPENFAST)
 
   set(AMR_WIND_OPENFAST_VERSION "3" CACHE STRING "OpenFAST major version")
   if((AMR_WIND_OPENFAST_VERSION STREQUAL "master") OR (AMR_WIND_OPENFAST_VERSION STREQUAL "main") OR (AMR_WIND_OPENFAST_VERSION STREQUAL "develop"))
-    set(AMR_WIND_OPENFAST_VERSION "4.0")
+    set(AMR_WIND_OPENFAST_VERSION "4.1")
   endif()
   if(NOT AMR_WIND_OPENFAST_VERSION VERSION_LESS "5")
     message(FATAL_ERROR "AMR_WIND_OPENFAST_VERSION must be less than 5.")
   endif()
+  if(AMR_WIND_OPENFAST_VERSION VERSION_GREATER_EQUAL "4" AND AMR_WIND_OPENFAST_VERSION VERSION_LESS "4.1")
+    message(FATAL_ERROR "AMR-Wind does not support OpenFAST version 4.0. Either update to 4.1 or revert to 3.")
+  endif()
+  message(STATUS "AMR_WIND_OPENFAST_VERSION = ${AMR_WIND_OPENFAST_VERSION}")
   string(REPLACE "." ";" OPENFAST_VERSION_LIST ${AMR_WIND_OPENFAST_VERSION})
   list(LENGTH OPENFAST_VERSION_LIST OPENFAST_VERSION_LIST_LENGTH)
   if(OPENFAST_VERSION_LIST_LENGTH GREATER_EQUAL 1)
     list(GET OPENFAST_VERSION_LIST 0 OPENFAST_VERSION_MAJOR)
   endif()
+  if(OPENFAST_VERSION_LIST_LENGTH GREATER_EQUAL 2)
+    list(GET OPENFAST_VERSION_LIST 1 OPENFAST_VERSION_MINOR)
+  endif()
   target_compile_definitions(${amr_wind_lib_name} PUBLIC OPENFAST_VERSION_MAJOR=${OPENFAST_VERSION_MAJOR})
+  target_compile_definitions(${amr_wind_lib_name} PUBLIC OPENFAST_VERSION_MINOR=${OPENFAST_VERSION_MINOR})
 endif()
 
 if(AMR_WIND_ENABLE_ASCENT)
@@ -204,7 +205,6 @@ if(AMR_WIND_ENABLE_ASCENT)
   target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_USE_ASCENT)
 endif()
 
-# Link with HELICS module
 if(AMR_WIND_ENABLE_HELICS)
   set(CMAKE_PREFIX_PATH ${HELICS_DIR} ${CMAKE_PREFIX_PATH})
   find_package(HELICS 3 REQUIRED)
@@ -222,17 +222,20 @@ if(AMR_WIND_TEST_WITH_PYTHON)
   find_package(Python3 REQUIRED COMPONENTS Interpreter)
 endif()
 
-#Build amr-wind and link to amrex library
 generate_version_info()
 add_subdirectory(amr-wind)
+
+target_link_libraries_system(${amr_wind_lib_name} PUBLIC AMReX::amrex AMReX-Hydro::amrex_hydro_api)
+target_link_libraries(${amr_wind_exe_name} PRIVATE ${amr_wind_lib_name} AMReX-Hydro::amrex_hydro_api)
+target_link_libraries(${aw_api_lib} PUBLIC ${amr_wind_lib_name} AMReX-Hydro::amrex_hydro_api)
+
+set_target_properties(${amr_wind_lib_name} buildInfo${amr_wind_lib_name}
+	  PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 if(AMR_WIND_ENABLE_CUDA)
   set(awtargets "${amr_wind_lib_name};${amr_wind_exe_name}")
   foreach(tgt IN LISTS awtargets)
     set_cuda_build_properties(${tgt})
-    # get_target_property(AMR_WIND_SOURCES ${tgt} SOURCES)
-    # list(FILTER AMR_WIND_SOURCES INCLUDE REGEX "\\.cpp")
-    # set_source_files_properties(${AMR_WIND_SOURCES} PROPERTIES LANGUAGE CUDA)
   endforeach()
 endif()
 
@@ -245,12 +248,6 @@ if(AMR_WIND_ENABLE_UNIT_TESTS OR AMR_WIND_ENABLE_TESTS)
   add_subdirectory("submods/googletest")
   add_subdirectory("unit_tests")
   set_cuda_build_properties(${amr_wind_unit_test_exe_name})
-  # if(AMR_WIND_ENABLE_CUDA)
-  #   get_target_property(UTEST_SOURCES ${amr_wind_unit_test_exe_name} SOURCES)
-  #   set_source_files_properties(${UTEST_SOURCES} PROPERTIES LANGUAGE CUDA)
-  #   set_target_properties(${amr_wind_unit_test_exe_name} PROPERTIES
-  #     CUDA_SEPARABLE_COMPILATION ON)
-  # endif()
 endif()
 
 add_subdirectory(tools)
@@ -270,14 +267,14 @@ install(
   TARGETS ${amr_wind_exe_name}
   ${aw_api_lib} ${amr_wind_lib_name} buildInfo${amr_wind_lib_name}
   EXPORT ${PROJECT_NAME}Targets
-  RUNTIME DESTINATION bin
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib)
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 if(AMR_WIND_ENABLE_UNIT_TESTS OR AMR_WIND_ENABLE_TESTS)
   install(
     TARGETS ${amr_wind_unit_test_exe_name}
-    RUNTIME DESTINATION bin)
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 endif()
 
 install(
@@ -288,15 +285,15 @@ install(
 install(
   EXPORT ${PROJECT_NAME}Targets
   NAMESPACE ${PROJECT_NAME}::
-  DESTINATION lib/cmake/${PROJECT_NAME})
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
 
 configure_package_config_file(
   cmake/${PROJECT_NAME}Config.cmake.in
   ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-  INSTALL_DESTINATION lib/cmake/${PROJECT_NAME})
+  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-  DESTINATION lib/cmake/${PROJECT_NAME})
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
 install(FILES
   ${PROJECT_SOURCE_DIR}/cmake/FindMASA.cmake
   ${PROJECT_SOURCE_DIR}/cmake/FindNetCDF.cmake

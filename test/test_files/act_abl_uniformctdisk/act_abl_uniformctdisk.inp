@@ -35,7 +35,7 @@ transport.reference_temperature 			 = 300
 transport.thermal_expansion_coefficient 			 = 0.00333333
 # turbulence equation parameters 
 turbulence.model 			 = Kosovic
-Kosovic.refMOL 			 = -1e30
+Kosovic.monin_obukhov_length 			 = -1e30
 # Atmospheric boundary layer
 ABL.kappa 			 = .41
 ABL.normal_direction 			 = 2

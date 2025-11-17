@@ -113,7 +113,14 @@ When all of these steps are complete, the job directory for running the turbine 
 
     avg_theta.dat  T0_OpenFAST/  T1_OpenFAST/  T2_OpenFAST/  turbines.inp
 
-and the turbine inflow-outflow simulation is ready to be submitted.
+and the turbine inflow-outflow simulation is ready to be submitted using
+
+.. code-block:: console
+
+    amr_wind turbines.inp
+
+which should follow after an ``srun`` or ``mpiexec`` or a similar command to take advantage of parallelization.
+
 
 Below we show the magnitude of the velocity at t=7350s (top) and at the final time
 (bottom) of the simulation. In both images, the three turbines are displayed as 3D

@@ -210,7 +210,7 @@ TEST_F(SamplingTest, sampling)
 
     {
         amrex::ParmParse pp("sampling");
-        pp.add("output_frequency", 1);
+        pp.add("output_interval", 1);
         pp.addarr("labels", amrex::Vector<std::string>{"line1"});
         pp.addarr(
             "fields",
@@ -249,7 +249,7 @@ TEST_F(SamplingTest, sampling_timing)
 
     {
         amrex::ParmParse pp("sampling");
-        pp.add("output_frequency", 1);
+        pp.add("output_interval", 1);
         pp.add("output_delay", 1);
         pp.addarr("labels", amrex::Vector<std::string>{"line1"});
         pp.addarr(

@@ -19,9 +19,9 @@ io.outputs = vorticity
 io.derived_outputs = q_criterion q_criterion_nondim mag_vorticity
 incflo.post_processing = ke enst
 ke.type = KineticEnergy
-ke.output_frequency = 1
+ke.output_interval = 1
 enst.type = Enstrophy
-enst.output_frequency = 1
+enst.output_interval = 1
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #

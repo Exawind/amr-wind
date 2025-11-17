@@ -16,6 +16,7 @@ void SimTime::parse_parameters()
     amrex::ParmParse pp("time");
     pp.query("stop_time", m_stop_time);
     pp.query("max_step", m_stop_time_index);
+    pp.query("delay_time", m_delay_time);
     pp.query("fixed_dt", m_fixed_dt);
     pp.query("initial_dt", m_initial_dt);
     pp.query("max_dt", m_max_dt);
@@ -39,6 +40,7 @@ void SimTime::parse_parameters()
     pp.query("plot_start", m_plt_start_index);
     pp.query("checkpoint_start", m_chkpt_start_index);
     pp.query("use_force_cfl", m_use_force_cfl);
+    pp.query("profiling_interval", m_profiling_interval);
 
     // Tolerances
     pp.query("plot_time_interval_reltol", m_plt_t_tol);
@@ -247,12 +249,12 @@ void SimTime::set_current_cfl(
             dt_new = amrex::min(dt_new, m_initial_dt);
         }
 
-        m_dt[0] = dt_new;
+        m_dt[0] = (m_cur_time < m_delay_time) ? m_initial_dt : dt_new;
 
     } else {
         // Ensure that we use user-specified dt. Checkpoint restart might have
         // overridden this
-        m_dt[0] = m_fixed_dt;
+        m_dt[0] = (m_cur_time < m_delay_time) ? m_initial_dt : m_fixed_dt;
     }
 
     m_current_cfl = 0.5 * cfl_unit_time * m_dt[0];
@@ -416,6 +418,13 @@ void SimTime::calculate_minimum_enforce_dt_abs_tol()
                                                m_postprocess_time_interval[npp])
                  : m_force_dt_abs_tol);
     }
+}
+
+bool SimTime::output_profiling_info() const
+{
+    return (
+        (m_profiling_interval > 0) &&
+        (m_time_index % m_profiling_interval == 0));
 }
 
 } // namespace amr_wind
