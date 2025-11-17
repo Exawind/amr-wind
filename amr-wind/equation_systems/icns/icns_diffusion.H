@@ -579,6 +579,8 @@ struct DiffusionOp<ICNS, Scheme>
             }
         }
     }
+
+    void set_overset_mask(const IntField& imask) {}
 };
 
 } // namespace amr_wind::pde
