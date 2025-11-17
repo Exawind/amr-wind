@@ -281,7 +281,10 @@ void FPlaneAveragingFine<FType>::compute_averages(const IndexSelector& idxOp)
                                 const int line_ind_hi = amrex::min(
                                     amrex::max(
                                         static_cast<int>(
-                                            (cell_xhi - xlo) / line_dx),
+                                            (cell_xhi -
+                                             amr_wind::constants::TIGHT_TOL -
+                                             xlo) /
+                                            line_dx),
                                         0),
                                     num_cells - 1);
 
