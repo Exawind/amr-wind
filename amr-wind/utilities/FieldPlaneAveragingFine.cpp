@@ -1,4 +1,5 @@
 #include "amr-wind/utilities/FieldPlaneAveragingFine.H"
+#include "amr-wind/utilities/constants.H"
 #include "AMReX_iMultiFab.H"
 #include "AMReX_MultiFabUtil.H"
 #include <algorithm>
@@ -205,6 +206,8 @@ void FPlaneAveragingFine<FType>::compute_averages(const IndexSelector& idxOp)
         ((g0.ProbHi(0) - g0.ProbLo(0)) * (g0.ProbHi(1) - g0.ProbLo(1)) *
          (g0.ProbHi(2) - g0.ProbLo(2)));
 
+    const bool periodic_dir = g0.periodicity().isPeriodic(m_axis);
+
     const auto& mesh = m_field.repo().mesh();
     const int finestLevel = mesh.finestLevel();
 
@@ -214,6 +217,11 @@ void FPlaneAveragingFine<FType>::compute_averages(const IndexSelector& idxOp)
         const amrex::Real dx = geom.CellSize()[m_axis];
         const amrex::Real dy = geom.CellSize()[idxOp.odir1];
         const amrex::Real dz = geom.CellSize()[idxOp.odir2];
+
+        const amrex::Real problo_x = geom.ProbLo(m_axis);
+        const amrex::Real probhi_x = geom.ProbHi(m_axis);
+
+        const auto dir = m_axis;
 
         amrex::iMultiFab level_mask;
         if (lev < finestLevel) {
@@ -274,7 +282,10 @@ void FPlaneAveragingFine<FType>::compute_averages(const IndexSelector& idxOp)
                                 const int line_ind_hi = amrex::min(
                                     amrex::max(
                                         static_cast<int>(
-                                            (cell_xhi - xlo) / line_dx),
+                                            (cell_xhi -
+                                             amr_wind::constants::TIGHT_TOL -
+                                             xlo) /
+                                            line_dx),
                                         0),
                                     num_cells - 1);
 
@@ -304,11 +315,47 @@ void FPlaneAveragingFine<FType>::compute_averages(const IndexSelector& idxOp)
                                     deltax = amrex::min(deltax, dx);
                                     const amrex::Real vol = deltax * dy * dz;
 
+                                    // Calculate location of target
+                                    const auto x_targ =
+                                        0.5 * (line_xlo + line_xhi);
+                                    // Calculate location of cell center
+                                    const amrex::IntVect iv{i, j, k};
+                                    const auto idx = iv[dir];
+                                    const auto x_cell =
+                                        problo_x + (idx + 0.5) * dx;
+                                    // Get location of neighboring cell centers
+                                    auto x_up = x_cell + dx;
+                                    auto x_down = x_cell - dx;
+                                    // Bound locations by domain limits
+                                    if (!periodic_dir) {
+                                        x_up = amrex::min(probhi_x, x_up);
+                                        x_down = amrex::max(problo_x, x_down);
+                                    }
+                                    // Pick indices of closest neighbor
+                                    auto iv_nb = iv;
+                                    auto x_nb = x_cell;
+                                    if (std::abs(x_up - x_targ) <
+                                        std::abs(x_down - x_targ)) {
+                                        x_nb = x_up;
+                                        iv_nb[dir] += 1;
+                                    } else {
+                                        x_nb = x_down;
+                                        iv_nb[dir] -= 1;
+                                    }
+                                    // Interpolate to target location using
+                                    // closest neighbor
+                                    // (will do nothing if already at cell
+                                    // center)
                                     for (int n = 0; n < num_comps; ++n) {
+                                        const auto f_interp =
+                                            fab_arr(iv, n) +
+                                            (fab_arr(iv_nb, n) -
+                                             fab_arr(iv, n)) *
+                                                ((x_targ - x_cell) /
+                                                 (x_nb - x_cell));
                                         amrex::Gpu::deviceReduceSum(
                                             &line_avg[num_comps * ind + n],
-                                            mask_arr(i, j, k) *
-                                                fab_arr(i, j, k, n) * vol *
+                                            mask_arr(i, j, k) * f_interp * vol *
                                                 denom,
                                             handler);
                                     }
