@@ -176,6 +176,17 @@ struct DiffusionOp<TKE, Scheme> : public DiffSolverIface<typename TKE::MLDiffOp>
         }
     }
 
+    void set_overset_mask(const IntField& imask)
+    {
+        auto& repo = m_pdefields.repo;
+        const int finest_level = repo.num_active_levels() - 1;
+
+        for (int lev = 0; lev <= finest_level; ++lev) {
+            this->m_solver->setOversetMask(lev, imask(lev));
+            this->m_applier->setOversetMask(lev, imask(lev));
+        }
+    }
+
     Field& m_lhs_src_term;
 };
 
