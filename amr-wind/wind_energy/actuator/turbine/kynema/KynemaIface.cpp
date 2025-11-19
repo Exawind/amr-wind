@@ -687,6 +687,9 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::ext_init_turbine(
     // Close file
     fi.interface->CloseOutputFile();
 
+    // Set initial yaw
+    fi.interface->Turbine().yaw_control = fi.yaw;
+
     // Determine the number of substeps for Kynema per CFD timestep
     fi.num_substeps = static_cast<int>(std::floor(fi.dt_cfd / fi.dt_ext));
 

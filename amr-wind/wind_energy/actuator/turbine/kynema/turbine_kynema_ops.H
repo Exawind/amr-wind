@@ -81,6 +81,12 @@ struct ReadInputsOp<TurbineKynema, SrcTrait>
             pp.query("rot_speed_rpm", tf.rotational_speed);
             tf.rotational_speed *= 2.0 * M_PI / 60.;
         }
+        // Initial or constant nacelle yaw
+        pp.query("yaw_rad", tf.yaw);
+        if (!pp.contains("yaw_rad")) {
+            pp.query("yaw_deg", tf.yaw);
+            tf.yaw *= M_PI / 180.;
+        }
     }
 };
 

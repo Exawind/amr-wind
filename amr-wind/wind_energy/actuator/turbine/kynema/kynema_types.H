@@ -238,6 +238,7 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
 
     double fluid_density{1.};
     double rotational_speed{0.};
+    double yaw{0.};
     int substep_counter{0};
 
     std::string controller_shared_lib_path{""};
