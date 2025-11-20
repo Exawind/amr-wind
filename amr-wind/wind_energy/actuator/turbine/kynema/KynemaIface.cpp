@@ -20,7 +20,8 @@ void build_turbine(
     const int n_blades,
     const int n_blade_nodes,
     const int n_tower_nodes,
-    const double rotor_speed_init)
+    const double rotor_speed_init,
+    const double yaw_init)
 {
     // WindIO components
     const auto& wio_blade = wio["components"]["blade"];
@@ -48,7 +49,8 @@ void build_turbine(
         .SetTowerTopToRotorApex(
             wio_drivetrain["outer_shape"]["distance_tt_hub"].as<double>())
         .SetGearBoxRatio(wio_drivetrain["gearbox"]["gear_ratio"].as<double>())
-        .SetRotorSpeed(rotor_speed_init);
+        .SetRotorSpeed(rotor_speed_init)
+        .SetNacelleYawAngle(yaw_init);
 
     //--------------------------------------------------------------------------
     // Build Blades
@@ -655,7 +657,7 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::ext_init_turbine(
     // Builds turbine, including blades, nacelle, and tower
     exw_kynema::build_turbine(
         builder, wio, fi.num_blades, fi.num_blade_elem, num_pts_tower_struct,
-        fi.rotational_speed);
+        fi.rotational_speed, fi.yaw);
 
     auto n_aero_sections = exw_kynema::build_aero(builder, wio);
 
@@ -686,9 +688,6 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::ext_init_turbine(
 
     // Close file
     fi.interface->CloseOutputFile();
-
-    // Set initial yaw
-    fi.interface->Turbine().yaw_control = fi.yaw;
 
     // Determine the number of substeps for Kynema per CFD timestep
     fi.num_substeps = static_cast<int>(std::floor(fi.dt_cfd / fi.dt_ext));
