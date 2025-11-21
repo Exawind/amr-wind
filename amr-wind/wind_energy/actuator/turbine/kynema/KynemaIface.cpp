@@ -392,6 +392,7 @@ void update_turbine(::ext_turb::KynemaTurbine& fi, bool advance)
             const double t = fi.time_index * fi.dt_ext;
             fi.interface->ApplyController(t);
         }
+        fi.interface->Turbine().yaw_control = fi.yaw;
         bool converged = fi.interface->Step();
         if (!converged) {
             amrex::Abort("Kynema did not converge\n");
