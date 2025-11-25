@@ -141,6 +141,11 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
         interface->Turbine().hub_node.loads[1] = buffer_f[length_force(0)];
         interface->Turbine().hub_node.loads[2] =
             buffer_f[length_force(0) + length_force(1)];
+        // Fluid velocity at hub is passed separately for the sake of controller
+        std::array<double, 3> hub_inflow{
+            buffer_fv[0], buffer_fv[length_force(0)],
+            buffer_fv[length_force(0) + length_force(1)]};
+        interface->SetHubInflow(hub_inflow);
     }
 
     /** Helper functions for navigating indices */
