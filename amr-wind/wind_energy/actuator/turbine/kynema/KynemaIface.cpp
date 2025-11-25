@@ -683,8 +683,10 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::ext_init_turbine(
     // Create output
     builder.Outputs().SetOutputFilePath("kynema_" + fi.tlabel);
 
-    fi.interface =
-        std::make_unique<kynema::interfaces::TurbineInterface>(builder.Build());
+    fi.interface = std::make_unique<kynema::interfaces::TurbineInterface>(
+        builder.Solution().Input(), builder.Turbine().Input(),
+        builder.Aerodynamics().Input(), builder.Controller().Input(),
+        builder.Outputs().Config());
 
     // Close file
     fi.interface->CloseOutputFile();
