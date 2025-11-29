@@ -100,8 +100,23 @@ public:
 
     void post_overset_actions() override
     {
-        const auto& imask = m_repo.get_int_field("mask_cell");
-        m_diff_op->set_overset_mask(imask);
+        if (PDE::has_diffusion) {
+            BL_PROFILE(
+                "amr-wind::" + this->identifier() + "::post_regrid_actions");
+            const auto& imask = m_repo.get_int_field("mask_cell");
+            m_diff_op->set_overset_mask(imask);
+        }
+
+        const bool variable_density =
+            (!m_sim.pde_manager().constant_density() ||
+             m_sim.physics_manager().contains("MultiPhase"));
+
+        m_adv_op.reset(new AdvectionOp<PDE, Scheme>(
+            m_sim, m_fields, m_sim.has_overset(), variable_density,
+            m_sim.has_mesh_mapping(), m_sim.is_anelastic()));
+
+        // Post-solve operations should also apply after a regrid
+        m_post_solve_op(m_time.current_time());
     }
 
     //! Return the object holding the fields necessary for solving this PDE
