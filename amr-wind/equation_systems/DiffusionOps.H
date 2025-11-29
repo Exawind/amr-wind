@@ -176,6 +176,17 @@ struct DiffusionOp<
             amrex::Gpu::streamSynchronize();
         }
     }
+
+    void set_overset_mask(const IntField& imask)
+    {
+        const auto& repo = this->m_pdefields.repo;
+        const int finest_level = repo.num_active_levels() - 1;
+
+        for (int lev = 0; lev <= finest_level; ++lev) {
+            this->m_solver->setOversetMask(lev, imask(lev));
+            this->m_applier->setOversetMask(lev, imask(lev));
+        }
+    }
 };
 
 } // namespace amr_wind::pde
