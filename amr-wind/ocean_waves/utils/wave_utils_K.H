@@ -96,6 +96,35 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE WaveVec harmonize_profiles_1d(
     return combo;
 }
 
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE WaveVec harmonize_profiles_2d(
+    const amrex::Real x,
+    const amrex::Real y,
+    const amrex::Real left_bdy,
+    const amrex::Real left_length,
+    const amrex::Real right_bdy,
+    const amrex::Real right_length,
+    const amrex::Real lo_y_bdy,
+    const amrex::Real hi_y_bdy,
+    const amrex::Real y_length,
+    const WaveVec left,
+    const WaveVec bulk,
+    const WaveVec right)
+{
+    // First get forcing profile, applies in x and y zones
+    auto profile_forcing = harmonize_profiles_1d(
+        x, left_bdy, left_length, right_bdy, right_length, left, left, right);
+
+    // Also get initial profile
+    // First get forcing profile, applies in x and y zones
+    auto profile_init = harmonize_profiles_1d(
+        x, left_bdy, left_length, right_bdy, right_length, left, bulk, right);
+
+    // Then harmonize in y direction
+    return harmonize_profiles_1d(
+        y, lo_y_bdy, y_length, hi_y_bdy, y_length, profile_forcing,
+        profile_init, profile_forcing);
+}
+
 } // namespace amr_wind::ocean_waves::utils
 
 #endif
