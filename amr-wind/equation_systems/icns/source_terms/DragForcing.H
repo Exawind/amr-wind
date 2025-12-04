@@ -1,9 +1,9 @@
 #ifndef DRAGFORCING_H
 #define DRAGFORCING_H
 
-#include "amr-wind/equation_systems/icns/MomentumSource.H"
-#include "amr-wind/core/SimTime.H"
 #include "amr-wind/CFDSim.H"
+#include "amr-wind/core/SimTime.H"
+#include "amr-wind/equation_systems/icns/MomentumSource.H"
 #include "amr-wind/utilities/constants.H"
 
 namespace amr_wind::pde::icns {
@@ -37,19 +37,7 @@ private:
     const Field& m_velocity;
     const Field* m_target_vel{nullptr};
     const Field* m_target_levelset{nullptr};
-    amrex::Gpu::DeviceVector<amrex::Real> m_device_vel_ht;
-    amrex::Gpu::DeviceVector<amrex::Real> m_device_vel_vals;
     amrex::Real m_drag_coefficient{10.0};
-    amrex::Real m_sponge_strength{1.0};
-    amrex::Real m_sponge_density{1.0};
-    amrex::Real m_sponge_distance_west{-1000};
-    amrex::Real m_sponge_distance_east{1000};
-    amrex::Real m_sponge_distance_south{-1000};
-    amrex::Real m_sponge_distance_north{1000};
-    int m_sponge_west{0};
-    int m_sponge_east{1};
-    int m_sponge_south{0};
-    int m_sponge_north{1};
     bool m_is_laminar{false};
     bool m_terrain_is_waves{false};
     bool m_apply_MOSD{false};
@@ -58,6 +46,12 @@ private:
     amrex::Real m_kappa{0.41};
     amrex::Real m_gamma_m{5.0};
     amrex::Real m_beta_m{16.0};
+    amrex::Real m_meso_start{1e30};
+    amrex::Real m_west_damping_len{0};
+    amrex::Real m_east_damping_len{0};
+    amrex::Real m_north_damping_len{0};
+    amrex::Real m_south_damping_len{0};
+    amrex::Real m_damp_timescale{20};
 };
 
 } // namespace amr_wind::pde::icns
