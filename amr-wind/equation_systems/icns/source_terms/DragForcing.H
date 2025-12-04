@@ -1,9 +1,9 @@
 #ifndef DRAGFORCING_H
 #define DRAGFORCING_H
 
+#include "amr-wind/equation_systems/icns/MomentumSource.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/core/SimTime.H"
-#include "amr-wind/equation_systems/icns/MomentumSource.H"
 #include "amr-wind/utilities/constants.H"
 
 namespace amr_wind::pde::icns {
