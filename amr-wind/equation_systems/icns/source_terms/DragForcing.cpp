@@ -7,8 +7,6 @@
 #include "amr-wind/physics/TerrainDrag.H"
 #include "amr-wind/utilities/constants.H"
 
-
-
 namespace {
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real viscous_drag_calculations(
     amrex::Real& Dxz,
