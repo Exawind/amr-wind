@@ -3,10 +3,8 @@
 #include "amr-wind/utilities/IOManager.H"
 
 #include "AMReX_Gpu.H"
-#include "AMReX_Random.H"
 #include "amr-wind/wind_energy/ABL.H"
 #include "amr-wind/physics/TerrainDrag.H"
-#include "amr-wind/utilities/linear_interpolation.H"
 #include "amr-wind/utilities/constants.H"
 
 
