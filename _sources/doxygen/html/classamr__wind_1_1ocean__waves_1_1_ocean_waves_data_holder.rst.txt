@@ -1,0 +1,14 @@
+.. meta::e199154571492d108eaed2db826051165dffc6947cab9cdd92d11d590d26346670637b57ea1994edc0fa2991568d6974f81dca1ff328a74fb5c051cbde380fa8
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ocean_waves::OceanWavesDataHolder&lt; OceanWavesTrait &gt; Class Template Reference
+
+OceanWavesDataHolder&lt; OceanWavesTrait &gt; Class Template Reference
+======================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1ocean__waves_1_1_ocean_waves_data_holder.html

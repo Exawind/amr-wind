@@ -1,0 +1,14 @@
+.. meta::92b358cdfa1f69eb19bbd92cf3d5f4874ee3ef8d9e7bef525a5a9c66403f3e20812b76f35673ab10b702861a2a9febe0cb80c845bdd946b4a128700d231a34c4
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::turbulence::OneEqKsgsM84&lt; Transport &gt; Class Template Reference
+
+OneEqKsgsM84&lt; Transport &gt; Class Template Reference
+========================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1turbulence_1_1_one_eq_ksgs_m84.html

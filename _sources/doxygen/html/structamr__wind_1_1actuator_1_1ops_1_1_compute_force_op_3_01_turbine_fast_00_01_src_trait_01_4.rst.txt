@@ -1,0 +1,14 @@
+.. meta::5c31c6cc856e04138715040105fc53ac5c218593f947ce9584c8745b87a47718c81e4e4e214366cc550c3853da2ceb081e4b494089375a8abc02dcb354ceeef1
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::ComputeForceOp&lt; TurbineFast, SrcTrait &gt; Struct Template Reference
+
+ComputeForceOp&lt; TurbineFast, SrcTrait &gt; Struct Template Reference
+=======================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1ops_1_1_compute_force_op_3_01_turbine_fast_00_01_src_trait_01_4.html

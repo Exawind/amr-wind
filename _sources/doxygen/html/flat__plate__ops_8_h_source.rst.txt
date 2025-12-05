@@ -1,0 +1,14 @@
+.. meta::3aa182464074c5a0177d11fe77f5909ffdcf3629885e4e3d203b56191b38fc081e079a4792170f131897a1f715c50ee5bf56c35b403a5182558b2bd65bff7231
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/actuator/wing/flat_plate_ops.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/wind\_energy/actuator/wing/flat\_plate\_ops.H Source File
+======================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: flat__plate__ops_8_h_source.html

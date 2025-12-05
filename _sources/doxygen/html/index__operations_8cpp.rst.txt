@@ -1,0 +1,14 @@
+.. meta::101d72df8f20ca43ac52c465640aca1987ba2d46f575722fa4e68a7e6f4f21c5c9ed257b2c00b89c6f66a6c31d381c9aabd493441bfac6eb5f511617bc91ebe5
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/index_operations.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/index\_operations.cpp File Reference
+===========================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: index__operations_8cpp.html

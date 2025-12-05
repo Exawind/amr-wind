@@ -1,0 +1,14 @@
+.. meta::3f3af1c99cafd7f6ddc666590ab41424f30f77d25e6b4f75e2ea517e3dfb71112f84f1f04edf437d5c11ac05573e6b7845d5446ad4fa9e8263a4251e63ffe870
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/ocean_waves/relaxation_zones/LinearWaves.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/ocean\_waves/relaxation\_zones/LinearWaves.cpp File Reference
+==========================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _linear_waves_8cpp.html

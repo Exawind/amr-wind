@@ -1,0 +1,14 @@
+.. meta::65e915b960456d55b5f6fbf60560d22f4bfafb7b7460c4ff5c299709639b615d217bb8c56f2ac8e52aaf9a7bb0c7747cf0245bad398b5114b488215a47d79c74
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/FieldNorms.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/FieldNorms.cpp File Reference
+=============================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _field_norms_8cpp.html

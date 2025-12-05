@@ -1,0 +1,14 @@
+.. meta::89c1016ddc7b8fd2b7d6d1ae1e23c0568116d5690e478ca1a7e60203b7e08d461ab8af6341424cd5bb7d3e6eca2a4802d419957e687ae9e7bb8774750693a88a
+
+:orphan:
+
+.. title:: AMR-Wind API: amrex Namespace Reference
+
+amrex Namespace Reference
+=========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: namespaceamrex.html

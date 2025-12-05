@@ -1,0 +1,14 @@
+.. meta::d68a4f5b71e61e9d5e2f826e0fd2363f102347339caee6a4d178a357ba037e64511451a9b856d756ce077b339d69bd6ffe3c2e4ee3fbe94e8a6daf496e9aad86
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/ocean_waves/utils/wave_utils_K.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/ocean\_waves/utils/wave\_utils\_K.H File Reference
+===============================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: wave__utils___k_8_h.html

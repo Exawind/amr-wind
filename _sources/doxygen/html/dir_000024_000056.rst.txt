@@ -1,0 +1,14 @@
+.. meta::36d638ec7ae422b549ff28653573b3ddc08728fcc41dde4fa17ffd2c1871332bfb44027cb9ed67164fde48421251bdc8da113ad132871fefd86422b176e3f2f7
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/turbulence/LES -&gt; wind_energy Relation
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/turbulence/LES -&gt; wind\_energy Relation
+=======================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: dir_000024_000056.html

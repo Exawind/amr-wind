@@ -1,0 +1,14 @@
+.. meta::833c186400ed2a74b3a0be13942f90c8998d631559b8040ebdb55509a4209145581395167f2dee03bbd552967a15e8b0f26108519cc06ffdcf34572eee6ff4a4
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::TurbulenceOp&lt; Temperature &gt; Struct Reference
+
+TurbulenceOp&lt; Temperature &gt; Struct Reference
+==================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1pde_1_1_turbulence_op_3_01_temperature_01_4.html

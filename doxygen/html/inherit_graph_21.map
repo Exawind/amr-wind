@@ -1,0 +1,7 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$structamr__wind_1_1actuator_1_1_disk_base_data.html" title=" " alt="" coords="5,37,153,77"/>
+<area shape="rect" id="Node000001" href="$structamr__wind_1_1actuator_1_1_joukowsky_data.html" title=" " alt="" coords="201,5,349,45"/>
+<area shape="poly" id="edge44_Node000000_Node000001" title=" " alt="" coords="166,40,200,35,201,40,167,46"/>
+<area shape="rect" id="Node000002" href="$structamr__wind_1_1actuator_1_1_uniform_ct_data.html" title=" " alt="" coords="201,69,349,109"/>
+<area shape="poly" id="edge45_Node000000_Node000002" title=" " alt="" coords="167,69,201,75,200,80,166,74"/>
+</map>
