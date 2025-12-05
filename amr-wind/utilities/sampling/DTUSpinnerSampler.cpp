@@ -237,7 +237,7 @@ void DTUSpinnerSampler::get_turbine_data(const std::string& turbine_label)
 
     // Read and broadcast data
     if (testline) {
-        const auto& actdata = actline->meta().fast_data;
+        const auto& actdata = actline->meta().ext_data;
         const auto& info = actline->info();
 
         // Create buffer object
@@ -255,7 +255,7 @@ void DTUSpinnerSampler::get_turbine_data(const std::string& turbine_label)
 
         bcast_turbine(turbine_pack, info.root_proc);
     } else if (testdisk) {
-        const auto& actdata = actdisk->meta().fast_data;
+        const auto& actdata = actdisk->meta().ext_data;
         const auto& info = actdisk->info();
 
         // Create buffer object

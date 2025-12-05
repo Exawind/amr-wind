@@ -2,11 +2,18 @@
 #include "amr-wind/utilities/console_io.H"
 
 #include "AMReX_FileSystem.H"
+#ifdef AMR_WIND_USE_KYNEMA
+#include <Kokkos_Core.hpp>
+#endif
 
 int main(int argc, char* argv[])
 {
 #ifdef AMREX_USE_MPI
     MPI_Init(&argc, &argv);
+#endif
+
+#ifdef AMR_WIND_USE_KYNEMA
+    Kokkos::initialize(argc, argv);
 #endif
 
     using namespace amrex::mpidatatypes;
