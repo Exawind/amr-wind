@@ -654,6 +654,7 @@ struct InitDataOp<W2AWaves>
 
         const amrex::Real gen_length = wdata.gen_length;
         const amrex::Real beach_length = wdata.beach_length;
+        const amrex::Real y_length = wdata.zone_length_y;
         const amrex::Real zero_sea_level = wdata.zsl;
 
         const bool has_beach = wdata.has_beach && multiphase_mode;
@@ -673,6 +674,7 @@ struct InitDataOp<W2AWaves>
             velocity(level), amrex::IntVect(3),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                 const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
                 // Wave profile
@@ -686,9 +688,9 @@ struct InitDataOp<W2AWaves>
                 const auto bulk = init_wave_field ? wave_sol : quiescent;
                 const auto outlet = has_beach ? quiescent : wave_sol;
 
-                const auto local_profile = utils::harmonize_profiles_1d(
-                    x, problo[0], gen_length, probhi[0], beach_length, wave_sol,
-                    bulk, outlet);
+                const auto local_profile = utils::harmonize_profiles_2d(
+                    x, y, problo[0], gen_length, probhi[0], beach_length,
+                    problo[1], probhi[1], y_length, wave_sol, bulk, outlet);
 
                 phi_tmp[nbx](i, j, k) = local_profile[3] - z;
                 vel_tmp[nbx](i, j, k, 0) = local_profile[0];

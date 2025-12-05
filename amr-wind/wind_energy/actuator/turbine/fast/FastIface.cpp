@@ -1,4 +1,6 @@
-#include "amr-wind/wind_energy/actuator/turbine/fast/FastIface.H"
+#include "amr-wind/wind_energy/actuator/turbine/external/ExtTurbIface.H"
+#include "amr-wind/wind_energy/actuator/turbine/fast/fast_types.H"
+#include "amr-wind/wind_energy/actuator/turbine/fast/fast_wrapper.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/core/SimTime.H"
 #include "amr-wind/utilities/io_utils.H"
@@ -11,7 +13,9 @@
 #include <algorithm>
 #include <cmath>
 
-namespace exw_fast {
+using namespace exw_fast;
+
+namespace ext_turb {
 namespace {
 
 template <typename FType, class... Args>
@@ -41,9 +45,8 @@ inline void copy_filename(const std::string& inp, char* out)
 
 } // namespace
 
-FastIface::FastIface(const amr_wind::CFDSim& /*unused*/) {}
-
-FastIface::~FastIface()
+template <>
+ExtTurbIface<FastTurbine, FastSolverData>::~ExtTurbIface()
 {
     int ierr = ErrID_None;
     amrex::Array<char, fast_strlen()> err_msg;
@@ -55,7 +58,8 @@ FastIface::~FastIface()
     }
 }
 
-void FastIface::parse_inputs(
+template <>
+void ExtTurbIface<FastTurbine, FastSolverData>::parse_inputs(
     const amr_wind::CFDSim& sim, const std::string& inp_name)
 {
     amrex::ParmParse pp(inp_name);
@@ -86,14 +90,14 @@ void FastIface::parse_inputs(
     AMREX_ALWAYS_ASSERT(m_stop_time > (cfd_stop - 1.0e-6));
 
     if (m_start_time > 0.0) {
-        m_sim_mode = SimMode::replay;
+        m_sim_mode = ::ext_turb::SimMode::replay;
 
         std::string sim_mode{"replay"};
         pp.query("openfast_sim_mode", sim_mode);
         if (sim_mode == "replay") {
-            m_sim_mode = SimMode::replay;
+            m_sim_mode = ::ext_turb::SimMode::replay;
         } else if (sim_mode == "restart") {
-            m_sim_mode = SimMode::restart;
+            m_sim_mode = ::ext_turb::SimMode::restart;
         } else {
             amrex::Abort(
                 "Invalid simulation mode when start time > 0 provided: " +
@@ -102,20 +106,8 @@ void FastIface::parse_inputs(
     }
 }
 
-int FastIface::register_turbine(FastTurbine& data)
-{
-    BL_PROFILE("amr-wind::FastIface::register_turbine");
-    AMREX_ALWAYS_ASSERT(!m_is_initialized);
-    const int local_id = static_cast<int>(m_turbine_data.size());
-    const int gid = data.tid_global;
-    m_turbine_map[gid] = local_id;
-    data.tid_local = local_id;
-    m_turbine_data.emplace_back(&data);
-
-    return local_id;
-}
-
-void FastIface::allocate_fast_turbines()
+template <>
+void ExtTurbIface<FastTurbine, FastSolverData>::allocate_ext_turbines()
 {
     BL_PROFILE("amr-wind::FastIface::allocate_turbines");
     int nturbines = static_cast<int>(m_turbine_data.size());
@@ -123,7 +115,9 @@ void FastIface::allocate_fast_turbines()
     m_is_initialized = true;
 }
 
-void FastIface::init_solution(const int local_id)
+template <>
+void ExtTurbIface<FastTurbine, FastSolverData>::init_solution(
+    const int local_id)
 {
     BL_PROFILE("amr-wind::FastIface::init_solution");
     AMREX_ALWAYS_ASSERT(local_id < static_cast<int>(m_turbine_data.size()));
@@ -134,7 +128,9 @@ void FastIface::init_solution(const int local_id)
     fi.is_solution0 = false;
 }
 
-void FastIface::get_hub_stats(const int local_id)
+template <>
+void ExtTurbIface<FastTurbine, FastSolverData>::get_hub_stats(
+    const int local_id)
 {
     BL_PROFILE("amr-wind::FastIface::get_hub_stats");
 
@@ -145,70 +141,144 @@ void FastIface::get_hub_stats(const int local_id)
         fi.hub_rot_vel.begin(), fi.hub_orient.begin());
 }
 
-void FastIface::advance_turbine(const int local_id)
-{
-    BL_PROFILE("amr-wind::FastIface::advance_turbine");
-    AMREX_ASSERT(local_id < static_cast<int>(m_turbine_data.size()));
+#ifdef AMR_WIND_USE_OPENFAST
 
-    auto& fi = *m_turbine_data[local_id];
-    AMREX_ASSERT(!fi.is_solution0);
+template <>
+void ExtTurbIface<FastTurbine, FastSolverData>::prepare_netcdf_file(
+    FastTurbine& fi)
+{
+#ifdef AMR_WIND_USE_NETCDF
+    BL_PROFILE("amr-wind::FastIface::prepare_netcdf_file");
+    if (!amrex::UtilCreateDirectory(m_solver_data.output_dir, 0755)) {
+        amrex::CreateDirectoryFailed(m_solver_data.output_dir);
+    }
+
+    const std::string fname =
+        m_solver_data.output_dir + "/" + fi.tlabel + ".nc";
+
+    // Don't overwrite existing
+    if (amrex::FileSystem::Exists(fname)) {
+        return;
+    }
+
+    auto ncf = ncutils::NCFile::create(fname, NC_CLOBBER | NC_NETCDF4);
+    const std::string nt_name = "num_time_steps";
+    const std::string np_name = "num_vel_points";
+    ncf.enter_def_mode();
+    ncf.put_attr("title", "AMR-Wind OpenFAST velocity data");
+    ncf.put_attr("AMR-Wind_version", amr_wind::ioutils::amr_wind_version());
+    ncf.put_attr("created_on", amr_wind::ioutils::timestamp());
+    ncf.def_dim(nt_name, NC_UNLIMITED);
+    ncf.def_dim(np_name, fi.from_cfd.u_Len);
+    ncf.def_dim("ndim", AMREX_SPACEDIM);
+    ncf.def_var("time", NC_FLOAT, {nt_name});
+    ncf.def_var("xco", NC_FLOAT, {np_name});
+    ncf.def_var("yco", NC_FLOAT, {np_name});
+    ncf.def_var("zco", NC_FLOAT, {np_name});
+    ncf.def_var("uvel", NC_FLOAT, {nt_name, np_name});
+    ncf.def_var("vvel", NC_FLOAT, {nt_name, np_name});
+    ncf.def_var("wvel", NC_FLOAT, {nt_name, np_name});
+    ncf.exit_def_mode();
+
     {
-        const auto& tmax = fi.stop_time;
-        const auto& telapsed = (fi.time_index + fi.num_substeps) * fi.dt_fast;
-        if (telapsed > (tmax + 1.0e-8)) {
-            // clang-format off
-            amrex::OutStream()
-                << "\nWARNING: FastIface:\n"
-                << "  Elapsed simulation time will exceed max "
-                << "time set for OpenFAST"
-                << std::endl << std::endl;
-            // clang-format on
-        }
+        const auto npts = static_cast<size_t>(fi.from_cfd.u_Len);
+        auto xco = ncf.var("xco");
+        xco.put(fi.position_at_vel(0), {0}, {npts});
+        auto yco = ncf.var("yco");
+        yco.put(fi.position_at_vel(1), {0}, {npts});
+        auto zco = ncf.var("zco");
+        zco.put(fi.position_at_vel(2), {0}, {npts});
     }
-
-    write_velocity_data(fi);
-    for (int i = 0; i < fi.num_substeps; ++i, ++fi.time_index) {
-        fast_func(FAST_Step, &fi.tid_local);
-    }
-
-    if (fi.chkpt_interval > 0 &&
-        (fi.time_index / fi.num_substeps) % fi.chkpt_interval == 0) {
-        amrex::Array<char, fast_strlen()> rst_file;
-        copy_filename(" ", rst_file.begin());
-        fast_func(FAST_CreateCheckpoint, &fi.tid_local, rst_file.begin());
-    }
+#else
+    amrex::ignore_unused(fi);
+    amrex::OutStream()
+        << "WARNING: FastIface: NetCDF support was not enabled during compile "
+           "time. FastIface cannot support restart."
+        << std::endl;
+#endif
 }
 
-void FastIface::init_turbine(const int local_id)
+template <>
+void ExtTurbIface<FastTurbine, FastSolverData>::write_velocity_data(
+    const FastTurbine& fi)
 {
-    AMREX_ALWAYS_ASSERT(local_id < static_cast<int>(m_turbine_data.size()));
-    if (!m_is_initialized) {
-        allocate_fast_turbines();
-    }
-    auto& fi = *m_turbine_data[local_id];
+#ifdef AMR_WIND_USE_NETCDF
+    BL_PROFILE("amr-wind::FastIface::write_velocity_data");
+    const std::string fname =
+        m_solver_data.output_dir + "/" + fi.tlabel + ".nc";
+    auto ncf = ncutils::NCFile::open(fname, NC_WRITE);
+    const std::string nt_name = "num_time_steps";
+    const size_t nt = ncf.dim(nt_name).len();
+    const auto npts = static_cast<size_t>(fi.from_cfd.u_Len);
 
-    switch (fi.sim_mode) {
-    case SimMode::init: {
-        fast_init_turbine(fi);
-        prepare_netcdf_file(fi);
-        break;
-    }
-
-    case SimMode::replay: {
-        fast_init_turbine(fi);
-        fast_replay_turbine(fi);
-        break;
-    }
-
-    case SimMode::restart: {
-        fast_restart_turbine(fi);
-        prepare_netcdf_file(fi);
-        break;
-    }
-    }
+    const double time = fi.time_index * fi.dt_ext;
+    ncf.var("time").put(&time, {nt}, {1});
+    const auto& uu = fi.from_cfd;
+    ncf.var("uvel").put(uu.u, {nt, 0}, {1, npts});
+    ncf.var("vvel").put(uu.v, {nt, 0}, {1, npts});
+    ncf.var("wvel").put(uu.w, {nt, 0}, {1, npts});
+#else
+    amrex::ignore_unused(fi);
+#endif
 }
 
-void FastIface::fast_init_turbine(FastTurbine& fi)
+template <>
+void ExtTurbIface<FastTurbine, FastSolverData>::read_velocity_data(
+    FastTurbine& fi, const ncutils::NCFile& ncf, const size_t tid)
+{
+#ifdef AMR_WIND_USE_NETCDF
+    const auto nt = static_cast<size_t>(tid);
+    const auto npts = static_cast<size_t>(fi.from_cfd.u_Len);
+
+    auto& uu = fi.from_cfd;
+    ncf.var("uvel").get(uu.u, {nt, 0}, {1, npts});
+    ncf.var("vvel").get(uu.v, {nt, 0}, {1, npts});
+    ncf.var("wvel").get(uu.w, {nt, 0}, {1, npts});
+#else
+    amrex::ignore_unused(fi);
+    amrex::Abort(
+        "FastIface::read_velocity_data: AMR-Wind was not compiled with NetCDF "
+        "support");
+#endif
+}
+
+#else
+
+template <>
+void ExtTurbIface<FastTurbine, FastSolverData>::prepare_netcdf_file(
+    FastTurbine& /*unused*/)
+{}
+template <>
+void ExtTurbIface<FastTurbine, FastSolverData>::write_velocity_data(
+    const FastTurbine& /*unused*/)
+{}
+template <>
+void ExtTurbIface<FastTurbine, FastSolverData>::read_velocity_data(
+    FastTurbine& /*unused*/,
+    const ncutils::NCFile& /*unused*/,
+    const size_t /*unused*/)
+{}
+
+#endif
+
+template <>
+void ExtTurbIface<FastTurbine, FastSolverData>::do_turbine_step(FastTurbine& fi)
+{
+    fast_func(FAST_Step, &fi.tid_local);
+}
+
+template <>
+void ExtTurbIface<FastTurbine, FastSolverData>::write_turbine_checkpoint(
+    int& tid)
+{
+    amrex::Array<char, fast_strlen()> rst_file;
+    copy_filename(" ", rst_file.begin());
+    fast_func(FAST_CreateCheckpoint, &tid, rst_file.begin());
+}
+
+template <>
+void ExtTurbIface<FastTurbine, FastSolverData>::ext_init_turbine(
+    FastTurbine& fi)
 {
     BL_PROFILE("amr-wind::FastIface::init_turbine");
 
@@ -225,17 +295,19 @@ void FastIface::fast_init_turbine(FastTurbine& fi)
     fast_func(
         FAST_ExtInfw_Init, &fi.tid_local, &fi.stop_time, inp_file.begin(),
         &fi.tid_global, out_file, &fi.num_pts_blade, &fi.num_pts_tower,
-        fi.base_pos.begin(), &abort_lev, &fi.dt_cfd, &fi.dt_fast,
-        &m_inflow_type, &fi.num_blades, &fi.num_blade_elem, &fi.num_tower_elem,
-        &fi.chord_cluster_type, &fi.to_cfd, &fi.from_cfd);
+        fi.base_pos.begin(), &abort_lev, &fi.dt_cfd, &fi.dt_ext,
+        &m_solver_data.m_inflow_type, &fi.num_blades, &fi.num_blade_elem,
+        &fi.num_tower_elem, &fi.chord_cluster_type, &fi.to_cfd, &fi.from_cfd);
 #else
     fast_func(
         FAST_OpFM_Init, &fi.tid_local, &fi.stop_time, inp_file.begin(),
-        &fi.tid_global, &m_num_sc_inputs_glob, &m_num_sc_inputs,
-        &m_num_sc_outputs, &m_init_sc_inputs_glob, &m_init_sc_inputs_turbine,
-        &fi.num_pts_blade, &fi.num_pts_tower, fi.base_pos.begin(), &abort_lev,
-        &fi.dt_fast, &fi.num_blades, &fi.num_blade_elem, &fi.chord_cluster_type,
-        &fi.to_cfd, &fi.from_cfd, &fi.to_sc, &fi.from_sc);
+        &fi.tid_global, &m_solver_data.m_num_sc_inputs_glob,
+        &m_solver_data.m_num_sc_inputs, &m_solver_data.m_num_sc_outputs,
+        &m_solver_data.m_init_sc_inputs_glob,
+        &m_solver_data.m_init_sc_inputs_turbine, &fi.num_pts_blade,
+        &fi.num_pts_tower, fi.base_pos.begin(), &abort_lev, &fi.dt_ext,
+        &fi.num_blades, &fi.num_blade_elem, &fi.chord_cluster_type, &fi.to_cfd,
+        &fi.from_cfd, &fi.to_sc, &fi.from_sc);
 #endif
 
     {
@@ -255,13 +327,13 @@ void FastIface::fast_init_turbine(FastTurbine& fi)
     }
 
     // Determine the number of substeps for FAST per CFD timestep
-    fi.num_substeps = static_cast<int>(std::floor(fi.dt_cfd / fi.dt_fast));
+    fi.num_substeps = static_cast<int>(std::floor(fi.dt_cfd / fi.dt_ext));
 
     AMREX_ALWAYS_ASSERT(fi.num_substeps > 0);
     // Check that the time step sizes are consistent and FAST advances at an
     // integral multiple of CFD timestep
     double dt_err =
-        fi.dt_cfd / (static_cast<double>(fi.num_substeps) * fi.dt_fast) - 1.0;
+        fi.dt_cfd / (static_cast<double>(fi.num_substeps) * fi.dt_ext) - 1.0;
     if (dt_err > 1.0e-12) {
         amrex::Abort(
             "FastIFace: OpenFAST timestep is not an integral "
@@ -271,20 +343,23 @@ void FastIface::fast_init_turbine(FastTurbine& fi)
 
 // cppcheck-suppress constParameterReference
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void FastIface::fast_replay_turbine(FastTurbine& fi)
+template <>
+void ExtTurbIface<FastTurbine, FastSolverData>::ext_replay_turbine(
+    FastTurbine& fi)
 {
 #ifdef AMR_WIND_USE_NETCDF
     BL_PROFILE("amr-wind::FastIface::replay_turbine");
 
     // Determine the number of timesteps we should advance this turbine
     const auto num_steps =
-        static_cast<int>(std::floor(fi.start_time / fi.dt_fast));
+        static_cast<int>(std::floor(fi.start_time / fi.dt_ext));
     // Compute the number of CFD steps to read velocity data
     const auto num_cfd_steps = num_steps / fi.num_substeps;
 
     // Ensure that the NetCDF file exists and contains the required number of
     // timesteps for restart.
-    const std::string fname = m_output_dir + "/" + fi.tlabel + ".nc";
+    const std::string fname =
+        m_solver_data.output_dir + "/" + fi.tlabel + ".nc";
     AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
         amrex::FileSystem::Exists(fname),
         "FastIface: Cannot find OpenFAST velocity data file: " + fname);
@@ -318,7 +393,9 @@ void FastIface::fast_replay_turbine(FastTurbine& fi)
 }
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-void FastIface::fast_restart_turbine(FastTurbine& fi)
+template <>
+void ExtTurbIface<FastTurbine, FastSolverData>::ext_restart_turbine(
+    FastTurbine& fi)
 {
     BL_PROFILE("amr-wind::FastIface::restart_turbine");
 
@@ -334,12 +411,12 @@ void FastIface::fast_restart_turbine(FastTurbine& fi)
 #if OPENFAST_VERSION_MAJOR == 4
     fast_func(
         FAST_ExtInfw_Restart, &fi.tid_local, chkpt_file.begin(), &abort_lev,
-        &fi.dt_fast, &fi.num_blades, &fi.num_blade_elem, &fi.num_tower_elem,
+        &fi.dt_ext, &fi.num_blades, &fi.num_blade_elem, &fi.num_tower_elem,
         &fi.time_index, &fi.to_cfd, &fi.from_cfd);
 #else
     fast_func(
         FAST_OpFM_Restart, &fi.tid_local, chkpt_file.begin(), &abort_lev,
-        &fi.dt_fast, &fi.num_blades, &fi.num_blade_elem, &fi.time_index,
+        &fi.dt_ext, &fi.num_blades, &fi.num_blade_elem, &fi.time_index,
         &fi.to_cfd, &fi.from_cfd, &fi.to_sc, &fi.from_sc);
 #endif
 
@@ -360,13 +437,13 @@ void FastIface::fast_restart_turbine(FastTurbine& fi)
     }
 
     // Determine the number of substeps for FAST per CFD timestep
-    fi.num_substeps = static_cast<int>(std::floor(fi.dt_cfd / fi.dt_fast));
+    fi.num_substeps = static_cast<int>(std::floor(fi.dt_cfd / fi.dt_ext));
 
     AMREX_ALWAYS_ASSERT(fi.num_substeps > 0);
     // Check that the time step sizes are consistent and FAST advances at an
     // integral multiple of CFD timestep
     double dt_err =
-        fi.dt_cfd / (static_cast<double>(fi.num_substeps) * fi.dt_fast) - 1.0;
+        fi.dt_cfd / (static_cast<double>(fi.num_substeps) * fi.dt_ext) - 1.0;
     if (dt_err > 1.0e-4) {
         amrex::Abort(
             "FastIFace: OpenFAST timestep is not an integral "
@@ -374,110 +451,6 @@ void FastIface::fast_restart_turbine(FastTurbine& fi)
     }
 }
 
-#ifdef AMR_WIND_USE_OPENFAST
+template class ExtTurbIface<FastTurbine, FastSolverData>;
 
-void FastIface::prepare_netcdf_file(FastTurbine& fi)
-{
-#ifdef AMR_WIND_USE_NETCDF
-    BL_PROFILE("amr-wind::FastIface::prepare_netcdf_file");
-    if (!amrex::UtilCreateDirectory(m_output_dir, 0755)) {
-        amrex::CreateDirectoryFailed(m_output_dir);
-    }
-
-    const std::string fname = m_output_dir + "/" + fi.tlabel + ".nc";
-
-    // Don't overwrite existing
-    if (amrex::FileSystem::Exists(fname)) {
-        return;
-    }
-
-    auto ncf = ncutils::NCFile::create(fname, NC_CLOBBER | NC_NETCDF4);
-    const std::string nt_name = "num_time_steps";
-    const std::string np_name = "num_vel_points";
-    ncf.enter_def_mode();
-    ncf.put_attr("title", "AMR-Wind OpenFAST velocity data");
-    ncf.put_attr("AMR-Wind_version", amr_wind::ioutils::amr_wind_version());
-    ncf.put_attr("created_on", amr_wind::ioutils::timestamp());
-    ncf.def_dim(nt_name, NC_UNLIMITED);
-    ncf.def_dim(np_name, fi.from_cfd.u_Len);
-    ncf.def_dim("ndim", AMREX_SPACEDIM);
-    ncf.def_var("time", NC_FLOAT, {nt_name});
-    ncf.def_var("xco", NC_FLOAT, {np_name});
-    ncf.def_var("yco", NC_FLOAT, {np_name});
-    ncf.def_var("zco", NC_FLOAT, {np_name});
-    ncf.def_var("uvel", NC_FLOAT, {nt_name, np_name});
-    ncf.def_var("vvel", NC_FLOAT, {nt_name, np_name});
-    ncf.def_var("wvel", NC_FLOAT, {nt_name, np_name});
-    ncf.exit_def_mode();
-
-    {
-        const auto npts = static_cast<size_t>(fi.from_cfd.u_Len);
-        auto xco = ncf.var("xco");
-        xco.put(fi.to_cfd.pxVel, {0}, {npts});
-        auto yco = ncf.var("yco");
-        yco.put(fi.to_cfd.pyVel, {0}, {npts});
-        auto zco = ncf.var("zco");
-        zco.put(fi.to_cfd.pzVel, {0}, {npts});
-    }
-#else
-    amrex::ignore_unused(fi);
-    amrex::OutStream()
-        << "WARNING: FastIface: NetCDF support was not enabled during compile "
-           "time. FastIface cannot support restart."
-        << std::endl;
-#endif
-}
-
-void FastIface::write_velocity_data(const FastTurbine& fi)
-{
-#ifdef AMR_WIND_USE_NETCDF
-    BL_PROFILE("amr-wind::FastIface::write_velocity_data");
-    const std::string fname = m_output_dir + "/" + fi.tlabel + ".nc";
-    auto ncf = ncutils::NCFile::open(fname, NC_WRITE);
-    const std::string nt_name = "num_time_steps";
-    const size_t nt = ncf.dim(nt_name).len();
-    const auto npts = static_cast<size_t>(fi.from_cfd.u_Len);
-
-    const double time = fi.time_index * fi.dt_fast;
-    ncf.var("time").put(&time, {nt}, {1});
-    const auto& uu = fi.from_cfd;
-    ncf.var("uvel").put(uu.u, {nt, 0}, {1, npts});
-    ncf.var("vvel").put(uu.v, {nt, 0}, {1, npts});
-    ncf.var("wvel").put(uu.w, {nt, 0}, {1, npts});
-#else
-    amrex::ignore_unused(fi);
-#endif
-}
-
-void FastIface::read_velocity_data(
-    FastTurbine& fi, const ncutils::NCFile& ncf, const size_t tid)
-{
-#ifdef AMR_WIND_USE_NETCDF
-    const auto nt = static_cast<size_t>(tid);
-    const auto npts = static_cast<size_t>(fi.from_cfd.u_Len);
-
-    auto& uu = fi.from_cfd;
-    ncf.var("uvel").get(uu.u, {nt, 0}, {1, npts});
-    ncf.var("vvel").get(uu.v, {nt, 0}, {1, npts});
-    ncf.var("wvel").get(uu.w, {nt, 0}, {1, npts});
-#else
-    amrex::ignore_unused(fi);
-    amrex::Abort(
-        "FastIface::read_velocity_data: AMR-Wind was not compiled with NetCDF "
-        "support");
-#endif
-}
-
-#else
-
-void FastIface::prepare_netcdf_file(FastTurbine& /*unused*/) {}
-void FastIface::write_velocity_data(const FastTurbine& /*unused*/) {}
-void FastIface::read_velocity_data(
-    FastTurbine& /*unused*/,
-    const ncutils::NCFile& /*unused*/,
-    const size_t /*unused*/)
-{}
-
-#endif
-
-} // namespace exw_fast
+} // namespace ext_turb
