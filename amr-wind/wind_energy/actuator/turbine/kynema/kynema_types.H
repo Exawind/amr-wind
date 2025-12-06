@@ -243,6 +243,8 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
 
     double fluid_density{1.};
     double rotational_speed{0.};
+    double generator_power{0.};
+    double wind_speed{0.};
     double yaw{0.};
     int substep_counter{0};
 

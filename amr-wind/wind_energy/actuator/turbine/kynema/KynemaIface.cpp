@@ -21,6 +21,8 @@ void build_turbine(
     const int n_blade_nodes,
     const int n_tower_nodes,
     const double rotor_speed_init,
+    const double generator_power_init,
+    const double wind_speed_init,
     const double yaw_init)
 {
     // WindIO components
@@ -50,6 +52,8 @@ void build_turbine(
             wio_drivetrain["outer_shape"]["distance_tt_hub"].as<double>())
         .SetGearBoxRatio(wio_drivetrain["gearbox"]["gear_ratio"].as<double>())
         .SetRotorSpeed(rotor_speed_init)
+        .SetGeneratorPower(generator_power_init)
+        .SetHubWindSpeed(wind_speed_init)
         .SetNacelleYawAngle(yaw_init);
 
     //--------------------------------------------------------------------------
@@ -169,10 +173,7 @@ void build_turbine(
     tower_builder
         .SetElementOrder(
             n_tower_nodes - 1) // Set element order to num nodes - 1
-        .SetQuadratureStyle(
-            kynema::interfaces::components::BeamInput::QuadratureStyle::
-                Segmented)
-        .SetSectionRefinement(4)
+        .SetSectionRefinement(2)
         .PrescribedRootMotion(false); // Fix displacement of tower base node
 
     // Add reference axis coordinates (WindIO uses Z-axis as reference axis)
@@ -388,13 +389,13 @@ void update_turbine(::ext_turb::KynemaTurbine& fi, bool advance)
     }
     if (advance) {
         // individual turbine step, do not output every step
-        if (fi.controller_input_file.size() > 0) {
-            const double t = fi.time_index * fi.dt_ext;
-            fi.interface->ApplyController(t);
-        }
         bool converged = fi.interface->Step();
         if (!converged) {
             amrex::Abort("Kynema did not converge\n");
+        }
+        if (fi.controller_input_file.size() > 0) {
+            const double t = fi.time_index * fi.dt_ext;
+            fi.interface->ApplyController(t);
         }
     }
 
@@ -657,7 +658,7 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::ext_init_turbine(
     // Builds turbine, including blades, nacelle, and tower
     exw_kynema::build_turbine(
         builder, wio, fi.num_blades, fi.num_blade_elem, num_pts_tower_struct,
-        fi.rotational_speed, fi.yaw);
+        fi.rotational_speed, fi.generator_power, fi.wind_speed, fi.yaw);
 
     auto n_aero_sections = exw_kynema::build_aero(builder, wio);
 
