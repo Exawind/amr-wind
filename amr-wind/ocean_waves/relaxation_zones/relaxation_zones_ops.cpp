@@ -219,7 +219,8 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                     Gamma_yhi = utils::gamma_absorb(
                         y - (probhi[1] - zone_length_y), zone_length_y, 1.0);
                     const amrex::Real Gamma_y_to_xhi = utils::gamma_generate(
-                        x - (probhi[1] - 2. * beach_length), beach_length);
+                        x - (probhi[0] - 1.5 * beach_length),
+                        0.5 * beach_length);
                     if (has_beach) {
                         Gamma_ylo = std::max(Gamma_ylo, Gamma_y_to_xhi);
                         Gamma_yhi = std::max(Gamma_yhi, Gamma_y_to_xhi);
