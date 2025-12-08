@@ -3,6 +3,7 @@
 
 #include <AMReX_FArrayBox.H>
 #include <cmath>
+#include "amr-wind/utilities/constants.H"
 
 namespace amr_wind::ocean_waves::utils {
 
