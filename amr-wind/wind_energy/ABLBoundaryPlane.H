@@ -189,6 +189,9 @@ private:
     const FieldRepo& m_repo;
     const amrex::AmrCore& m_mesh;
 
+    //NEW from Manu - scaling factor for inflow data
+    amrex::Real m_inflow_scale{1.0};
+
     // pointer to pointer : when ABL boundary plane gets initialized, amr-wind
     // CFDsim does not yet have the up to date pointer to the mbc or the
     // read_erf function, hence the use of double pointers
