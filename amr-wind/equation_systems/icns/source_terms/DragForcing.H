@@ -46,12 +46,6 @@ private:
     amrex::Real m_kappa{0.41};
     amrex::Real m_gamma_m{5.0};
     amrex::Real m_beta_m{16.0};
-    amrex::Real m_meso_start{1e30};
-    amrex::Real m_west_damping_len{0};
-    amrex::Real m_east_damping_len{0};
-    amrex::Real m_north_damping_len{0};
-    amrex::Real m_south_damping_len{0};
-    amrex::Real m_damp_timescale{20};
 };
 
 } // namespace amr_wind::pde::icns

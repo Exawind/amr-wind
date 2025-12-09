@@ -48,6 +48,14 @@ private:
 
     //! Which coordinate directions are forced
     amrex::Vector<int> m_fcoord{1, 1, 1};
+
+    // Lateral Damping
+    amrex::Real m_meso_start{1e30};
+    amrex::Real m_west_damping_len{0};
+    amrex::Real m_east_damping_len{0};
+    amrex::Real m_north_damping_len{0};
+    amrex::Real m_south_damping_len{0};
+    amrex::Real m_vertical_cutoff{1e30};
 };
 
 } // namespace amr_wind::pde::icns

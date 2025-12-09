@@ -108,12 +108,6 @@ DragForcing::DragForcing(const CFDSim& sim)
     pp_abl.query("kappa", m_kappa);
     pp_abl.query("mo_gamma_m", m_gamma_m);
     pp_abl.query("mo_beta_m", m_beta_m);
-    pp_abl.query("lateral_damping_start", m_meso_start);
-    pp_abl.query("west_damping_length", m_west_damping_len);
-    pp_abl.query("east_damping_length", m_east_damping_len);
-    pp_abl.query("north_damping_length", m_north_damping_len);
-    pp_abl.query("south_damping_length", m_south_damping_len);
-    pp_abl.query("damp_time_scale", m_damp_timescale);
 }
 
 DragForcing::~DragForcing() = default;
@@ -174,44 +168,10 @@ void DragForcing::operator()(
             ? MOData::calc_psi_m(
                   0.5 * dx[2] / m_monin_obukhov_length, m_beta_m, m_gamma_m)
             : 0.0;
-    const amrex::Real meso_sponge_start = m_meso_start;
-    const amrex::Real west_damping_len = m_west_damping_len;
-    const amrex::Real east_damping_len = m_east_damping_len;
-    const amrex::Real north_damping_len = m_north_damping_len;
-    const amrex::Real south_damping_len = m_south_damping_len;
-    const amrex::Real damp_timescale = m_damp_timescale;
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
         const amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
         const amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
-        const amrex::Real west_zrd = prob_lo[0] + west_damping_len;
-        const amrex::Real west_Rayleigh_coeff =
-            std::sin(0.5 * M_PI * (x - west_zrd) / (prob_lo[0] - west_zrd));
-        const amrex::Real damp_west =
-            (x < (prob_lo[0] + west_damping_len))
-                ? west_Rayleigh_coeff * west_Rayleigh_coeff
-                : 0.0;
-        const amrex::Real east_zrd = prob_hi[0] - east_damping_len;
-        const amrex::Real east_Rayleigh_coeff =
-            std::sin(0.5 * M_PI * (x - east_zrd) / (prob_hi[0] - east_zrd));
-        const amrex::Real damp_east =
-            ((prob_hi[0] - x) < east_damping_len)
-                ? east_Rayleigh_coeff * east_Rayleigh_coeff
-                : 0.0;
-        const amrex::Real south_zrd = prob_lo[1] + south_damping_len;
-        const amrex::Real south_Rayleigh_coeff =
-            std::sin(0.5 * M_PI * (y - south_zrd) / (prob_lo[1] - south_zrd));
-        const amrex::Real damp_south =
-            (y < (prob_lo[1] + south_damping_len))
-                ? south_Rayleigh_coeff * south_Rayleigh_coeff
-                : 0.0;
-        const amrex::Real north_zrd = prob_hi[1] - north_damping_len;
-        const amrex::Real north_Rayleigh_coeff =
-            std::sin(0.5 * M_PI * (y - north_zrd) / (prob_hi[1] - north_zrd));
-        const amrex::Real damp_north =
-            ((prob_hi[1] - y) < north_damping_len)
-                ? north_Rayleigh_coeff * north_Rayleigh_coeff
-                : 0.0;
         const amrex::Real ux1 = vel(i, j, k, 0);
         const amrex::Real uy1 = vel(i, j, k, 1);
         const amrex::Real uz1 = vel(i, j, k, 2);
@@ -219,7 +179,6 @@ void DragForcing::operator()(
         amrex::Real Dyz = 0.0;
         amrex::Real bc_forcing_x = 0;
         amrex::Real bc_forcing_y = 0;
-        amrex::Real horizontal_Rayleigh_z = 0.0;
         const amrex::Real m = std::sqrt(ux1 * ux1 + uy1 * uy1 + uz1 * uz1);
         if (drag(i, j, k) == 1 && (!is_laminar)) {
             // Check if close enough to interface to use current cell or below
@@ -273,13 +232,6 @@ void DragForcing::operator()(
             target_v = target_vel_arr(i, j, k, 1);
             target_w = target_vel_arr(i, j, k, 2);
         }
-        const amrex::Real zrd = (prob_hi[2] - meso_sponge_start);
-        const amrex::Real Rayleigh_coeff =
-            std::sin(0.5 * M_PI * (z - zrd) / (prob_hi[2] - zrd));
-        horizontal_Rayleigh_z = (z > meso_sponge_start)
-                                    ? -Rayleigh_coeff * Rayleigh_coeff *
-                                          (0.0 - uz1) / damp_timescale
-                                    : 0.0;
         const amrex::Real CdM = std::min(
             Cd / (m + amr_wind::constants::EPS), cd_max / scale_factor);
         src_term(i, j, k, 0) -= CdM * m * (ux1 - target_u) * blank(i, j, k) +
@@ -288,10 +240,7 @@ void DragForcing::operator()(
         src_term(i, j, k, 1) -= CdM * m * (uy1 - target_v) * blank(i, j, k) +
                                 Dyz * drag(i, j, k) +
                                 bc_forcing_y * drag(i, j, k);
-        src_term(i, j, k, 2) -=
-            CdM * m * (uz1 - target_w) * blank(i, j, k) +
-            std::max(damp_west + damp_east + damp_north + damp_south, 1.0) *
-                horizontal_Rayleigh_z;
+        src_term(i, j, k, 2) -= CdM * m * (uz1 - target_w) * blank(i, j, k);
     });
 }
 
