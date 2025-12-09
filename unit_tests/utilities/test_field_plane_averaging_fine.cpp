@@ -143,6 +143,16 @@ TEST_F(FieldPlaneAveragingFineTest, test_linear_fine_only)
         for (int j = 0; j < 3; ++j) {
             EXPECT_NEAR(u0[j] * (z), u[j], tol);
         }
+
+        const amrex::Array<amrex::Real, 3> dudx = {
+            pa_fine.line_derivative_interpolated(z, 0),
+            pa_fine.line_derivative_interpolated(z, 1),
+            pa_fine.line_derivative_interpolated(z, 2)};
+
+        // test each velocity field du/dx = u0
+        for (int j = 0; j < 3; ++j) {
+            EXPECT_NEAR(u0[j], dudx[j], tol);
+        }
     }
 }
 
@@ -162,7 +172,7 @@ TEST_F(FieldPlaneAveragingFineTest, test_linear)
     constexpr int dir = 2;
     init_field_linear(velocityf, u0, dir);
 
-    amr_wind::FieldPlaneAveragingFine pa_fine(velocityf, sim().time(), dir);
+    amr_wind::FieldPlaneAveragingFine pa_fine(velocityf, sim().time(), dir, true);
     pa_fine();
 
     constexpr int n = 20;
@@ -184,6 +194,16 @@ TEST_F(FieldPlaneAveragingFineTest, test_linear)
         // test each velocity field u = u0 + u0*x
         for (int j = 0; j < 3; ++j) {
             EXPECT_NEAR(u0[j] * (z), u[j], tol);
+        }
+
+        const amrex::Array<amrex::Real, 3> dudx = {
+            pa_fine.line_derivative_interpolated(z, 0),
+            pa_fine.line_derivative_interpolated(z, 1),
+            pa_fine.line_derivative_interpolated(z, 2)};
+
+        // test each velocity field du/dx = u0
+        for (int j = 0; j < 3; ++j) {
+            EXPECT_NEAR(u0[j], dudx[j], tol);
         }
     }
 }
