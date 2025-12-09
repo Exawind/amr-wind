@@ -143,6 +143,8 @@ void DragForcing::operator()(
         is_waves ? (*m_target_levelset)(lev).const_array(mfi)
                  : amrex::Array4<amrex::Real>();
 
+    const auto& geom = m_mesh.Geom(lev);
+    const auto& dx = geom.CellSizeArray();
     const amrex::Real drag_coefficient = m_drag_coefficient;
     // Copy Data
     const auto& dt = m_time.delta_t();
