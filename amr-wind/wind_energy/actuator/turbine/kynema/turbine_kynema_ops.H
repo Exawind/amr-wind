@@ -95,6 +95,8 @@ struct ReadInputsOp<TurbineKynema, SrcTrait>
             pp.query("yaw_deg", tf.yaw);
             tf.yaw *= M_PI / 180.;
         }
+        // Generator efficiency
+        pp.query("generator_efficiency", tf.generator_efficiency);
     }
 };
 

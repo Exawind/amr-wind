@@ -23,7 +23,8 @@ void build_turbine(
     const double rotor_speed_init,
     const double generator_power_init,
     const double wind_speed_init,
-    const double yaw_init)
+    const double yaw_init,
+    const double generator_efficiency)
 {
     // WindIO components
     const auto& wio_blade = wio["components"]["blade"];
@@ -54,7 +55,8 @@ void build_turbine(
         .SetRotorSpeed(rotor_speed_init)
         .SetGeneratorPower(generator_power_init)
         .SetHubWindSpeed(wind_speed_init)
-        .SetNacelleYawAngle(yaw_init);
+        .SetNacelleYawAngle(yaw_init)
+        .SetGeneratorEfficiency(generator_efficiency);
 
     //--------------------------------------------------------------------------
     // Build Blades
@@ -658,7 +660,8 @@ void ExtTurbIface<KynemaTurbine, KynemaSolverData>::ext_init_turbine(
     // Builds turbine, including blades, nacelle, and tower
     exw_kynema::build_turbine(
         builder, wio, fi.num_blades, fi.num_blade_elem, num_pts_tower_struct,
-        fi.rotational_speed, fi.generator_power, fi.wind_speed, fi.yaw);
+        fi.rotational_speed, fi.generator_power, fi.wind_speed, fi.yaw,
+        fi.generator_efficiency);
 
     auto n_aero_sections = exw_kynema::build_aero(builder, wio);
 

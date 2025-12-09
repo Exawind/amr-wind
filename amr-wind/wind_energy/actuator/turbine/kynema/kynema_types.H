@@ -246,6 +246,7 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
     double generator_power{0.};
     double wind_speed{0.};
     double yaw{0.};
+    double generator_efficiency{1.};
     int substep_counter{0};
 
     std::string controller_shared_lib_path{""};
