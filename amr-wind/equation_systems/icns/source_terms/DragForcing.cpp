@@ -143,10 +143,6 @@ void DragForcing::operator()(
         is_waves ? (*m_target_levelset)(lev).const_array(mfi)
                  : amrex::Array4<amrex::Real>();
 
-    const auto& geom = m_mesh.Geom(lev);
-    const auto& dx = geom.CellSizeArray();
-    const auto& prob_lo = geom.ProbLoArray();
-    const auto& prob_hi = geom.ProbHiArray();
     const amrex::Real drag_coefficient = m_drag_coefficient;
     // Copy Data
     const auto& dt = m_time.delta_t();
@@ -169,9 +165,6 @@ void DragForcing::operator()(
                   0.5 * dx[2] / m_monin_obukhov_length, m_beta_m, m_gamma_m)
             : 0.0;
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-        const amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
-        const amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
-        const amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
         const amrex::Real ux1 = vel(i, j, k, 0);
         const amrex::Real uy1 = vel(i, j, k, 1);
         const amrex::Real uz1 = vel(i, j, k, 2);
