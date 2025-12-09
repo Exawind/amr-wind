@@ -122,7 +122,8 @@ TEST_F(FieldPlaneAveragingFineTest, test_linear_fine_only)
     constexpr int dir = 2;
     init_field_linear(velocityf, u0, dir);
 
-    amr_wind::FieldPlaneAveragingFine pa_fine(velocityf, sim().time(), dir);
+    amr_wind::FieldPlaneAveragingFine pa_fine(
+        velocityf, sim().time(), dir, true);
     pa_fine();
 
     constexpr int n = 20;
