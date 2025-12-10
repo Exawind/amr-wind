@@ -1,0 +1,14 @@
+.. meta::22930cbf2c1fd4d3e10dbcd97987917de3a99d846e90193943294b6b2269d4e93a82199fca4786f08ead11b8eb196a3d6b4cb353107f43590213087b80b886bb
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/actuator/wing/fixed_wing_ops.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/wind\_energy/actuator/wing/fixed\_wing\_ops.H Source File
+======================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: fixed__wing__ops_8_h_source.html

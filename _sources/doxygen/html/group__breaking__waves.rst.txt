@@ -1,0 +1,14 @@
+.. meta::1b35518e151d275d9b9c548641d7b87f5239bee9755386f9a5ba64046b494d4cca61a4252213c9378c7a7351d74decc765cacaa5f80cad214011b4d35e03a0fe
+
+:orphan:
+
+.. title:: AMR-Wind API: Breaking Waves modeling
+
+Breaking Waves modeling
+=======================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: group__breaking__waves.html

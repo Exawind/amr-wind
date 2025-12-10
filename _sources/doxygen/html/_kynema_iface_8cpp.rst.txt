@@ -1,0 +1,14 @@
+.. meta::11fd0f92808ccfa2c0138029e9f6402cb9afbe9512b901c5ebe0ad3570b588a8318c4a3cdb337726f24e163357a1521d6339879eb334e640a8225e4a4c5e5737
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/actuator/turbine/kynema/KynemaIface.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/wind\_energy/actuator/turbine/kynema/KynemaIface.cpp File Reference
+================================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _kynema_iface_8cpp.html

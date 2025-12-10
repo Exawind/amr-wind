@@ -1,0 +1,14 @@
+.. meta::37c89f0927ab4497b5a2aea90baafda7d444671f055e622f5b06545901c4a52542272eba4cc1b0e1ca6d4bf2051f38f4bad02e960d683465792ed170e20564ce
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::AMROversetInfo Struct Reference
+
+AMROversetInfo Struct Reference
+===============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1_a_m_r_overset_info.html
