@@ -30,7 +30,9 @@ RayleighDamping::RayleighDamping(const CFDSim& sim)
     pp.query("east_damping_length", m_east_damping_len);
     pp.query("north_damping_length", m_north_damping_len);
     pp.query("south_damping_length", m_south_damping_len);
-    pp.query("vertical_cutoff", m_vertical_cutoff);
+    if (pp.contains("lateral_damping_start")) {
+        pp.get("vertical_cutoff", m_vertical_cutoff);
+    }
 }
 
 RayleighDamping::~RayleighDamping() = default;
