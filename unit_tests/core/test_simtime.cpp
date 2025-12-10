@@ -442,4 +442,42 @@ TEST_F(SimTimeTest, enforce_timeinterval_delay)
     EXPECT_EQ(plot_step_sum, 3);
 }
 
+TEST_F(SimTimeTest, enforce_chkpt_timeinterval)
+{
+    build_simtime_params();
+    {
+        amrex::ParmParse pp("time");
+        pp.add("regrid_interval", -1);
+        pp.add("checkpoint_interval", -1);
+        pp.add("plot_interval", -1);
+
+        pp.add("checkpoint_time_interval", 0.5);
+        pp.add("enforce_checkpoint_time_dt", true);
+
+        // Default values for tolerances
+        pp.add("stop_time", 1.0);
+        pp.add("max_step", 10);
+    }
+    amr_wind::SimTime time;
+    time.parse_parameters();
+
+    int counter = 0;
+    int chkpt_counter = 0;
+    amrex::Real chkpt_time_sum = 0.0;
+    int chkpt_step_sum = 0;
+    while (time.new_timestep()) {
+        time.set_current_cfl(0.45 / 0.4, 0.0, 0.0);
+        time.advance_time();
+        ++counter;
+        if (time.write_checkpoint()) {
+            ++chkpt_counter;
+            chkpt_time_sum += time.new_time();
+            chkpt_step_sum += counter;
+        }
+    }
+    EXPECT_EQ(chkpt_counter, 2);
+    EXPECT_NEAR(chkpt_time_sum, 1.5, 1e-8);
+    EXPECT_EQ(chkpt_step_sum, 2 + 6);
+}
+
 } // namespace amr_wind_tests
