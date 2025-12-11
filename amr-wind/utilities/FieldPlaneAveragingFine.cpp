@@ -11,11 +11,13 @@ FPlaneAveragingFine<FType>::FPlaneAveragingFine(
     const FType& field_in,
     const amr_wind::SimTime& time,
     int axis_in,
-    bool compute_deriv)
+    bool compute_deriv,
+    int max_level)
     : m_field(field_in)
     , m_time(time)
     , m_axis(axis_in)
     , m_comp_deriv(compute_deriv)
+    , m_max_level(max_level)
 {
     AMREX_ALWAYS_ASSERT(m_axis >= 0 && m_axis < AMREX_SPACEDIM);
     auto geom = m_field.repo().mesh().Geom();
@@ -25,7 +27,8 @@ FPlaneAveragingFine<FType>::FPlaneAveragingFine(
     m_xlo = geom[0].ProbLo(m_axis);
     m_xhi = geom[0].ProbHi(m_axis);
 
-    const int finestLevel = m_field.repo().mesh().maxLevel();
+    const int finestLevel =
+        m_max_level < 0 ? m_field.repo().mesh().maxLevel() : m_max_level;
     const int dom_lo = geom[finestLevel].Domain().smallEnd()[m_axis];
     const int dom_hi = geom[finestLevel].Domain().bigEnd()[m_axis];
 
@@ -222,7 +225,7 @@ void FPlaneAveragingFine<FType>::compute_averages(const IndexSelector& idxOp)
     const bool periodic_dir = g0.periodicity().isPeriodic(m_axis);
 
     const auto& mesh = m_field.repo().mesh();
-    const int finestLevel = mesh.finestLevel();
+    const int finestLevel = m_max_level < 0 ? mesh.finestLevel() : m_max_level;
 
     for (int lev = 0; lev <= finestLevel; ++lev) {
 
@@ -512,7 +515,7 @@ void VelPlaneAveragingFine::compute_hvelmag_averages(const IndexSelector& idxOp)
          (g0.ProbHi(2) - g0.ProbLo(2)));
 
     const auto& mesh = m_field.repo().mesh();
-    const int finestLevel = mesh.finestLevel();
+    const int finestLevel = m_max_level < 0 ? mesh.finestLevel() : m_max_level;
 
     for (int lev = 0; lev <= finestLevel; ++lev) {
 

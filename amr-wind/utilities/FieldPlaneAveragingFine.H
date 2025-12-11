@@ -41,7 +41,8 @@ public:
         const FType& field_in,
         const amr_wind::SimTime& time,
         int axis_in,
-        bool compute_deriv = false);
+        bool compute_deriv = false,
+        int max_level = -1);
 
     virtual ~FPlaneAveragingFine() = default;
 
@@ -95,6 +96,8 @@ public:
 protected:
     int m_ncomp; /** number of average components */
 
+    int m_max_level{-1}; // or set to very high integer?
+
     amrex::Vector<amrex::Real>
         m_line_average; /** line storage for the average velocity and tracer
                            variables */
@@ -131,7 +134,7 @@ public: // public for GPU
 using FieldPlaneAveragingFine = FPlaneAveragingFine<Field>;
 using ScratchFieldPlaneAveragingFine = FPlaneAveragingFine<ScratchField>;
 
-/** Specific application of FieldPlaneAveraging to the velocity field
+/** Specific application of FieldPlaneAveragingFine to the velocity field
  *  \ingroup statistics we_abl
  */
 class VelPlaneAveragingFine : public FieldPlaneAveragingFine
