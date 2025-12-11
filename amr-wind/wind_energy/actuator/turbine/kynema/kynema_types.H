@@ -274,8 +274,8 @@ struct KynemaSolverData
 
     double damping_factor{0.};
     int nl_iter_max{12};
-    double abs_err_tol{1e-7};
-    double rel_err_tol{1e-6};
+    double abs_err_tol{1e-5};
+    double rel_err_tol{1e-4};
     amrex::Vector<amrex::Real> gravity{0.0, 0.0, -9.81};
 };
 
