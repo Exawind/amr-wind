@@ -85,7 +85,7 @@ struct ReadInputsOp<TurbineKynema, SrcTrait>
         pp.query("generator_power_init", tf.generator_power);
         // Initial wind speed
         amrex::Vector<amrex::Real> vel_vec{tf.wind_speed, 0., 0.};
-        pp.queryarr("hub_wind_vector_guess", vel_vec);
+        pp.queryarr("hub_wind_vector_init", vel_vec);
         tf.wind_speed = std::sqrt(
             vel_vec[0] * vel_vec[0] + vel_vec[1] * vel_vec[1] +
             vel_vec[2] * vel_vec[2]);
