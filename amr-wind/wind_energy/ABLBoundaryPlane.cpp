@@ -316,12 +316,10 @@ ABLBoundaryPlane::ABLBoundaryPlane(CFDSim& sim)
     pp.get("bndry_file", m_filename);
     pp.query("bndry_output_format", m_out_fmt);
 
-    // NEW from Manu - inflow scaling factor (default 1.0)
     pp.query("inflow_scaling_factor", m_inflow_scale);
     amrex::Print() << "ABLBoundaryPlane: inflow_scaling_factor = "
                    << m_inflow_scale << std::endl;
     if (m_inflow_scale <= 0.0) { m_inflow_scale = 1.0; } // safety
-    // END NEW from Manu
 
 #ifndef AMR_WIND_USE_NETCDF
     if (m_out_fmt == "netcdf") {
@@ -1396,18 +1394,6 @@ void ABLBoundaryPlane::populate_data(
             const auto& src_arr = src.array();
             const int nstart = m_in_data.component(static_cast<int>(fld.id()));
             
-            // Original code before scaling - 12 DEC 2025
-            /*
-            amrex::ParallelFor(
-                bx, nc,
-                [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                    dest(i, j, k, n + dcomp) = src_arr(
-                        i + shift_to_cc[0], j + shift_to_cc[1],
-                        k + shift_to_cc[2], n + nstart + orig_comp);
-                });
-            */
-
-            // NEW from Manu: only scale the "velocity" field; otherwise multiplier is 1.0
             const amrex::Real inflow_mult =
                 (m_inflow_scale != 1.0 && fld.name() == "velocity")
                 ? m_inflow_scale
@@ -1424,7 +1410,6 @@ void ABLBoundaryPlane::populate_data(
                     // NEW: scaled assignment
                     dest(i, j, k, n + dcomp) = inflow_mult * val;
                 });
-            // END NEW from Manu
         }
     }
 
