@@ -40,7 +40,7 @@ private:
     //! LogLaw instance
     LogLaw m_log_law;
     int m_direction{2}; ///< Direction normal to wall, hardcoded to z
-    VelPlaneAveraging m_pa_vel_fine;
+    VelPlaneAveraging m_pa_vel;
 
     MOSD m_mosd;
 };
