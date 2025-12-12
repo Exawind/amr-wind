@@ -105,7 +105,7 @@ void TiogaInterface::post_overset_conn_work()
     // Update equation systems after a connectivity update
     m_sim.pde_manager().icns().post_regrid_actions();
     for (auto& eqn : m_sim.pde_manager().scalar_eqns()) {
-        eqn->post_regrid_actions();
+        eqn->post_overset_actions();
     }
     m_iblank_cell_host.reset();
     m_iblank_node_host.reset();

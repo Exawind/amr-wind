@@ -62,6 +62,9 @@ public:
     //! Perform updates specific to PDE after a regrid is performed
     virtual void post_regrid_actions() = 0;
 
+    //! Perform updates specific to PDE after overset connectivity is performed
+    virtual void post_overset_actions() = 0;
+
     //! Compute the source (forcing) terms for this PDE
     virtual void compute_source_term(const FieldState fstate) = 0;
 
