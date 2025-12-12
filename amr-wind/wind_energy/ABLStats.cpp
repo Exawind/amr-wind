@@ -37,7 +37,9 @@ ABLStats::ABLStats(
     , m_pa_tu(m_pa_vel, m_pa_temp)
     , m_pa_uu(m_pa_vel, m_pa_vel)
     , m_pa_uuu(m_pa_vel, m_pa_vel, m_pa_vel)
+#ifdef AMR_WIND_USE_NETCDF
     , m_max_level(max_level)
+#endif
 {}
 
 ABLStats::~ABLStats() = default;

@@ -168,8 +168,12 @@ private:
 #endif
     std::string m_ascii_file_name;
 
+#ifdef AMR_WIND_USE_NETCDF
     //! Maximum level to consider in planar averages: -1 means no limit
     int m_max_level{-1};
+    // - when netcdf is not used, max level is still used but it is only needed
+    // - at initialization, does not need to be stored
+#endif
 
     //! Frequency of data sampling and output
     int m_out_freq{100};
