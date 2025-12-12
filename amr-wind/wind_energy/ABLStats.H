@@ -5,7 +5,6 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/transport_models/TransportModel.H"
 #include "amr-wind/utilities/FieldPlaneAveraging.H"
-#include "amr-wind/utilities/FieldPlaneAveragingFine.H"
 #include "amr-wind/utilities/SecondMomentAveraging.H"
 #include "amr-wind/utilities/ThirdMomentAveraging.H"
 #include "amr-wind/utilities/PostProcessing.H"
@@ -40,7 +39,8 @@ public:
     ABLStats(
         CFDSim& /*sim*/,
         const ABLWallFunction& /*abl_wall_func*/,
-        const int dir);
+        const int dir,
+        const int max_level);
 
     ~ABLStats() override;
 
@@ -59,7 +59,7 @@ public:
     void compute_zi();
 
     //! Return vel plane averaging instance
-    const VelPlaneAveragingFine& vel_profile() const override
+    const VelPlaneAveraging& vel_profile() const override
     {
         return m_pa_vel_fine;
     };
@@ -77,7 +77,7 @@ public:
     }
 
     //! Return instance that handles temperature statistics
-    const FieldPlaneAveragingFine& theta_profile_fine() const override
+    const FieldPlaneAveraging& theta_profile_fine() const override
     {
         return m_pa_temp_fine;
     }
@@ -144,8 +144,8 @@ private:
 
     VelPlaneAveraging m_pa_vel;
     FieldPlaneAveraging m_pa_temp;
-    VelPlaneAveragingFine m_pa_vel_fine;
-    FieldPlaneAveragingFine m_pa_temp_fine;
+    VelPlaneAveraging m_pa_vel_fine;
+    FieldPlaneAveraging m_pa_temp_fine;
     FieldPlaneAveraging m_pa_mueff;
     SecondMomentAveraging m_pa_tt;
     SecondMomentAveraging m_pa_tu;
@@ -167,6 +167,9 @@ private:
     std::string m_out_fmt{"ascii"};
 #endif
     std::string m_ascii_file_name;
+
+    //! Maximum level to consider in planar averages: -1 means no limit
+    int m_max_level{-1};
 
     //! Frequency of data sampling and output
     int m_out_freq{100};

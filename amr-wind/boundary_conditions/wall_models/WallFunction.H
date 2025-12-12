@@ -3,7 +3,7 @@
 
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/core/FieldBCOps.H"
-#include "amr-wind/utilities/FieldPlaneAveragingFine.H"
+#include "amr-wind/utilities/FieldPlaneAveraging.H"
 #include "amr-wind/boundary_conditions/wall_models/LogLaw.H"
 #include "amr-wind/boundary_conditions/wall_models/MOSD.H"
 
@@ -40,7 +40,7 @@ private:
     //! LogLaw instance
     LogLaw m_log_law;
     int m_direction{2}; ///< Direction normal to wall, hardcoded to z
-    VelPlaneAveragingFine m_pa_vel;
+    VelPlaneAveraging m_pa_vel_fine;
 
     MOSD m_mosd;
 };

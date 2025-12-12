@@ -44,7 +44,7 @@ TEST_F(SecondMomentAveragingTest, test_constant)
     // test the average of a constant is the same constant
     for (int dir = 0; dir < 3; ++dir) {
 
-        amr_wind::FieldPlaneAveraging pa(velocityf, sim().time(), dir);
+        amr_wind::FieldPlaneAveraging pa(velocityf, sim().time(), dir, 0);
         pa();
 
         amr_wind::SecondMomentAveraging uu(pa, pa);
@@ -116,7 +116,7 @@ TEST_F(SecondMomentAveragingTest, test_linear)
             add_linear(dir, u0, mesh().Geom(0), bx, vel);
         });
 
-    amr_wind::FieldPlaneAveraging pa(velocityf, sim().time(), dir);
+    amr_wind::FieldPlaneAveraging pa(velocityf, sim().time(), dir, 0);
     pa();
     amr_wind::SecondMomentAveraging uu(pa, pa);
     uu();
@@ -228,7 +228,7 @@ void SecondMomentAveragingTest::test_dir(int dir)
             add_periodic(a, mesh().Geom(lev), bx, vel);
         });
 
-    amr_wind::FieldPlaneAveraging pa(velocityf, sim().time(), dir);
+    amr_wind::FieldPlaneAveraging pa(velocityf, sim().time(), dir, 0);
     pa();
 
     amr_wind::SecondMomentAveraging uu(pa, pa);

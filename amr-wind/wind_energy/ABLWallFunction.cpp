@@ -147,7 +147,7 @@ void ABLWallFunction::init_log_law_height()
 }
 
 void ABLWallFunction::update_umean(
-    const VelPlaneAveragingFine& vpa, const FieldPlaneAveragingFine& tpa)
+    const VelPlaneAveraging& vpa, const FieldPlaneAveraging& tpa)
 {
     const auto& time = m_sim.time();
 

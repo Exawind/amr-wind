@@ -9,7 +9,6 @@ target_sources(${amr_wind_lib_name}
       io_utils.cpp
       IOManager.cpp
       FieldPlaneAveraging.cpp
-      FieldPlaneAveragingFine.cpp
       SecondMomentAveraging.cpp
       ThirdMomentAveraging.cpp
 

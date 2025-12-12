@@ -34,13 +34,16 @@ ABL::ABL(CFDSim& sim)
     {
         std::string statistics_mode = "precursor";
         int dir = 2;
+        // Use current behavior for regression (!!CHANGE for final PR!!)
+        int stats_max_level = 0;
         amrex::ParmParse pp("ABL");
         pp.query("enable_hybrid_rl_mode", m_hybrid_rl);
         pp.query("initial_sdr_value", m_init_sdr);
         pp.query("normal_direction", dir);
         pp.query("statistics_mode", statistics_mode);
-        m_stats =
-            ABLStatsBase::create(statistics_mode, sim, m_abl_wall_func, dir);
+        pp.query("stats_max_level", stats_max_level);
+        m_stats = ABLStatsBase::create(
+            statistics_mode, sim, m_abl_wall_func, dir, stats_max_level);
         // Check for file input
         m_file_input = pp.contains("initial_condition_input_file");
     }

@@ -4,7 +4,7 @@
 #include <AMReX_GpuContainers.H>
 #include <string>
 #include "amr-wind/turbulence/TurbModelBase.H"
-#include "amr-wind/utilities/FieldPlaneAveragingFine.H"
+#include "amr-wind/utilities/FieldPlaneAveraging.H"
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/fvm/stencils.H"
 #include "amr-wind/utilities/DirectionSelector.H"
@@ -56,7 +56,7 @@ private:
     const Field& m_vel;
     const Field& m_temperature;
     const Field& m_rho;
-    FieldPlaneAveragingFine m_pa_temp;
+    FieldPlaneAveraging m_pa_temp;
     amrex::Vector<amrex::Real> m_gravity{0.0, 0.0, -9.81};
 };
 

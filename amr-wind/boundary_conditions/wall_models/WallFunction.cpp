@@ -13,7 +13,7 @@
 namespace amr_wind {
 
 WallFunction::WallFunction(CFDSim& sim)
-    : m_sim(sim), m_mesh(m_sim.mesh()), m_pa_vel(sim, m_direction)
+    : m_sim(sim), m_mesh(m_sim.mesh()), m_pa_vel_fine(sim, m_direction, -1)
 {
     amrex::Real mu;
     amrex::Real rho{1.0};
@@ -324,9 +324,9 @@ void VelWallFunc::operator()(Field& velocity, const FieldState rho_state)
 
 void WallFunction::update_umean()
 {
-    m_pa_vel();
+    m_pa_vel_fine();
     m_log_law.wspd_mean =
-        m_pa_vel.line_hvelmag_average_interpolated(m_log_law.zref);
+        m_pa_vel_fine.line_hvelmag_average_interpolated(m_log_law.zref);
 }
 
 void WallFunction::update_utau_mean() { m_log_law.update_utau_mean(); }
