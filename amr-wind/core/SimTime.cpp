@@ -373,16 +373,30 @@ bool SimTime::write_checkpoint() const
 
 bool SimTime::write_last_plot_file() const
 {
+    const amrex::Real tol = std::min(m_plt_t_tol * m_dt[0], m_force_dt_abs_tol);
     return (
-        (m_plt_interval > 0) &&
-        ((m_time_index - m_plt_start_index) % m_plt_interval != 0));
+        ((m_plt_interval > 0) &&
+         ((m_time_index - m_plt_start_index) % m_plt_interval != 0)) ||
+        ((m_plt_t_interval > 0.0) &&
+         ((m_new_time - m_plt_start_time + tol) / m_plt_t_interval -
+              std::floor(
+                  (m_new_time - m_plt_start_time + tol) / m_plt_t_interval) >=
+          m_dt[0] / m_plt_t_interval)));
 }
 
 bool SimTime::write_last_checkpoint() const
 {
+    const amrex::Real tol =
+        std::min(m_chkpt_t_tol * m_dt[0], m_force_dt_abs_tol);
     return (
-        (m_chkpt_interval > 0) &&
-        ((m_time_index - m_chkpt_start_index) % m_chkpt_interval != 0));
+        ((m_chkpt_interval > 0) &&
+         ((m_time_index - m_chkpt_start_index) % m_chkpt_interval != 0)) ||
+        ((m_chkpt_t_interval > 0.0) &&
+         ((m_new_time - m_chkpt_start_time + tol) / m_chkpt_t_interval -
+              std::floor(
+                  (m_new_time - m_chkpt_start_time + tol) /
+                  m_chkpt_t_interval) >=
+          m_dt[0] / m_chkpt_t_interval)));
 }
 
 void SimTime::set_restart_time(int tidx, amrex::Real time)
