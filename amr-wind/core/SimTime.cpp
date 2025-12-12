@@ -218,7 +218,7 @@ void SimTime::set_current_cfl(
             m_cur_time + dt_new - m_chkpt_t_delay >= 0) {
             // Shorten dt if going to overshoot next output time
             dt_new = get_enforced_dt_for_output(
-                dt_new, m_cur_time, m_chkpt_interval, m_force_chkpt_tol);
+                dt_new, m_cur_time, m_chkpt_t_interval, m_force_chkpt_tol);
             // how it works: the floor operator gets the index of the last
             // output, with a tolerance proportional to the current dt.
             // adding 1 and multiplying by the time interval finds the next
