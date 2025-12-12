@@ -9,7 +9,7 @@
 #include "AMReX_RealBox.H"
 #include "AMReX_Vector.H"
 
-#include "amr-wind/utilities/FieldPlaneAveragingFine.H"
+#include "amr-wind/utilities/FieldPlaneAveraging.H"
 
 namespace amr_wind_tests {
 
@@ -122,8 +122,8 @@ TEST_F(FieldPlaneAveragingFineTest, test_linear_fine_only)
     constexpr int dir = 2;
     init_field_linear(velocityf, u0, dir);
 
-    amr_wind::FieldPlaneAveragingFine pa_fine(
-        velocityf, sim().time(), dir, true);
+    amr_wind::FieldPlaneAveraging pa_fine(
+        velocityf, sim().time(), dir, -1, true);
     pa_fine();
 
     constexpr int n = 20;
@@ -173,8 +173,8 @@ TEST_F(FieldPlaneAveragingFineTest, test_linear)
     constexpr int dir = 2;
     init_field_linear(velocityf, u0, dir);
 
-    amr_wind::FieldPlaneAveragingFine pa_fine(
-        velocityf, sim().time(), dir, true);
+    amr_wind::FieldPlaneAveraging pa_fine(
+        velocityf, sim().time(), dir, -1, true);
     pa_fine();
 
     constexpr int n = 20;
