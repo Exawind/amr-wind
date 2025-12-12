@@ -33,7 +33,7 @@ FPlaneAveraging<FType>::FPlaneAveraging(
     const amrex::IntVect dom_hi_vec(geom[finestLevel].Domain().bigEnd());
     const int dom_lo = dom_lo_vec[m_axis];
     const int dom_hi = dom_hi_vec[m_axis];
-    
+
     AMREX_ALWAYS_ASSERT(dom_lo == 0);
     const auto& mesh = m_field.repo().mesh();
     int dom_hi2 = geom[0].Domain().bigEnd()[m_axis] + 1;
@@ -458,7 +458,8 @@ template class FPlaneAveraging<Field>;
 template class FPlaneAveraging<ScratchField>;
 
 VelPlaneAveraging::VelPlaneAveraging(CFDSim& sim, int axis_in, int max_level)
-    : FieldPlaneAveraging(sim.repo().get_field("velocity"), sim.time(), axis_in, max_level)
+    : FieldPlaneAveraging(
+          sim.repo().get_field("velocity"), sim.time(), axis_in, max_level)
 {
     m_line_hvelmag_average.resize(m_ncell_line, 0.0);
     m_line_Su_average.resize(m_ncell_line, 0.0);

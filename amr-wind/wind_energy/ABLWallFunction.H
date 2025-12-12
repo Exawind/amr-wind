@@ -34,8 +34,8 @@ public:
     void init_log_law_height();
 
     //! Update the mean velocity at a given timestep
-    void update_umean(
-        const VelPlaneAveraging& vpa, const FieldPlaneAveraging& tpa);
+    void
+    update_umean(const VelPlaneAveraging& vpa, const FieldPlaneAveraging& tpa);
 
     void update_tflux(const amrex::Real tflux);
 

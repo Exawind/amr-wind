@@ -20,7 +20,10 @@
 namespace amr_wind {
 
 ABLStats::ABLStats(
-    CFDSim& sim, const ABLWallFunction& abl_wall_func, const int dir, const int max_level)
+    CFDSim& sim,
+    const ABLWallFunction& abl_wall_func,
+    const int dir,
+    const int max_level)
     : m_sim(sim)
     , m_abl_wall_func(abl_wall_func)
     , m_temperature(sim.repo().get_field("temperature"))
