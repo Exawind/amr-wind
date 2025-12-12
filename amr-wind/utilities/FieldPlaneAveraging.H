@@ -151,8 +151,6 @@ private:
     amrex::Vector<amrex::Real>
         m_line_hvelmag_average; /** line storage for the average horizontal
                                    velocity magnitude */
-    //! line storage for the derivative of average horizontal velocity magnitude
-    amrex::Vector<amrex::Real> m_line_hvelmag_deriv;
 
     amrex::Vector<amrex::Real>
         m_line_Su_average; /** line storage for the average horizontal
