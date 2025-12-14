@@ -259,7 +259,7 @@ private:
     //! output format for bndry output
     std::string m_out_fmt{"native"};
 
-    //! Read fronzen data 
+    //! Read fronzen data
     bool m_read_frozen_data{false};
 };
 
