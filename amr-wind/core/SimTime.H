@@ -261,6 +261,12 @@ private:
     //! Smallest absolute tolerance for enforcing dt, considering all
     amrex::Real m_force_dt_abs_tol{1e8};
 
+    //! Initial starting time for generating checkpoint files (time-based)
+    amrex::Real m_chkpt_start_time{0.};
+
+    //! Initial starting time for generating output files (time-based)
+    amrex::Real m_plt_start_time{0.};
+
     //! Counter for the number of timesteps since start of simulation
     int m_time_index{0};
 
