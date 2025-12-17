@@ -468,14 +468,16 @@ Example for ``TurbineKynemaLine``::
    **type:** Real, optional, default = 0
 
    This is the initial rotational speed of the turbine in RPM. This parameter can
-   alternatively be set in radians per second using the input parameter :input_param:`rot_speed_radps`.
+   alternatively be set in radians per second using the input parameter
+   :input_param:`Actuator.TurbineKynemaLine.rot_speed_radps`.
 
 .. input_param:: Actuator.TurbineKynemaLine.rot_speed_radps
 
    **type:** Real, optional, default = 0
 
    This is the initial rotational speed of the turbine in radians per second.
-   If this argument is present, :input_param:`rot_speed_rpm` will be ignored.
+   If this argument is present,
+   :input_param:`Actuator.TurbineKynemaLine.rot_speed_rpm` will be ignored.
 
 .. input_param:: Actuator.TurbineKynemaLine.yaw_deg
 
@@ -483,14 +485,14 @@ Example for ``TurbineKynemaLine``::
 
    This is the initial yaw angle of the turbine in degrees, counterclockwise
    from the -x direction. This parameter can alternatively be set in radians
-   using the input parameter :input_param:`yaw_rad`.
+   using the input parameter :input_param:`Actuator.TurbineKynemaLine.yaw_rad`.
 
 .. input_param:: Actuator.TurbineKynemaLine.yaw_rad
 
    **type:** Real, optional, default = 0
 
    This is the initial yaw angle of the turbine in radians. If this argument is
-   present, :input_param:`yaw_deg` will be ignored.
+   present, :input_param:`Actuator.TurbineKynemaLine.yaw_deg` will be ignored.
 
 .. input_param:: Actuator.TurbineKynemaLine.kynema_input_file
 
