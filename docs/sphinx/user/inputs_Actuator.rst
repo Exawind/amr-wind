@@ -397,7 +397,7 @@ Example for ``TurbineFastLine``::
    This is the name of the openfast input file with all the turbine information.
 
 TurbineKynemaLine
-"""""""""""""""
+"""""""""""""""""
 
 This actuator type requires an AMR-Wind build with Kynema coupling
 enabled. This is a similar coupling to OpenFAST, but Kynema
@@ -470,6 +470,13 @@ Example for ``TurbineKynemaLine``::
    This is the initial rotational speed of the turbine in RPM. This parameter can
    alternatively be set in radians per second using the input parameter :input_param:`rot_speed_radps`.
 
+.. input_param:: Actuator.TurbineKynemaLine.rot_speed_radps
+
+   **type:** Real, optional, default = 0
+
+   This is the initial rotational speed of the turbine in radians per second.
+   If this argument is present, :input_param:`rot_speed_rpm` will be ignored.
+
 .. input_param:: Actuator.TurbineKynemaLine.yaw_deg
 
    **type:** Real, optional, default = 0
@@ -477,6 +484,13 @@ Example for ``TurbineKynemaLine``::
    This is the initial yaw angle of the turbine in degrees, counterclockwise
    from the -x direction. This parameter can alternatively be set in radians
    using the input parameter :input_param:`yaw_rad`.
+
+.. input_param:: Actuator.TurbineKynemaLine.yaw_rad
+
+   **type:** Real, optional, default = 0
+
+   This is the initial yaw angle of the turbine in radians. If this argument is
+   present, :input_param:`yaw_deg` will be ignored.
 
 .. input_param:: Actuator.TurbineKynemaLine.kynema_input_file
 
@@ -523,7 +537,7 @@ Example for ``TurbineKynemaLine``::
 
    This is the time step size chosen for the Kynema turbine model. It must
    be a factor of the AMR-Wind time step so that Kynema can take an integer
-   number of substeps for each AMR-Wind time step. If not populated, the Kynema time
+   number of sub-steps for each AMR-Wind time step. If not populated, the Kynema time
    step size will be the same as the flow solver time step, and, due to the
    robustness of Kynema, this is typically fine.
 
@@ -560,7 +574,7 @@ Example for ``TurbineKynemaLine``::
    **type:** Real, optional, default = 0
 
    This parameter sets the numerical damping (time-based) of the Kynema solver.
-   Unintuitively, full damping corresponds to 0 and no damping corresponds to 1.
+   Counterintuitively, full damping corresponds to 0 and no damping corresponds to 1.
 
 Active Wake Control with Joukowsky Disk
 """""""""""""""""""""""""""""""""""""""
