@@ -1,0 +1,17 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$structamr__wind_1_1pde_1_1_scalar_transport.html" title=" " alt="" coords="5,153,232,179"/>
+<area shape="rect" id="Node000001" href="$structamr__wind_1_1pde_1_1_density.html" title=" " alt="" coords="299,5,475,31"/>
+<area shape="poly" id="edge181_Node000000_Node000001" title=" " alt="" coords="140,142,199,90,238,63,279,40,310,28,311,33,281,44,241,67,203,94,144,146"/>
+<area shape="rect" id="Node000002" href="$structamr__wind_1_1pde_1_1_levelset.html" title=" " alt="" coords="297,55,478,80"/>
+<area shape="poly" id="edge182_Node000000_Node000002" title=" " alt="" coords="154,144,212,116,279,89,319,77,321,83,281,94,214,121,157,149"/>
+<area shape="rect" id="Node000003" href="$structamr__wind_1_1pde_1_1_passive_scalar.html" title=" " alt="" coords="280,104,495,129"/>
+<area shape="poly" id="edge183_Node000000_Node000003" title=" " alt="" coords="201,148,317,127,318,132,202,153"/>
+<area shape="rect" id="Node000004" href="$structamr__wind_1_1pde_1_1_s_d_r.html" title=" " alt="" coords="311,153,464,179"/>
+<area shape="poly" id="edge184_Node000000_Node000004" title=" " alt="" coords="246,163,310,163,310,169,246,169"/>
+<area shape="rect" id="Node000005" href="$structamr__wind_1_1pde_1_1_t_k_e.html" title=" " alt="" coords="312,203,463,228"/>
+<area shape="poly" id="edge185_Node000000_Node000005" title=" " alt="" coords="202,179,318,200,317,205,201,184"/>
+<area shape="rect" id="Node000006" href="$structamr__wind_1_1pde_1_1_temperature.html" title=" " alt="" coords="283,252,491,277"/>
+<area shape="poly" id="edge186_Node000000_Node000006" title=" " alt="" coords="157,183,215,210,281,237,324,249,323,254,279,242,212,215,155,187"/>
+<area shape="rect" id="Node000007" href="$structamr__wind_1_1pde_1_1_v_o_f.html" title=" " alt="" coords="311,301,464,327"/>
+<area shape="poly" id="edge187_Node000000_Node000007" title=" " alt="" coords="144,186,203,237,241,264,281,286,315,299,314,304,279,291,238,268,200,241,141,190"/>
+</map>

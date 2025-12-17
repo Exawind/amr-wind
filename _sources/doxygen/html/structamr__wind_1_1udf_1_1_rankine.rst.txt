@@ -1,0 +1,14 @@
+.. meta::f95393b28db0d815e73f3941c39dca1971547ab16918f18a41700af7d0c40c0f51b63ae62e64e5ce524343366cf7d4431b83838188716d9b649c8fce80fbf474
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::udf::Rankine Struct Reference
+
+Rankine Struct Reference
+========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1udf_1_1_rankine.html

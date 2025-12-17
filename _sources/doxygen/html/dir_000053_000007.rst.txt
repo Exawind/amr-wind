@@ -1,0 +1,14 @@
+.. meta::2aa31e1b63a5981b8bdf189781bcae8864c1bd7b1d96d7794cce81faff9b723c4ab5b8bfe1b81ea3d829fe3b8ac39ad4bfd835a86fd709183a9d5ff8ccd139dc
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/vof -&gt; boundary_conditions Relation
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/equation\_systems/vof -&gt; boundary\_conditions Relation
+======================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: dir_000053_000007.html

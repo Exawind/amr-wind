@@ -1,0 +1,14 @@
+.. meta::c2c01df72d88d98524b6929eb783d80af1bd4b64794bb115f3eca63d7882f84551b98d945cb585c80feb8562da5e3c612c3e9752fc10148f2c6be983980c3e8e
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::udf::PowerLawProfile::DeviceOp Struct Reference
+
+DeviceOp Struct Reference
+=========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1udf_1_1_power_law_profile_1_1_device_op.html

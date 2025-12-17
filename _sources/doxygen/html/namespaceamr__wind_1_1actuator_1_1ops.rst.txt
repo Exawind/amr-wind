@@ -1,0 +1,14 @@
+.. meta::14475d95b20be8e688b54e0dd11ebfa6db809635e279842ab06635db4ebd3632034a817791d717f3d69252d88968359832a902fbe600f2e8ce8770c0fd4386d0
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops Namespace Reference
+
+ops Namespace Reference
+=======================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: namespaceamr__wind_1_1actuator_1_1ops.html

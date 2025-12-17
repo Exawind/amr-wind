@@ -1,0 +1,14 @@
+.. meta::0194fba2b075bce245571555955e0affefc9ab5de652fe3af2caa1be2f9c19d646ea184bdb90083a715ff7e0c1e87e9248417adc1bdec3d12243956c5cdc9cbe
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::ComputeForceOp&lt; ActTrait, SrcTrait, typename &gt; Struct Template Reference
+
+ComputeForceOp&lt; ActTrait, SrcTrait, typename &gt; Struct Template Reference
+==============================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1ops_1_1_compute_force_op.html

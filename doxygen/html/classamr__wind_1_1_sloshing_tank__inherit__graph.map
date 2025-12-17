@@ -1,0 +1,5 @@
+<map id="amr_wind::SloshingTank" name="amr_wind::SloshingTank">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,108,184,133"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="13,5,177,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="97,74,97,108,92,108,92,74"/>
+</map>

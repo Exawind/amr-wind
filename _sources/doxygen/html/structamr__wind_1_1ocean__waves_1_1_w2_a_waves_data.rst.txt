@@ -1,0 +1,14 @@
+.. meta::6adeb55c7a50cb83b9067dd88d36a3220e6ebc3800c8d2eed4027fec148015cd96cc1f0dcc5a0e8009a8c3ae216a1dc9a02cf18d1e73475a238c28b2c746ff8c
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ocean_waves::W2AWavesData Struct Reference
+
+W2AWavesData Struct Reference
+=============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ocean__waves_1_1_w2_a_waves_data.html

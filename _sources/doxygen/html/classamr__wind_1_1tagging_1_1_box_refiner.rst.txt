@@ -1,0 +1,14 @@
+.. meta::469ed038883f944c850a51039358186fd8c3e81d8c7b5e06ff4fa4d386fba7cafb009435da38e32483ac2a1cae7c98c71698163c7dffb51ff25a2edd1b0f6d5e
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::tagging::BoxRefiner Class Reference
+
+BoxRefiner Class Reference
+==========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1tagging_1_1_box_refiner.html

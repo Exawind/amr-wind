@@ -1,0 +1,14 @@
+.. meta::f9ce4f835a044cfdae8be1e74abf62249b7bc35492b7c7d9dfaa3d65e316c03111c99cb06985ac9df6f818cd4ae99022596e36f4fd065304a5e139ae857948df
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/tagging/QCriterionRefinement.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/tagging/QCriterionRefinement.H Source File
+=================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _q_criterion_refinement_8_h_source.html

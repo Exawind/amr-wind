@@ -1,0 +1,14 @@
+.. meta::5cfc44590a0a1512dfa5b15760d10085667720b00e717d59979f8b288d4e3a913f89ef4cfadffa2d47d8db35b5b4676e510ab242f786492b2d662a8c307c39c6
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::WingBaseData Struct Reference
+
+WingBaseData Struct Reference
+=============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1_wing_base_data.html

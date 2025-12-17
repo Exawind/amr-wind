@@ -1,0 +1,14 @@
+.. meta::dcabe7e1e4b518e431e0d49e739a2ad0ccbc2ee9c7af4dd6be8269b3d15f41c285b674e234d8cf5ffa41208af8d4da594c21b64f93095d0664cc635a61f020bd
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::SourceTerm Class Reference
+
+SourceTerm Class Reference
+==========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1pde_1_1_source_term.html

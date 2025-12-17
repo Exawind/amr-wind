@@ -1,0 +1,14 @@
+.. meta::19359adb509c8bdc85e18b53367583151e0b3432f960fe6402bdb582c1e8f470b4eaae39ecd3b057419aa7cc8d197d2fe707484c495154bd9f739c2fd9be8540
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/ABLModulatedPowerLaw.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/wind\_energy/ABLModulatedPowerLaw.H File Reference
+===============================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _a_b_l_modulated_power_law_8_h.html

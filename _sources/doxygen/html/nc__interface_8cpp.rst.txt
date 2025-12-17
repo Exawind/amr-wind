@@ -1,0 +1,14 @@
+.. meta::a867c5aad11444750fae5afcdada9275e5765d65d72b57bfaf831f4f9bc5c9c2339fc162702c9a5fea9693d11bbb27d6fd2bf9c540013de35a53249f9239a78e
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/ncutils/nc_interface.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/ncutils/nc\_interface.cpp File Reference
+===============================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: nc__interface_8cpp.html

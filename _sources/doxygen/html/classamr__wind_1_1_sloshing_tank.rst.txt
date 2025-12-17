@@ -1,0 +1,14 @@
+.. meta::e3a1a7c42c0d62618c45af3515f372b4dfaa50648cfc5361df54baaf4098971523185cdf4d8cfdcf3d4df371e485137e4b48098e5b7eea17e0483f2566cce5e0
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::SloshingTank Class Reference
+
+SloshingTank Class Reference
+============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_sloshing_tank.html

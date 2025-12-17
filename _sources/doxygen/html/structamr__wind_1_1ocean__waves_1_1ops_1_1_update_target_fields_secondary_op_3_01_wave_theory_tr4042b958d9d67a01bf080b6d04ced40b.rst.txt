@@ -1,0 +1,14 @@
+.. meta::35777bee05be6671119ea42ece24c7e408e33bc69054d515e41347b24357527139cd9fe40a6249844a1c588765056a214025a30fd4257e8aebd0d8157f22c74b
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ocean_waves::ops::UpdateTargetFieldsSecondaryOp&lt; WaveTheoryTrait, typename std::enable_if_t&lt; std::is_base_of_v&lt; RelaxZonesType, WaveTheoryTrait &gt; &gt; &gt; Struct Template Reference
+
+is\_base\_of\_v&lt; RelaxZonesType, WaveTheoryTrait &gt; &gt; &gt; Struct Template Reference
+============================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ocean__waves_1_1ops_1_1_update_target_fields_secondary_op_3_01_wave_theory_tr4042b958d9d67a01bf080b6d04ced40b.html

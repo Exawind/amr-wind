@@ -1,0 +1,14 @@
+.. meta::4f78303dfe546b736c2523a1a280655385b28ff5aab9edec425441d6532daeeedfabffb15d66984ba6144e48f18df563ba81c267bb6d1bcb841ee0404b8c345e
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/actuator/turbine/fast/fast_types.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/wind\_energy/actuator/turbine/fast/fast\_types.H File Reference
+============================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: fast__types_8_h.html

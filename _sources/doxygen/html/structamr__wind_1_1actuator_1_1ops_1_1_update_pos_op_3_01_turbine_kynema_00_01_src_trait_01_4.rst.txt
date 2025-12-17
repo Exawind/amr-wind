@@ -1,0 +1,14 @@
+.. meta::bb5ed7ef0f22a9b84768599bd40d71a215910745a97e198ae205f161806012a9f93a092ef0b251caf666fd2a2e8676e555bd4072366cc4bd926527b76f9063fd
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::UpdatePosOp&lt; TurbineKynema, SrcTrait &gt; Struct Template Reference
+
+UpdatePosOp&lt; TurbineKynema, SrcTrait &gt; Struct Template Reference
+======================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1ops_1_1_update_pos_op_3_01_turbine_kynema_00_01_src_trait_01_4.html

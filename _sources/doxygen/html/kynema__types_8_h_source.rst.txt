@@ -1,0 +1,14 @@
+.. meta::35abd4316f16535e0bc642d4b20213816b7dc3a5c58181d5cc7050d2b53add7aa9580afd73c334de53363ce9e1fa4418cc894862f60c31b86350ae2186fb613e
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/actuator/turbine/kynema/kynema_types.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/wind\_energy/actuator/turbine/kynema/kynema\_types.H Source File
+=============================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: kynema__types_8_h_source.html

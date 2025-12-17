@@ -1,0 +1,14 @@
+.. meta::c681f8eb279b017713c2ba158a5e651ebc5f92eabc523e8c0828280c2e64a29c326cb883e0fbb6c764c36cc6cdd245738d7916bebbc7dd6a4ccf57ff328ad6ec
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities -&gt; averaging Relation
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities -&gt; averaging Relation
+===============================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: dir_000051_000005.html
