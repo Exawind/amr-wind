@@ -136,7 +136,7 @@ TEST_F(ABLMeshTest, stats_tke_diffusion)
 
     // Initialize ABL Stats
     amr_wind::ABLWallFunction wall_func(sim());
-    amr_wind::ABLStats stats(sim(), wall_func, 2);
+    amr_wind::ABLStats stats(sim(), wall_func, 2, 0);
 
     // Calculate diffusion term
     stats.calc_tke_diffusion(*diff, buoy, shear, dissip, dt);
@@ -204,7 +204,7 @@ TEST_F(ABLMeshTest, stats_energy_budget)
 
     // Initialize ABL Stats
     amr_wind::ABLWallFunction wall_func(sim());
-    amr_wind::ABLStats stats(sim(), wall_func, 2);
+    amr_wind::ABLStats stats(sim(), wall_func, 2, 0);
 
     // Set initial tke value and advance states
     init_field1(tke);
