@@ -233,6 +233,7 @@ void ABLStats::post_advance_work()
 
 void ABLStats::compute_zi()
 {
+<<<<<<< HEAD
     // This finds the location of the capping inversion (z_i) using the
     // method of Sullivan et al. in "Structure of the entrainment zone
     // capping the convective atmospheric boundary layer," JAS, Vol. 55,
@@ -242,6 +243,9 @@ void ABLStats::compute_zi()
     // the maximum d(\theta)/dz is found.  You then have an x,y array
     // of x,y local z_i.  z_i is then averaged over the x,y array to give
     // <z_i>.
+=======
+    BL_PROFILE("amr-wind::ABLStats::compute_zi");
+>>>>>>> exawind/main
 
     BL_PROFILE("amr-wind::ABLStats::compute_zi");
 
