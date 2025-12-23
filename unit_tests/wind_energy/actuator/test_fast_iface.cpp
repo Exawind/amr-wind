@@ -1,7 +1,8 @@
 #include "aw_test_utils/MeshTest.H"
 #include "aw_test_utils/pp_utils.H"
 
-#include "amr-wind/wind_energy/actuator/turbine/fast/FastIface.H"
+#include "amr-wind/wind_energy/actuator/turbine/external/ExtTurbIface.H"
+#include "amr-wind/wind_energy/actuator/turbine/fast/fast_types.H"
 
 #include <algorithm>
 
@@ -47,7 +48,7 @@ TEST_F(FastIfaceTest, fast_init)
     sim().time().parse_parameters();
 
     const int iproc = amrex::ParallelDescriptor::MyProc();
-    ::exw_fast::FastTurbine fi;
+    ::ext_turb::FastTurbine fi;
     fi.tlabel = "T001";
     fi.tid_local = -1;
     fi.tid_global = iproc;
@@ -61,7 +62,9 @@ TEST_F(FastIfaceTest, fast_init)
     fi.start_time = 0.0;
     fi.stop_time = 0.625;
 
-    ::exw_fast::FastIface fast(sim());
+    ::ext_turb::ExtTurbIface<
+        ::ext_turb::FastTurbine, ::ext_turb::FastSolverData>
+        fast(sim());
     fast.parse_inputs(sim(), "OpenFAST");
     fast.register_turbine(fi);
 
@@ -69,7 +72,7 @@ TEST_F(FastIfaceTest, fast_init)
 
 #if AW_ENABLE_OPENFAST_UTEST
     fast.init_turbine(fi.tid_local);
-    EXPECT_NEAR(fi.dt_fast, 0.00625, 1.0e-12);
+    EXPECT_NEAR(fi.dt_ext, 0.00625, 1.0e-12);
     EXPECT_EQ(fi.num_substeps, 10);
     EXPECT_EQ(fi.num_blades, 3);
     EXPECT_TRUE(fi.is_solution0);
@@ -100,7 +103,7 @@ TEST_F(FastIfaceTest, fast_replay)
     sim().time().parse_parameters();
 
     const int iproc = amrex::ParallelDescriptor::MyProc();
-    ::exw_fast::FastTurbine fi;
+    ::ext_turb::FastTurbine fi;
     fi.tlabel = "T001";
     fi.tid_local = -1;
     fi.tid_global = iproc;
@@ -113,9 +116,11 @@ TEST_F(FastIfaceTest, fast_replay)
     fi.start_time = 0.125;
     fi.stop_time = 0.625;
     fi.dt_cfd = 0.0625;
-    fi.sim_mode = ::exw_fast::SimMode::replay;
+    fi.sim_mode = ::ext_turb::SimMode::replay;
 
-    ::exw_fast::FastIface fast(sim());
+    ::ext_turb::ExtTurbIface<
+        ::ext_turb::FastTurbine, ::ext_turb::FastSolverData>
+        fast(sim());
     fast.parse_inputs(sim(), "OpenFAST");
     fast.register_turbine(fi);
 

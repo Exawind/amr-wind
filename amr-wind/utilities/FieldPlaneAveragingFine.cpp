@@ -1,4 +1,5 @@
 #include "amr-wind/utilities/FieldPlaneAveragingFine.H"
+#include "amr-wind/utilities/constants.H"
 #include "AMReX_iMultiFab.H"
 #include "AMReX_MultiFabUtil.H"
 #include <algorithm>
@@ -7,8 +8,14 @@ namespace amr_wind {
 
 template <typename FType>
 FPlaneAveragingFine<FType>::FPlaneAveragingFine(
-    const FType& field_in, const amr_wind::SimTime& time, int axis_in)
-    : m_field(field_in), m_time(time), m_axis(axis_in)
+    const FType& field_in,
+    const amr_wind::SimTime& time,
+    int axis_in,
+    bool compute_deriv)
+    : m_field(field_in)
+    , m_time(time)
+    , m_axis(axis_in)
+    , m_comp_deriv(compute_deriv)
 {
     AMREX_ALWAYS_ASSERT(m_axis >= 0 && m_axis < AMREX_SPACEDIM);
     auto geom = m_field.repo().mesh().Geom();
@@ -38,6 +45,9 @@ FPlaneAveragingFine<FType>::FPlaneAveragingFine(
     m_ncomp = m_field.num_comp();
 
     m_line_average.resize(static_cast<size_t>(m_ncell_line) * m_ncomp, 0.0);
+    if (m_comp_deriv) {
+        m_line_deriv.resize(static_cast<size_t>(m_ncell_line) * m_ncomp, 0.0);
+    }
     m_line_xcentroid.resize(m_ncell_line);
 
     for (int i = 0; i < m_ncell_line; ++i) {
@@ -182,6 +192,10 @@ void FPlaneAveragingFine<FType>::operator()()
         amrex::Abort("axis must be equal to 0, 1, or 2");
         break;
     }
+
+    if (m_comp_deriv) {
+        compute_line_derivatives();
+    }
 }
 
 template <typename FType>
@@ -205,6 +219,8 @@ void FPlaneAveragingFine<FType>::compute_averages(const IndexSelector& idxOp)
         ((g0.ProbHi(0) - g0.ProbLo(0)) * (g0.ProbHi(1) - g0.ProbLo(1)) *
          (g0.ProbHi(2) - g0.ProbLo(2)));
 
+    const bool periodic_dir = g0.periodicity().isPeriodic(m_axis);
+
     const auto& mesh = m_field.repo().mesh();
     const int finestLevel = mesh.finestLevel();
 
@@ -214,6 +230,11 @@ void FPlaneAveragingFine<FType>::compute_averages(const IndexSelector& idxOp)
         const amrex::Real dx = geom.CellSize()[m_axis];
         const amrex::Real dy = geom.CellSize()[idxOp.odir1];
         const amrex::Real dz = geom.CellSize()[idxOp.odir2];
+
+        const amrex::Real problo_x = geom.ProbLo(m_axis);
+        const amrex::Real probhi_x = geom.ProbHi(m_axis);
+
+        const auto dir = m_axis;
 
         amrex::iMultiFab level_mask;
         if (lev < finestLevel) {
@@ -274,7 +295,10 @@ void FPlaneAveragingFine<FType>::compute_averages(const IndexSelector& idxOp)
                                 const int line_ind_hi = amrex::min(
                                     amrex::max(
                                         static_cast<int>(
-                                            (cell_xhi - xlo) / line_dx),
+                                            (cell_xhi -
+                                             amr_wind::constants::TIGHT_TOL -
+                                             xlo) /
+                                            line_dx),
                                         0),
                                     num_cells - 1);
 
@@ -304,11 +328,47 @@ void FPlaneAveragingFine<FType>::compute_averages(const IndexSelector& idxOp)
                                     deltax = amrex::min(deltax, dx);
                                     const amrex::Real vol = deltax * dy * dz;
 
+                                    // Calculate location of target
+                                    const auto x_targ =
+                                        0.5 * (line_xlo + line_xhi);
+                                    // Calculate location of cell center
+                                    const amrex::IntVect iv{i, j, k};
+                                    const auto idx = iv[dir];
+                                    const auto x_cell =
+                                        problo_x + (idx + 0.5) * dx;
+                                    // Get location of neighboring cell centers
+                                    auto x_up = x_cell + dx;
+                                    auto x_down = x_cell - dx;
+                                    // Bound locations by domain limits
+                                    if (!periodic_dir) {
+                                        x_up = amrex::min(probhi_x, x_up);
+                                        x_down = amrex::max(problo_x, x_down);
+                                    }
+                                    // Pick indices of closest neighbor
+                                    auto iv_nb = iv;
+                                    auto x_nb = x_cell;
+                                    if (std::abs(x_up - x_targ) <
+                                        std::abs(x_down - x_targ)) {
+                                        x_nb = x_up;
+                                        iv_nb[dir] += 1;
+                                    } else {
+                                        x_nb = x_down;
+                                        iv_nb[dir] -= 1;
+                                    }
+                                    // Interpolate to target location using
+                                    // closest neighbor
+                                    // (will do nothing if already at cell
+                                    // center)
                                     for (int n = 0; n < num_comps; ++n) {
+                                        const auto f_interp =
+                                            fab_arr(iv, n) +
+                                            (fab_arr(iv_nb, n) -
+                                             fab_arr(iv, n)) *
+                                                ((x_targ - x_cell) /
+                                                 (x_nb - x_cell));
                                         amrex::Gpu::deviceReduceSum(
                                             &line_avg[num_comps * ind + n],
-                                            mask_arr(i, j, k) *
-                                                fab_arr(i, j, k, n) * vol *
+                                            mask_arr(i, j, k) * f_interp * vol *
                                                 denom,
                                             handler);
                                     }
@@ -323,6 +383,64 @@ void FPlaneAveragingFine<FType>::compute_averages(const IndexSelector& idxOp)
     lavg.copyToHost(m_line_average.data(), m_line_average.size());
     amrex::ParallelDescriptor::ReduceRealSum(
         m_line_average.data(), m_line_average.size());
+}
+
+template <typename FType>
+void FPlaneAveragingFine<FType>::compute_line_derivatives()
+{
+    BL_PROFILE("amr-wind::FPlaneAveragingFine::compute_line_derivatives");
+    for (int i = 0; i < m_ncell_line; ++i) {
+        for (int n = 0; n < m_ncomp; ++n) {
+            m_line_deriv[m_ncomp * i + n] =
+                line_derivative_of_average_cell(i, n);
+        }
+    }
+}
+
+template <typename FType>
+amrex::Real FPlaneAveragingFine<FType>::line_derivative_of_average_cell(
+    int ind, int comp) const
+{
+    BL_PROFILE(
+        "amr-wind::FPlaneAveragingFine::line_derivative_of_average_cell");
+
+    AMREX_ALWAYS_ASSERT(comp >= 0 && comp < m_ncomp);
+    AMREX_ALWAYS_ASSERT(ind >= 0 && ind < m_ncell_line);
+
+    amrex::Real dudx;
+
+    if (ind == 0) {
+        dudx = (m_line_average[m_ncomp * (ind + 1) + comp] -
+                m_line_average[m_ncomp * ind + comp]) /
+               m_dx;
+    } else if (ind == m_ncell_line - 1) {
+        dudx = (m_line_average[m_ncomp * (ind) + comp] -
+                m_line_average[m_ncomp * (ind - 1) + comp]) /
+               m_dx;
+    } else {
+        dudx = 0.5 *
+               (m_line_average[m_ncomp * (ind + 1) + comp] -
+                m_line_average[m_ncomp * (ind - 1) + comp]) /
+               m_dx;
+    }
+
+    return dudx;
+}
+
+template <typename FType>
+amrex::Real FPlaneAveragingFine<FType>::line_derivative_interpolated(
+    amrex::Real x, int comp) const
+{
+    BL_PROFILE("amr-wind::FPlaneAveragingFine::line_derivative_interpolated");
+
+    AMREX_ALWAYS_ASSERT(comp >= 0 && comp < m_ncomp);
+
+    int ind;
+    amrex::Real c;
+    convert_x_to_ind(x, ind, c);
+
+    return m_line_deriv[m_ncomp * ind + comp] * (1.0 - c) +
+           m_line_deriv[m_ncomp * (ind + 1) + comp] * c;
 }
 
 template class FPlaneAveragingFine<Field>;

@@ -47,7 +47,7 @@ Kosovic.writeTerms                          = false
 Kosovic.switchLoc                           = 48
 # Reference Monin-Obukhov length for the RANS length scale at surface. 
 # Can be replaced with the computed length scale in the code. However, adds code complications. 
-Kosovic.refMOL                              = -1e30
+Kosovic.monin_obukhov_length                = -1e30
 # Experimental feature to turn off the LES model and use the numerical dissipation as a sub-grid scale model 
 # Initial results showed a value of 100 m improved the results by 3-5% for neutral stratification when dx<16 m 
 Kosovic.LESOff                              = 100

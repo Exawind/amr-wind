@@ -199,6 +199,9 @@ private:
     //! Max time for simulation
     amrex::Real m_stop_time{-1.0};
 
+    //! Delayed adaptive stepping
+    amrex::Real m_delay_time{-1.0};
+
     //! Maximum CFL constraint
     amrex::Real m_max_cfl{1.0};
 
@@ -257,6 +260,12 @@ private:
 
     //! Smallest absolute tolerance for enforcing dt, considering all
     amrex::Real m_force_dt_abs_tol{1e8};
+
+    //! Initial starting time for generating checkpoint files (time-based)
+    amrex::Real m_chkpt_start_time{0.};
+
+    //! Initial starting time for generating output files (time-based)
+    amrex::Real m_plt_start_time{0.};
 
     //! Counter for the number of timesteps since start of simulation
     int m_time_index{0};

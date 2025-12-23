@@ -129,6 +129,24 @@ void incflo::InitialIterations()
         }
     }
 
+    // Subtract initial pressure if initialized
+    // (primarily intended for two-phase overset)
+    if (m_reconstruct_true_pressure) {
+        auto& press = m_repo.get_field("p");
+        amrex::Real global_max_p =
+            amr_wind::field_ops::global_max_magnitude(press);
+        // If max pressure is different from 0, then infer that pressure has
+        // been initialized
+        bool init_p = std::abs(global_max_p) > amr_wind::constants::LOOSE_TOL;
+        if (init_p) {
+            const auto& p0 = m_repo.get_field("reference_pressure");
+            for (int lev = 0; lev <= finest_level; lev++) {
+                amrex::MultiFab::Subtract(
+                    press(lev), p0(lev), 0, 0, 1, p0.num_grow()[0]);
+            }
+        }
+    }
+
     for (int iter = 0; iter < m_initial_iterations; ++iter) {
         if (m_verbose != 0) {
             amrex::Print() << "In initial_iterations: iter = " << iter << "\n";

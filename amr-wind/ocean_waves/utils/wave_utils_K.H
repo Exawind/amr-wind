@@ -3,6 +3,7 @@
 
 #include <AMReX_FArrayBox.H>
 #include <cmath>
+#include "amr-wind/utilities/constants.H"
 
 namespace amr_wind::ocean_waves::utils {
 
@@ -86,7 +87,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE WaveVec harmonize_profiles_1d(
         gamma_generate(x - (left_bdy + left_length), 0.5 * left_length);
     const amrex::Real Gamma_right = gamma_absorb(
         x - (right_bdy - 1.5 * right_length), 0.5 * right_length, 1.0);
-    const bool right_inactive = Gamma_right > 1.0 - 1e-12;
+    const bool right_inactive = Gamma_right > 1.0 - constants::TIGHT_TOL;
     WaveVec combo;
     for (int n = 0; n < 4; ++n) {
         combo[n] = right_inactive
@@ -94,6 +95,38 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE WaveVec harmonize_profiles_1d(
                        : combine_linear(Gamma_right, right[n], bulk[n]);
     }
     return combo;
+}
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE WaveVec harmonize_profiles_2d(
+    const amrex::Real x,
+    const amrex::Real y,
+    const amrex::Real left_bdy,
+    const amrex::Real left_length,
+    const amrex::Real right_bdy,
+    const amrex::Real right_length,
+    const amrex::Real lo_y_bdy,
+    const amrex::Real hi_y_bdy,
+    const amrex::Real y_length,
+    const WaveVec left,
+    const WaveVec bulk,
+    const WaveVec right)
+{
+    // First get forcing profile, applies in x and y zones
+    auto profile_forcing = harmonize_profiles_1d(
+        x, left_bdy, left_length, right_bdy, right_length, left, left, right);
+
+    // Also get initial profile according to x direction
+    auto profile_init = harmonize_profiles_1d(
+        x, left_bdy, left_length, right_bdy, right_length, left, bulk, right);
+
+    // Then harmonize in y direction if applicable
+    if (y_length >= constants::EPS) {
+        profile_init = harmonize_profiles_1d(
+            y, lo_y_bdy, y_length, hi_y_bdy, y_length, profile_forcing,
+            profile_init, profile_forcing);
+    }
+
+    return profile_init;
 }
 
 } // namespace amr_wind::ocean_waves::utils

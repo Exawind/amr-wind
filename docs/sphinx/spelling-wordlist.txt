@@ -12,6 +12,7 @@ Fortran
 Joukowsky
 Jupyter
 Karman
+Kynema
 Liungman
 MPI
 Menter 
@@ -97,6 +98,7 @@ namespace
 namespaces
 netcdf
 normals
+numpy
 ok
 openfast
 overset

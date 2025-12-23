@@ -21,8 +21,6 @@ MultiPhase::MultiPhase(CFDSim& sim)
     pp_multiphase.query("density_fluid1", m_rho1);
     pp_multiphase.query("density_fluid2", m_rho2);
     pp_multiphase.query("verbose", m_verbose);
-    pp_multiphase.query("interface_smoothing", m_interface_smoothing);
-    pp_multiphase.query("interface_smoothing_frequency", m_smooth_freq);
 
     // Register either the VOF or levelset equation
     if (amrex::toLower(m_interface_model) == "vof") {
@@ -169,21 +167,7 @@ void MultiPhase::post_regrid_actions()
     }
 }
 
-void MultiPhase::pre_advance_work()
-{
-    switch (m_interface_capturing_method) {
-    case InterfaceCapturingMethod::VOF:
-        if (m_interface_smoothing &&
-            m_sim.time().time_index() % m_smooth_freq == 0) {
-            amrex::Print() << "Smoothing the air-sea interface : "
-                           << m_sim.time().current_time() << std::endl;
-            favre_filtering();
-        }
-        break;
-    case InterfaceCapturingMethod::LS:
-        break;
-    };
-}
+void MultiPhase::pre_advance_work() {}
 
 void MultiPhase::post_advance_work()
 {
@@ -429,60 +413,6 @@ void MultiPhase::calculate_advected_facedensity()
                 });
         }
     }
-}
-
-void MultiPhase::favre_filtering()
-{
-    const int nlevels = m_sim.repo().num_active_levels();
-
-    // create scratch fields
-    auto density_filter =
-        m_sim.repo().create_scratch_field(1, 1, FieldLoc::CELL);
-    auto momentum =
-        m_sim.repo().create_scratch_field(AMREX_SPACEDIM, 1, FieldLoc::CELL);
-    auto momentum_filter =
-        m_sim.repo().create_scratch_field(AMREX_SPACEDIM, 1, FieldLoc::CELL);
-
-    for (int lev = 0; lev < nlevels; ++lev) {
-        auto& mom = (*momentum)(lev);
-        auto& velocity = m_velocity(lev);
-        auto& density = m_density(lev);
-        const auto& vel_arrs = velocity.const_arrays();
-        const auto& rho_arrs = density.const_arrays();
-        const auto& rhou_arrs = mom.arrays();
-        amrex::ParallelFor(
-            velocity, amrex::IntVect(1), AMREX_SPACEDIM,
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
-                rhou_arrs[nbx](i, j, k, n) =
-                    vel_arrs[nbx](i, j, k, n) * rho_arrs[nbx](i, j, k);
-            });
-    }
-    amrex::Gpu::streamSynchronize();
-
-    // Do the filtering
-    fvm::filter((*density_filter), m_density);
-    fvm::filter((*momentum_filter), (*momentum));
-
-    for (int lev = 0; lev < nlevels; ++lev) {
-        auto& velocity = m_velocity(lev);
-        auto& vof = (*m_vof)(lev);
-        auto& mom_fil = (*momentum_filter)(lev);
-        auto& rho_fil = (*density_filter)(lev);
-        const auto& vel_arrs = velocity.arrays();
-        const auto& volfrac_arrs = vof.const_arrays();
-        const auto& rho_u_f_arrs = mom_fil.const_arrays();
-        const auto& rho_f_arrs = rho_fil.const_arrays();
-        amrex::ParallelFor(
-            velocity, amrex::IntVect(0), AMREX_SPACEDIM,
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
-                if (volfrac_arrs[nbx](i, j, k) <= 0.5) {
-                    vel_arrs[nbx](i, j, k, n) = rho_u_f_arrs[nbx](i, j, k, n) /
-                                                rho_f_arrs[nbx](i, j, k);
-                }
-            });
-    }
-    amrex::Gpu::streamSynchronize();
-    m_velocity.fillpatch(m_sim.time().current_time());
 }
 
 // Reconstructing the volume fraction from a levelset function

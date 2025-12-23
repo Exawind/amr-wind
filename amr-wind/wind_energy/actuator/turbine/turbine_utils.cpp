@@ -27,8 +27,10 @@ void read_inputs(
     pp.query_either("epsilon_tower", tdata.eps_tower);
 
     pp.get("base_position", tinfo.base_pos);
-    pp.get("rotor_diameter", tinfo.rotor_diameter);
-    pp.get("hub_height", tinfo.hub_height);
+    if (tdata.solver_name != "Kynema") {
+        pp.get("rotor_diameter", tinfo.rotor_diameter);
+        pp.get("hub_height", tinfo.hub_height);
+    }
     bool use_fllc = false;
     pp.query("fllc", use_fllc);
     if (use_fllc) {

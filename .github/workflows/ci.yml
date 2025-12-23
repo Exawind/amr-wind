@@ -34,13 +34,13 @@ jobs:
         openmp_flag: [OpenMP, NoOpenMP]
         include:
           - os: macos-latest
-            install_deps: brew install open-mpi ccache
+            install_deps: brew install open-mpi ccache fftw
             comp: llvm
             procs: $(sysctl -n hw.ncpu)
             ccache_cache: /Users/runner/Library/Caches/ccache
           - os: ubuntu-24.04
             #Note mpich on ubuntu-24.04 does not run mpiexec correctly so we are using openmpi
-            install_deps: sudo apt-get install -y libopenmpi-dev openmpi-bin
+            install_deps: sudo apt-get install -y libopenmpi-dev openmpi-bin libfftw3-dev
             comp: gnu
             procs: $(nproc)
             ccache_cache: ~/.cache/ccache
@@ -99,6 +99,7 @@ jobs:
           -DAMR_WIND_TEST_WITH_FCOMPARE:BOOL=OFF \
           -DAMR_WIND_SAVE_GOLDS:BOOL=ON \
           -DAMR_WIND_SAVED_GOLDS_DIRECTORY:PATH=${{runner.workspace}}/golds-${{matrix.build_type}}-${{matrix.openmp_flag}} \
+          -DAMR_WIND_ENABLE_W2A:BOOL=ON \
           -DCMAKE_CXX_COMPILER_LAUNCHER:STRING=ccache \
           ${{github.workspace}}
     - name: Build

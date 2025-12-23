@@ -11,7 +11,7 @@ namespace {
 inline vs::Vector parse_vector(amrex::ParmParse& pp, const std::string& key)
 {
     amrex::Vector<amrex::Real> tmp;
-    pp.getarr(key.data(), tmp);
+    pp.getarr(key, tmp);
     AMREX_ALWAYS_ASSERT(tmp.size() == 3U);
 
     return vs::Vector{tmp[0], tmp[1], tmp[2]};
