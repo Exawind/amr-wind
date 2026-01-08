@@ -428,7 +428,7 @@ void Sampling::write_info_file(const std::string& fname)
     }
 
     // YAML formatting
-    fh << "time: " << std::setprecision(6) << m_sim.time().new_time() 
+    fh << "time: " << std::setprecision(6) << m_sim.time().new_time()
        << std::endl;
     fh << "samplers:" << std::endl;
     for (int i = 0; i < m_samplers.size(); ++i) {
