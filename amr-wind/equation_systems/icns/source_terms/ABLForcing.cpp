@@ -82,6 +82,7 @@ ABLForcing::ABLForcing(const CFDSim& sim)
         amrex::Real sinphi = std::sin(latitude);
 
         m_coriolis_factor = 2.0 * omega * sinphi;
+        amrex::Print() << "m_coriolis_factor = " << m_coriolis_factor << " " << omega << " " << sinphi << std::endl;
     }
 
     for (int i = 0; i < AMREX_SPACEDIM; ++i) {
