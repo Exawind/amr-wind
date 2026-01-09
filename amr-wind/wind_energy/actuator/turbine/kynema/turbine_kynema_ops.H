@@ -81,12 +81,22 @@ struct ReadInputsOp<TurbineKynema, SrcTrait>
             pp.query("rot_speed_rpm", tf.rotational_speed);
             tf.rotational_speed *= 2.0 * M_PI / 60.;
         }
+        // Initial generator speed
+        pp.query("generator_power_init", tf.generator_power);
+        // Initial wind speed
+        amrex::Vector<amrex::Real> vel_vec{tf.wind_speed, 0., 0.};
+        pp.queryarr("hub_wind_vector_init", vel_vec);
+        tf.wind_speed = std::sqrt(
+            vel_vec[0] * vel_vec[0] + vel_vec[1] * vel_vec[1] +
+            vel_vec[2] * vel_vec[2]);
         // Initial or constant nacelle yaw
         pp.query("yaw_rad", tf.yaw);
         if (!pp.contains("yaw_rad")) {
             pp.query("yaw_deg", tf.yaw);
             tf.yaw *= M_PI / 180.;
         }
+        // Generator efficiency
+        pp.query("generator_efficiency", tf.generator_efficiency);
     }
 };
 

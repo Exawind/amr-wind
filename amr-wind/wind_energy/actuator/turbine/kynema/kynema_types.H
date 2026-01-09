@@ -243,7 +243,10 @@ struct KynemaTurbine : public ext_turb::ExternalTurbine
 
     double fluid_density{1.};
     double rotational_speed{0.};
+    double generator_power{0.};
+    double wind_speed{0.};
     double yaw{0.};
+    double generator_efficiency{1.};
     int substep_counter{0};
 
     std::string controller_shared_lib_path{""};
@@ -271,8 +274,8 @@ struct KynemaSolverData
 
     double damping_factor{0.};
     int nl_iter_max{12};
-    double abs_err_tol{1e-7};
-    double rel_err_tol{1e-6};
+    double abs_err_tol{1e-5};
+    double rel_err_tol{1e-4};
     amrex::Vector<amrex::Real> gravity{0.0, 0.0, -9.81};
 };
 
