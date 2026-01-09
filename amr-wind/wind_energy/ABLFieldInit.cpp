@@ -76,6 +76,7 @@ void ABLFieldInit::initialize_from_inputfile()
 
     pp_abl.query("perturb_velocity", m_perturb_vel);
     pp_abl.query("perturb_ref_height", m_ref_height);
+    pp_abl.query("perturb_base_height", m_base_height);
     pp_abl.query("Uperiods", m_Uperiods);
     pp_abl.query("Vperiods", m_Vperiods);
     pp_abl.query("deltaU", m_deltaU);
@@ -349,6 +350,7 @@ void ABLFieldInit::operator()(
         const amrex::Real ufac = m_deltaU * std::exp(0.5) / m_ref_height;
         const amrex::Real vfac = m_deltaV * std::exp(0.5) / m_ref_height;
         const amrex::Real ref_height = m_ref_height;
+        const amrex::Real base_height = m_base_height;
 
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -357,8 +359,8 @@ void ABLFieldInit::operator()(
                 const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
                 const amrex::Real xl = x - problo[0];
                 const amrex::Real yl = y - problo[1];
-                const amrex::Real zl = z / ref_height;
-                const amrex::Real damp = std::exp(-0.5 * zl * zl);
+                const amrex::Real zl = (z - base_height) / ref_height;
+                const amrex::Real damp = (zl >= 0.0) ? std::exp(-0.5 * zl * zl) : 0.0;
 
                 velocity(i, j, k, 0) += ufac * damp * z * std::cos(aval * yl);
                 velocity(i, j, k, 1) += vfac * damp * z * std::cos(bval * xl);

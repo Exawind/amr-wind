@@ -233,14 +233,31 @@ void ABLStats::post_advance_work()
 
 void ABLStats::compute_zi()
 {
+    // This finds the location of the capping inversion (z_i) using the
+    // method of Sullivan et al. in "Structure of the entrainment zone
+    // capping the convective atmospheric boundary layer," JAS, Vol. 55,
+    // 1998.
+    //
+    // In this method, for every x,y location in the computational domain,
+    // the maximum d(\theta)/dz is found.  You then have an x,y array
+    // of x,y local z_i.  z_i is then averaged over the x,y array to give
+    // <z_i>.
+
     BL_PROFILE("amr-wind::ABLStats::compute_zi");
 
+    // Compute the potential temperature gradient.
     auto gradT = (this->m_sim.repo())
                      .create_scratch_field(3, m_temperature.num_grow()[0]);
     fvm::gradient(*gradT, m_temperature);
 
     // Only compute zi using coarsest level
     const int lev = 0;
+
+    // Using the AMReX ReduceToPlane function, find the maximum
+    // d(\theta)/dz over the mesh along lines in the normal direction,
+    // which typically would be z (if z is up).  We end up with this
+    // 2D "planar" array of max d(\theta)/dz over the horizontal
+    // extent of the domain.
     const int dir = m_normal_dir;
     const auto& geom = (this->m_sim.repo()).mesh().Geom(lev);
     auto const& domain_box = geom.Domain();
@@ -318,6 +335,10 @@ void ABLStats::compute_zi()
                 }
             });
 
+        // To get the planar average over the non-normal directions (typically
+        // x and y), we sum up all the max temperature gradient values.  Again,
+        // this only happens on the IO processor.  Once we have the sum, divide
+        // by the number of coarse grid points in x and y.
         const auto dnval = m_dn;
         zi_sum = amrex::Reduce::Sum<amrex::Real>(
             nblocks, [=] AMREX_GPU_DEVICE(int iblock) {
@@ -357,6 +378,11 @@ void ABLStats::compute_zi()
         }
     }
     m_zi = zi_sum / static_cast<amrex::Real>(npts);
+
+    // It is necessary for other processors to know <z_i>, so broadcast
+    // it back out to all processors.
+    amrex::ParallelDescriptor::Bcast(
+        &m_zi, 1, amrex::ParallelDescriptor::IOProcessorNumber());
 }
 
 void ABLStats::process_output()
