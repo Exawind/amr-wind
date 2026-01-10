@@ -13,7 +13,7 @@
 namespace amr_wind {
 
 WallFunction::WallFunction(CFDSim& sim)
-    : m_sim(sim), m_mesh(m_sim.mesh()), m_pa_vel(sim, m_direction)
+    : m_sim(sim), m_mesh(m_sim.mesh()), m_pa_vel(sim, m_direction, -1)
 {
     amrex::Real mu;
     amrex::Real rho{1.0};
