@@ -9,7 +9,10 @@
 int main(int argc, char* argv[])
 {
 #if defined(_OPENMP) && !defined(AMREX_USE_OMP)
-    static_assert(false, "Error: OpenMP is enabled in the compiler but not through the build system");
+    static_assert(
+        false,
+        "Error: OpenMP is enabled in the compiler but not through the build "
+        "system");
 #endif
 
 #ifdef AMREX_USE_MPI
