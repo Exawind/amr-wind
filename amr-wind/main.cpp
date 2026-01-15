@@ -23,13 +23,13 @@ int main(int argc, char* argv[])
     Kokkos::initialize(argc, argv);
 #endif
 
+    using namespace amrex::mpidatatypes;
+
     if (argc < 2) {
         // Print usage and exit with error code if no input file was provided.
-        amr_wind::io::print_usage(
-            amrex::mpidatatypes::MPI_COMM_WORLD, std::cout);
+        amr_wind::io::print_usage(MPI_COMM_WORLD, std::cout);
         amr_wind::io::print_error(
-            amrex::mpidatatypes::MPI_COMM_WORLD,
-            "No input file provided. Exiting!!");
+            MPI_COMM_WORLD, "No input file provided. Exiting!!");
         return 1;
     }
 
@@ -37,40 +37,34 @@ int main(int argc, char* argv[])
     for (auto i = 1; i < argc; i++) {
         const std::string param(argv[i]);
         if ((param == "--help") || (param == "-h")) {
-            amr_wind::io::print_banner(
-                amrex::mpidatatypes::MPI_COMM_WORLD, std::cout);
-            amr_wind::io::print_usage(
-                amrex::mpidatatypes::MPI_COMM_WORLD, std::cout);
+            amr_wind::io::print_banner(MPI_COMM_WORLD, std::cout);
+            amr_wind::io::print_usage(MPI_COMM_WORLD, std::cout);
             return 0;
         }
     }
 
     if (!amrex::FileSystem::Exists(std::string(argv[1]))) {
         // Print usage and exit with error code if we cannot find the input file
-        amr_wind::io::print_usage(
-            amrex::mpidatatypes::MPI_COMM_WORLD, std::cout);
+        amr_wind::io::print_usage(MPI_COMM_WORLD, std::cout);
         amr_wind::io::print_error(
-            amrex::mpidatatypes::MPI_COMM_WORLD,
-            "Input file does not exist = " + std::string(argv[1]) +
-                ". Exiting!!");
+            MPI_COMM_WORLD, "Input file does not exist = " +
+                                std::string(argv[1]) + ". Exiting!!");
         return 1;
     }
 
-    amr_wind::io::print_banner(amrex::mpidatatypes::MPI_COMM_WORLD, std::cout);
-    amrex::Initialize(
-        argc, argv, true, amrex::mpidatatypes::MPI_COMM_WORLD, []() {
-            amrex::ParmParse pp("amrex");
-            // Set the defaults so that we throw an exception instead of
-            // attempting to generate backtrace files. However, if the user has
-            // explicitly set these options in their input files respect those
-            // settings.
-            if (!pp.contains("throw_exception")) {
-                pp.add("throw_exception", 1);
-            }
-            if (!pp.contains("signal_handling")) {
-                pp.add("signal_handling", 0);
-            }
-        });
+    amr_wind::io::print_banner(MPI_COMM_WORLD, std::cout);
+    amrex::Initialize(argc, argv, true, MPI_COMM_WORLD, []() {
+        amrex::ParmParse pp("amrex");
+        // Set the defaults so that we throw an exception instead of attempting
+        // to generate backtrace files. However, if the user has explicitly set
+        // these options in their input files respect those settings.
+        if (!pp.contains("throw_exception")) {
+            pp.add("throw_exception", 1);
+        }
+        if (!pp.contains("signal_handling")) {
+            pp.add("signal_handling", 0);
+        }
+    });
 
     { /* These braces are necessary to ensure amrex::Finalize() can be called
         without explicitly deleting all the incflo member MultiFabs */

@@ -28,17 +28,17 @@ public:
 
     void SetUp() override
     {
-        amrex::Initialize(
-            m_argc, m_argv, true, amrex::mpidatatypes::MPI_COMM_WORLD, []() {
-                amrex::ParmParse pp("amrex");
-                if (!(pp.contains("v") || pp.contains("verbose"))) {
-                    pp.add("verbose", -1);
-                    pp.add("v", -1);
-                }
+        using namespace amrex::mpidatatypes;
+        amrex::Initialize(m_argc, m_argv, true, MPI_COMM_WORLD, []() {
+            amrex::ParmParse pp("amrex");
+            if (!(pp.contains("v") || pp.contains("verbose"))) {
+                pp.add("verbose", -1);
+                pp.add("v", -1);
+            }
 
-                pp.add("throw_exception", 1);
-                pp.add("signal_handling", 0);
-            });
+            pp.add("throw_exception", 1);
+            pp.add("signal_handling", 0);
+        });
 
         // Save managed memory flag for future use
         {
