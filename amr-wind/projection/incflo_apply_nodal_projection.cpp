@@ -7,14 +7,12 @@
 #include "amr-wind/projection/nodal_projection_ops.H"
 #include "hydro_utils.H"
 
-using namespace amrex;
-
 void amr_wind::nodal_projection::set_inflow_velocity(
     amr_wind::PhysicsMgr& phy_mgr,
     amr_wind::Field& vel_fld,
     int lev,
     amrex::Real time,
-    MultiFab& vel_mfab,
+    amrex::MultiFab& vel_mfab,
     int nghost)
 {
     vel_fld.set_inflow(lev, time, vel_mfab, nghost);
@@ -32,32 +30,32 @@ void amr_wind::nodal_projection::set_inflow_velocity(
     }
 }
 
-Array<amrex::LinOpBCType, AMREX_SPACEDIM>
+amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM>
 amr_wind::nodal_projection::get_projection_bc(
-    Orientation::Side side,
+    amrex::Orientation::Side side,
     amr_wind::Field& pressure,
-    const Array<int, AMREX_SPACEDIM>& is_periodic)
+    const amrex::Array<int, AMREX_SPACEDIM>& is_periodic)
 {
     const auto& bctype = pressure.bc_type();
-    Array<LinOpBCType, AMREX_SPACEDIM> r;
+    amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM> r;
     for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
         if (is_periodic[dir] == 1) {
-            r[dir] = LinOpBCType::Periodic;
+            r[dir] = amrex::LinOpBCType::Periodic;
         } else {
-            auto bc = bctype[Orientation(dir, side)];
+            auto bc = bctype[amrex::Orientation(dir, side)];
             switch (bc) {
             case BC::pressure_outflow: {
-                r[dir] = LinOpBCType::Dirichlet;
+                r[dir] = amrex::LinOpBCType::Dirichlet;
                 break;
             }
             case BC::mass_inflow_outflow:
             case BC::mass_inflow:
             case BC::wave_generation: {
-                r[dir] = LinOpBCType::inflow;
+                r[dir] = amrex::LinOpBCType::inflow;
                 break;
             }
             default:
-                r[dir] = LinOpBCType::Neumann;
+                r[dir] = amrex::LinOpBCType::Neumann;
                 break;
             };
         }
@@ -84,16 +82,20 @@ void amr_wind::nodal_projection::apply_dirichlet_vel(
 
 void amr_wind::nodal_projection::enforce_inout_solvability(
     amr_wind::Field& velocity,
-    const Vector<Geometry>& geom,
+    const amrex::Vector<amrex::Geometry>& geom,
     const int num_levels)
 {
-    BCRec const* bc_type = velocity.bcrec().data();
-    Vector<Array<MultiFab*, AMREX_SPACEDIM>> vel_vec(num_levels);
+    amrex::BCRec const* bc_type = velocity.bcrec().data();
+    amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>> vel_vec(
+        num_levels);
 
     for (int lev = 0; lev < num_levels; ++lev) {
-        vel_vec[lev][0] = new MultiFab(velocity(lev), amrex::make_alias, 0, 1);
-        vel_vec[lev][1] = new MultiFab(velocity(lev), amrex::make_alias, 1, 1);
-        vel_vec[lev][2] = new MultiFab(velocity(lev), amrex::make_alias, 2, 1);
+        vel_vec[lev][0] =
+            new amrex::MultiFab(velocity(lev), amrex::make_alias, 0, 1);
+        vel_vec[lev][1] =
+            new amrex::MultiFab(velocity(lev), amrex::make_alias, 1, 1);
+        vel_vec[lev][2] =
+            new amrex::MultiFab(velocity(lev), amrex::make_alias, 2, 1);
     }
 
     HydroUtils::enforceInOutSolvability(vel_vec, bc_type, geom, true);
@@ -150,9 +152,9 @@ void amr_wind::nodal_projection::enforce_inout_solvability(
  *
  */
 void incflo::ApplyProjection(
-    Vector<MultiFab const*> density,
-    Real time,
-    Real scaling_factor,
+    amrex::Vector<amrex::MultiFab const*> density,
+    amrex::Real time,
+    amrex::Real scaling_factor,
     bool incremental)
 {
     BL_PROFILE("amr-wind::incflo::ApplyProjection");
@@ -248,7 +250,7 @@ void incflo::ApplyProjection(
     // Define "vel" to be U^* - U^n rather than U^*
     if (proj_for_small_dt || incremental) {
         for (int lev = 0; lev <= finest_level; ++lev) {
-            MultiFab::Subtract(
+            amrex::MultiFab::Subtract(
                 velocity(lev), velocity_old(lev), 0, 0, AMREX_SPACEDIM, 0);
         }
     }
@@ -260,12 +262,12 @@ void incflo::ApplyProjection(
 
     // Create sigma while accounting for mesh mapping
     // sigma = 1/(fac^2)*J * dt/rho
-    Vector<amrex::MultiFab> sigma(finest_level + 1);
+    amrex::Vector<amrex::MultiFab> sigma(finest_level + 1);
     if (variable_density || mesh_mapping) {
         int ncomp = mesh_mapping ? AMREX_SPACEDIM : 1;
         for (int lev = 0; lev <= finest_level; ++lev) {
             sigma[lev].define(
-                grids[lev], dmap[lev], ncomp, 0, MFInfo(), Factory(lev));
+                grids[lev], dmap[lev], ncomp, 0, amrex::MFInfo(), Factory(lev));
             const auto& sig_arrs = sigma[lev].arrays();
             const auto& rho_arrs = density[lev]->const_arrays();
             const auto& fac_arrs =
@@ -301,11 +303,12 @@ void incflo::ApplyProjection(
     std::unique_ptr<Hydro::NodalProjector> nodal_projector;
 
     auto bclo = amr_wind::nodal_projection::get_projection_bc(
-        Orientation::low, pressure, m_sim.mesh().Geom()[0].isPeriodic());
+        amrex::Orientation::low, pressure, m_sim.mesh().Geom()[0].isPeriodic());
     auto bchi = amr_wind::nodal_projection::get_projection_bc(
-        Orientation::high, pressure, m_sim.mesh().Geom()[0].isPeriodic());
+        amrex::Orientation::high, pressure,
+        m_sim.mesh().Geom()[0].isPeriodic());
 
-    Vector<MultiFab*> vel;
+    amrex::Vector<amrex::MultiFab*> vel;
     for (int lev = 0; lev <= finest_level; ++lev) {
         vel.push_back(&(velocity(lev)));
         vel[lev]->setBndry(0.0);
@@ -420,7 +423,7 @@ void incflo::ApplyProjection(
     // Define "vel" to be U^{n+1} rather than (U^{n+1}-U^n)
     if (proj_for_small_dt || incremental) {
         for (int lev = 0; lev <= finest_level; ++lev) {
-            MultiFab::Add(
+            amrex::MultiFab::Add(
                 velocity(lev), velocity_old(lev), 0, 0, AMREX_SPACEDIM, 0);
         }
     }
@@ -434,13 +437,16 @@ void incflo::ApplyProjection(
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
-        for (MFIter mfi(grad_p(lev), TilingIfNotGPU()); mfi.isValid(); ++mfi) {
-            Box const& tbx = mfi.tilebox();
-            Box const& nbx = mfi.nodaltilebox();
-            Array4<Real> const& gp_lev = grad_p(lev).array(mfi);
-            Array4<Real> const& p_lev = pressure(lev).array(mfi);
-            Array4<Real const> const& gp_proj = gradphi[lev]->const_array(mfi);
-            Array4<Real const> const& p_proj = phi[lev]->const_array(mfi);
+        for (amrex::MFIter mfi(grad_p(lev), amrex::TilingIfNotGPU());
+             mfi.isValid(); ++mfi) {
+            amrex::Box const& tbx = mfi.tilebox();
+            amrex::Box const& nbx = mfi.nodaltilebox();
+            amrex::Array4<amrex::Real> const& gp_lev = grad_p(lev).array(mfi);
+            amrex::Array4<amrex::Real> const& p_lev = pressure(lev).array(mfi);
+            amrex::Array4<amrex::Real const> const& gp_proj =
+                gradphi[lev]->const_array(mfi);
+            amrex::Array4<amrex::Real const> const& p_proj =
+                phi[lev]->const_array(mfi);
             if (incremental) {
                 amrex::ParallelFor(
                     tbx, AMREX_SPACEDIM,
