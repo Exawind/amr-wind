@@ -38,7 +38,7 @@ const std::string dbl_line = std::string(78, '=') + "\n";
 const std::string dash_line = "\n" + std::string(78, '-') + "\n";
 } // namespace
 
-void print_usage(MPI_Comm comm, std::ostream& out)
+void print_usage(amrex::mpidatatypes::MPI_Comm comm, std::ostream& out)
 {
 #ifdef AMREX_USE_MPI
     int irank = 0;
@@ -65,7 +65,7 @@ Optional:
 )doc" << std::endl;
 }
 
-void print_error(MPI_Comm comm, const std::string& msg)
+void print_error(amrex::mpidatatypes::MPI_Comm comm, const std::string& msg)
 {
 #ifdef AMREX_USE_MPI
     int irank = 0;
@@ -84,7 +84,7 @@ void print_error(MPI_Comm comm, const std::string& msg)
     std::cout << "ERROR: " << msg << std::endl;
 }
 
-void print_banner(MPI_Comm comm, std::ostream& out)
+void print_banner(amrex::mpidatatypes::MPI_Comm comm, std::ostream& out)
 {
 #ifdef AMREX_USE_MPI
     int irank = 0;

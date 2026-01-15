@@ -2,8 +2,6 @@
 #include "diagnostics.H"
 #include "constants.H"
 
-using namespace amrex;
-
 void amr_wind::diagnostics::make_mask_addend(
     amrex::MultiFab& mfab,
     const amrex::MultiFab& mfab_mask,

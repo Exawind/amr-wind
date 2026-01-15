@@ -127,8 +127,6 @@ ConvectingTaylorVortex::ConvectingTaylorVortex(const CFDSim& sim)
 void ConvectingTaylorVortex::initialize_fields(
     int level, const amrex::Geometry& geom)
 {
-    using namespace utils;
-
     const auto& dx = geom.CellSizeArray();
     const auto& prob_lo = geom.ProbLoArray();
 

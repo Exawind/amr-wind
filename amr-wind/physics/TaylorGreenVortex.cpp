@@ -19,8 +19,6 @@ TaylorGreenVortex::TaylorGreenVortex(const CFDSim& sim)
 void TaylorGreenVortex::initialize_fields(
     int level, const amrex::Geometry& geom)
 {
-    using namespace utils;
-
     auto& velocity = m_velocity(level);
     auto& density = m_density(level);
 
@@ -41,12 +39,12 @@ void TaylorGreenVortex::initialize_fields(
             const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
             const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-            vel_arrs[nbx](i, j, k, 0) = std::sin(two_pi() * x / Lx) *
-                                        std::cos(two_pi() * y / Ly) *
-                                        cos(two_pi() * z / Lz);
-            vel_arrs[nbx](i, j, k, 1) = -std::cos(two_pi() * x / Lx) *
-                                        std::sin(two_pi() * y / Ly) *
-                                        cos(two_pi() * z / Lz);
+            vel_arrs[nbx](i, j, k, 0) = std::sin(utils::two_pi() * x / Lx) *
+                                        std::cos(utils::two_pi() * y / Ly) *
+                                        cos(utils::two_pi() * z / Lz);
+            vel_arrs[nbx](i, j, k, 1) = -std::cos(utils::two_pi() * x / Lx) *
+                                        std::sin(utils::two_pi() * y / Ly) *
+                                        cos(utils::two_pi() * z / Lz);
             vel_arrs[nbx](i, j, k, 2) = 0.0;
         });
     amrex::Gpu::streamSynchronize();

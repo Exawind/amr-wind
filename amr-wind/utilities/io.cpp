@@ -6,8 +6,6 @@
 #include "amr-wind/utilities/console_io.H"
 #include "amr-wind/utilities/IOManager.H"
 
-using namespace amrex;
-
 namespace {
 const std::string level_prefix{"Level_"};
 }
@@ -20,8 +18,8 @@ void incflo::ReadCheckpointFile()
     amrex::Print() << "Restarting from checkpoint " << restart_file
                    << std::endl;
 
-    RealArray prob_lo = {0.0};
-    RealArray prob_hi = {0.0};
+    amrex::RealArray prob_lo = {0.0};
+    amrex::RealArray prob_hi = {0.0};
 
     /***************************************************************************
      * Load header: set up problem domain (including BoxArray)                 *
@@ -31,10 +29,10 @@ void incflo::ReadCheckpointFile()
 
     std::string File(restart_file + "/Header");
 
-    VisMF::IO_Buffer io_buffer(VisMF::GetIOBufferSize());
+    amrex::VisMF::IO_Buffer io_buffer(amrex::VisMF::GetIOBufferSize());
 
-    Vector<char> fileCharPtr;
-    ParallelDescriptor::ReadAndBcastFile(File, fileCharPtr);
+    amrex::Vector<char> fileCharPtr;
+    amrex::ParallelDescriptor::ReadAndBcastFile(File, fileCharPtr);
     std::string fileCharPtrString(fileCharPtr.dataPtr());
     std::istringstream is(fileCharPtrString, std::istringstream::in);
 
@@ -107,7 +105,7 @@ void incflo::ReadCheckpointFile()
         pp.getarr("n_cell", n_cell_input);
     }
 
-    IntVect rep(1, 1, 1);
+    amrex::IntVect rep(1, 1, 1);
     for (int d = 0; d < AMREX_SPACEDIM; d++) {
         AMREX_ALWAYS_ASSERT(prob_hi[d] > prob_lo[d]); // NOLINT
 
@@ -126,18 +124,18 @@ void incflo::ReadCheckpointFile()
         }
     }
 
-    bool replicate = (rep != IntVect::TheUnitVector());
+    bool replicate = (rep != amrex::IntVect::TheUnitVector());
 
     if (replicate) {
         amrex::Print() << "replicating restart file: " << rep << std::endl;
     }
 
     // Set up problem domain
-    RealBox rb(prob_lo_input.data(), prob_hi_input.data());
-    Geometry::ResetDefaultProbDomain(rb);
+    amrex::RealBox rb(prob_lo_input.data(), prob_hi_input.data());
+    amrex::Geometry::ResetDefaultProbDomain(rb);
     for (int lev = 0; lev <= max_level; ++lev) {
         SetGeometry(
-            lev, Geometry(
+            lev, amrex::Geometry(
                      Geom(lev).Domain(), rb, Geom(lev).CoordInt(),
                      Geom(lev).isPeriodic()));
     }
@@ -153,7 +151,7 @@ void incflo::ReadCheckpointFile()
 
     // always use level 0 to check domain size
     constexpr int lev0{0};
-    Box orig_domain(ba_inp[lev0].minimalBox());
+    amrex::Box orig_domain(ba_inp[lev0].minimalBox());
 
     if (replicate) {
         amrex::Print() << " OLD BA had " << ba_inp[lev0].size() << " GRIDS "
@@ -162,13 +160,13 @@ void incflo::ReadCheckpointFile()
     }
 
     for (int lev = 0; lev <= finest_level; ++lev) {
-        BoxList bl;
+        amrex::BoxList bl;
         for (int k = 0; k < rep[2]; k++) {
             for (int j = 0; j < rep[1]; j++) {
                 for (int i = 0; i < rep[0]; i++) {
                     for (int nb = 0; nb < ba_inp[lev].size(); nb++) {
-                        Box b(ba_inp[lev][nb]);
-                        IntVect shift_vec(
+                        amrex::Box b(ba_inp[lev][nb]);
+                        amrex::IntVect shift_vec(
                             i * orig_domain.length(0),
                             j * orig_domain.length(1),
                             k * orig_domain.length(2));
@@ -182,7 +180,7 @@ void incflo::ReadCheckpointFile()
                 }
             }
         }
-        BoxArray ba_rep;
+        amrex::BoxArray ba_rep;
         ba_rep.define(bl);
 
         if (replicate && lev == 0) {
@@ -206,15 +204,15 @@ void incflo::ReadCheckpointFile()
         }
 
         // Create distribution mapping
-        dm_inp[lev].define(ba_inp[lev], ParallelDescriptor::NProcs());
+        dm_inp[lev].define(ba_inp[lev], amrex::ParallelDescriptor::NProcs());
 
-        BoxArray ba(ba_rep.simplified());
+        amrex::BoxArray ba(ba_rep.simplified());
         ba.maxSize(maxGridSize(lev));
         if (refine_grid_layout) {
-            ChopGrids(lev, ba, ParallelDescriptor::NProcs());
+            ChopGrids(lev, ba, amrex::ParallelDescriptor::NProcs());
         }
-        DistributionMapping dm =
-            DistributionMapping{ba, ParallelDescriptor::NProcs()};
+        amrex::DistributionMapping dm =
+            amrex::DistributionMapping{ba, amrex::ParallelDescriptor::NProcs()};
 
         MakeNewLevelFromScratch(lev, m_time.current_time(), ba, dm);
     }

@@ -115,7 +115,7 @@ void OversetOps::update_gradp()
     // Velocity multifab is needed for proper initialization, but only the size
     // matters for the purpose of calculating gradp, the values do not matter
     int finest_level = m_sim_ptr->mesh().finestLevel();
-    Vector<MultiFab*> vel;
+    amrex::Vector<amrex::MultiFab*> vel;
     for (int lev = 0; lev <= finest_level; ++lev) {
         vel.push_back(&(velocity(lev)));
     }
