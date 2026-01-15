@@ -103,9 +103,9 @@ public:
         m_abl_meso_temp_forcing = forcing;
     }
 
-    void register_hurricane_forcing(pde::icns::HurricaneForcing* forcing) const
+    void register_hurricane_forcing(pde::icns::HurricaneForcing& forcing) const
     {
-        m_hurricane_forcing = forcing;
+        m_hurricane_forcing = &forcing;
     }
 
     void register_hurricane_temp_forcing(
