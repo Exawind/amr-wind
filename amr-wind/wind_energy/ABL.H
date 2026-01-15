@@ -84,34 +84,34 @@ public:
 
     void post_advance_work() override;
 
-    void register_forcing_term(pde::icns::ABLForcing* forcing) const
+    void register_forcing_term(pde::icns::ABLForcing& forcing) const
     {
-        m_abl_forcing = forcing;
+        m_abl_forcing = &forcing;
     }
 
-    void register_mean_boussinesq_term(pde::icns::ABLMeanBoussinesq* term) const
+    void register_mean_boussinesq_term(pde::icns::ABLMeanBoussinesq& term) const
     {
-        m_abl_mean_bous = term;
+        m_abl_mean_bous = &term;
     }
-    void register_meso_mom_forcing(pde::icns::ABLMesoForcingMom* forcing) const
+    void register_meso_mom_forcing(pde::icns::ABLMesoForcingMom& forcing) const
     {
-        m_abl_meso_mom_forcing = forcing;
+        m_abl_meso_mom_forcing = &forcing;
     }
     void register_meso_temp_forcing(
-        pde::temperature::ABLMesoForcingTemp* forcing) const
+        pde::temperature::ABLMesoForcingTemp& forcing) const
     {
-        m_abl_meso_temp_forcing = forcing;
+        m_abl_meso_temp_forcing = &forcing;
     }
 
-    void register_hurricane_forcing(pde::icns::HurricaneForcing* forcing) const
+    void register_hurricane_forcing(pde::icns::HurricaneForcing& forcing) const
     {
-        m_hurricane_forcing = forcing;
+        m_hurricane_forcing = &forcing;
     }
 
     void register_hurricane_temp_forcing(
-        pde::temperature::HurricaneTempForcing* forcing) const
+        pde::temperature::HurricaneTempForcing& forcing) const
     {
-        m_hurricane_temp_forcing = forcing;
+        m_hurricane_temp_forcing = &forcing;
     }
 
     const ABLBoundaryPlane& bndry_plane() const { return *m_bndry_plane; }

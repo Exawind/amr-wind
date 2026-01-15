@@ -17,7 +17,7 @@ HurricaneTempForcing::HurricaneTempForcing(const CFDSim& sim)
 
     const auto& abl = sim.physics_manager().get<amr_wind::ABL>();
     // NO need to re-register the hurricane forcing
-    abl.register_hurricane_temp_forcing(this);
+    abl.register_hurricane_temp_forcing(*this);
     // Read the Hurricane Temperature Forcing
     {
         amrex::ParmParse pp("HurricaneTempForcing");

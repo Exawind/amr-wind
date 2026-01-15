@@ -14,7 +14,7 @@ ABLMeanBoussinesq::ABLMeanBoussinesq(const CFDSim& sim)
 
 {
     const auto& abl = sim.physics_manager().get<amr_wind::ABL>();
-    abl.register_mean_boussinesq_term(this);
+    abl.register_mean_boussinesq_term(*this);
 
     // gravity in `incflo` namespace
     amrex::ParmParse pp_incflo("incflo");
