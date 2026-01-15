@@ -11,8 +11,6 @@
 
 #include "AMReX_ParmParse.H"
 
-using namespace amrex;
-
 incflo::incflo()
     : m_sim(*this)
     , m_time(m_sim.time())
@@ -64,7 +62,7 @@ void incflo::init_mesh()
         amrex::Print() << "Creating mesh... ";
         InitFromScratch(m_time.current_time());
         amrex::Print() << "done" << std::endl;
-        if (ParallelDescriptor::IOProcessor()) {
+        if (amrex::ParallelDescriptor::IOProcessor()) {
             amrex::Print() << "Grid summary: " << std::endl;
             printGridSummary(amrex::OutStream(), 0, finest_level);
         }
@@ -82,7 +80,7 @@ void incflo::init_mesh()
             }
         }
 
-        if (ParallelDescriptor::IOProcessor()) {
+        if (amrex::ParallelDescriptor::IOProcessor()) {
             amrex::Print() << "Grid summary: " << std::endl;
             printGridSummary(amrex::OutStream(), 0, finest_level);
         }
@@ -192,7 +190,7 @@ bool incflo::regrid_and_update()
         regrid(0, m_time.current_time());
         amrex::Real rend = amrex::ParallelDescriptor::second() - rstart;
         amrex::Print() << "time elapsed = " << rend << std::endl;
-        if (ParallelDescriptor::IOProcessor()) {
+        if (amrex::ParallelDescriptor::IOProcessor()) {
             amrex::Print() << "Grid summary: " << std::endl;
             printGridSummary(amrex::OutStream(), 0, finest_level);
         }
@@ -370,9 +368,9 @@ void incflo::do_advance(const int fixed_point_iteration)
 // virtual function in AmrCore
 void incflo::MakeNewLevelFromScratch(
     int lev,
-    Real time,
-    const BoxArray& new_grids,
-    const DistributionMapping& new_dmap)
+    amrex::Real time,
+    const amrex::BoxArray& new_grids,
+    const amrex::DistributionMapping& new_dmap)
 {
     BL_PROFILE("amr-wind::incflo::MakeNewLevelFromScratch()");
 
@@ -452,7 +450,8 @@ void incflo::init_physics_and_pde()
     m_sim.post_manager().pre_init_actions();
 }
 
-void incflo::ErrorEst(int lev, TagBoxArray& tags, Real time, int ngrow)
+void incflo::ErrorEst(
+    int lev, amrex::TagBoxArray& tags, amrex::Real time, int ngrow)
 {
     BL_PROFILE("amr-wind::incflo::ErrorEst()");
     m_mesh_refiner->tag_cells(lev, tags, time, ngrow);
