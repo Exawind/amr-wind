@@ -1,0 +1,14 @@
+.. meta::2c7eb5735a3523490e97bcf7745e0b3369bff76f22a2aed4bf148531f82120e07979159f070ab4b4a97f693ccb3b5101cf995e633b9ff9177796f8e8e7f7a178
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::TurbineFromExtSolver&lt; SolverTurbine, SolverData &gt; Struct Template Reference
+
+TurbineFromExtSolver&lt; SolverTurbine, SolverData &gt; Struct Template Reference
+=================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1_turbine_from_ext_solver.html

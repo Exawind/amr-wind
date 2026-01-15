@@ -1,0 +1,14 @@
+.. meta::a25eae20913c451a30e35b0162039b53984e2875b63a56834794b19915a88f37c4a26161ee4e0cd87c4831233f6472f61f439222ce09bb7c2de0601d481e5a18
+
+:orphan:
+
+.. title:: AMR-Wind API: exw_kynema Namespace Reference
+
+exw\_kynema Namespace Reference
+===============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: namespaceexw__kynema.html

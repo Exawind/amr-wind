@@ -1,0 +1,14 @@
+.. meta::f5536afbeb6fb310efc10cb8b440d58116dbcbc9a3a9eb5fa3bb8388953df823c4e490aef3b7186558504993d98b8f27b82a1cc9a7b4d71408abcdc06f55e342
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/LidarSampler.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/LidarSampler.H Source File
+==========================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _lidar_sampler_8_h_source.html

@@ -1,0 +1,14 @@
+.. meta::8deb99f5b69465fafcfea16741cc85eea351bc88e3b9b1bb22aabdac4897af955da4f241e053551c11d90ba2e96e7bcfb1013c5ae5c964fd8f825f70721481f6
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/ThirdMomentAveraging.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/ThirdMomentAveraging.cpp File Reference
+==============================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _third_moment_averaging_8cpp.html

@@ -1,0 +1,14 @@
+.. meta::5c4d842dd2c8983cca86f139b8adf542fa1f0b5f3baf77464b9a8b2336fc7890163ee131cd22ed3fb594ca944d4029b6fa95e7a049e5405c022588e806f879c9
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::utils::MultiParser Class Reference
+
+MultiParser Class Reference
+===========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1utils_1_1_multi_parser.html

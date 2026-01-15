@@ -1,0 +1,14 @@
+.. meta::ca353237503f43b84566b26390ef418262e7c5cfdec517e37668eefae9e9b162728715a3d38ff3cf9bb6357c8dfcd1f7bc17f2ad6727fa43603deba1d0f4baf2
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::udf::PowerLawProfile Struct Reference
+
+PowerLawProfile Struct Reference
+================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1udf_1_1_power_law_profile.html

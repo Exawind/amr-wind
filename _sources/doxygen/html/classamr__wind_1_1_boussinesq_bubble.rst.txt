@@ -1,0 +1,14 @@
+.. meta::7a7c1692f8dd78cad4fc941cfd43442c8f4fcf3cde7b89c9b4136c4b61584dbb2ca961ffb8f49cf32757db24fa97bc1fd7b4ae2c35a76d7efb2c73e70eeab950
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::BoussinesqBubble Class Reference
+
+BoussinesqBubble Class Reference
+================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_boussinesq_bubble.html

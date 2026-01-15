@@ -1,0 +1,7 @@
+<map id="amr_wind::SynthTurbDeviceData" name="amr_wind::SynthTurbDeviceData">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,212,240,237"/>
+<area shape="rect" id="Node000002" href="$structamr__wind_1_1vs_1_1_vector_t.html" title=" " alt="" coords="39,101,206,141"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="125,155,125,212,120,212,120,155"/>
+<area shape="rect" id="Node000003" href="$structamr__wind_1_1vs_1_1_vector_t.html" title=" " alt="" coords="21,5,225,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="125,45,125,101,120,101,120,45"/>
+</map>

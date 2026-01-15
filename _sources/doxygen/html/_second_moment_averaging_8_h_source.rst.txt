@@ -1,0 +1,14 @@
+.. meta::9a88574a8b615d5f538d78abdf478ce4f8827edf5ceec37244426a6431c336a64016f9522ac690f166ab238678d320848e4f134174a5c18e956b2cbb0f72cc4c
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/SecondMomentAveraging.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/SecondMomentAveraging.H Source File
+==========================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _second_moment_averaging_8_h_source.html

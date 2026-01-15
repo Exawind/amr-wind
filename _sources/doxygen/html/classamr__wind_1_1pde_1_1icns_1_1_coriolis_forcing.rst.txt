@@ -1,0 +1,14 @@
+.. meta::638468af1495bd749d7ac807c58e69b9b4e31558500366f4fced575e40a288b64aea523b18e11f2fe74190100834038143706810a71556e001a6a6394ea01cc6
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::icns::CoriolisForcing Class Reference
+
+CoriolisForcing Class Reference
+===============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1pde_1_1icns_1_1_coriolis_forcing.html

@@ -1,0 +1,7 @@
+<map id="amr_wind::ib::ImmersedBoundaryModel" name="amr_wind::ib::ImmersedBoundaryModel">
+<area shape="rect" id="Node000001" title=" " alt="" coords="649,48,892,88"/>
+<area shape="rect" id="Node000002" href="$structamr__wind_1_1_factory.html" title=" " alt="" coords="401,33,600,103"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="614,65,649,65,649,71,614,71"/>
+<area shape="rect" id="Node000003" href="$structamr__wind_1_1_factory.html" title=" " alt="" coords="5,48,157,88"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="171,65,401,65,401,71,171,71"/>
+</map>

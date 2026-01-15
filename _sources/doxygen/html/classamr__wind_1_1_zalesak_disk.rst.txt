@@ -1,0 +1,14 @@
+.. meta::36f0d3e088e62ae1a06e511cb44416e7e22adf76525350df50ba5746a868a8f10d5c1cb73f92d9f5a718655200b388063c30d8af7428ee23e1cd3e935f5c90d3
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ZalesakDisk Class Reference
+
+ZalesakDisk Class Reference
+===========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_zalesak_disk.html

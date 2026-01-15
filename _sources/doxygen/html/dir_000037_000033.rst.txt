@@ -1,0 +1,14 @@
+.. meta::0da040c0fae87a5e4d76a500017ce8239d38d10a7ab7b55606542c93130d891d8bd476527d217aeddae1d13e3384150ea5d3c0bda5b79e7a428e872cdde47837
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling -&gt; physics Relation
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling -&gt; physics Relation
+======================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: dir_000037_000033.html

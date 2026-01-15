@@ -1,0 +1,14 @@
+.. meta::915bde0bf4c8640347ce926ff96c5e14a62938864a393bebe429ecdd52d45095bd2fb7b8b36094ed6d439b74863818660fe77a945e7869822d9191f8c2023a26
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::DamBreak Class Reference
+
+DamBreak Class Reference
+========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_dam_break.html

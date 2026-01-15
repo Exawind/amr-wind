@@ -1,0 +1,14 @@
+.. meta::798a5058d054c25f9e206d2166021ec5f91272561557f4f241a1e3fc280c003f0a557e5845f3c3d37c2e12c761cb2bc4519eddef67b472611acc8e72ed09e61e
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/ocean_waves/OceanWavesOps.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/ocean\_waves/OceanWavesOps.H Source File
+=====================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _ocean_waves_ops_8_h_source.html
