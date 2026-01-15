@@ -17,7 +17,7 @@ ABLMesoForcingMom::ABLMesoForcingMom(const CFDSim& sim)
     : ABLMesoscaleForcing(sim, identifier())
 {
     const auto& abl = sim.physics_manager().get<amr_wind::ABL>();
-    abl.register_meso_mom_forcing(this);
+    abl.register_meso_mom_forcing(*this);
     abl.abl_statistics().register_meso_mom_forcing(this);
 
     if (!abl.abl_meso_file().is_tendency_forcing()) {
