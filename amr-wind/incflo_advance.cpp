@@ -9,8 +9,6 @@
 #include "amr-wind/utilities/PostProcessing.H"
 #include "AMReX_MultiFabUtil.H"
 
-using namespace amrex;
-
 void incflo::pre_advance_stage1()
 {
     BL_PROFILE("amr-wind::incflo::pre_advance_stage1");
@@ -181,7 +179,7 @@ void incflo::ApplyPredictor(
 {
     BL_PROFILE("amr-wind::incflo::ApplyPredictor");
     // We use the new time value for things computed on the "*" state
-    Real new_time = m_time.new_time();
+    amrex::Real new_time = m_time.new_time();
 
     if (m_verbose > 2) {
         PrintMaxValues("before predictor step");
@@ -280,7 +278,7 @@ void incflo::ApplyPredictor(
             icns().fields().src_term, density_old, 0, 0, 1, AMREX_SPACEDIM, 0);
 
         const int nghost_force = 1;
-        IntVect ng(nghost_force);
+        amrex::IntVect ng(nghost_force);
         icns().fields().src_term.fillpatch(m_time.current_time(), ng);
 
         for (auto& eqn : scalar_eqns()) {
@@ -373,9 +371,9 @@ void incflo::ApplyPredictor(
     // *************************************************************************************
     if (m_diff_type == DiffusionType::Crank_Nicolson ||
         m_diff_type == DiffusionType::Implicit) {
-        Real dt_diff = (m_diff_type == DiffusionType::Implicit)
-                           ? m_time.delta_t()
-                           : 0.5 * m_time.delta_t();
+        amrex::Real dt_diff = (m_diff_type == DiffusionType::Implicit)
+                                  ? m_time.delta_t()
+                                  : 0.5 * m_time.delta_t();
         icns().solve(dt_diff);
     } else if (m_diff_type == DiffusionType::Explicit && m_use_godunov) {
         // explicit RK2
@@ -520,7 +518,7 @@ void incflo::ApplyCorrector()
     BL_PROFILE("amr-wind::incflo::ApplyCorrector");
 
     // We use the new time value for things computed on the "*" state
-    Real new_time = m_time.new_time();
+    amrex::Real new_time = m_time.new_time();
 
     if (m_verbose > 2) {
         PrintMaxValues("before corrector step");
@@ -625,9 +623,9 @@ void incflo::ApplyCorrector()
 
     if (m_diff_type == DiffusionType::Crank_Nicolson ||
         m_diff_type == DiffusionType::Implicit) {
-        Real dt_diff = (m_diff_type == DiffusionType::Implicit)
-                           ? m_time.delta_t()
-                           : 0.5 * m_time.delta_t();
+        amrex::Real dt_diff = (m_diff_type == DiffusionType::Implicit)
+                                  ? m_time.delta_t()
+                                  : 0.5 * m_time.delta_t();
         icns().solve(dt_diff);
     }
     icns().post_solve_actions();
@@ -700,7 +698,7 @@ void incflo::ApplyPrescribeStep()
 
     if (m_use_godunov) {
         const int nghost_force = 1;
-        IntVect ng(nghost_force);
+        amrex::IntVect ng(nghost_force);
         for (auto& eqn : scalar_eqns()) {
             eqn->fields().src_term.fillpatch(m_time.current_time(), ng);
         }

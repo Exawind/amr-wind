@@ -4,8 +4,6 @@
 #include <cmath>
 #include <limits>
 
-using namespace amrex;
-
 /** Estimate the new timestep for adaptive timestepping algorithm
  *
  * Compute new \f$\Delta t\f$ by using the formula derived in "A Boundary
@@ -35,9 +33,9 @@ void incflo::compute_dt()
 
     bool explicit_diffusion = (m_diff_type == DiffusionType::Explicit);
 
-    Real conv_cfl = 0.0;
-    Real diff_cfl = 0.0;
-    Real force_cfl = 0.0;
+    amrex::Real conv_cfl = 0.0;
+    amrex::Real diff_cfl = 0.0;
+    amrex::Real force_cfl = 0.0;
     const bool mesh_mapping = m_sim.has_mesh_mapping();
 
     const auto& den = density();
@@ -49,26 +47,27 @@ void incflo::compute_dt()
 
     for (int lev = 0; lev <= finest_level; ++lev) {
         auto const dxinv = geom[lev].InvCellSizeArray();
-        MultiFab const& vel = icns().fields().field(lev);
-        MultiFab const& vel_force = icns().fields().src_term(lev);
-        MultiFab const& mu = icns().fields().mueff(lev);
-        MultiFab const& rho = den(lev);
+        amrex::MultiFab const& vel = icns().fields().field(lev);
+        amrex::MultiFab const& vel_force = icns().fields().src_term(lev);
+        amrex::MultiFab const& mu = icns().fields().mueff(lev);
+        amrex::MultiFab const& rho = den(lev);
 
         auto const& vel_arr = vel.const_arrays();
         auto const& mask_arr = mask_cell(lev).const_arrays();
-        MultiArray4<Real const> fac_arr =
+        amrex::MultiArray4<amrex::Real const> fac_arr =
             mesh_mapping ? ((*mesh_fac)(lev).const_arrays())
-                         : MultiArray4<Real const>();
+                         : amrex::MultiArray4<amrex::Real const>();
 
-        Real conv_lev = 0.0;
-        Real mphase_conv_lev = 0.0;
-        Real diff_lev = 0.0;
-        Real force_lev = 0.0;
+        amrex::Real conv_lev = 0.0;
+        amrex::Real mphase_conv_lev = 0.0;
+        amrex::Real diff_lev = 0.0;
+        amrex::Real force_lev = 0.0;
 
         conv_lev += amrex::ParReduce(
-            TypeList<ReduceOpMax>{}, TypeList<Real>{}, vel, IntVect(0),
-            [=] AMREX_GPU_DEVICE(
-                int box_no, int i, int j, int k) -> GpuTuple<Real> {
+            amrex::TypeList<amrex::ReduceOpMax>{},
+            amrex::TypeList<amrex::Real>{}, vel, amrex::IntVect(0),
+            [=] AMREX_GPU_DEVICE(int box_no, int i, int j, int k)
+                -> amrex::GpuTuple<amrex::Real> {
                 auto const& v_bx = vel_arr[box_no];
 
                 const amrex::Real fac_x =
@@ -89,12 +88,13 @@ void incflo::compute_dt()
             });
 
         if (m_sim.pde_manager().has_pde("VOF")) {
-            MultiFab const& vof = m_repo.get_field("vof")(lev);
+            amrex::MultiFab const& vof = m_repo.get_field("vof")(lev);
             auto const& vof_arr = vof.const_arrays();
             mphase_conv_lev += amrex::ParReduce(
-                TypeList<ReduceOpMax>{}, TypeList<Real>{}, vel, IntVect(0),
-                [=] AMREX_GPU_DEVICE(
-                    int box_no, int i, int j, int k) -> GpuTuple<Real> {
+                amrex::TypeList<amrex::ReduceOpMax>{},
+                amrex::TypeList<amrex::Real>{}, vel, amrex::IntVect(0),
+                [=] AMREX_GPU_DEVICE(int box_no, int i, int j, int k)
+                    -> amrex::GpuTuple<amrex::Real> {
                     auto const& v_bx = vel_arr[box_no];
                     auto const& vof_bx = vof_arr[box_no];
 
@@ -134,9 +134,10 @@ void incflo::compute_dt()
             auto const& mu_arr = mu.const_arrays();
             auto const& rho_arr = rho.const_arrays();
             diff_lev += amrex::ParReduce(
-                TypeList<ReduceOpMax>{}, TypeList<Real>{}, rho, IntVect(0),
-                [=] AMREX_GPU_DEVICE(
-                    int box_no, int i, int j, int k) -> GpuTuple<Real> {
+                amrex::TypeList<amrex::ReduceOpMax>{},
+                amrex::TypeList<amrex::Real>{}, rho, amrex::IntVect(0),
+                [=] AMREX_GPU_DEVICE(int box_no, int i, int j, int k)
+                    -> amrex::GpuTuple<amrex::Real> {
                     auto const& mu_bx = mu_arr[box_no];
                     auto const& rho_bx = rho_arr[box_no];
 
@@ -147,7 +148,7 @@ void incflo::compute_dt()
                     const amrex::Real fac_z =
                         mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0;
 
-                    const Real dxinv2 =
+                    const amrex::Real dxinv2 =
                         2.0 * (dxinv[0] / fac_x * dxinv[0] / fac_x +
                                dxinv[1] / fac_y * dxinv[1] / fac_y +
                                dxinv[2] / fac_z * dxinv[2] / fac_z);
@@ -164,10 +165,10 @@ void incflo::compute_dt()
             auto const& vf_arr = vel_force.const_arrays();
             auto const& rho_arr = rho.const_arrays();
             force_lev += amrex::ParReduce(
-                TypeList<ReduceOpMax>{}, TypeList<Real>{}, vel_force,
-                IntVect(0),
-                [=] AMREX_GPU_DEVICE(
-                    int box_no, int i, int j, int k) -> GpuTuple<Real> {
+                amrex::TypeList<amrex::ReduceOpMax>{},
+                amrex::TypeList<amrex::Real>{}, vel_force, amrex::IntVect(0),
+                [=] AMREX_GPU_DEVICE(int box_no, int i, int j, int k)
+                    -> amrex::GpuTuple<amrex::Real> {
                     auto const& vf_bx = vf_arr[box_no];
                     auto const& rho_bx = rho_arr[box_no];
 
@@ -197,14 +198,15 @@ void incflo::compute_dt()
         force_cfl = amrex::max(force_cfl, force_lev);
     }
 
-    ParallelAllReduce::Max<Real>(conv_cfl, ParallelContext::CommunicatorSub());
+    amrex::ParallelAllReduce::Max<amrex::Real>(
+        conv_cfl, amrex::ParallelContext::CommunicatorSub());
     if (explicit_diffusion) {
-        ParallelAllReduce::Max<Real>(
-            diff_cfl, ParallelContext::CommunicatorSub());
+        amrex::ParallelAllReduce::Max<amrex::Real>(
+            diff_cfl, amrex::ParallelContext::CommunicatorSub());
     }
     if (m_time.use_force_cfl()) {
-        ParallelAllReduce::Max<Real>(
-            force_cfl, ParallelContext::CommunicatorSub());
+        amrex::ParallelAllReduce::Max<amrex::Real>(
+            force_cfl, amrex::ParallelContext::CommunicatorSub());
     }
 
     m_time.set_current_cfl(conv_cfl, diff_cfl, force_cfl);
@@ -214,7 +216,7 @@ void incflo::compute_prescribe_dt()
 {
     BL_PROFILE("amr-wind::incflo::compute_prescribe_dt");
 
-    Real conv_cfl = 0.0;
+    amrex::Real conv_cfl = 0.0;
     const bool mesh_mapping = m_sim.has_mesh_mapping();
 
     amr_wind::Field const* mesh_fac =
@@ -230,18 +232,19 @@ void incflo::compute_prescribe_dt()
         auto const& wf_arr = m_repo.get_field("w_mac")(lev).const_arrays();
         auto const& mask_arr = mask_cell(lev).const_arrays();
 
-        MultiArray4<Real const> fac_arr =
+        amrex::MultiArray4<amrex::Real const> fac_arr =
             mesh_mapping ? ((*mesh_fac)(lev).const_arrays())
-                         : MultiArray4<Real const>();
+                         : amrex::MultiArray4<amrex::Real const>();
 
-        Real conv_lev = 0.0;
-        Real mphase_conv_lev = 0.0;
+        amrex::Real conv_lev = 0.0;
+        amrex::Real mphase_conv_lev = 0.0;
 
         conv_lev += amrex::ParReduce(
-            TypeList<ReduceOpMax>{}, TypeList<Real>{},
-            icns().fields().field(lev), IntVect(0),
-            [=] AMREX_GPU_DEVICE(
-                int box_no, int i, int j, int k) -> GpuTuple<Real> {
+            amrex::TypeList<amrex::ReduceOpMax>{},
+            amrex::TypeList<amrex::Real>{}, icns().fields().field(lev),
+            amrex::IntVect(0),
+            [=] AMREX_GPU_DEVICE(int box_no, int i, int j, int k)
+                -> amrex::GpuTuple<amrex::Real> {
                 auto const& umac = uf_arr[box_no];
                 auto const& vmac = vf_arr[box_no];
                 auto const& wmac = wf_arr[box_no];
@@ -269,13 +272,14 @@ void incflo::compute_prescribe_dt()
             });
 
         if (m_sim.pde_manager().has_pde("VOF")) {
-            MultiFab const& vof = m_repo.get_field("vof")(lev);
+            amrex::MultiFab const& vof = m_repo.get_field("vof")(lev);
             auto const& vof_arr = vof.const_arrays();
             mphase_conv_lev += amrex::ParReduce(
-                TypeList<ReduceOpMax>{}, TypeList<Real>{},
-                icns().fields().field(lev), IntVect(0),
-                [=] AMREX_GPU_DEVICE(
-                    int box_no, int i, int j, int k) -> GpuTuple<Real> {
+                amrex::TypeList<amrex::ReduceOpMax>{},
+                amrex::TypeList<amrex::Real>{}, icns().fields().field(lev),
+                amrex::IntVect(0),
+                [=] AMREX_GPU_DEVICE(int box_no, int i, int j, int k)
+                    -> amrex::GpuTuple<amrex::Real> {
                     auto const& vof_bx = vof_arr[box_no];
                     auto const& umac = uf_arr[box_no];
                     auto const& vmac = vf_arr[box_no];
@@ -319,7 +323,8 @@ void incflo::compute_prescribe_dt()
         conv_cfl = amrex::max(conv_cfl, conv_lev);
     }
 
-    ParallelAllReduce::Max<Real>(conv_cfl, ParallelContext::CommunicatorSub());
+    amrex::ParallelAllReduce::Max<amrex::Real>(
+        conv_cfl, amrex::ParallelContext::CommunicatorSub());
 
     m_time.set_current_cfl(conv_cfl, 0.0, 0.0);
 }
