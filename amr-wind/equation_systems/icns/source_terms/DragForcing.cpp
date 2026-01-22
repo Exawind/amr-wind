@@ -134,6 +134,9 @@ void DragForcing::operator()(
     const auto& drag = (*m_terrain_drag)(lev).const_array(mfi);
     auto* const m_terrainz0 = &this->m_sim.repo().get_field("terrainz0");
     const auto& terrainz0 = (*m_terrainz0)(lev).const_array(mfi);
+    auto* const m_terrain_damping =
+        &this->m_sim.repo().get_field("terrain_damping");
+    const auto& damping = (*m_terrain_damping)(lev).const_array(mfi);
     const bool is_waves = m_terrain_is_waves;
     const bool model_form_drag = m_apply_MOSD;
     const auto& target_vel_arr = is_waves
@@ -145,6 +148,8 @@ void DragForcing::operator()(
 
     const auto& geom = m_mesh.Geom(lev);
     const auto& dx = geom.CellSizeArray();
+    const auto& prob_lo = geom.ProbLoArray();
+    const auto& prob_hi = geom.ProbHiArray();
     const amrex::Real drag_coefficient = m_drag_coefficient;
     // Copy Data
     const auto& dt = m_time.delta_t();
@@ -167,6 +172,9 @@ void DragForcing::operator()(
                   0.5 * dx[2] / m_monin_obukhov_length, m_beta_m, m_gamma_m)
             : 0.0;
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+        const amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
+        const amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
+        const amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
         const amrex::Real ux1 = vel(i, j, k, 0);
         const amrex::Real uy1 = vel(i, j, k, 1);
         const amrex::Real uz1 = vel(i, j, k, 2);
@@ -215,8 +223,8 @@ void DragForcing::operator()(
                                          (amr_wind::constants::EPS +
                                           std::sqrt(ux2r * ux2r + uy2r * uy2r));
             // BC forcing pushes nonrelative velocity toward target velocity
-            bc_forcing_x = -(uxTarget - ux1) / dt;
-            bc_forcing_y = -(uyTarget - uy1) / dt;
+            bc_forcing_x = -(uxTarget - ux1) / (5 * dt);
+            bc_forcing_y = -(uyTarget - uy1) / (5 * dt);
         }
         // Target velocity intended for within terrain
         amrex::Real target_u = 0.;
@@ -235,7 +243,8 @@ void DragForcing::operator()(
         src_term(i, j, k, 1) -= CdM * m * (uy1 - target_v) * blank(i, j, k) +
                                 Dyz * drag(i, j, k) +
                                 bc_forcing_y * drag(i, j, k);
-        src_term(i, j, k, 2) -= CdM * m * (uz1 - target_w) * blank(i, j, k);
+        src_term(i, j, k, 2) -= CdM * m * (uz1 - target_w) * blank(i, j, k) +
+                                damping(i, j, k) * (uz1);
     });
 }
 

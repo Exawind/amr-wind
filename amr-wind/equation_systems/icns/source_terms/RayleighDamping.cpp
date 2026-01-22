@@ -25,14 +25,6 @@ RayleighDamping::RayleighDamping(const CFDSim& sim)
     pp.queryarr("force_coord_directions", m_fcoord);
 
     // Based upon Allaerts & Meyers (JFM, 2017) and Durran & Klemp (AMS, 1983)
-    pp.query("lateral_damping_start", m_meso_start);
-    pp.query("west_damping_length", m_west_damping_len);
-    pp.query("east_damping_length", m_east_damping_len);
-    pp.query("north_damping_length", m_north_damping_len);
-    pp.query("south_damping_length", m_south_damping_len);
-    if (pp.contains("lateral_damping_start")) {
-        pp.get("vertical_cutoff", m_vertical_cutoff);
-    }
 }
 
 RayleighDamping::~RayleighDamping() = default;
@@ -63,13 +55,7 @@ void RayleighDamping::operator()(
     const amrex::Real fx = m_fcoord[0];
     const amrex::Real fy = m_fcoord[1];
     const amrex::Real fz = m_fcoord[2];
-    //! Lateral
-    const amrex::Real meso_sponge_start = m_meso_start;
-    const amrex::Real west_damping_len = m_west_damping_len;
-    const amrex::Real east_damping_len = m_east_damping_len;
-    const amrex::Real north_damping_len = m_north_damping_len;
-    const amrex::Real south_damping_len = m_south_damping_len;
-    const amrex::Real vertical_cutoff = m_vertical_cutoff;
+
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         amrex::Real coeff = 0.0;
         const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
@@ -83,42 +69,12 @@ void RayleighDamping::operator()(
         } else {
             coeff = 1.0;
         }
-        const amrex::Real west_zrd = problo[0] + west_damping_len;
-        const amrex::Real west_Rayleigh_coeff =
-            std::sin(0.5 * M_PI * (x - west_zrd) / (problo[0] - west_zrd));
-        const amrex::Real damp_west =
-            (x < west_zrd) ? west_Rayleigh_coeff * west_Rayleigh_coeff : 0.0;
-        const amrex::Real east_zrd = probhi[0] - east_damping_len;
-        const amrex::Real east_Rayleigh_coeff =
-            std::sin(0.5 * M_PI * (x - east_zrd) / (probhi[0] - east_zrd));
-        const amrex::Real damp_east =
-            (x > east_zrd) ? east_Rayleigh_coeff * east_Rayleigh_coeff : 0.0;
-        const amrex::Real south_zrd = problo[1] + south_damping_len;
-        const amrex::Real south_Rayleigh_coeff =
-            std::sin(0.5 * M_PI * (y - south_zrd) / (problo[1] - south_zrd));
-        const amrex::Real damp_south =
-            (y < south_zrd) ? south_Rayleigh_coeff * south_Rayleigh_coeff : 0.0;
-        const amrex::Real north_zrd = probhi[1] - north_damping_len;
-        const amrex::Real north_Rayleigh_coeff =
-            std::sin(0.5 * M_PI * (y - north_zrd) / (probhi[1] - north_zrd));
-        const amrex::Real damp_north =
-            (y > north_zrd) ? north_Rayleigh_coeff * north_Rayleigh_coeff : 0.0;
-        const amrex::Real zhigh = vertical_cutoff;
-        const amrex::Real Rayleigh_coeff = std::sin(
-            0.5 * M_PI * (z - meso_sponge_start) / (zhigh - meso_sponge_start));
-        const amrex::Real horizontal_Rayleigh_z =
-            (z > meso_sponge_start && z < zhigh)
-                ? Rayleigh_coeff * Rayleigh_coeff *
-                      (ref_vel[2] - vel(i, j, k, 2)) / tau
-                : 0.0;
         src_term(i, j, k, 0) +=
             fx * coeff * (ref_vel[0] - vel(i, j, k, 0)) / tau;
         src_term(i, j, k, 1) +=
             fy * coeff * (ref_vel[1] - vel(i, j, k, 1)) / tau;
         src_term(i, j, k, 2) +=
-            fz * coeff * (ref_vel[2] - vel(i, j, k, 2)) / tau +
-            std::max(damp_west + damp_east + damp_north + damp_south, 1.0) *
-                horizontal_Rayleigh_z;
+            fz * coeff * (ref_vel[2] - vel(i, j, k, 2)) / tau;
     });
 }
 

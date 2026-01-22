@@ -60,6 +60,7 @@ private:
     bool m_writeTerms{false};
     const Field& m_vel;
     const Field& m_rho;
+    const Field& m_theta;
     Field& m_Nij;
     Field& m_divNij;
     std::string m_wall_het_model{"none"};
@@ -68,6 +69,8 @@ private:
     amrex::Real m_gamma_m{5.0};
     amrex::Real m_beta_m{16.0};
     amrex::Real m_surface_roughness_z0{0.1};
+    //! Transport model
+    const transport::TransportModel& m_transport;
 };
 
 } // namespace amr_wind::turbulence
