@@ -178,14 +178,79 @@ Section: Momentum Sources
    **type:** Real, optional
 
    This value specifies the coefficient for the forcing term in the immersed boundary forcing method. It is currently
-   recommended to use the default value to avoid initial numerical stability.
+   recommended to use the default value to avoid initial numerical stability. 
+
+.. input_param:: DragForcing.sponge_strength
+
+   **type:** Real, optional
+
+   The value of the sponge layer coefficient. It is recommended to use the default value of 1.0.  
+
+.. input_param:: DragForcing.sponge_density
+
+   **type:** Real, optional
+
+   The value of the sponge layer density. It is recommended to use the default value of 1.0.  
+
+.. input_param:: DragForcing.sponge_distance_west
+
+   **type:** Real, optional
+
+   This value is specified as a negative value when the inflow x-velocity is <=0. The default value is -1000 m and can be changed if strong 
+   reflections are observed. 
+
+.. input_param:: DragForcing.sponge_distance_east
+
+   **type:** Real, optional
+
+   This value is specified as a positive value when the inflow x-velocity is >=0. The default value is 1000 m and can be changed if strong 
+   reflections are observed. 
+
+.. input_param:: DragForcing.sponge_distance_south
+
+   **type:** Real, optional
+
+   This value is specified as a negative value when the inflow y-velocity is <=0. The default value is -1000 m and can be changed if strong 
+   reflections are observed. 
+
+.. input_param:: DragForcing.sponge_distance_north
+
+   **type:** Real, optional
+
+   This value is specified as a positive value when the inflow y-velocity is >=0. The default value is 1000 m and can be changed if strong 
+   reflections are observed. 
+
+.. input_param:: DragForcing.sponge_west
+
+   **type:** int, optional
+
+   This term turns on the sponge layer in the west (-x) boundary. The default value is 0. 
+
+.. input_param:: DragForcing.sponge_east
+
+   **type:** int, optional
+
+   This term turns on the sponge layer in the east (+x) boundary. The default value is 1. 
+
+.. input_param:: DragForcing.sponge_south
+
+   **type:** int, optional
+
+   This term turns on the sponge layer in the south (-y) boundary. The default value is 0. 
+
+.. input_param:: DragForcing.sponge_north
+
+   **type:** int, optional
+
+   This term turns on the sponge layer in the north (+y) boundary. The default value is 1. 
+
 
 .. input_param:: DragForcing.is_laminar
 
-   **type:** Boolean, optional, default = false
+   **type:** int, optional
 
-   This term is intended to indicate whether the simulation is laminar or not. For laminar
-   cases, the drag coefficient is reduced.
+   This term turns off the sponge layer. This term is required for terrain simulations with periodic 
+   boundary conditions. The default value is 0. 
 
 .. input_param:: DragForcing.wave_model_inviscid_form_drag
 
@@ -231,45 +296,3 @@ The following arguments are influential when ``GravityForcing`` is included in :
    adds back the reference pressure profile to obtain the full pressure after the
    pressure solve has been performed. This makes no difference to the flow evolution,
    but it changes the field available for post-processing or coupling to overset solvers.
-
-Rayleigh Damping is a momentum source term that forces the flow near the boundaries.
-All of the default arguments deal with the upper boundary (in z), damping the flow
-toward a target velocity. There are also additional arguments to use similar forcing
-in the lateral directions.
-
-.. input_param:: RayleighDamping.time_scale
-
-   **type:** Real, required
-
-   Time scale of the damping. The smaller the time scale (and closer to the time step size),
-   the stronger and more immediate the damping will be.
-
-.. input_param:: RayleighDamping.length_complete_damping
-
-   **type:** Real, required
-
-   Beginning at the top boundary, the complete damping region uses damping at full strength, i.e. "complete damping".
-   This length designates how far the complete damping region extends from the top boundary.
-
-.. input_param:: RayleighDamping.length_sloped_damping
-
-   **type:** Real, required
-
-   Beginning at the bottom of the complete damping region, the sloped damping region gradually
-   transitions from complete damping to no damping at all. This length designates how far the
-   sloped damping region extends from the bottom of the complete damping region.
-
-.. input_param:: RayleighDamping.reference_velocity
-
-   **type:** Vector<Real>, required
-
-   The target velocity that the damping forces the flow toward.
-
-.. input_param:: RayleighDamping.force_coord_direction
-
-   **type:** Vector<Int>, optional, default = [1, 1, 1]
-
-   This parameter determines which coordinate directions of velocity will be forced.
-   The default is to force every direction, but often only forcing in the z direction
-   is desired, which can be achieved by setting this parameter to 0 0 1.
-

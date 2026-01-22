@@ -33,7 +33,7 @@ transport.laminar_prandtl                          = 0.7
 transport.turbulent_prandtl                        = 0.333
 # turbulence equation parameters 
 turbulence.model                                   = Kosovic
-Kosovic.monin_obukhov_length                       = -1e30
+Kosovic.refMOL                                     = -1e30
 # Atmospheric boundary layer
 ABL.perturb_velocity                               = false
 ABL.perturb_temperature                            = false
@@ -54,6 +54,14 @@ PerturbationForcing.start                          = -4000 -3000 0
 PerturbationForcing.end                            = -3600 3000 900 
 PerturbationForcing.pert_amplitude                 = 1.0
 PerturbationForcing.time_steps                     = 108
+DragForcing.sponge_west                            = 1
+DragForcing.sponge_east                            = 1
+DragForcing.sponge_north                           = 1
+DragForcing.sponge_south                           = 1
+DragForcing.sponge_distance_west                   = -2000
+DragForcing.sponge_distance_east                   = 3000
+DragForcing.sponge_distance_south                  = -2000
+DragForcing.sponge_distance_north                  = 3000
 BoussinesqBuoyancy.reference_temperature           = 300
 BoussinesqBuoyancy.thermal_expansion_coeff         = 0.00333333
 CoriolisForcing.east_vector                        = 1.0 0.0 0.0 
