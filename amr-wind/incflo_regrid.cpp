@@ -1,12 +1,13 @@
 #include "amr-wind/incflo.H"
 
-using namespace amrex;
-
 // Make a new level using provided BoxArray and DistributionMapping and
 // fill with interpolated coarse level data.
 // overrides the pure virtual function in AmrCore
 void incflo::MakeNewLevelFromCoarse(
-    int lev, Real time, const BoxArray& ba, const DistributionMapping& dm)
+    int lev,
+    amrex::Real time,
+    const amrex::BoxArray& ba,
+    const amrex::DistributionMapping& dm)
 {
     BL_PROFILE("amr-wind::incflo::MakeNewLevelFromCoarse()");
 
@@ -22,7 +23,10 @@ void incflo::MakeNewLevelFromCoarse(
 // fill with existing fine and coarse data.
 // overrides the pure virtual function in AmrCore
 void incflo::RemakeLevel(
-    int lev, Real time, const BoxArray& ba, const DistributionMapping& dm)
+    int lev,
+    amrex::Real time,
+    const amrex::BoxArray& ba,
+    const amrex::DistributionMapping& dm)
 {
     BL_PROFILE("amr-wind::incflo::RemakeLevel()");
 

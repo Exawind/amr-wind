@@ -278,8 +278,6 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real volume_intercept(
     const amrex::Real b3,
     const amrex::Real volF) noexcept
 {
-    using namespace amrex;
-
     amrex::Real const_tiny = std::numeric_limits<amrex::Real>::epsilon();
     // (1) "order coefficients: m1<m2<m3"
     // (2) "get ranges: V1<V2<v3"
@@ -365,7 +363,6 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real cut_volume(
     const amrex::Real r0,
     const amrex::Real dr0) noexcept
 {
-
     const amrex::Real const_tiny = std::numeric_limits<amrex::Real>::epsilon();
     amrex::Real al;
 
