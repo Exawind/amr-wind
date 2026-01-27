@@ -45,6 +45,8 @@ TerrainDrag::TerrainDrag(CFDSim& sim)
     m_terrain_drag.setVal(0.0);
     m_terrainz0.set_default_fillpatch_bc(m_sim.time());
     m_terrain_height.set_default_fillpatch_bc(m_sim.time());
+    amrex::ParmParse pp_abl("ABL");
+    pp_abl.query("surface_roughness_z0", m_surface_roughness_z0);
 }
 
 void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
@@ -118,6 +120,7 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
     auto levelDrag = drag.arrays();
     auto levelz0 = terrainz0.arrays();
     auto levelheight = terrain_height.arrays();
+    const amrex::Real default_roughness = m_surface_roughness_z0;
     amrex::ParallelFor(
         blanking, m_terrain_blank.num_grow(),
         [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
@@ -131,7 +134,7 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
                 static_cast<int>((z <= terrainHt) && (z > prob_lo[2]));
             levelheight[nbx](i, j, k, 0) = terrainHt;
 
-            amrex::Real roughz0 = 0.1;
+            amrex::Real roughz0 = default_roughness;
             if (xrough_size > 0) {
                 roughz0 = interp::bilinear(
                     xrough_ptr, xrough_ptr + xrough_size, yrough_ptr,
