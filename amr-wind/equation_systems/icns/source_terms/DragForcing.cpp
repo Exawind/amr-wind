@@ -102,11 +102,9 @@ DragForcing::DragForcing(const CFDSim& sim)
     pp.query("is_laminar", m_is_laminar);
     if (m_sponge_west == 1 || m_sponge_east == 1 || m_sponge_south == 1 ||
         m_sponge_north == 1) {
-        amrex::Print()
-                << " WARNING: Sponge Forcing with no precursor RANS is not 
-                recommended and
-            use with caution."
-                << std::endl;
+        amrex::Print() << " WARNING: Sponge Forcing with no precursor RANS is "
+                          "not recommended and use with caution."
+                       << std::endl;
     }
     const auto& phy_mgr = m_sim.physics_manager();
     if (phy_mgr.contains("ABL")) {

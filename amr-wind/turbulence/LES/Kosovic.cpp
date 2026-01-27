@@ -49,6 +49,7 @@ Kosovic<Transport>::Kosovic(CFDSim& sim)
     pp_abl.query("mo_gamma_m", m_gamma_m);
     pp_abl.query("mo_beta_m", m_beta_m);
     pp_abl.query("surface_roughness_z0", m_surface_roughness_z0);
+    pp_abl.query("ref_temp", m_ref_temp);
 }
 template <typename Transport>
 void Kosovic<Transport>::update_turbulent_viscosity(
@@ -123,9 +124,7 @@ void Kosovic<Transport>::update_turbulent_viscosity(
                 ? MOData::calc_psi_m(
                       1.5 * dz / monin_obukhov_length, m_beta_m, m_gamma_m)
                 : 0.0;
-        amrex::FArrayBox ref_theta_fab(bx, 1, amrex::The_Async_Arena());
-        amrex::Array4<amrex::Real> const& ref_theta_arr = ref_theta_fab.array();
-        m_transport.ref_theta_impl(lev, mfi, bx, ref_theta_arr);
+        const amrex::Real T0 = m_ref_temp;
         amrex::ParallelFor(
             mu_turb(lev),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
@@ -155,7 +154,6 @@ void Kosovic<Transport>::update_turbulent_viscosity(
                 const amrex::Real blankTerrain =
                     (has_terrain) ? 1 - blank_arrs[nbx](i, j, k, 0) : 1.0;
                 amrex::Real mut = mu_arrs[nbx](i, j, k) * mu_arrs[nbx](i, j, k);
-                const amrex::Real T0 = ref_theta_arr(i, j, k);
                 amrex::Real stratification =
                     -(gradT_arrs[nbx](i, j, k, 0) * gravity[0] +
                       gradT_arrs[nbx](i, j, k, 1) * gravity[1] +

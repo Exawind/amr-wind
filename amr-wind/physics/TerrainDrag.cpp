@@ -176,7 +176,6 @@ void TerrainDrag::initialize_fields(int level, const amrex::Geometry& geom)
     // Lateral East
     const amrex::Real horizontal_tau = m_horizontal_tau;
     const amrex::Real horizontal_abl_height = m_horizontal_abl_height;
-    const amrex::Real horizontal_free_atmosphere = m_horizontal_free_atmosphere;
     const amrex::Real z_sloped = m_horizontal_slope_end;
     const amrex::Real vertical_slope = m_vertical_slope;
     const amrex::Real vertical_full = m_vertical_full;

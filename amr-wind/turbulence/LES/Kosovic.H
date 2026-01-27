@@ -69,8 +69,7 @@ private:
     amrex::Real m_gamma_m{5.0};
     amrex::Real m_beta_m{16.0};
     amrex::Real m_surface_roughness_z0{0.1};
-    //! Transport model
-    const transport::TransportModel& m_transport;
+    amrex::Real m_ref_temp{300.0};
 };
 
 } // namespace amr_wind::turbulence
