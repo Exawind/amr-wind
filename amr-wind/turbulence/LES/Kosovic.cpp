@@ -219,7 +219,7 @@ void Kosovic<Transport>::update_alphaeff(Field& alphaeff)
     auto lam_alpha = (this->m_transport).alpha();
     auto& mu_turb = this->m_mu_turb;
     auto& repo = mu_turb.repo();
-    const amrex::Real muCoeff = 3.0; 
+    const amrex::Real muCoeff = 3.0;
     const int nlevels = repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& muturb_arrs = mu_turb(lev).const_arrays();
