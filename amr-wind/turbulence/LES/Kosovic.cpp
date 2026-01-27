@@ -153,7 +153,7 @@ void Kosovic<Transport>::update_turbulent_viscosity(
                     (1 - locSurfaceFactor) * smag_factor;
                 const amrex::Real blankTerrain =
                     (has_terrain) ? 1 - blank_arrs[nbx](i, j, k, 0) : 1.0;
-                amrex::Real mut = mu_arrs[nbx](i, j, k) * mu_arrs[nbx](i, j, k);
+                amrex::Real mut = mu_arrs[nbx](i, j, k);
                 amrex::Real stratification =
                     -(gradT_arrs[nbx](i, j, k, 0) * gravity[0] +
                       gradT_arrs[nbx](i, j, k, 1) * gravity[1] +
@@ -161,8 +161,8 @@ void Kosovic<Transport>::update_turbulent_viscosity(
                     T0;
                 amrex::Real non_linear_coeff = 1.0;
                 if (stratification > 1e-10) {
-                    stratification =
-                        std::sqrt(std::max(1e-10, mut - 3.0 * stratification));
+                    stratification = std::sqrt(
+                        std::max(1e-10, mut * mut - 3.0 * stratification));
                     non_linear_coeff = (stratification < 1e-10) ? 0 : 1;
                 } else {
                     stratification = mut;

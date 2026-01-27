@@ -513,10 +513,31 @@ TEST_F(TurbLESTest, test_kosovic_setup_calc)
         pp.add("Cb", Cb);
     }
     {
+        amrex::ParmParse pp("incflo");
+        amrex::Vector<std::string> physics{"ABL"};
+        pp.addarr("physics", physics);
+        pp.add("density", 1.225);
+        amrex::Vector<amrex::Real> vvec{8.0, 0.0, 0.0};
+        pp.addarr("velocity", vvec);
+        amrex::Vector<amrex::Real> gvec{0.0, 0.0, -9.81};
+        pp.addarr("gravity", gvec);
+    }
+    {
         amrex::ParmParse pp("transport");
         pp.add("viscosity", visc);
     }
-
+    {
+        amrex::ParmParse pp("ABL");
+        amrex::Vector<amrex::Real> t_hts{0.0, 100.0, 4000.0};
+        pp.addarr("temperature_heights", t_hts);
+        amrex::Vector<amrex::Real> t_vals{300.0, 300.0, 300.0};
+        pp.addarr("temperature_values", t_vals);
+    }
+    // Transport
+    {
+        amrex::ParmParse pp("transport");
+        pp.add("reference_temperature", 300.0);
+    }
     // Initialize necessary parts of solver
     populate_parameters();
     initialize_mesh();
@@ -548,6 +569,9 @@ TEST_F(TurbLESTest, test_kosovic_setup_calc)
     // Set up uniform unity density field
     auto& dens = sim().repo().get_field("density");
     dens.setVal(rho0);
+    // Set up temperature field with constant gradient in z
+    auto& temp = sim().repo().get_field("temperature");
+    temp.setVal(300.0);
 
     // Update turbulent viscosity directly
     tmodel.update_turbulent_viscosity(
