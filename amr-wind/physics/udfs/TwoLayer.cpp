@@ -18,8 +18,8 @@ TwoLayer::TwoLayer(const Field& fld)
         const int ncomp = fld.num_comp();
         amrex::ParmParse pp("TwoLayer");
 
-        amrex::Vector<amrex::Real> top_vel(0.0, ncomp);
-        amrex::Vector<amrex::Real> bottom_vel(0.0, ncomp);
+        amrex::Vector<amrex::Real> top_vel(ncomp, 0.0);
+        amrex::Vector<amrex::Real> bottom_vel(ncomp, 0.0);
         pp.getarr("top_vel", top_vel);
         pp.getarr("bottom_vel", bottom_vel);
 
