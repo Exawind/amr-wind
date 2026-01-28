@@ -5,6 +5,9 @@
 #include "amr-wind/utilities/sampling/SamplingUtils.H"
 #include "amr-wind/utilities/sampling/LineSampler.H"
 #include "amr-wind/core/vs/vector_space.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::sampling {
 
@@ -40,11 +43,11 @@ public:
 
     void new_cone();
 
-    double total_sweep_time() const;
-    double periodic_time();
+    amrex::Real total_sweep_time() const;
+    amrex::Real periodic_time();
     int sweep_count() const;
     phase determine_operation_phase() const;
-    double determine_current_sweep_angle() const;
+    amrex::Real determine_current_sweep_angle() const;
 
     //! Populate and return a vector of probe locations to be sampled
     void sampling_locations(SampleLocType& /*sample_locs**/) const override;
@@ -73,7 +76,7 @@ public:
         const size_t /*unused*/) const override;
 
     bool output_netcdf_field(
-        const std::vector<double>& output_buffer,
+        const std::vector<amrex::Real>& output_buffer,
         ncutils::NCGroup& grp,
         const size_t nt) override;
 
@@ -117,9 +120,9 @@ public:
     long num_points_quad() const { return 1 + m_ntheta * (m_nphi - 1); }
 
     static void line_average(
-        const std::vector<double>& weights,
-        const std::vector<double>& values,
-        std::vector<double>& reduced,
+        const std::vector<amrex::Real>& weights,
+        const std::vector<amrex::Real>& values,
+        std::vector<amrex::Real>& reduced,
         long offset);
 
     //! Run data modification for specific sampler
@@ -128,12 +131,12 @@ public:
     bool do_subsampling_interp() override { return true; }
 
     //! Modify sample buffer after sampling happens
-    std::vector<double> modify_sample_data(
-        const std::vector<double>& sample_data,
+    std::vector<amrex::Real> modify_sample_data(
+        const std::vector<amrex::Real>& sample_data,
         const std::string& /*unused*/) override;
 
     void calc_lineofsight_velocity(
-        const std::vector<std::vector<double>>& /*velocity_raw*/,
+        const std::vector<std::vector<amrex::Real>>& /*velocity_raw*/,
         const int /*interp_idx*/) override;
 
 protected:
@@ -142,7 +145,7 @@ protected:
     std::string m_label;
     int m_id{-1};
 
-    amrex::Real m_radtodeg{180.0 / M_PI};
+    amrex::Real m_radtodeg{180.0_rt / static_cast<amrex::Real>(M_PI)};
 
     amrex::Vector<amrex::Real> m_start;
     amrex::Vector<amrex::Real> m_end;
@@ -155,12 +158,12 @@ protected:
     LosRotType m_los_proj;
     LosUnitType m_los_unit;
 
-    std::vector<double> m_los_velocity;
-    std::vector<double> m_los_velocity_next;
-    std::vector<double> m_los_velocity_prior;
-    std::vector<double> m_los_velocity_interp;
+    std::vector<amrex::Real> m_los_velocity;
+    std::vector<amrex::Real> m_los_velocity_next;
+    std::vector<amrex::Real> m_los_velocity_prior;
+    std::vector<amrex::Real> m_los_velocity_interp;
 
-    std::vector<double> m_weights;
+    std::vector<amrex::Real> m_weights;
     std::vector<vs::Vector> m_rays;
 
     amrex::Real m_sample_freq;       // Simulation sample rate
@@ -200,7 +203,7 @@ protected:
     long m_num_points_prior;
     long m_num_output_points_prior;
 
-    amrex::Real m_fill_val{-99999.99};
+    amrex::Real m_fill_val{-99999.99_rt};
 };
 
 } // namespace amr_wind::sampling

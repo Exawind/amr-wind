@@ -3,6 +3,9 @@
 
 #include <string>
 #include "amr-wind/turbulence/TurbModelBase.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::turbulence {
 
@@ -50,14 +53,14 @@ private:
     Field& m_rho;
     Field* m_tke{nullptr};
     //! Turbulence constant
-    amrex::Real m_Cmu{0.556};
-    amrex::Real m_Cmu_prime{0.556};
-    amrex::Real m_Cb_stable{0.25};
-    amrex::Real m_Cb_unstable{0.35};
-    amrex::Real m_prandtl{1.0};
+    amrex::Real m_Cmu{0.556_rt};
+    amrex::Real m_Cmu_prime{0.556_rt};
+    amrex::Real m_Cb_stable{0.25_rt};
+    amrex::Real m_Cb_unstable{0.35_rt};
+    amrex::Real m_prandtl{1.0_rt};
     Field& m_temperature;
     //! Gravity vector (m/s^2)
-    amrex::Vector<amrex::Real> m_gravity{0.0, 0.0, -9.81};
+    amrex::Vector<amrex::Real> m_gravity{0.0_rt, 0.0_rt, -9.81_rt};
     amrex::Real m_surf_flux{0};
     amrex::Real m_meso_sponge_start{2000};
 };

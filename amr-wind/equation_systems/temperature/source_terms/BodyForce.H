@@ -1,12 +1,12 @@
 #ifndef BODYFORCE_H
 #define BODYFORCE_H
 
+#include <cstddef>
 #include "amr-wind/equation_systems/temperature/TemperatureSource.H"
 #include "amr-wind/core/SimTime.H"
-#include <AMReX_GpuContainers.H>
-#include <AMReX_REAL.H>
-#include <AMReX_Vector.H>
-#include <cstddef>
+#include "AMReX_GpuContainers.H"
+#include "AMReX_REAL.H"
+#include "AMReX_Vector.H"
 
 namespace amr_wind::pde::temperature {
 

@@ -6,6 +6,9 @@
 #include "amr-wind/CFDSim.H"
 #include "AMReX_Gpu.H"
 #include <AMReX_BndryRegister.H>
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind {
 
@@ -74,10 +77,10 @@ private:
     bool m_terrain_exists{false};
 
     // Store time corresponding to current boundary data
-    amrex::Real m_bndry_time{0.0};
+    amrex::Real m_bndry_time{0.0_rt};
 
     // Will only remain negative if not needed
-    amrex::Real m_rho1{-1.0};
+    amrex::Real m_rho1{-1.0_rt};
 };
 
 } // namespace amr_wind

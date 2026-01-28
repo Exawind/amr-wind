@@ -8,6 +8,9 @@
 #include "amr-wind/CFDSim.H"
 
 #include "AMReX_ParmParse.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::pde {
 
@@ -115,7 +118,7 @@ struct SrcTermOpBase
     operator()(const FieldState fstate, const bool /* mesh_mapping */)
     {
         // Zero out source term
-        this->fields.src_term.setVal(0.0);
+        this->fields.src_term.setVal(0.0_rt);
 
         // Return early if there are no source terms to process
         if (this->sources.empty()) {

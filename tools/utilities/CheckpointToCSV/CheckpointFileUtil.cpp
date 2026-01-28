@@ -74,7 +74,7 @@ CheckpointFileDataImpl::CheckpointFileDataImpl(
         std::istringstream lis(line);
         int i = 0;
         while (lis >> word) {
-            m_prob_lo[i++] = std::stod(word);
+            m_prob_lo[i++] = static_cast<amrex::Real>(std::stod(word));
         }
     }
 
@@ -84,7 +84,7 @@ CheckpointFileDataImpl::CheckpointFileDataImpl(
         std::istringstream lis(line);
         int i = 0;
         while (lis >> word) {
-            m_prob_hi[i++] = std::stod(word);
+            m_prob_hi[i++] = static_cast<amrex::Real>(std::stod(word));
         }
     }
 

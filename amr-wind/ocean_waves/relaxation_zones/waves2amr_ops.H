@@ -11,6 +11,9 @@
 #include "amr-wind/core/field_ops.H"
 #include "amr-wind/equation_systems/BCOps.H"
 #include "AMReX_MultiFabUtil.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 #ifdef AMR_WIND_USE_W2A
 namespace {
@@ -270,7 +273,7 @@ struct ReadInputsOp<W2AWaves>
                                         : wdata.r_rmodes.get_dtout();
 
         // Get initial time and timestep synced
-        if (wdata.t_winit > 0.0) {
+        if (wdata.t_winit > 0.0_rt) {
             // If initial time was specified
             // Get time index near requested time
             wdata.ntime =
@@ -294,10 +297,10 @@ struct ReadInputsOp<W2AWaves>
                        << std::endl;
 
         // Initialize variables to store modes
-        amrex::Real depth{0.0};
+        amrex::Real depth{0.0_rt};
         if (wdata.is_ocean) {
             int vsize = wdata.c_rmodes.get_vector_size();
-            double initval = 0.0;
+            amrex::Real initval = 0.0_rt;
             wdata.c_mX.resize(vsize, initval);
             wdata.c_mY.resize(vsize, initval);
             wdata.c_mZ.resize(vsize, initval);
@@ -332,7 +335,7 @@ struct ReadInputsOp<W2AWaves>
         } else {
             int vsize = wdata.r_rmodes.get_vector_size();
             int vasize = wdata.r_rmodes.get_addl_vector_size();
-            double initval = 0.0;
+            amrex::Real initval = 0.0_rt;
             wdata.r_mX.resize(vsize, initval);
             wdata.r_mY.resize(vsize, initval);
             wdata.r_mZ.resize(vsize, initval);
@@ -449,8 +452,8 @@ struct ReadInputsOp<W2AWaves>
         bool found_z_double{false};
         for (int n = 0; n < wdata.hvec.size() - 1; ++n) {
             const amrex::Real dz = wdata.hvec[n] - wdata.hvec[n + 1];
-            if (!found_z_double && dz >= 2.0 * dz0) {
-                z_double = 0.5 * (wdata.hvec[n] + wdata.hvec[n + 1]);
+            if (!found_z_double && dz >= 2.0_rt * dz0) {
+                z_double = 0.5_rt * (wdata.hvec[n] + wdata.hvec[n + 1]);
                 found_z_double = true;
             }
         }
@@ -520,7 +523,7 @@ struct ReadInputsOp<W2AWaves>
                 wdata.n0, wdata.n1, wdata.c_mFS, wdata.c_eta_mptr);
             wdata.sp_eta_vec.resize(
                 static_cast<size_t>(wdata.n0) * static_cast<size_t>(wdata.n1),
-                0.0);
+                0.0_rt);
             modes_hosgrid::populate_hos_eta(
                 wdata.c_rmodes, wdata.plan_vector, wdata.c_eta_mptr,
                 wdata.sp_eta_vec);
@@ -547,7 +550,7 @@ struct ReadInputsOp<W2AWaves>
                 wdata.n0, wdata.n1, wdata.r_mFS, wdata.r_eta_mptr);
             wdata.sp_eta_vec.resize(
                 static_cast<size_t>(wdata.n0) * static_cast<size_t>(wdata.n1),
-                0.0);
+                0.0_rt);
             modes_hosgrid::populate_hos_eta(
                 wdata.r_rmodes, wdata.plan_vector, wdata.r_eta_mptr,
                 wdata.sp_eta_vec);
@@ -623,8 +626,8 @@ struct InitDataOp<W2AWaves>
         const auto& probhi = geom.ProbHiArray();
         const auto& dx = geom.CellSizeArray();
 
-        // Set t_last to 0.0 to signify information read in
-        wdata.t_last = 0.0;
+        // Set t_last to 0.0_rt to signify information read in
+        wdata.t_last = 0.0_rt;
 
         // indvec is complete upon initialization (all heights every proc)
         amrex::Vector<int> indvec(wdata.hvec.size());
@@ -673,16 +676,17 @@ struct InitDataOp<W2AWaves>
         amrex::ParallelFor(
             velocity(level), amrex::IntVect(3),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-                const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
-                const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+                const amrex::Real x = problo[0] + (i + 0.5_rt) * dx[0];
+                const amrex::Real y = problo[1] + (j + 0.5_rt) * dx[1];
+                const amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
 
                 // Wave profile
                 const utils::WaveVec wave_sol{
                     ow_vel[nbx](i, j, k, 0), ow_vel[nbx](i, j, k, 1),
                     ow_vel[nbx](i, j, k, 2), ow_phi[nbx](i, j, k) + z};
                 // Quiescent profile
-                const utils::WaveVec quiescent{0.0, 0.0, 0.0, zero_sea_level};
+                const utils::WaveVec quiescent{
+                    0.0_rt, 0.0_rt, 0.0_rt, zero_sea_level};
 
                 // Specify initial state for each region of domain
                 const auto bulk = init_wave_field ? wave_sol : quiescent;
@@ -732,11 +736,11 @@ struct InitDataOp<W2AWaves>
                     // Velocity of liquid becomes velocity of entire cell
                     // Interpolate using cell-centered values to liquid centroid
                     // Consider only z-direction to find centroid
-                    const amrex::Real z_cell = problo[2] + (k + 0.5) * dx[2];
+                    const amrex::Real z_cell = problo[2] + (k + 0.5_rt) * dx[2];
                     const amrex::Real z_cell_below = z_cell - dx[2];
-                    const amrex::Real z_cell_bottom = z_cell - 0.5 * dx[2];
+                    const amrex::Real z_cell_bottom = z_cell - 0.5_rt * dx[2];
                     const amrex::Real z_liq_center =
-                        z_cell_bottom + 0.5 * vof_local * dx[2];
+                        z_cell_bottom + 0.5_rt * vof_local * dx[2];
                     for (int n = 0; n < AMREX_SPACEDIM; ++n) {
                         vel[nbx](i, j, k, n) =
                             vel_tmp[nbx](i, j, k - 1, n) +
@@ -880,7 +884,7 @@ struct UpdateTargetFieldsOp<W2AWaves>
                     wdata.sp_eta_vec.resize(
                         static_cast<size_t>(wdata.n0) *
                             static_cast<size_t>(wdata.n1),
-                        0.0);
+                        0.0_rt);
                     wdata.sp_u_vec.resize(
                         static_cast<size_t>(wdata.n0 * wdata.n1) *
                         wdata.indvec.size());

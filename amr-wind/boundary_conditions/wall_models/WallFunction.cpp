@@ -9,6 +9,9 @@
 #include "AMReX_ParmParse.H"
 #include "AMReX_Print.H"
 #include "AMReX_ParallelDescriptor.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind {
 
@@ -16,11 +19,11 @@ WallFunction::WallFunction(CFDSim& sim)
     : m_sim(sim), m_mesh(m_sim.mesh()), m_pa_vel(sim, m_direction)
 {
     amrex::Real mu;
-    amrex::Real rho{1.0};
+    amrex::Real rho{1.0_rt};
 
     {
         amrex::ParmParse pp("BodyForce");
-        amrex::Vector<amrex::Real> body_force{0.0, 0.0, 0.0};
+        amrex::Vector<amrex::Real> body_force{0.0_rt, 0.0_rt, 0.0_rt};
         pp.getarr("magnitude", body_force);
         m_log_law.utau_mean = std::sqrt(
             std::sqrt(
@@ -44,7 +47,7 @@ WallFunction::WallFunction(CFDSim& sim)
         const auto& geom = m_mesh.Geom(0);
         m_log_law.zref =
             (geom.ProbLo(m_direction) +
-             (m_log_law.ref_index + 0.5) * geom.CellSize(m_direction));
+             (m_log_law.ref_index + 0.5_rt) * geom.CellSize(m_direction));
     }
     {
         amrex::ParmParse pp(
@@ -129,7 +132,7 @@ void VelWallFunc::wall_model(
                         const amrex::Real vv =
                             vold_arr(i, j, k + idx_offset, 1);
                         const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
-                        const amrex::Real xc = problo[0] + (i + 0.5) * dx[0];
+                        const amrex::Real xc = problo[0] + (i + 0.5_rt) * dx[0];
 
                         if (dx[0] <= dx[2]) {
                             // Use the nearest cell value without interpolation
@@ -148,13 +151,15 @@ void VelWallFunc::wall_model(
                                 mu * den(i, j, k);
                         } else {
                             const int k_lo = static_cast<int>(
-                                std::floor(dx[0] / dx[2] - 0.5));
+                                std::floor(dx[0] / dx[2] - 0.5_rt));
                             const int k_hi = k_lo + 1;
 
                             if (bx.contains(amrex::IntVect(i, j, k_lo)) &&
                                 bx.contains(amrex::IntVect(i, j, k_hi))) {
-                                const amrex::Real z_lo = (k_lo + 0.5) * dx[2];
-                                const amrex::Real z_hi = (k_hi + 0.5) * dx[2];
+                                const amrex::Real z_lo =
+                                    (k_lo + 0.5_rt) * dx[2];
+                                const amrex::Real z_hi =
+                                    (k_hi + 0.5_rt) * dx[2];
                                 const amrex::Real z_interp = dx[0];
                                 AMREX_ALWAYS_ASSERT(
                                     (z_lo <= z_interp) && (z_interp < z_hi));
@@ -196,7 +201,7 @@ void VelWallFunc::wall_model(
                             }
                         }
 
-                        varr(i, j, k - 1, 2) = 0.0;
+                        varr(i, j, k - 1, 2) = 0.0_rt;
                     });
             }
 
@@ -212,7 +217,7 @@ void VelWallFunc::wall_model(
                             vold_arr(i, j, k - 1 - idx_offset, 1);
                         const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
                         // Dirichlet BC
-                        varr(i, j, k, 2) = 0.0;
+                        varr(i, j, k, 2) = 0.0_rt;
 
                         // Shear stress BC
                         varr(i, j, k, 0) =
@@ -273,11 +278,11 @@ void VelWallFunc::wall_model(
                         const amrex::Real mu = eta(i, j, k);
 
                         // Dirichlet BC
-                        varr(i, j, k - 1, 2) = 0.0;
+                        varr(i, j, k - 1, 2) = 0.0_rt;
 
                         // Shear stress BC
                         varr(i, j, k - 1, 0) = utau * utau / mu * den(i, j, k);
-                        varr(i, j, k - 1, 1) = 0.0;
+                        varr(i, j, k - 1, 1) = 0.0_rt;
                     });
             }
 
@@ -289,11 +294,11 @@ void VelWallFunc::wall_model(
                         const amrex::Real mu = eta(i, j, k - 1);
 
                         // Dirichlet BC
-                        varr(i, j, k, 2) = 0.0;
+                        varr(i, j, k, 2) = 0.0_rt;
 
                         // Shear stress BC
                         varr(i, j, k, 0) = utau * utau / mu * den(i, j, k);
-                        varr(i, j, k, 1) = 0.0;
+                        varr(i, j, k, 1) = 0.0_rt;
                     });
             }
         }

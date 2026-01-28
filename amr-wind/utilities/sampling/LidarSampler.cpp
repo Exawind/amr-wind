@@ -2,8 +2,10 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/utilities/tensor_ops.H"
 #include "amr-wind/utilities/linear_interpolation.H"
-
 #include "AMReX_ParmParse.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind {
 namespace sampling {
@@ -50,7 +52,7 @@ void LidarSampler::initialize(const std::string& key)
 
     // Initialize the star and end variables
     m_start = m_origin;
-    m_end = {0., 0., 0.};
+    m_end = {0.0_rt, 0.0_rt, 0.0_rt};
 
     // The period to know if the table repeats in time
     m_period = m_time_table[np - 1] - m_time_table[0];
@@ -75,7 +77,7 @@ bool LidarSampler::update_sampling_locations()
         ::amr_wind::interp::linear(m_time_table, m_azimuth_table, time));
 
     const amrex::Real current_elevation = utils::radians(
-        90. -
+        90.0_rt -
         ::amr_wind::interp::linear(m_time_table, m_elevation_table, time));
 
     // Coordinate transform spherical to cartesian

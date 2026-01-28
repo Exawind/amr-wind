@@ -8,8 +8,11 @@
 #include "AMReX_Geometry.H"
 #include "AMReX_RealBox.H"
 #include "AMReX_Vector.H"
+#include "AMReX_REAL.H"
 
 #include "amr-wind/utilities/FieldPlaneAveragingFine.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind_tests {
 
@@ -22,8 +25,8 @@ protected:
 
         {
             amrex::ParmParse pp("geometry");
-            amrex::Vector<amrex::Real> problo{{0.0, 0.0, 0.0}};
-            amrex::Vector<amrex::Real> probhi{{8.0, 8.0, 8.0}};
+            amrex::Vector<amrex::Real> problo{{0.0_rt, 0.0_rt, 0.0_rt}};
+            amrex::Vector<amrex::Real> probhi{{8.0_rt, 8.0_rt, 8.0_rt}};
 
             pp.addarr("prob_lo", problo);
             pp.addarr("prob_hi", probhi);
@@ -64,8 +67,8 @@ public:
     void test_dir(int /*dir*/);
     const amrex::Real z_fine_lo = 2;
     const amrex::Real z_fine_hi = 4;
-    const amrex::Real z_fine_lo_in = z_fine_lo + 0.1;
-    const amrex::Real z_fine_hi_in = z_fine_hi - 0.1;
+    const amrex::Real z_fine_lo_in = z_fine_lo + 0.1_rt;
+    const amrex::Real z_fine_hi_in = z_fine_hi - 0.1_rt;
 };
 
 namespace {
@@ -85,17 +88,17 @@ void init_field_linear(
         amrex::ParallelFor(
             fld(lev), fld.num_grow(),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                amrex::Real off = 0.5;
+                amrex::Real off = 0.5_rt;
                 // Set values at boundaries if outside domain
                 if (k < 0) {
-                    off += 0.5;
+                    off += 0.5_rt;
                 }
                 if (k > 8 * (lev + 1) - 1) {
-                    off -= 0.5;
+                    off -= 0.5_rt;
                 }
                 const amrex::GpuArray<amrex::Real, 3> x = {
-                    problo[0] + (i + 0.5) * dx[0],
-                    problo[1] + (j + 0.5) * dx[1],
+                    problo[0] + (i + 0.5_rt) * dx[0],
+                    problo[1] + (j + 0.5_rt) * dx[1],
                     problo[2] + (k + off) * dx[2]};
                 farrs[nbx](i, j, k, 0) = x[dir] * a[0];
                 farrs[nbx](i, j, k, 1) = x[dir] * a[1];
@@ -109,9 +112,10 @@ void init_field_linear(
 TEST_F(FieldPlaneAveragingFineTest, test_linear_fine_only)
 {
 
-    constexpr double tol = 1.0e-12;
+    constexpr amrex::Real tol = 1.0e-12_rt;
 
-    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> u0 = {{1.0, 3.5, 5.6}};
+    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> u0 = {
+        {1.0_rt, 3.5_rt, 5.6_rt}};
 
     populate_parameters();
     initialize_mesh();
@@ -160,9 +164,10 @@ TEST_F(FieldPlaneAveragingFineTest, test_linear_fine_only)
 TEST_F(FieldPlaneAveragingFineTest, test_linear)
 {
 
-    constexpr double tol = 1.0e-12;
+    constexpr amrex::Real tol = 1.0e-12_rt;
 
-    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> u0 = {{1.0, 3.5, 5.6}};
+    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> u0 = {
+        {1.0_rt, 3.5_rt, 5.6_rt}};
 
     populate_parameters();
     initialize_mesh();
@@ -179,9 +184,9 @@ TEST_F(FieldPlaneAveragingFineTest, test_linear)
 
     constexpr int n = 20;
     const amrex::Real L = z_fine_hi - z_fine_lo;
-    const amrex::Real dz = L / ((amrex::Real)n);
-    const amrex::Real half_dz_pa = 0.25;
-    const int n_more = static_cast<int>((8. - 2. * half_dz_pa) / dz);
+    const amrex::Real dz = L / (static_cast<amrex::Real>(n));
+    const amrex::Real half_dz_pa = 0.25_rt;
+    const int n_more = static_cast<int>((8.0_rt - 2.0_rt * half_dz_pa) / dz);
 
     // test along a line spanning domain, from first point to last
     for (int i = 0; i < n_more; ++i) {

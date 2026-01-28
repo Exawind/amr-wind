@@ -2,6 +2,9 @@
 #define DENSITY_OPS_H
 
 #include "amr-wind/equation_systems/density/density.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::pde {
 
@@ -37,7 +40,7 @@ struct ComputeRHSOp<Density, Scheme>
                     rho_arrs[nbx](i, j, k) = rho_o_arrs[nbx](i, j, k) +
                                              dt * ddt_o_arrs[nbx](i, j, k);
                     // Defer n+1/2 update to the time-stepping algorithm
-                    // rho_nph(i, j, k) = 0.5 * (rho(i, j, k) + rho_o(i, j,
+                    // rho_nph(i, j, k) = 0.5_rt * (rho(i, j, k) + rho_o(i, j,
                     // k));
                 });
         }
@@ -66,11 +69,11 @@ struct ComputeRHSOp<Density, Scheme>
                 [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                     rho_arrs[nbx](i, j, k) =
                         rho_o_arrs[nbx](i, j, k) +
-                        dt * 0.5 *
+                        dt * 0.5_rt *
                             (ddt_o_arrs[nbx](i, j, k) + ddt_arrs[nbx](i, j, k));
                     // Defer n+1/2 update to time-stepping algorithm
                     // rho_nph(i, j, k) =
-                    //     0.5 * (rho(i, j, k) + rho_o(i, j, k));
+                    //     0.5_rt * (rho(i, j, k) + rho_o(i, j, k));
                 });
         }
         amrex::Gpu::streamSynchronize();

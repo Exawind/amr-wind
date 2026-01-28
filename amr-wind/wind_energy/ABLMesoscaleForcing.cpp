@@ -2,9 +2,12 @@
 #include "amr-wind/utilities/linear_interpolation.H"
 #include "AMReX_Print.H"
 #include "AMReX_ParmParse.H"
+#include "AMReX_REAL.H"
 
 // WORKAROUND
 #include <fstream>
+
+using namespace amrex::literals;
 
 namespace amr_wind {
 
@@ -50,7 +53,7 @@ ABLMesoscaleForcing::ABLMesoscaleForcing(
                 amrex::Real zmin = m_mesh.Geom(0).ProbLo(m_axis);
                 amrex::Real zmax = m_mesh.Geom(0).ProbHi(m_axis);
                 m_weighting_heights = {zmin, zmax};
-                m_weighting_values = {1.0, 1.0};
+                m_weighting_values = {1.0_rt, 1.0_rt};
             }
         } else {
             // weightings will be automatically set based on forcing transition
@@ -75,7 +78,7 @@ ABLMesoscaleForcing::ABLMesoscaleForcing(
         if ((pp.query("normalize_by_zmax", m_norm_zmax) == 1) &&
             (m_norm_zmax != 0)) {
             amrex::Real zmax = m_mesh.Geom(0).ProbHi(m_axis);
-            m_scaleFact = 1.0 / zmax;
+            m_scaleFact = 1.0_rt / zmax;
             amrex::Print() << "  set scaling factor to " << m_scaleFact
                            << std::endl;
         }
@@ -91,12 +94,12 @@ void ABLMesoscaleForcing::set_transition_weighting()
     m_blending_heights = {
         zmin, m_transition_height, m_transition_height + m_transition_thickness,
         zmax};
-    m_blending_values = {1.0, 1.0, 0.0, 0.0};
+    m_blending_values = {1.0_rt, 1.0_rt, 0.0_rt, 0.0_rt};
 
     if (!m_user_specified_weighting) {
         // set weighting profile based on forcing transition
         m_weighting_heights = m_blending_heights;
-        m_weighting_values = {1.0, 1.0, 0.0, 0.0};
+        m_weighting_values = {1.0_rt, 1.0_rt, 0.0_rt, 0.0_rt};
         amrex::Print() << "setting new weighting profile" << std::endl;
         for (int i = 0; i < m_weighting_heights.size(); ++i) {
             amrex::Print() << "  " << m_weighting_heights[i] << " "
@@ -152,13 +155,14 @@ void ABLMesoscaleForcing::indirect_forcing_init()
     for (int irow = 0; irow < 4; irow++) {
         for (int icol = 0; icol < 4; icol++) {
 
-            zTz(irow, icol) = 0.0;
+            zTz(irow, icol) = 0.0_rt;
 
             for (int iht = 0; iht < m_nht; iht++) {
                 zTz(irow, icol) =
                     zTz(irow, icol) +
-                    m_W[iht] *
-                        std::pow(m_zht[iht] * m_scaleFact, (icol + irow));
+                    m_W[iht] * std::pow(
+                                   m_zht[iht] * m_scaleFact,
+                                   static_cast<amrex::Real>(icol + irow));
             }
             // amrex::Print()<< "Z^T W Z ["<<irow<<","<<icol<<"] : " <<
             // zTz(irow,icol) << std::endl;
@@ -197,7 +201,7 @@ void ABLMesoscaleForcing::invert_mat(
         m(0, 1) * (m(1, 0) * A2323 - m(1, 2) * A0323 + m(1, 3) * A0223) +
         m(0, 2) * (m(1, 0) * A1323 - m(1, 1) * A0323 + m(1, 3) * A0123) -
         m(0, 3) * (m(1, 0) * A1223 - m(1, 1) * A0223 + m(1, 2) * A0123);
-    det = 1.0 / det;
+    det = 1.0_rt / det;
 
     im(0, 0) = det * (m(1, 1) * A2323 - m(1, 2) * A1323 + m(1, 3) * A1223);
     im(0, 1) = det * -(m(0, 1) * A2323 - m(0, 2) * A1323 + m(0, 3) * A1223);
@@ -282,7 +286,7 @@ void ABLMesoscaleForcing::blend_forcings(
     amrex::Print() << "Blending forcings" << std::endl;
     for (int iht = 0; iht < m_nht; iht++) {
         error[iht] =
-            m_blend[iht] * lower[iht] + (1.0 - m_blend[iht]) * upper[iht];
+            m_blend[iht] * lower[iht] + (1.0_rt - m_blend[iht]) * upper[iht];
     }
 }
 

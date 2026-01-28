@@ -14,6 +14,9 @@
 #include "hydro_utils.H"
 
 #include "amr-wind/equation_systems/vof/vof_momentum_flux.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::pde {
 
@@ -196,7 +199,7 @@ struct AdvectionOp<
                     (godunov_scheme == godunov::scheme::BDS)) {
                     amrex::FArrayBox tmpfab(
                         amrex::grow(bx, 1), 1, amrex::The_Async_Arena());
-                    tmpfab.setVal<amrex::RunOn::Device>(0.0);
+                    tmpfab.setVal<amrex::RunOn::Device>(0.0_rt);
                     const auto& divu = tmpfab.array();
                     const bool is_velocity = false;
                     const bool known_edge_state = false;
@@ -217,7 +220,7 @@ struct AdvectionOp<
                     // if state is NPH, then n and n+1 are known, and only
                     // spatial extrapolation is performed
                     const amrex::Real dt_extrap =
-                        (fstate == FieldState::NPH) ? 0.0 : dt;
+                        (fstate == FieldState::NPH) ? 0.0_rt : dt;
 
                     HydroUtils::ComputeFluxesOnBoxFromState(
                         bx, PDE::ndim, mfi,
@@ -285,7 +288,7 @@ struct AdvectionOp<
                 HydroUtils::ComputeDivergence(
                     bx, conv_term(lev).array(mfi), (*flux_x)(lev).array(mfi),
                     (*flux_y)(lev).array(mfi), (*flux_z)(lev).array(mfi),
-                    PDE::ndim, geom[lev], amrex::Real(-1.0),
+                    PDE::ndim, geom[lev], amrex::Real(-1.0_rt),
                     fluxes_are_area_weighted);
             }
         }

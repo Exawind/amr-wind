@@ -5,6 +5,9 @@
 #include "AMReX_Gpu.H"
 #include "AMReX_ParmParse.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind {
 
@@ -59,9 +62,9 @@ bool ABLFieldInitFile::operator()(
         // Working vector to read data onto host
         const auto dlen = count[0] * count[1] * count[2];
         // Vector to store the 3d data into a single array and set size
-        amrex::Gpu::DeviceVector<amrex::Real> uvel_d(dlen, 0.0);
-        amrex::Gpu::DeviceVector<amrex::Real> vvel_d(dlen, 0.0);
-        amrex::Gpu::DeviceVector<amrex::Real> wvel_d(dlen, 0.0);
+        amrex::Gpu::DeviceVector<amrex::Real> uvel_d(dlen, 0.0_rt);
+        amrex::Gpu::DeviceVector<amrex::Real> vvel_d(dlen, 0.0_rt);
+        amrex::Gpu::DeviceVector<amrex::Real> wvel_d(dlen, 0.0_rt);
 
         // Open the netcdf input file
         // This file should have the same dimensions as the simulation
@@ -77,7 +80,7 @@ bool ABLFieldInitFile::operator()(
             auto wvel = ncf.var("wvel");
 
             // Read the velocity components u, v, w and copy to device
-            amrex::Vector<double> tmp(dlen, 0.0);
+            amrex::Vector<amrex::Real> tmp(dlen, 0.0_rt);
             uvel.get(tmp.data(), start, count);
             amrex::Gpu::copy(
                 amrex::Gpu::hostToDevice, tmp.begin(), tmp.end(),

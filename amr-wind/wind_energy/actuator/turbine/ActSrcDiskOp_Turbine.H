@@ -1,10 +1,13 @@
 #ifndef ACTSRCDISKOP_TURBINE_H_
 #define ACTSRCDISKOP_TURBINE_H_
 
+#include "AMReX_REAL.H"
 #include "amr-wind/wind_energy/actuator/actuator_ops.H"
 #include "amr-wind/wind_energy/actuator/actuator_utils.H"
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/wind_energy/actuator/turbine/turbine_types.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::actuator::ops {
 
@@ -106,19 +109,19 @@ operator()(const int lev, const amrex::MFIter& mfi, const amrex::Geometry& geom)
     // assume constant dr same for all blades
     const auto* host_pos = tdata.blades[0].pos.data();
     const amrex::Real dR = vs::mag_sqr(host_pos[0] - host_pos[1]);
-    const amrex::Real dT = 2.0 * ::amr_wind::utils::pi() / tdata.num_blades;
+    const amrex::Real dT = 2.0_rt * ::amr_wind::utils::pi() / tdata.num_blades;
     // assume these will be copied to device by the lambda capture...
     const vs::Vector m_normal(tdata.rotor_frame.x());
     const vs::Vector m_origin(tdata.rot_center);
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const vs::Vector cc{
-            problo[0] + (i + 0.5) * dx[0],
-            problo[1] + (j + 0.5) * dx[1],
-            problo[2] + (k + 0.5) * dx[2],
+            problo[0] + (i + 0.5_rt) * dx[0],
+            problo[1] + (j + 0.5_rt) * dx[1],
+            problo[2] + (k + 0.5_rt) * dx[2],
         };
 
-        amrex::RealArray src_force = {0.0};
+        amrex::RealArray src_force = {0.0_rt};
         for (int ib = 0; ib < nBlades; ++ib) {
             // blade/disk contribution
             {

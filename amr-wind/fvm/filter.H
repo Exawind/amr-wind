@@ -5,6 +5,9 @@
 #include "AMReX_Array4.H"
 #include "AMReX_Geometry.H"
 #include "AMReX_MFIter.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::fvm {
 
@@ -66,7 +69,7 @@ struct Filter
                          f * phi_arr(i, j, k, icomp) +
                          fm1 * phi_arr(i, j, k - 1, icomp));
                     filterphi_arr(i, j, k, icomp) =
-                        1. / 3. * (filx + fily + filz);
+                        1.0_rt / 3.0_rt * (filx + fily + filz);
                 }
             });
     }

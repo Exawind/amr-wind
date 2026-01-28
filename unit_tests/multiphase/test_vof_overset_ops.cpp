@@ -2,6 +2,9 @@
 #include "aw_test_utils/iter_tools.H"
 #include "aw_test_utils/test_utils.H"
 #include "amr-wind/overset/overset_ops_routines.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind_tests {
 
@@ -21,8 +24,8 @@ protected:
         }
         {
             amrex::ParmParse pp("geometry");
-            amrex::Vector<amrex::Real> problo{{0.0, 0.0, 0.0}};
-            amrex::Vector<amrex::Real> probhi{{1.0, 1.0, 1.0}};
+            amrex::Vector<amrex::Real> problo{{0.0_rt, 0.0_rt, 0.0_rt}};
+            amrex::Vector<amrex::Real> probhi{{1.0_rt, 1.0_rt, 1.0_rt}};
 
             pp.addarr("prob_lo", problo);
             pp.addarr("prob_hi", probhi);
@@ -45,60 +48,60 @@ void init_vof_etc(
         const auto& bx = mfi.validbox();
         amrex::ParallelFor(
             grow(bx, 2), [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-                vof_arr(i, j, k) = 0.0;
-                tgvof_arr(i, j, k) = 0.;
-                norm_arr(i, j, k, dir) = 1.0;
+                vof_arr(i, j, k) = 0.0_rt;
+                tgvof_arr(i, j, k) = 0.0_rt;
+                norm_arr(i, j, k, dir) = 1.0_rt;
                 const int idx = (dir == 0 ? i : (dir == 1 ? j : k));
                 if (idx == -1) {
                     // Within margin
-                    vof_arr(i, j, k) = 0.41;
-                    tgvof_arr(i, j, k) = 0.5;
-                    norm_arr(i, j, k, dir) = -1.0;
+                    vof_arr(i, j, k) = 0.41_rt;
+                    tgvof_arr(i, j, k) = 0.5_rt;
+                    norm_arr(i, j, k, dir) = -1.0_rt;
                 } else if (idx == 0) {
                     // Within margin
-                    vof_arr(i, j, k) = 0.55;
-                    tgvof_arr(i, j, k) = 0.5;
-                    norm_arr(i, j, k, dir) = 1.0;
+                    vof_arr(i, j, k) = 0.55_rt;
+                    tgvof_arr(i, j, k) = 0.5_rt;
+                    norm_arr(i, j, k, dir) = 1.0_rt;
                 } else if (idx == 1) {
                     // Outside margin, low
-                    vof_arr(i, j, k) = 0.1;
-                    tgvof_arr(i, j, k) = 0.2;
-                    norm_arr(i, j, k, dir) = -1.0;
+                    vof_arr(i, j, k) = 0.1_rt;
+                    tgvof_arr(i, j, k) = 0.2_rt;
+                    norm_arr(i, j, k, dir) = -1.0_rt;
                 } else if (idx == 2) {
                     // Also low
-                    vof_arr(i, j, k) = 0.2;
-                    tgvof_arr(i, j, k) = 0.22;
-                    norm_arr(i, j, k, dir) = 1.0;
+                    vof_arr(i, j, k) = 0.2_rt;
+                    tgvof_arr(i, j, k) = 0.22_rt;
+                    norm_arr(i, j, k, dir) = 1.0_rt;
                 } else if (idx == 3) {
                     // Above half
-                    vof_arr(i, j, k) = 0.7;
-                    tgvof_arr(i, j, k) = 0.8;
-                    norm_arr(i, j, k, dir) = -1.0;
+                    vof_arr(i, j, k) = 0.7_rt;
+                    tgvof_arr(i, j, k) = 0.8_rt;
+                    norm_arr(i, j, k, dir) = -1.0_rt;
                 } else if (idx == 4) {
                     // Also high
-                    vof_arr(i, j, k) = 0.65;
-                    tgvof_arr(i, j, k) = 0.91;
-                    norm_arr(i, j, k, dir) = 1.0;
+                    vof_arr(i, j, k) = 0.65_rt;
+                    tgvof_arr(i, j, k) = 0.91_rt;
+                    norm_arr(i, j, k, dir) = 1.0_rt;
                 } else if (idx == 5) {
                     // Also high, positive gradient
-                    vof_arr(i, j, k) = 0.8;
-                    tgvof_arr(i, j, k) = 0.75;
-                    norm_arr(i, j, k, dir) = -1.0;
+                    vof_arr(i, j, k) = 0.8_rt;
+                    tgvof_arr(i, j, k) = 0.75_rt;
+                    norm_arr(i, j, k, dir) = -1.0_rt;
                 } else if (idx == 6) {
                     // Within margin
-                    vof_arr(i, j, k) = 0.45;
-                    tgvof_arr(i, j, k) = 0.5;
-                    norm_arr(i, j, k, dir) = 1.0;
+                    vof_arr(i, j, k) = 0.45_rt;
+                    tgvof_arr(i, j, k) = 0.5_rt;
+                    norm_arr(i, j, k, dir) = 1.0_rt;
                 } else if (idx == 7) {
                     // Low, negative gradient
-                    vof_arr(i, j, k) = 0.3;
-                    tgvof_arr(i, j, k) = 0.2;
-                    norm_arr(i, j, k, dir) = -1.0;
+                    vof_arr(i, j, k) = 0.3_rt;
+                    tgvof_arr(i, j, k) = 0.2_rt;
+                    norm_arr(i, j, k, dir) = -1.0_rt;
                 } else if (idx == 8) {
                     // High
-                    vof_arr(i, j, k) = 0.7;
-                    tgvof_arr(i, j, k) = 0.6;
-                    norm_arr(i, j, k, dir) = 1.0;
+                    vof_arr(i, j, k) = 0.7_rt;
+                    tgvof_arr(i, j, k) = 0.6_rt;
+                    norm_arr(i, j, k, dir) = 1.0_rt;
                 }
             });
     });
@@ -113,29 +116,29 @@ void init_velocity_etc(
         const auto& bx = mfi.validbox();
         amrex::ParallelFor(
             grow(bx, 2), [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-                vel_arr(i, j, k) = 0.0;
-                vof_arr(i, j, k) = 0.0;
+                vel_arr(i, j, k) = 0.0_rt;
+                vof_arr(i, j, k) = 0.0_rt;
                 const int idx = (dir == 0 ? i : (dir == 1 ? j : k));
                 if (idx == -1) {
-                    vof_arr(i, j, k) = 0.41;
-                    vel_arr(i, j, k, 0) = 1.0;
-                    vel_arr(i, j, k, 1) = 2.0;
-                    vel_arr(i, j, k, 2) = 3.0;
+                    vof_arr(i, j, k) = 0.41_rt;
+                    vel_arr(i, j, k, 0) = 1.0_rt;
+                    vel_arr(i, j, k, 1) = 2.0_rt;
+                    vel_arr(i, j, k, 2) = 3.0_rt;
                 } else if (idx == 0) {
-                    vof_arr(i, j, k) = 0.55;
-                    vel_arr(i, j, k, 0) = 1.5;
-                    vel_arr(i, j, k, 1) = 2.5;
-                    vel_arr(i, j, k, 2) = 3.5;
+                    vof_arr(i, j, k) = 0.55_rt;
+                    vel_arr(i, j, k, 0) = 1.5_rt;
+                    vel_arr(i, j, k, 1) = 2.5_rt;
+                    vel_arr(i, j, k, 2) = 3.5_rt;
                 } else if (idx == 1) {
-                    vof_arr(i, j, k) = 0.2;
-                    vel_arr(i, j, k, 0) = 2.0;
-                    vel_arr(i, j, k, 1) = 3.0;
-                    vel_arr(i, j, k, 2) = 4.0;
+                    vof_arr(i, j, k) = 0.2_rt;
+                    vel_arr(i, j, k, 0) = 2.0_rt;
+                    vel_arr(i, j, k, 1) = 3.0_rt;
+                    vel_arr(i, j, k, 2) = 4.0_rt;
                 } else if (idx == 2) {
-                    vof_arr(i, j, k) = 0.2;
-                    vel_arr(i, j, k, 0) = 2.5;
-                    vel_arr(i, j, k, 1) = 3.5;
-                    vel_arr(i, j, k, 2) = 4.5;
+                    vof_arr(i, j, k) = 0.2_rt;
+                    vel_arr(i, j, k, 0) = 2.5_rt;
+                    vel_arr(i, j, k, 1) = 3.5_rt;
+                    vel_arr(i, j, k, 2) = 4.5_rt;
                 }
             });
     });
@@ -156,32 +159,32 @@ void init_gp_rho_etc(
         const auto& bx = mfi.validbox();
         amrex::ParallelFor(
             grow(bx, 2), [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-                gp_arr(i, j, k) = 0.0;
-                vof_arr(i, j, k) = 0.0;
+                gp_arr(i, j, k) = 0.0_rt;
+                vof_arr(i, j, k) = 0.0_rt;
                 const int idx = (dir == 0 ? i : (dir == 1 ? j : k));
                 if (idx == -1) {
-                    vof_arr(i, j, k) = 0.41;
-                    gp_arr(i, j, k, 0) = 1.0;
-                    gp_arr(i, j, k, 1) = 2.0;
-                    gp_arr(i, j, k, 2) = 3.0;
+                    vof_arr(i, j, k) = 0.41_rt;
+                    gp_arr(i, j, k, 0) = 1.0_rt;
+                    gp_arr(i, j, k, 1) = 2.0_rt;
+                    gp_arr(i, j, k, 2) = 3.0_rt;
                 } else if (idx == 0) {
-                    vof_arr(i, j, k) = 0.55;
-                    gp_arr(i, j, k, 0) = 1.5;
-                    gp_arr(i, j, k, 1) = 2.5;
-                    gp_arr(i, j, k, 2) = 3.5;
+                    vof_arr(i, j, k) = 0.55_rt;
+                    gp_arr(i, j, k, 0) = 1.5_rt;
+                    gp_arr(i, j, k, 1) = 2.5_rt;
+                    gp_arr(i, j, k, 2) = 3.5_rt;
                 } else if (idx == 1) {
-                    vof_arr(i, j, k) = 0.2;
-                    gp_arr(i, j, k, 0) = 2.0;
-                    gp_arr(i, j, k, 1) = 3.0;
-                    gp_arr(i, j, k, 2) = 4.0;
+                    vof_arr(i, j, k) = 0.2_rt;
+                    gp_arr(i, j, k, 0) = 2.0_rt;
+                    gp_arr(i, j, k, 1) = 3.0_rt;
+                    gp_arr(i, j, k, 2) = 4.0_rt;
                 } else if (idx == 2) {
-                    vof_arr(i, j, k) = 0.2;
-                    gp_arr(i, j, k, 0) = 2.5;
-                    gp_arr(i, j, k, 1) = 3.5;
-                    gp_arr(i, j, k, 2) = 4.5;
+                    vof_arr(i, j, k) = 0.2_rt;
+                    gp_arr(i, j, k, 0) = 2.5_rt;
+                    gp_arr(i, j, k, 1) = 3.5_rt;
+                    gp_arr(i, j, k, 2) = 4.5_rt;
                 }
-                rho_arr(i, j, k) =
-                    rho1 * vof_arr(i, j, k) + rho2 * (1. - vof_arr(i, j, k));
+                rho_arr(i, j, k) = rho1 * vof_arr(i, j, k) +
+                                   rho2 * (1.0_rt - vof_arr(i, j, k));
             });
     });
 }
@@ -194,11 +197,11 @@ void init_vof_only(amr_wind::Field& vof)
         amrex::ParallelFor(
             grow(bx, 2), [=] AMREX_GPU_DEVICE(int i, int j, int k) {
                 if (k > 3) {
-                    vof_arr(i, j, k) = 0.;
+                    vof_arr(i, j, k) = 0.0_rt;
                 } else if (k < 3) {
-                    vof_arr(i, j, k) = 1.0;
+                    vof_arr(i, j, k) = 1.0_rt;
                 } else {
-                    vof_arr(i, j, k) = 0.5;
+                    vof_arr(i, j, k) = 0.5_rt;
                 }
             });
     });
@@ -314,9 +317,9 @@ void calc_gp_rho_face(
             grow(bx, flux.num_grow()),
             [=] AMREX_GPU_DEVICE(int i, int j, int k) {
                 amrex::Real u_f, v_f, w_f;
-                amrex::Real fac = 1.0;
+                amrex::Real fac = 1.0_rt;
                 if (random_fflag) {
-                    fac = ((i + j + k) % 8 == 0) ? 0. : fac;
+                    fac = ((i + j + k) % 8 == 0) ? 0.0_rt : fac;
                     f_arr(i, j, k, 3 + ioff) = fac;
                 }
                 amr_wind::overset_ops::gp_rho_face(
@@ -465,41 +468,50 @@ amrex::Real check_alpha_flux_impl(amr_wind::Field& flux, const int& dir)
                     if (idx == 0) {
                         // Both within margin, will average
                         const amrex::Real flux_answer =
-                            0.5 * ((0.5 - 0.41) * 1.0 + (0.5 - 0.55) * -1.0);
+                            0.5_rt * ((0.5_rt - 0.41_rt) * 1.0_rt +
+                                      (0.5_rt - 0.55_rt) * -1.0_rt);
                         error += std::abs(f_arr(i, j, k) - flux_answer);
                     } else if (idx == 1) {
                         // Current is low, neighbor within margin
-                        const amrex::Real flux_answer = (0.2 - 0.1) * -1.0;
+                        const amrex::Real flux_answer =
+                            (0.2_rt - 0.1_rt) * -1.0_rt;
                         error += std::abs(f_arr(i, j, k) - flux_answer);
                     } else if (idx == 2) {
                         // Low on both sides, gphi > 0
-                        const amrex::Real flux_answer = (0.2 - 0.1) * 1.0;
+                        const amrex::Real flux_answer =
+                            (0.2_rt - 0.1_rt) * 1.0_rt;
                         error += std::abs(f_arr(i, j, k) - flux_answer);
                     } else if (idx == 3) {
                         // Opposite sides of margin, no conditional fits
                         const amrex::Real flux_answer =
-                            0.5 * ((0.8 - 0.7) * -1.0 + (0.22 - 0.2) * 1.0);
+                            0.5_rt * ((0.8_rt - 0.7_rt) * -1.0_rt +
+                                      (0.22_rt - 0.2_rt) * 1.0_rt);
                         error += std::abs(f_arr(i, j, k) - flux_answer);
                     } else if (idx == 4) {
                         // High on both sides, gphi < 0
-                        const amrex::Real flux_answer = (0.8 - 0.7) * 1.0;
+                        const amrex::Real flux_answer =
+                            (0.8_rt - 0.7_rt) * 1.0_rt;
                         error += std::abs(f_arr(i, j, k) - flux_answer);
                     } else if (idx == 5) {
                         // High on both sides, gphi > 0
-                        const amrex::Real flux_answer = (0.75 - 0.8) * -1.0;
+                        const amrex::Real flux_answer =
+                            (0.75_rt - 0.8_rt) * -1.0_rt;
                         error += std::abs(f_arr(i, j, k) - flux_answer);
                     } else if (idx == 6) {
                         // Current is within margin, neighbor is high
-                        const amrex::Real flux_answer = (0.75 - 0.8) * 1.0;
+                        const amrex::Real flux_answer =
+                            (0.75_rt - 0.8_rt) * 1.0_rt;
                         error += std::abs(f_arr(i, j, k) - flux_answer);
                     } else if (idx == 7) {
                         // Current is low, neighbor is within margin
-                        const amrex::Real flux_answer = (0.2 - 0.3) * -1.0;
+                        const amrex::Real flux_answer =
+                            (0.2_rt - 0.3_rt) * -1.0_rt;
                         error += std::abs(f_arr(i, j, k) - flux_answer);
                     } else if (idx == 8) {
                         // Opposite sides of margin, no conditional fits
                         const amrex::Real flux_answer =
-                            0.5 * ((0.6 - 0.7) * -1.0 + (0.2 - 0.3) * 1.0);
+                            0.5_rt * ((0.6_rt - 0.7_rt) * -1.0_rt +
+                                      (0.2_rt - 0.3_rt) * 1.0_rt);
                         error += std::abs(f_arr(i, j, k) - flux_answer);
                     }
                 });
@@ -527,27 +539,27 @@ amrex::Real check_velocity_face_impl(amr_wind::Field& flux, const int& dir)
                     const int idx = (dir == 0 ? i : (dir == 1 ? j : k));
                     if (idx == 0) {
                         // gphi > 0, uwpind from the "left"
-                        amrex::Real flux_answer = 1.0;
+                        amrex::Real flux_answer = 1.0_rt;
                         error += std::abs(f_arr(i, j, k, 0) - flux_answer);
-                        flux_answer = 2.0;
+                        flux_answer = 2.0_rt;
                         error += std::abs(f_arr(i, j, k, 1) - flux_answer);
-                        flux_answer = 3.0;
+                        flux_answer = 3.0_rt;
                         error += std::abs(f_arr(i, j, k, 2) - flux_answer);
                     } else if (idx == 1) {
                         // gphi < 0, upwind from the "right"
-                        amrex::Real flux_answer = 2.0;
+                        amrex::Real flux_answer = 2.0_rt;
                         error += std::abs(f_arr(i, j, k, 0) - flux_answer);
-                        flux_answer = 3.0;
+                        flux_answer = 3.0_rt;
                         error += std::abs(f_arr(i, j, k, 1) - flux_answer);
-                        flux_answer = 4.0;
+                        flux_answer = 4.0_rt;
                         error += std::abs(f_arr(i, j, k, 2) - flux_answer);
                     } else if (idx == 2) {
                         // gphi = 0, average both sides
-                        amrex::Real flux_answer = 0.5 * (2.5 + 2.0);
+                        amrex::Real flux_answer = 0.5_rt * (2.5_rt + 2.0_rt);
                         error += std::abs(f_arr(i, j, k, 0) - flux_answer);
-                        flux_answer = 0.5 * (3.5 + 3.0);
+                        flux_answer = 0.5_rt * (3.5_rt + 3.0_rt);
                         error += std::abs(f_arr(i, j, k, 1) - flux_answer);
-                        flux_answer = 0.5 * (4.5 + 4.0);
+                        flux_answer = 0.5_rt * (4.5_rt + 4.0_rt);
                         error += std::abs(f_arr(i, j, k, 2) - flux_answer);
                     }
                 });
@@ -580,35 +592,37 @@ amrex::Real check_gp_rho_face_impl(
                     if (idx == 0) {
                         // gphi > 0, uwpind from the "left"
                         const amrex::Real rho_answer =
-                            rho1 * 0.41 + rho2 * (1. - 0.41);
-                        amrex::Real flux_answer = 1.0 / rho_answer;
+                            rho1 * 0.41_rt + rho2 * (1.0_rt - 0.41_rt);
+                        amrex::Real flux_answer = 1.0_rt / rho_answer;
                         error += std::abs(f_arr(i, j, k, 0) - flux_answer);
-                        flux_answer = 2.0 / rho_answer;
+                        flux_answer = 2.0_rt / rho_answer;
                         error += std::abs(f_arr(i, j, k, 1) - flux_answer);
-                        flux_answer = 3.0 / rho_answer;
+                        flux_answer = 3.0_rt / rho_answer;
                         error += std::abs(f_arr(i, j, k, 2) - flux_answer);
                     } else if (idx == 1) {
                         // gphi < 0, upwind from the "right"
                         const amrex::Real rho_answer =
-                            rho1 * 0.2 + rho2 * (1. - 0.2);
-                        amrex::Real flux_answer = 2.0 / rho_answer;
+                            rho1 * 0.2_rt + rho2 * (1.0_rt - 0.2_rt);
+                        amrex::Real flux_answer = 2.0_rt / rho_answer;
                         error += std::abs(f_arr(i, j, k, 0) - flux_answer);
-                        flux_answer = 3.0 / rho_answer;
+                        flux_answer = 3.0_rt / rho_answer;
                         error += std::abs(f_arr(i, j, k, 1) - flux_answer);
-                        flux_answer = 4.0 / rho_answer;
+                        flux_answer = 4.0_rt / rho_answer;
                         error += std::abs(f_arr(i, j, k, 2) - flux_answer);
                     } else if (idx == 2) {
                         // gphi = 0, average both sides
                         const amrex::Real rho_r =
-                            rho1 * 0.2 + rho2 * (1. - 0.2);
+                            rho1 * 0.2_rt + rho2 * (1.0_rt - 0.2_rt);
                         const amrex::Real rho_l =
-                            rho1 * 0.2 + rho2 * (1. - 0.2);
+                            rho1 * 0.2_rt + rho2 * (1.0_rt - 0.2_rt);
                         amrex::Real flux_answer =
-                            0.5 * (2.5 / rho_r + 2.0 / rho_l);
+                            0.5_rt * (2.5_rt / rho_r + 2.0_rt / rho_l);
                         error += std::abs(f_arr(i, j, k, 0) - flux_answer);
-                        flux_answer = 0.5 * (3.5 / rho_r + 3.0 / rho_l);
+                        flux_answer =
+                            0.5_rt * (3.5_rt / rho_r + 3.0_rt / rho_l);
                         error += std::abs(f_arr(i, j, k, 1) - flux_answer);
-                        flux_answer = 0.5 * (4.5 / rho_r + 4.0 / rho_l);
+                        flux_answer =
+                            0.5_rt * (4.5_rt / rho_r + 4.0_rt / rho_l);
                         error += std::abs(f_arr(i, j, k, 2) - flux_answer);
                     }
                 });
@@ -763,7 +777,7 @@ TEST_F(VOFOversetOps, alpha_flux)
     auto& vof = repo.declare_field("vof", 1, nghost);
     auto& tg_vof = repo.declare_field("target_vof", 1, nghost);
     auto& norm = repo.declare_field("int_normal", 3, nghost);
-    const amrex::Real margin = 0.1;
+    const amrex::Real margin = 0.1_rt;
 
     // Create flux fields
     auto& flux_x =
@@ -782,7 +796,7 @@ TEST_F(VOFOversetOps, alpha_flux)
     // Check results
     amrex::Real error_total = check_alpha_flux_impl(flux_x, dir);
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
-    EXPECT_NEAR(error_total, 0.0, 1e-15);
+    EXPECT_NEAR(error_total, 0.0_rt, 1.0e-15_rt);
 
     // -- Variations in y direction -- //
     dir = 1;
@@ -793,7 +807,7 @@ TEST_F(VOFOversetOps, alpha_flux)
     // Check results
     error_total = check_alpha_flux_impl(flux_y, dir);
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
-    EXPECT_NEAR(error_total, 0.0, 1e-15);
+    EXPECT_NEAR(error_total, 0.0_rt, 1.0e-15_rt);
 
     // -- Variations in z direction -- //
     dir = 2;
@@ -804,7 +818,7 @@ TEST_F(VOFOversetOps, alpha_flux)
     // Check results
     error_total = check_alpha_flux_impl(flux_z, dir);
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
-    EXPECT_NEAR(error_total, 0.0, 1e-15);
+    EXPECT_NEAR(error_total, 0.0_rt, 1.0e-15_rt);
 }
 
 TEST_F(VOFOversetOps, velocity_face)
@@ -834,7 +848,7 @@ TEST_F(VOFOversetOps, velocity_face)
     // Check results
     amrex::Real error_total = check_velocity_face_impl(flux_x, dir);
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
-    EXPECT_NEAR(error_total, 0.0, 1e-15);
+    EXPECT_NEAR(error_total, 0.0_rt, 1.0e-15_rt);
 
     // -- Variations in y direction -- //
     dir = 1;
@@ -845,7 +859,7 @@ TEST_F(VOFOversetOps, velocity_face)
     // Check results
     error_total = check_velocity_face_impl(flux_y, dir);
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
-    EXPECT_NEAR(error_total, 0.0, 1e-15);
+    EXPECT_NEAR(error_total, 0.0_rt, 1.0e-15_rt);
 
     // -- Variations in z direction -- //
     dir = 2;
@@ -856,7 +870,7 @@ TEST_F(VOFOversetOps, velocity_face)
     // Check results
     error_total = check_velocity_face_impl(flux_z, dir);
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
-    EXPECT_NEAR(error_total, 0.0, 1e-15);
+    EXPECT_NEAR(error_total, 0.0_rt, 1.0e-15_rt);
 }
 
 TEST_F(VOFOversetOps, gp_rho_face)
@@ -864,8 +878,8 @@ TEST_F(VOFOversetOps, gp_rho_face)
     populate_parameters();
     initialize_mesh();
 
-    const amrex::Real rho_liq = 1000.;
-    const amrex::Real rho_gas = 1.;
+    const amrex::Real rho_liq = 1000.0_rt;
+    const amrex::Real rho_gas = 1.0_rt;
 
     auto& repo = sim().repo();
     const int nghost = 3;
@@ -891,7 +905,7 @@ TEST_F(VOFOversetOps, gp_rho_face)
     amrex::Real error_total =
         check_gp_rho_face_impl(flux_x, dir, rho_liq, rho_gas);
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
-    EXPECT_NEAR(error_total, 0.0, 1e-15);
+    EXPECT_NEAR(error_total, 0.0_rt, 1.0e-15_rt);
 
     // -- Variations in y direction -- //
     dir = 1;
@@ -902,7 +916,7 @@ TEST_F(VOFOversetOps, gp_rho_face)
     // Check results
     error_total = check_gp_rho_face_impl(flux_y, dir, rho_liq, rho_gas);
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
-    EXPECT_NEAR(error_total, 0.0, 1e-15);
+    EXPECT_NEAR(error_total, 0.0_rt, 1.0e-15_rt);
 
     // -- Variations in z direction -- //
     dir = 2;
@@ -913,7 +927,7 @@ TEST_F(VOFOversetOps, gp_rho_face)
     // Check results
     error_total = check_gp_rho_face_impl(flux_z, dir, rho_liq, rho_gas);
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
-    EXPECT_NEAR(error_total, 0.0, 1e-15);
+    EXPECT_NEAR(error_total, 0.0_rt, 1.0e-15_rt);
 }
 
 TEST_F(VOFOversetOps, pseudo_vscale_dt)
@@ -928,10 +942,10 @@ TEST_F(VOFOversetOps, pseudo_vscale_dt)
     auto& norm = repo.declare_field("int_normal", 3, nghost);
     auto& iblank = repo.declare_int_field("iblank_cell", 1, nghost);
     iblank.setVal(-1);
-    constexpr amrex::Real margin = 0.1;
-    constexpr amrex::Real convg_tol = 1e-8;
+    constexpr amrex::Real margin = 0.1_rt;
+    constexpr amrex::Real convg_tol = 1.0e-8_rt;
     // With vof and target_vof arrays, max vof removed is 50%, doubling pdt
-    constexpr amrex::Real pdt_answer = 2.0;
+    constexpr amrex::Real pdt_answer = 2.0_rt;
     // With a single level, pseudo velocity scale should be dx of lev 0
     const auto dx_lev0 = repo.mesh().Geom(0).CellSizeArray();
     const amrex::Real pvs_answer =
@@ -939,7 +953,7 @@ TEST_F(VOFOversetOps, pseudo_vscale_dt)
 
     // Pseudo-velocity scale, should be the smallest dx in iblank region
     const auto& iblank_cell = repo.get_int_field("iblank_cell");
-    const amrex::Real max_pvscale = 100.;
+    const amrex::Real max_pvscale = 100.0_rt;
     amrex::Real pvscale = max_pvscale;
     for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
         const amrex::Real pvscale_lev =
@@ -966,7 +980,7 @@ TEST_F(VOFOversetOps, pseudo_vscale_dt)
     // Populate flux field
     calc_alpha_flux(flux_x, vof, tg_vof, norm, dir, margin);
     // Calculate pseudo dt
-    amrex::Real ptfac = 100.0;
+    amrex::Real ptfac = 100.0_rt;
     for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
         const amrex::Real ptfac_lev =
             amr_wind::overset_ops::calculate_pseudo_dt_flux(
@@ -978,7 +992,7 @@ TEST_F(VOFOversetOps, pseudo_vscale_dt)
     amrex::ParallelDescriptor::ReduceRealMin(ptfac);
     EXPECT_DOUBLE_EQ(ptfac, pdt_answer);
     // Zero flux for subsequent tests
-    flux_x.setVal(0.0);
+    flux_x.setVal(0.0_rt);
 
     // -- Variations in y direction -- //
     dir = 1;
@@ -987,7 +1001,7 @@ TEST_F(VOFOversetOps, pseudo_vscale_dt)
     // Populate flux field
     calc_alpha_flux(flux_y, vof, tg_vof, norm, dir, margin);
     // Calculate pseudo dt
-    ptfac = 100.0;
+    ptfac = 100.0_rt;
     for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
         const amrex::Real ptfac_lev =
             amr_wind::overset_ops::calculate_pseudo_dt_flux(
@@ -999,7 +1013,7 @@ TEST_F(VOFOversetOps, pseudo_vscale_dt)
     amrex::ParallelDescriptor::ReduceRealMin(ptfac);
     EXPECT_DOUBLE_EQ(ptfac, pdt_answer);
     // Zero flux for subsequent test
-    flux_y.setVal(0.0);
+    flux_y.setVal(0.0_rt);
 
     // -- Variations in z direction -- //
     dir = 2;
@@ -1008,7 +1022,7 @@ TEST_F(VOFOversetOps, pseudo_vscale_dt)
     // Populate flux field
     calc_alpha_flux(flux_z, vof, tg_vof, norm, dir, margin);
     // Calculate pseudo dt
-    ptfac = 100.0;
+    ptfac = 100.0_rt;
     for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
         const amrex::Real ptfac_lev =
             amr_wind::overset_ops::calculate_pseudo_dt_flux(
@@ -1021,7 +1035,7 @@ TEST_F(VOFOversetOps, pseudo_vscale_dt)
     EXPECT_DOUBLE_EQ(ptfac, pdt_answer);
 
     // Redo z direction with max being 1, as in overall algorithm
-    ptfac = 1.0;
+    ptfac = 1.0_rt;
     for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
         const amrex::Real ptfac_lev =
             amr_wind::overset_ops::calculate_pseudo_dt_flux(
@@ -1031,7 +1045,7 @@ TEST_F(VOFOversetOps, pseudo_vscale_dt)
         ptfac = amrex::min(ptfac, ptfac_lev);
     }
     amrex::ParallelDescriptor::ReduceRealMin(ptfac);
-    EXPECT_DOUBLE_EQ(ptfac, 1.0);
+    EXPECT_DOUBLE_EQ(ptfac, 1.0_rt);
 }
 
 TEST_F(VOFOversetOps, psource_manual)
@@ -1039,8 +1053,8 @@ TEST_F(VOFOversetOps, psource_manual)
     populate_parameters();
     initialize_mesh();
 
-    const amrex::Real rho_liq = 1000.;
-    const amrex::Real rho_gas = 1.;
+    const amrex::Real rho_liq = 1000.0_rt;
+    const amrex::Real rho_gas = 1.0_rt;
 
     auto& repo = sim().repo();
     const int nghost = 3;
@@ -1077,7 +1091,7 @@ TEST_F(VOFOversetOps, psource_manual)
     // Check difference
     amrex::Real error_total = check_psrc_manual_impl(psrc, psmn);
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
-    EXPECT_NEAR(error_total, 0.0, 1e-10);
+    EXPECT_NEAR(error_total, 0.0_rt, 1.0e-10_rt);
 }
 
 TEST_F(VOFOversetOps, projection_masks)
@@ -1109,8 +1123,8 @@ TEST_F(VOFOversetOps, projection_masks)
     amrex::Real error_cell = check_iblank_cell_impl(mask_cell);
     amrex::ParallelDescriptor::ReduceRealSum(error_node);
     amrex::ParallelDescriptor::ReduceRealSum(error_cell);
-    EXPECT_NEAR(error_node, 0.0, 1e-10);
-    EXPECT_NEAR(error_cell, 0.0, 1e-10);
+    EXPECT_NEAR(error_node, 0.0_rt, 1.0e-10_rt);
+    EXPECT_NEAR(error_cell, 0.0_rt, 1.0e-10_rt);
 
     // Change mask_cell to default (single-phase) approach
     amr_wind::overset_ops::revert_mask_cell_after_mac(repo);
@@ -1118,7 +1132,7 @@ TEST_F(VOFOversetOps, projection_masks)
     // Check against expectations
     error_cell = check_iblank_cell_default_impl(mask_cell);
     amrex::ParallelDescriptor::ReduceRealSum(error_cell);
-    EXPECT_NEAR(error_cell, 0.0, 1e-10);
+    EXPECT_NEAR(error_cell, 0.0_rt, 1.0e-10_rt);
 }
 
 } // namespace amr_wind_tests

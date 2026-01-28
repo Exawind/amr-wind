@@ -3,6 +3,9 @@
 
 #include <string>
 #include "amr-wind/turbulence/RANS/KOmegaSST.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::turbulence {
 
@@ -14,7 +17,7 @@ namespace amr_wind::turbulence {
  * Gritskevich, M. S., Garbaruk, A.V., Schutze, J and Menter, F.R., "Development
  * of DDES and IDDES formulations for the k-omega Shear Stress Transport Model",
  * Flow Turbulence and Combustion, 88, 2012, pp. 431-449, DOI
- * 10.1007/s10494-011-9378-4.
+ * 10.1007_rt/s10494-011-9378-4.
  *
  * Implementation contains the simplified version where f_e = 0 as in eq. 12 in
  * the paper
@@ -53,15 +56,15 @@ protected:
     Field& m_rans_ind;
 
     //! Turbulence constants
-    amrex::Real m_Cdes1{0.78};
-    amrex::Real m_Cdes2{0.61};
-    amrex::Real m_Cdt1{20.0};
-    amrex::Real m_Cdt2{3.0};
-    amrex::Real m_Cl{5.0};
-    amrex::Real m_Ct{1.87};
-    amrex::Real m_Cw{0.15};
-    amrex::Real m_kappa{0.41};
-    amrex::Real m_sdr_prod_clip_factor{10.0};
+    amrex::Real m_Cdes1{0.78_rt};
+    amrex::Real m_Cdes2{0.61_rt};
+    amrex::Real m_Cdt1{20.0_rt};
+    amrex::Real m_Cdt2{3.0_rt};
+    amrex::Real m_Cl{5.0_rt};
+    amrex::Real m_Ct{1.87_rt};
+    amrex::Real m_Cw{0.15_rt};
+    amrex::Real m_kappa{0.41_rt};
+    amrex::Real m_sdr_prod_clip_factor{10.0_rt};
 };
 
 } // namespace amr_wind::turbulence

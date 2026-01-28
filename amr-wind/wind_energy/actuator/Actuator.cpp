@@ -1,3 +1,5 @@
+#include <algorithm>
+#include <memory>
 #include "amr-wind/wind_energy/actuator/Actuator.H"
 #include "amr-wind/wind_energy/actuator/ActParser.H"
 #include "amr-wind/wind_energy/actuator/ActuatorContainer.H"
@@ -5,9 +7,9 @@
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/utilities/io_utils.H"
 #include "amr-wind/utilities/IOManager.H"
+#include "AMReX_REAL.H"
 
-#include <algorithm>
-#include <memory>
+using namespace amrex::literals;
 
 namespace amr_wind::actuator {
 
@@ -284,7 +286,7 @@ void Actuator::compute_forces()
 void Actuator::compute_source_term()
 {
     BL_PROFILE("amr-wind::actuator::Actuator::compute_source_term");
-    m_act_source.setVal(0.0);
+    m_act_source.setVal(0.0_rt);
     const int nlevels = m_sim.repo().num_active_levels();
 
     for (int lev = 0; lev < nlevels; ++lev) {

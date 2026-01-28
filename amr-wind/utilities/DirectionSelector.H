@@ -1,9 +1,3 @@
-//
-//  DirectionSelector.H
-//  amr-wind
-//
-//
-
 #ifndef DirectionSelector_H
 #define DirectionSelector_H
 

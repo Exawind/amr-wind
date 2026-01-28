@@ -3,6 +3,9 @@
 #include "amr-wind/core/FieldUtils.H"
 
 #include "AMReX_ParmParse.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::pde::icns {
 
@@ -61,8 +64,9 @@ void GravityForcing::operator()(
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const amrex::Real factor =
-            (!ipt ? 1.0
-                  : 1.0 - (ir0 ? rho0_arr(i, j, k) : mr0c) / rho_arr(i, j, k));
+            (!ipt ? 1.0_rt
+                  : 1.0_rt -
+                        (ir0 ? rho0_arr(i, j, k) : mr0c) / rho_arr(i, j, k));
 
         vel_forces(i, j, k, 0) += gravity[0] * factor;
         vel_forces(i, j, k, 1) += gravity[1] * factor;

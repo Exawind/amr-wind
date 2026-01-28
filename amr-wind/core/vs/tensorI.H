@@ -190,7 +190,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE Tensor xrot(const amrex::Real angle)
     const amrex::Real cval = std::cos(ang);
     const amrex::Real sval = std::sin(ang);
 
-    return Tensor{1.0, 0.0, 0.0, 0.0, cval, sval, 0.0, -sval, cval};
+    return Tensor{1.0_rt, 0.0_rt, 0.0_rt, 0.0_rt, cval,
+                  sval,   0.0_rt, -sval,  cval};
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE Tensor yrot(const amrex::Real angle)
@@ -199,7 +200,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE Tensor yrot(const amrex::Real angle)
     const amrex::Real cval = std::cos(ang);
     const amrex::Real sval = std::sin(ang);
 
-    return Tensor{cval, 0.0, -sval, 0.0, 1.0, 0.0, sval, 0.0, cval};
+    return Tensor{cval,   0.0_rt, -sval,  0.0_rt, 1.0_rt,
+                  0.0_rt, sval,   0.0_rt, cval};
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE Tensor zrot(const amrex::Real angle)
@@ -208,15 +210,16 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE Tensor zrot(const amrex::Real angle)
     const amrex::Real cval = std::cos(ang);
     const amrex::Real sval = std::sin(ang);
 
-    return Tensor{cval, sval, 0.0, -sval, cval, 0.0, 0.0, 0.0, 1.0};
+    return Tensor{cval,   sval,   0.0_rt, -sval, cval,
+                  0.0_rt, 0.0_rt, 0.0_rt, 1.0_rt};
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE Tensor
 quaternion(const Vector& axis, const amrex::Real angle)
 {
-    const amrex::Real ang = -1.0 * utils::radians(angle);
-    const amrex::Real cval = std::cos(0.5 * ang);
-    const amrex::Real sval = std::sin(0.5 * ang);
+    const amrex::Real ang = -1.0_rt * utils::radians(angle);
+    const amrex::Real cval = std::cos(0.5_rt * ang);
+    const amrex::Real sval = std::sin(0.5_rt * ang);
     const auto vmag = mag(axis);
     const amrex::Real q0 = cval;
     const amrex::Real q1 = sval * axis.x() / vmag;
@@ -225,15 +228,15 @@ quaternion(const Vector& axis, const amrex::Real angle)
 
     Tensor t;
     t.xx() = q0 * q0 + q1 * q1 - q2 * q2 - q3 * q3;
-    t.xy() = 2.0 * (q1 * q2 - q0 * q3);
-    t.xz() = 2.0 * (q0 * q2 + q1 * q3);
+    t.xy() = 2.0_rt * (q1 * q2 - q0 * q3);
+    t.xz() = 2.0_rt * (q0 * q2 + q1 * q3);
 
-    t.yx() = 2.0 * (q1 * q2 + q0 * q3);
+    t.yx() = 2.0_rt * (q1 * q2 + q0 * q3);
     t.yy() = q0 * q0 - q1 * q1 + q2 * q2 - q3 * q3;
-    t.yz() = 2.0 * (q2 * q3 - q0 * q1);
+    t.yz() = 2.0_rt * (q2 * q3 - q0 * q1);
 
-    t.zx() = 2.0 * (q1 * q3 - q0 * q2);
-    t.zy() = 2.0 * (q0 * q1 + q2 * q3);
+    t.zx() = 2.0_rt * (q1 * q3 - q0 * q2);
+    t.zy() = 2.0_rt * (q0 * q1 + q2 * q3);
     t.zz() = q0 * q0 - q1 * q1 - q2 * q2 + q3 * q3;
 
     return t;

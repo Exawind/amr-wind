@@ -12,6 +12,9 @@
 #include "AMReX_Vector.H"
 
 #include "amr-wind/utilities/tagging/CartBoxRefinement.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind_tests {
 
@@ -32,8 +35,8 @@ protected:
         }
         {
             amrex::ParmParse pp("geometry");
-            amrex::Vector<amrex::Real> problo{{-20.0, -100.0, 0.0}};
-            amrex::Vector<amrex::Real> probhi{{20.0, 100.0, 30.0}};
+            amrex::Vector<amrex::Real> problo{{-20.0_rt, -100.0_rt, 0.0_rt}};
+            amrex::Vector<amrex::Real> probhi{{20.0_rt, 100.0_rt, 30.0_rt}};
 
             pp.addarr("prob_lo", problo);
             pp.addarr("prob_hi", probhi);

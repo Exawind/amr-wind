@@ -1,4 +1,7 @@
 #include "SecondMomentAveraging.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind {
 
@@ -86,7 +89,7 @@ SecondMomentAveraging::SecondMomentAveraging(
 
     m_second_moments_line.resize(
         static_cast<size_t>(m_plane_average1.ncell_line()) * m_num_moments,
-        0.0);
+        0.0_rt);
 }
 
 void SecondMomentAveraging::operator()()
@@ -94,7 +97,8 @@ void SecondMomentAveraging::operator()()
 
     m_last_updated_index = m_plane_average1.last_updated_index();
 
-    std::fill(m_second_moments_line.begin(), m_second_moments_line.end(), 0.0);
+    std::fill(
+        m_second_moments_line.begin(), m_second_moments_line.end(), 0.0_rt);
 
     const auto& field1 = m_plane_average1.field();
     const auto& field2 = m_plane_average2.field();
@@ -140,7 +144,7 @@ void SecondMomentAveraging::compute_average(
     const auto* line_avg1 = lavg1.data();
     const auto* line_avg2 = lavg2.data();
 
-    amrex::Real denom = 1.0 / (amrex::Real)m_plane_average1.ncell_plane();
+    amrex::Real denom = 1.0_rt / (amrex::Real)m_plane_average1.ncell_plane();
 
     const int ncomp1 = m_plane_average1.ncomp();
     const int ncomp2 = m_plane_average2.ncomp();
@@ -228,23 +232,23 @@ SecondMomentAveraging::line_average_interpolated(amrex::Real x, int comp) const
     const amrex::Real xlo = m_plane_average1.xlo();
     const int ncell_line = m_plane_average1.ncell_line();
 
-    amrex::Real c = 0.0;
+    amrex::Real c = 0.0_rt;
     int ind = 0;
 
-    if (x > xlo + 0.5 * dx) {
-        ind = static_cast<int>(floor((x - xlo) / dx - 0.5));
-        const amrex::Real x1 = xlo + (ind + 0.5) * dx;
+    if (x > xlo + 0.5_rt * dx) {
+        ind = static_cast<int>(floor((x - xlo) / dx - 0.5_rt));
+        const amrex::Real x1 = xlo + (ind + 0.5_rt) * dx;
         c = (x - x1) / dx;
     }
 
     if (ind + 1 >= ncell_line) {
         ind = ncell_line - 2;
-        c = 1.0;
+        c = 1.0_rt;
     }
 
     AMREX_ALWAYS_ASSERT(ind >= 0 and ind + 1 < ncell_line);
 
-    return m_second_moments_line[m_num_moments * ind + comp] * (1.0 - c) +
+    return m_second_moments_line[m_num_moments * ind + comp] * (1.0_rt - c) +
            m_second_moments_line[m_num_moments * (ind + 1) + comp] * c;
 }
 

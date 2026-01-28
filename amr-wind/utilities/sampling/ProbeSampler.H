@@ -2,6 +2,9 @@
 #define PROBESAMPLER_H
 
 #include "amr-wind/utilities/sampling/SamplerBase.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::sampling {
 
@@ -59,7 +62,7 @@ private:
     const CFDSim& m_sim;
     SampleLocType m_probes;
 
-    amrex::Vector<amrex::Real> m_offset_vector{0.0, 0.0, 0.0};
+    amrex::Vector<amrex::Real> m_offset_vector{0.0_rt, 0.0_rt, 0.0_rt};
     amrex::Vector<amrex::Real> m_poffsets;
 
     std::string m_label;

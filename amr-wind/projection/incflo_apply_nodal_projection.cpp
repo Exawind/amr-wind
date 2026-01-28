@@ -1,4 +1,4 @@
-#include <AMReX_BC_TYPES.H>
+#include "AMReX_BC_TYPES.H"
 #include <memory>
 #include "amr-wind/incflo.H"
 #include "amr-wind/core/MLMGOptions.H"
@@ -6,6 +6,9 @@
 #include "amr-wind/core/field_ops.H"
 #include "amr-wind/projection/nodal_projection_ops.H"
 #include "hydro_utils.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 void amr_wind::nodal_projection::set_inflow_velocity(
     amr_wind::PhysicsMgr& phy_mgr,
@@ -75,7 +78,7 @@ void amr_wind::nodal_projection::apply_dirichlet_vel(
             // Pure solid-body points
             if (iblank[nbx](i, j, k) == 0) {
                 // Set velocity to 0 for now
-                vel[nbx](i, j, k, n) = 0.0;
+                vel[nbx](i, j, k, n) = 0.0_rt;
             }
         });
 }
@@ -132,7 +135,7 @@ void amr_wind::nodal_projection::enforce_inout_solvability(
  *
  *  Notes:
  *  - `scaling_factor` equals \f$\Delta t\f$ except when called during initial
- *     projection, when it is 1.0
+ *     projection, when it is 1.0_rt
  *
  *  - \f$\rho\f$ in the above expressions is either at state `n+1` or `n+1/2`
  *    depending on whether this method was called from incflo::ApplyPredictor or
@@ -164,7 +167,7 @@ void incflo::ApplyProjection(
     // projects (U^*-U^n + dt Gp) rather than (U^* + dt Gp)
 
     bool proj_for_small_dt =
-        (time > 0.0 and m_time.delta_t() < 0.1 * m_time.delta_t_nm1());
+        (time > 0.0_rt and m_time.delta_t() < 0.1_rt * m_time.delta_t_nm1());
 
     if (m_verbose > 2) {
         if (proj_for_small_dt) {
@@ -225,18 +228,18 @@ void incflo::ApplyProjection(
                     const amrex::Real soverrho =
                         scaling_factor / rho_arrs[nbx](i, j, k);
                     amrex::Real fac_x =
-                        mesh_mapping ? (fac_arrs[nbx](i, j, k, 0)) : 1.0;
+                        mesh_mapping ? (fac_arrs[nbx](i, j, k, 0)) : 1.0_rt;
                     amrex::Real fac_y =
-                        mesh_mapping ? (fac_arrs[nbx](i, j, k, 1)) : 1.0;
+                        mesh_mapping ? (fac_arrs[nbx](i, j, k, 1)) : 1.0_rt;
                     amrex::Real fac_z =
-                        mesh_mapping ? (fac_arrs[nbx](i, j, k, 2)) : 1.0;
+                        mesh_mapping ? (fac_arrs[nbx](i, j, k, 2)) : 1.0_rt;
 
                     u_arrs[nbx](i, j, k, 0) +=
-                        1 / fac_x * gp_arrs[nbx](i, j, k, 0) * soverrho;
+                        1.0_rt / fac_x * gp_arrs[nbx](i, j, k, 0) * soverrho;
                     u_arrs[nbx](i, j, k, 1) +=
-                        1 / fac_y * gp_arrs[nbx](i, j, k, 1) * soverrho;
+                        1.0_rt / fac_y * gp_arrs[nbx](i, j, k, 1) * soverrho;
                     u_arrs[nbx](i, j, k, 2) +=
-                        1 / fac_z * gp_arrs[nbx](i, j, k, 2) * soverrho;
+                        1.0_rt / fac_z * gp_arrs[nbx](i, j, k, 2) * soverrho;
                 });
         }
         amrex::Gpu::streamSynchronize();
@@ -285,11 +288,11 @@ void incflo::ApplyProjection(
                 [=] AMREX_GPU_DEVICE(
                     int nbx, int i, int j, int k, int n) noexcept {
                     amrex::Real fac_cc =
-                        mesh_mapping ? (fac_arrs[nbx](i, j, k, n)) : 1.0;
+                        mesh_mapping ? (fac_arrs[nbx](i, j, k, n)) : 1.0_rt;
                     amrex::Real det_j =
-                        mesh_mapping ? (detJ_arrs[nbx](i, j, k)) : 1.0;
-                    sig_arrs[nbx](i, j, k, n) = std::pow(fac_cc, -2.) * det_j *
-                                                scaling_factor /
+                        mesh_mapping ? (detJ_arrs[nbx](i, j, k)) : 1.0_rt;
+                    sig_arrs[nbx](i, j, k, n) = std::pow(fac_cc, -2.0_rt) *
+                                                det_j * scaling_factor /
                                                 rho_arrs[nbx](i, j, k);
                     if (is_anelastic) {
                         sig_arrs[nbx](i, j, k, n) *= ref_rho_arrs[nbx](i, j, k);
@@ -311,7 +314,7 @@ void incflo::ApplyProjection(
     amrex::Vector<amrex::MultiFab*> vel;
     for (int lev = 0; lev <= finest_level; ++lev) {
         vel.push_back(&(velocity(lev)));
-        vel[lev]->setBndry(0.0);
+        vel[lev]->setBndry(0.0_rt);
         if (!proj_for_small_dt and !incremental) {
             amr_wind::nodal_projection::set_inflow_velocity(
                 m_sim.physics_manager(), velocity, lev, time, *vel[lev], 1);
@@ -350,7 +353,7 @@ void incflo::ApplyProjection(
             vel, GetVecOfConstPtrs(sigma), Geom(0, finest_level),
             options.lpinfo());
     } else {
-        amrex::Real rho_0 = 1.0;
+        amrex::Real rho_0 = 1.0_rt;
         amrex::ParmParse pp("incflo");
         pp.query("density", rho_0);
 
@@ -390,7 +393,7 @@ void incflo::ApplyProjection(
         auto phif = m_repo.create_scratch_field(1, 1, amr_wind::FieldLoc::NODE);
         if (incremental) {
             for (int lev = 0; lev <= finestLevel(); ++lev) {
-                (*phif)(lev).setVal(0.0);
+                (*phif)(lev).setVal(0.0_rt);
             }
         } else {
             amr_wind::field_ops::copy(*phif, pressure, 0, 0, 1, 1);
@@ -472,7 +475,7 @@ void incflo::ApplyProjection(
     }
 
     // Determine if reference pressure should be added back
-    if (m_reconstruct_true_pressure && time != 0.0) {
+    if (m_reconstruct_true_pressure && time != 0.0_rt) {
         const auto& p0 = m_repo.get_field("reference_pressure");
         for (int lev = 0; lev <= finest_level; lev++) {
             amrex::MultiFab::Add(

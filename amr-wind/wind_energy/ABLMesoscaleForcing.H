@@ -7,6 +7,8 @@
 #include "AMReX_Vector.H"
 #include "amr-wind/CFDSim.H"
 
+using namespace amrex::literals;
+
 namespace amr_wind {
 
 class ABLMesoscaleForcing
@@ -30,9 +32,10 @@ protected:
 
     // inputs
     std::string m_forcing_scheme;
-    amrex::Real m_gain_coeff{0.2}; // relaxation factor for all forcing schemes
-    bool m_debug{false};           // print out profiles for debugging
-    bool m_tendency{false};        // check if tendency forcing
+    amrex::Real m_gain_coeff{
+        0.2_rt};            // relaxation factor for all forcing schemes
+    bool m_debug{false};    // print out profiles for debugging
+    bool m_tendency{false}; // check if tendency forcing
 
     // planar averaging heights
     amrex::Vector<amrex::Real> m_zht;
@@ -44,7 +47,7 @@ protected:
     // int m_ind_polyOrder;
     int m_norm_zmax = 0;
     amrex::Real m_scaleFact =
-        1e-3; // to improve conditioning of regression matrix
+        1.0e-3_rt; // to improve conditioning of regression matrix
 
     amrex::Array2D<amrex::Real, 0, 3, 0, 3> m_im_zTz;
 

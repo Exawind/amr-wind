@@ -9,6 +9,9 @@
 #include "amr-wind/fvm/stencils.H"
 #include "amr-wind/utilities/DirectionSelector.H"
 #include "amr-wind/utilities/linear_interpolation.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::turbulence {
 /** AMD LES Model
@@ -48,7 +51,7 @@ public:
 private:
     //! Poincare coefficient (default value set for 2nd order AMR-wind
     //! discretization)
-    amrex::Real m_C{0.333333333333333};
+    amrex::Real m_C{0.333333333333333_rt};
 
     //! Wall-normal direction axis
     int m_normal_dir{2};
@@ -57,7 +60,7 @@ private:
     const Field& m_temperature;
     const Field& m_rho;
     FieldPlaneAveragingFine m_pa_temp;
-    amrex::Vector<amrex::Real> m_gravity{0.0, 0.0, -9.81};
+    amrex::Vector<amrex::Real> m_gravity{0.0_rt, 0.0_rt, -9.81_rt};
 };
 
 AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real amd_muvel(
@@ -76,25 +79,25 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real amd_muvel(
     const int normal_dir,
     const amrex::Real nlo) noexcept
 {
-    amrex::Real num_shear = 0;
-    amrex::Real num_buoy = 0;
-    amrex::Real denom = 0;
+    amrex::Real num_shear = 0.0_rt;
+    amrex::Real num_buoy = 0.0_rt;
+    amrex::Real denom = 0.0_rt;
     const int n_ind = amr_wind::direction_selector(i, j, k, normal_dir);
-    const amrex::Real h = nlo + (n_ind + 0.5) * dx[normal_dir];
+    const amrex::Real h = nlo + (n_ind + 0.5_rt) * dx[normal_dir];
     const amrex::Real gradTbar_h = amr_wind::interp::linear(
         gradTbar_coord_begin, gradTbar_coord_end, gradTbar, h);
     for (int ii = 0; ii < AMREX_SPACEDIM; ++ii) {
         // This should operate only on the wall normal velocity
         num_buoy +=
             gradVel(i, j, k, normal_dir * AMREX_SPACEDIM + ii) *
-            (gradT(i, j, k, ii) - ((ii == normal_dir) ? gradTbar_h : 0.0)) *
+            (gradT(i, j, k, ii) - ((ii == normal_dir) ? gradTbar_h : 0.0_rt)) *
             dx[ii] * dx[ii];
 
         for (int jj = 0; jj < AMREX_SPACEDIM; ++jj) {
             const amrex::Real diuj = gradVel(i, j, k, ii * AMREX_SPACEDIM + jj);
             const amrex::Real djui = gradVel(i, j, k, jj * AMREX_SPACEDIM + ii);
             denom += diuj * diuj;
-            const amrex::Real sij = 0.5 * (diuj + djui);
+            const amrex::Real sij = 0.5_rt * (diuj + djui);
             for (int kk = 0; kk < AMREX_SPACEDIM; ++kk) {
                 const amrex::Real dkui =
                     gradVel(i, j, k, ii * AMREX_SPACEDIM + kk);
@@ -104,10 +107,10 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real amd_muvel(
             }
         }
     }
-    denom = std::max(1e-15, denom);
+    denom = amrex::max<amrex::Real>(1.0e-15_rt, denom);
     num_shear *= -C;
     num_buoy *= C * beta * std::abs(gravity[normal_dir]);
-    return std::max(1e-15, (num_shear + num_buoy) / denom);
+    return amrex::max<amrex::Real>(1.0e-15_rt, (num_shear + num_buoy) / denom);
 }
 
 AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real amd_thermal_diff(
@@ -131,9 +134,9 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real amd_thermal_diff(
         }
     }
 
-    denom = std::max(1e-15, denom);
+    denom = amrex::max<amrex::Real>(1.0e-15_rt, denom);
     num *= -C;
-    return std::max(1e-15, num / denom);
+    return amrex::max<amrex::Real>(1.0e-15_rt, num / denom);
 }
 
 } // namespace amr_wind::turbulence
