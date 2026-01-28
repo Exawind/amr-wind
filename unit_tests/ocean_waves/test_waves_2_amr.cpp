@@ -44,7 +44,7 @@ TEST_F(OceanWavesW2ATest, time_advance)
     EXPECT_TRUE(resize_flag);
     EXPECT_EQ(t, 0.1_rt);
     EXPECT_EQ(t_last, newtime);
-    EXPECT_NEAR(f_interp, newtime / t, 1e-10);
+    EXPECT_NEAR(f_interp, newtime / t, 1.0e-10_rt);
 
     // Upon initialization without waves, when t_last has not been modified
     read_flag = false;
@@ -64,7 +64,7 @@ TEST_F(OceanWavesW2ATest, time_advance)
     // Double data routine changes t_last_prior
     t_last_prior = (ntime - 1) * dt_modes;
     f_interp = (newtime - t_last_prior) / (t - t_last_prior);
-    EXPECT_NEAR(f_interp, newtime / t, 1e-10);
+    EXPECT_NEAR(f_interp, newtime / t, 1.0e-10_rt);
 
     // Upon initialization as restart, when t_last has not been modified
     read_flag = false;
@@ -85,7 +85,7 @@ TEST_F(OceanWavesW2ATest, time_advance)
     // Double data routine changes t_last_prior
     t_last_prior = (ntime - 1) * dt_modes;
     f_interp = (newtime - t_last_prior) / (t - t_last_prior);
-    EXPECT_NEAR(f_interp, (3.99_rt - 3.9_rt) / dt_modes, 1e-10);
+    EXPECT_NEAR(f_interp, (3.99_rt - 3.9_rt) / dt_modes, 1.0e-10_rt);
 
     // Upon initialization as restart, when newtime happens to be at ntime
     read_flag = false;
@@ -105,7 +105,7 @@ TEST_F(OceanWavesW2ATest, time_advance)
     EXPECT_TRUE(resize_flag);
     EXPECT_EQ(t, 40 * dt_modes);
     EXPECT_EQ(t_last, newtime);
-    EXPECT_NEAR(f_interp, 1.0_rt, 1e-10);
+    EXPECT_NEAR(f_interp, 1.0_rt, 1.0e-10_rt);
 
     // The following 3 tests are for during initial iterations (after the first)
     // -- Beginning from time = 0. --
@@ -126,7 +126,7 @@ TEST_F(OceanWavesW2ATest, time_advance)
     EXPECT_FALSE(read_flag);
     EXPECT_FALSE(resize_flag);
     EXPECT_EQ(t_last, newtime);
-    EXPECT_NEAR(f_interp, 0.0_rt, 1e-10);
+    EXPECT_NEAR(f_interp, 0.0_rt, 1.0e-10_rt);
     // -- Beginning from time = 3.98_rt --
     read_flag = false;
     resize_flag = false;
@@ -145,7 +145,7 @@ TEST_F(OceanWavesW2ATest, time_advance)
     EXPECT_FALSE(read_flag);
     EXPECT_FALSE(resize_flag);
     EXPECT_EQ(t_last, newtime);
-    EXPECT_NEAR(f_interp, 0.0_rt, 1e-10);
+    EXPECT_NEAR(f_interp, 0.0_rt, 1.0e-10_rt);
     // -- Beginning from time = 3.99_rt --
     read_flag = false;
     resize_flag = false;
@@ -158,13 +158,13 @@ TEST_F(OceanWavesW2ATest, time_advance)
     evaluate_read_resize(
         ntime, read_flag, resize_flag, t, t_last, new_ntime, t_winit, dt_modes,
         newtime);
-    f_interp = (newtime - t_last_prior) / (t - t_last_prior + 1e-16);
+    f_interp = (newtime - t_last_prior) / (t - t_last_prior + 1.0e-16_rt);
     // Should not regrid nor read, time interpolation should do nothing
     EXPECT_EQ(ntime, new_ntime);
     EXPECT_FALSE(read_flag);
     EXPECT_FALSE(resize_flag);
     EXPECT_EQ(t_last, newtime);
-    EXPECT_NEAR(f_interp, 0.0_rt, 1e-10);
+    EXPECT_NEAR(f_interp, 0.0_rt, 1.0e-10_rt);
 
     // The following tests are for during ordinary timesteps
     // -- No resize, no reading, just interp
@@ -184,7 +184,7 @@ TEST_F(OceanWavesW2ATest, time_advance)
     EXPECT_FALSE(read_flag);
     EXPECT_FALSE(resize_flag);
     EXPECT_EQ(t_last, newtime);
-    EXPECT_NEAR(f_interp, 0.01_rt / 0.02_rt, 1e-10);
+    EXPECT_NEAR(f_interp, 0.01_rt / 0.02_rt, 1.0e-10_rt);
     // -- No resize, yes reading
     resize_flag = false;
     read_flag = false;
@@ -202,7 +202,7 @@ TEST_F(OceanWavesW2ATest, time_advance)
     EXPECT_FALSE(resize_flag);
     EXPECT_EQ(t, 41 * dt_modes);
     EXPECT_EQ(t_last, newtime);
-    EXPECT_NEAR(f_interp, 0.01_rt / (4.1_rt - 4.0_rt), 1e-10);
+    EXPECT_NEAR(f_interp, 0.01_rt / (4.1_rt - 4.0_rt), 1.0e-10_rt);
     // -- No resize, yes reading, big timestep means amrex::Real read
     resize_flag = false;
     read_flag = false;
@@ -223,7 +223,7 @@ TEST_F(OceanWavesW2ATest, time_advance)
     EXPECT_EQ(t, 42 * dt_modes);
     EXPECT_EQ(t_last, newtime);
     // interp is from 4.1_rt (replaced) to 4.15_rt
-    EXPECT_NEAR(f_interp, (4.15_rt - 4.1_rt) / (4.2_rt - 4.1_rt), 1e-10);
+    EXPECT_NEAR(f_interp, (4.15_rt - 4.1_rt) / (4.2_rt - 4.1_rt), 1.0e-10_rt);
     // -- No resize, yes reading, big timestep leads to convenient single read
     resize_flag = false;
     read_flag = false;
@@ -243,7 +243,7 @@ TEST_F(OceanWavesW2ATest, time_advance)
     EXPECT_EQ(t, 42 * dt_modes);
     EXPECT_EQ(t_last, newtime);
     // interp is from 4.0_rt to 4.2_rt, but it leads to 1
-    EXPECT_NEAR(f_interp, (4.2_rt - 4.0_rt) / (4.2_rt - 4.0_rt), 1e-10);
+    EXPECT_NEAR(f_interp, (4.2_rt - 4.0_rt) / (4.2_rt - 4.0_rt), 1.0e-10_rt);
 }
 
 TEST_F(OceanWavesW2ATest, time_reset)
@@ -271,12 +271,12 @@ TEST_F(OceanWavesW2ATest, time_interp)
     auto& vel = sim().repo().declare_cc_field("ow_velocity", 3, 3, 1);
     auto& w2a_lvs = sim().repo().declare_cc_field("w2a_levelset", 1, 3, 1);
     auto& w2a_vel = sim().repo().declare_cc_field("w2a_velocity", 3, 3, 1);
-    lvs.setVal(0.);
-    amrex::Real t_last = 0.;
+    lvs.setVal(0.0_rt);
+    amrex::Real t_last = 0.0_rt;
 
     // First time from "file"
     w2a_lvs.setVal(1.0_rt);
-    amrex::Real t_w2a = 1.;
+    amrex::Real t_w2a = 1.0_rt;
 
     // Interpolate once in time
     amrex::Real t_sim = 0.5_rt;
@@ -289,8 +289,8 @@ TEST_F(OceanWavesW2ATest, time_interp)
     // Check value of levelset
     const amrex::Real fmax1 = utils::field_max(lvs);
     const amrex::Real fmin1 = utils::field_min(lvs);
-    EXPECT_NEAR(fmax1, 0.5_rt, 1e-10);
-    EXPECT_NEAR(fmin1, 0.5_rt, 1e-10);
+    EXPECT_NEAR(fmax1, 0.5_rt, 1.0e-10_rt);
+    EXPECT_NEAR(fmin1, 0.5_rt, 1.0e-10_rt);
 
     // Step forward in time, after current w2a data
     t_sim += 1.;
@@ -300,8 +300,8 @@ TEST_F(OceanWavesW2ATest, time_interp)
         amr_wind::field_ops::copy(lvs, w2a_lvs, 0, 0, 1, lvs.num_grow());
         t_last = t_w2a;
         // Update w2a values (as in a file read)
-        w2a_lvs.setVal(0.);
-        t_w2a += 1.;
+        w2a_lvs.setVal(0.0_rt);
+        t_w2a += 1.0_rt;
     }
 
     // Interpolate again
@@ -311,8 +311,8 @@ TEST_F(OceanWavesW2ATest, time_interp)
     // Check value of levelset
     const amrex::Real fmax2 = utils::field_max(lvs);
     const amrex::Real fmin2 = utils::field_min(lvs);
-    EXPECT_NEAR(fmax2, 0.5_rt, 1e-10);
-    EXPECT_NEAR(fmin2, 0.5_rt, 1e-10);
+    EXPECT_NEAR(fmax2, 0.5_rt, 1.0e-10_rt);
+    EXPECT_NEAR(fmin2, 0.5_rt, 1.0e-10_rt);
 }
 
 } // namespace amr_wind_tests

@@ -44,20 +44,20 @@ int evaluate_read_resize(
         // Sim time to go with recorded data
         wtime = new_ntime * wdt - wtinit;
         // If double reading is deemed necessary, check for convenience
-        if (double_data == 1 && std::abs(wtime - time) <= 1e-10) {
+        if (double_data == 1 && std::abs(wtime - time) <= 1.0e-10_rt) {
             // Reading can be done just once, w2a fields replace ow fields
             double_data = 2;
         }
     }
     // Check if reading must take place for other reasons
-    if (t_last < -1e-10) {
+    if (t_last < -1.0e-10_rt) {
         // Signifies initialization from scratch without waves or a restart
         read_flag = true;
         // Resizing needs to happen for the first time
         resize_flag = true;
 
         // Confirm that new time is not coincident with modes time step
-        if (std::abs(wtime - time) > 1e-10) {
+        if (std::abs(wtime - time) > 1.0e-10_rt) {
             // Data must be read before and after wtime
             double_data = 1;
         } else {
@@ -65,7 +65,7 @@ int evaluate_read_resize(
             double_data = 2;
         }
 
-    } else if (std::abs(t_last) < 1e-10) {
+    } else if (std::abs(t_last) < 1.0e-10_rt) {
         // Signifies initialization with waves
         read_flag = true;
         // Resizing needs to happen for the first time
@@ -186,7 +186,9 @@ void time_interpolate_wave_fields(
     const amrex::Real t_new,
     const amrex::Real t_future)
 {
-    const amrex::Real b = (t_new - t_old) / (t_future - t_old + 1e-16);
+    const amrex::Real b =
+        (t_new - t_old) /
+        (t_future - t_old + std::numeric_limits<amrex::Real>::epsilon());
     const amrex::Real a = 1. - b;
     amr_wind::field_ops::lincomb(
         lvs_field, a, lvs_field, 0, b, future_lvs_field, 0, 0, 1,
@@ -249,7 +251,7 @@ struct ReadInputsOp<W2AWaves>
         // Read user inputs to height vector
         int nheights = 0;
         int nh_above = 1;
-        amrex::Real dz0 = 0.;
+        amrex::Real dz0 = 0.0_rt;
         pp.get("number_interp_points_in_z", nheights);
         pp.get("interp_spacing_at_surface", dz0);
         pp.query("number_interp_above_surface", nh_above);
@@ -319,8 +321,8 @@ struct ReadInputsOp<W2AWaves>
             // Get dimensional length
             wdata.dimL = wdata.c_rmodes.get_L();
             // Get nominal last timestep of data
-            wdata.n_wstop =
-                (int)((wdata.c_rmodes.get_Tstop() + 1e-8) / wdata.dt_modes);
+            wdata.n_wstop = static_cast<int>(
+                (wdata.c_rmodes.get_Tstop() + 1.0e-8_rt) / wdata.dt_modes);
 
             amrex::Print()
                 << "OceanWaves: Waves2AMR parameters from HOS-Ocean file: \n"
@@ -357,8 +359,8 @@ struct ReadInputsOp<W2AWaves>
             // Get dimensional length
             wdata.dimL = wdata.r_rmodes.get_L();
             // Get nominal last timestep of data
-            wdata.n_wstop =
-                (int)((wdata.r_rmodes.get_Tstop() + 1e-8) / wdata.dt_modes);
+            wdata.n_wstop = static_cast<int>(
+                (wdata.r_rmodes.get_Tstop() + 1.0e-8_rt) / wdata.dt_modes);
 
             amrex::Print()
                 << "OceanWaves: Waves2AMR parameters from HOS-NWT file: \n"
@@ -383,7 +385,8 @@ struct ReadInputsOp<W2AWaves>
         }
 
         // Warning if depth does not correspond to simulation
-        if (std::abs(depth - (wdata.zsl - prob_lo_input[2])) > 1e-3 * depth) {
+        if (std::abs(depth - (wdata.zsl - prob_lo_input[2])) >
+            1.0e-3_rt * depth) {
             amrex::Print()
                 << "WARNING: Mismatch between water depths from AMR-Wind "
                    "domain and HOS data interpreted by Waves2AMR. \n   ^This "
@@ -448,7 +451,7 @@ struct ReadInputsOp<W2AWaves>
                 std::to_string(flag));
         }
 
-        amrex::Real z_double{0.};
+        amrex::Real z_double{0.0_rt};
         bool found_z_double{false};
         for (int n = 0; n < wdata.hvec.size() - 1; ++n) {
             const amrex::Real dz = wdata.hvec[n] - wdata.hvec[n + 1];
@@ -723,16 +726,17 @@ struct InitDataOp<W2AWaves>
         amrex::ParallelFor(
             velocity(level), amrex::IntVect(2),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                const amrex::Real eps = 2. * std::cbrt(dx[0] * dx[1] * dx[2]);
+                const amrex::Real eps =
+                    2.0_rt * std::cbrt(dx[0] * dx[1] * dx[2]);
                 const amrex::Real vof_local =
                     multiphase::levelset_to_vof(i, j, k, eps, phi_tmp[nbx]);
 
-                if (vof_local > 1. - constants::TIGHT_TOL) {
+                if (vof_local > 1.0_rt - constants::TIGHT_TOL) {
                     // Entire cell is liquid
                     vel[nbx](i, j, k, 0) = vel_tmp[nbx](i, j, k, 0);
                     vel[nbx](i, j, k, 1) = vel_tmp[nbx](i, j, k, 1);
                     vel[nbx](i, j, k, 2) = vel_tmp[nbx](i, j, k, 2);
-                } else if (vof_local > 1e-3) {
+                } else if (vof_local > 1.0e-3_rt) {
                     // Velocity of liquid becomes velocity of entire cell
                     // Interpolate using cell-centered values to liquid centroid
                     // Consider only z-direction to find centroid

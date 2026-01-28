@@ -171,7 +171,7 @@ public:
 
     bool is_data_newer_than(const amrex::Real time) const
     {
-        return (m_in_data.tinterp() - time > 1e-12);
+        return (m_in_data.tinterp() - time > 1.0e-12_rt);
     }
 
     io_mode mode() const { return m_io_mode; }

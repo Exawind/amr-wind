@@ -154,10 +154,10 @@ void FreeSurfaceSampler::initialize(const std::string& key)
                                        ? 1
                                        : 0;
                         } else {
-                            n0_f = (int)std::ceil(
-                                (xm[gc0] - 0.5_rt * dx[gc0] - s_gc0) / dxs0);
-                            n0_a = (int)std::ceil(
-                                (xm[gc0] + 0.5_rt * dx[gc0] - s_gc0) / dxs0);
+                            n0_f = static_cast<int>(std::ceil(
+                                (xm[gc0] - 0.5_rt * dx[gc0] - s_gc0) / dxs0));
+                            n0_a = static_cast<int>(std::ceil(
+                                (xm[gc0] + 0.5_rt * dx[gc0] - s_gc0) / dxs0));
                             // Edge case of phi
                             if (std::abs(
                                     xm[gc0] + 0.5_rt * dx[gc0] - phi[gc0]) <
@@ -182,10 +182,10 @@ void FreeSurfaceSampler::initialize(const std::string& key)
                                        ? 1
                                        : 0;
                         } else {
-                            n1_f = (int)std::ceil(
-                                (xm[gc1] - 0.5_rt * dx[gc1] - s_gc1) / dxs1);
-                            n1_a = (int)std::ceil(
-                                (xm[gc1] + 0.5_rt * dx[gc1] - s_gc1) / dxs1);
+                            n1_f = static_cast<int>(std::ceil(
+                                (xm[gc1] - 0.5_rt * dx[gc1] - s_gc1) / dxs1));
+                            n1_a = static_cast<int>(std::ceil(
+                                (xm[gc1] + 0.5_rt * dx[gc1] - s_gc1) / dxs1));
                             // Edge case of phi
                             if (std::abs(
                                     xm[gc1] + 0.5_rt * dx[gc1] - phi[gc1]) <
@@ -271,10 +271,10 @@ void FreeSurfaceSampler::initialize(const std::string& key)
                                    ? 1
                                    : 0;
                     } else {
-                        n0_f = (int)std::ceil(
-                            (xm[gc0] - 0.5_rt * dx[gc0] - s_gc0) / dxs0);
-                        n0_a = (int)std::ceil(
-                            (xm[gc0] + 0.5_rt * dx[gc0] - s_gc0) / dxs0);
+                        n0_f = static_cast<int>(std::ceil(
+                            (xm[gc0] - 0.5_rt * dx[gc0] - s_gc0) / dxs0));
+                        n0_a = static_cast<int>(std::ceil(
+                            (xm[gc0] + 0.5_rt * dx[gc0] - s_gc0) / dxs0));
                         // Edge case of phi
                         if (std::abs(xm[gc0] + 0.5_rt * dx[gc0] - phi[gc0]) <
                                 eps &&
@@ -297,10 +297,10 @@ void FreeSurfaceSampler::initialize(const std::string& key)
                                    ? 1
                                    : 0;
                     } else {
-                        n1_f = (int)std::ceil(
-                            (xm[gc1] - 0.5_rt * dx[gc1] - s_gc1) / dxs1);
-                        n1_a = (int)std::ceil(
-                            (xm[gc1] + 0.5_rt * dx[gc1] - s_gc1) / dxs1);
+                        n1_f = static_cast<int>(std::ceil(
+                            (xm[gc1] - 0.5_rt * dx[gc1] - s_gc1) / dxs1));
+                        n1_a = static_cast<int>(std::ceil(
+                            (xm[gc1] + 0.5_rt * dx[gc1] - s_gc1) / dxs1));
                         // Edge case of phi
                         if (std::abs(xm[gc1] + 0.5_rt * dx[gc1] - phi[gc1]) <
                                 eps &&
@@ -415,7 +415,6 @@ void FreeSurfaceSampler::sampling_locations(
 
 bool FreeSurfaceSampler::update_sampling_locations()
 {
-
     BL_PROFILE("amr-wind::FreeSurfaceSampler::update_sampling_locations");
 
     // Zero data in output array
@@ -513,11 +512,12 @@ bool FreeSurfaceSampler::update_sampling_locations()
                                 bool calc_flag_diffuse = false;
                                 const bool single_phase_below_interface =
                                     (ni % 2 == 0 &&
-                                     vof_arr(i, j, k) >= 1.0_rt - 1e-12) ||
-                                    (ni % 2 != 0 && vof_arr(i, j, k) <= 1e-12);
+                                     vof_arr(i, j, k) >= 1.0_rt - 1.0e-12_rt) ||
+                                    (ni % 2 != 0 &&
+                                     vof_arr(i, j, k) <= 1.0e-12_rt);
                                 const bool multiphase =
-                                    vof_arr(i, j, k) < (1.0_rt - 1e-12) &&
-                                    vof_arr(i, j, k) > 1e-12;
+                                    vof_arr(i, j, k) < (1.0_rt - 1.0e-12_rt) &&
+                                    vof_arr(i, j, k) > 1.0e-12_rt;
                                 const bool use_linear_interp =
                                     (has_overset && ibl_arr(i, j, k) == -1) ||
                                     linear_on;
@@ -676,8 +676,9 @@ bool FreeSurfaceSampler::update_sampling_locations()
                                     }
                                     // If interface is above upper
                                     // bound, limit it
-                                    if (ht > xm[dir] + 0.5_rt * dx[dir] *
-                                                           (1.0_rt + 1e-8)) {
+                                    if (ht >
+                                        xm[dir] + 0.5_rt * dx[dir] *
+                                                      (1.0_rt + 1.0e-8_rt)) {
                                         ht = xm[dir] + 0.5_rt * dx[dir];
                                     }
                                     // Save interface location by atomic max

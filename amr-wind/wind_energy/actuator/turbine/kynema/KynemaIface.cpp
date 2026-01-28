@@ -1,3 +1,5 @@
+#include <algorithm>
+#include <cmath>
 #include "amr-wind/wind_energy/actuator/turbine/external/ExtTurbIface.H"
 #include "amr-wind/wind_energy/actuator/turbine/kynema/kynema_types.H"
 #include "amr-wind/wind_energy/actuator/turbine/kynema/kynema_wrapper.H"
@@ -9,9 +11,6 @@
 #include "AMReX.H"
 #include "AMReX_ParmParse.H"
 #include "AMReX_FileSystem.H"
-
-#include <algorithm>
-#include <cmath>
 #include "AMReX_REAL.H"
 
 using namespace amrex::literals;
@@ -120,7 +119,7 @@ void build_turbine(
                 "stiffness and mass matrices not on same grid");
         }
         for (auto i : std::views::iota(0U, n_sections)) {
-            if (abs(m_grid[i] - k_grid[i]) > 1e-8) {
+            if (std::abs(m_grid[i] - k_grid[i]) > 1.0e-8_rt) {
                 throw std::runtime_error(
                     "stiffness and mass matrices not on same grid");
             }

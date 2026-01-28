@@ -177,7 +177,7 @@ TEST_F(ABLMeshTest, stats_energy_budget)
     }
     {
         amrex::ParmParse pp("transport");
-        pp.add("viscosity", (amrex::Real)1e-5);
+        pp.add("viscosity", 1.0e-5_rt);
     }
 
     // incflo.diffusion_type = 1

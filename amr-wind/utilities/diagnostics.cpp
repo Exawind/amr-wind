@@ -114,7 +114,7 @@ amrex::Real amr_wind::diagnostics::get_vel_max(
             amrex::Box const& bx,
             amrex::Array4<amrex::Real const> const& vel_arr,
             amrex::Array4<int const> const& mask_arr) -> amrex::Real {
-            amrex::Real max_fab = -1e8;
+            amrex::Real max_fab = -1.0e8_rt;
             amrex::Loop(bx, [=, &max_fab](int i, int j, int k) noexcept {
                 max_fab = amrex::max<amrex::Real>(
                     max_fab, mask_arr(i, j, k) > 0
@@ -150,7 +150,6 @@ amrex::Real amr_wind::diagnostics::get_vel_loc(
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> problo,
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx)
 {
-
     return amrex::ReduceMax(
         vel, level_mask, 0,
         [=] AMREX_GPU_HOST_DEVICE(
@@ -165,7 +164,7 @@ amrex::Real amr_wind::diagnostics::get_vel_loc(
                 bool mask_check = (mask_arr(i, j, k) > 0);
                 bool loc_check =
                     (amrex::Math::abs(vel_max - vel_arr(i, j, k, vdir)) <
-                     1e-10);
+                     1.0e-10_rt);
                 loc_fab = amrex::max<amrex::Real>(
                     loc_fab, (mask_check && loc_check ? loc : problo[ldir]));
             });
@@ -185,7 +184,7 @@ amrex::Real amr_wind::diagnostics::get_macvel_max(
             amrex::Box const& bx,
             amrex::Array4<amrex::Real const> const& mvel_arr,
             amrex::Array4<int const> const& mask_arr) -> amrex::Real {
-            amrex::Real max_fab = -1e8;
+            amrex::Real max_fab = -1.0e8_rt;
             amrex::Loop(bx, [=, &max_fab](int i, int j, int k) noexcept {
                 int ii = i - (vdir == 0 ? 1 : 0);
                 int jj = j - (vdir == 1 ? 1 : 0);
@@ -242,7 +241,8 @@ amrex::Real amr_wind::diagnostics::get_macvel_loc(
                 bool mask_check =
                     (mask_arr(i, j, k) + mask_arr(ii, jj, kk) > 0);
                 bool loc_check =
-                    (amrex::Math::abs(mvel_max - mvel_arr(i, j, k)) < 1e-10);
+                    (amrex::Math::abs(mvel_max - mvel_arr(i, j, k)) <
+                     1.0e-10_rt);
                 loc_fab = amrex::max<amrex::Real>(
                     loc_fab, (mask_check && loc_check ? loc : problo[ldir]));
             });
@@ -260,9 +260,9 @@ amrex::Array<amrex::Real, 24> amr_wind::diagnostics::PrintMaxVelLocations(
     const int finest_level = repo.num_active_levels() - 1;
 
     // Get infinity norm of velocities
-    amrex::Real u_max{-1e8}, v_max{-1e8}, w_max{-1e8};
+    amrex::Real u_max{-1.0e8_rt}, v_max{-1.0e8_rt}, w_max{-1.0e8_rt};
     // Minima will be negated later
-    amrex::Real u_min{-1e8}, v_min{-1e8}, w_min{-1e8};
+    amrex::Real u_min{-1.0e8_rt}, v_min{-1.0e8_rt}, w_min{-1.0e8_rt};
     for (int lev = 0; lev <= finest_level; lev++) {
         // Use level_mask to only count finest level present
         amrex::iMultiFab level_mask;
@@ -443,9 +443,9 @@ amrex::Array<amrex::Real, 24> amr_wind::diagnostics::PrintMaxMACVelLocations(
     const int finest_level = repo.num_active_levels() - 1;
 
     // Get infinity norm of mac velocities
-    amrex::Real uMAC_max{-1e8}, vMAC_max{-1e8}, wMAC_max{-1e8};
+    amrex::Real uMAC_max{-1.0e8_rt}, vMAC_max{-1.0e8_rt}, wMAC_max{-1.0e8_rt};
     // Minima will be negated later
-    amrex::Real uMAC_min{-1e8}, vMAC_min{-1e8}, wMAC_min{-1e8};
+    amrex::Real uMAC_min{-1.0e8_rt}, vMAC_min{-1.0e8_rt}, wMAC_min{-1.0e8_rt};
     for (int lev = 0; lev <= finest_level; lev++) {
         // Use level_mask to only count finest level present
         // Do it with a ghost cell for the sake of checking faces

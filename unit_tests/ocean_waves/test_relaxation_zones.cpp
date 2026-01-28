@@ -180,7 +180,7 @@ amrex::Real gas_velocity_error(
                 amrex::Loop(
                     bx, nc, [=, &error](int i, int j, int k, int n) noexcept {
                         error +=
-                            (vof_arr(i, j, k) < 1e-12
+                            (vof_arr(i, j, k) < 1.0e-12_rt
                                  ? std::abs(vel_arr(i, j, k, n) - gvel)
                                  : 0.0_rt);
                     });
