@@ -75,9 +75,9 @@ jobs:
     - name: Install Ccache
       run: |
         if [ "${RUNNER_OS}" != "macOS" ]; then
-          wget https://github.com/ccache/ccache/releases/download/v4.8/ccache-4.8-linux-x86_64.tar.xz
-          tar xvf ccache-4.8-linux-x86_64.tar.xz
-          sudo cp -f ccache-4.8-linux-x86_64/ccache /usr/local/bin/
+          wget https://github.com/ccache/ccache/releases/download/v4.12.2/ccache-4.12.2-linux-x86_64.tar.xz
+          tar xvf ccache-4.12.2-linux-x86_64.tar.xz
+          sudo cp -f ccache-4.12.2-linux-x86_64/ccache /usr/local/bin/
         fi
     - name: Set Up Ccache
       uses: actions/cache@v4
@@ -187,9 +187,9 @@ jobs:
           echo "CCACHE_MAXSIZE=300M" >> $GITHUB_ENV
       - name: Install Ccache
         run: |
-          wget https://github.com/ccache/ccache/releases/download/v4.8/ccache-4.8-linux-x86_64.tar.xz
-          tar xvf ccache-4.8-linux-x86_64.tar.xz
-          sudo cp -f ccache-4.8-linux-x86_64/ccache /usr/local/bin/
+          wget https://github.com/ccache/ccache/releases/download/v4.12.2/ccache-4.12.2-linux-x86_64.tar.xz
+          tar xvf ccache-4.12.2-linux-x86_64.tar.xz
+          sudo cp -f ccache-4.12.2-linux-x86_64/ccache /usr/local/bin/
       - name: Set Up Ccache
         uses: actions/cache@v4
         with:
@@ -244,9 +244,9 @@ jobs:
           echo "CCACHE_MAXSIZE=100M" >> $GITHUB_ENV
       - name: Install Ccache
         run: |
-          wget https://github.com/ccache/ccache/releases/download/v4.8/ccache-4.8-linux-x86_64.tar.xz
-          tar xvf ccache-4.8-linux-x86_64.tar.xz
-          sudo cp -f ccache-4.8-linux-x86_64/ccache /usr/local/bin/
+          wget https://github.com/ccache/ccache/releases/download/v4.12.2/ccache-4.12.2-linux-x86_64.tar.xz
+          tar xvf ccache-4.12.2-linux-x86_64.tar.xz
+          sudo cp -f ccache-4.12.2-linux-x86_64/ccache /usr/local/bin/
       - name: Set Up Ccache
         uses: actions/cache@v4
         with:
@@ -310,9 +310,9 @@ jobs:
           echo "CCACHE_DEPEND=1" >> $GITHUB_ENV
       - name: Install Ccache
         run: |
-          wget https://github.com/ccache/ccache/releases/download/v4.8/ccache-4.8-linux-x86_64.tar.xz
-          tar xvf ccache-4.8-linux-x86_64.tar.xz
-          sudo cp -f ccache-4.8-linux-x86_64/ccache /usr/local/bin/
+          wget https://github.com/ccache/ccache/releases/download/v4.12.2/ccache-4.12.2-linux-x86_64.tar.xz
+          tar xvf ccache-4.12.2-linux-x86_64.tar.xz
+          sudo cp -f ccache-4.12.2-linux-x86_64/ccache /usr/local/bin/
       - name: Set Up Ccache
         uses: actions/cache@v4
         with:
@@ -402,10 +402,10 @@ jobs:
           echo "CTCACHE_DIR=~/.cache/ctcache" >> $GITHUB_ENV
       - name: Install Ccache
         run: |
-          wget https://github.com/ccache/ccache/releases/download/v4.8/ccache-4.8-linux-x86_64.tar.xz
+          wget https://github.com/ccache/ccache/releases/download/v4.12.2/ccache-4.12.2-linux-x86_64.tar.xz
           sudo curl https://raw.githubusercontent.com/matus-chochlik/ctcache/7fd516e91c17779cbc6fc18bd119313d9532dd90/clang-tidy-cache -Lo /usr/bin/clang-tidy-cache
-          tar xvf ccache-4.8-linux-x86_64.tar.xz
-          sudo cp -f ccache-4.8-linux-x86_64/ccache /usr/local/bin/
+          tar xvf ccache-4.12.2-linux-x86_64.tar.xz
+          sudo cp -f ccache-4.12.2-linux-x86_64/ccache /usr/local/bin/
           sudo chmod +x /usr/bin/clang-tidy-cache
           mkdir -p ~/.cache/ctcache
       - name: Set Up Ccache
