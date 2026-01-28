@@ -13,9 +13,11 @@
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_ParallelDescriptor.H"
-#include <AMReX_REAL.H>
-#include <AMReX_Vector.H>
+#include "AMReX_REAL.H"
+#include "AMReX_Vector.H"
 #include "AMReX_ValLocPair.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind {
 
@@ -60,7 +62,7 @@ void ABLStats::initialize()
 
     {
         amrex::ParmParse pp("incflo");
-        amrex::Vector<amrex::Real> gravity{0.0, 0.0, -9.81};
+        amrex::Vector<amrex::Real> gravity{0.0_rt, 0.0_rt, -9.81_rt};
         pp.queryarr("gravity", gravity);
         m_gravity = utils::vec_mag(gravity.data());
     }
@@ -321,7 +323,7 @@ void ABLStats::compute_zi()
         const auto dnval = m_dn;
         zi_sum = amrex::Reduce::Sum<amrex::Real>(
             nblocks, [=] AMREX_GPU_DEVICE(int iblock) {
-                return (ptmp[iblock] + amrex::Real(0.5)) * dnval;
+                return (ptmp[iblock] + amrex::Real(0.5_rt)) * dnval;
             });
 #else
         const auto lo = amrex::lbound(fabbox);
@@ -340,7 +342,7 @@ void ABLStats::compute_zi()
                         idxmax = i;
                     }
                 }
-                zi_sum += (idxmax + amrex::Real(0.5)) * m_dn;
+                zi_sum += (idxmax + amrex::Real(0.5_rt)) * m_dn;
             }
         }
 #endif
@@ -413,15 +415,15 @@ void ABLStats::write_ascii()
         return;
     }
 
-    amrex::RealArray abl_forcing = {0.0};
+    amrex::RealArray abl_forcing = {0.0_rt};
     if (m_abl_forcing != nullptr) {
         abl_forcing = m_abl_forcing->abl_forcing();
     }
 
-    double wstar = 0.0;
+    amrex::Real wstar = 0.0_rt;
     const auto ref_theta = m_sim.transport_model().reference_temperature();
     auto Q = m_abl_wall_func.mo().surf_temp_flux;
-    if (Q > 1e-10) {
+    if (Q > 1.0e-10_rt) {
         wstar = std::cbrt(m_gravity * Q * m_zi / ref_theta);
     }
     auto L = m_abl_wall_func.mo().obukhov_len;
@@ -608,21 +610,21 @@ void ABLStats::write_netcdf()
         ncf.var("time").put(&time, {nt}, {1});
         auto ustar = m_abl_wall_func.utau();
         ncf.var("ustar").put(&ustar, {nt}, {1});
-        double wstar = 0.0;
+        amrex::Real wstar = 0.0_rt;
         auto Q = m_abl_wall_func.mo().surf_temp_flux;
         const auto ref_theta = m_sim.transport_model().reference_temperature();
         ncf.var("Q").put(&Q, {nt}, {1});
         auto Tsurf = m_abl_wall_func.mo().surf_temp;
         ncf.var("Tsurf").put(&Tsurf, {nt}, {1});
-        if (Q > 1e-10) {
+        if (Q > 1.0e-10_rt) {
             wstar = std::cbrt(m_gravity * Q * m_zi / ref_theta);
         }
         ncf.var("wstar").put(&wstar, {nt}, {1});
-        double L = m_abl_wall_func.mo().obukhov_len;
+        amrex::Real L = m_abl_wall_func.mo().obukhov_len;
         ncf.var("L").put(&L, {nt}, {1});
         ncf.var("zi").put(&m_zi, {nt}, {1});
 
-        amrex::RealArray abl_forcing = {0.0};
+        amrex::RealArray abl_forcing = {0.0_rt};
         if (m_abl_forcing != nullptr) {
             abl_forcing = m_abl_forcing->abl_forcing();
         }

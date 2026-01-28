@@ -11,6 +11,9 @@
 #include <memory>
 #include <string>
 #include <map>
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind {
 
@@ -90,7 +93,7 @@ private:
     std::map<std::string, FieldTimeAverage*> m_registered;
 
     //! Time to start averaging the fields
-    amrex::Real m_start_time{0.0};
+    amrex::Real m_start_time{0.0_rt};
 
     //! Time to stop averaging the fields
     amrex::Real m_stop_time{std::numeric_limits<amrex::Real>::max()};

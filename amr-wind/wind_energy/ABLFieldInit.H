@@ -11,6 +11,8 @@
 #include "AMReX_Vector.H"
 #include "AMReX_Gpu.H"
 
+using namespace amrex::literals;
+
 namespace amr_wind {
 
 /** Initialize ABL fields
@@ -93,46 +95,46 @@ private:
     amrex::Real m_rho;
 
     //! Amplitude of fluctuations in x-direction
-    amrex::Real m_deltaU{1.0};
+    amrex::Real m_deltaU{1.0_rt};
 
     //! Amplitude of fluctuations in y-direction
-    amrex::Real m_deltaV{1.0};
+    amrex::Real m_deltaV{1.0_rt};
 
     //! Number of sinusoidal waves in x-direction
-    amrex::Real m_Uperiods{4.0};
+    amrex::Real m_Uperiods{4.0_rt};
 
     //! Number of sinusoidal waves in y-direction
-    amrex::Real m_Vperiods{4.0};
+    amrex::Real m_Vperiods{4.0_rt};
 
     //! Reference height for velocity perturbations
-    amrex::Real m_ref_height{50.0};
+    amrex::Real m_ref_height{50.0_rt};
 
     //! Amplitude of temperature perturbations
-    amrex::Real m_delta_t{0.8};
+    amrex::Real m_delta_t{0.8_rt};
 
     //! Mean for Gaussian number generator
-    amrex::Real m_theta_gauss_mean{0.0};
+    amrex::Real m_theta_gauss_mean{0.0_rt};
 
     //! Variance for Gaussian number generator
-    amrex::Real m_theta_gauss_var{1.0};
+    amrex::Real m_theta_gauss_var{1.0_rt};
 
     //! Cutoff height for temperature fluctuations
-    amrex::Real m_theta_cutoff_height{1.0e16};
+    amrex::Real m_theta_cutoff_height{1.0e16_rt};
 
     //! Initial value for tke field
-    amrex::Real m_tke_init{0.1};
+    amrex::Real m_tke_init{0.1_rt};
 
     //! Multiplicative factor for init tke profile
-    amrex::Real m_tke_init_factor{0.4};
+    amrex::Real m_tke_init_factor{0.4_rt};
 
     //! Cutoff height for init tke profile
-    amrex::Real m_tke_cutoff_height{250.};
+    amrex::Real m_tke_cutoff_height{250.0_rt};
 
     //! Top velocity
-    amrex::RealArray m_top_vel{20.0};
+    amrex::RealArray m_top_vel{20.0_rt};
 
     //! Bottom velocity
-    amrex::RealArray m_bottom_vel{4.0};
+    amrex::RealArray m_bottom_vel{4.0_rt};
 
     //! Initial linear velocity profile boolean
     bool m_linear_profile{false};

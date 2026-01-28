@@ -9,6 +9,9 @@
 #include "amr-wind/utilities/sampling/SamplerBase.H"
 #include "amr-wind/utilities/sampling/SamplingContainer.H"
 #include <AMReX_PlotFileUtil.H>
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 /**
  *  \defgroup sampling Data-sampling utilities
@@ -157,10 +160,10 @@ private:
     std::string m_ncfile_name;
 
     // Current sample buffer for full container
-    std::vector<double> m_sample_buf;
+    std::vector<amrex::Real> m_sample_buf;
 
     // Current sample buffer for output
-    std::vector<double> m_output_buf;
+    std::vector<amrex::Real> m_output_buf;
 
     //! Number of output particles in netcdf
     size_t m_netcdf_output_particles{0};

@@ -6,6 +6,9 @@
 #include "AMReX_ParmParse.H"
 #include "amr-wind/utilities/IOManager.H"
 #include "amr-wind/fvm/vorticity_mag.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::enstrophy {
 
@@ -31,7 +34,7 @@ amrex::Real Enstrophy::calculate_enstrophy()
     BL_PROFILE("amr-wind::Enstrophy::calculate_enstrophy");
 
     // integrated total Enstrophy
-    amrex::Real total_enstrophy = 0.0;
+    amrex::Real total_enstrophy = 0.0_rt;
 
     const int finest_level = m_velocity.repo().num_active_levels() - 1;
     const auto& geom = m_velocity.repo().mesh().Geom();
@@ -64,7 +67,7 @@ amrex::Real Enstrophy::calculate_enstrophy()
                 amrex::Array4<amrex::Real const> const& den_arr,
                 amrex::Array4<amrex::Real const> const& vort_arr,
                 amrex::Array4<int const> const& mask_arr) -> amrex::Real {
-                amrex::Real enstrophy_fab = 0.0;
+                amrex::Real enstrophy_fab = 0.0_rt;
 
                 amrex::Loop(
                     bx, [=, &enstrophy_fab](int i, int j, int k) noexcept {
@@ -79,7 +82,7 @@ amrex::Real Enstrophy::calculate_enstrophy()
     // total volume of grid on level 0
     const amrex::Real total_vol = geom[0].ProbDomain().volume();
 
-    total_enstrophy *= 0.5 / total_vol;
+    total_enstrophy *= 0.5_rt / total_vol;
 
     amrex::ParallelDescriptor::ReduceRealSum(total_enstrophy);
 

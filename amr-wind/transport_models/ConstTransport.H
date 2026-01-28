@@ -3,6 +3,9 @@
 
 #include "amr-wind/transport_models/TransportModel.H"
 #include "AMReX_ParmParse.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::transport {
 
@@ -100,7 +103,7 @@ public:
     {
         amrex::ParmParse pp("transport");
         const std::string key = scalar_name + "_laminar_schmidt";
-        amrex::Real lam_schmidt = 1.0;
+        amrex::Real lam_schmidt = 1.0_rt;
         pp.query(key, lam_schmidt);
         return lam_schmidt;
     }
@@ -109,7 +112,7 @@ public:
     {
         amrex::ParmParse pp("transport");
         const std::string key = scalar_name + "_turbulent_schmidt";
-        amrex::Real turb_schmidt = 1.0;
+        amrex::Real turb_schmidt = 1.0_rt;
         pp.query(key, turb_schmidt);
         return turb_schmidt;
     }
@@ -128,7 +131,7 @@ public:
     inline std::unique_ptr<ScratchField> alpha() override
     {
         auto alpha = mu();
-        amrex::Real inv_Pr = 1.0 / m_Pr;
+        amrex::Real inv_Pr = 1.0_rt / m_Pr;
         for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
             (*alpha)(lev).mult(inv_Pr);
         }
@@ -140,7 +143,7 @@ public:
     {
         amrex::Real lam_schmidt = laminar_schmidt(scalar_name);
 
-        amrex::Real inv_schmidt = 1.0 / lam_schmidt;
+        amrex::Real inv_schmidt = 1.0_rt / lam_schmidt;
         auto diff = mu();
         for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
             (*diff)(lev).mult(inv_schmidt);
@@ -174,7 +177,7 @@ public:
         const amrex::Array4<amrex::Real>& beta) const override
     {
 
-        if (m_constant_beta > 0.0) {
+        if (m_constant_beta > 0.0_rt) {
             const amrex::Real beta_val = m_constant_beta;
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -185,10 +188,10 @@ public:
             const auto& temp0_arr = temp0(lev).const_array(mfi);
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    beta(i, j, k) = 1.0 / temp0_arr(i, j, k);
+                    beta(i, j, k) = 1.0_rt / temp0_arr(i, j, k);
                 });
         } else {
-            const amrex::Real beta_val = 1.0 / m_reference_temperature;
+            const amrex::Real beta_val = 1.0_rt / m_reference_temperature;
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     beta(i, j, k) = beta_val;
@@ -201,7 +204,7 @@ public:
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     if (vof_arr(i, j, k) > constants::TIGHT_TOL) {
-                        beta(i, j, k) = 0.0;
+                        beta(i, j, k) = 0.0_rt;
                     }
                 });
         }
@@ -215,7 +218,7 @@ public:
     //! Return the reference temperature
     inline std::unique_ptr<ScratchField> ref_theta() const override
     {
-        if (m_reference_temperature < 0.0) {
+        if (m_reference_temperature < 0.0_rt) {
             amrex::Abort("Reference temperature was not set");
         }
 
@@ -240,7 +243,7 @@ public:
         const amrex::Box& bx,
         const amrex::Array4<amrex::Real>& ref_theta) const override
     {
-        if (m_reference_temperature < 0.0) {
+        if (m_reference_temperature < 0.0_rt) {
             amrex::Abort("Reference temperature was not set");
         }
 
@@ -265,19 +268,19 @@ private:
     FieldRepo& m_repo;
 
     //! (Laminar) dynamic viscosity
-    amrex::Real m_mu{1.0e-5};
+    amrex::Real m_mu{1.0e-5_rt};
 
     //! Prandtl number
-    amrex::Real m_Pr{1.0};
+    amrex::Real m_Pr{1.0_rt};
 
     //! Turbulent Prandtl number
-    amrex::Real m_Prt{1.0};
+    amrex::Real m_Prt{1.0_rt};
 
     //! Constant thermal expansion coefficient
-    amrex::Real m_constant_beta{0.0};
+    amrex::Real m_constant_beta{0.0_rt};
 
     //! Reference temperature
-    amrex::Real m_reference_temperature{-1.0};
+    amrex::Real m_reference_temperature{-1.0_rt};
 };
 
 } // namespace amr_wind::transport

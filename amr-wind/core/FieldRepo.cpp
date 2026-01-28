@@ -1,6 +1,9 @@
 #include <memory>
 
 #include "amr-wind/core/FieldRepo.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind {
 
@@ -424,7 +427,7 @@ void FieldRepo::allocate_field_data(
             ba1, dm, field->num_comp(), field->num_grow(), amrex::MFInfo(),
             factory);
 
-        mfab_vec.back().setVal(0.0);
+        mfab_vec.back().setVal(0.0_rt);
     }
 }
 
@@ -443,7 +446,7 @@ void FieldRepo::allocate_field_data(
         ba, m_mesh.DistributionMap(lev), field.num_comp(), field.num_grow(),
         amrex::MFInfo(), factory);
 
-    mfab_vec.back().setVal(0.0);
+    mfab_vec.back().setVal(0.0_rt);
 }
 
 void FieldRepo::allocate_field_data(Field& field)

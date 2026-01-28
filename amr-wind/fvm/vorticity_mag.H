@@ -2,6 +2,9 @@
 #define VORTICITYMAG_H
 
 #include "amr-wind/fvm/fvm_utils.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::fvm {
 
@@ -68,9 +71,9 @@ struct VorticityMag
                       cm1 * phi(i, j, k - 1, 1)) *
                      idx[2];
 
-                vortmagphi(i, j, k) = sqrt(
-                    std::pow(uy - vx, 2) + std::pow(vz - wy, 2) +
-                    std::pow(wx - uz, 2));
+                vortmagphi(i, j, k) = std::sqrt(
+                    std::pow(uy - vx, 2.0_rt) + std::pow(vz - wy, 2.0_rt) +
+                    std::pow(wx - uz, 2.0_rt));
             });
     }
 

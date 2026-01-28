@@ -4,6 +4,9 @@
 #include <string>
 #include "amr-wind/turbulence/TurbModelBase.H"
 #include "amr-wind/core/FieldRepo.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::turbulence {
 
@@ -39,7 +42,7 @@ public:
 
 private:
     //! Smagorinsky coefficient (default value set for ABL simulations)
-    amrex::Real m_Cs{0.135};
+    amrex::Real m_Cs{0.135_rt};
 
     const Field& m_vel;
     const Field& m_rho;

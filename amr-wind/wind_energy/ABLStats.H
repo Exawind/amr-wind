@@ -12,6 +12,9 @@
 #include "amr-wind/utilities/sampling/SamplerBase.H"
 #include "amr-wind/utilities/sampling/SamplingContainer.H"
 #include "amr-wind/wind_energy/ABLWallFunction.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind {
 
@@ -172,19 +175,19 @@ private:
     int m_out_freq{100};
 
     //! Acceleration due to gravity magnitude
-    amrex::Real m_gravity{9.81};
+    amrex::Real m_gravity{9.81_rt};
 
     //! Von-Karman constant
-    amrex::Real m_kappa{0.41};
+    amrex::Real m_kappa{0.41_rt};
 
     //! Variable to store capping inversion height
-    amrex::Real m_zi{0.0};
+    amrex::Real m_zi{0.0_rt};
 
     //! Wall-normal direction axis
     int m_normal_dir{2};
 
     //! Cell spacing at the coarsest level
-    amrex::Real m_dn{0.0};
+    amrex::Real m_dn{0.0_rt};
 
     //! Number of cells in the horizontal direction
     size_t m_ncells_h1{0};

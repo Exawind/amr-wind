@@ -1,7 +1,7 @@
 #ifndef ThirdMomentAveraging_H
 #define ThirdMomentAveraging_H
 
-#include <AMReX_AmrCore.H>
+#include "AMReX_AmrCore.H"
 #include "amr-wind/utilities/DirectionSelector.H"
 #include "amr-wind/core/Field.H"
 #include "amr-wind/utilities/FieldPlaneAveraging.H"

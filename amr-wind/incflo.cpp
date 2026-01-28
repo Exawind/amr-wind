@@ -1,5 +1,4 @@
 #include "amr-wind/incflo.H"
-
 #include "amr-wind/wind_energy/ABL.H"
 #include "amr-wind/utilities/tagging/RefinementCriteria.H"
 #include "amr-wind/equation_systems/PDEBase.H"
@@ -8,8 +7,10 @@
 #include "amr-wind/utilities/IOManager.H"
 #include "amr-wind/utilities/PostProcessing.H"
 #include "amr-wind/overset/OversetManager.H"
-
 #include "AMReX_ParmParse.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 incflo::incflo()
     : m_sim(*this)
@@ -186,9 +187,11 @@ bool incflo::regrid_and_update()
 
     if (m_time.do_regrid()) {
         amrex::Print() << "Regrid mesh ... ";
-        amrex::Real rstart = amrex::ParallelDescriptor::second();
+        auto rstart =
+            static_cast<amrex::Real>(amrex::ParallelDescriptor::second());
         regrid(0, m_time.current_time());
-        amrex::Real rend = amrex::ParallelDescriptor::second() - rstart;
+        auto rend = static_cast<amrex::Real>(
+            amrex::ParallelDescriptor::second() - rstart);
         amrex::Print() << "time elapsed = " << rend << std::endl;
         if (amrex::ParallelDescriptor::IOProcessor()) {
             amrex::Print() << "Grid summary: " << std::endl;
@@ -281,10 +284,12 @@ void incflo::Evolve()
 {
     BL_PROFILE("amr-wind::incflo::Evolve()");
 
-    const amrex::Real init_time = amrex::ParallelDescriptor::second();
+    const auto init_time =
+        static_cast<amrex::Real>(amrex::ParallelDescriptor::second());
 
     while (m_time.new_timestep()) {
-        const amrex::Real time0 = amrex::ParallelDescriptor::second();
+        const auto time0 =
+            static_cast<amrex::Real>(amrex::ParallelDescriptor::second());
 
         regrid_and_update();
 
@@ -298,7 +303,8 @@ void incflo::Evolve()
             pre_advance_stage2();
         }
 
-        const amrex::Real time1 = amrex::ParallelDescriptor::second();
+        const auto time1 =
+            static_cast<amrex::Real>(amrex::ParallelDescriptor::second());
         // Advance to time t + dt
         for (int fixed_point_iteration = 0;
              fixed_point_iteration < m_fixed_point_iterations;
@@ -307,9 +313,11 @@ void incflo::Evolve()
         }
 
         amrex::Print() << std::endl;
-        const amrex::Real time2 = amrex::ParallelDescriptor::second();
+        const auto time2 =
+            static_cast<amrex::Real>(amrex::ParallelDescriptor::second());
         post_advance_work();
-        const amrex::Real time3 = amrex::ParallelDescriptor::second();
+        const auto time3 =
+            static_cast<amrex::Real>(amrex::ParallelDescriptor::second());
 
         amrex::Print() << "WallClockTime in Evolve() for step "
                        << m_time.time_index()

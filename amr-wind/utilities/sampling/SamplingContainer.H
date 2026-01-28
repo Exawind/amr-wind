@@ -5,6 +5,9 @@
 
 #include "AMReX_AmrParticles.H"
 #include "amr-wind/utilities/DerivedQuantity.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind {
 
@@ -114,7 +117,7 @@ public:
         const int scomp);
 
     //! Populate the buffer with data for all the particles
-    void populate_buffer(std::vector<double>& buf);
+    void populate_buffer(std::vector<amrex::Real>& buf);
 
     long num_sampling_particles() const { return m_total_particles; }
 
@@ -169,9 +172,9 @@ public:
             const amrex::Real wy_hi = (y - j);
             const amrex::Real wz_hi = (z - k);
 
-            const amrex::Real wx_lo = 1.0 - wx_hi;
-            const amrex::Real wy_lo = 1.0 - wy_hi;
-            const amrex::Real wz_lo = 1.0 - wz_hi;
+            const amrex::Real wx_lo = 1.0_rt - wx_hi;
+            const amrex::Real wy_lo = 1.0_rt - wy_hi;
+            const amrex::Real wz_lo = 1.0_rt - wz_hi;
 
             parr[ip] = wx_lo * wy_lo * wz_lo * farr(i, j, k, ic) +
                        wx_lo * wy_lo * wz_hi * farr(i, j, k + 1, ic) +
@@ -208,35 +211,35 @@ private:
             switch (floc) {
             case FieldLoc::NODE: {
                 amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{
-                    0.0, 0.0, 0.0};
+                    0.0_rt, 0.0_rt, 0.0_rt};
                 sample_field(np, ic, pvec, parr, farr, plo, dxi, dx, offset);
                 break;
             }
 
             case FieldLoc::CELL: {
                 amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{
-                    0.5, 0.5, 0.5};
+                    0.5_rt, 0.5_rt, 0.5_rt};
                 sample_field(np, ic, pvec, parr, farr, plo, dxi, dx, offset);
                 break;
             }
 
             case FieldLoc::XFACE: {
                 amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{
-                    0.0, 0.5, 0.5};
+                    0.0_rt, 0.5_rt, 0.5_rt};
                 sample_field(np, ic, pvec, parr, farr, plo, dxi, dx, offset);
                 break;
             }
 
             case FieldLoc::YFACE: {
                 amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{
-                    0.5, 0.0, 0.5};
+                    0.5_rt, 0.0_rt, 0.5_rt};
                 sample_field(np, ic, pvec, parr, farr, plo, dxi, dx, offset);
                 break;
             }
 
             case FieldLoc::ZFACE: {
                 amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{
-                    0.5, 0.5, 0.0};
+                    0.5_rt, 0.5_rt, 0.0_rt};
                 sample_field(np, ic, pvec, parr, farr, plo, dxi, dx, offset);
                 break;
             }

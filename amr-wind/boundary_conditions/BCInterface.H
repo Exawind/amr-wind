@@ -7,6 +7,9 @@
 #include "AMReX_BC_TYPES.H"
 
 #include <utility>
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 /**
  *  \defgroup field_bc Boundary conditions management
@@ -46,7 +49,7 @@ public:
     virtual ~BCIface() = default;
 
     //! Operator that performs init actions and syncs the BC data to device
-    virtual void operator()(const amrex::Real value = 0.0);
+    virtual void operator()(const amrex::Real value = 0.0_rt);
 
     //! User-defined functions for Dirichlet-type boundaries
     amrex::Array<const std::string, 3> get_dirichlet_udfs();

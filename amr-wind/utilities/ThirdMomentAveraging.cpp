@@ -1,4 +1,7 @@
 #include "ThirdMomentAveraging.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind {
 
@@ -102,7 +105,7 @@ ThirdMomentAveraging::ThirdMomentAveraging(
 
     m_third_moments_line.resize(
         static_cast<size_t>(m_plane_average1.ncell_line()) * m_num_moments,
-        0.0);
+        0.0_rt);
 }
 
 void ThirdMomentAveraging::operator()()
@@ -114,7 +117,7 @@ void ThirdMomentAveraging::operator()()
     const auto& field2 = m_plane_average2.field();
     const auto& field3 = m_plane_average3.field();
 
-    std::fill(m_third_moments_line.begin(), m_third_moments_line.end(), 0.0);
+    std::fill(m_third_moments_line.begin(), m_third_moments_line.end(), 0.0_rt);
 
     const int level = m_plane_average1.level();
 
@@ -162,7 +165,7 @@ void ThirdMomentAveraging::compute_average(
     const auto* line_avg2 = lavg2.data();
     const auto* line_avg3 = lavg3.data();
 
-    amrex::Real denom = 1.0 / (amrex::Real)m_plane_average1.ncell_plane();
+    amrex::Real denom = 1.0_rt / (amrex::Real)m_plane_average1.ncell_plane();
 
     const int ncomp1 = m_plane_average1.ncomp();
     const int ncomp2 = m_plane_average2.ncomp();
@@ -260,23 +263,23 @@ ThirdMomentAveraging::line_average_interpolated(amrex::Real x, int comp) const
     const amrex::Real xlo = m_plane_average1.xlo();
     const int ncell_line = m_plane_average1.ncell_line();
 
-    amrex::Real c = 0.0;
+    amrex::Real c = 0.0_rt;
     int ind = 0;
 
-    if (x > xlo + 0.5 * dx) {
-        ind = static_cast<int>(floor((x - xlo) / dx - 0.5));
-        const amrex::Real x1 = xlo + (ind + 0.5) * dx;
+    if (x > xlo + 0.5_rt * dx) {
+        ind = static_cast<int>(floor((x - xlo) / dx - 0.5_rt));
+        const amrex::Real x1 = xlo + (ind + 0.5_rt) * dx;
         c = (x - x1) / dx;
     }
 
     if (ind + 1 >= ncell_line) {
         ind = ncell_line - 2;
-        c = 1.0;
+        c = 1.0_rt;
     }
 
     AMREX_ALWAYS_ASSERT(ind >= 0 and ind + 1 < ncell_line);
 
-    return m_third_moments_line[m_num_moments * ind + comp] * (1.0 - c) +
+    return m_third_moments_line[m_num_moments * ind + comp] * (1.0_rt - c) +
            m_third_moments_line[m_num_moments * (ind + 1) + comp] * c;
 }
 

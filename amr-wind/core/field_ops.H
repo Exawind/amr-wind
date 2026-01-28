@@ -3,6 +3,9 @@
 
 #include "amr-wind/core/Field.H"
 #include "AMReX_MultiFab.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 /**
  *  \defgroup field_ops Field operations
@@ -404,19 +407,19 @@ inline amrex::Real global_max_magnitude(FType& field)
     const auto& repo = field.repo();
     const auto ncomp = field.num_comp();
 
-    amrex::Real maxglobal = 0.0;
+    amrex::Real maxglobal = 0.0_rt;
     const int nlevels = repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
-        amrex::Real maxglobal_lev = 0.0;
+        amrex::Real maxglobal_lev = 0.0_rt;
         maxglobal_lev = amrex::ReduceMax(
             field(lev), 0.,
             [=] AMREX_GPU_HOST_DEVICE(
                 amrex::Box const& b,
                 amrex::Array4<amrex::Real const> const& field_arr)
                 -> amrex::Real {
-                amrex::Real mx = 0.0;
+                amrex::Real mx = 0.0_rt;
                 amrex::Loop(b, [=, &mx](int i, int j, int k) noexcept {
-                    amrex::Real mag = 0.0;
+                    amrex::Real mag = 0.0_rt;
                     for (int icomp = 0; icomp < ncomp; ++icomp) {
                         mag = mag + field_arr(i, j, k, icomp) *
                                         field_arr(i, j, k, icomp);
@@ -441,7 +444,7 @@ inline amrex::Real global_max_magnitude(FType& field)
 template <typename FType>
 inline void normalize(FType& field)
 {
-    const amrex::Real eps = 1.0e-12;
+    const amrex::Real eps = 1.0e-12_rt;
     const auto& repo = field.repo();
     const auto ncomp = field.num_comp();
 
@@ -453,7 +456,7 @@ inline void normalize(FType& field)
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 auto farr = farrs[nbx];
                 // Compute magnitude
-                amrex::Real mag = 0.;
+                amrex::Real mag = 0.0_rt;
                 for (int icomp = 0; icomp < ncomp; ++icomp) {
                     mag = mag + farr(i, j, k, icomp) * farr(i, j, k, icomp);
                 }

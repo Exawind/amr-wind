@@ -8,6 +8,8 @@
 #include "AMReX_MLLinOp.H"
 #include "AMReX_MLMG.H"
 
+using namespace amrex::literals;
+
 namespace Hydro {
 class NodalProjector;
 class MacProjector;
@@ -51,10 +53,10 @@ struct MLMGOptions
     int max_order{2};
 
     //! Relative tolerance for convergence of MLMG solvers
-    amrex::Real rel_tol{1.0e-11};
+    amrex::Real rel_tol{1.0e-11_rt};
 
     //! Absolute tolerance for convergence checks
-    amrex::Real abs_tol{1.0e-14};
+    amrex::Real abs_tol{1.0e-14_rt};
 
 private:
     void parse_options(const std::string& /*prefix*/);
@@ -74,10 +76,10 @@ private:
     std::string m_hypre_interface{"ij"};
 
     //! Relative tolerance for convergence of MLMG solvers
-    amrex::Real m_bottom_rel_tol{1.0e-4};
+    amrex::Real m_bottom_rel_tol{1.0e-4_rt};
 
     //! Absolute tolerance for convergence checks
-    amrex::Real m_bottom_abs_tol{1e-12};
+    amrex::Real m_bottom_abs_tol{1.0e-12_rt};
 
     /** Verbosity of the MLMG and Projector interfaces
      */

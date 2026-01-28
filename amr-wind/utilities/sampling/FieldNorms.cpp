@@ -1,11 +1,14 @@
 #include "amr-wind/utilities/sampling/FieldNorms.H"
 #include "amr-wind/utilities/io_utils.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
-#include <AMReX_MultiFabUtil.H>
-#include <utility>
-#include "AMReX_ParmParse.H"
 #include "amr-wind/utilities/IOManager.H"
 #include "amr-wind/utilities/constants.H"
+#include "AMReX_MultiFabUtil.H"
+#include "AMReX_ParmParse.H"
+#include "AMReX_REAL.H"
+#include <utility>
+
+using namespace amrex::literals;
 
 namespace amr_wind::field_norms {
 
@@ -48,7 +51,7 @@ void FieldNorms::initialize()
         }
     }
 
-    m_fnorms.resize(m_var_names.size(), 0.0);
+    m_fnorms.resize(m_var_names.size(), 0.0_rt);
 
     prepare_ascii_file();
 }
@@ -60,7 +63,7 @@ amrex::Real FieldNorms::get_norm(
     const int norm_type,
     const bool use_mask)
 {
-    amrex::Real nrm = 0.0;
+    amrex::Real nrm = 0.0_rt;
 
     AMREX_ASSERT(comp >= 0 && comp < field.num_comp());
 
@@ -71,7 +74,6 @@ amrex::Real FieldNorms::get_norm(
     const auto& mesh = field.repo().mesh();
 
     for (int lev = 0; lev <= finest_level; lev++) {
-
         const amrex::Real cell_vol = geom[lev].CellSize()[0] *
                                      geom[lev].CellSize()[1] *
                                      geom[lev].CellSize()[2];
@@ -89,7 +91,7 @@ amrex::Real FieldNorms::get_norm(
             if (lev < finest_level) {
                 level_mask = makeFineMask(
                     mesh.boxArray(lev), mesh.DistributionMap(lev),
-                    mesh.boxArray(lev + 1), mesh.refRatio(lev), 1., 0.);
+                    mesh.boxArray(lev + 1), mesh.refRatio(lev), 1.0_rt, 0.0_rt);
             } else {
                 level_mask.define(
                     mesh.boxArray(lev), mesh.DistributionMap(lev), 1, 0,
@@ -112,7 +114,7 @@ amrex::Real FieldNorms::get_norm(
                     amrex::Array4<amrex::Real const> const& mask_arr,
                     amrex::Array4<amrex::Real const> const& field_arr)
                     -> amrex::Real {
-                    amrex::Real nrm_fab = 0.0;
+                    amrex::Real nrm_fab = 0.0_rt;
 
                     const auto& fbx =
                         it_sum == 1
@@ -130,7 +132,7 @@ amrex::Real FieldNorms::get_norm(
                                     index_type[nn] == 1 &&
                                     (iv[nn] == fbx.bigEnd(nn) ||
                                      iv[nn] == fbx.smallEnd(nn));
-                                data_vol *= at_node_dir ? 0.5 : 1.0;
+                                data_vol *= at_node_dir ? 0.5_rt : 1.0_rt;
                                 // limit mask array indices to cell-centered
                                 iv_cc[nn] = amrex::min(
                                     bx.bigEnd(nn),
@@ -145,7 +147,7 @@ amrex::Real FieldNorms::get_norm(
                                         field_arr(i, j, k, n);
                                 fval = std::sqrt(fval);
                             }
-                            fval *= norm_type == 2 ? fval : 1.;
+                            fval *= norm_type == 2 ? fval : 1.0_rt;
                             nrm_fab += data_vol * fval * mask_arr(iv_cc);
                         });
                     return nrm_fab;
@@ -159,7 +161,7 @@ amrex::Real FieldNorms::get_norm(
                     amrex::Array4<amrex::Real const> const& field_arr,
                     amrex::Array4<amrex::Real const> const& mask_arr)
                     -> amrex::Real {
-                    amrex::Real nrm_fab = 0.0;
+                    amrex::Real nrm_fab = 0.0_rt;
 
                     amrex::Loop(
                         bx, [=, &nrm_fab](int i, int j, int k) noexcept {
@@ -172,9 +174,10 @@ amrex::Real FieldNorms::get_norm(
                                         field_arr(i, j, k, n);
                                 fval = std::sqrt(fval);
                             }
-                            if (std::abs(mask_arr(i, j, k) - 1.) <
+                            if (std::abs(mask_arr(i, j, k) - 1.0_rt) <
                                 constants::TIGHT_TOL) {
-                                nrm_fab = std::max(nrm_fab, fval);
+                                nrm_fab =
+                                    amrex::max<amrex::Real>(nrm_fab, fval);
                             }
                         });
                     return nrm_fab;
@@ -251,7 +254,7 @@ void FieldNorms::write_ascii()
         f << m_sim.time().time_index() << std::scientific
           << std::setprecision(m_precision) << std::setw(m_width)
           << m_sim.time().new_time();
-        for (double m_fnorm : m_fnorms) {
+        for (amrex::Real m_fnorm : m_fnorms) {
             f << std::setw(m_width) << m_fnorm;
         }
         f << std::endl;

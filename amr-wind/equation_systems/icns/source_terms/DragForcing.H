@@ -5,6 +5,9 @@
 #include "amr-wind/core/SimTime.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/utilities/constants.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::pde::icns {
 
@@ -39,9 +42,9 @@ private:
     const Field* m_target_levelset{nullptr};
     amrex::Gpu::DeviceVector<amrex::Real> m_device_vel_ht;
     amrex::Gpu::DeviceVector<amrex::Real> m_device_vel_vals;
-    amrex::Real m_drag_coefficient{10.0};
-    amrex::Real m_sponge_strength{1.0};
-    amrex::Real m_sponge_density{1.0};
+    amrex::Real m_drag_coefficient{10.0_rt};
+    amrex::Real m_sponge_strength{1.0_rt};
+    amrex::Real m_sponge_density{1.0_rt};
     amrex::Real m_sponge_distance_west{-1000};
     amrex::Real m_sponge_distance_east{1000};
     amrex::Real m_sponge_distance_south{-1000};
@@ -55,9 +58,9 @@ private:
     bool m_apply_MOSD{false};
     std::string m_wall_het_model{"none"};
     amrex::Real m_monin_obukhov_length{constants::LARGE_NUM};
-    amrex::Real m_kappa{0.41};
-    amrex::Real m_gamma_m{5.0};
-    amrex::Real m_beta_m{16.0};
+    amrex::Real m_kappa{0.41_rt};
+    amrex::Real m_gamma_m{5.0_rt};
+    amrex::Real m_beta_m{16.0_rt};
 };
 
 } // namespace amr_wind::pde::icns

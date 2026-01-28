@@ -9,6 +9,9 @@
 #include "amr-wind/wind_energy/actuator/FLLCOp.H"
 #include "amr-wind/utilities/linear_interpolation.H"
 #include "amr-wind/core/vs/vector_space.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::actuator {
 namespace wing {
@@ -151,9 +154,9 @@ struct ComputeForceOp<
         // (interpolate pitch angle at step n+1/2) or the initial pitch angle
         if (!wdata.pitch_timetable_file.empty()) {
             const auto time_interp =
-                (time.current_time() + time.new_time()) / 2.0;
+                (time.current_time() + time.new_time()) / 2.0_rt;
             wdata.pitch = amr_wind::interp::linear_angle(
-                wdata.time_table, wdata.pitch_table, time_interp, 360.);
+                wdata.time_table, wdata.pitch_table, time_interp, 360.0_rt);
             amrex::Print() << "Wing Ops: Current wing pitch (at time "
                            << time_interp << " s) is " << wdata.pitch
                            << " degrees.\n";
@@ -169,8 +172,8 @@ struct ComputeForceOp<
             (amrex::Real)wdata.force_coord_flags[2]};
 
         // Calculate the local force using sampled velocity (at n)
-        amrex::Real total_lift = 0.0;
-        amrex::Real total_drag = 0.0;
+        amrex::Real total_lift = 0.0_rt;
+        amrex::Real total_drag = 0.0_rt;
         for (int ip = 0; ip < npts; ++ip) {
 
             // Wind vector is relative to actuator motion
@@ -187,12 +190,12 @@ struct ComputeForceOp<
             amrex::Real cl, cd;
             aflookup(aoa, cl, cd);
 
-            // Calculate factor for qval: 0.5 * Uinf * Uinf * dx
+            // Calculate factor for qval: 0.5_rt * Uinf * Uinf * dx
             // but replace velocity magnitude if specified
             auto qfac =
-                (wdata.prescribed_uinf < 0.0)
-                    ? 0.5 * vmag * vmag
-                    : 0.5 * wdata.prescribed_uinf * wdata.prescribed_uinf;
+                (wdata.prescribed_uinf < 0.0_rt)
+                    ? 0.5_rt * vmag * vmag
+                    : 0.5_rt * wdata.prescribed_uinf * wdata.prescribed_uinf;
             // Length scale in spanwise direction
             if (wdata.gauss_2D && wdata.normalize_2D_spanwise) {
                 // Do not multiply by a length scale, but divide by number of
@@ -200,7 +203,7 @@ struct ComputeForceOp<
                 qfac /= (amrex::Real)npts;
                 // Convert 3D Gaussian factor to 2D factor
                 constexpr amrex::Real G2D_from_3D =
-                    0.31830988618379067 / 0.17958712212516656;
+                    0.31830988618379067_rt / 0.17958712212516656_rt;
                 qfac *= G2D_from_3D;
                 // Get rid of epsilon in spanwise direction
                 const amrex::Real eps_span = grid.epsilon[ip][1];

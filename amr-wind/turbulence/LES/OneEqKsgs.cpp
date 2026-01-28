@@ -7,6 +7,9 @@
 #include "amr-wind/equation_systems/tke/TKE.H"
 
 #include "AMReX_ParmParse.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind {
 namespace turbulence {
@@ -133,10 +136,10 @@ void OneEqKsgsM84<Transport>::update_turbulent_viscosity(
                       gradT_arrs[nbx](i, j, k, 1) * gravity[1] +
                       gradT_arrs[nbx](i, j, k, 2) * gravity[2]) *
                     beta_arrs[nbx](i, j, k);
-                if (stratification > 1e-10) {
+                if (stratification > 1.0e-10_rt) {
                     tlscale_arrs[nbx](i, j, k) = amrex::min<amrex::Real>(
                         ds,
-                        0.76 *
+                        0.76_rt *
                             std::sqrt(tke_arrs[nbx](i, j, k) / stratification));
                 } else {
                     tlscale_arrs[nbx](i, j, k) = ds;
@@ -148,7 +151,7 @@ void OneEqKsgsM84<Transport>::update_turbulent_viscosity(
 
                 buoy_prod_arrs[nbx](i, j, k) =
                     -mu_arrs[nbx](i, j, k) *
-                    (1.0 + 2.0 * tlscale_arrs[nbx](i, j, k) / ds) *
+                    (1.0_rt + 2.0_rt * tlscale_arrs[nbx](i, j, k) / ds) *
                     stratification;
 
                 shear_prod_arrs[nbx](i, j, k) *=
@@ -191,7 +194,7 @@ void OneEqKsgsM84<Transport>::update_alphaeff(Field& alphaeff)
                 alphaeff_arrs[nbx](i, j, k) =
                     lam_diff_arrs[nbx](i, j, k) +
                     muturb_arrs[nbx](i, j, k) *
-                        (1.0 + 2.0 * tlscale_arrs[nbx](i, j, k) / ds);
+                        (1.0_rt + 2.0_rt * tlscale_arrs[nbx](i, j, k) / ds);
             });
     }
     amrex::Gpu::streamSynchronize();
@@ -208,9 +211,9 @@ void OneEqKsgsM84<Transport>::update_scalar_diff(
 
     if (name == pde::TKE::var_name()) {
         auto& mu_turb = this->mu_turb();
-        deff.setVal(0.0);
+        deff.setVal(0.0_rt);
         field_ops::saxpy(
-            deff, 2.0, mu_turb, 0, 0, deff.num_comp(), deff.num_grow());
+            deff, 2.0_rt, mu_turb, 0, 0, deff.num_comp(), deff.num_grow());
     } else {
         amrex::Abort(
             "OneEqKsgsM84:update_scalar_diff not implemented for field " +
@@ -302,9 +305,9 @@ void OneEqKsgsS94<Transport>::update_scalar_diff(
 
     if (name == pde::TKE::var_name()) {
         auto& mu_turb = this->mu_turb();
-        deff.setVal(0.0);
+        deff.setVal(0.0_rt);
         field_ops::saxpy(
-            deff, 2.0, mu_turb, 0, 0, deff.num_comp(), deff.num_grow());
+            deff, 2.0_rt, mu_turb, 0, 0, deff.num_comp(), deff.num_grow());
     } else {
         amrex::Abort(
             "OneEqKsgsM84:update_scalar_diff not implemented for field " +

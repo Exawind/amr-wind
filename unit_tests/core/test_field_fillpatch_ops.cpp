@@ -2,6 +2,9 @@
 #include "amr-wind/core/FieldBCOps.H"
 #include "amr-wind/core/FieldFillPatchOps.H"
 #include "amr-wind/projection/nodal_projection_ops.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind_tests {
 
@@ -23,7 +26,7 @@ struct TestProfile
             const int orig_comp) const
         {
             const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> vel{
-                1.0, 2.0, 3.0};
+                1.0_rt, 2.0_rt, 3.0_rt};
             field(iv[0], iv[1], iv[2], dcomp + comp) = vel[orig_comp + comp];
         }
     };
@@ -63,17 +66,17 @@ amrex::Real get_field_err(
                             // Ghost cells in boundaries
                             if (i == -1 || j == -1 || k == -1 || i == 9 ||
                                 j == 8 || k == 8) {
-                                error += std::abs(f_arr(i, j, k) - 1.0);
+                                error += std::abs(f_arr(i, j, k) - 1.0_rt);
                             } else {
-                                error += std::abs(f_arr(i, j, k) - 0.0);
+                                error += std::abs(f_arr(i, j, k) - 0.0_rt);
                             }
                         } else {
                             // Valid face-normal cells
                             if ((i == 0 || i == 8) && (j >= 0 && j <= 7) &&
                                 (k >= 0 && k <= 7)) {
-                                error += std::abs(f_arr(i, j, k) - 1.0);
+                                error += std::abs(f_arr(i, j, k) - 1.0_rt);
                             } else {
-                                error += std::abs(f_arr(i, j, k) - 0.0);
+                                error += std::abs(f_arr(i, j, k) - 0.0_rt);
                             }
                         }
                     } else if (comp == 1) {
@@ -82,17 +85,17 @@ amrex::Real get_field_err(
                             // Ghost cells in boundaries
                             if (i == -1 || j == -1 || k == -1 || i == 8 ||
                                 j == 9 || k == 8) {
-                                error += std::abs(f_arr(i, j, k) - 2.0);
+                                error += std::abs(f_arr(i, j, k) - 2.0_rt);
                             } else {
-                                error += std::abs(f_arr(i, j, k) - 0.0);
+                                error += std::abs(f_arr(i, j, k) - 0.0_rt);
                             }
                         } else {
                             // Valid face-normal cells
                             if ((j == 0 || j == 8) && (i >= 0 && i <= 7) &&
                                 (k >= 0 && k <= 7)) {
-                                error += std::abs(f_arr(i, j, k) - 2.0);
+                                error += std::abs(f_arr(i, j, k) - 2.0_rt);
                             } else {
-                                error += std::abs(f_arr(i, j, k) - 0.0);
+                                error += std::abs(f_arr(i, j, k) - 0.0_rt);
                             }
                         }
                     } else {
@@ -101,17 +104,17 @@ amrex::Real get_field_err(
                             // Ghost cells in boundaries
                             if (i == -1 || j == -1 || k == -1 || i == 8 ||
                                 j == 8 || k == 9) {
-                                error += std::abs(f_arr(i, j, k) - 3.0);
+                                error += std::abs(f_arr(i, j, k) - 3.0_rt);
                             } else {
-                                error += std::abs(f_arr(i, j, k) - 0.0);
+                                error += std::abs(f_arr(i, j, k) - 0.0_rt);
                             }
                         } else {
                             // Valid face-normal cells
                             if ((k == 0 || k == 8) && (i >= 0 && i <= 7) &&
                                 (j >= 0 && j <= 7)) {
-                                error += std::abs(f_arr(i, j, k) - 3.0);
+                                error += std::abs(f_arr(i, j, k) - 3.0_rt);
                             } else {
-                                error += std::abs(f_arr(i, j, k) - 0.0);
+                                error += std::abs(f_arr(i, j, k) - 0.0_rt);
                             }
                         }
                     }
@@ -121,13 +124,13 @@ amrex::Real get_field_err(
                         // Ghost cells in boundaries
                         if (i <= -1 || j <= -1 || k <= -1 || i >= 8 || j >= 8 ||
                             k >= 8) {
-                            error += std::abs(f_arr(i, j, k, 0) - 1.0);
-                            error += std::abs(f_arr(i, j, k, 1) - 2.0);
-                            error += std::abs(f_arr(i, j, k, 2) - 3.0);
+                            error += std::abs(f_arr(i, j, k, 0) - 1.0_rt);
+                            error += std::abs(f_arr(i, j, k, 1) - 2.0_rt);
+                            error += std::abs(f_arr(i, j, k, 2) - 3.0_rt);
                         } else {
-                            error += std::abs(f_arr(i, j, k, 0) - 0.0);
-                            error += std::abs(f_arr(i, j, k, 1) - 0.0);
-                            error += std::abs(f_arr(i, j, k, 2) - 0.0);
+                            error += std::abs(f_arr(i, j, k, 0) - 0.0_rt);
+                            error += std::abs(f_arr(i, j, k, 1) - 0.0_rt);
+                            error += std::abs(f_arr(i, j, k, 2) - 0.0_rt);
                         }
                     } else {
                         // First ghost cells only
@@ -141,13 +144,13 @@ amrex::Real get_field_err(
                             ((k == -1 || k == 8) && (i >= 0 && i <= 7) &&
                              (j >= 0 && j <= 7));
                         if (is_ibdy || is_jbdy || is_kbdy) {
-                            error += std::abs(f_arr(i, j, k, 0) - 1.0);
-                            error += std::abs(f_arr(i, j, k, 1) - 2.0);
-                            error += std::abs(f_arr(i, j, k, 2) - 3.0);
+                            error += std::abs(f_arr(i, j, k, 0) - 1.0_rt);
+                            error += std::abs(f_arr(i, j, k, 1) - 2.0_rt);
+                            error += std::abs(f_arr(i, j, k, 2) - 3.0_rt);
                         } else {
-                            error += std::abs(f_arr(i, j, k, 0) - 0.0);
-                            error += std::abs(f_arr(i, j, k, 1) - 0.0);
-                            error += std::abs(f_arr(i, j, k, 2) - 0.0);
+                            error += std::abs(f_arr(i, j, k, 0) - 0.0_rt);
+                            error += std::abs(f_arr(i, j, k, 1) - 0.0_rt);
+                            error += std::abs(f_arr(i, j, k, 2) - 0.0_rt);
                         }
                     }
                 }

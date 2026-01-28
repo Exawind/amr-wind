@@ -5,6 +5,9 @@
 #include "AMReX_ParmParse.H"
 #include "AMReX_Gpu.H"
 #include "AMReX_Random.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::pde::icns {
 
@@ -99,11 +102,11 @@ void MetMastForcing::operator()(
         const auto& terrain_height = (*m_terrain_height)(lev).const_array(mfi);
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                const amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
-                const amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
-                const amrex::Real z = std::max(
-                    prob_lo[2] + (k + 0.5) * dx[2] - terrain_height(i, j, k),
-                    0.5 * dx[2]);
+                const amrex::Real x = prob_lo[0] + (i + 0.5_rt) * dx[0];
+                const amrex::Real y = prob_lo[1] + (j + 0.5_rt) * dx[1];
+                const amrex::Real z = amrex::max<amrex::Real>(
+                    prob_lo[2] + (k + 0.5_rt) * dx[2] - terrain_height(i, j, k),
+                    0.5_rt * dx[2]);
                 //! Testing for one point for now
                 int ii = 0;
                 amrex::Real ri2 = (x - metmast_x_d[ii]) *
@@ -114,7 +117,7 @@ void MetMastForcing::operator()(
                 ri2 += (z - metmast_z_d[ii]) * (z - metmast_z_d[ii]) /
                        (vertical_radius * vertical_radius);
                 const amrex::Real weight_fn =
-                    (ri2 <= damping_radius) ? std::exp(-0.25 * ri2) : 0;
+                    (ri2 <= damping_radius) ? std::exp(-0.25_rt * ri2) : 0;
                 amrex::Real ref_windx = u_values_d[ii];
                 amrex::Real ref_windy = v_values_d[ii];
                 amrex::Real ref_windz = w_values_d[ii];
@@ -128,9 +131,9 @@ void MetMastForcing::operator()(
     } else {
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                const amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
-                const amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
-                const amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
+                const amrex::Real x = prob_lo[0] + (i + 0.5_rt) * dx[0];
+                const amrex::Real y = prob_lo[1] + (j + 0.5_rt) * dx[1];
+                const amrex::Real z = prob_lo[2] + (k + 0.5_rt) * dx[2];
                 //! Testing for one point for now
                 int ii = 0;
                 amrex::Real ri2 = (x - metmast_x_d[ii]) *
@@ -141,7 +144,7 @@ void MetMastForcing::operator()(
                 ri2 += (z - metmast_z_d[ii]) * (z - metmast_z_d[ii]) /
                        (vertical_radius * vertical_radius);
                 const amrex::Real weight_fn =
-                    (ri2 <= 100) ? std::exp(-0.25 * ri2) : 0;
+                    (ri2 <= 100) ? std::exp(-0.25_rt * ri2) : 0;
                 amrex::Real ref_windx = u_values_d[ii];
                 amrex::Real ref_windy = v_values_d[ii];
                 amrex::Real ref_windz = w_values_d[ii];

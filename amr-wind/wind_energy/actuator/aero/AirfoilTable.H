@@ -4,6 +4,9 @@
 #include "amr-wind/wind_energy/actuator/actuator_types.H"
 #include <iosfwd>
 #include <memory>
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::actuator {
 
@@ -52,7 +55,7 @@ public:
     amrex::Real& cd_factor() { return m_cd_factor; }
 
 private:
-    amrex::Real m_cd_factor{0.0};
+    amrex::Real m_cd_factor{0.0_rt};
 };
 
 class AirfoilLoader
