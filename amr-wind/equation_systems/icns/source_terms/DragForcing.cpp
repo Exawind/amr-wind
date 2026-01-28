@@ -100,6 +100,12 @@ DragForcing::DragForcing(const CFDSim& sim)
     pp.query("sponge_south", m_sponge_south);
     pp.query("sponge_north", m_sponge_north);
     pp.query("is_laminar", m_is_laminar);
+    if (m_sponge_west == 1 || m_sponge_east == 1 || m_sponge_south == 1 ||
+        m_sponge_north == 1) {
+        amrex::Print() << " WARNING: Sponge Forcing with no precursor RANS is "
+                          "not recommended and use with caution."
+                       << std::endl;
+    }
     const auto& phy_mgr = m_sim.physics_manager();
     if (phy_mgr.contains("ABL")) {
         const auto& abl = m_sim.physics_manager().get<amr_wind::ABL>();
@@ -160,7 +166,9 @@ void DragForcing::operator()(
     const auto& drag = (*m_terrain_drag)(lev).const_array(mfi);
     auto* const m_terrainz0 = &this->m_sim.repo().get_field("terrainz0");
     const auto& terrainz0 = (*m_terrainz0)(lev).const_array(mfi);
-
+    auto* const m_terrain_damping =
+        &this->m_sim.repo().get_field("terrain_damping");
+    const auto& damping = (*m_terrain_damping)(lev).const_array(mfi);
     const bool is_waves = m_terrain_is_waves;
     const bool model_form_drag = m_apply_MOSD;
     const auto& target_vel_arr = is_waves
@@ -290,8 +298,8 @@ void DragForcing::operator()(
                                          (amr_wind::constants::EPS +
                                           std::sqrt(ux2r * ux2r + uy2r * uy2r));
             // BC forcing pushes nonrelative velocity toward target velocity
-            bc_forcing_x = -(uxTarget - ux1) / dt;
-            bc_forcing_y = -(uyTarget - uy1) / dt;
+            bc_forcing_x = -(uxTarget - ux1) / (5 * dt);
+            bc_forcing_y = -(uyTarget - uy1) / (5 * dt);
         }
         // Target velocity intended for within terrain
         amrex::Real target_u = 0.;
@@ -302,7 +310,6 @@ void DragForcing::operator()(
             target_v = target_vel_arr(i, j, k, 1);
             target_w = target_vel_arr(i, j, k, 2);
         }
-
         const amrex::Real CdM = std::min(
             Cd / (m + amr_wind::constants::EPS), cd_max / scale_factor);
         src_term(i, j, k, 0) -=
@@ -318,7 +325,8 @@ void DragForcing::operator()(
         src_term(i, j, k, 2) -=
             (CdM * m * (uz1 - target_w) * blank(i, j, k) +
              (xstart_damping + xend_damping + ystart_damping + yend_damping) *
-                 (uz1 - sponge_density * spongeVelZ));
+                 (uz1 - sponge_density * spongeVelZ)) +
+            damping(i, j, k) * (uz1);
     });
 }
 
