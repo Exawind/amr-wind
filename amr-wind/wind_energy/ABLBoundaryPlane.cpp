@@ -380,7 +380,7 @@ void ABLBoundaryPlane::pre_predictor_work()
         return;
     }
     if (!m_read_frozen_data) {
-        read_file(true);
+        read_file(false);
     }
 }
 
