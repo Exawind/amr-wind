@@ -8,13 +8,11 @@
 #include "amr-wind/utilities/tagging/RefinementCriteria.H"
 #include "amr-wind/utilities/tagging/CartBoxRefinement.H"
 
-using namespace amrex;
-
 void incflo::CheckAndSetUpDryRun()
 {
     // Check if dry run is requested; exit if not
     {
-        ParmParse pp("incflo");
+        amrex::ParmParse pp("incflo");
         pp.query("dry_run", m_dry_run);
         if (!m_dry_run) {
             return;
@@ -22,20 +20,20 @@ void incflo::CheckAndSetUpDryRun()
     }
     // Disable additional computations associated with initialization
     {
-        ParmParse pp("incflo");
+        amrex::ParmParse pp("incflo");
         pp.add("initial_iterations", 0);
         pp.add("do_initial_proj", false);
     }
     // Zero time steps, write plotfile and not checkpoint
     {
-        ParmParse pp("time");
+        amrex::ParmParse pp("time");
         pp.add("max_step", 0);
         pp.add("plot_interval", 1);
         pp.add("checkpoint_inteval", (-1));
     }
     // Give prefix to plotfile
     {
-        ParmParse pp("io");
+        amrex::ParmParse pp("io");
         std::string current_plt{"plt"};
         pp.query("plot_file", current_plt);
         pp.add("plot_file", (std::string) "dry_run_" + current_plt);
@@ -48,7 +46,7 @@ void incflo::ReadParameters()
 {
 
     { // Prefix incflo
-        ParmParse pp("incflo");
+        amrex::ParmParse pp("incflo");
 
         pp.query("verbose", m_verbose);
 
@@ -206,7 +204,7 @@ void incflo::InitialProjection()
         PrintMaxValues("before initial projection");
     }
 
-    Real dummy_dt = 1.0;
+    amrex::Real dummy_dt = 1.0;
     bool incremental = false;
     ApplyProjection(
         density().vec_const_ptrs(), m_time.current_time(), dummy_dt,

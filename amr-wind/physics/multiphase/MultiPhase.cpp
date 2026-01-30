@@ -201,7 +201,6 @@ void MultiPhase::post_advance_work()
 
 amrex::Real MultiPhase::volume_fraction_sum()
 {
-    using namespace amrex;
     BL_PROFILE("amr-wind::multiphase::ComputeVolumeFractionSum");
     const int nlevels = m_sim.repo().num_active_levels();
     const auto& geom = m_sim.mesh().Geom();
@@ -210,7 +209,6 @@ amrex::Real MultiPhase::volume_fraction_sum()
     amrex::Real total_volume_frac = 0.0;
 
     for (int lev = 0; lev < nlevels; ++lev) {
-
         amrex::iMultiFab level_mask;
         if (lev < nlevels - 1) {
             level_mask = makeFineMask(
@@ -248,7 +246,6 @@ amrex::Real MultiPhase::volume_fraction_sum()
 
 amrex::Real MultiPhase::momentum_sum(int n)
 {
-    using namespace amrex;
     BL_PROFILE("amr-wind::multiphase::ComputeVolumeFractionSum");
     const int nlevels = m_sim.repo().num_active_levels();
     const auto& geom = m_sim.mesh().Geom();
@@ -257,7 +254,6 @@ amrex::Real MultiPhase::momentum_sum(int n)
     amrex::Real total_momentum = 0.0;
 
     for (int lev = 0; lev < nlevels; ++lev) {
-
         amrex::iMultiFab level_mask;
         if (lev < nlevels - 1) {
             level_mask = makeFineMask(

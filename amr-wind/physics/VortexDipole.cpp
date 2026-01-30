@@ -28,8 +28,6 @@ VortexDipole::VortexDipole(const CFDSim& sim)
  */
 void VortexDipole::initialize_fields(int level, const amrex::Geometry& geom)
 {
-    using namespace utils;
-
     auto& velocity = m_velocity(level);
     auto& density = m_density(level);
 

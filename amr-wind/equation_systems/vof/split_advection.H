@@ -20,13 +20,11 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE void eulerian_implicit(
     amrex::Array4<amrex::Real> const& vofL,
     amrex::Array4<amrex::Real> const& vofR)
 {
-    using namespace amrex;
-
-    constexpr Real tiny = 1e-12;
-    Real mx = 0.0, my = 0.0, mz = 0.0, alpha = 0.0;
-    Real x0, deltax;
-    Real aL = velL * dtdx;
-    Real aR = velR * dtdx;
+    constexpr amrex::Real tiny = 1e-12;
+    amrex::Real mx = 0.0, my = 0.0, mz = 0.0, alpha = 0.0;
+    amrex::Real x0, deltax;
+    amrex::Real aL = velL * dtdx;
+    amrex::Real aR = velR * dtdx;
 
     vofL(i, j, k) = 0.0;
     vofR(i, j, k) = 0.0;
