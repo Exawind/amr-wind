@@ -324,6 +324,7 @@ void DragForcing::operator()(
                  (uy1 - sponge_density * spongeVelY));
         src_term(i, j, k, 2) -=
             (CdM * m * (uz1 - target_w) * blank(i, j, k) +
+             CdM * m * (uz1 - target_w) * drag(i, j, k) +
              (xstart_damping + xend_damping + ystart_damping + yend_damping) *
                  (uz1 - sponge_density * spongeVelZ)) +
             damping(i, j, k) * (uz1);
