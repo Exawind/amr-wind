@@ -1,3 +1,4 @@
+
 #include <AMReX_Orientation.H>
 
 #include "amr-wind/equation_systems/tke/source_terms/KransAxell.H"
@@ -125,10 +126,11 @@ void KransAxell::operator()(
                 m * kappa / (std::log(3 * z / z0) - psi_m);
             const amrex::Real T0 = ref_theta_arr(i, j, k);
             const amrex::Real hf = std::abs(gravity[2]) / T0 * heat_flux;
-            const amrex::Real rans_b = std::pow(
-                std::max(hf, 0.0) * kappa * z / std::pow(Cmu, 3), (2.0 / 3.0));
-            bcforcing =
-                (ustar * ustar / (Cmu * Cmu) + rans_b - tke_arr(i, j, k)) / dt;
+            const amrex::Real rans_b =
+                std::max(hf, 0.0) * kappa * z / std::pow(Cmu, 3);
+            const amrex::Real tke_exact = std::pow(
+                ustar * ustar * ustar / (Cmu * Cmu * Cmu) + rans_b, 2.0 / 3.0);
+            bcforcing = (tke_exact - tke_arr(i, j, k)) / (5 * dt);
         }
         amrex::Real ref_tke = tke_arr(i, j, k);
         const amrex::Real zi =
@@ -177,12 +179,12 @@ void KransAxell::operator()(
                     m * kappa / (std::log(3 * z / cell_z0) - psi_m);
                 const amrex::Real T0 = ref_theta_arr(i, j, k);
                 const amrex::Real hf = std::abs(gravity[2]) / T0 * heat_flux;
-                const amrex::Real rans_b = std::pow(
-                    std::max(hf, 0.0) * kappa * z / std::pow(Cmu, 3),
-                    (2.0 / 3.0));
-                terrainforcing =
-                    (ustar * ustar / (Cmu * Cmu) + rans_b - tke_arr(i, j, k)) /
-                    dt;
+                const amrex::Real rans_b =
+                    std::max(hf, 0.0) * kappa * z / std::pow(Cmu, 3);
+                const amrex::Real tke_exact = std::pow(
+                    ustar * ustar * ustar / (Cmu * Cmu * Cmu) + rans_b,
+                    2.0 / 3.0);
+                terrainforcing = (tke_exact - tke_arr(i, j, k)) / (5 * dt);
                 amrex::Real bcforcing = 0;
                 if (k == 0) {
                     bcforcing = (1 - blank_arr(i, j, k)) * terrainforcing;

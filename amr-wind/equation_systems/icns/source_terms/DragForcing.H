@@ -2,8 +2,8 @@
 #define DRAGFORCING_H
 
 #include "amr-wind/equation_systems/icns/MomentumSource.H"
-#include "amr-wind/core/SimTime.H"
 #include "amr-wind/CFDSim.H"
+#include "amr-wind/core/SimTime.H"
 #include "amr-wind/utilities/constants.H"
 
 namespace amr_wind::pde::icns {
@@ -42,14 +42,14 @@ private:
     amrex::Real m_drag_coefficient{10.0};
     amrex::Real m_sponge_strength{1.0};
     amrex::Real m_sponge_density{1.0};
-    amrex::Real m_sponge_distance_west{-1000};
-    amrex::Real m_sponge_distance_east{1000};
-    amrex::Real m_sponge_distance_south{-1000};
-    amrex::Real m_sponge_distance_north{1000};
+    amrex::Real m_sponge_distance_west{0};
+    amrex::Real m_sponge_distance_east{0};
+    amrex::Real m_sponge_distance_south{0};
+    amrex::Real m_sponge_distance_north{0};
     int m_sponge_west{0};
-    int m_sponge_east{1};
+    int m_sponge_east{0};
     int m_sponge_south{0};
-    int m_sponge_north{1};
+    int m_sponge_north{0};
     bool m_is_laminar{false};
     bool m_terrain_is_waves{false};
     bool m_apply_MOSD{false};
