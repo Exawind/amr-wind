@@ -7,6 +7,9 @@
 
 #include <AMReX_Print.H>
 #include <algorithm>
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::actuator {
 
@@ -230,7 +233,7 @@ void ActuatorContainer::populate_field_buffers()
         m_proc_offsets.back() * static_cast<size_t>(NumPStructReal);
 
     amrex::Vector<amrex::Real> buff_host(num_buff_entries);
-    amrex::Gpu::DeviceVector<amrex::Real> buff_device(num_buff_entries, 0.0);
+    amrex::Gpu::DeviceVector<amrex::Real> buff_device(num_buff_entries, 0.0_rt);
 
     auto* buffer_pointer = buff_device.data();
     auto* offsets = m_proc_offsets_device.data();
@@ -307,11 +310,11 @@ void ActuatorContainer::interpolate_fields(
                 auto& pp = pstruct[ip];
                 // Determine offsets within the containing cell
                 const amrex::Real x =
-                    (pp.pos(0) - plo[0] - 0.5 * dx[0]) * dxi[0];
+                    (pp.pos(0) - plo[0] - 0.5_rt * dx[0]) * dxi[0];
                 const amrex::Real y =
-                    (pp.pos(1) - plo[1] - 0.5 * dx[1]) * dxi[1];
+                    (pp.pos(1) - plo[1] - 0.5_rt * dx[1]) * dxi[1];
                 const amrex::Real z =
-                    (pp.pos(2) - plo[2] - 0.5 * dx[2]) * dxi[2];
+                    (pp.pos(2) - plo[2] - 0.5_rt * dx[2]) * dxi[2];
 
                 // Index of the low corner
                 const int i = static_cast<int>(std::floor(x));
@@ -323,9 +326,9 @@ void ActuatorContainer::interpolate_fields(
                 const amrex::Real wy_hi = (y - j);
                 const amrex::Real wz_hi = (z - k);
 
-                const amrex::Real wx_lo = 1.0 - wx_hi;
-                const amrex::Real wy_lo = 1.0 - wy_hi;
-                const amrex::Real wz_lo = 1.0 - wz_hi;
+                const amrex::Real wx_lo = 1.0_rt - wx_hi;
+                const amrex::Real wy_lo = 1.0_rt - wy_hi;
+                const amrex::Real wz_lo = 1.0_rt - wz_hi;
 
                 const int iproc = pp.cpu();
 
@@ -398,9 +401,9 @@ void ActuatorContainer::compute_local_coordinates()
             const int* lo = bx.loVect();
 
             auto& pvec = m_proc_pos[iproc];
-            pvec.x() = geom.ProbLo()[0] + (lo[0] + 0.5) * geom.CellSize()[0];
-            pvec.y() = geom.ProbLo()[1] + (lo[1] + 0.5) * geom.CellSize()[1];
-            pvec.z() = geom.ProbLo()[2] + (lo[2] + 0.5) * geom.CellSize()[2];
+            pvec.x() = geom.ProbLo()[0] + (lo[0] + 0.5_rt) * geom.CellSize()[0];
+            pvec.y() = geom.ProbLo()[1] + (lo[1] + 0.5_rt) * geom.CellSize()[1];
+            pvec.z() = geom.ProbLo()[2] + (lo[2] + 0.5_rt) * geom.CellSize()[2];
 
             // Indicate that we have found a point and it is safe to exit the
             // loop

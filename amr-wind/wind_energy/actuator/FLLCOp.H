@@ -4,6 +4,9 @@
 #include "amr-wind/wind_energy/actuator/actuator_types.H"
 #include "amr-wind/wind_energy/actuator/FLLC.H"
 #include "amr-wind/utilities/linear_interpolation.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::actuator {
 
@@ -64,14 +67,14 @@ struct FLLCOp
         /**
          * Step 1
          * Compute the lift force distribution (G)
-         * Compute equation 5.3 from Martinez-Tossas and Meneveau 2019
+         * Compute equation 5.3_rt from Martinez-Tossas and Meneveau 2019
          */
         for (int ip = 0; ip < npts; ++ip) {
             const auto force = data.force[ip];
             const auto vel = data.vel_rel[ip];
             const auto dr = fllc.dr[ip];
-            const auto vmag =
-                std::max(vs::mag(vel), vs::DTraits<amrex::Real>::eps());
+            const auto vmag = amrex::max<amrex::Real>(
+                vs::mag(vel), vs::DTraits<amrex::Real>::eps());
             const auto vmag2 = vmag * vmag;
 
             const auto fv = force & vel;
@@ -82,18 +85,20 @@ struct FLLCOp
         /**
          * Step 2
          * Compute gradient of the lift force distribution (\Delta G)
-         * Compute equations 5.4 and 5.5 from Martinez-Tossas and Meneveau 2019
+         * Compute equations 5.4_rt and 5.5_rt from Martinez-Tossas and Meneveau
+         * 2019
          */
         dG[0] = G[0];
         dG[npts - 1] = -1 * G[npts - 1];
         for (int ip = 1; ip < npts - 1; ++ip) {
-            dG[ip] = 0.5 * (G[ip + 1] - G[ip - 1]);
+            dG[ip] = 0.5_rt * (G[ip + 1] - G[ip - 1]);
         }
 
         /**
          * Step 3
          * Compute the induced velocities
-         * Compute equations 5.6 and 5.7 from Martinez-Tossas and Meneveau 2019
+         * Compute equations 5.6_rt and 5.7_rt from Martinez-Tossas and Meneveau
+         * 2019
          */
         for (int ip = 0; ip < npts; ++ip) {
 
@@ -108,15 +113,15 @@ struct FLLCOp
 
                 const auto r_dis = vs::mag(data.vel_pos[ip] - data.vel_pos[jp]);
                 const auto& vel = data.vel_rel[jp];
-                const auto vmag =
-                    std::max(vs::mag(vel), vs::DTraits<amrex::Real>::eps());
+                const auto vmag = amrex::max<amrex::Real>(
+                    vs::mag(vel), vs::DTraits<amrex::Real>::eps());
 
                 auto coefficient =
-                    1.0 / (-4.0 * amr_wind::utils::pi() * r_dis * vmag);
+                    1.0_rt / (-4.0_rt * amr_wind::utils::pi() * r_dis * vmag);
                 const auto cLes =
-                    1.0 - std::exp(-r_dis * r_dis / (eps_les * eps_les));
+                    1.0_rt - std::exp(-r_dis * r_dis / (eps_les * eps_les));
                 const auto cOpt =
-                    1.0 - std::exp(-r_dis * r_dis / (eps_opt * eps_opt));
+                    1.0_rt - std::exp(-r_dis * r_dis / (eps_opt * eps_opt));
 
                 // The sign of the induced velocity depends on which side of the
                 // blade we are on
@@ -130,18 +135,18 @@ struct FLLCOp
 
             // Relaxation to compute the induced velocity
             const auto f = fllc.relaxation_factor;
-            du[ip] = (1. - f) * du[ip] + f * (u_opt[ip] - u_les[ip]);
+            du[ip] = (1.0_rt - f) * du[ip] + f * (u_opt[ip] - u_les[ip]);
         }
 
         /**
          * Step 4
          * Compute the induced velocity difference
-         * Compute equation 5.8 from Martinez-Tossas and Meneveau 2019
+         * Compute equation 5.8_rt from Martinez-Tossas and Meneveau 2019
          */
         for (int ip = 0; ip < npts; ++ip) {
             vel_ptr[ip] = vel_ptr[ip] + du[ip];
-            u_les[ip] *= 0.0;
-            u_opt[ip] *= 0.0;
+            u_les[ip] *= 0.0_rt;
+            u_opt[ip] *= 0.0_rt;
         }
 
         /**
@@ -190,8 +195,8 @@ struct FLLCOp
             const auto force = data.force[ip];
             const auto vel = data.vel_rel[ip];
             const auto dr = fllc.dr[ip];
-            const auto vmag =
-                std::max(vs::mag(vel), vs::DTraits<amrex::Real>::eps());
+            const auto vmag = amrex::max<amrex::Real>(
+                vs::mag(vel), vs::DTraits<amrex::Real>::eps());
             const auto vmag2 = vmag * vmag;
             fllc.vel_rel[ip] = vel;
             const auto fv = force & vel;
@@ -223,7 +228,7 @@ struct FLLCOp
          */
         for (int ip = 0; ip < npts; ++ip) {
 
-            const auto coefficient = 1.0 / (2.0 * amr_wind::utils::pi());
+            const auto coefficient = 1.0_rt / (2.0_rt * amr_wind::utils::pi());
 
             for (int jp = 0; jp < dr.size(); ++jp) {
 
@@ -232,10 +237,10 @@ struct FLLCOp
                 const auto eps_les2 = eps_les * eps_les;
                 const auto eps_opt2 = eps_opt * eps_opt;
                 const auto& vel = vel_rel[jp];
-                const auto vmag =
-                    std::max(vs::mag(vel), vs::DTraits<amrex::Real>::eps());
-                auto k_les = 0.;
-                auto k_opt = 0.;
+                const auto vmag = amrex::max<amrex::Real>(
+                    vs::mag(vel), vs::DTraits<amrex::Real>::eps());
+                auto k_les = 0.0_rt;
+                auto k_opt = 0.0_rt;
 
                 const auto r_dis =
                     (fllc.nonuniform)
@@ -244,8 +249,8 @@ struct FLLCOp
 
                 if (r_dis == 0.) {
 
-                    k_les = .5 / (eps_les2);
-                    k_opt = .5 / (eps_opt2);
+                    k_les = 0.5_rt / (eps_les2);
+                    k_opt = 0.5_rt / (eps_opt2);
 
                 }
 
@@ -254,10 +259,12 @@ struct FLLCOp
                     auto exp_les = std::exp(-r_dis * r_dis / eps_les2);
                     auto exp_opt = std::exp(-r_dis * r_dis / eps_opt2);
 
-                    k_les = exp_les / eps_les2 +
-                            1. / (2. * r_dis * r_dis) * (exp_les - 1.);
-                    k_opt = exp_opt / eps_opt2 +
-                            1. / (2. * r_dis * r_dis) * (exp_opt - 1.);
+                    k_les = exp_les / eps_les2 + 1.0_rt /
+                                                     (2.0_rt * r_dis * r_dis) *
+                                                     (exp_les - 1.0_rt);
+                    k_opt = exp_opt / eps_opt2 + 1.0_rt /
+                                                     (2.0_rt * r_dis * r_dis) *
+                                                     (exp_opt - 1.0_rt);
                 }
 
                 u_les[ip] =
@@ -268,7 +275,7 @@ struct FLLCOp
 
             // Relaxation to compute the induced velocity
             const auto f = fllc.relaxation_factor;
-            du[ip] = (1. - f) * du[ip] + f * (u_opt[ip] - u_les[ip]);
+            du[ip] = (1.0_rt - f) * du[ip] + f * (u_opt[ip] - u_les[ip]);
         }
 
         /**
@@ -277,8 +284,8 @@ struct FLLCOp
          */
         for (int ip = 0; ip < npts; ++ip) {
             vel_ptr[ip] = vel_ptr[ip] + du[ip];
-            u_les[ip] *= 0.0;
-            u_opt[ip] *= 0.0;
+            u_les[ip] *= 0.0_rt;
+            u_opt[ip] *= 0.0_rt;
         }
 
         /**

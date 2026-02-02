@@ -1,4 +1,3 @@
-
 #include "amr-wind/boundary_conditions/MassInflowOutflowBC.H"
 
 namespace amr_wind {

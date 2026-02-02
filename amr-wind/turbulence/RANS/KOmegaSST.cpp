@@ -7,8 +7,10 @@
 #include "amr-wind/turbulence/turb_utils.H"
 #include "amr-wind/equation_systems/tke/TKE.H"
 #include "amr-wind/equation_systems/sdr/SDR.H"
-
 #include "AMReX_ParmParse.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind {
 namespace turbulence {
@@ -21,7 +23,7 @@ void KOmegaSST<Transport>::parse_model_coeffs()
          this->m_sim.physics_manager().contains("MultiPhase"))) {
         this->m_include_buoyancy = true;
     }
-    this->m_buoyancy_factor = (this->m_include_buoyancy) ? 1.0 : 0.0;
+    this->m_buoyancy_factor = (this->m_include_buoyancy) ? 1.0_rt : 0.0_rt;
 
     {
         const std::string coeffs_dict = this->model_name() + "_coeffs";
@@ -88,7 +90,7 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(
     const auto& sdr = (*this->m_sdr).state(fstate);
     const auto& repo = mu_turb.repo();
     auto& tke_lhs = (this->m_sim).repo().get_field("tke_lhs_src_term");
-    tke_lhs.setVal(0.0);
+    tke_lhs.setVal(0.0_rt);
     auto& sdr_lhs = (this->m_sim).repo().get_field("sdr_lhs_src_term");
 
     auto gradK = (this->m_sim.repo()).create_scratch_field(3, 0);
@@ -143,22 +145,23 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(
                          gradOmega_arrs[nbx](i, j, k, 2));
 
                 amrex::Real cdkomega = amrex::max<amrex::Real>(
-                    1e-10, 2.0 * rho_arrs[nbx](i, j, k) * sigma_omega2 * gko /
-                               (sdr_arrs[nbx](i, j, k) + 1e-15));
+                    1.0e-10_rt, 2.0_rt * rho_arrs[nbx](i, j, k) * sigma_omega2 *
+                                    gko /
+                                    (sdr_arrs[nbx](i, j, k) + 1.0e-15_rt));
 
                 amrex::Real tmp1 =
-                    4.0 * rho_arrs[nbx](i, j, k) * sigma_omega2 *
+                    4.0_rt * rho_arrs[nbx](i, j, k) * sigma_omega2 *
                     tke_arrs[nbx](i, j, k) /
                     (cdkomega * wd_arrs[nbx](i, j, k) * wd_arrs[nbx](i, j, k));
                 amrex::Real tmp2 = std::sqrt(tke_arrs[nbx](i, j, k)) /
                                    (beta_star * sdr_arrs[nbx](i, j, k) *
                                         wd_arrs[nbx](i, j, k) +
-                                    1e-15);
+                                    1.0e-15_rt);
                 amrex::Real tmp3 =
-                    500.0 * lam_mu_arrs[nbx](i, j, k) /
+                    500.0_rt * lam_mu_arrs[nbx](i, j, k) /
                     (wd_arrs[nbx](i, j, k) * wd_arrs[nbx](i, j, k) *
                          sdr_arrs[nbx](i, j, k) * rho_arrs[nbx](i, j, k) +
-                     1e-15);
+                     1.0e-15_rt);
                 amrex::Real tmp4 = shear_prod_arrs[nbx](i, j, k);
 
                 amrex::Real arg1 = amrex::min<amrex::Real>(
@@ -168,7 +171,7 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(
                 amrex::Real alpha = tmp_f1 * (alpha1 - alpha2) + alpha2;
                 amrex::Real beta = tmp_f1 * (beta1 - beta2) + beta2;
 
-                amrex::Real arg2 = amrex::max<amrex::Real>(2.0 * tmp2, tmp3);
+                amrex::Real arg2 = amrex::max<amrex::Real>(2.0_rt * tmp2, tmp3);
                 amrex::Real f2 = std::tanh(arg2 * arg2);
 
                 mu_arrs[nbx](i, j, k) =
@@ -191,8 +194,8 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(
                 // For TKE equation:
                 shear_prod_arrs[nbx](i, j, k) = amrex::min<amrex::Real>(
                     amrex::max<amrex::Real>(
-                        mu_arrs[nbx](i, j, k) * tmp4 * tmp4, 0.0),
-                    10.0 * beta_star * rho_arrs[nbx](i, j, k) *
+                        mu_arrs[nbx](i, j, k) * tmp4 * tmp4, 0.0_rt),
+                    10.0_rt * beta_star * rho_arrs[nbx](i, j, k) *
                         tke_arrs[nbx](i, j, k) * sdr_arrs[nbx](i, j, k));
 
                 const amrex::Real diss_amb =
@@ -211,12 +214,13 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(
                 amrex::Real production_omega =
                     rho_arrs[nbx](i, j, k) * alpha *
                     amrex::min<amrex::Real>(
-                        tmp4 * tmp4, 10.0 * beta_star * sdr_arrs[nbx](i, j, k) *
+                        tmp4 * tmp4, 10.0_rt * beta_star *
+                                         sdr_arrs[nbx](i, j, k) *
                                          sdr_arrs[nbx](i, j, k));
 
                 amrex::Real cross_diffusion =
-                    (1.0 - tmp_f1) * 2.0 * rho_arrs[nbx](i, j, k) *
-                    sigma_omega2 * gko / (sdr_arrs[nbx](i, j, k) + 1e-15);
+                    (1.0_rt - tmp_f1) * 2.0_rt * rho_arrs[nbx](i, j, k) *
+                    sigma_omega2 * gko / (sdr_arrs[nbx](i, j, k) + 1.0e-15_rt);
 
                 const amrex::Real sdr_diss_amb =
                     beta * rho_arrs[nbx](i, j, k) * sdr_amb * sdr_amb;
@@ -224,7 +228,7 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(
                 if (diff_type == DiffusionType::Crank_Nicolson) {
 
                     tke_lhs_arrs[nbx](i, j, k) =
-                        0.5 * tke_lhs_arrs[nbx](i, j, k);
+                        0.5_rt * tke_lhs_arrs[nbx](i, j, k);
 
                     sdr_src_arrs[nbx](i, j, k) = production_omega;
 
@@ -233,23 +237,23 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(
                     sdr_lhs_arrs[nbx](i, j, k) =
                         (rho_arrs[nbx](i, j, k) * beta *
                              sdr_arrs[nbx](i, j, k) +
-                         0.5 * std::abs(cross_diffusion) /
-                             (sdr_arrs[nbx](i, j, k) + 1e-15)) *
+                         0.5_rt * std::abs(cross_diffusion) /
+                             (sdr_arrs[nbx](i, j, k) + 1.0e-15_rt)) *
                         delta_t;
                 } else if (diff_type == DiffusionType::Implicit) {
                     /* Source term linearization is based on Florian
                        Menter's (1993) AIAA paper */
-                    diss_arrs[nbx](i, j, k) = 0.0;
+                    diss_arrs[nbx](i, j, k) = 0.0_rt;
 
                     sdr_src_arrs[nbx](i, j, k) = production_omega;
 
-                    sdr_diss_arrs[nbx](i, j, k) = 0.0;
+                    sdr_diss_arrs[nbx](i, j, k) = 0.0_rt;
 
                     sdr_lhs_arrs[nbx](i, j, k) =
-                        (2.0 * rho_arrs[nbx](i, j, k) * beta *
+                        (2.0_rt * rho_arrs[nbx](i, j, k) * beta *
                              sdr_arrs[nbx](i, j, k) +
                          std::abs(cross_diffusion) /
-                             (sdr_arrs[nbx](i, j, k) + 1e-15)) *
+                             (sdr_arrs[nbx](i, j, k) + 1.0e-15_rt)) *
                         delta_t;
 
                 } else {
@@ -261,9 +265,9 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(
                             sdr_arrs[nbx](i, j, k) * sdr_arrs[nbx](i, j, k) +
                         sdr_diss_amb;
 
-                    sdr_lhs_arrs[nbx](i, j, k) = 0.5 * rho_arrs[nbx](i, j, k) *
-                                                 beta * sdr_arrs[nbx](i, j, k) *
-                                                 delta_t;
+                    sdr_lhs_arrs[nbx](i, j, k) =
+                        0.5_rt * rho_arrs[nbx](i, j, k) * beta *
+                        sdr_arrs[nbx](i, j, k) * delta_t;
                 }
             });
     }
@@ -276,7 +280,6 @@ template <typename Transport>
 void KOmegaSST<Transport>::update_scalar_diff(
     Field& deff, const std::string& name)
 {
-
     BL_PROFILE("amr-wind::" + this->identifier() + "::update_scalar_diff");
 
     auto lam_mu = (this->m_transport).mu();

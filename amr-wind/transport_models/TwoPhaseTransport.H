@@ -4,6 +4,9 @@
 #include "amr-wind/physics/multiphase/MultiPhase.H"
 #include "amr-wind/transport_models/TransportModel.H"
 #include "AMReX_ParmParse.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::transport {
 
@@ -113,7 +116,7 @@ public:
     {
         amrex::ParmParse pp("transport");
         const std::string key = scalar_name + "_laminar_schmidt";
-        amrex::Real lam_schmidt = 1.0;
+        amrex::Real lam_schmidt = 1.0_rt;
         pp.query(key, lam_schmidt);
         return lam_schmidt;
     }
@@ -122,7 +125,7 @@ public:
     {
         amrex::ParmParse pp("transport");
         const std::string key = scalar_name + "_turbulent_schmidt";
-        amrex::Real turb_schmidt = 1.0;
+        amrex::Real turb_schmidt = 1.0_rt;
         pp.query(key, turb_schmidt);
         return turb_schmidt;
     }
@@ -149,7 +152,7 @@ public:
                         int nbx, int i, int j, int k) noexcept {
                         visc_arrs[nbx](i, j, k) =
                             mu1 * volfrac_arrs[nbx](i, j, k) +
-                            mu2 * (1.0 - volfrac_arrs[nbx](i, j, k));
+                            mu2 * (1.0_rt - volfrac_arrs[nbx](i, j, k));
                     });
             }
             amrex::Gpu::streamSynchronize();
@@ -163,7 +166,8 @@ public:
                 const auto& dx = geom[lev].CellSizeArray();
                 const auto& visc_arrs = (*mu)(lev).arrays();
                 const auto& phi_arrs = levelset(lev).const_arrays();
-                const amrex::Real eps = std::cbrt(2. * dx[0] * dx[1] * dx[2]);
+                const amrex::Real eps =
+                    std::cbrt(2.0_rt * dx[0] * dx[1] * dx[2]);
                 const amrex::Real mu1 = m_mu1;
                 const amrex::Real mu2 = m_mu2;
 
@@ -173,20 +177,21 @@ public:
                         int nbx, int i, int j, int k) noexcept {
                         amrex::Real smooth_heaviside;
                         if (phi_arrs[nbx](i, j, k) > eps) {
-                            smooth_heaviside = 1.0;
+                            smooth_heaviside = 1.0_rt;
                         } else if (phi_arrs[nbx](i, j, k) < -eps) {
-                            smooth_heaviside = 0.;
+                            smooth_heaviside = 0.0_rt;
                         } else {
                             smooth_heaviside =
-                                0.5 *
-                                (1.0 + phi_arrs[nbx](i, j, k) / eps +
-                                 1.0 / M_PI *
+                                0.5_rt *
+                                (1.0_rt + phi_arrs[nbx](i, j, k) / eps +
+                                 1.0_rt / static_cast<amrex::Real>(M_PI) *
                                      std::sin(
-                                         phi_arrs[nbx](i, j, k) * M_PI / eps));
+                                         phi_arrs[nbx](i, j, k) *
+                                         static_cast<amrex::Real>(M_PI) / eps));
                         }
                         visc_arrs[nbx](i, j, k) =
                             mu1 * smooth_heaviside +
-                            mu2 * (1.0 - smooth_heaviside);
+                            mu2 * (1.0_rt - smooth_heaviside);
                     });
             }
             amrex::Gpu::streamSynchronize();
@@ -218,7 +223,7 @@ public:
                         int nbx, int i, int j, int k) noexcept {
                         thdiff_arrs[nbx](i, j, k) =
                             mu1 / Pr1 * volfrac_arrs[nbx](i, j, k) +
-                            mu2 / Pr2 * (1.0 - volfrac_arrs[nbx](i, j, k));
+                            mu2 / Pr2 * (1.0_rt - volfrac_arrs[nbx](i, j, k));
                     });
             }
 
@@ -230,7 +235,8 @@ public:
                 const auto& dx = geom[lev].CellSizeArray();
                 const auto& visc_arrs = (*alpha)(lev).arrays();
                 const auto& phi_arrs = levelset(lev).const_arrays();
-                const amrex::Real eps = std::cbrt(2. * dx[0] * dx[1] * dx[2]);
+                const amrex::Real eps =
+                    std::cbrt(2.0_rt * dx[0] * dx[1] * dx[2]);
                 const amrex::Real mu1 = m_mu1;
                 const amrex::Real mu2 = m_mu2;
                 const amrex::Real Pr1 = m_Pr1;
@@ -241,20 +247,21 @@ public:
                         int nbx, int i, int j, int k) noexcept {
                         amrex::Real smooth_heaviside;
                         if (phi_arrs[nbx](i, j, k) > eps) {
-                            smooth_heaviside = 1.0;
+                            smooth_heaviside = 1.0_rt;
                         } else if (phi_arrs[nbx](i, j, k) < -eps) {
-                            smooth_heaviside = 0.;
+                            smooth_heaviside = 0.0_rt;
                         } else {
                             smooth_heaviside =
-                                0.5 *
-                                (1.0 + phi_arrs[nbx](i, j, k) / eps +
-                                 1.0 / M_PI *
+                                0.5_rt *
+                                (1.0_rt + phi_arrs[nbx](i, j, k) / eps +
+                                 1.0_rt / static_cast<amrex::Real>(M_PI) *
                                      std::sin(
-                                         phi_arrs[nbx](i, j, k) * M_PI / eps));
+                                         phi_arrs[nbx](i, j, k) *
+                                         static_cast<amrex::Real>(M_PI) / eps));
                         }
                         visc_arrs[nbx](i, j, k) =
                             mu1 / Pr1 * smooth_heaviside +
-                            mu2 / Pr2 * (1.0 - smooth_heaviside);
+                            mu2 / Pr2 * (1.0_rt - smooth_heaviside);
                     });
             }
         }
@@ -267,7 +274,7 @@ public:
     {
         amrex::Real lam_schmidt = laminar_schmidt(scalar_name);
 
-        amrex::Real inv_schmidt = 1.0 / lam_schmidt;
+        amrex::Real inv_schmidt = 1.0_rt / lam_schmidt;
         auto diff = mu();
         for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
             (*diff)(lev).mult(inv_schmidt);
@@ -301,7 +308,7 @@ public:
         const amrex::Array4<amrex::Real>& beta) const override
     {
 
-        if (m_constant_beta > 0.0) {
+        if (m_constant_beta > 0.0_rt) {
             const amrex::Real beta_val = m_constant_beta;
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -312,10 +319,10 @@ public:
             const auto& temp0_arr = temp0(lev).const_array(mfi);
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    beta(i, j, k) = 1.0 / temp0_arr(i, j, k);
+                    beta(i, j, k) = 1.0_rt / temp0_arr(i, j, k);
                 });
         } else {
-            const amrex::Real beta_val = 1.0 / m_reference_temperature;
+            const amrex::Real beta_val = 1.0_rt / m_reference_temperature;
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     beta(i, j, k) = beta_val;
@@ -329,28 +336,31 @@ public:
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     if (vof_arr(i, j, k) > constants::TIGHT_TOL) {
-                        beta(i, j, k) = 0.0;
+                        beta(i, j, k) = 0.0_rt;
                     }
                 });
         } else if (ifacetype == InterfaceCapturingMethod::LS) {
             const auto& levelset = m_repo.get_field("levelset");
             const auto& dx = m_repo.mesh().Geom(lev).CellSizeArray();
             const auto& phi_arr = levelset(lev).const_array(mfi);
-            const amrex::Real eps = std::cbrt(2. * dx[0] * dx[1] * dx[2]);
+            const amrex::Real eps = std::cbrt(2.0_rt * dx[0] * dx[1] * dx[2]);
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     amrex::Real smooth_heaviside;
                     if (phi_arr(i, j, k) > eps) {
-                        smooth_heaviside = 1.0;
+                        smooth_heaviside = 1.0_rt;
                     } else if (phi_arr(i, j, k) < -eps) {
-                        smooth_heaviside = 0.;
+                        smooth_heaviside = 0.0_rt;
                     } else {
                         smooth_heaviside =
-                            0.5 * (1.0 + phi_arr(i, j, k) / eps +
-                                   1.0 / M_PI *
-                                       std::sin(phi_arr(i, j, k) * M_PI / eps));
+                            0.5_rt *
+                            (1.0_rt + phi_arr(i, j, k) / eps +
+                             1.0_rt / static_cast<amrex::Real>(M_PI) *
+                                 std::sin(
+                                     phi_arr(i, j, k) *
+                                     static_cast<amrex::Real>(M_PI) / eps));
                     }
-                    beta(i, j, k) *= (1 - smooth_heaviside);
+                    beta(i, j, k) *= (1.0_rt - smooth_heaviside);
                 });
         }
     }
@@ -363,7 +373,7 @@ public:
     //! Return the reference temperature
     inline std::unique_ptr<ScratchField> ref_theta() const override
     {
-        if (m_reference_temperature < 0.0) {
+        if (m_reference_temperature < 0.0_rt) {
             amrex::Abort("Reference temperature was not set");
         }
 
@@ -388,7 +398,7 @@ public:
         const amrex::Box& bx,
         const amrex::Array4<amrex::Real>& ref_theta) const override
     {
-        if (m_reference_temperature < 0.0) {
+        if (m_reference_temperature < 0.0_rt) {
             amrex::Abort("Reference temperature was not set");
         }
 
@@ -416,25 +426,25 @@ private:
     const PhysicsMgr& m_physics_mgr;
 
     //! Phase 1 (liquid) dynamic molecular viscosity
-    amrex::Real m_mu1{1.0e-3};
+    amrex::Real m_mu1{1.0e-3_rt};
 
     //! Phase 2 (gas) dynamic molecular viscosity
-    amrex::Real m_mu2{1.0e-5};
+    amrex::Real m_mu2{1.0e-5_rt};
 
     //! Phase 1 (liquid) Prandtl number
-    amrex::Real m_Pr1{7.2};
+    amrex::Real m_Pr1{7.2_rt};
 
     //! Phase 2 (gas) Prandtl number
-    amrex::Real m_Pr2{0.7};
+    amrex::Real m_Pr2{0.7_rt};
 
     //! Turbulent Prandtl number
-    amrex::Real m_Prt{1.0};
+    amrex::Real m_Prt{1.0_rt};
 
     //! Constant thermal expansion coefficient
-    amrex::Real m_constant_beta{0.0};
+    amrex::Real m_constant_beta{0.0_rt};
 
     //! Reference temperature
-    amrex::Real m_reference_temperature{-1.0};
+    amrex::Real m_reference_temperature{-1.0_rt};
 
     InterfaceCapturingMethod get_iface_method() const
     {

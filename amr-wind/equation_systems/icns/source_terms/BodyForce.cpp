@@ -9,6 +9,9 @@
 #include <AMReX_IntVect.H>
 #include <cstddef>
 #include <ios>
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::pde::icns {
 
@@ -118,7 +121,7 @@ void BodyForce::operator()(
     const FieldState /*fstate*/,
     const amrex::Array4<amrex::Real>& src_term) const
 {
-    const auto& nph_time = 0.5 * (m_time.current_time() + m_time.new_time());
+    const auto& nph_time = 0.5_rt * (m_time.current_time() + m_time.new_time());
     const auto& problo = m_mesh.Geom(lev).ProbLoArray();
     const auto& dx = m_mesh.Geom(lev).CellSizeArray();
 
@@ -132,7 +135,7 @@ void BodyForce::operator()(
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::IntVect iv(i, j, k);
-                const amrex::Real ht = problo[2] + (iv[2] + 0.5) * dx[2];
+                const amrex::Real ht = problo[2] + (iv[2] + 0.5_rt) * dx[2];
                 const amrex::Real fx = amr_wind::interp::linear(
                     force_ht, force_ht_end, force_x, ht);
                 const amrex::Real fy = amr_wind::interp::linear(
@@ -157,7 +160,7 @@ void BodyForce::operator()(
         }
 
         amrex::Real coeff =
-            (m_type == "oscillatory") ? std::cos(m_omega * nph_time) : 1.0;
+            (m_type == "oscillatory") ? std::cos(m_omega * nph_time) : 1.0_rt;
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 src_term(i, j, k, 0) += coeff * forcing[0];

@@ -9,6 +9,9 @@
 #include "AMReX_iMultiFab.H"
 #include "AMReX_MultiFabUtil.H"
 #include "AMReX_ParmParse.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind {
 namespace synth_turb {
@@ -39,7 +42,7 @@ public:
         amrex::Real vel_start,
         amrex::Real vel_stop,
         int shear_dir)
-        : MeanProfile(0.5 * (vel_start + vel_stop), shear_dir)
+        : MeanProfile(0.5_rt * (vel_start + vel_stop), shear_dir)
         , m_op{h_min, h_max, vel_start, vel_stop}
     {}
 
@@ -66,7 +69,7 @@ struct PowerLawOp
     {
         const amrex::Real heff = height - m_hoffset;
         amrex::Real pfac =
-            (heff > 0.0) ? std::pow((heff / m_ref_height), m_alpha) : 0.0;
+            (heff > 0.0_rt) ? std::pow((heff / m_ref_height), m_alpha) : 0.0_rt;
         return m_ref_vel * amrex::min(amrex::max(pfac, m_umin), m_umax);
     }
 };
@@ -270,7 +273,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void get_lr_indices(
 
     const amrex::Real xfrac = xbox - turb_grid.dx[dir] * il;
     rxr = xfrac / turb_grid.dx[dir];
-    rxl = (1.0 - rxr);
+    rxl = (1.0_rt - rxr);
 }
 
 /** Determine if a given point (in local frame) is within the turbulence box
@@ -284,10 +287,10 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE bool find_point_in_box(
     const SynthTurbDeviceData& t_grid, const vs::Vector& pt, InterpWeights& wt)
 {
     // Get y and z w.r.t. the lower corner of the grid
-    const amrex::Real yy = pt[1] + t_grid.box_len[1] * 0.5;
-    const amrex::Real zz = pt[2] + t_grid.box_len[2] * 0.5;
+    const amrex::Real yy = pt[1] + t_grid.box_len[1] * 0.5_rt;
+    const amrex::Real zz = pt[2] + t_grid.box_len[2] * 0.5_rt;
     bool inBox =
-        ((yy >= 0.0) && (yy <= t_grid.box_len[1]) && (zz >= 0.0) &&
+        ((yy >= 0.0_rt) && (yy <= t_grid.box_len[1]) && (zz >= 0.0_rt) &&
          (zz <= t_grid.box_len[2]));
 
     if (inBox) {
@@ -362,7 +365,7 @@ SyntheticTurbulence::SyntheticTurbulence(const CFDSim& sim)
     amrex::Abort(
         "SyntheticTurbulence: AMR-Wind was not built with NetCDF support.");
 #endif
-    const amrex::Real pi = std::acos(-1.0);
+    const amrex::Real pi = std::acos(-1.0_rt);
 
     amrex::ParmParse pp("SynthTurb");
 
@@ -373,7 +376,7 @@ SyntheticTurbulence::SyntheticTurbulence(const CFDSim& sim)
     // Load position and orientation of the grid
     amrex::Real wind_direction{270.};
     pp.query("wind_direction", wind_direction);
-    amrex::Vector<amrex::Real> location{0.0, 0.0, 0.0};
+    amrex::Vector<amrex::Real> location{0.0_rt, 0.0_rt, 0.0_rt};
     pp.queryarr("grid_location", location);
 
     std::string mean_wind_type = "ConstValue";
@@ -437,7 +440,7 @@ SyntheticTurbulence::SyntheticTurbulence(const CFDSim& sim)
     m_mean_wind_type = mean_wind_type;
     // Smearing factors
     pp.get("gauss_smearing_factor", m_epsilon);
-    m_gauss_scaling = 1.0 / (m_epsilon * std::sqrt(pi));
+    m_gauss_scaling = 1.0_rt / (m_epsilon * std::sqrt(pi));
 
     // Time offsets if any...
     pp.query("time_offset", m_time_offset);
@@ -456,7 +459,7 @@ SyntheticTurbulence::SyntheticTurbulence(const CFDSim& sim)
     //
     // x-direction points to flow direction (convert from compass direction to
     // vector)
-    m_turb_grid.tr_mat = vs::zrot(270.0 - wind_direction);
+    m_turb_grid.tr_mat = vs::zrot(270.0_rt - wind_direction);
 
     amrex::Print() << "Synthetic turbulence forcing initialized \n"
                    << "  Turbulence file = " << m_turb_filename << "\n"
@@ -516,8 +519,8 @@ void SyntheticTurbulence::update()
 
     // Stop update if the current time is past the requested duration of the
     // injection of the synthetic turbulence and if this duration is positive
-    if (m_duration > 0.0 && cur_time > m_duration) {
-        const amrex::Vector<amrex::Real> zeros{0.0, 0.0, 0.0};
+    if (m_duration > 0.0_rt && cur_time > m_duration) {
+        const amrex::Vector<amrex::Real> zeros{0.0_rt, 0.0_rt, 0.0_rt};
         m_turb_force.setVal(zeros, m_turb_force.num_grow()[0]);
         return;
     }
@@ -588,8 +591,9 @@ void SyntheticTurbulence::update_impl(
                 vs::Vector vel_g;
 
                 vs::Vector xyz_g{
-                    problo[0] + (i + 0.5) * dx, problo[1] + (j + 0.5) * dy,
-                    problo[2] + (k + 0.5) * dz};
+                    problo[0] + (i + 0.5_rt) * dx,
+                    problo[1] + (j + 0.5_rt) * dy,
+                    problo[2] + (k + 0.5_rt) * dz};
 
                 // Transform position vector from global inertial
                 // reference frame to local reference frame attached to
@@ -618,7 +622,7 @@ void SyntheticTurbulence::update_impl(
                     const amrex::Real v_mag = vs::mag(vel_g);
                     // (V_n + 1/2 v_n) in Eq. 10
                     const amrex::Real v_mag_total =
-                        (velfunc(xyz_g[sdir]) + 0.5 * v_mag);
+                        (velfunc(xyz_g[sdir]) + 0.5_rt * v_mag);
 
                     // Smearing factor (see Eq. 11). The normal direction to
                     // the grid is the x-axis of the local reference frame

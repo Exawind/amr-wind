@@ -7,6 +7,9 @@
 #include "amr-wind/utilities/IOManager.H"
 
 #include "AMReX_ParmParse.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::sampling {
 
@@ -124,7 +127,7 @@ void Sampling::initialize()
 #ifdef AMR_WIND_USE_NETCDF
     if (m_out_fmt == "netcdf") {
         prepare_netcdf_file();
-        m_sample_buf.assign(m_total_particles * m_var_names.size(), 0.0);
+        m_sample_buf.assign(m_total_particles * m_var_names.size(), 0.0_rt);
     }
 #endif
 
@@ -264,10 +267,10 @@ void Sampling::convert_velocity_lineofsight()
         long scan_size =
             (obj->do_subsampling_interp()) ? sample_size / 2 : sample_size;
 
-        std::vector<std::vector<double>> temp_vel(
-            scan_size, std::vector<double>(AMREX_SPACEDIM));
-        std::vector<std::vector<double>> temp_vel_next(
-            scan_size, std::vector<double>(AMREX_SPACEDIM));
+        std::vector<std::vector<amrex::Real>> temp_vel(
+            scan_size, std::vector<amrex::Real>(AMREX_SPACEDIM));
+        std::vector<std::vector<amrex::Real>> temp_vel_next(
+            scan_size, std::vector<amrex::Real>(AMREX_SPACEDIM));
 
         if (obj->do_convert_velocity_los()) {
             for (int iv = 0; iv < AMREX_SPACEDIM; ++iv) {
@@ -313,16 +316,16 @@ void Sampling::create_output_buffer()
             long sample_size = obj->num_points();
             if (obj->do_data_modification()) {
                 // Run data through specific sampler's mod method
-                const std::vector<double> temp_sb_mod(
+                const std::vector<amrex::Real> temp_sb_mod(
                     &m_sample_buf[offset], &m_sample_buf[offset + sample_size]);
-                std::vector<double> mod_result =
+                std::vector<amrex::Real> mod_result =
                     obj->modify_sample_data(temp_sb_mod, m_var_names[iv]);
                 m_output_buf.insert(
                     m_output_buf.end(), mod_result.begin(), mod_result.end());
                 offset += sample_size;
             } else {
                 // Directly put m_sample_buf in m_output_buf
-                std::vector<double> temp_sb(
+                std::vector<amrex::Real> temp_sb(
                     &m_sample_buf[offset], &m_sample_buf[offset + sample_size]);
                 m_output_buf.insert(
                     m_output_buf.end(), temp_sb.begin(), temp_sb.end());

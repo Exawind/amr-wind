@@ -3,6 +3,9 @@
 
 #include "amr-wind/wind_energy/actuator/disk/disk_types.H"
 #include "amr-wind/core/vs/vector_space.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::actuator {
 
@@ -24,13 +27,13 @@ struct DiskBaseData
     amrex::Real dr;
     amrex::Real density;
     amrex::Real current_ct;
-    amrex::Real diameters_to_sample{0.0};
+    amrex::Real diameters_to_sample{0.0_rt};
     RealList thrust_coeff;
     RealList table_velocity;
     std::string spreading_type{"LinearBasis"};
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real radius() const
     {
-        return 0.5 * diameter;
+        return 0.5_rt * diameter;
     }
 };
 

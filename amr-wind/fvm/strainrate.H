@@ -2,6 +2,9 @@
 #define STRAINRATE_H
 
 #include "amr-wind/fvm/fvm_utils.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::fvm {
 
@@ -77,10 +80,11 @@ struct StrainRate
                       cm1 * phi(i, j, k - 1, 2)) *
                      idx[2];
 
-                strphi(i, j, k) = sqrt(
-                    2.0 * std::pow(ux, 2) + 2.0 * std::pow(vy, 2) +
-                    2.0 * std::pow(wz, 2) + std::pow(uy + vx, 2) +
-                    std::pow(vz + wy, 2) + std::pow(wx + uz, 2));
+                strphi(i, j, k) = std::sqrt(
+                    2.0_rt * std::pow(ux, 2.0_rt) +
+                    2.0_rt * std::pow(vy, 2.0_rt) +
+                    2.0_rt * std::pow(wz, 2.0_rt) + std::pow(uy + vx, 2.0_rt) +
+                    std::pow(vz + wy, 2.0_rt) + std::pow(wx + uz, 2.0_rt));
             });
     }
 

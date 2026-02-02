@@ -13,6 +13,9 @@
 #include "AMReX_MLMG.H"
 #include "AMReX_AmrCore.H"
 #include "AMReX_MultiFabUtil.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::pde {
 
@@ -144,7 +147,7 @@ struct DiffusionOp<
     //! Computes the diffusion term that goes in the RHS
     void compute_diff_term(const FieldState fstate)
     {
-        this->setup_operator(*this->m_applier, 0.0, -1.0, fstate);
+        this->setup_operator(*this->m_applier, 0.0_rt, -1.0_rt, fstate);
 
         auto tau_state = std::is_same<Scheme, fvm::Godunov>::value
                              ? FieldState::New
@@ -169,7 +172,8 @@ struct DiffusionOp<
                     divtau(lev), divtau.num_grow(), divtau.num_comp(),
                     [=] AMREX_GPU_DEVICE(
                         int nbx, int i, int j, int k, int n) noexcept {
-                        const amrex::Real rhoinv = 1.0 / rho_arrs[nbx](i, j, k);
+                        const amrex::Real rhoinv =
+                            1.0_rt / rho_arrs[nbx](i, j, k);
                         divtau_arrs[nbx](i, j, k, n) *= rhoinv;
                     });
             }

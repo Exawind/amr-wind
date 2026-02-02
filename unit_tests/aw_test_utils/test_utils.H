@@ -9,6 +9,9 @@
 #include "AMReX_MultiFab.H"
 #include "AMReX_Vector.H"
 #include "amr-wind/core/FieldRepo.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind_tests::utils {
 
@@ -16,7 +19,7 @@ inline amrex::Real field_min(const amr_wind::Field& field, const int icomp = 0)
 {
     amrex::Real min_val = std::numeric_limits<amrex::Real>::max();
     for (int lev = 0; lev < field.repo().num_active_levels(); ++lev) {
-        min_val = amrex::min(min_val, field(lev).min(icomp));
+        min_val = amrex::min<amrex::Real>(min_val, field(lev).min(icomp));
     }
 
     return min_val;
@@ -26,7 +29,7 @@ inline amrex::Real field_max(const amr_wind::Field& field, const int icomp = 0)
 {
     amrex::Real max_val = -std::numeric_limits<amrex::Real>::max();
     for (int lev = 0; lev < field.repo().num_active_levels(); ++lev) {
-        max_val = amrex::max(max_val, field(lev).max(icomp));
+        max_val = amrex::max<amrex::Real>(max_val, field(lev).max(icomp));
     }
 
     return max_val;
@@ -37,7 +40,7 @@ field_min(const amr_wind::ScratchField& field, const int icomp = 0)
 {
     amrex::Real min_val = std::numeric_limits<amrex::Real>::max();
     for (int lev = 0; lev < field.repo().num_active_levels(); ++lev) {
-        min_val = amrex::min(min_val, field(lev).min(icomp));
+        min_val = amrex::min<amrex::Real>(min_val, field(lev).min(icomp));
     }
 
     return min_val;
@@ -48,7 +51,7 @@ field_max(const amr_wind::ScratchField& field, const int icomp = 0)
 {
     amrex::Real max_val = -std::numeric_limits<amrex::Real>::max();
     for (int lev = 0; lev < field.repo().num_active_levels(); ++lev) {
-        max_val = amrex::max(max_val, field(lev).max(icomp));
+        max_val = amrex::max<amrex::Real>(max_val, field(lev).max(icomp));
     }
 
     return max_val;
@@ -67,7 +70,7 @@ inline amrex::Real field_min(
 {
     amrex::Real min_val = std::numeric_limits<amrex::Real>::max();
     for (int lev = 0; lev < nlevels; ++lev) {
-        min_val = amrex::min(min_val, field[lev]->min(ncomp));
+        min_val = amrex::min<amrex::Real>(min_val, field[lev]->min(ncomp));
     }
     return min_val;
 }
@@ -85,7 +88,7 @@ inline amrex::Real field_max(
 {
     amrex::Real max_val = -std::numeric_limits<amrex::Real>::max();
     for (int lev = 0; lev < nlevels; ++lev) {
-        max_val = amrex::max(max_val, field[lev]->max(ncomp));
+        max_val = amrex::max<amrex::Real>(max_val, field[lev]->max(ncomp));
     }
     return max_val;
 }
