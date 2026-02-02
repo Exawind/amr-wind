@@ -74,7 +74,8 @@ struct PostSolveOp<TKE>
     }
 
     PDEFields& m_fields;
-    amrex::Real m_clip_value{1.0e-8_rt};
+    amrex::Real m_clip_value{
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e2_rt};
 };
 
 template <typename Scheme>

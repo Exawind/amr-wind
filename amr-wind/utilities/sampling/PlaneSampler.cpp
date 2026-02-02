@@ -66,7 +66,8 @@ void PlaneSampler::check_bounds()
     for (int d = 1; d < AMREX_SPACEDIM; ++d) {
         min_dx = amrex::min<amrex::Real>(fine_geom.CellSize(d), min_dx);
     }
-    const auto tol = amrex::max<amrex::Real>(1.0e-10_rt * min_dx, bounds_tol);
+    const auto tol = amrex::max<amrex::Real>(
+        std::numeric_limits<amrex::Real>::epsilon() * min_dx, bounds_tol);
 
     // First fix the origin so that it is within bounds, if it is close enough
     for (int d = 0; d < AMREX_SPACEDIM; ++d) {

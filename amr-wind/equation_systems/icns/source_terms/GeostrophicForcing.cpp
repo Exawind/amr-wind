@@ -157,7 +157,8 @@ void GeostrophicForcing::operator()(
             // - interface_band checks for closeness to interface
             // - need to also check for within liquid
             if (multiphase::interface_band(i, j, k, vof, n_band) ||
-                vof(i, j, k) > 1.0_rt - 1.0e-12_rt) {
+                vof(i, j, k) >
+                    1.0_rt - std::numeric_limits<amrex::Real>::epsilon()) {
                 // Turn off forcing
                 wfac = 0.0_rt;
             }

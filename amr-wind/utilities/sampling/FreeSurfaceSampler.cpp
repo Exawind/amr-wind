@@ -63,7 +63,7 @@ void FreeSurfaceSampler::initialize(const std::string& key)
         }
     }
     // Small number for floating-point comparisons
-    constexpr amrex::Real eps = 1.0e-16_rt;
+    constexpr amrex::Real eps = std::numeric_limits<amrex::Real>::epsilon();
 
     // Calculate total number of points
     m_npts = m_npts_dir[0] * m_npts_dir[1];
@@ -512,12 +512,22 @@ bool FreeSurfaceSampler::update_sampling_locations()
                                 bool calc_flag_diffuse = false;
                                 const bool single_phase_below_interface =
                                     (ni % 2 == 0 &&
-                                     vof_arr(i, j, k) >= 1.0_rt - 1.0e-12_rt) ||
+                                     vof_arr(i, j, k) >=
+                                         1.0_rt -
+                                             std::numeric_limits<
+                                                 amrex::Real>::epsilon()) ||
                                     (ni % 2 != 0 &&
-                                     vof_arr(i, j, k) <= 1.0e-12_rt);
+                                     vof_arr(i, j, k) <=
+                                         std::numeric_limits<
+                                             amrex::Real>::epsilon());
                                 const bool multiphase =
-                                    vof_arr(i, j, k) < (1.0_rt - 1.0e-12_rt) &&
-                                    vof_arr(i, j, k) > 1.0e-12_rt;
+                                    vof_arr(i, j, k) <
+                                        (1.0_rt -
+                                         std::numeric_limits<
+                                             amrex::Real>::epsilon()) &&
+                                    vof_arr(i, j, k) >
+                                        std::numeric_limits<
+                                            amrex::Real>::epsilon();
                                 const bool use_linear_interp =
                                     (has_overset && ibl_arr(i, j, k) == -1) ||
                                     linear_on;
@@ -677,8 +687,11 @@ bool FreeSurfaceSampler::update_sampling_locations()
                                     // If interface is above upper
                                     // bound, limit it
                                     if (ht >
-                                        xm[dir] + 0.5_rt * dx[dir] *
-                                                      (1.0_rt + 1.0e-8_rt)) {
+                                        xm[dir] +
+                                            0.5_rt * dx[dir] *
+                                                (1.0_rt +
+                                                 std::numeric_limits<
+                                                     amrex::Real>::epsilon())) {
                                         ht = xm[dir] + 0.5_rt * dx[dir];
                                     }
                                     // Save interface location by atomic max
@@ -716,7 +729,7 @@ void FreeSurfaceSampler::post_regrid_actions()
 {
     BL_PROFILE("amr-wind::FreeSurfaceSampler::post_regrid_actions");
     // Small number for floating-point comparisons
-    constexpr amrex::Real eps = 1.0e-16_rt;
+    constexpr amrex::Real eps = std::numeric_limits<amrex::Real>::epsilon();
     // Get working fields
     auto& fidx = m_sim.repo().get_int_field("sample_idx_" + m_label);
     auto& floc = m_sim.repo().get_field("sample_loc_" + m_label);

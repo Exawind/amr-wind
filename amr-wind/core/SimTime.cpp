@@ -316,7 +316,7 @@ void SimTime::advance_time()
 
 bool SimTime::continue_simulation() const
 {
-    constexpr amrex::Real eps = 1.0e-12_rt;
+    constexpr amrex::Real eps = std::numeric_limits<amrex::Real>::epsilon();
     bool stop_simulation = false;
 
     if (m_stop_time_index == 0) {

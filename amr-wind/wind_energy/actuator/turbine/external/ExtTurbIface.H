@@ -153,7 +153,8 @@ void ExtTurbIface<SolverTurbine, SolverData>::advance_turbine(
         // Default is off, unless a turbine model reads, populates stop_time
         const auto& tmax = fi.stop_time;
         const auto& telapsed = (fi.time_index + fi.num_substeps) * fi.dt_ext;
-        if (telapsed > (tmax + 1.0e-8_rt) && fi.stop_time > 0.0_rt) {
+        if (telapsed > (tmax + std::numeric_limits<amrex::Real>::epsilon()) &&
+            fi.stop_time > 0.0_rt) {
             // clang-format off
             amrex::OutStream()
                 << "\nWARNING: ExtTurbIface:\n"

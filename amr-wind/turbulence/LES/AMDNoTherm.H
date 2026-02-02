@@ -1,13 +1,13 @@
 #ifndef AMDNOTHERM_H
 #define AMDNOTHERM_H
 
-#include <AMReX_Config.H>
-#include <AMReX_AmrCore.H>
 #include <string>
 #include "amr-wind/incflo_enums.H"
 #include "amr-wind/turbulence/TurbModelBase.H"
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/fvm/stencils.H"
+#include "AMReX_Config.H"
+#include "AMReX_AmrCore.H"
 #include "AMReX_REAL.H"
 
 using namespace amrex::literals;
@@ -76,10 +76,12 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real amd_base_muvel(
             }
         }
     }
-    denom = amrex::max<amrex::Real>(1.0e-15_rt, denom);
+    denom = amrex::max<amrex::Real>(
+        std::numeric_limits<amrex::Real>::epsilon(), denom);
     num_shear = -C * num_shear;
 
-    return amrex::max<amrex::Real>(1.0e-15_rt, num_shear / denom);
+    return amrex::max<amrex::Real>(
+        std::numeric_limits<amrex::Real>::epsilon(), num_shear / denom);
 }
 
 } // namespace amr_wind::turbulence

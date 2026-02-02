@@ -63,7 +63,8 @@ EkmanSpiral::EkmanSpiral(const CFDSim& sim)
         amrex::Real latitude;
         pp.get("latitude", latitude);
         AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
-            std::abs(latitude - 90.0_rt) < 1.0e-15_rt,
+            std::abs(latitude - 90.0_rt) <
+                std::numeric_limits<amrex::Real>::epsilon(),
             "Ekman Spiral only works with geostrophic forcing which has to be "
             "at latitude 90 degrees");
     }
@@ -75,7 +76,9 @@ EkmanSpiral::EkmanSpiral(const CFDSim& sim)
         m_vel = gwind[0];
 
         AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
-            std::abs(gwind[1]) < 1.0e-15_rt && std::abs(gwind[2]) < 1.0e-15_rt,
+            std::abs(gwind[1]) < std::numeric_limits<amrex::Real>::epsilon() &&
+                std::abs(gwind[2]) <
+                    std::numeric_limits<amrex::Real>::epsilon(),
             "Ekman Spiral only works for forcing in x-dir for now");
     }
 

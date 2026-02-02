@@ -233,8 +233,10 @@ void VortexRing::initialize_velocity(const VortexRingType& vorticity_theta)
     amrex::MLMG mlmg(linop);
 
     mlmg.setVerbose(2);
-    const amrex::Real rel_tol = 1.0e-13_rt;
-    const amrex::Real abs_tol = 1.0e-13_rt;
+    const amrex::Real rel_tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e2_rt;
+    const amrex::Real abs_tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e2_rt;
 
     for (int level = 0; level <= m_repo.mesh().finestLevel(); ++level) {
         (*vectorpotential)(level).setVal(0.0_rt, 0, AMREX_SPACEDIM, 1);

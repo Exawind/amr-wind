@@ -255,7 +255,9 @@ void populate_normal_vector(
             multiphase::youngs_finite_difference_normal_neumann(
                 i, j, k, ibdy, jbdy, kbdy, vof[nbx], mx, my, mz);
             // Normalize normal
-            mmag = std::sqrt(mx * mx + my * my + mz * mz + 1.0e-20_rt);
+            mmag = std::sqrt(
+                mx * mx + my * my + mz * mz +
+                std::numeric_limits<amrex::Real>::epsilon());
             // Save normal
             normvec[nbx](i, j, k, 0) = mx / mmag;
             normvec[nbx](i, j, k, 1) = my / mmag;

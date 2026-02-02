@@ -36,7 +36,7 @@ private:
     //! User input parameters
     amrex::Vector<amrex::Real> m_beta{0.0_rt, 3.0_rt, 0.0_rt};
 
-    amrex::Real m_eps{1.0e-11_rt};
+    amrex::Real m_eps{std::numeric_limits<amrex::Real>::epsilon() * 1.0e2_rt};
 };
 
 } // namespace amr_wind::channel_map

@@ -323,7 +323,8 @@ bool DTUSpinnerSampler::update_sampling_locations()
     amrex::Real start_diff = std::abs(time - start_time);
 
     // Initialize the sampling time to the first time in the simulation
-    if (start_diff < 1.0e-10_rt && m_update_count == 0) {
+    if (start_diff < std::numeric_limits<amrex::Real>::epsilon() * 1.0e2_rt &&
+        m_update_count == 0) {
         m_time_sampling = time;
         m_hub_location_init = m_hub_location;
     }
@@ -387,9 +388,15 @@ bool DTUSpinnerSampler::update_sampling_locations()
 
             if (k < m_ns) {
                 amrex::Real step =
-                    (start_diff > 1.0e-10_rt) ? 1.0_rt * k : 0.0_rt;
+                    (start_diff >
+                     std::numeric_limits<amrex::Real>::epsilon() * 1.0e2_rt)
+                        ? 1.0_rt * k
+                        : 0.0_rt;
                 amrex::Real srat =
-                    (start_diff > 1.0e-10_rt) ? step / m_ns : 0.0_rt;
+                    (start_diff >
+                     std::numeric_limits<amrex::Real>::epsilon() * 1.0e2_rt)
+                        ? step / m_ns
+                        : 0.0_rt;
 
                 // Unit vector in the direction of the beam
                 auto beam_vector = generate_lidar_pattern(

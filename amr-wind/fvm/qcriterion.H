@@ -93,7 +93,10 @@ struct Qcriterion
                 if (nondim) {
                     qcritphi(i, j, k) =
                         0.5_rt *
-                        (W2 / amrex::max<amrex::Real>(1.0e-14_rt, S2) - 1.0_rt);
+                        (W2 / amrex::max<amrex::Real>(
+                                  std::numeric_limits<amrex::Real>::epsilon(),
+                                  S2) -
+                         1.0_rt);
                 } else {
                     qcritphi(i, j, k) = 0.5_rt * (W2 - S2);
                 }

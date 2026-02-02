@@ -115,7 +115,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     if ((idx.lim == Limits::LOWLIM) || (idx.lim == Limits::UPLIM)) {
         return yinp[ncomp * idx.idx + comp];
     }
-    static constexpr DType1 eps = 1.0e-8_rt;
+    static constexpr DType1 eps =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e2_rt;
     const int j = idx.idx;
     const auto denom = (xbegin[j + 1] - xbegin[j]);
     const auto facR = (denom > eps) ? ((xout - xbegin[j]) / denom) : 1.0_rt;
@@ -160,7 +161,8 @@ inline void linear_monotonic(
     const int ncomp = 1,
     const int comp = 0)
 {
-    static constexpr typename C1::value_type eps = 1.0e-8_rt;
+    static constexpr typename C1::value_type eps =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e2_rt;
     AMREX_ASSERT(xinp.size() == yinp.size());
     AMREX_ASSERT(xout.size() == yout.size());
 
@@ -227,7 +229,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     if ((idx.lim == Limits::LOWLIM) || (idx.lim == Limits::UPLIM)) {
         return yinp[idx.idx];
     }
-    static constexpr DType1 eps = 1.0e-8_rt;
+    static constexpr DType1 eps =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e2_rt;
     const int j = idx.idx;
     const auto denom = (xbegin[j + 1] - xbegin[j]);
     /* https://math.stackexchange.com/questions/2144234/interpolating-between-2-angles
@@ -297,7 +300,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     const int i = xidx.idx;
     const int j = yidx.idx;
 
-    static constexpr DType1 eps = 1.0e-8_rt;
+    static constexpr DType1 eps =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e2_rt;
     const auto xdenom = (xbegin[i + 1] - xbegin[i]);
     const auto xfacR = (xdenom > eps) ? ((xout - xbegin[i]) / xdenom) : 1.0_rt;
     const auto xfacL = static_cast<DType1>(1.0_rt) - xfacR;

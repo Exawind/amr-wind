@@ -10,26 +10,28 @@ using namespace amrex::literals;
 namespace amr_wind::constants {
 
 //! A number close to zero
-static constexpr amrex::Real SMALL_NUM = static_cast<amrex::Real>(
-    std::numeric_limits<amrex::Real>::epsilon() * 1.0e10_rt);
+static constexpr amrex::Real SMALL_NUM =
+    static_cast<amrex::Real>(std::numeric_limits<amrex::Real>::epsilon());
 
 //! A number very close to zero
 static constexpr amrex::Real EPS =
     static_cast<amrex::Real>(std::numeric_limits<amrex::Real>::epsilon());
 
 //! A tight tolerance
-static constexpr amrex::Real TIGHT_TOL = 1.0e-12_rt;
+static constexpr amrex::Real TIGHT_TOL =
+    std::numeric_limits<amrex::Real>::epsilon() * 1.0e2_rt;
 
 //! A loose tolerance
-static constexpr amrex::Real LOOSE_TOL = 1.0e-8_rt;
+static constexpr amrex::Real LOOSE_TOL =
+    std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
 
 //! A large negative number
-static constexpr amrex::Real LOW_NUM = static_cast<amrex::Real>(
-    std::numeric_limits<amrex::Real>::lowest() * 1.0e-10_rt);
+static constexpr amrex::Real LOW_NUM =
+    static_cast<amrex::Real>(std::numeric_limits<amrex::Real>::lowest());
 
 //! A large positive number
-static constexpr amrex::Real LARGE_NUM = static_cast<amrex::Real>(
-    std::numeric_limits<amrex::Real>::max() * 1.0e-10_rt);
+static constexpr amrex::Real LARGE_NUM =
+    static_cast<amrex::Real>(std::numeric_limits<amrex::Real>::max());
 
 //! Closeness comparison
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool

@@ -60,11 +60,13 @@ ChannelFlow::ChannelFlow(CFDSim& sim)
                         ppb.queryarr("magnitude", body_force);
                         m_dpdx = -body_force[0];
                         AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
-                            std::abs(body_force[1]) < 1.0e-16_rt,
+                            std::abs(body_force[1]) <
+                                std::numeric_limits<amrex::Real>::epsilon(),
                             "body force in y should be zero for this wall "
                             "function");
                         AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
-                            std::abs(body_force[2]) < 1.0e-16_rt,
+                            std::abs(body_force[2]) <
+                                std::numeric_limits<amrex::Real>::epsilon(),
                             "body force in z should be zero for this wall "
                             "function");
                     }
@@ -453,7 +455,8 @@ void ChannelFlow::post_init_actions()
         amrex::Vector<amrex::Real> body_force{0.0_rt, 0.0_rt, 0.0_rt};
         pp.getarr("magnitude", body_force);
         AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
-            std::abs(body_force[2]) < 1.0e-16_rt,
+            std::abs(body_force[2]) <
+                std::numeric_limits<amrex::Real>::epsilon(),
             "body force in z should be zero if using a wall model");
     }
 }

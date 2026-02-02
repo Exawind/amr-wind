@@ -444,7 +444,8 @@ inline amrex::Real global_max_magnitude(FType& field)
 template <typename FType>
 inline void normalize(FType& field)
 {
-    const amrex::Real eps = 1.0e-12_rt;
+    const amrex::Real eps =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e2_rt;
     const auto& repo = field.repo();
     const auto ncomp = field.num_comp();
 
