@@ -5,6 +5,9 @@
 #include "amr-wind/equation_systems/vof/vof.H"
 #include "amr-wind/equation_systems/SchemeTraits.H"
 #include "amr-wind/utilities/tagging/CartBoxRefinement.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind_tests {
 namespace {
@@ -20,30 +23,30 @@ void initialize_volume_fractions(
             if (dir < 0) {
                 // Bottom left half is liquid, top right half is gas
                 if (i + j + k == 3) {
-                    vof_arr(i, j, k) = 0.5;
+                    vof_arr(i, j, k) = 0.5_rt;
                 } else {
                     if (i + j + k < 3) {
-                        vof_arr(i, j, k) = 1.0;
+                        vof_arr(i, j, k) = 1.0_rt;
                     } else {
-                        vof_arr(i, j, k) = 0.0;
+                        vof_arr(i, j, k) = 0.0_rt;
                     }
                 }
             } else {
                 const int icheck = (dir == 0) ? i : ((dir == 1) ? j : k);
                 if (2 * icheck + 1 == nx) {
-                    vof_arr(i, j, k) = 0.5;
+                    vof_arr(i, j, k) = 0.5_rt;
                 } else {
                     if (2 * icheck + 1 < nx) {
-                        vof_arr(i, j, k) = 1.0;
+                        vof_arr(i, j, k) = 1.0_rt;
                     } else {
-                        vof_arr(i, j, k) = 0.0;
+                        vof_arr(i, j, k) = 0.0_rt;
                     }
                 }
             }
         });
     });
     // Populate boundary cells
-    vof.fillpatch(0.0);
+    vof.fillpatch(0.0_rt);
 }
 
 void initialize_adv_velocities(
@@ -78,12 +81,12 @@ void get_accuracy(
             const int icheck = (dir == 0) ? i : ((dir == 1) ? j : k);
             // Check if current solution matches initial solution
             if (2 * icheck + 1 == nx) {
-                err_arr(i, j, k) = std::abs(vof_arr(i, j, k) - 0.5);
+                err_arr(i, j, k) = std::abs(vof_arr(i, j, k) - 0.5_rt);
             } else {
                 if (2 * icheck + 1 < nx) {
-                    err_arr(i, j, k) = std::abs(vof_arr(i, j, k) - 1.0);
+                    err_arr(i, j, k) = std::abs(vof_arr(i, j, k) - 1.0_rt);
                 } else {
-                    err_arr(i, j, k) = std::abs(vof_arr(i, j, k) - 0.0);
+                    err_arr(i, j, k) = std::abs(vof_arr(i, j, k) - 0.0_rt);
                 }
             }
         });
@@ -107,8 +110,8 @@ protected:
         }
         {
             amrex::ParmParse pp("geometry");
-            amrex::Vector<amrex::Real> problo{{0.0, 0.0, 0.0}};
-            amrex::Vector<amrex::Real> probhi{{1.0, 1.0, 1.0}};
+            amrex::Vector<amrex::Real> problo{{0.0_rt, 0.0_rt, 0.0_rt}};
+            amrex::Vector<amrex::Real> probhi{{1.0_rt, 1.0_rt, 1.0_rt}};
 
             pp.addarr("prob_lo", problo);
             pp.addarr("prob_hi", probhi);
@@ -136,10 +139,10 @@ protected:
 
     void testing_coorddir(const int dir, amrex::Real CFL)
     {
-        constexpr double tol = 1.0e-15;
+        constexpr amrex::Real tol = 1.0e-15_rt;
 
         // Flow-through time
-        const amrex::Real ft_time = 1.0 / m_vel;
+        const amrex::Real ft_time = 1.0_rt / m_vel;
 
         // Set timestep according to input
         m_dt = ft_time / ((amrex::Real)m_nx) * CFL;
@@ -243,34 +246,34 @@ protected:
             auto& error_fld = *error_ptr;
             // Initialize at 0
             for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
-                error_fld(lev).setVal(0.0);
+                error_fld(lev).setVal(0.0_rt);
             }
 
             get_accuracy(error_fld, dir, m_nx, vof);
 
             // Check error in each mfab
-            constexpr amrex::Real vofsol_check = 0.0;
+            constexpr amrex::Real vofsol_check = 0.0_rt;
             for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
                 // Sum error and check
                 EXPECT_NEAR(error_fld(lev).max(0), vofsol_check, tol);
             }
         }
     }
-    const amrex::Real m_rho1 = 1000.0;
-    const amrex::Real m_rho2 = 1.0;
-    const amrex::Real m_vel = 5.0;
+    const amrex::Real m_rho1 = 1000.0_rt;
+    const amrex::Real m_rho2 = 1.0_rt;
+    const amrex::Real m_vel = 5.0_rt;
     const int m_nx = 3;
-    amrex::Real m_dt = 0.0; // will be set according to CFL
+    amrex::Real m_dt = 0.0_rt; // will be set according to CFL
 };
 
-TEST_F(VOFConsTest, X) { testing_coorddir(0, 0.45); }
-TEST_F(VOFConsTest, Y) { testing_coorddir(1, 0.45); }
-TEST_F(VOFConsTest, Z) { testing_coorddir(2, 0.45); }
+TEST_F(VOFConsTest, X) { testing_coorddir(0, 0.45_rt); }
+TEST_F(VOFConsTest, Y) { testing_coorddir(1, 0.45_rt); }
+TEST_F(VOFConsTest, Z) { testing_coorddir(2, 0.45_rt); }
 // Need multi-directional velocity and vof field to test communication of vof
 // during directionally-split advection
-TEST_F(VOFConsTest, CFL045) { testing_coorddir(-1, 0.45); }
-TEST_F(VOFConsTest, CFL01) { testing_coorddir(-1, 0.1); }
+TEST_F(VOFConsTest, CFL045) { testing_coorddir(-1, 0.45_rt); }
+TEST_F(VOFConsTest, CFL01) { testing_coorddir(-1, 0.1_rt); }
 // Test transport across multiple mesh levels - just check conservation
-TEST_F(VOFConsTest, 2level) { testing_coorddir(-2, 0.5 * 0.45); }
+TEST_F(VOFConsTest, 2level) { testing_coorddir(-2, 0.5_rt * 0.45_rt); }
 
 } // namespace amr_wind_tests

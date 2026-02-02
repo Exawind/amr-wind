@@ -3,6 +3,9 @@
 
 #include "amr-wind/utilities/DerivedQuantity.H"
 #include "amr-wind/utilities/io_utils.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind {
 namespace {
@@ -90,7 +93,7 @@ void DerivedQtyMgr::operator()(ScratchField& fld, const int scomp) const
         (*qty)(fld, icomp);
         icomp += qty->num_comp();
     }
-    fld.fillpatch(0.0);
+    fld.fillpatch(0.0_rt);
 }
 
 int DerivedQtyMgr::num_comp() const noexcept

@@ -7,6 +7,9 @@
 #include "amr-wind/physics/BoussinesqBubble.H"
 #include "amr-wind/utilities/tagging/RefinementCriteria.H"
 #include "amr-wind/utilities/tagging/CartBoxRefinement.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 void incflo::CheckAndSetUpDryRun()
 {
@@ -72,14 +75,15 @@ void incflo::ReadParameters()
                 "Crank-Nicolson or 2 for implicit");
         }
 
-        if (!m_use_godunov && m_time.max_cfl() > 0.5) {
+        if (!m_use_godunov && m_time.max_cfl() > 0.5_rt) {
             amrex::Abort(
-                "We currently require cfl <= 0.5 when using the MOL advection "
+                "We currently require cfl <= 0.5_rt when using the MOL "
+                "advection "
                 "scheme");
         }
-        if (m_use_godunov && m_time.max_cfl() > 1.0) {
+        if (m_use_godunov && m_time.max_cfl() > 1.0_rt) {
             amrex::Abort(
-                "We currently require cfl <= 1.0 when using the Godunov "
+                "We currently require cfl <= 1.0_rt when using the Godunov "
                 "advection scheme");
         }
 
@@ -204,15 +208,15 @@ void incflo::InitialProjection()
         PrintMaxValues("before initial projection");
     }
 
-    amrex::Real dummy_dt = 1.0;
+    amrex::Real dummy_dt = 1.0_rt;
     bool incremental = false;
     ApplyProjection(
         density().vec_const_ptrs(), m_time.current_time(), dummy_dt,
         incremental);
 
     // We set p and gp back to zero (p0 may still be still non-zero)
-    pressure().setVal(0.0);
-    grad_p().setVal(0.0);
+    pressure().setVal(0.0_rt);
+    grad_p().setVal(0.0_rt);
 
     if (m_verbose != 0) {
         PrintMaxValues("after initial projection");

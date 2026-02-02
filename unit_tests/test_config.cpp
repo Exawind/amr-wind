@@ -10,6 +10,9 @@
 #include "AMReX_ParallelDescriptor.H"
 #include "AMReX_Print.H"
 #include "AMReX_Gpu.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amrex {
 const char* buildInfoGetGitHash(int i);
@@ -70,7 +73,7 @@ TEST(Configuration, GPU)
        << ": " << Dev::deviceName() << "\n"
        << "    Warp size          : " << Dev::warp_size << "\n"
        << "    Global memory      : "
-       << (static_cast<double>(Dev::totalGlobalMem()) / (1 << 30)) << "GB\n"
+       << (static_cast<amrex::Real>(Dev::totalGlobalMem()) / (1 << 30)) << "GB\n"
        << "    Shared mem/ block  : "
        << (Dev::sharedMemPerBlock() / (1 << 10)) << "KB\n"
        << "    Max. threads/block : " << Dev::maxThreadsPerBlock()

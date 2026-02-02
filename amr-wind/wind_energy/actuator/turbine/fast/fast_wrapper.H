@@ -6,6 +6,9 @@ namespace exw_fast {
 #ifdef AMR_WIND_USE_OPENFAST
 extern "C" {
 #include "FAST_Library.h"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 }
 
 extern void exw_fast_output_redirect(char*);
@@ -37,7 +40,7 @@ inline void FAST_HubPosition(
     int* /*unused*/,
     float* /*unused*/,
     float* /*unused*/,
-    double* /*unused*/,
+    amrex::Real* /*unused*/,
     int* /*unused*/,
     char* /*unused*/)
 {}
@@ -57,7 +60,7 @@ inline void FAST_CFD_Step(int* /*unused*/, int* /*unused*/, char* /*unused*/) {}
 
 inline void FAST_ExtInfw_Init(
     int* /*unused*/,
-    double* /*unused*/,
+    amrex::Real* /*unused*/,
     const char* /*unused*/,
     int* /*unused*/,
     const char* /*unused*/,
@@ -65,7 +68,7 @@ inline void FAST_ExtInfw_Init(
     int* /*unused*/,
     float* /*unused*/,
     int* /*unused*/,
-    double* /*unused*/,
+    amrex::Real* /*unused*/,
     int* /*unused*/,
     int* /*unused*/,
     int* /*unused*/,
@@ -81,7 +84,7 @@ inline void FAST_ExtInfw_Restart(
     int* /*unused*/,
     char* /*unused*/,
     int* /*unused*/,
-    double* /*unused*/,
+    amrex::Real* /*unused*/,
     int* /*unused*/,
     int* /*unused*/,
     int* /*unused*/,
@@ -112,7 +115,7 @@ inline void FAST_OpFM_Step(int* /*unused*/, int* /*unused*/, char* /*unused*/)
 
 inline void FAST_OpFM_Init(
     int* /*unused*/,
-    double* /*unused*/,
+    amrex::Real* /*unused*/,
     const char* /*unused*/,
     int* /*unused*/,
     int* /*unused*/,
@@ -124,7 +127,7 @@ inline void FAST_OpFM_Init(
     int* /*unused*/,
     float* /*unused*/,
     int* /*unused*/,
-    double* /*unused*/,
+    amrex::Real* /*unused*/,
     int* /*unused*/,
     int* /*unused*/,
     int* /*unused*/,
@@ -140,7 +143,7 @@ inline void FAST_OpFM_Restart(
     int* /*unused*/,
     char* /*unused*/,
     int* /*unused*/,
-    double* /*unused*/,
+    amrex::Real* /*unused*/,
     int* /*unused*/,
     int* /*unused*/,
     int* /*unused*/,

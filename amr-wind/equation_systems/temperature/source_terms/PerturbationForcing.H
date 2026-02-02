@@ -5,6 +5,9 @@
 #include "amr-wind/core/SimTime.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/transport_models/TransportModel.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::pde::temperature {
 
@@ -33,7 +36,7 @@ private:
     amrex::Vector<amrex::Real> m_end;
     int m_time_index{100};
     int m_start_level{0};
-    amrex::Real m_pert_amplitude{1.0};
+    amrex::Real m_pert_amplitude{1.0_rt};
 };
 
 } // namespace amr_wind::pde::temperature

@@ -20,6 +20,9 @@
 #endif
 #ifdef AMR_WIND_USE_ASCENT
 #include "ascent_config.h"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 #endif
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
@@ -263,7 +266,7 @@ void print_nonlinear_residual(
     }
     amrex::Gpu::streamSynchronize();
 
-    amrex::Array<amrex::Real, AMREX_SPACEDIM> rms_vel = {0.0};
+    amrex::Array<amrex::Real, AMREX_SPACEDIM> rms_vel = {0.0_rt};
 
     for (int lev = 0; lev < nlevels; ++lev) {
         for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {

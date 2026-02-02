@@ -3,6 +3,9 @@
 
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/equation_systems/icns/MomentumSource.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::pde::icns {
 
@@ -26,7 +29,7 @@ public:
         const amrex::Array4<amrex::Real>& vel_forces) const override;
 
 private:
-    amrex::Vector<amrex::Real> m_gravity{0.0, 0.0, -9.81};
+    amrex::Vector<amrex::Real> m_gravity{0.0_rt, 0.0_rt, -9.81_rt};
 
     Field* m_rho{nullptr};
     Field* m_rho0{nullptr};
@@ -36,7 +39,7 @@ private:
     // Presence of rho0 for perturbational form
     bool m_use_reference_density{false};
     // Constant reference density
-    amrex::Real m_rho0_const{1.0};
+    amrex::Real m_rho0_const{1.0_rt};
 };
 
 } // namespace amr_wind::pde::icns

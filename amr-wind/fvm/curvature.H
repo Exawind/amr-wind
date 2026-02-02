@@ -2,6 +2,9 @@
 #define CURVATURE_H
 
 #include "amr-wind/fvm/fvm_utils.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::fvm {
 
@@ -117,12 +120,12 @@ struct Curvature
                     (cp1 * phiz_ip1 + c * phiz + cm1 * phiz_im1) * idx[0];
 
                 curphi(i, j, k, n) =
-                    -(phix * phix * phiyy - 2. * phix * phiy * phixy +
+                    -(phix * phix * phiyy - 2.0_rt * phix * phiy * phixy +
                       phiy * phiy * phixx + phix * phix * phizz -
-                      2. * phix * phiz * phixz + phiz * phiz * phixx +
-                      phiy * phiy * phizz - 2. * phiy * phiz * phiyz +
+                      2.0_rt * phix * phiz * phixz + phiz * phiz * phixx +
+                      phiy * phiy * phizz - 2.0_rt * phiy * phiz * phiyz +
                       phiz * phiz * phiyy) /
-                    std::pow(phix * phix + phiy * phiy + phiz * phiz, 1.5);
+                    std::pow(phix * phix + phiy * phiy + phiz * phiz, 1.5_rt);
             });
     }
 

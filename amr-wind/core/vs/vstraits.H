@@ -2,7 +2,6 @@
 #define VSTRAITS_H
 
 #include <limits>
-#include "AMReX_REAL.H"
 
 namespace amr_wind::vs {
 
@@ -38,7 +37,10 @@ struct DTraits<double>
     {
         return std::numeric_limits<double>::min();
     }
-    static constexpr double eps() noexcept { return 1.0e-15; }
+    static constexpr double eps() noexcept
+    {
+        return std::numeric_limits<double>::epsilon();
+    }
 };
 
 template <>
@@ -54,7 +56,10 @@ struct DTraits<float>
     {
         return std::numeric_limits<float>::min();
     }
-    static constexpr float eps() noexcept { return 1.0e-7F; }
+    static constexpr float eps() noexcept
+    {
+        return std::numeric_limits<float>::epsilon();
+    }
 };
 
 } // namespace amr_wind::vs

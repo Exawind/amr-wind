@@ -3,6 +3,9 @@
 #include "aw_test_utils/test_utils.H"
 #include "amr-wind/physics/multiphase/MultiPhase.H"
 #include "amr-wind/utilities/tagging/CartBoxRefinement.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind_tests {
 
@@ -15,8 +18,8 @@ protected:
 
         {
             amrex::ParmParse pp("geometry");
-            amrex::Vector<amrex::Real> problo{{0.0, 0.0, 0.0}};
-            amrex::Vector<amrex::Real> probhi{{1.0, 1.0, 1.0}};
+            amrex::Vector<amrex::Real> problo{{0.0_rt, 0.0_rt, 0.0_rt}};
+            amrex::Vector<amrex::Real> probhi{{1.0_rt, 1.0_rt, 1.0_rt}};
 
             pp.addarr("prob_lo", problo);
             pp.addarr("prob_hi", probhi);
@@ -70,7 +73,7 @@ TEST_F(ICNSInitTest, generic_2level)
     auto& repo = sim().repo();
     auto& generic_field = repo.declare_field("generic", 1, 1, 1);
     generic_field.set_default_fillpatch_bc(sim().time());
-    generic_field.fillpatch(0.0);
+    generic_field.fillpatch(0.0_rt);
 }
 
 } // namespace amr_wind_tests

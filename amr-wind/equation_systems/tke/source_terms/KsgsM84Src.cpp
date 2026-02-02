@@ -3,6 +3,9 @@
 #include "amr-wind/equation_systems/tke/source_terms/KsgsM84Src.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/turbulence/TurbulenceModel.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::pde::tke {
 
@@ -16,7 +19,7 @@ KsgsM84Src::KsgsM84Src(const CFDSim& sim)
     AMREX_ALWAYS_ASSERT(sim.turbulence_model().model_name() == "OneEqKsgsM84");
     auto coeffs = sim.turbulence_model().model_coeffs();
     m_Ceps = coeffs["Ceps"];
-    m_CepsGround = (3.9 / 0.93) * m_Ceps;
+    m_CepsGround = (3.9_rt / 0.93_rt) * m_Ceps;
 }
 
 KsgsM84Src::~KsgsM84Src() = default;
