@@ -3,6 +3,9 @@
 
 #include "amr-wind/core/vs/vector_space.H"
 #include <AMReX_FArrayBox.H>
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::overset_ops {
 
@@ -11,7 +14,7 @@ amrex::Real AMREX_GPU_DEVICE AMREX_FORCE_INLINE
 asdf(const amrex::Real a_vof, const amrex::Real i_th, const amrex::Real tiny)
 {
     // function of local vof value and interface thickness
-    return (i_th * log((a_vof + tiny) / (1. - a_vof + tiny)));
+    return (i_th * std::log((a_vof + tiny) / (1.0_rt - a_vof + tiny)));
 }
 
 amrex::Real AMREX_GPU_DEVICE AMREX_FORCE_INLINE alpha_flux(
@@ -40,22 +43,27 @@ amrex::Real AMREX_GPU_DEVICE AMREX_FORCE_INLINE alpha_flux(
     const amrex::Real dphi_ = (vof(iv) - tg_vof(iv)) * norm_;
     const amrex::Real dphi_nb = (tg_vof(ivm) - vof(ivm)) * norm_nb;
     // Average value used across the interface
-    amrex::Real dphi_eval = 0.5 * (dphi_ + dphi_nb);
+    amrex::Real dphi_eval = 0.5_rt * (dphi_ + dphi_nb);
     // Upwinding when on the gas side, downwinding on the liquid
-    // Across the interface defined as crossing 0.5 or within margin of 0.5
-    if ((std::abs(vof(iv) - 0.5) > margin ||
-         std::abs(vof(ivm) - 0.5) > margin)) {
-        if (gphi > 0.0) {
-            dphi_eval = (vof(ivm) < 0.5 && vof(iv) <= 0.5 + margin) ? dphi_nb
-                                                                    : dphi_eval;
-            dphi_eval =
-                (vof(ivm) >= 0.5 - margin && vof(iv) > 0.5) ? dphi_ : dphi_eval;
+    // Across the interface defined as crossing 0.5_rt or within margin of
+    // 0.5_rt
+    if ((std::abs(vof(iv) - 0.5_rt) > margin ||
+         std::abs(vof(ivm) - 0.5_rt) > margin)) {
+        if (gphi > 0.0_rt) {
+            dphi_eval = (vof(ivm) < 0.5_rt && vof(iv) <= 0.5_rt + margin)
+                            ? dphi_nb
+                            : dphi_eval;
+            dphi_eval = (vof(ivm) >= 0.5_rt - margin && vof(iv) > 0.5_rt)
+                            ? dphi_
+                            : dphi_eval;
         }
-        if (gphi < 0.0) {
-            dphi_eval =
-                (vof(iv) < 0.5 && vof(ivm) <= 0.5 + margin) ? dphi_ : dphi_eval;
-            dphi_eval = (vof(iv) >= 0.5 - margin && vof(ivm) > 0.5) ? dphi_nb
-                                                                    : dphi_eval;
+        if (gphi < 0.0_rt) {
+            dphi_eval = (vof(iv) < 0.5_rt && vof(ivm) <= 0.5_rt + margin)
+                            ? dphi_
+                            : dphi_eval;
+            dphi_eval = (vof(iv) >= 0.5_rt - margin && vof(ivm) > 0.5_rt)
+                            ? dphi_nb
+                            : dphi_eval;
         }
     }
     return dphi_eval;
@@ -88,16 +96,16 @@ void AMREX_GPU_DEVICE AMREX_FORCE_INLINE velocity_face(
     const amrex::Real v_nb = velocity(ivm, 1);
     const amrex::Real w_nb = velocity(ivm, 2);
     // Average value when gphi = 0
-    uface = 0.5 * (u_ + u_nb);
-    vface = 0.5 * (v_ + v_nb);
-    wface = 0.5 * (w_ + w_nb);
+    uface = 0.5_rt * (u_ + u_nb);
+    vface = 0.5_rt * (v_ + v_nb);
+    wface = 0.5_rt * (w_ + w_nb);
     // Use simple upwinding
-    if (gphi > 0.0) {
+    if (gphi > 0.0_rt) {
         uface = u_nb;
         vface = v_nb;
         wface = w_nb;
     }
-    if (gphi < 0.0) {
+    if (gphi < 0.0_rt) {
         uface = u_;
         vface = v_;
         wface = w_;
@@ -132,16 +140,16 @@ void AMREX_GPU_DEVICE AMREX_FORCE_INLINE gp_rho_face(
     const amrex::Real v_nb = gp(ivm, 1) / rho(ivm);
     const amrex::Real w_nb = gp(ivm, 2) / rho(ivm);
     // Average value when gphi = 0
-    uface = 0.5 * (u_ + u_nb);
-    vface = 0.5 * (v_ + v_nb);
-    wface = 0.5 * (w_ + w_nb);
+    uface = 0.5_rt * (u_ + u_nb);
+    vface = 0.5_rt * (v_ + v_nb);
+    wface = 0.5_rt * (w_ + w_nb);
     // Use simple upwinding
-    if (gphi > 0.0) {
+    if (gphi > 0.0_rt) {
         uface = u_nb;
         vface = v_nb;
         wface = w_nb;
     }
-    if (gphi < 0.0) {
+    if (gphi < 0.0_rt) {
         uface = u_;
         vface = v_;
         wface = w_;

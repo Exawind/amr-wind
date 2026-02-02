@@ -2,6 +2,9 @@
 #include "amr-wind/CFDSim.H"
 #include "AMReX_ParmParse.H"
 #include "amr-wind/utilities/trig_ops.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind {
 
@@ -35,17 +38,17 @@ void TaylorGreenVortex::initialize_fields(
 
     amrex::ParallelFor(
         velocity, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-            const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-            const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
-            const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+            const amrex::Real x = problo[0] + (i + 0.5_rt) * dx[0];
+            const amrex::Real y = problo[1] + (j + 0.5_rt) * dx[1];
+            const amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
 
             vel_arrs[nbx](i, j, k, 0) = std::sin(utils::two_pi() * x / Lx) *
                                         std::cos(utils::two_pi() * y / Ly) *
-                                        cos(utils::two_pi() * z / Lz);
+                                        std::cos(utils::two_pi() * z / Lz);
             vel_arrs[nbx](i, j, k, 1) = -std::cos(utils::two_pi() * x / Lx) *
                                         std::sin(utils::two_pi() * y / Ly) *
-                                        cos(utils::two_pi() * z / Lz);
-            vel_arrs[nbx](i, j, k, 2) = 0.0;
+                                        std::cos(utils::two_pi() * z / Lz);
+            vel_arrs[nbx](i, j, k, 2) = 0.0_rt;
         });
     amrex::Gpu::streamSynchronize();
 }

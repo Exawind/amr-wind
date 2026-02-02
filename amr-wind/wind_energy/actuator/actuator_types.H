@@ -9,6 +9,9 @@
 
 #include <set>
 #include <utility>
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind {
 
@@ -94,7 +97,7 @@ struct ActGrid
     RealList density;
 
     //! Switch for turning off distance components in Gaussian calculation
-    vs::Vector dcoord_flags{1.0, 1.0, 1.0};
+    vs::Vector dcoord_flags{1.0_rt, 1.0_rt, 1.0_rt};
 
     /** Helper method to resize the data arrays defined on the grid
      *

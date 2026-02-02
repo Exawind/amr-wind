@@ -1,15 +1,16 @@
-#include <AMReX.H>
 #include <memory>
-
+#include "AMReX.H"
 #include "amr-wind/equation_systems/icns/icns_advection.H"
 #include "amr-wind/core/MLMGOptions.H"
 #include "amr-wind/utilities/console_io.H"
 #include "amr-wind/wind_energy/ABL.H"
 #include "amr-wind/ocean_waves/OceanWaves.H"
 #include "amr-wind/overset/overset_ops_routines.H"
-
 #include "AMReX_MultiFabUtil.H"
 #include "hydro_MacProjector.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::pde {
 
@@ -216,7 +217,7 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
     amrex::Vector<amrex::Array<amrex::MultiFab*, ICNS::ndim>> mac_vec(
         m_repo.num_active_levels());
 
-    amrex::Real factor = m_has_overset ? 0.5 * dt : 1.0;
+    amrex::Real factor = m_has_overset ? 0.5_rt * dt : 1.0_rt;
 
     std::unique_ptr<ScratchField> ref_rho_xf, ref_rho_yf, ref_rho_zf;
     if (m_is_anelastic) {
@@ -412,7 +413,7 @@ void MacProjOp::mac_proj_to_uniform_space(
                     detJ_arrs[nbx](i, j, k) / fac_arrs[nbx](i, j, k, 0);
                 rho_arrs[nbx](i, j, k) =
                     ovst_fac * detJ_arrs[nbx](i, j, k) /
-                    std::pow(fac_arrs[nbx](i, j, k, 0), 2) /
+                    std::pow(fac_arrs[nbx](i, j, k, 0), 2.0_rt) /
                     rho_arrs[nbx](i, j, k);
             });
     }
@@ -431,7 +432,7 @@ void MacProjOp::mac_proj_to_uniform_space(
                     detJ_arrs[nbx](i, j, k) / fac_arrs[nbx](i, j, k, 1);
                 rho_arrs[nbx](i, j, k) =
                     ovst_fac * detJ_arrs[nbx](i, j, k) /
-                    std::pow(fac_arrs[nbx](i, j, k, 1), 2) /
+                    std::pow(fac_arrs[nbx](i, j, k, 1), 2.0_rt) /
                     rho_arrs[nbx](i, j, k);
             });
     }
@@ -450,7 +451,7 @@ void MacProjOp::mac_proj_to_uniform_space(
                     detJ_arrs[nbx](i, j, k) / fac_arrs[nbx](i, j, k, 2);
                 rho_arrs[nbx](i, j, k) =
                     ovst_fac * detJ_arrs[nbx](i, j, k) /
-                    std::pow(fac_arrs[nbx](i, j, k, 2), 2) /
+                    std::pow(fac_arrs[nbx](i, j, k, 2), 2.0_rt) /
                     rho_arrs[nbx](i, j, k);
             });
     }

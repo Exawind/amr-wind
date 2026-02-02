@@ -4,6 +4,9 @@
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/core/Field.H"
 #include "amr-wind/CFDSim.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::hybrid_rans_les_abl {
 
@@ -41,7 +44,7 @@ private:
     Field* m_sdr{nullptr};
 
     //! Turbulence model constant
-    amrex::Real m_Ce{0.1};
+    amrex::Real m_Ce{0.1_rt};
 };
 } // namespace amr_wind::hybrid_rans_les_abl
 

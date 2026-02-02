@@ -3,6 +3,9 @@
 
 #include <string>
 #include "amr-wind/turbulence/TurbModelBase.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::turbulence {
 
@@ -29,8 +32,8 @@ protected:
     Field* m_tke{nullptr};
 
     //! Turbulence constant
-    amrex::Real m_Ce{0.1};
-    amrex::Real m_Ceps{0.93};
+    amrex::Real m_Ce{0.1_rt};
+    amrex::Real m_Ceps{0.93_rt};
 };
 
 /** 1-equation subgrid scale TKE turbulence model
@@ -78,7 +81,7 @@ private:
     Field& m_temperature;
 
     //! Gravity vector (m/s^2)
-    amrex::Vector<amrex::Real> m_gravity{0.0, 0.0, -9.81};
+    amrex::Vector<amrex::Real> m_gravity{0.0_rt, 0.0_rt, -9.81_rt};
 
     //! Hybrid RANS-LES with Nalu-wind
     bool m_hybrid_rl{false};

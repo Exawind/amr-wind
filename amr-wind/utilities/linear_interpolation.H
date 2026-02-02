@@ -2,7 +2,10 @@
 #define LINEAR_INTERPOLATION_H
 
 #include "AMReX_Gpu.H"
-#include <AMReX_Extension.H>
+#include "AMReX_REAL.H"
+#include "AMReX_Extension.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::interp {
 
@@ -51,7 +54,7 @@ bisection_search(const It begin, const It end, const T& x)
         int mid = (il + ir) >> 1;
         const T xmid = *(begin + mid);
 
-        if ((x - xmid) * (x - xl) <= 0.0) {
+        if ((x - xmid) * (x - xl) <= 0.0_rt) {
             ir = mid;
         } else {
             il = mid;
@@ -112,11 +115,11 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     if ((idx.lim == Limits::LOWLIM) || (idx.lim == Limits::UPLIM)) {
         return yinp[ncomp * idx.idx + comp];
     }
-    static constexpr DType1 eps = 1.0e-8;
+    static constexpr DType1 eps = 1.0e-8_rt;
     const int j = idx.idx;
     const auto denom = (xbegin[j + 1] - xbegin[j]);
-    const auto facR = (denom > eps) ? ((xout - xbegin[j]) / denom) : 1.0;
-    const auto facL = static_cast<DType1>(1.0) - facR;
+    const auto facR = (denom > eps) ? ((xout - xbegin[j]) / denom) : 1.0_rt;
+    const auto facL = static_cast<DType1>(1.0_rt) - facR;
     return facL * yinp[ncomp * j + comp] + facR * yinp[ncomp * (j + 1) + comp];
 }
 
@@ -157,7 +160,7 @@ inline void linear_monotonic(
     const int ncomp = 1,
     const int comp = 0)
 {
-    static constexpr typename C1::value_type eps = 1.0e-8;
+    static constexpr typename C1::value_type eps = 1.0e-8_rt;
     AMREX_ASSERT(xinp.size() == yinp.size());
     AMREX_ASSERT(xout.size() == yout.size());
 
@@ -173,8 +176,9 @@ inline void linear_monotonic(
         } else if (idx.lim == Limits::VALID) {
             int j = idx.idx;
             const auto denom = (xinp[j + 1] - xinp[j]);
-            const auto facR = (denom > eps) ? ((x - xinp[j]) / denom) : 1.0;
-            const auto facL = static_cast<typename C1::value_type>(1.0) - facR;
+            const auto facR = (denom > eps) ? ((x - xinp[j]) / denom) : 1.0_rt;
+            const auto facL =
+                static_cast<typename C1::value_type>(1.0_rt) - facR;
             yout[i] = facL * yinp[ncomp * j + comp] +
                       facR * yinp[ncomp * (j + 1) + comp];
             ;
@@ -223,15 +227,15 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     if ((idx.lim == Limits::LOWLIM) || (idx.lim == Limits::UPLIM)) {
         return yinp[idx.idx];
     }
-    static constexpr DType1 eps = 1.0e-8;
+    static constexpr DType1 eps = 1.0e-8_rt;
     const int j = idx.idx;
     const auto denom = (xbegin[j + 1] - xbegin[j]);
     /* https://math.stackexchange.com/questions/2144234/interpolating-between-2-angles
      */
-    const auto R = (denom > eps) ? ((xout - xbegin[j]) / denom) : 0.0;
+    const auto R = (denom > eps) ? ((xout - xbegin[j]) / denom) : 0.0_rt;
     const auto ub = upper_bound;
-    const auto hb = 0.5 * upper_bound;
-    const auto ohb = 1.5 * upper_bound;
+    const auto hb = 0.5_rt * upper_bound;
+    const auto ohb = 1.5_rt * upper_bound;
     return yinp[j] +
            (std::fmod((std::fmod(yinp[j + 1] - yinp[j], ub) + ohb), ub) - hb) *
                R;
@@ -293,13 +297,13 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     const int i = xidx.idx;
     const int j = yidx.idx;
 
-    static constexpr DType1 eps = 1.0e-8;
+    static constexpr DType1 eps = 1.0e-8_rt;
     const auto xdenom = (xbegin[i + 1] - xbegin[i]);
-    const auto xfacR = (xdenom > eps) ? ((xout - xbegin[i]) / xdenom) : 1.0;
-    const auto xfacL = static_cast<DType1>(1.0) - xfacR;
+    const auto xfacR = (xdenom > eps) ? ((xout - xbegin[i]) / xdenom) : 1.0_rt;
+    const auto xfacL = static_cast<DType1>(1.0_rt) - xfacR;
     const auto ydenom = (ybegin[j + 1] - ybegin[j]);
-    const auto yfacR = (ydenom > eps) ? ((yout - ybegin[j]) / ydenom) : 1.0;
-    const auto yfacL = static_cast<DType1>(1.0) - yfacR;
+    const auto yfacR = (ydenom > eps) ? ((yout - ybegin[j]) / ydenom) : 1.0_rt;
+    const auto yfacL = static_cast<DType1>(1.0_rt) - yfacR;
 
     const auto z00 = zinp[i * ny + j];
     const auto z10 = zinp[(i + 1) * ny + j];

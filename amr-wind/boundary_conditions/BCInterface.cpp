@@ -3,6 +3,9 @@
 #include "amr-wind/boundary_conditions/FixedGradientBC.H"
 #include "amr-wind/boundary_conditions/MassInflowOutflowBC.H"
 #include "AMReX_ParmParse.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind {
 
@@ -279,7 +282,7 @@ void BCVelocity::read_values()
         pp.queryarr(fname, bcval[ori], 0, ndim);
         if (bct == BC::no_slip_wall) {
             // Set normal component to zero
-            bcval[ori][ori.coordDir()] = 0.0;
+            bcval[ori][ori.coordDir()] = 0.0_rt;
         }
     }
 }

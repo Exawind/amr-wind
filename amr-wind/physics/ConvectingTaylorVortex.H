@@ -4,6 +4,9 @@
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/core/Field.H"
 #include "amr-wind/CFDSim.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::ctv {
 
@@ -126,13 +129,13 @@ private:
     void output_error();
 
     //! initial density value
-    amrex::Real m_rho{1.0};
+    amrex::Real m_rho{1.0_rt};
 
     //! mean x-velocity value
-    amrex::Real m_u0{1.0};
+    amrex::Real m_u0{1.0_rt};
 
     //! mean y-velocity value
-    amrex::Real m_v0{1.0};
+    amrex::Real m_v0{1.0_rt};
 
     //! damping
     amrex::Real m_omega;

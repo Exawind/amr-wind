@@ -6,6 +6,9 @@
 #include "amr-wind/core/FieldBCOps.H"
 #include "amr-wind/core/SimTime.H"
 #include "amr-wind/boundary_conditions/BCInterface.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind {
 
@@ -22,7 +25,7 @@ FieldInfo::FieldInfo(
     , m_floc(floc)
     , m_bc_values(
           static_cast<long>(AMREX_SPACEDIM) * 2,
-          amrex::Vector<amrex::Real>(ncomp, 0.0))
+          amrex::Vector<amrex::Real>(ncomp, 0.0_rt))
     , m_bc_values_dview(static_cast<long>(ncomp) * AMREX_SPACEDIM * 2)
     , m_bcrec(ncomp)
     , m_bcrec_d(ncomp)

@@ -3,6 +3,9 @@
 
 #include "amr-wind/core/Field.H"
 #include "amr-wind/core/FieldRepo.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind_tests {
 
@@ -13,25 +16,25 @@ inline void init_field(amr_wind::Field& fld)
     const int nlevels = fld.repo().num_active_levels();
     const int ncomp = fld.num_comp();
 
-    amrex::Real offsetx = 0.0;
-    amrex::Real offsety = 0.0;
-    amrex::Real offsetz = 0.0;
+    amrex::Real offsetx = 0.0_rt;
+    amrex::Real offsety = 0.0_rt;
+    amrex::Real offsetz = 0.0_rt;
     if (fld.field_location() == amr_wind::FieldLoc::CELL) {
-        offsetx = 0.5;
-        offsety = 0.5;
-        offsetz = 0.5;
+        offsetx = 0.5_rt;
+        offsety = 0.5_rt;
+        offsetz = 0.5_rt;
     }
     if (fld.field_location() == amr_wind::FieldLoc::XFACE) {
-        offsety = 0.5;
-        offsetz = 0.5;
+        offsety = 0.5_rt;
+        offsetz = 0.5_rt;
     }
     if (fld.field_location() == amr_wind::FieldLoc::YFACE) {
-        offsetx = 0.5;
-        offsetz = 0.5;
+        offsetx = 0.5_rt;
+        offsetz = 0.5_rt;
     }
     if (fld.field_location() == amr_wind::FieldLoc::ZFACE) {
-        offsetx = 0.5;
-        offsety = 0.5;
+        offsetx = 0.5_rt;
+        offsety = 0.5_rt;
     }
 
     for (int lev = 0; lev < nlevels; ++lev) {

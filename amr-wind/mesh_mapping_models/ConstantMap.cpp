@@ -1,6 +1,9 @@
 #include "amr-wind/mesh_mapping_models/ConstantMap.H"
 
 #include "AMReX_ParmParse.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::const_map {
 
@@ -139,11 +142,11 @@ void ConstantMap::create_non_uniform_mesh(int lev, const amrex::Geometry& geom)
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 nu_coord_cc(i, j, k, 0) =
-                    problo[0] + (i + 0.5) * dx[0] * scale_fac_cc(i, j, k, 0);
+                    problo[0] + (i + 0.5_rt) * dx[0] * scale_fac_cc(i, j, k, 0);
                 nu_coord_cc(i, j, k, 1) =
-                    problo[1] + (j + 0.5) * dx[1] * scale_fac_cc(i, j, k, 1);
+                    problo[1] + (j + 0.5_rt) * dx[1] * scale_fac_cc(i, j, k, 1);
                 nu_coord_cc(i, j, k, 2) =
-                    problo[2] + (k + 0.5) * dx[2] * scale_fac_cc(i, j, k, 2);
+                    problo[2] + (k + 0.5_rt) * dx[2] * scale_fac_cc(i, j, k, 2);
             });
 
         const auto& nbx = mfi.grownnodaltilebox();

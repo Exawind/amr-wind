@@ -2,6 +2,9 @@
 #define MODATA_H
 
 #include "amr-wind/utilities/trig_ops.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind {
 
@@ -24,13 +27,13 @@ struct MOData
         SURFACE_TEMPERATURE ///< Surface temperature specified
     };
 
-    amrex::Real zref{0.0};           ///< Reference height (m)
-    amrex::Real z0{0.1};             ///< Aerodynamic roughness height (m)
-    amrex::Real z0t{z0};             ///< Thermal roughness height (m)
-    amrex::Real utau;                ///< Friction velocity (m/s)
-    amrex::Real kappa{0.41};         ///< von Karman constant
-    amrex::Real gravity{9.81};       ///< Acceleration due to gravity (m/s^2)
-    amrex::Real obukhov_len{1.0e16}; ///< Non-dimensional Obukhov length
+    amrex::Real zref{0.0_rt};           ///< Reference height (m)
+    amrex::Real z0{0.1_rt};             ///< Aerodynamic roughness height (m)
+    amrex::Real z0t{z0};                ///< Thermal roughness height (m)
+    amrex::Real utau;                   ///< Friction velocity (m/s)
+    amrex::Real kappa{0.41_rt};         ///< von Karman constant
+    amrex::Real gravity{9.81_rt};       ///< Acceleration due to gravity (m/s^2)
+    amrex::Real obukhov_len{1.0e16_rt}; ///< Non-dimensional Obukhov length
 
     amrex::RealArray vel_mean; ///< Mean velocity (at zref)
     amrex::Real vmag_mean;     ///< Mean wind speed (at zref)
@@ -38,13 +41,13 @@ struct MOData
     amrex::Real Sv_mean;       ///< Mean wind speed times y-velocity (at zref)
     amrex::Real theta_mean;    ///< Mean potential temperature
 
-    amrex::Real surf_temp_flux{0.0}; ///< Heat flux
-    amrex::Real surf_temp;           ///< Instantaneous surface temperature
+    amrex::Real surf_temp_flux{0.0_rt}; ///< Heat flux
+    amrex::Real surf_temp;              ///< Instantaneous surface temperature
 
-    amrex::Real gamma_m{5.0};
-    amrex::Real gamma_h{5.0};
-    amrex::Real beta_m{16.0};
-    amrex::Real beta_h{16.0};
+    amrex::Real gamma_m{5.0_rt};
+    amrex::Real gamma_h{5.0_rt};
+    amrex::Real beta_m{16.0_rt};
+    amrex::Real beta_h{16.0_rt};
 
     ThetaCalcType alg_type{ThetaCalcType::HEAT_FLUX};
 

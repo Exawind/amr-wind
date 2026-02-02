@@ -5,6 +5,9 @@
 #include "amr-wind/wind_energy/actuator/actuator_ops.H"
 #include "amr-wind/utilities/tensor_ops.H"
 #include "amr-wind/utilities/linear_interpolation.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::actuator {
 namespace disk {
@@ -101,7 +104,7 @@ void compute_disk_points(
     VecList& points,
     const vs::Vector& cylAxis,
     const int offset,
-    const double dOffset);
+    const amrex::Real dOffset);
 
 template <typename T>
 void parse_and_gather_params(const utils::ActParser& pp, T& metaData)
@@ -143,9 +146,9 @@ struct UpdateVelOp<
     {
         auto& meta = data.meta();
         const auto& grid = data.grid();
-        meta.reference_velocity = {0.0, 0.0, 0.0};
-        meta.mean_disk_velocity = {0.0, 0.0, 0.0};
-        meta.density = 0.0;
+        meta.reference_velocity = {0.0_rt, 0.0_rt, 0.0_rt};
+        meta.mean_disk_velocity = {0.0_rt, 0.0_rt, 0.0_rt};
+        meta.density = 0.0_rt;
         auto& refVel = meta.reference_velocity;
         auto& diskVel = meta.mean_disk_velocity;
         auto& density = meta.density;
