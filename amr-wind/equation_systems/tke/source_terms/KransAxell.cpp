@@ -106,13 +106,11 @@ void KransAxell::operator()(
     amrex::Real z0 = m_z0;
     const bool has_terrain =
         this->m_sim.repo().int_field_exists("terrain_blank");
-    const bool has_roughness =
-        this->m_sim.repo().field_exists("terrainz0");
+    const bool has_roughness = this->m_sim.repo().field_exists("terrainz0");
     const auto* m_terrainz0 =
         has_roughness ? &this->m_sim.repo().get_field("terrainz0") : nullptr;
-    const auto& z0_arr = has_roughness
-                        ? (*m_terrainz0)(lev).const_array(mfi)
-                        : amrex::Array4<amrex::Real>();
+    const auto& z0_arr = has_roughness ? (*m_terrainz0)(lev).const_array(mfi)
+                                       : amrex::Array4<amrex::Real>();
     const amrex::Real sponge_start = m_meso_start;
     const auto vsize = m_wind_heights_d.size();
     const auto* wind_heights_d = m_wind_heights_d.data();
@@ -128,7 +126,7 @@ void KransAxell::operator()(
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         amrex::Real bcforcing = 0;
         const amrex::Real cell_z0 =
-                            has_roughness ? std::max(z0_arr(i, j, k, 0), z0_min) : z0;
+            has_roughness ? std::max(z0_arr(i, j, k, 0), z0_min) : z0;
         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
         if (k == 0) {
             const amrex::Real ux = vel(i, j, k + 1, 0);
@@ -143,7 +141,8 @@ void KransAxell::operator()(
                     std::pow(Cmu, 3.0_rt),
                 (2.0_rt / 3.0_rt));
             bcforcing =
-                (ustar * ustar / (Cmu * Cmu) + rans_b - tke_arr(i, j, k)) / ( 5 * dt );
+                (ustar * ustar / (Cmu * Cmu) + rans_b - tke_arr(i, j, k)) /
+                (5 * dt);
         }
         amrex::Real ref_tke = tke_arr(i, j, k);
         const amrex::Real zi = amrex::max<amrex::Real>(
@@ -195,7 +194,7 @@ void KransAxell::operator()(
                     (2.0_rt / 3.0_rt));
                 terrainforcing =
                     (ustar * ustar / (Cmu * Cmu) + rans_b - tke_arr(i, j, k)) /
-                   (5 * dt );
+                    (5 * dt);
                 amrex::Real bcforcing = 0;
                 if (k == 0) {
                     bcforcing = (1 - blank_arr(i, j, k)) * terrainforcing;
