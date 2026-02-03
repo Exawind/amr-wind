@@ -265,7 +265,7 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                     fvel_liq = in_beach ? 1.0_rt : fvel_liq;
                     amrex::Real rho_ = rho1 * volfrac(i, j, k) +
                                        rho2 * (1.0_rt - volfrac(i, j, k));
-                    for (int n = 0; n < vel.ncomp; ++n) {
+                    for (int n = 0; n < vel.nComp(); ++n) {
                         // Get updated liquid velocity
                         amrex::Real vel_liq = vel(i, j, k, n);
                         const amrex::Real dvel_liq =
