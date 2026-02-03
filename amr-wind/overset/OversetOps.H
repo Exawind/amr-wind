@@ -3,6 +3,9 @@
 
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/physics/multiphase/MultiPhase.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind {
 
@@ -36,15 +39,15 @@ private:
     // Reinitialization parameters
     int m_n_iterations{10};
     int m_calc_convg_interval{1}; // calctolniter, cconv
-    amrex::Real m_convg_tol = 1e-12;
-    amrex::Real m_relative_length_scale = 1.5;
-    amrex::Real m_upw_margin = 0.1;
-    amrex::Real m_target_cutoff = 0.0; // proc_tgvof_tol
+    amrex::Real m_convg_tol = 1.0e-12_rt;
+    amrex::Real m_relative_length_scale = 1.5_rt;
+    amrex::Real m_upw_margin = 0.1_rt;
+    amrex::Real m_target_cutoff = 0.0_rt; // proc_tgvof_tol
 
     // Tolerance for VOF-related bound checks
-    const amrex::Real m_vof_tol = 1e-12;
+    const amrex::Real m_vof_tol = 1.0e-12_rt;
     // Small number for approximate signed distance function
-    const amrex::Real m_asdf_tiny = 1e-12;
+    const amrex::Real m_asdf_tiny = 1.0e-12_rt;
 
     // Pointer for pressure gradient copy field
     amr_wind::Field* m_gp_copy{nullptr};

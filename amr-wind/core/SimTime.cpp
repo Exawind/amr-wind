@@ -2,6 +2,9 @@
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_Print.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind {
 
@@ -9,7 +12,7 @@ void SimTime::parse_parameters()
 {
     // Initialize delta_t to negative values
     for (amrex::Real& i : m_dt) {
-        i = -1.0;
+        i = -1.0_rt;
     }
 
     // Parse options in "time" namespace
@@ -50,33 +53,33 @@ void SimTime::parse_parameters()
     pp.query("checkpoint_time_interval_reltol", m_chkpt_t_tol);
     pp.query("enforce_checkpoint_dt_reltol", m_force_chkpt_tol);
 
-    if (m_fixed_dt > 0.0) {
+    if (m_fixed_dt > 0.0_rt) {
         m_dt[0] = m_fixed_dt;
     } else {
         m_adaptive = true;
     }
 
-    if (m_plt_interval > 0 && m_plt_t_interval > 0.0) {
+    if (m_plt_interval > 0 && m_plt_t_interval > 0.0_rt) {
         amrex::Abort(
             "plot_interval and plot_time_interval are both specified. "
             "timestep- and time-based plotting should not be used together; "
             "please only specify one.");
     }
 
-    if (m_chkpt_interval > 0 && m_chkpt_t_interval > 0.0) {
+    if (m_chkpt_interval > 0 && m_chkpt_t_interval > 0.0_rt) {
         amrex::Abort(
             "checkpoint_interval and checkpoint_time_interval are both "
             "specified. timestep- and time-based checkpointing should not be "
             "used together; please only specify one.");
     }
 
-    if (m_plt_t_interval <= 0.0 && m_force_plt_dt) {
+    if (m_plt_t_interval <= 0.0_rt && m_force_plt_dt) {
         amrex::Abort(
             "enforce_plot_time_dt is true, but no plot time interval has been "
             "provided.");
     }
 
-    if (m_chkpt_t_interval <= 0.0 && m_force_chkpt_dt) {
+    if (m_chkpt_t_interval <= 0.0_rt && m_force_chkpt_dt) {
         amrex::Abort(
             "enforce_checkpoint_time_dt is true, but no checkpoint time "
             "interval has been provided.");
@@ -160,7 +163,7 @@ void SimTime::set_current_cfl(
     bool use_init_dt{false};
     const amrex::Real cd_cfl = conv_cfl + diff_cfl;
     const amrex::Real cfl_unit_time =
-        cd_cfl + std::sqrt(cd_cfl * cd_cfl + 4.0 * src_cfl);
+        cd_cfl + std::sqrt(cd_cfl * cd_cfl + 4.0_rt * src_cfl);
     if ((m_adaptive && !m_is_init) &&
         (cfl_unit_time < std::numeric_limits<amrex::Real>::epsilon())) {
         // First timestep, starting from t = 0, is special case
@@ -181,7 +184,7 @@ void SimTime::set_current_cfl(
     }
     amrex::Real dt_new =
         use_init_dt ? m_initial_dt
-                    : 2.0 * m_max_cfl /
+                    : 2.0_rt * m_max_cfl /
                           amrex::max(
                               cfl_unit_time,
                               std::numeric_limits<amrex::Real>::epsilon());
@@ -192,8 +195,9 @@ void SimTime::set_current_cfl(
     }
 
     // Limit timestep growth to % per timestep
-    if (m_dt[0] > 0.0) {
-        dt_new = amrex::min<amrex::Real>(dt_new, (1.0 + m_dt_growth) * m_dt[0]);
+    if (m_dt[0] > 0.0_rt) {
+        dt_new =
+            amrex::min<amrex::Real>(dt_new, (1.0_rt + m_dt_growth) * m_dt[0]);
     }
 
     if (m_adaptive) {
@@ -210,13 +214,13 @@ void SimTime::set_current_cfl(
         }
 
         // Don't overshoot stop time
-        if ((m_stop_time > 0.0) && ((m_cur_time + dt_new) > m_stop_time)) {
+        if ((m_stop_time > 0.0_rt) && ((m_cur_time + dt_new) > m_stop_time)) {
             dt_new = m_stop_time - m_cur_time;
         }
 
         // Shorten timestep to hit output frequency exactly
         // Only should be active after delay interval is passed
-        if (m_chkpt_t_interval > 0.0 && m_force_chkpt_dt &&
+        if (m_chkpt_t_interval > 0.0_rt && m_force_chkpt_dt &&
             m_cur_time + dt_new - m_chkpt_t_delay >= 0) {
             // Shorten dt if going to overshoot next output time
             dt_new = get_enforced_dt_for_output(
@@ -229,7 +233,7 @@ void SimTime::set_current_cfl(
             // then the dt becomes this increment to get to the next output
             // time.
         }
-        if (m_plt_t_interval > 0.0 && m_force_plt_dt &&
+        if (m_plt_t_interval > 0.0_rt && m_force_plt_dt &&
             m_cur_time + dt_new - m_plt_t_delay >= 0) {
             // Shorten dt if going to overshoot next output time
             dt_new = get_enforced_dt_for_output(
@@ -237,7 +241,7 @@ void SimTime::set_current_cfl(
         }
         // Consider postprocessing as well
         for (int npp = 0; npp < m_postprocess_time_interval.size(); ++npp) {
-            if (m_postprocess_time_interval[npp] > 0.0 &&
+            if (m_postprocess_time_interval[npp] > 0.0_rt &&
                 m_postprocess_enforce_dt[npp] &&
                 m_cur_time + dt_new - m_postprocess_time_delay[npp] >= 0) {
                 // Shorten dt if going to overshoot next output time
@@ -247,7 +251,7 @@ void SimTime::set_current_cfl(
             }
         }
 
-        if (m_is_init && m_initial_dt > 0.0) {
+        if (m_is_init && m_initial_dt > 0.0_rt) {
             dt_new = amrex::min(dt_new, m_initial_dt);
         }
 
@@ -259,7 +263,7 @@ void SimTime::set_current_cfl(
         m_dt[0] = (m_cur_time < m_delay_time) ? m_initial_dt : m_fixed_dt;
     }
 
-    m_current_cfl = 0.5 * cfl_unit_time * m_dt[0];
+    m_current_cfl = 0.5_rt * cfl_unit_time * m_dt[0];
     m_conv_cfl = conv_cfl * m_dt[0];
     m_diff_cfl = diff_cfl * m_dt[0];
     m_src_cfl = std::sqrt(src_cfl) * m_dt[0];
@@ -301,7 +305,7 @@ void SimTime::advance_time()
     // Only issue warnings when the error is greater than 1% of the timestep
     // specified
     const bool issue_cfl_warning =
-        m_adaptive ? false : (1.0 - (m_dt_calc / m_dt[0])) > 0.01;
+        m_adaptive ? false : (1.0_rt - (m_dt_calc / m_dt[0])) > 0.01_rt;
     if (issue_cfl_warning && !m_is_init) {
         amrex::Print() << "WARNING: fixed_dt does not satisfy CFL condition.\n"
                        << "Max. CFL: " << m_max_cfl
@@ -312,14 +316,14 @@ void SimTime::advance_time()
 
 bool SimTime::continue_simulation() const
 {
-    constexpr double eps = 1.0e-12;
+    constexpr amrex::Real eps = 1.0e-12_rt;
     bool stop_simulation = false;
 
     if (m_stop_time_index == 0) {
         return stop_simulation;
     }
 
-    if ((m_stop_time > 0.0) && ((m_new_time + eps) >= m_stop_time)) {
+    if ((m_stop_time > 0.0_rt) && ((m_new_time + eps) >= m_stop_time)) {
         return stop_simulation;
     }
 
@@ -342,12 +346,13 @@ bool SimTime::write_plot_file() const
 {
     // If dt is enforced, allow smallest tolerance to be in effect. This avoids
     // unintentionally plotting in consecutive timesteps because of shortened dt
-    const amrex::Real tol = std::min(m_plt_t_tol * m_dt[0], m_force_dt_abs_tol);
+    const amrex::Real tol =
+        amrex::min<amrex::Real>(m_plt_t_tol * m_dt[0], m_force_dt_abs_tol);
     return (
         ((m_plt_interval > 0) && (m_time_index - m_plt_delay >= 0) &&
          ((m_time_index - m_plt_start_index) % m_plt_interval == 0)) ||
-        ((m_plt_t_interval > 0.0) &&
-         (m_new_time + tol - m_plt_t_delay >= 0.0) &&
+        ((m_plt_t_interval > 0.0_rt) &&
+         (m_new_time + tol - m_plt_t_delay >= 0.0_rt) &&
          ((m_new_time - m_plt_start_time + tol) / m_plt_t_interval -
               std::floor(
                   (m_new_time - m_plt_start_time + tol) / m_plt_t_interval) <
@@ -358,12 +363,12 @@ bool SimTime::write_checkpoint() const
 {
     // If dt is enforced, use smallest tolerance
     const amrex::Real tol =
-        std::min(m_chkpt_t_tol * m_dt[0], m_force_dt_abs_tol);
+        amrex::min<amrex::Real>(m_chkpt_t_tol * m_dt[0], m_force_dt_abs_tol);
     return (
         ((m_chkpt_interval > 0) && (m_time_index - m_chkpt_delay >= 0) &&
          ((m_time_index - m_chkpt_start_index) % m_chkpt_interval == 0)) ||
-        ((m_chkpt_t_interval > 0.0) &&
-         (m_new_time + tol - m_chkpt_t_delay >= 0.0) &&
+        ((m_chkpt_t_interval > 0.0_rt) &&
+         (m_new_time + tol - m_chkpt_t_delay >= 0.0_rt) &&
          ((m_new_time - m_chkpt_start_time + tol) / m_chkpt_t_interval -
               std::floor(
                   (m_new_time - m_chkpt_start_time + tol) /
@@ -373,11 +378,12 @@ bool SimTime::write_checkpoint() const
 
 bool SimTime::write_last_plot_file() const
 {
-    const amrex::Real tol = std::min(m_plt_t_tol * m_dt[0], m_force_dt_abs_tol);
+    const amrex::Real tol =
+        amrex::min<amrex::Real>(m_plt_t_tol * m_dt[0], m_force_dt_abs_tol);
     return (
         ((m_plt_interval > 0) &&
          ((m_time_index - m_plt_start_index) % m_plt_interval != 0)) ||
-        ((m_plt_t_interval > 0.0) &&
+        ((m_plt_t_interval > 0.0_rt) &&
          ((m_new_time - m_plt_start_time + tol) / m_plt_t_interval -
               std::floor(
                   (m_new_time - m_plt_start_time + tol) / m_plt_t_interval) >=
@@ -387,11 +393,11 @@ bool SimTime::write_last_plot_file() const
 bool SimTime::write_last_checkpoint() const
 {
     const amrex::Real tol =
-        std::min(m_chkpt_t_tol * m_dt[0], m_force_dt_abs_tol);
+        amrex::min<amrex::Real>(m_chkpt_t_tol * m_dt[0], m_force_dt_abs_tol);
     return (
         ((m_chkpt_interval > 0) &&
          ((m_time_index - m_chkpt_start_index) % m_chkpt_interval != 0)) ||
-        ((m_chkpt_t_interval > 0.0) &&
+        ((m_chkpt_t_interval > 0.0_rt) &&
          ((m_new_time - m_chkpt_start_time + tol) / m_chkpt_t_interval -
               std::floor(
                   (m_new_time - m_chkpt_start_time + tol) /
@@ -426,17 +432,18 @@ void SimTime::calculate_minimum_enforce_dt_abs_tol()
 {
     m_force_dt_abs_tol =
         (m_force_chkpt_dt
-             ? std::min(
+             ? amrex::min<amrex::Real>(
                    m_force_dt_abs_tol, m_force_chkpt_tol * m_chkpt_t_interval)
              : m_force_dt_abs_tol);
     m_force_dt_abs_tol =
         (m_force_plt_dt
-             ? std::min(m_force_dt_abs_tol, m_force_plt_tol * m_plt_t_interval)
+             ? amrex::min<amrex::Real>(
+                   m_force_dt_abs_tol, m_force_plt_tol * m_plt_t_interval)
              : m_force_dt_abs_tol);
     for (int npp = 0; npp < m_postprocess_time_interval.size(); ++npp) {
         m_force_dt_abs_tol =
             (m_postprocess_enforce_dt[npp]
-                 ? std::min(
+                 ? amrex::min<amrex::Real>(
                        m_force_dt_abs_tol, m_postprocess_enforce_dt_tol[npp] *
                                                m_postprocess_time_interval[npp])
                  : m_force_dt_abs_tol);

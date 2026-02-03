@@ -4,6 +4,9 @@
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/transport_models/TransportModel.H"
 #include "amr-wind/equation_systems/icns/MomentumSource.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::pde::icns {
 
@@ -33,7 +36,7 @@ public:
 private:
     const Field& m_temperature;
 
-    amrex::Vector<amrex::Real> m_gravity{0.0, 0.0, -9.81};
+    amrex::Vector<amrex::Real> m_gravity{0.0_rt, 0.0_rt, -9.81_rt};
 
     //! Transport model
     const transport::TransportModel& m_transport;

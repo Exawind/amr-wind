@@ -2,6 +2,9 @@
 #define HYDROSTATIC_OPS_H
 #include <AMReX_MultiFabUtil.H>
 #include "amr-wind/core/FieldRepo.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::hydrostatic {
 
@@ -20,9 +23,10 @@ static void define_rho0(
             rho0(lev),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 const amrex::Real zbtm = problo[2] + k * dx[2];
-                const amrex::Real vof =
-                    amrex::max(amrex::min(1.0, (wlev - zbtm) / dx[2]), 0.0);
-                rho0_arrs[nbx](i, j, k) = vof * rho1 + (1.0 - vof) * rho2;
+                const amrex::Real vof = amrex::max<amrex::Real>(
+                    amrex::min<amrex::Real>(1.0_rt, (wlev - zbtm) / dx[2]),
+                    0.0_rt);
+                rho0_arrs[nbx](i, j, k) = vof * rho1 + (1.0_rt - vof) * rho2;
             });
     }
     amrex::Gpu::streamSynchronize();
@@ -46,10 +50,11 @@ static void define_p0(
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 const amrex::Real z = problo[2] + k * dx[2];
                 // Integrated (top-down in z) phase heights to pressure node
-                const amrex::Real ih_g = amrex::max(
-                    0.0, amrex::min(probhi[2] - wlev, probhi[2] - z));
-                const amrex::Real ih_l =
-                    amrex::max(0.0, amrex::min(wlev - z, wlev - problo[2]));
+                const amrex::Real ih_g = amrex::max<amrex::Real>(
+                    0.0_rt, amrex::min(probhi[2] - wlev, probhi[2] - z));
+                const amrex::Real ih_l = amrex::max<amrex::Real>(
+                    0.0_rt,
+                    amrex::min<amrex::Real>(wlev - z, wlev - problo[2]));
                 // Integrated rho at pressure node
                 const amrex::Real irho = rho1 * ih_l + rho2 * ih_g;
 

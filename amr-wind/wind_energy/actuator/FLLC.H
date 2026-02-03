@@ -3,6 +3,9 @@
 
 #include "amr-wind/wind_energy/actuator/actuator_types.H"
 #include "amr-wind/wind_energy/actuator/ActParser.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::actuator {
 
@@ -17,8 +20,8 @@ struct FLLCData
     // constants
     FLLCType correction_type{FLLCType::VariableChord};
     amrex::Real epsilon;
-    amrex::Real relaxation_factor{0.1};
-    amrex::Real fllc_start_time{0.0};
+    amrex::Real relaxation_factor{0.1_rt};
+    amrex::Real fllc_start_time{0.0_rt};
     RealList r;
     RealList dr;
     RealList optimal_epsilon;

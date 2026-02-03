@@ -2,6 +2,9 @@
 #include "amr-wind/equation_systems/vof/split_advection.H"
 #include "AMReX_Geometry.H"
 #include "AMReX_MultiFabUtil.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind {
 
@@ -38,7 +41,7 @@ void multiphase::split_advection_step(
             const auto& bx = mfi.tilebox();
             amrex::FArrayBox tmpfab(
                 amrex::grow(bx, 1), 2, amrex::The_Async_Arena());
-            tmpfab.setVal<amrex::RunOn::Device>(0.0);
+            tmpfab.setVal<amrex::RunOn::Device>(0.0_rt);
 
             // Compression term coefficient
             if (iorder == 0) {

@@ -2,6 +2,9 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/utilities/index_operations.H"
 #include "AMReX_ParmParse.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::sampling {
 
@@ -27,7 +30,7 @@ void ProbeSampler::initialize(const std::string& key)
             static_cast<int>(m_offset_vector.size()) == AMREX_SPACEDIM);
     } else {
         // No offsets is implemented as 1 offset of 0.
-        m_poffsets.push_back(0.0);
+        m_poffsets.push_back(0.0_rt);
     }
 
     int npts_file = 0;
@@ -46,7 +49,7 @@ void ProbeSampler::initialize(const std::string& key)
     int idx = 0;
     m_npts = static_cast<int>(m_poffsets.size()) * npts_file;
     const auto& locs_file = probes_file.locations();
-    for (double m_poffset : m_poffsets) {
+    for (amrex::Real m_poffset : m_poffsets) {
         for (int i = 0; i < npts_file; ++i) {
             amrex::RealVect loc;
             for (int d = 0; d < AMREX_SPACEDIM; ++d) {

@@ -13,6 +13,9 @@
 #include "AMReX_ParmParse.H"
 #include "AMReX_Print.H"
 #include "AMReX_ParallelDescriptor.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind {
 
@@ -142,7 +145,7 @@ void ABLWallFunction::init_log_law_height()
 {
     if (m_use_fch) {
         const auto& geom = m_mesh.Geom(0);
-        m_mo.zref = 0.5 * geom.CellSize(m_direction);
+        m_mo.zref = 0.5_rt * geom.CellSize(m_direction);
     }
 }
 
@@ -157,8 +160,8 @@ void ABLWallFunction::update_umean(
                 m_surf_temp_init +
                 m_surf_temp_rate *
                     amrex::max<amrex::Real>(
-                        time.current_time() - m_surf_temp_rate_tstart, 0.0) /
-                    3600.0;
+                        time.current_time() - m_surf_temp_rate_tstart, 0.0_rt) /
+                    3600.0_rt;
         } else {
             m_mo.surf_temp = amr_wind::interp::linear(
                 m_surf_temp_time, m_surf_temp_value, time.current_time());
@@ -171,8 +174,8 @@ void ABLWallFunction::update_umean(
         m_mo.vel_mean[0] = m_wf_vel[0];
         m_mo.vel_mean[1] = m_wf_vel[1];
         m_mo.vmag_mean = m_wf_vmag;
-        m_mo.Su_mean = 0.0; // TODO: need to fill this correctly
-        m_mo.Sv_mean = 0.0; // TODO: need to fill this correctly
+        m_mo.Su_mean = 0.0_rt; // TODO: need to fill this correctly
+        m_mo.Sv_mean = 0.0_rt; // TODO: need to fill this correctly
         m_mo.theta_mean = m_wf_theta;
     } else {
         m_mo.vel_mean[0] = vpa.line_average_interpolated(m_mo.zref, 0);
@@ -270,7 +273,7 @@ void ABLVelWallFunc::wall_model(
             if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
                 velocity.bc_type()[zlo] == BC::wall_model) {
                 if (m_wall_het_model == "mol") {
-                    const amrex::Real z = 0.5 * dx[2];
+                    const amrex::Real z = 0.5_rt * dx[2];
                     const amrex::Real zeta = z / m_monin_obukhov_length;
                     const amrex::Real psi_m = mo.calc_psi_m(zeta);
                     const amrex::Real abl_z0 = mo.z0;
@@ -288,9 +291,10 @@ void ABLVelWallFunc::wall_model(
                             const amrex::Real drag = std::log(z / z0) - psi_m;
                             const amrex::Real ustar = wspd * kappa / drag;
                             // Dirichlet BC
-                            varr(i, j, k - 1, 2) = 0.0;
+                            varr(i, j, k - 1, 2) = 0.0_rt;
                             const amrex::Real blankTerrain =
-                                (has_terrain) ? 1 - blank_arr(i, j, k, 0) : 1.0;
+                                (has_terrain) ? 1 - blank_arr(i, j, k, 0)
+                                              : 1.0_rt;
                             // Shear stress BC
                             // Blank Terrain added to keep the boundary
                             // condition backward compatible while adding
@@ -313,9 +317,10 @@ void ABLVelWallFunc::wall_model(
                                 std::sqrt(uu * uu + vv * vv);
 
                             // Dirichlet BC
-                            varr(i, j, k - 1, 2) = 0.0;
+                            varr(i, j, k - 1, 2) = 0.0_rt;
                             const amrex::Real blankTerrain =
-                                (has_terrain) ? 1 - blank_arr(i, j, k, 0) : 1.0;
+                                (has_terrain) ? 1 - blank_arr(i, j, k, 0)
+                                              : 1.0_rt;
                             // Shear stress BC
                             // Blank Terrain added to keep the boundary
                             // condition backward compatible while adding
@@ -439,7 +444,7 @@ void ABLTempWallFunc::wall_model(
             if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
                 temperature.bc_type()[zlo] == BC::wall_model) {
                 if (m_wall_het_model == "mol") {
-                    const amrex::Real z = 0.5 * dx[2];
+                    const amrex::Real z = 0.5_rt * dx[2];
                     const amrex::Real zeta = z / m_monin_obukhov_length;
                     const amrex::Real psi_m = mo.calc_psi_m(zeta);
                     const amrex::Real kappa = mo.kappa;
@@ -466,7 +471,8 @@ void ABLTempWallFunc::wall_model(
                             const amrex::Real surf_temp_flux =
                                 ustar * thetastar;
                             const amrex::Real blankTerrain =
-                                (has_terrain) ? 1 - blank_arr(i, j, k, 0) : 1.0;
+                                (has_terrain) ? 1 - blank_arr(i, j, k, 0)
+                                              : 1.0_rt;
                             tarr(i, j, k - 1) = blankTerrain * den(i, j, k) *
                                                 surf_temp_flux / alphaT;
                         });
@@ -481,7 +487,8 @@ void ABLTempWallFunc::wall_model(
                                 std::sqrt(uu * uu + vv * vv);
                             const amrex::Real theta2 = told_arr(i, j, k);
                             const amrex::Real blankTerrain =
-                                (has_terrain) ? 1 - blank_arr(i, j, k, 0) : 1.0;
+                                (has_terrain) ? 1 - blank_arr(i, j, k, 0)
+                                              : 1.0_rt;
                             tarr(i, j, k - 1) = blankTerrain * den(i, j, k) *
                                                 tau.calc_theta(wspd, theta2) /
                                                 alphaT;

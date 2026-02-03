@@ -5,6 +5,9 @@
 #include "amr-wind/core/Factory.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
 #include "amr-wind/utilities/constants.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind {
 
@@ -108,7 +111,7 @@ public:
 
     //! Run specific output for the sampler
     virtual bool output_netcdf_field(
-        const std::vector<double>& /*unused*/,
+        const std::vector<amrex::Real>& /*unused*/,
         ncutils::NCGroup& /*unused*/,
         const size_t /*unused*/)
     {
@@ -121,14 +124,15 @@ public:
     virtual bool do_subsampling_interp() { return false; }
 
     //! Sample buffer modification instructions
-    virtual std::vector<double> modify_sample_data(
-        const std::vector<double>& sampledata, const std::string& /*unused*/)
+    virtual std::vector<amrex::Real> modify_sample_data(
+        const std::vector<amrex::Real>& sampledata,
+        const std::string& /*unused*/)
     {
         return sampledata;
     }
 
     virtual void calc_lineofsight_velocity(
-        const std::vector<std::vector<double>>& /*unused*/,
+        const std::vector<std::vector<amrex::Real>>& /*unused*/,
         const int /*unused*/)
     {}
 

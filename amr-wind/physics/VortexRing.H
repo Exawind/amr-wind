@@ -3,6 +3,9 @@
 
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/core/Field.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind {
 
@@ -38,17 +41,17 @@ private:
     Field& m_density;
 
     //! initial density value
-    amrex::Real m_rho{1.0};
+    amrex::Real m_rho{1.0_rt};
 
-    amrex::Real m_R{1.0};
-    amrex::Real m_Gamma{1.0};
-    amrex::Real m_delta{0.2};
-    amrex::Real m_dz{2.0};
+    amrex::Real m_R{1.0_rt};
+    amrex::Real m_Gamma{1.0_rt};
+    amrex::Real m_delta{0.2_rt};
+    amrex::Real m_dz{2.0_rt};
     amrex::Vector<int> m_perturbation_modes;
-    amrex::Vector<double> m_perturbation_phases_1;
-    amrex::Vector<double> m_perturbation_phases_2;
+    amrex::Vector<amrex::Real> m_perturbation_phases_1;
+    amrex::Vector<amrex::Real> m_perturbation_phases_2;
     // amplitude relative to the unperturbed vortex ring diameter
-    amrex::Real m_perturbation_amplitude{1e-4};
+    amrex::Real m_perturbation_amplitude{1.0e-4_rt};
 
     std::string m_vortexringtype{"fatcore"};
 };

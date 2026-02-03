@@ -5,6 +5,9 @@
 #include "amr-wind/core/Field.H"
 #include "amr-wind/core/IntField.H"
 #include "amr-wind/core/ScratchField.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 /** Multiphase physics
  *
@@ -91,10 +94,10 @@ private:
     Field* m_vof{nullptr};
 
     // Density value for Fluid 1
-    amrex::Real m_rho1{10.0};
+    amrex::Real m_rho1{10.0_rt};
 
     // Density value for Fluid 2
-    amrex::Real m_rho2{1.0};
+    amrex::Real m_rho2{1.0_rt};
 
     // Bools according to ICNS settings
     // Turning on perturbational density and pressure
@@ -105,9 +108,9 @@ private:
     bool m_init_p{false};
 
     // Info to create rho0
-    amrex::Real m_water_level0{0.0};
+    amrex::Real m_water_level0{0.0_rt};
     // Info to reconstruct true pressure
-    amrex::Vector<amrex::Real> m_gravity{0.0, 0.0, -9.81};
+    amrex::Vector<amrex::Real> m_gravity{0.0_rt, 0.0_rt, -9.81_rt};
 
     // Multiphase model enum
     std::string m_interface_model{"vof"};
@@ -118,12 +121,12 @@ private:
     int m_verbose{0};
 
     // sum of volume fractions (for vof only)
-    amrex::Real m_total_volfrac{0.0};
+    amrex::Real m_total_volfrac{0.0_rt};
 
-    amrex::Real m_q0{0.0};
-    amrex::Real m_q1{0.0};
-    amrex::Real m_q2{0.0};
-    amrex::Real m_sumvof0{0.0};
+    amrex::Real m_q0{0.0_rt};
+    amrex::Real m_q1{0.0_rt};
+    amrex::Real m_q2{0.0_rt};
+    amrex::Real m_sumvof0{0.0_rt};
 };
 
 } // namespace amr_wind

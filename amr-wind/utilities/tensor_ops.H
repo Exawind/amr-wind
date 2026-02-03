@@ -2,6 +2,9 @@
 #define TENSOR_OPS_H
 
 #include "AMReX_Gpu.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::utils {
 
@@ -30,7 +33,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void vec_normalize(T* x)
 {
     static_assert(
         AMREX_SPACEDIM == 3, "Vector ops only defined for AMREX_SPACEDIM == 3");
-    const T inv_mag = 1.0 / vec_mag(x);
+    const T inv_mag = 1.0_rt / vec_mag(x);
     x[0] *= inv_mag;
     x[1] *= inv_mag;
     x[2] *= inv_mag;
@@ -40,7 +43,7 @@ template <typename T>
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T
 dot_prod(const T* x, const T* y, const int ndim)
 {
-    T sum = 0.0;
+    T sum = 0.0_rt;
     for (int i = 0; i < ndim; ++i) {
         sum += x[i] * y[i];
     }

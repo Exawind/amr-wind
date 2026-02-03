@@ -4,6 +4,9 @@
 #include "AMReX_ParmParse.H"
 #include "amr-wind/fvm/gradient.H"
 #include "amr-wind/core/field_ops.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind {
 
@@ -31,7 +34,7 @@ SloshingTank::SloshingTank(CFDSim& sim)
 void SloshingTank::initialize_fields(int level, const amrex::Geometry& geom)
 {
     auto& velocity = m_velocity(level);
-    velocity.setVal(0.0);
+    velocity.setVal(0.0_rt);
 
     auto& levelset = m_levelset(level);
     auto& pressure = m_pressure(level);
@@ -52,14 +55,15 @@ void SloshingTank::initialize_fields(int level, const amrex::Geometry& geom)
 
     amrex::ParallelFor(
         levelset, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-            const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-            const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
-            const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+            const amrex::Real x = problo[0] + (i + 0.5_rt) * dx[0];
+            const amrex::Real y = problo[1] + (j + 0.5_rt) * dx[1];
+            const amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
             const amrex::Real z0 =
                 water_level +
                 Amp * std::exp(
-                          -kappa * (std::pow(x - problo[0] - 0.5 * Lx, 2) +
-                                    std::pow(y - problo[1] - 0.5 * Ly, 2)));
+                          -kappa *
+                          (std::pow(x - problo[0] - 0.5_rt * Lx, 2.0_rt) +
+                           std::pow(y - problo[1] - 0.5_rt * Ly, 2.0_rt)));
             phi_arrs[nbx](i, j, k) = z0 - z;
         });
 
@@ -74,13 +78,15 @@ void SloshingTank::initialize_fields(int level, const amrex::Geometry& geom)
                 const amrex::Real z0 =
                     water_level +
                     Amp * std::exp(
-                              -kappa * (std::pow(x - problo[0] - 0.5 * Lx, 2) +
-                                        std::pow(y - problo[1] - 0.5 * Ly, 2)));
+                              -kappa *
+                              (std::pow(x - problo[0] - 0.5_rt * Lx, 2.0_rt) +
+                               std::pow(y - problo[1] - 0.5_rt * Ly, 2.0_rt)));
                 // Integrated (top-down in z) phase heights to pressure node
-                amrex::Real ih_g =
-                    amrex::max(0.0, amrex::min(probhi[2] - z0, probhi[2] - z));
-                amrex::Real ih_l =
-                    amrex::max(0.0, amrex::min(z0 - z, z0 - problo[2]));
+                amrex::Real ih_g = amrex::max<amrex::Real>(
+                    0.0_rt,
+                    amrex::min<amrex::Real>(probhi[2] - z0, probhi[2] - z));
+                amrex::Real ih_l = amrex::max<amrex::Real>(
+                    0.0_rt, amrex::min<amrex::Real>(z0 - z, z0 - problo[2]));
                 // Integrated rho at pressure node
                 const amrex::Real irho = rho1 * ih_l + rho2 * ih_g;
 

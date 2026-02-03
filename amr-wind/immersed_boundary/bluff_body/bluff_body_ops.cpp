@@ -10,6 +10,9 @@
 #include "amr-wind/physics/ConvectingTaylorVortex.H"
 
 #include "AMReX_ParmParse.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::ib::bluff_body {
 
@@ -52,19 +55,19 @@ void apply_mms_vel(CFDSim& sim)
         amrex::ParallelFor(
             levelset(lev), levelset.num_grow(),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-                const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
+                const amrex::Real x = problo[0] + (i + 0.5_rt) * dx[0];
+                const amrex::Real y = problo[1] + (j + 0.5_rt) * dx[1];
 
                 if (phi_arrs[nbx](i, j, k) <= 0) {
                     varrs[nbx](i, j, k, 0) =
                         u0 - std::cos(utils::pi() * (x - u0 * t)) *
                                  std::sin(utils::pi() * (y - v0 * t)) *
-                                 std::exp(-2.0 * omega * t);
+                                 std::exp(-2.0_rt * omega * t);
                     varrs[nbx](i, j, k, 1) =
                         v0 + std::sin(utils::pi() * (x - u0 * t)) *
                                  std::cos(utils::pi() * (y - v0 * t)) *
-                                 std::exp(-2.0 * omega * t);
-                    varrs[nbx](i, j, k, 2) = 0.0;
+                                 std::exp(-2.0_rt * omega * t);
+                    varrs[nbx](i, j, k, 2) = 0.0_rt;
                 }
             });
     }
@@ -115,9 +118,9 @@ void apply_dirichlet_vel(CFDSim& sim, const amrex::Vector<amrex::Real>& vel_bc)
                     // For this particular ghost-cell find the
                     // body-intercept (BI) point and image-point (IP)
                     // First define the ghost cell point
-                    // amrex::Real x_GC = problo[0] + (i + 0.5) * dx[0];
-                    // amrex::Real y_GC = problo[1] + (j + 0.5) * dx[1];
-                    // amrex::Real z_GC = problo[2] + (k + 0.5) * dx[2];
+                    // amrex::Real x_GC = problo[0] + (i + 0.5_rt) * dx[0];
+                    // amrex::Real y_GC = problo[1] + (j + 0.5_rt) * dx[1];
+                    // amrex::Real z_GC = problo[2] + (k + 0.5_rt) * dx[2];
                     // Find the "image-points"
                     varrs[nbx](i, j, k, 0) = velx;
                     varrs[nbx](i, j, k, 1) = vely;
