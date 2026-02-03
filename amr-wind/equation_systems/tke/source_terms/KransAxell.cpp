@@ -122,23 +122,24 @@ void KransAxell::operator()(
         psi_m = MOData::calc_psi_m(
             1.5_rt * dx[2] / m_monin_obukhov_length, m_beta_m, m_gamma_m);
     }
-    const amrex::Real z0_min = 1e-4;
+    const amrex::Real z0_min = 1e-4_rt;
+    const amrex::Real Cmu3 = amrex::pow<amrex::Real>(Cmu, 3.0_rt);
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-        amrex::Real bcforcing = 0;
+        amrex::Real bcforcing = 0.0_rt;
         const amrex::Real cell_z0 =
-            has_roughness ? std::max(z0_arr(i, j, k, 0), z0_min) : z0;
+            has_roughness ? amrex::max<amrex::Real>(z0_arr(i, j, k, 0), z0_min) : z0;
         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
         if (k == 0) {
             const amrex::Real ux = vel(i, j, k + 1, 0);
             const amrex::Real uy = vel(i, j, k + 1, 1);
-            const amrex::Real m = std::sqrt(ux * ux + uy * uy);
+            const amrex::Real m = amrex::sqrt<amrex::Real>(ux * ux + uy * uy);
             const amrex::Real ustar =
-                m * kappa / (std::log(3 * z / cell_z0) - psi_m);
+                m * kappa / (amrex::log<amrex::Real>(3 * z / cell_z0) - psi_m);
             const amrex::Real T0 = ref_theta_arr(i, j, k);
-            const amrex::Real hf = std::abs(gravity[2]) / T0 * heat_flux;
-            const amrex::Real rans_b = std::pow(
+            const amrex::Real hf = amrex::abs<amrex::Real>(gravity[2]) / T0 * heat_flux;
+            const amrex::Real rans_b = amrex::pow<amrex::Real>(
                 amrex::max<amrex::Real>(hf, 0.0_rt) * kappa * z /
-                    std::pow(Cmu, 3.0_rt),
+                    Cmu3,
                 (2.0_rt / 3.0_rt));
             bcforcing =
                 (ustar * ustar / (Cmu * Cmu) + rans_b - tke_arr(i, j, k)) /
@@ -155,8 +156,7 @@ void KransAxell::operator()(
         }
         const amrex::Real sponge_forcing =
             1.0_rt / dt * (tke_arr(i, j, k) - ref_tke);
-        dissip_arr(i, j, k) = std::pow(Cmu, 3.0_rt) *
-                              std::pow(tke_arr(i, j, k), 1.5_rt) /
+        dissip_arr(i, j, k) = Cmu3 * amrex::pow<amrex::Real>(tke_arr(i, j, k), 1.5_rt) /
                               (tlscale_arr(i, j, k) + amr_wind::constants::EPS);
         src_term(i, j, k) += shear_prod_arr(i, j, k) + buoy_prod_arr(i, j, k) -
                              dissip_arr(i, j, k) -
@@ -176,21 +176,21 @@ void KransAxell::operator()(
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 const amrex::Real cell_z0 =
-                    drag_arr(i, j, k) * std::max(z0_arr(i, j, k), z0_min) +
+                    drag_arr(i, j, k) * amrex::max<amrex::Real>(z0_arr(i, j, k), z0_min) +
                     (1 - drag_arr(i, j, k)) * z0;
                 amrex::Real terrainforcing = 0;
                 amrex::Real dragforcing = 0;
                 amrex::Real ux = vel(i, j, k + 1, 0);
                 amrex::Real uy = vel(i, j, k + 1, 1);
                 amrex::Real z = 0.5_rt * dx[2];
-                amrex::Real m = std::sqrt(ux * ux + uy * uy);
+                amrex::Real m = amrex::sqrt<amrex::Real>(ux * ux + uy * uy);
                 const amrex::Real ustar =
-                    m * kappa / (std::log(3.0_rt * z / cell_z0) - psi_m);
+                    m * kappa / (amrex::log<amrex::Real>(3.0_rt * z / cell_z0) - psi_m);
                 const amrex::Real T0 = ref_theta_arr(i, j, k);
-                const amrex::Real hf = std::abs(gravity[2]) / T0 * heat_flux;
-                const amrex::Real rans_b = std::pow(
+                const amrex::Real hf = amrex::abs<amrex::Real>(gravity[2]) / T0 * heat_flux;
+                const amrex::Real rans_b = amrex::pow<amrex::Real>(
                     amrex::max<amrex::Real>(hf, 0.0_rt) * kappa * z /
-                        std::pow(Cmu, 3.0_rt),
+                        Cmu3,
                     (2.0_rt / 3.0_rt));
                 terrainforcing =
                     (ustar * ustar / (Cmu * Cmu) + rans_b - tke_arr(i, j, k)) /
@@ -202,7 +202,7 @@ void KransAxell::operator()(
                 ux = vel(i, j, k, 0);
                 uy = vel(i, j, k, 1);
                 const amrex::Real uz = vel(i, j, k, 2);
-                m = std::sqrt(ux * ux + uy * uy + uz * uz);
+                m = amrex::sqrt<amrex::Real>(ux * ux + uy * uy + uz * uz);
                 const amrex::Real Cd = amrex::min<amrex::Real>(
                     10.0_rt / (dx[2] * m + amr_wind::constants::EPS),
                     100.0_rt / dx[2]);
