@@ -53,10 +53,10 @@ struct MLMGOptions
     int max_order{2};
 
     //! Relative tolerance for convergence of MLMG solvers
-    amrex::Real rel_tol{std::numeric_limits<amrex::Real>::epsilon() * 1.0e3_rt};
+    amrex::Real rel_tol{std::numeric_limits<amrex::Real>::epsilon() * 1.0e5_rt};
 
     //! Absolute tolerance for convergence checks
-    amrex::Real abs_tol{std::numeric_limits<amrex::Real>::epsilon() * 1.0e1_rt};
+    amrex::Real abs_tol{std::numeric_limits<amrex::Real>::epsilon() * 1.0e2_rt};
 
 private:
     void parse_options(const std::string& /*prefix*/);
@@ -76,12 +76,11 @@ private:
     std::string m_hypre_interface{"ij"};
 
     //! Relative tolerance for convergence of MLMG solvers
-    amrex::Real m_bottom_rel_tol{
-        std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt};
+    amrex::Real m_bottom_rel_tol{1.0e-4_rt};
 
     //! Absolute tolerance for convergence checks
     amrex::Real m_bottom_abs_tol{
-        std::numeric_limits<amrex::Real>::epsilon() * 1.0e3_rt};
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt};
 
     /** Verbosity of the MLMG and Projector interfaces
      */
