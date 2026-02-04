@@ -122,7 +122,8 @@ void QCriterionRefinement::operator()(
             const auto qc_nondim =
                 0.5_rt *
                 (W2 / amrex::max<amrex::Real>(
-                          S2, std::numeric_limits<amrex::Real>::epsilon()) -
+                          S2, std::numeric_limits<amrex::Real>::epsilon() *
+                                  1.0e3_rt) -
                  1.0_rt);
 
             if ((nondim && qc_nondim > qc_val) ||

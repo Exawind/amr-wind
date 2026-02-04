@@ -11,7 +11,7 @@ namespace amr_wind::constants {
 
 //! A number close to zero
 static constexpr amrex::Real SMALL_NUM =
-    static_cast<amrex::Real>(std::numeric_limits<amrex::Real>::epsilon());
+    static_cast<amrex::Real>(std::numeric_limits<amrex::Real>::min());
 
 //! A number very close to zero
 static constexpr amrex::Real EPS =
@@ -19,11 +19,11 @@ static constexpr amrex::Real EPS =
 
 //! A tight tolerance
 static constexpr amrex::Real TIGHT_TOL =
-    std::numeric_limits<amrex::Real>::epsilon() * 1.0e2_rt;
+    std::numeric_limits<amrex::Real>::epsilon() * 1.0e3_rt;
 
 //! A loose tolerance
 static constexpr amrex::Real LOOSE_TOL =
-    std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
+    std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt;
 
 //! A large negative number
 static constexpr amrex::Real LOW_NUM =

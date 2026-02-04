@@ -513,21 +513,23 @@ bool FreeSurfaceSampler::update_sampling_locations()
                                 const bool single_phase_below_interface =
                                     (ni % 2 == 0 &&
                                      vof_arr(i, j, k) >=
-                                         1.0_rt -
-                                             std::numeric_limits<
-                                                 amrex::Real>::epsilon()) ||
+                                         1.0_rt - std::numeric_limits<
+                                                      amrex::Real>::epsilon() *
+                                                      1.0e3_rt) ||
                                     (ni % 2 != 0 &&
                                      vof_arr(i, j, k) <=
                                          std::numeric_limits<
-                                             amrex::Real>::epsilon());
+                                             amrex::Real>::epsilon() *
+                                             1.0e3_rt);
                                 const bool multiphase =
                                     vof_arr(i, j, k) <
-                                        (1.0_rt -
-                                         std::numeric_limits<
-                                             amrex::Real>::epsilon()) &&
+                                        (1.0_rt - std::numeric_limits<
+                                                      amrex::Real>::epsilon() *
+                                                      1.0e3_rt) &&
                                     vof_arr(i, j, k) >
                                         std::numeric_limits<
-                                            amrex::Real>::epsilon();
+                                            amrex::Real>::epsilon() *
+                                            1.0e3_rt;
                                 const bool use_linear_interp =
                                     (has_overset && ibl_arr(i, j, k) == -1) ||
                                     linear_on;
@@ -691,7 +693,8 @@ bool FreeSurfaceSampler::update_sampling_locations()
                                             0.5_rt * dx[dir] *
                                                 (1.0_rt +
                                                  std::numeric_limits<
-                                                     amrex::Real>::epsilon())) {
+                                                     amrex::Real>::epsilon() *
+                                                     1.0e5_rt)) {
                                         ht = xm[dir] + 0.5_rt * dx[dir];
                                     }
                                     // Save interface location by atomic max

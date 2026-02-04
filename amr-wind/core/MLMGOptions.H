@@ -53,7 +53,7 @@ struct MLMGOptions
     int max_order{2};
 
     //! Relative tolerance for convergence of MLMG solvers
-    amrex::Real rel_tol{std::numeric_limits<amrex::Real>::epsilon() * 1.0e2_rt};
+    amrex::Real rel_tol{std::numeric_limits<amrex::Real>::epsilon() * 1.0e3_rt};
 
     //! Absolute tolerance for convergence checks
     amrex::Real abs_tol{std::numeric_limits<amrex::Real>::epsilon() * 1.0e1_rt};
@@ -77,11 +77,11 @@ private:
 
     //! Relative tolerance for convergence of MLMG solvers
     amrex::Real m_bottom_rel_tol{
-        std::numeric_limits<amrex::Real>::epsilon() * 1.0e2_rt};
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt};
 
     //! Absolute tolerance for convergence checks
     amrex::Real m_bottom_abs_tol{
-        std::numeric_limits<amrex::Real>::epsilon() * 1.0e1_rt};
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e3_rt};
 
     /** Verbosity of the MLMG and Projector interfaces
      */

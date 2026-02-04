@@ -145,7 +145,7 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(
                          gradOmega_arrs[nbx](i, j, k, 2));
 
                 amrex::Real cdkomega = amrex::max<amrex::Real>(
-                    std::numeric_limits<amrex::Real>::epsilon() * 1.0e2_rt,
+                    std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt,
                     2.0_rt * rho_arrs[nbx](i, j, k) * sigma_omega2 * gko /
                         (sdr_arrs[nbx](i, j, k) +
                          std::numeric_limits<amrex::Real>::epsilon()));

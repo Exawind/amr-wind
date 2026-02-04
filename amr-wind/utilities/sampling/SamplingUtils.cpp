@@ -60,7 +60,7 @@ vs::Tensor rotation_matrix(vs::Vector dst, vs::Vector src)
     const auto ang = dst & src;
 
     const amrex::Real small =
-        std::numeric_limits<amrex::Real>::epsilon() * vs::mag(dst);
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e2_rt * vs::mag(dst);
     if (std::abs(1 + ang) < small) {
         return scale(vs::Tensor::identity(), -1);
     }

@@ -323,7 +323,7 @@ bool DTUSpinnerSampler::update_sampling_locations()
     amrex::Real start_diff = std::abs(time - start_time);
 
     // Initialize the sampling time to the first time in the simulation
-    if (start_diff < std::numeric_limits<amrex::Real>::epsilon() * 1.0e2_rt &&
+    if (start_diff < std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt &&
         m_update_count == 0) {
         m_time_sampling = time;
         m_hub_location_init = m_hub_location;
@@ -389,12 +389,12 @@ bool DTUSpinnerSampler::update_sampling_locations()
             if (k < m_ns) {
                 amrex::Real step =
                     (start_diff >
-                     std::numeric_limits<amrex::Real>::epsilon() * 1.0e2_rt)
+                     std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt)
                         ? 1.0_rt * k
                         : 0.0_rt;
                 amrex::Real srat =
                     (start_diff >
-                     std::numeric_limits<amrex::Real>::epsilon() * 1.0e2_rt)
+                     std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt)
                         ? step / m_ns
                         : 0.0_rt;
 
