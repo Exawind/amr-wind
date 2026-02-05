@@ -9,10 +9,6 @@ using namespace amrex::literals;
 
 namespace amr_wind::constants {
 
-//! A number close to zero
-static constexpr amrex::Real SMALL_NUM =
-    static_cast<amrex::Real>(std::numeric_limits<amrex::Real>::min());
-
 //! A number very close to zero
 static constexpr amrex::Real EPS =
     static_cast<amrex::Real>(std::numeric_limits<amrex::Real>::epsilon());

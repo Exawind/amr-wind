@@ -44,7 +44,7 @@ struct PostSolveOp<SDR>
     }
 
     PDEFields& m_fields;
-    amrex::Real clip_value{1.0e-7_rt};
+    amrex::Real clip_value{std::numeric_limits<float>::epsilon()};
 };
 
 template <typename Scheme>

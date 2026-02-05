@@ -690,7 +690,9 @@ bool FreeSurfaceSampler::update_sampling_locations()
                                     // bound, limit it
                                     if (ht >
                                         xm[dir] + 0.5_rt * dx[dir] *
-                                                      (1.0_rt + 1.0e-7_rt)) {
+                                                      (1.0_rt +
+                                                       std::numeric_limits<
+                                                           float>::epsilon())) {
                                         ht = xm[dir] + 0.5_rt * dx[dir];
                                     }
                                     // Save interface location by atomic max
