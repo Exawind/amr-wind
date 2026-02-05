@@ -22,7 +22,8 @@ static constexpr amrex::Real TIGHT_TOL =
     std::numeric_limits<amrex::Real>::epsilon() * 1.0e3_rt;
 
 //! A loose tolerance
-static constexpr amrex::Real LOOSE_TOL = 1.0e-6_rt;
+static constexpr amrex::Real LOOSE_TOL =
+    std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt;
 
 //! A large negative number
 static constexpr amrex::Real LOW_NUM =
