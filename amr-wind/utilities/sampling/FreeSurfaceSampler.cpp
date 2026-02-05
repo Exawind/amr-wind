@@ -515,21 +515,21 @@ bool FreeSurfaceSampler::update_sampling_locations()
                                      vof_arr(i, j, k) >=
                                          1.0_rt - std::numeric_limits<
                                                       amrex::Real>::epsilon() *
-                                                      1.0e3_rt) ||
+                                                      1.0e4_rt) ||
                                     (ni % 2 != 0 &&
                                      vof_arr(i, j, k) <=
                                          std::numeric_limits<
                                              amrex::Real>::epsilon() *
-                                             1.0e3_rt);
+                                             1.0e4_rt);
                                 const bool multiphase =
                                     vof_arr(i, j, k) <
                                         (1.0_rt - std::numeric_limits<
                                                       amrex::Real>::epsilon() *
-                                                      1.0e3_rt) &&
+                                                      1.0e4_rt) &&
                                     vof_arr(i, j, k) >
                                         std::numeric_limits<
                                             amrex::Real>::epsilon() *
-                                            1.0e3_rt;
+                                            1.0e4_rt;
                                 const bool use_linear_interp =
                                     (has_overset && ibl_arr(i, j, k) == -1) ||
                                     linear_on;
@@ -689,12 +689,8 @@ bool FreeSurfaceSampler::update_sampling_locations()
                                     // If interface is above upper
                                     // bound, limit it
                                     if (ht >
-                                        xm[dir] +
-                                            0.5_rt * dx[dir] *
-                                                (1.0_rt +
-                                                 std::numeric_limits<
-                                                     amrex::Real>::epsilon() *
-                                                     1.0e5_rt)) {
+                                        xm[dir] + 0.5_rt * dx[dir] *
+                                                      (1.0_rt + 1.0e-7_rt)) {
                                         ht = xm[dir] + 0.5_rt * dx[dir];
                                     }
                                     // Save interface location by atomic max

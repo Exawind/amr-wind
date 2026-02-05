@@ -173,7 +173,7 @@ public:
     {
         return (
             m_in_data.tinterp() - time >
-            std::numeric_limits<amrex::Real>::epsilon() * 1.0e2_rt);
+            std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
     }
 
     io_mode mode() const { return m_io_mode; }

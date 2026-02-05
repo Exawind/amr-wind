@@ -137,7 +137,7 @@ void OneEqKsgsM84<Transport>::update_turbulent_viscosity(
                       gradT_arrs[nbx](i, j, k, 2) * gravity[2]) *
                     beta_arrs[nbx](i, j, k);
                 if (stratification >
-                    std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt) {
+                    std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt) {
                     tlscale_arrs[nbx](i, j, k) = amrex::min<amrex::Real>(
                         ds,
                         0.76_rt *

@@ -445,7 +445,7 @@ template <typename FType>
 inline void normalize(FType& field)
 {
     const amrex::Real eps =
-        std::numeric_limits<amrex::Real>::epsilon() * 1.0e2_rt;
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
     const auto& repo = field.repo();
     const auto ncomp = field.num_comp();
 

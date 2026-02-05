@@ -159,7 +159,7 @@ void GeostrophicForcing::operator()(
             if (multiphase::interface_band(i, j, k, vof, n_band) ||
                 vof(i, j, k) >
                     1.0_rt - std::numeric_limits<amrex::Real>::epsilon() *
-                                 1.0e2_rt) {
+                                 1.0e4_rt) {
                 // Turn off forcing
                 wfac = 0.0_rt;
             }

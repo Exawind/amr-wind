@@ -94,7 +94,8 @@ struct Qcriterion
                     qcritphi(i, j, k) =
                         0.5_rt *
                         (W2 / amrex::max<amrex::Real>(
-                                  std::numeric_limits<amrex::Real>::epsilon(),
+                                  std::numeric_limits<amrex::Real>::epsilon() *
+                                      1.0e2_rt,
                                   S2) -
                          1.0_rt);
                 } else {

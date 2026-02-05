@@ -572,7 +572,8 @@ TEST_F(VOFOpTest, interface_plane)
         vof_val = amrex::max<amrex::Real>(
             std::numeric_limits<amrex::Real>::epsilon(),
             amrex::min<amrex::Real>(
-                1.0_rt - std::numeric_limits<amrex::Real>::epsilon(), vof_val));
+                1.0_rt - std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt,
+                vof_val));
         // in x
         init_vof_h(vof, vof_val, 0);
         error_total = fit_plane_test_impl_h(vof, vof_val, 0);

@@ -108,11 +108,11 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real amd_muvel(
         }
     }
     denom = amrex::max<amrex::Real>(
-        std::numeric_limits<amrex::Real>::epsilon(), denom);
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e1_rt, denom);
     num_shear *= -C;
     num_buoy *= C * beta * std::abs(gravity[normal_dir]);
     return amrex::max<amrex::Real>(
-        std::numeric_limits<amrex::Real>::epsilon(),
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e1_rt,
         (num_shear + num_buoy) / denom);
 }
 
@@ -138,10 +138,10 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real amd_thermal_diff(
     }
 
     denom = amrex::max<amrex::Real>(
-        std::numeric_limits<amrex::Real>::epsilon(), denom);
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e1_rt, denom);
     num *= -C;
     return amrex::max<amrex::Real>(
-        std::numeric_limits<amrex::Real>::epsilon(), num / denom);
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e1_rt, num / denom);
 }
 
 } // namespace amr_wind::turbulence

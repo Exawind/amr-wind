@@ -198,7 +198,7 @@ bool RadarSampler::update_sampling_locations()
     amrex::Real dt_sample = 1.0_rt / m_sample_freq;
     amrex::Real st_diff = time - start_time;
 
-    if (st_diff < std::numeric_limits<amrex::Real>::epsilon() * 1.0e2_rt) {
+    if (st_diff < std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt) {
         m_radar_time = time;
     }
 

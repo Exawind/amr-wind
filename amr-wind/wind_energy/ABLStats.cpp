@@ -423,7 +423,7 @@ void ABLStats::write_ascii()
     amrex::Real wstar = 0.0_rt;
     const auto ref_theta = m_sim.transport_model().reference_temperature();
     auto Q = m_abl_wall_func.mo().surf_temp_flux;
-    if (Q > std::numeric_limits<amrex::Real>::epsilon() * 1.0e2_rt) {
+    if (Q > std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt) {
         wstar = std::cbrt(m_gravity * Q * m_zi / ref_theta);
     }
     auto L = m_abl_wall_func.mo().obukhov_len;
@@ -616,7 +616,7 @@ void ABLStats::write_netcdf()
         ncf.var("Q").put(&Q, {nt}, {1});
         auto Tsurf = m_abl_wall_func.mo().surf_temp;
         ncf.var("Tsurf").put(&Tsurf, {nt}, {1});
-        if (Q > std::numeric_limits<amrex::Real>::epsilon() * 1.0e2_rt) {
+        if (Q > std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt) {
             wstar = std::cbrt(m_gravity * Q * m_zi / ref_theta);
         }
         ncf.var("wstar").put(&wstar, {nt}, {1});
