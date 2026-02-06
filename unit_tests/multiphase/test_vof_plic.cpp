@@ -570,7 +570,10 @@ TEST_F(VOFOpTest, interface_plane)
     for (int n = 0; n < 20; ++n) {
         amrex::Real vof_val = amrex::Random();
         vof_val = amrex::max<amrex::Real>(
-            1.0e-12_rt, amrex::min<amrex::Real>(1.0_rt - 1.0e-12_rt, vof_val));
+            std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt,
+            amrex::min<amrex::Real>(
+                1.0_rt - std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt,
+                vof_val));
         // in x
         init_vof_h(vof, vof_val, 0);
         error_total = fit_plane_test_impl_h(vof, vof_val, 0);

@@ -195,9 +195,12 @@ void new_wing_position_velocity(
             (std::sin(2.0_rt * static_cast<amrex::Real>(M_PI) * tnp1 / period) -
              std::sin(2.0_rt * static_cast<amrex::Real>(M_PI) * tn / period));
         // The translational velocity over the time step is disp/dt
-        vtr.x() = disp.x() / (tnp1 - tn + 1.0e-20_rt);
-        vtr.y() = disp.y() / (tnp1 - tn + 1.0e-20_rt);
-        vtr.z() = disp.z() / (tnp1 - tn + 1.0e-20_rt);
+        vtr.x() = disp.x() /
+                  (tnp1 - tn + std::numeric_limits<amrex::Real>::epsilon());
+        vtr.y() = disp.y() /
+                  (tnp1 - tn + std::numeric_limits<amrex::Real>::epsilon());
+        vtr.z() = disp.z() /
+                  (tnp1 - tn + std::numeric_limits<amrex::Real>::epsilon());
         // The tiny number in the denominator is important for initialization
     }
     for (int ip = 0; ip < npts; ++ip) {

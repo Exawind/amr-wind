@@ -168,7 +168,7 @@ void SimTime::set_current_cfl(
         (cfl_unit_time < std::numeric_limits<amrex::Real>::epsilon())) {
         // First timestep, starting from t = 0, is special case
         if (m_cur_time < std::numeric_limits<amrex::Real>::epsilon()) {
-            if (m_initial_dt > 0.) {
+            if (m_initial_dt > 0.0_rt) {
                 use_init_dt = true;
             } else {
                 amrex::Abort(
@@ -201,11 +201,11 @@ void SimTime::set_current_cfl(
     }
 
     if (m_adaptive) {
-        if (m_max_dt > 0.) {
+        if (m_max_dt > 0.0_rt) {
             dt_new = amrex::min(dt_new, m_max_dt);
         }
 
-        if (m_min_dt > 0. && dt_new < m_min_dt) {
+        if (m_min_dt > 0.0_rt && dt_new < m_min_dt) {
             amrex::Abort(
                 "CFL restriction on adaptive dt has reduced the time step size "
                 "below the minimum allowable dt (min_dt). Aborting simulation "
@@ -316,7 +316,8 @@ void SimTime::advance_time()
 
 bool SimTime::continue_simulation() const
 {
-    constexpr amrex::Real eps = 1.0e-12_rt;
+    constexpr amrex::Real eps =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
     bool stop_simulation = false;
 
     if (m_stop_time_index == 0) {

@@ -244,7 +244,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void mixed_youngs_central_normal(
     youngs_finite_difference_normal(
         i, j, k, volfrac, m(3, 0), m(3, 1), m(3, 2));
     // normalize the set (mx,my,mz): |mx|+|my|+|mz| = 1
-    constexpr amrex::Real tiny = 1.0e-20_rt;
+    constexpr amrex::Real tiny = std::numeric_limits<amrex::Real>::epsilon();
     t0 = std::abs(m(3, 0)) + std::abs(m(3, 1)) + std::abs(m(3, 2)) + tiny;
     m(3, 0) = m(3, 0) / t0;
     m(3, 1) = m(3, 1) / t0;
@@ -330,7 +330,10 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real volume_intercept(
         p = 2.0_rt * m1 * m2;
         q = 1.5_rt * m1 * m2 * (m12 - 2.0_rt * m3 * ch);
         p12 = std::sqrt(p);
-        teta = std::acos(q / (p * p12 + 1.0e-20_rt)) / 3.0_rt;
+        teta =
+            std::acos(
+                q / (p * p12 + std::numeric_limits<amrex::Real>::epsilon())) /
+            3.0_rt;
         cs = std::cos(teta);
         alpha = p12 * (std::sqrt(3.0_rt * (1.0_rt - cs * cs)) - cs) + m12;
     } else if (m12 < m3) {
@@ -339,7 +342,10 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real volume_intercept(
         p = m1 * (m2 + m3) + m2 * m3 - 0.25_rt;
         q = 1.5_rt * m1 * m2 * m3 * (0.5_rt - ch);
         p12 = std::sqrt(p);
-        teta = std::acos(q / (p * p12 + 1.0e-20_rt)) / 3.0_rt;
+        teta =
+            std::acos(
+                q / (p * p12 + std::numeric_limits<amrex::Real>::epsilon())) /
+            3.0_rt;
         cs = std::cos(teta);
         alpha = p12 * (std::sqrt(3.0_rt * (1.0_rt - cs * cs)) - cs) + 0.5_rt;
     }

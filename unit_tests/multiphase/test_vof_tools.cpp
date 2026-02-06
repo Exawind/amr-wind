@@ -135,7 +135,11 @@ levelset_to_vof_test_impl(const amrex::Real deltax, amr_wind::Field& levelset)
                         i, j, k, 2.0_rt * dx, levelset_arr);
 
                     // Perform checks in multiphase cells
-                    if (vof > 1.0e-12_rt && vof < 1.0_rt - 1.0e-12_rt) {
+                    if (vof > std::numeric_limits<amrex::Real>::epsilon() *
+                                  1.0e4_rt &&
+                        vof < 1.0_rt -
+                                  std::numeric_limits<amrex::Real>::epsilon() *
+                                      1.0e4_rt) {
                         // Integrate to get VOF, check error
                         amrex::Real approx_vof = amrex::min<amrex::Real>(
                             1.0_rt,
@@ -146,13 +150,16 @@ levelset_to_vof_test_impl(const amrex::Real deltax, amr_wind::Field& levelset)
                     }
 
                     // Perform checks in single-phase cells
-                    if (vof <= 1.0e-12_rt) {
+                    if (vof <= std::numeric_limits<amrex::Real>::epsilon() *
+                                   1.0e4_rt) {
                         // Interface should be more than half cell away,
                         // negative levelset value
                         error += amrex::max<amrex::Real>(
                             0.0_rt, 0.5_rt * dx + levelset_arr(i, j, k));
                     }
-                    if (vof >= 1.0_rt - 1.0e-12_rt) {
+                    if (vof >=
+                        1.0_rt - std::numeric_limits<amrex::Real>::epsilon() *
+                                     1.0e4_rt) {
                         // Interface should be more than half cell away,
                         // positive levelset value
                         error += amrex::max<amrex::Real>(

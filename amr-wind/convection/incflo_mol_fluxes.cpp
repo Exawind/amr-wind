@@ -1,7 +1,7 @@
-#include <AMReX_Geometry.H>
-#include <AMReX_Slopes_K.H>
 #include "amr-wind/convection/MOL.H"
 #include "amr-wind/utilities/bc_ops.H"
+#include "AMReX_Geometry.H"
+#include "AMReX_Slopes_K.H"
 #include "AMReX_REAL.H"
 
 using namespace amrex::literals;
@@ -42,7 +42,7 @@ void mol::compute_convective_fluxes(
     amrex::Vector<amrex::Geometry> geom)
 {
     BL_PROFILE("amr-wind::mol::compute_convective_fluxes");
-    constexpr amrex::Real small_vel = 1.0e-8_rt;
+    constexpr amrex::Real small_vel = std::numeric_limits<float>::epsilon();
 
     const amrex::Box& domain_box = geom[lev].Domain();
     const int domain_ilo = domain_box.smallEnd(0);

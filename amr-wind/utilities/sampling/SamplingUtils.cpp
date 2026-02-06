@@ -59,7 +59,8 @@ vs::Tensor rotation_matrix(vs::Vector dst, vs::Vector src)
     auto vmat = skew_cross(dst, src);
     const auto ang = dst & src;
 
-    const amrex::Real small = 1.0e-14_rt * vs::mag(dst);
+    const amrex::Real small =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e2_rt * vs::mag(dst);
     if (std::abs(1 + ang) < small) {
         return scale(vs::Tensor::identity(), -1);
     }
