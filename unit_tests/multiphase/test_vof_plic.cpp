@@ -269,7 +269,8 @@ amrex::Real normal_vector_neumann_test_impl(
 
                     // Use L1 norm, check against non-neumann implementation
                     // Slope across overset boundary should be different
-                    constexpr amrex::Real slp_tol = 1.0e-8_rt;
+                    constexpr amrex::Real slp_tol =
+                        std::numeric_limits<float>::epsilon();
                     if (ibdy != 0) {
                         // x slope should be different
                         error += std::abs(mx - mxn) > slp_tol ? 0.0_rt : 1.0_rt;
@@ -456,7 +457,10 @@ TEST_F(VOFOpTest, volume_intercept)
         mz = mz / mm2;
         // Limit vof values to multiphase range
         vof = amrex::max<amrex::Real>(
-            1.0e-12_rt, amrex::min<amrex::Real>(1.0_rt - 1.0e-12_rt, vof));
+            std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt,
+            amrex::min<amrex::Real>(
+                1.0_rt - std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt,
+                vof));
         // Get intercept value and check for nan
         amrex::Real alpha =
             amr_wind::multiphase::volume_intercept(mx, my, mz, vof);
@@ -494,7 +498,8 @@ TEST_F(VOFOpTest, volume_intercept)
 TEST_F(VOFOpTest, interface_normal)
 {
 
-    constexpr amrex::Real tol = 1.0e-11_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e5_rt;
 
     populate_parameters();
     {
@@ -531,7 +536,8 @@ TEST_F(VOFOpTest, interface_normal)
 TEST_F(VOFOpTest, interface_plane)
 {
 
-    constexpr amrex::Real tol = 1.0e-11_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e5_rt;
 
     populate_parameters();
     {
@@ -595,7 +601,8 @@ TEST_F(VOFOpTest, interface_plane)
 TEST_F(VOFOpTest, interface_normal_neumann)
 {
 
-    constexpr amrex::Real tol = 1.0e-11_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e5_rt;
 
     populate_parameters();
     {

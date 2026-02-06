@@ -75,7 +75,9 @@ TEST_F(FastIfaceTest, fast_init)
 
 #if AW_ENABLE_OPENFAST_UTEST
     fast.init_turbine(fi.tid_local);
-    EXPECT_NEAR(fi.dt_ext, 0.00625_rt, 1.0e-12_rt);
+    EXPECT_NEAR(
+        fi.dt_ext, 0.00625_rt,
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
     EXPECT_EQ(fi.num_substeps, 10);
     EXPECT_EQ(fi.num_blades, 3);
     EXPECT_TRUE(fi.is_solution0);

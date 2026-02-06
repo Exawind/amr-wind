@@ -105,7 +105,8 @@ amrex::Real filtering_test_impl(amr_wind::Field& scalar, const int pdegree)
 TEST_F(FvmOpTestFiltering, filter)
 {
 
-    constexpr amrex::Real tol = 1.0e-11_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e5_rt;
 
     populate_parameters();
     {

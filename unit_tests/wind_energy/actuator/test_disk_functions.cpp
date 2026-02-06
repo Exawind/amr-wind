@@ -52,7 +52,9 @@ TEST_P(TestAreaComputer, area_matches)
             area_computed += m_computer->area_section(i);
         }
     }
-    EXPECT_NEAR(m_area, area_computed, 1.0e-12_rt * m_area);
+    EXPECT_NEAR(
+        m_area, area_computed,
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt * m_area);
 }
 
 TEST_P(TestAreaComputer, weight_sums_to_one)

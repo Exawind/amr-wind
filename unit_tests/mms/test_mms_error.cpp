@@ -70,7 +70,8 @@ TEST_F(MMSMeshTest, mms_error)
     const amrex::Real w_mms_err =
         mms.compute_error(2, velocityf, masa_eval_3d_exact_w);
 
-    const amrex::Real tol = 1.0e-12_rt;
+    const amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
 
     amrex::Array<amrex::Real, AMREX_SPACEDIM> golds = {
         0.67158428586284569_rt, 0.6978702996158761_rt, 0.74092816587175314_rt};

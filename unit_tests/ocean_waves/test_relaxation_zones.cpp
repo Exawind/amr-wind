@@ -180,7 +180,9 @@ amrex::Real gas_velocity_error(
                 amrex::Loop(
                     bx, nc, [=, &error](int i, int j, int k, int n) noexcept {
                         error +=
-                            (vof_arr(i, j, k) < 1.0e-12_rt
+                            (vof_arr(i, j, k) < std::numeric_limits<
+                                                    amrex::Real>::epsilon() *
+                                                    1.0e4_rt
                                  ? std::abs(vel_arr(i, j, k, n) - gvel)
                                  : 0.0_rt);
                     });
@@ -297,7 +299,8 @@ amrex::Real uface_bdy_error(amr_wind::Field& comp, amr_wind::Field& targ)
 
 TEST_F(OceanWavesOpTest, relaxation_zone)
 {
-    constexpr amrex::Real tol = 1.0e-12_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
 
     populate_parameters();
     {

@@ -83,7 +83,8 @@ TEST_F(PostProcTimeTest, time_interval)
 
     EXPECT_EQ(out_counter, 1 + 5);
     EXPECT_NEAR(
-        out_time_sum, 0. + 1.2_rt + 2.1_rt + 3.0_rt + 4.2_rt + 5.1_rt, 1e-8);
+        out_time_sum, 0. + 1.2_rt + 2.1_rt + 3.0_rt + 4.2_rt + 5.1_rt,
+        std::numeric_limits<float>::epsilon());
     EXPECT_EQ(out_step_sum, 4 + 7 + 10 + 14 + 17);
 
     // Remove file
@@ -141,7 +142,9 @@ TEST_F(PostProcTimeTest, enforce_time_interval)
     }
 
     EXPECT_EQ(out_counter, 3);
-    EXPECT_NEAR(out_time_sum, 0. + 0.45_rt + 2. * 0.45_rt, 1e-8);
+    EXPECT_NEAR(
+        out_time_sum, 0. + 0.45_rt + 2. * 0.45_rt,
+        std::numeric_limits<float>::epsilon());
     EXPECT_EQ(out_step_sum, 2 + 9);
 
     // Remove file
@@ -198,7 +201,7 @@ TEST_F(PostProcTimeTest, output_end)
     }
 
     EXPECT_EQ(out_counter, 1);
-    EXPECT_NEAR(out_time_sum, 6.3_rt, 1e-8);
+    EXPECT_NEAR(out_time_sum, 6.3_rt, std::numeric_limits<float>::epsilon());
     EXPECT_EQ(out_step_sum, 21);
 
     // Remove file
@@ -256,7 +259,7 @@ TEST_F(PostProcTimeTest, time_output_end)
     }
 
     EXPECT_EQ(out_counter, 1);
-    EXPECT_NEAR(out_time_sum, 6.3_rt, 1e-8);
+    EXPECT_NEAR(out_time_sum, 6.3_rt, std::numeric_limits<float>::epsilon());
     EXPECT_EQ(out_step_sum, 21);
 
     // Remove file

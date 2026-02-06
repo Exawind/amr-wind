@@ -104,7 +104,8 @@ using ICNSFields =
 
 TEST_F(ABLOffshoreMeshTest, abl_forcing)
 {
-    constexpr amrex::Real tol = 1.0e-12_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
     populate_parameters();
     initialize_mesh();
 
@@ -208,7 +209,8 @@ TEST_F(ABLOffshoreMeshTest, abl_forcing)
 
 TEST_F(ABLOffshoreMeshTest, geostrophic_forcing)
 {
-    constexpr amrex::Real tol = 1.0e-12_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
     populate_parameters();
 
     amrex::ParmParse pp("CoriolisForcing");
@@ -306,7 +308,8 @@ TEST_F(ABLOffshoreMeshTest, geostrophic_forcing)
 
 TEST_F(ABLOffshoreMeshTest, boussinesq)
 {
-    constexpr amrex::Real tol = 1.0e-12_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
 
     // Initialize parameters
     populate_parameters();

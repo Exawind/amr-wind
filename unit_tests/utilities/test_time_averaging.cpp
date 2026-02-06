@@ -39,7 +39,7 @@ protected:
     const std::string m_name = "temperature_mean_tavg";
     const amrex::Real m_fwidth = 2.0_rt;
     const amrex::Real m_dt = 0.1_rt;
-    const amrex::Real m_tol = 1.0e-8_rt;
+    const amrex::Real m_tol = std::numeric_limits<float>::epsilon();
 };
 
 TEST_F(TimeAveragingTest, every_step)

@@ -154,7 +154,8 @@ TEST_F(ActuatorTest, act_container)
     // Check the interpolated velocity field
     {
         namespace vs = amr_wind::vs;
-        constexpr amrex::Real rtol = 1.0e-12_rt;
+        constexpr amrex::Real rtol =
+            std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
         amrex::Real rerr = 0.0_rt;
         const int npts = ac.num_actuator_points();
         const auto& pvec = data.position;

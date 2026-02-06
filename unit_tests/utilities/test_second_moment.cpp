@@ -25,7 +25,8 @@ public:
 
 TEST_F(SecondMomentAveragingTest, test_constant)
 {
-    constexpr amrex::Real tol = 1.0e-12_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
     constexpr amrex::Real u0 = 2.3_rt, v0 = 3.5_rt, w0 = 5.6_rt;
 
     populate_parameters();
@@ -89,7 +90,8 @@ void add_linear(
 TEST_F(SecondMomentAveragingTest, test_linear)
 {
 
-    constexpr amrex::Real tol = 1.0e-12_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
 
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> u0 = {
         {1.0_rt, 3.5_rt, 5.6_rt}};
@@ -196,7 +198,8 @@ void add_periodic(
 void SecondMomentAveragingTest::test_dir(int dir)
 {
 
-    constexpr amrex::Real tol = 1.0e-12_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
     constexpr amrex::Real u0 = 2.3_rt, v0 = 3.5_rt, w0 = 5.6_rt;
 
     populate_parameters();

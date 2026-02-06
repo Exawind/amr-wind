@@ -295,7 +295,8 @@ TEST_F(SamplingTest, probe_sampler)
 {
     initialize_mesh();
 
-    constexpr amrex::Real tol = 1.0e-12_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
     std::string fname = "probes.txt";
     // Write file
     write_probe_sampler_file(fname);
@@ -452,7 +453,7 @@ TEST_F(SamplingTest, radar_sampler)
 TEST_F(SamplingTest, sampling_utils)
 {
     namespace vs = amr_wind::vs;
-    amrex::Real toler = 1.0e-10_rt;
+    amrex::Real toler = std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt;
     vs::Vector unitx{1.0_rt, 0.0_rt, 0.0_rt};
     vs::Vector unity{0.0_rt, 1.0_rt, 0.0_rt};
     vs::Vector unitz{0.0_rt, 0.0_rt, 1.0_rt};
@@ -481,7 +482,7 @@ TEST_F(SamplingTest, sampling_utils)
 
 TEST_F(SamplingTest, quadrature)
 {
-    amrex::Real toler = 1.0e-12_rt;
+    amrex::Real toler = std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
     namespace vs = amr_wind::vs;
     namespace su = amr_wind::sampling::sampling_utils;
     int ntheta = 5;

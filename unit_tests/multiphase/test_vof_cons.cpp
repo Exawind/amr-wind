@@ -139,7 +139,8 @@ protected:
 
     void testing_coorddir(const int dir, amrex::Real CFL)
     {
-        constexpr amrex::Real tol = 1.0e-15_rt;
+        constexpr amrex::Real tol =
+            std::numeric_limits<amrex::Real>::epsilon() * 1.0e1_rt;
 
         // Flow-through time
         const amrex::Real ft_time = 1.0_rt / m_vel;

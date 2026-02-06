@@ -376,7 +376,8 @@ protected:
     const amrex::Real m_dt = 0.45_rt * 0.5_rt / m_vel; // first number is CFL
 };
 
-constexpr amrex::Real tol1 = 1.0e-15_rt;
+constexpr amrex::Real tol1 =
+    std::numeric_limits<amrex::Real>::epsilon() * 1.0e1_rt;
 
 TEST_F(VOFBCTest, dirichletX) { testing_bc_coorddir(1, 0, tol1); }
 TEST_F(VOFBCTest, slipwallY) { testing_bc_coorddir(2, 1, tol1); }

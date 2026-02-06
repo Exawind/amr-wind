@@ -44,7 +44,9 @@ TEST_F(OceanWavesW2ATest, time_advance)
     EXPECT_TRUE(resize_flag);
     EXPECT_EQ(t, 0.1_rt);
     EXPECT_EQ(t_last, newtime);
-    EXPECT_NEAR(f_interp, newtime / t, 1.0e-10_rt);
+    EXPECT_NEAR(
+        f_interp, newtime / t,
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt);
 
     // Upon initialization without waves, when t_last has not been modified
     read_flag = false;
@@ -64,7 +66,9 @@ TEST_F(OceanWavesW2ATest, time_advance)
     // Double data routine changes t_last_prior
     t_last_prior = (ntime - 1) * dt_modes;
     f_interp = (newtime - t_last_prior) / (t - t_last_prior);
-    EXPECT_NEAR(f_interp, newtime / t, 1.0e-10_rt);
+    EXPECT_NEAR(
+        f_interp, newtime / t,
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt);
 
     // Upon initialization as restart, when t_last has not been modified
     read_flag = false;
@@ -85,7 +89,9 @@ TEST_F(OceanWavesW2ATest, time_advance)
     // Double data routine changes t_last_prior
     t_last_prior = (ntime - 1) * dt_modes;
     f_interp = (newtime - t_last_prior) / (t - t_last_prior);
-    EXPECT_NEAR(f_interp, (3.99_rt - 3.9_rt) / dt_modes, 1.0e-10_rt);
+    EXPECT_NEAR(
+        f_interp, (3.99_rt - 3.9_rt) / dt_modes,
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt);
 
     // Upon initialization as restart, when newtime happens to be at ntime
     read_flag = false;
@@ -105,7 +111,9 @@ TEST_F(OceanWavesW2ATest, time_advance)
     EXPECT_TRUE(resize_flag);
     EXPECT_EQ(t, 40 * dt_modes);
     EXPECT_EQ(t_last, newtime);
-    EXPECT_NEAR(f_interp, 1.0_rt, 1.0e-10_rt);
+    EXPECT_NEAR(
+        f_interp, 1.0_rt,
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt);
 
     // The following 3 tests are for during initial iterations (after the first)
     // -- Beginning from time = 0. --
@@ -126,7 +134,9 @@ TEST_F(OceanWavesW2ATest, time_advance)
     EXPECT_FALSE(read_flag);
     EXPECT_FALSE(resize_flag);
     EXPECT_EQ(t_last, newtime);
-    EXPECT_NEAR(f_interp, 0.0_rt, 1.0e-10_rt);
+    EXPECT_NEAR(
+        f_interp, 0.0_rt,
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt);
     // -- Beginning from time = 3.98_rt --
     read_flag = false;
     resize_flag = false;
@@ -145,7 +155,9 @@ TEST_F(OceanWavesW2ATest, time_advance)
     EXPECT_FALSE(read_flag);
     EXPECT_FALSE(resize_flag);
     EXPECT_EQ(t_last, newtime);
-    EXPECT_NEAR(f_interp, 0.0_rt, 1.0e-10_rt);
+    EXPECT_NEAR(
+        f_interp, 0.0_rt,
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt);
     // -- Beginning from time = 3.99_rt --
     read_flag = false;
     resize_flag = false;
@@ -158,13 +170,16 @@ TEST_F(OceanWavesW2ATest, time_advance)
     evaluate_read_resize(
         ntime, read_flag, resize_flag, t, t_last, new_ntime, t_winit, dt_modes,
         newtime);
-    f_interp = (newtime - t_last_prior) / (t - t_last_prior + 1.0e-16_rt);
+    f_interp = (newtime - t_last_prior) /
+               (t - t_last_prior + std::numeric_limits<amrex::Real>::epsilon());
     // Should not regrid nor read, time interpolation should do nothing
     EXPECT_EQ(ntime, new_ntime);
     EXPECT_FALSE(read_flag);
     EXPECT_FALSE(resize_flag);
     EXPECT_EQ(t_last, newtime);
-    EXPECT_NEAR(f_interp, 0.0_rt, 1.0e-10_rt);
+    EXPECT_NEAR(
+        f_interp, 0.0_rt,
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt);
 
     // The following tests are for during ordinary timesteps
     // -- No resize, no reading, just interp
@@ -184,7 +199,9 @@ TEST_F(OceanWavesW2ATest, time_advance)
     EXPECT_FALSE(read_flag);
     EXPECT_FALSE(resize_flag);
     EXPECT_EQ(t_last, newtime);
-    EXPECT_NEAR(f_interp, 0.01_rt / 0.02_rt, 1.0e-10_rt);
+    EXPECT_NEAR(
+        f_interp, 0.01_rt / 0.02_rt,
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt);
     // -- No resize, yes reading
     resize_flag = false;
     read_flag = false;
@@ -202,7 +219,9 @@ TEST_F(OceanWavesW2ATest, time_advance)
     EXPECT_FALSE(resize_flag);
     EXPECT_EQ(t, 41 * dt_modes);
     EXPECT_EQ(t_last, newtime);
-    EXPECT_NEAR(f_interp, 0.01_rt / (4.1_rt - 4.0_rt), 1.0e-10_rt);
+    EXPECT_NEAR(
+        f_interp, 0.01_rt / (4.1_rt - 4.0_rt),
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt);
     // -- No resize, yes reading, big timestep means amrex::Real read
     resize_flag = false;
     read_flag = false;
@@ -223,7 +242,9 @@ TEST_F(OceanWavesW2ATest, time_advance)
     EXPECT_EQ(t, 42 * dt_modes);
     EXPECT_EQ(t_last, newtime);
     // interp is from 4.1_rt (replaced) to 4.15_rt
-    EXPECT_NEAR(f_interp, (4.15_rt - 4.1_rt) / (4.2_rt - 4.1_rt), 1.0e-10_rt);
+    EXPECT_NEAR(
+        f_interp, (4.15_rt - 4.1_rt) / (4.2_rt - 4.1_rt),
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt);
     // -- No resize, yes reading, big timestep leads to convenient single read
     resize_flag = false;
     read_flag = false;
@@ -243,7 +264,9 @@ TEST_F(OceanWavesW2ATest, time_advance)
     EXPECT_EQ(t, 42 * dt_modes);
     EXPECT_EQ(t_last, newtime);
     // interp is from 4.0_rt to 4.2_rt, but it leads to 1
-    EXPECT_NEAR(f_interp, (4.2_rt - 4.0_rt) / (4.2_rt - 4.0_rt), 1.0e-10_rt);
+    EXPECT_NEAR(
+        f_interp, (4.2_rt - 4.0_rt) / (4.2_rt - 4.0_rt),
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt);
 }
 
 TEST_F(OceanWavesW2ATest, time_reset)
@@ -289,8 +312,10 @@ TEST_F(OceanWavesW2ATest, time_interp)
     // Check value of levelset
     const amrex::Real fmax1 = utils::field_max(lvs);
     const amrex::Real fmin1 = utils::field_min(lvs);
-    EXPECT_NEAR(fmax1, 0.5_rt, 1.0e-10_rt);
-    EXPECT_NEAR(fmin1, 0.5_rt, 1.0e-10_rt);
+    EXPECT_NEAR(
+        fmax1, 0.5_rt, std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt);
+    EXPECT_NEAR(
+        fmin1, 0.5_rt, std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt);
 
     // Step forward in time, after current w2a data
     t_sim += 1.;
@@ -311,8 +336,10 @@ TEST_F(OceanWavesW2ATest, time_interp)
     // Check value of levelset
     const amrex::Real fmax2 = utils::field_max(lvs);
     const amrex::Real fmin2 = utils::field_min(lvs);
-    EXPECT_NEAR(fmax2, 0.5_rt, 1.0e-10_rt);
-    EXPECT_NEAR(fmin2, 0.5_rt, 1.0e-10_rt);
+    EXPECT_NEAR(
+        fmax2, 0.5_rt, std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt);
+    EXPECT_NEAR(
+        fmin2, 0.5_rt, std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt);
 }
 
 } // namespace amr_wind_tests

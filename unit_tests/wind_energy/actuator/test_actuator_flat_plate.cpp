@@ -128,10 +128,18 @@ struct InitDataOp<::amr_wind_tests::FlatPlate, SrcTrait>
                 (grid.orientation[0].x().unit() ^ vs::Vector::ihat()) &
                 vs::Vector::jhat());
             auto angle_gold = ::amr_wind::utils::radians(wdata.pitch);
-            EXPECT_NEAR(wing_len, 8.0_rt, 1.0e-12_rt);
-            EXPECT_NEAR(angle1, angle_gold, 1.0e-12_rt);
-            EXPECT_NEAR(angle2, -angle_gold, 1.0e-12_rt);
-            EXPECT_NEAR(vs::mag_sqr(grid.orientation[0]), 3.0_rt, 1.0e-12_rt);
+            EXPECT_NEAR(
+                wing_len, 8.0_rt,
+                std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
+            EXPECT_NEAR(
+                angle1, angle_gold,
+                std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
+            EXPECT_NEAR(
+                angle2, -angle_gold,
+                std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
+            EXPECT_NEAR(
+                vs::mag_sqr(grid.orientation[0]), 3.0_rt,
+                std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
         }
     }
 };
@@ -150,7 +158,9 @@ struct UpdateVelOp<::amr_wind_tests::FlatPlate, SrcTrait>
             const vs::Vector vgold{val, val, val};
             rerr += vs::mag_sqr(vel[i] - vgold);
         }
-        EXPECT_NEAR(rerr, 0.0_rt, 1.0e-12_rt);
+        EXPECT_NEAR(
+            rerr, 0.0_rt,
+            std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
     }
 };
 

@@ -131,8 +131,12 @@ TEST_F(FieldRepoTest, field_get)
         for (int i = 0; i < AMREX_SPACEDIM; ++i) {
             const auto min_vel = it->min(i);
             const auto max_vel = it->max(i);
-            EXPECT_NEAR(min_vel, golds[i], 1.0e-12_rt);
-            EXPECT_NEAR(min_vel, max_vel, 1.0e-12_rt);
+            EXPECT_NEAR(
+                min_vel, golds[i],
+                std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
+            EXPECT_NEAR(
+                min_vel, max_vel,
+                std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
         }
     }
 }
@@ -167,8 +171,12 @@ TEST_F(FieldRepoTest, field_multiple_states)
         for (int i = 0; i < AMREX_SPACEDIM; ++i) {
             const auto min_val = veldiff(lev).min(i);
             const auto max_val = veldiff(lev).max(i);
-            EXPECT_NEAR(min_val, golds[i], 1.0e-12_rt);
-            EXPECT_NEAR(min_val, max_val, 1.0e-12_rt);
+            EXPECT_NEAR(
+                min_val, golds[i],
+                std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
+            EXPECT_NEAR(
+                min_val, max_val,
+                std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
         }
     }
 }
@@ -233,8 +241,12 @@ TEST_F(FieldRepoTest, field_advance_states)
             const auto old_max = vel_old(lev).max(i);
             const auto new_min = velocity(lev).min(i);
             const auto new_max = velocity(lev).max(i);
-            EXPECT_NEAR(old_min, new_min, 1.0e-12_rt);
-            EXPECT_NEAR(old_max, new_max, 1.0e-12_rt);
+            EXPECT_NEAR(
+                old_min, new_min,
+                std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
+            EXPECT_NEAR(
+                old_max, new_max,
+                std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
         }
     }
 }
@@ -273,8 +285,12 @@ TEST_F(FieldRepoTest, field_create_state)
 
     const int nlevels = field_repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
-        EXPECT_NEAR(rho_nph(lev).min(0), rho_val, 1.0e-12_rt);
-        EXPECT_NEAR(rho_nph(lev).max(0), rho_val, 1.0e-12_rt);
+        EXPECT_NEAR(
+            rho_nph(lev).min(0), rho_val,
+            std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
+        EXPECT_NEAR(
+            rho_nph(lev).max(0), rho_val,
+            std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
     }
 
     // Ensure that advance states is a no op
@@ -310,8 +326,12 @@ TEST_F(FieldRepoTest, scratch_fields)
     amr_wind::field_ops::copy(*rho_nph, rho, 0, 0, 1, 0);
 
     for (int lev = 0; lev < nlevels; ++lev) {
-        EXPECT_NEAR((*rho_nph)(lev).min(0), 1.225_rt, 1.0e-12_rt);
-        EXPECT_NEAR((*rho_nph)(lev).max(0), 1.225_rt, 1.0e-12_rt);
+        EXPECT_NEAR(
+            (*rho_nph)(lev).min(0), 1.225_rt,
+            std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
+        EXPECT_NEAR(
+            (*rho_nph)(lev).max(0), 1.225_rt,
+            std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
     }
 }
 
@@ -402,8 +422,12 @@ TEST_F(FieldRepoTest, field_subviews)
 
         int nlevels = repo.num_active_levels();
         for (int lev = 0; lev < nlevels; ++lev) {
-            EXPECT_NEAR(wvel(lev).min(0), 30.0_rt, 1.0e-12_rt);
-            EXPECT_NEAR(wvel(lev).max(0), 30.0_rt, 1.0e-12_rt);
+            EXPECT_NEAR(
+                wvel(lev).min(0), 30.0_rt,
+                std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
+            EXPECT_NEAR(
+                wvel(lev).max(0), 30.0_rt,
+                std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
         }
     }
 
@@ -412,10 +436,18 @@ TEST_F(FieldRepoTest, field_subviews)
         EXPECT_TRUE(vel2d.num_comp() == 2);
         int nlevels = repo.num_active_levels();
         for (int lev = 0; lev < nlevels; ++lev) {
-            EXPECT_NEAR(vel2d(lev).min(0), 10.0_rt, 1.0e-12_rt);
-            EXPECT_NEAR(vel2d(lev).max(0), 10.0_rt, 1.0e-12_rt);
-            EXPECT_NEAR(vel2d(lev).min(1), 20.0_rt, 1.0e-12_rt);
-            EXPECT_NEAR(vel2d(lev).max(1), 20.0_rt, 1.0e-12_rt);
+            EXPECT_NEAR(
+                vel2d(lev).min(0), 10.0_rt,
+                std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
+            EXPECT_NEAR(
+                vel2d(lev).max(0), 10.0_rt,
+                std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
+            EXPECT_NEAR(
+                vel2d(lev).min(1), 20.0_rt,
+                std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
+            EXPECT_NEAR(
+                vel2d(lev).max(1), 20.0_rt,
+                std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
         }
     }
 }

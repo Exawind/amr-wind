@@ -43,7 +43,8 @@ TEST_F(ABLMeshTest, abl_initialization)
         });
 
     const int nlevels = mesh().num_levels();
-    const amrex::Real tol = 1.0e-12_rt;
+    const amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
 
     // Test temperature
     {
