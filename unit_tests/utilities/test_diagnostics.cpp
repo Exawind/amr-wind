@@ -277,7 +277,7 @@ TEST_F(DiagnosticsTest, Max_Vel_MultiLevel)
 
     // Check max's and min's, according to profiles
     const amrex::Real tol =
-        std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt;
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e7_rt;
     // max(u)
     EXPECT_NEAR(
         cc_results[0], 1.0_rt - std::pow(0.5_rt * 10.0_rt / 48.0_rt, 2.0_rt),

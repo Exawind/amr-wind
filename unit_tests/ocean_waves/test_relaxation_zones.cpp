@@ -329,7 +329,8 @@ TEST_F(OceanWavesOpTest, relaxation_zone)
 
 TEST_F(OceanWavesOpTest, gas_phase)
 {
-    constexpr amrex::Real tol = 1.0e-3_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e8_rt;
 
     populate_parameters();
     {

@@ -163,7 +163,8 @@ protected:
     //! Time delay for output
     amrex::Real m_out_time_delay{0.0_rt};
     //! Relative (to dt) tolerance for time interval output
-    amrex::Real m_out_time_tol{1.0e-8_rt};
+    amrex::Real m_out_time_tol{
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt};
     //! Relative (to m_out_time_interval) tolerance for enforcing dt
     amrex::Real m_enforce_dt_tol{1.0e-3_rt};
     //! Flag for enforcing time step based on output time
