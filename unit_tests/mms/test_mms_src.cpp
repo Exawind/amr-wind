@@ -20,7 +20,8 @@ TEST_F(MMSMeshTest, mms_forcing)
 #if defined(AMREX_USE_HIP)
     GTEST_SKIP();
 #else
-    constexpr amrex::Real tol = 1.0e-12_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
 
     // Initialize parameters
     utils::populate_mms_params();

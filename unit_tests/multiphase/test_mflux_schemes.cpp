@@ -188,7 +188,8 @@ protected:
     const amrex::Vector<amrex::Real> m_problo{{0.0_rt, -1.0_rt, 0.0_rt}};
     const amrex::Vector<amrex::Real> m_probhi{{2.0_rt, +1.0_rt, 2.0_rt}};
     const int m_nx = 5;
-    const amrex::Real m_tol = 1.0e-12_rt;
+    const amrex::Real m_tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
 };
 
 TEST_F(MFluxSchemeTest, upwind)

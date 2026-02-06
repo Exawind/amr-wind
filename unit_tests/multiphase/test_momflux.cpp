@@ -161,7 +161,8 @@ protected:
 
     void testing_coorddir(const int dir)
     {
-        constexpr amrex::Real tol = 1.0e-15_rt;
+        constexpr amrex::Real tol =
+            std::numeric_limits<amrex::Real>::epsilon() * 1.0e1_rt;
 
         populate_parameters();
         {

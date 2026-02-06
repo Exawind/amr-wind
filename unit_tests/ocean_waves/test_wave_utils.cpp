@@ -13,7 +13,8 @@ class WaveUtilsTest : public MeshTest
 
 TEST_F(WaveUtilsTest, free_surface_to_vof)
 {
-    constexpr amrex::Real tol = 1.0e-12_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
     constexpr amrex::Real zsl = 1.0_rt;
     constexpr amrex::Real dz = 0.5_rt;
 
@@ -47,7 +48,8 @@ TEST_F(WaveUtilsTest, free_surface_to_vof)
 
 TEST_F(WaveUtilsTest, gamma_generate)
 {
-    constexpr amrex::Real tol = 1.0e-12_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
     constexpr amrex::Real zone_length = 1.5_rt;
 
     const amrex::Real gamma_past_left =
@@ -76,7 +78,8 @@ TEST_F(WaveUtilsTest, gamma_generate)
 
 TEST_F(WaveUtilsTest, gamma_absorb)
 {
-    constexpr amrex::Real tol = 1.0e-12_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
     constexpr amrex::Real zone_length = 1.5_rt;
 
     const amrex::Real gamma_past_left =
@@ -110,7 +113,8 @@ TEST_F(WaveUtilsTest, gamma_absorb)
 
 TEST_F(WaveUtilsTest, ramp)
 {
-    constexpr amrex::Real tol = 1.0e-12_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
     constexpr amrex::Real near_tol = 1.0e-5_rt;
     constexpr amrex::Real ramp_period = 1.5_rt;
 
@@ -138,7 +142,8 @@ TEST_F(WaveUtilsTest, ramp)
 
 TEST_F(WaveUtilsTest, combine_linear)
 {
-    constexpr amrex::Real tol = 1.0e-12_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
     constexpr amrex::Real Gamma = 0.7_rt;
     constexpr amrex::Real target = 2.0_rt;
     constexpr amrex::Real current = 1.5_rt;
@@ -151,7 +156,8 @@ TEST_F(WaveUtilsTest, combine_linear)
 
 TEST_F(WaveUtilsTest, harmonize_profiles)
 {
-    constexpr amrex::Real tol = 1.0e-12_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
     constexpr amrex::Real problo_x = -1.0_rt;
     constexpr amrex::Real probhi_x = 1.0_rt;
     constexpr amrex::Real gen_length = 0.2_rt;
@@ -210,7 +216,8 @@ TEST_F(WaveUtilsTest, harmonize_profiles)
 // Proof of concept test for multiple gammas in x and y
 TEST_F(WaveUtilsTest, gamma_xy)
 {
-    constexpr amrex::Real tol = 1.0e-12_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
     constexpr amrex::Real zone_length = 0.25_rt;
 
     const amrex::Vector<amrex::Real> x{0.0_rt,

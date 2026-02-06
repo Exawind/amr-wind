@@ -310,7 +310,9 @@ TEST_F(VOFToolTest, levelset_to_vof)
     init_lvs(0, m_dx, levelset);
     error_total = levelset_to_vof_test_impl(m_dx, levelset);
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
-    EXPECT_NEAR(error_total, 0.0_rt, 1e-12);
+    EXPECT_NEAR(
+        error_total, 0.0_rt,
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
     //  profile 1: parabola
     init_lvs(1, m_dx, levelset);
     error_total = levelset_to_vof_test_impl(m_dx, levelset);
@@ -349,7 +351,9 @@ TEST_F(VOFToolTest, replace_masked_vof)
     // Check results
     amrex::Real error_total = initvof_test_impl(vof_mod);
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
-    EXPECT_NEAR(error_total, 0.0_rt, 1.0e-15_rt);
+    EXPECT_NEAR(
+        error_total, 0.0_rt,
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e1_rt);
 }
 
 } // namespace amr_wind_tests

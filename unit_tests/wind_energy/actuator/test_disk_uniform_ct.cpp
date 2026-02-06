@@ -44,7 +44,10 @@ TEST_F(UniformCtTest, compute_vecs_from_yaw)
     {
         const vs::Vector gold_vec = {1, 0, 0};
         for (int i = 0; i < 3; i++) {
-            EXPECT_NEAR(gold_vec[i], meta.normal_vec[i], 1.0e-12_rt) << i;
+            EXPECT_NEAR(
+                gold_vec[i], meta.normal_vec[i],
+                std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt)
+                << i;
         }
     }
     {
@@ -52,7 +55,10 @@ TEST_F(UniformCtTest, compute_vecs_from_yaw)
         gold_vec.normalize();
 
         for (int i = 0; i < 3; i++) {
-            EXPECT_NEAR(gold_vec[i], meta.sample_vec[i], 1.0e-12_rt) << i;
+            EXPECT_NEAR(
+                gold_vec[i], meta.sample_vec[i],
+                std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt)
+                << i;
         }
     }
 }
@@ -71,7 +77,10 @@ TEST_F(UniformCtTest, compute_vecs_from_tilt)
     {
         const vs::Vector gold_vec = {0, 0, 1};
         for (int i = 0; i < 3; i++) {
-            EXPECT_NEAR(gold_vec[i], meta.normal_vec[i], 1.0e-12_rt) << i;
+            EXPECT_NEAR(
+                gold_vec[i], meta.normal_vec[i],
+                std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt)
+                << i;
         }
     }
     {
@@ -79,7 +88,10 @@ TEST_F(UniformCtTest, compute_vecs_from_tilt)
         gold_vec.normalize();
 
         for (int i = 0; i < 3; i++) {
-            EXPECT_NEAR(gold_vec[i], meta.sample_vec[i], 1.0e-12_rt) << i;
+            EXPECT_NEAR(
+                gold_vec[i], meta.sample_vec[i],
+                std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt)
+                << i;
         }
     }
     // check that we throw because we've created a bad normal with this much
@@ -106,8 +118,14 @@ TEST_F(UniformCtTest, compute_vecs_with_different_north)
     {
         const auto& gold_vec = north;
         for (int i = 0; i < 3; i++) {
-            EXPECT_NEAR(gold_vec[i], meta.normal_vec[i], 1.0e-12_rt) << i;
-            EXPECT_NEAR(gold_vec[i], meta.sample_vec[i], 1.0e-12_rt) << i;
+            EXPECT_NEAR(
+                gold_vec[i], meta.normal_vec[i],
+                std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt)
+                << i;
+            EXPECT_NEAR(
+                gold_vec[i], meta.sample_vec[i],
+                std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt)
+                << i;
         }
     }
 }
@@ -133,7 +151,10 @@ TEST_F(UniformCtTest, compute_vecs_from_yaw_and_tilt_with_different_north)
     {
         const auto& gold_vec = east;
         for (int i = 0; i < 3; i++) {
-            EXPECT_NEAR(gold_vec[i], meta.normal_vec[i], 1.0e-12_rt) << i;
+            EXPECT_NEAR(
+                gold_vec[i], meta.normal_vec[i],
+                std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt)
+                << i;
         }
     }
     {
@@ -141,7 +162,10 @@ TEST_F(UniformCtTest, compute_vecs_from_yaw_and_tilt_with_different_north)
         gold_vec.normalize();
 
         for (int i = 0; i < 3; i++) {
-            EXPECT_NEAR(gold_vec[i], meta.sample_vec[i], 1.0e-12_rt) << i;
+            EXPECT_NEAR(
+                gold_vec[i], meta.sample_vec[i],
+                std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt)
+                << i;
         }
     }
 }
@@ -180,9 +204,13 @@ TEST_F(
             meta, points, meta.sample_vec, 0, meta.diameters_to_sample);
         amrex::Real mag = vs::mag(points[0]);
         points[0].normalize();
-        EXPECT_NEAR(mag, 1.0_rt, 1.0e-12_rt);
+        EXPECT_NEAR(
+            mag, 1.0_rt,
+            std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
         for (int i = 0; i < 3; i++) {
-            EXPECT_NEAR(points[0][i], meta.sample_vec[i], 1.0e-12_rt);
+            EXPECT_NEAR(
+                points[0][i], meta.sample_vec[i],
+                std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
         }
     }
     {
@@ -191,9 +219,13 @@ TEST_F(
             meta, points, meta.normal_vec, 0, meta.diameters_to_sample);
         amrex::Real mag = vs::mag(points[0]);
         points[0].normalize();
-        EXPECT_NEAR(mag, 1.0_rt, 1.0e-12_rt);
+        EXPECT_NEAR(
+            mag, 1.0_rt,
+            std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
         for (int i = 0; i < 3; i++) {
-            EXPECT_NEAR(points[0][i], meta.normal_vec[i], 1.0e-12_rt);
+            EXPECT_NEAR(
+                points[0][i], meta.normal_vec[i],
+                std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
         }
     }
 }
@@ -219,9 +251,13 @@ TEST_F(UniformCtTest, yawed_normal_is_opposite_expected_wind_dir)
         pp.add("yaw", dir.second);
         ops::base::optional_parameters(meta, ap);
         for (int i = 0; i < AMREX_SPACEDIM; i++) {
-            EXPECT_NEAR(dir.first[i], -meta.normal_vec[i], 1.0e-12_rt)
+            EXPECT_NEAR(
+                dir.first[i], -meta.normal_vec[i],
+                std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt)
                 << "Failure for yaw: " << dir.second << " index: " << i;
-            EXPECT_NEAR(dir.first[i], -meta.sample_vec[i], 1.0e-12_rt)
+            EXPECT_NEAR(
+                dir.first[i], -meta.sample_vec[i],
+                std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt)
                 << "Failure for yaw: " << dir.second << " index: " << i;
         }
     }
@@ -248,7 +284,9 @@ TEST_F(UniformCtTest, sample_yawed_normal_is_opposite_expected_wind_dir)
         pp.add("sample_yaw", dir.second);
         ops::base::optional_parameters(meta, ap);
         for (int i = 0; i < AMREX_SPACEDIM; i++) {
-            EXPECT_NEAR(dir.first[i], -meta.sample_vec[i], 1.0e-12_rt)
+            EXPECT_NEAR(
+                dir.first[i], -meta.sample_vec[i],
+                std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt)
                 << "Failure for sample yaw: " << dir.second << " index: " << i;
         }
     }

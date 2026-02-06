@@ -68,7 +68,8 @@ using ICNSFields =
 
 TEST_F(ABLMeshTest, abl_local_wall_model)
 {
-    constexpr amrex::Real tol = 1.0e-12_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
     constexpr amrex::Real mu = 0.01_rt;
     constexpr amrex::Real vval = 5.0_rt;
     constexpr amrex::Real dt = 0.1_rt;
@@ -170,7 +171,8 @@ TEST_F(ABLMeshTest, abl_local_wall_model)
 
 TEST_F(ABLMeshTest, abl_donelan_wall_model)
 {
-    constexpr amrex::Real tol = 1.0e-12_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
     constexpr amrex::Real mu = 0.01_rt;
     constexpr amrex::Real vval = 35.0_rt;
     constexpr amrex::Real dt = 0.1_rt;

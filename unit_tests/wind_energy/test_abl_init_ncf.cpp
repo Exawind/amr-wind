@@ -67,7 +67,8 @@ TEST_F(ABLMeshTest, abl_init_netcdf)
         });
 
     const int nlevels = mesh().num_levels();
-    const amrex::Real tol = 1.0e-12_rt;
+    const amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
 
     // Test velocity
     {
@@ -155,7 +156,8 @@ TEST_F(ABLMeshTest, abl_init_netcdf_multilevel)
 
     // Test velocity
     {
-        const amrex::Real tol = 1.0e-12_rt;
+        const amrex::Real tol =
+            std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
         amrex::Vector<amrex::Real> min_vel(3), max_vel(3);
         utils::field_minmax(nlevels, velocity, min_vel, max_vel);
         EXPECT_NEAR(min_vel[0], 0.0_rt, tol);

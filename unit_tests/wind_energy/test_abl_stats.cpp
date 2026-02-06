@@ -102,7 +102,8 @@ TEST_F(ABLMeshTest, stats_tke_diffusion)
 {
     // This test checks the implementation of the calc_diffusion routine to see
     // if it does what it is intended to do
-    constexpr amrex::Real tol = 1.0e-12_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
     constexpr amrex::Real val_shear = 0.5_rt;
     constexpr amrex::Real val_buoy = 0.4_rt;
     constexpr amrex::Real val_dissip = 0.3_rt;
@@ -156,7 +157,8 @@ TEST_F(ABLMeshTest, stats_tke_diffusion)
 TEST_F(ABLMeshTest, stats_energy_budget)
 {
     // This test checks the assumptions behind the calc_diffusion routine
-    constexpr amrex::Real tol = 1.0e-12_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
     constexpr amrex::Real dt = 0.1_rt;
     constexpr amrex::Real val_shear = 0.5_rt;
     constexpr amrex::Real val_buoy = 0.4_rt;

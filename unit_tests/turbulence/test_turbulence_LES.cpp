@@ -209,7 +209,8 @@ TEST_F(TurbLESTest, test_smag_setup_calc)
     // Check values of turbulent viscosity
     auto min_val = utils::field_min(muturb);
     auto max_val = utils::field_max(muturb);
-    const amrex::Real tol = 1.0e-12_rt;
+    const amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
     const amrex::Real smag_answer =
         rho0 * std::pow(Cs, 2.0_rt) *
         std::pow(std::cbrt(m_dx * m_dy * m_dz), 2.0_rt) * srate;
@@ -324,7 +325,8 @@ TEST_F(TurbLESTest, test_1eqKsgs_setup_calc)
     // Check values of turbulent viscosity
     const auto min_val = utils::field_min(muturb);
     const auto max_val = utils::field_max(muturb);
-    const amrex::Real tol = 1.0e-12_rt;
+    const amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
     const amrex::Real ksgs_answer =
         rho0 * Ce *
         amrex::min<amrex::Real>(
@@ -415,7 +417,8 @@ TEST_F(TurbLESTest, test_AMD_setup_calc)
     // Check values of turbulent viscosity
     const auto min_val = utils::field_min(muturb);
     const auto max_val = utils::field_max(muturb);
-    const amrex::Real tol = 1.0e-12_rt;
+    const amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
 
     const amrex::Real amd_answer =
         C *
@@ -494,7 +497,8 @@ TEST_F(TurbLESTest, test_AMDNoTherm_setup_calc)
     // Check values of turbulent viscosity
     const auto min_val = utils::field_min(muturb);
     const auto max_val = utils::field_max(muturb);
-    const amrex::Real tol = 1.0e-12_rt;
+    const amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
 
     const amrex::Real amd_answer =
         -C * std::pow(scale, 3.0_rt) *
@@ -564,7 +568,8 @@ TEST_F(TurbLESTest, test_kosovic_setup_calc)
     // Check values of turbulent viscosity
     auto min_val = utils::field_min(muturb);
     auto max_val = utils::field_max(muturb);
-    const amrex::Real tol = 1.0e-12_rt;
+    const amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
     const amrex::Real kosovic_answer =
         rho0 * std::pow(kosovic_Cs, 2.0_rt) *
         std::pow(std::cbrt(m_dx * m_dy * m_dz), 2.0_rt) * srate;

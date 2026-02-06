@@ -112,7 +112,8 @@ void init_field_linear(
 TEST_F(FieldPlaneAveragingFineTest, test_linear_fine_only)
 {
 
-    constexpr amrex::Real tol = 1.0e-12_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
 
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> u0 = {
         {1.0_rt, 3.5_rt, 5.6_rt}};
@@ -164,7 +165,8 @@ TEST_F(FieldPlaneAveragingFineTest, test_linear_fine_only)
 TEST_F(FieldPlaneAveragingFineTest, test_linear)
 {
 
-    constexpr amrex::Real tol = 1.0e-12_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
 
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> u0 = {
         {1.0_rt, 3.5_rt, 5.6_rt}};

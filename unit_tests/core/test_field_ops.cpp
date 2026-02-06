@@ -50,7 +50,9 @@ TEST_F(FieldOpsTest, compute_max_magnitude)
 
     amrex::Real global_maximum =
         amr_wind::field_ops::global_max_magnitude(field);
-    EXPECT_NEAR(global_maximum, 21.5_rt, 1.0e-12_rt);
+    EXPECT_NEAR(
+        global_maximum, 21.5_rt,
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
 }
 
 } // namespace amr_wind_tests

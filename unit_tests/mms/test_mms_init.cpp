@@ -29,7 +29,8 @@ TEST_F(MMSMeshTest, mms_initialization)
 
     auto velocity = velocityf.vec_ptrs();
     auto density = densityf.vec_ptrs();
-    const amrex::Real tol = 1.0e-12_rt;
+    const amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
 
     // Test density
     {

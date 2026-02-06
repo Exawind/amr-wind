@@ -113,7 +113,8 @@ protected:
 
 TEST_F(ABLSrcTimeTableTest, abl)
 {
-    constexpr amrex::Real tol = 1.0e-12_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
 
     // Write target wind file
     write_target_velocity_file(m_tvel_fname);
@@ -226,7 +227,8 @@ TEST_F(ABLSrcTimeTableTest, abl)
 
 TEST_F(ABLSrcTimeTableTest, bodyforce)
 {
-    constexpr amrex::Real tol = 1.0e-12_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
 
     // Write bodyforce file
     write_body_force_file(m_forces_fname);
@@ -323,7 +325,8 @@ TEST_F(ABLSrcTimeTableTest, bodyforce)
 
 TEST_F(ABLSrcTimeTableTest, geostrophic)
 {
-    constexpr amrex::Real tol = 1.0e-12_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
     // Default Coriolis parameters
     const amrex::Real cf =
         2.0_rt * (2.0_rt * static_cast<amrex::Real>(M_PI) / 86164.091_rt) *

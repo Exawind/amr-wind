@@ -172,7 +172,8 @@ TEST_F(DiagnosticsTest, Max_Vel)
         amr_wind::diagnostics::PrintMaxVelLocations(repo, "cell-centered");
 
     // Check max's and min's, according to profiles
-    const amrex::Real tol = 1.0e-10_rt;
+    const amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt;
     // max(u)
     EXPECT_NEAR(
         cc_results[0], 1.0_rt - std::pow(0.5_rt * 10.0_rt / 24.0_rt, 2.0_rt),
@@ -216,7 +217,8 @@ TEST_F(DiagnosticsTest, Max_MACvel)
         amr_wind::diagnostics::PrintMaxMACVelLocations(repo, "face-centered");
 
     // Check max's and min's, according to profiles
-    const amrex::Real tol = 1.0e-10_rt;
+    const amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt;
     // max(umac)
     EXPECT_NEAR(
         fc_results[0], 1.0_rt - std::pow(0.0_rt * 10.0_rt / 24.0_rt, 2.0_rt),
@@ -274,7 +276,8 @@ TEST_F(DiagnosticsTest, Max_Vel_MultiLevel)
         amr_wind::diagnostics::PrintMaxVelLocations(repo, "cell-centered");
 
     // Check max's and min's, according to profiles
-    const amrex::Real tol = 1.0e-10_rt;
+    const amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e7_rt;
     // max(u)
     EXPECT_NEAR(
         cc_results[0], 1.0_rt - std::pow(0.5_rt * 10.0_rt / 48.0_rt, 2.0_rt),
@@ -336,7 +339,8 @@ TEST_F(DiagnosticsTest, Max_MACvel_MultiLevel)
         amr_wind::diagnostics::PrintMaxMACVelLocations(repo, "face-centered");
 
     // Check max's and min's, according to profiles
-    const amrex::Real tol = 1.0e-10_rt;
+    const amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e7_rt;
     // max(umac)
     EXPECT_NEAR(
         fc_results[0], 1.0_rt - std::pow(0.0_rt * 10.0_rt / 48.0_rt, 2.0_rt),
@@ -383,7 +387,8 @@ TEST_F(DiagnosticsTest, Field_Extrema)
         3.0_rt + 0.5_rt * (1.0_rt / m_ncell[0] + 1.0_rt / m_ncell[1] +
                            1.0_rt / m_ncell[2]);
 
-    constexpr amrex::Real tol = 1.0e-10_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt;
     EXPECT_NEAR(fmin, gold_fmin, tol);
     EXPECT_NEAR(fmax, gold_fmax, tol);
 

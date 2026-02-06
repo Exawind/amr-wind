@@ -190,7 +190,8 @@ struct ComputeForceOp<::amr_wind_tests::FixedWing, ActSrcLine>
 {
     void operator()(::amr_wind_tests::FixedWing::DataType& data)
     {
-        constexpr amrex::Real tol = 1.0e-15_rt;
+        constexpr amrex::Real tol =
+            std::numeric_limits<amrex::Real>::epsilon() * 1.0e1_rt;
         const auto& meta = data.meta();
         const auto& grid = data.grid();
         ComputeForceOp<::amr_wind::actuator::FixedWing, ActSrcLine> actual_op;

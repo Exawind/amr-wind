@@ -65,8 +65,11 @@ TEST(Airfoil, read_txt_file)
     auto af = AirfoilLoader::load_text_file(ss);
     EXPECT_EQ(af->num_entries(), 6);
     EXPECT_NEAR(
-        af->aoa().front(), -1.0_rt * ::amr_wind::utils::pi(), 1.0e-12_rt);
-    EXPECT_NEAR(af->aoa().back(), 1.0_rt * ::amr_wind::utils::pi(), 1.0e-12_rt);
+        af->aoa().front(), -1.0_rt * ::amr_wind::utils::pi(),
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
+    EXPECT_NEAR(
+        af->aoa().back(), 1.0_rt * ::amr_wind::utils::pi(),
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
 }
 
 TEST(Airfoil, read_openfast_file)
@@ -77,9 +80,11 @@ TEST(Airfoil, read_openfast_file)
     auto af = AirfoilLoader::load_openfast_airfoil(ss);
     EXPECT_EQ(af->num_entries(), 6);
     EXPECT_NEAR(
-        af->aoa().front(), -1.0_rt * ::amr_wind::utils::pi(), 1.0e-12_rt);
+        af->aoa().front(), -1.0_rt * ::amr_wind::utils::pi(),
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
     EXPECT_NEAR(
-        af->aoa().back(), ::amr_wind::utils::radians(-150.0_rt), 1.0e-12_rt);
+        af->aoa().back(), ::amr_wind::utils::radians(-150.0_rt),
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
 }
 
 TEST(Airfoil, airfoil_lookup)

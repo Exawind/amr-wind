@@ -145,7 +145,9 @@ TEST(LinearInterpolation, lin_interp_single)
     std::vector<amrex::Real> xtest{2.5_rt, 4.5_rt, 6.3_rt, 8.8_rt};
     for (const auto& x : xtest) {
         const auto y = interp::linear(xvec, yvec, x);
-        EXPECT_NEAR(y, mult_fac * x, 1.0e-12_rt);
+        EXPECT_NEAR(
+            y, mult_fac * x,
+            std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
     }
 }
 
@@ -170,7 +172,9 @@ TEST(LinearInterpolation, lin_interp_single_multicomponent)
     for (const auto& x : xtest) {
         for (int n = 0; n < ncomp; n++) {
             const auto y = interp::linear(xvec, yvec, x, 3, n);
-            EXPECT_NEAR(y, mult_facs[n] * x, 1.0e-12_rt);
+            EXPECT_NEAR(
+                y, mult_facs[n] * x,
+                std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
         }
     }
 }
@@ -198,7 +202,9 @@ TEST(LinearInterpolation, bilin_interp_single)
     for (const auto& x : xtest) {
         for (const auto& y : ytest) {
             const auto z = interp::bilinear(xvec, yvec, zvec, x, y);
-            EXPECT_NEAR(z, mult_facx * x * mult_facy * y, 1.0e-12_rt);
+            EXPECT_NEAR(
+                z, mult_facx * x * mult_facy * y,
+                std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
         }
     }
 }
@@ -219,7 +225,9 @@ TEST(LinearInterpolation, lin_interp)
 
     interp::linear(xvec, yvec, xtest, ytest);
     for (size_t i = 0; i < xtest.size(); ++i) {
-        EXPECT_NEAR(ytest[i], mult_fac * xtest[i], 1.0e-12_rt);
+        EXPECT_NEAR(
+            ytest[i], mult_fac * xtest[i],
+            std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
     }
 }
 
@@ -239,7 +247,9 @@ TEST(LinearInterpolation, lin_monotonic)
 
     interp::linear_monotonic(xvec, yvec, xtest, ytest);
     for (size_t i = 0; i < xtest.size(); ++i) {
-        EXPECT_NEAR(ytest[i], mult_fac * xtest[i], 1.0e-12_rt);
+        EXPECT_NEAR(
+            ytest[i], mult_fac * xtest[i],
+            std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
     }
 }
 
@@ -275,9 +285,12 @@ TEST(LinearInterpolation, lin_interp_angle)
         xvec, yvec_rad, xtest, ytest_rad,
         2.0_rt * static_cast<amrex::Real>(M_PI));
     for (size_t i = 0; i < xtest.size(); ++i) {
-        EXPECT_NEAR(ytest_deg[i], ygold_deg[i], 1.0e-12_rt);
         EXPECT_NEAR(
-            ytest_rad[i], amr_wind::utils::radians(ygold_deg[i]), 1.0e-12_rt);
+            ytest_deg[i], ygold_deg[i],
+            std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
+        EXPECT_NEAR(
+            ytest_rad[i], amr_wind::utils::radians(ygold_deg[i]),
+            std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
     }
 }
 

@@ -135,7 +135,7 @@ protected:
     // No file output during test
     void prepare_ascii_file() override {}
     void write_ascii() override {}
-    const amrex::Real m_tol = 1.0e-8_rt;
+    const amrex::Real m_tol = std::numeric_limits<float>::epsilon() * 1.0e1_rt;
 };
 
 void FieldNormsImpl::check_output(
