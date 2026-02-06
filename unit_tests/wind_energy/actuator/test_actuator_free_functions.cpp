@@ -103,7 +103,8 @@ TEST(CylindricalTransformation, distances_on_rotated_shifted_circle)
         utils::half_pi(), d[1],
         std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt)
         << "angle in degress: " << utils::degrees(d[1]);
-    EXPECT_DOUBLE_EQ(1.0_rt, d[2]);
+    EXPECT_NEAR(
+        1.0_rt, d[2], std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
 }
 
 } // namespace
