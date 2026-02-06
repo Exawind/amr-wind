@@ -329,7 +329,6 @@ TEST_F(OceanWavesOpTest, relaxation_zone)
 
 TEST_F(OceanWavesOpTest, gas_phase)
 {
-
     constexpr amrex::Real tol = 1.0e-3_rt;
 
     populate_parameters();
@@ -386,7 +385,6 @@ TEST_F(OceanWavesOpTest, gas_phase)
 
 TEST_F(OceanWavesOpTest, boundary_fill)
 {
-
     constexpr amrex::Real tol = 1.0e-3_rt;
     const amrex::Vector<amrex::Real> gas_vel{{1.0_rt, 0.0_rt, 0.0_rt}};
 

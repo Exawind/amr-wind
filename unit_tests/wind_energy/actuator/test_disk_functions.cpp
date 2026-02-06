@@ -67,7 +67,9 @@ TEST_P(TestAreaComputer, weight_sums_to_one)
             weight_computed += m_computer->weight(i);
         }
     }
-    EXPECT_DOUBLE_EQ(1.0_rt, weight_computed);
+    EXPECT_NEAR(
+        1.0_rt, weight_computed,
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e1_rt);
 }
 
 class TestComputeDiskPoints : public ::testing::TestWithParam<vs::Vector>

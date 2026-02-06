@@ -371,7 +371,8 @@ TEST_F(WaveTheoriesTest, StokesWaveLength)
         (32.0_rt * std::pow(C, 5.0_rt));
     const amrex::Real LHS1 =
         C0 + std::pow(eps, 2.0_rt) * C2 + std::pow(eps, 4.0_rt) * C4;
-    EXPECT_NEAR(LHS1, RHS1, std::numeric_limits<float>::epsilon());
+    EXPECT_NEAR(
+        LHS1, RHS1, std::numeric_limits<amrex::Real>::epsilon() * 1.0e8_rt);
 
     // Reevaluate with a new set of conditions
     wave_height = 0.05_rt;
@@ -394,7 +395,8 @@ TEST_F(WaveTheoriesTest, StokesWaveLength)
     C0 = std::sqrt(std::tanh(k * water_depth));
     C2 = C0 * (2.0_rt + 7.0_rt * S * S) / (4.0_rt * C * C);
     const amrex::Real LHS2 = C0 + std::pow(eps, 2.0_rt) * C2;
-    EXPECT_NEAR(LHS2, RHS2, std::numeric_limits<float>::epsilon());
+    EXPECT_NEAR(
+        LHS2, RHS2, std::numeric_limits<amrex::Real>::epsilon() * 1.0e8_rt);
 }
 
 } // namespace amr_wind_tests

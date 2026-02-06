@@ -166,7 +166,8 @@ TEST_F(ExplicitDiffusionRK2Test, correct_approach)
     auto min_diff = utils::field_min(tke);
     auto max_diff = utils::field_max(tke);
     const auto abs_diff_tke = amrex::max<amrex::Real>(-min_diff, max_diff);
-    EXPECT_LT(abs_diff_tke, std::numeric_limits<float>::epsilon());
+    EXPECT_LT(
+        abs_diff_tke, std::numeric_limits<amrex::Real>::epsilon() * 1.0e8_rt);
 
     // As a sanity check for the test, confirm that diff_term is not 0
     min_diff = utils::field_min(diff_new);

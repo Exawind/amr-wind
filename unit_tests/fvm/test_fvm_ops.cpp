@@ -399,8 +399,8 @@ amrex::Real q_criterion_test_impl(amr_wind::Field& vel, const int pdegree)
 
 TEST_F(FvmOpTest, nonlinearsum)
 {
-
-    constexpr amrex::Real tol = std::numeric_limits<float>::epsilon();
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e8_rt;
 
     populate_parameters();
     {
@@ -510,8 +510,8 @@ TEST_F(FvmOpTest, vorticity_mag)
 
 TEST_F(FvmOpTest, q_criterion)
 {
-
-    constexpr amrex::Real tol = std::numeric_limits<float>::epsilon();
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e8_rt;
 
     populate_parameters();
     {

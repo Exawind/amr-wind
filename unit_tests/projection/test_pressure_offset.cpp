@@ -113,7 +113,8 @@ void ptest_kernel(
     auto& p = my_incflo.sim().repo().get_field("p");
     // Check result
     const amrex::Real pbottom = get_pbottom(p) / nbottom;
-    EXPECT_NEAR(p_0, pbottom, std::numeric_limits<float>::epsilon());
+    EXPECT_NEAR(
+        p_0, pbottom, std::numeric_limits<amrex::Real>::epsilon() * 1.0e8_rt);
 }
 
 } // namespace

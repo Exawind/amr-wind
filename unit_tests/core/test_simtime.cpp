@@ -1,8 +1,3 @@
-/** \file test_simtime.cpp
- *
- *  Unit tests for amr_wind::SimTime
- */
-
 #include "aw_test_utils/AmrexTest.H"
 #include "AMReX_ParmParse.H"
 #include "amr-wind/core/SimTime.H"
@@ -16,7 +11,6 @@ namespace {
 
 void build_simtime_params()
 {
-
     amrex::ParmParse pp("time");
     pp.add("stop_time", 2.0_rt);
     pp.add("max_step", 10);
