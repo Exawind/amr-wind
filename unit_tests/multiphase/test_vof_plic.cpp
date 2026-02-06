@@ -270,7 +270,7 @@ amrex::Real normal_vector_neumann_test_impl(
                     // Use L1 norm, check against non-neumann implementation
                     // Slope across overset boundary should be different
                     constexpr amrex::Real slp_tol =
-                        std::numeric_limits<float>::epsilon();
+                        std::numeric_limits<float>::epsilon() * 1.0e1_rt;
                     if (ibdy != 0) {
                         // x slope should be different
                         error += std::abs(mx - mxn) > slp_tol ? 0.0_rt : 1.0_rt;

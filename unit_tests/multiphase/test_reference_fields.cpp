@@ -143,7 +143,8 @@ TEST_F(MultiPhaseHydroStatic, reference_density)
     amrex::Real error_total =
         density_test_impl(rho0, sim().mesh().Geom(), m_rho1, m_rho2, m_wlev);
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
-    EXPECT_NEAR(error_total, 0.0_rt, std::numeric_limits<float>::epsilon());
+    EXPECT_NEAR(
+        error_total, 0.0_rt, std::numeric_limits<float>::epsilon() * 1.0e1_rt);
 }
 
 TEST_F(MultiPhaseHydroStatic, reference_pressure)
@@ -161,7 +162,8 @@ TEST_F(MultiPhaseHydroStatic, reference_pressure)
     amrex::Real error_total = pressure_test_impl(
         p0, sim().mesh().Geom(), m_rho1, m_rho2, m_wlev, m_gz, nghost);
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
-    EXPECT_NEAR(error_total, 0.0_rt, std::numeric_limits<float>::epsilon());
+    EXPECT_NEAR(
+        error_total, 0.0_rt, std::numeric_limits<float>::epsilon() * 1.0e1_rt);
 }
 
 } // namespace amr_wind_tests

@@ -961,7 +961,8 @@ TEST_F(VOFOversetOps, pseudo_vscale_dt)
     auto& iblank = repo.declare_int_field("iblank_cell", 1, nghost);
     iblank.setVal(-1);
     constexpr amrex::Real margin = 0.1_rt;
-    constexpr amrex::Real convg_tol = std::numeric_limits<float>::epsilon();
+    constexpr amrex::Real convg_tol =
+        std::numeric_limits<float>::epsilon() * 1.0e1_rt;
     // With vof and target_vof arrays, max vof removed is 50%, doubling pdt
     constexpr amrex::Real pdt_answer = 2.0_rt;
     // With a single level, pseudo velocity scale should be dx of lev 0

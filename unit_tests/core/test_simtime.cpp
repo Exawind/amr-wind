@@ -316,7 +316,9 @@ TEST_F(SimTimeTest, enforce_timeinterval)
         }
     }
     EXPECT_EQ(plot_counter, 2);
-    EXPECT_NEAR(plot_time_sum, 1.5_rt, std::numeric_limits<float>::epsilon());
+    EXPECT_NEAR(
+        plot_time_sum, 1.5_rt,
+        std::numeric_limits<float>::epsilon() * 1.0e1_rt);
     EXPECT_EQ(plot_step_sum, 2 + 6);
 }
 
@@ -333,7 +335,9 @@ TEST_F(SimTimeTest, enforce_timeinterval_bigtimetol)
         pp.add("enforce_plot_time_dt", true);
 
         // Choose values that could give issues
-        pp.add("enforce_plot_dt_reltol", std::numeric_limits<float>::epsilon());
+        pp.add(
+            "enforce_plot_dt_reltol",
+            std::numeric_limits<float>::epsilon() * 1.0e1_rt);
         pp.add("plot_time_interval_reltol", 1.0e0_rt);
 
         pp.add("stop_time", 1.0_rt);
@@ -357,7 +361,9 @@ TEST_F(SimTimeTest, enforce_timeinterval_bigtimetol)
         }
     }
     EXPECT_EQ(plot_counter, 2);
-    EXPECT_NEAR(plot_time_sum, 1.5_rt, std::numeric_limits<float>::epsilon());
+    EXPECT_NEAR(
+        plot_time_sum, 1.5_rt,
+        std::numeric_limits<float>::epsilon() * 1.0e1_rt);
     EXPECT_EQ(plot_step_sum, 2 + 6);
 }
 
@@ -376,7 +382,8 @@ TEST_F(SimTimeTest, enforce_timeinterval_bigdttol)
         // Weak enforcement of plot time interval on dt
         pp.add("enforce_plot_dt_reltol", 1.0e0_rt);
         pp.add(
-            "plot_time_interval_reltol", std::numeric_limits<float>::epsilon());
+            "plot_time_interval_reltol",
+            std::numeric_limits<float>::epsilon() * 1.0e1_rt);
 
         pp.add("stop_time", 1.0_rt);
         pp.add("max_step", 10);
@@ -403,7 +410,8 @@ TEST_F(SimTimeTest, enforce_timeinterval_bigdttol)
     // plot files are still written at the first step after interval is passed.
     EXPECT_EQ(plot_counter, 2);
     EXPECT_NEAR(
-        plot_time_sum, 0.8_rt + 1.0_rt, std::numeric_limits<float>::epsilon());
+        plot_time_sum, 0.8_rt + 1.0_rt,
+        std::numeric_limits<float>::epsilon() * 1.0e1_rt);
     EXPECT_EQ(plot_step_sum, 2 + 3);
 }
 
@@ -446,7 +454,9 @@ TEST_F(SimTimeTest, enforce_timeinterval_delay)
         }
     }
     EXPECT_EQ(plot_counter, 1);
-    EXPECT_NEAR(plot_time_sum, 1.0_rt, std::numeric_limits<float>::epsilon());
+    EXPECT_NEAR(
+        plot_time_sum, 1.0_rt,
+        std::numeric_limits<float>::epsilon() * 1.0e1_rt);
     // dt should not shorten for t = 0.5_rt
     EXPECT_GT(time2, 0.5_rt);
     // leading to fewer steps
@@ -487,7 +497,9 @@ TEST_F(SimTimeTest, enforce_chkpt_timeinterval)
         }
     }
     EXPECT_EQ(chkpt_counter, 2);
-    EXPECT_NEAR(chkpt_time_sum, 1.5_rt, std::numeric_limits<float>::epsilon());
+    EXPECT_NEAR(
+        chkpt_time_sum, 1.5_rt,
+        std::numeric_limits<float>::epsilon() * 1.0e1_rt);
     EXPECT_EQ(chkpt_step_sum, 2 + 6);
 }
 

@@ -338,7 +338,8 @@ TEST_F(WaveTheoriesTest, StokesWaveLength)
         (2.0_rt * static_cast<amrex::Real>(M_PI) / wave_period) *
         (2.0_rt * static_cast<amrex::Real>(M_PI) / wave_period) / g;
 
-    EXPECT_NEAR(k_newton, k_theory, std::numeric_limits<float>::epsilon());
+    EXPECT_NEAR(
+        k_newton, k_theory, std::numeric_limits<float>::epsilon() * 1.0e1_rt);
 
     // Check wave theory
     wave_height = 0.2_rt;

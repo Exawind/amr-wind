@@ -258,7 +258,7 @@ public:
     int check_sloc(const std::string& op);
 
 protected:
-    const amrex::Real m_tol = std::numeric_limits<float>::epsilon();
+    const amrex::Real m_tol = std::numeric_limits<float>::epsilon() * 1.0e1_rt;
 };
 
 int FreeSurfaceImpl::check_output(

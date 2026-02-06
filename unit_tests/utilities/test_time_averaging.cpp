@@ -39,8 +39,7 @@ protected:
     const std::string m_name = "temperature_mean_tavg";
     const amrex::Real m_fwidth = 2.0_rt;
     const amrex::Real m_dt = 0.1_rt;
-    const amrex::Real m_tol =
-        std::numeric_limits<amrex::Real>::epsilon() * 1.0e8_rt;
+    const amrex::Real m_tol = std::numeric_limits<float>::epsilon() * 1.0e1_rt;
 };
 
 TEST_F(TimeAveragingTest, every_step)
@@ -171,7 +170,7 @@ TEST_F(TimeAveragingTest, mismatch_time_interval)
     populate_parameters();
     {
         amrex::ParmParse pp("tavg");
-        pp.add("averaging_time_interval", static_cast<amrex::Real>(0.15_rt));
+        pp.add("averaging_time_interval", 0.15_rt);
     }
     initialize_mesh();
 

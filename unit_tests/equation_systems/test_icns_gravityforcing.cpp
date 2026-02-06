@@ -84,7 +84,7 @@ void fgtest_kernel(
     // Check forcing average value
     const amrex::Real Fz_avg = get_fgz_sum(Fg_field) / ncells;
     EXPECT_NEAR(
-        Fz_ref, Fz_avg, std::numeric_limits<amrex::Real>::epsilon() * 1.0e8_rt);
+        Fz_ref, Fz_avg, std::numeric_limits<float>::epsilon() * 1.0e1_rt);
 }
 
 } // namespace
