@@ -26,8 +26,8 @@ static constexpr amrex::Real LOW_NUM =
     static_cast<amrex::Real>(std::numeric_limits<amrex::Real>::lowest());
 
 //! A large positive number
-static constexpr amrex::Real LARGE_NUM =
-    static_cast<amrex::Real>(std::numeric_limits<amrex::Real>::max());
+static constexpr amrex::Real LARGE_NUM = static_cast<amrex::Real>(
+    std::numeric_limits<amrex::Real>::max() * 1.0e-10_rt);
 
 //! Closeness comparison
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool
