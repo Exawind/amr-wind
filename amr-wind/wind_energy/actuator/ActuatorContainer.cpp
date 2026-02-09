@@ -64,6 +64,7 @@ void ActuatorContainer::initialize_container()
             amrex::ParallelDescriptor::Communicator());
         AMREX_ALWAYS_ASSERT(local_total_pts == total_pts);
 #else
+        pts_per_proc.resize(nproc);
         pts_per_proc[0] = total_pts;
 #endif
         m_proc_offsets[0] = 0;
