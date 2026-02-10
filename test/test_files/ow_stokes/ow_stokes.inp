@@ -42,7 +42,7 @@ ICNS.source_terms = GravityForcing
 ICNS.use_perturb_pressure = true
 MultiPhase.verbose=1
 
-mac_proj.bottom_atol = 1e-14
+#mac_proj.bottom_atol = 1e-14
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #

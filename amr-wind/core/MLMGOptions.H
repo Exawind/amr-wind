@@ -54,10 +54,10 @@ struct MLMGOptions
 
 #ifdef BL_USE_FLOAT
     //! Relative tolerance for convergence of MLMG solvers
-    amrex::Real rel_tol{std::numeric_limits<amrex::Real>::epsilon() * 1.0e3_rt};
+    amrex::Real rel_tol{std::numeric_limits<amrex::Real>::epsilon() * 1.0e2_rt};
 
     //! Absolute tolerance for convergence checks
-    amrex::Real abs_tol{std::numeric_limits<amrex::Real>::epsilon() * 1.0e2_rt};
+    amrex::Real abs_tol{std::numeric_limits<amrex::Real>::epsilon() * 1.0e1_rt};
 #else
     //! Relative tolerance for convergence of MLMG solvers
     amrex::Real rel_tol{std::numeric_limits<amrex::Real>::epsilon() * 1.0e5_rt};
@@ -86,7 +86,7 @@ private:
 #ifdef BL_USE_FLOAT
     //! Relative tolerance for convergence of MLMG solvers
     amrex::Real m_bottom_rel_tol{
-        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt};
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e3_rt};
 
     //! Absolute tolerance for convergence checks
     amrex::Real m_bottom_abs_tol{
