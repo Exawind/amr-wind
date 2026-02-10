@@ -22,8 +22,8 @@ static constexpr amrex::Real LOOSE_TOL =
     std::numeric_limits<amrex::Real>::epsilon() * 1.0e8_rt;
 
 //! A large negative number
-static constexpr amrex::Real LOW_NUM =
-    static_cast<amrex::Real>(std::numeric_limits<amrex::Real>::lowest());
+static constexpr amrex::Real LOW_NUM = static_cast<amrex::Real>(
+    std::numeric_limits<amrex::Real>::lowest() * 1.0e-10_rt);
 
 //! A large positive number
 static constexpr amrex::Real LARGE_NUM = static_cast<amrex::Real>(
