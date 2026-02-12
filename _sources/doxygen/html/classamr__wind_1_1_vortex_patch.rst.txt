@@ -1,0 +1,14 @@
+.. meta::84b4609db8267e6ddcd9841ae6af00e5039063ad3d7e76ca84e4ebde1fb69515d7be216bcba58b752a54f76047fcde8faa841e3455d4e1f7f4f64a5841615720
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::VortexPatch Class Reference
+
+VortexPatch Class Reference
+===========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_vortex_patch.html

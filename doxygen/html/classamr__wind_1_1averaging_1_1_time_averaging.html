@@ -1,0 +1,704 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::averaging::TimeAveraging Class Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::averaging::TimeAveraging Class Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/classamr__wind_1_1averaging_1_1_time_averaging.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="timeaveraging-class-reference">
+<h1>TimeAveraging Class Reference<a class="headerlink" href="#timeaveraging-class-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::averaging::TimeAveraging Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="namespaceamr__wind_1_1averaging.html">averaging</a></li><li class="navelem"><a href="classamr__wind_1_1averaging_1_1_time_averaging.html">TimeAveraging</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
+<a href="classamr__wind_1_1averaging_1_1_time_averaging-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::averaging::TimeAveraging Class Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_time_averaging_8_h_source.html">TimeAveraging.H</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for amr_wind::averaging::TimeAveraging:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1averaging_1_1_time_averaging__inherit__graph.svg" width="207" height="168"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for amr_wind::averaging::TimeAveraging:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1averaging_1_1_time_averaging__coll__graph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a4e859e1f61c9baa3c810b2fafe6f6f4b" id="r_a4e859e1f61c9baa3c810b2fafe6f6f4b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4e859e1f61c9baa3c810b2fafe6f6f4b">TimeAveraging</a> (<a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;, std::string)</td></tr>
+<tr class="memitem:a58f68baf49496914e1d6724c316f17ea" id="r_a58f68baf49496914e1d6724c316f17ea"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a58f68baf49496914e1d6724c316f17ea">~TimeAveraging</a> () override</td></tr>
+<tr class="memitem:aeeb3ab38d4ce99b57faae36eacddb137" id="r_aeeb3ab38d4ce99b57faae36eacddb137"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeeb3ab38d4ce99b57faae36eacddb137">pre_init_actions</a> () override</td></tr>
+<tr class="memdesc:aeeb3ab38d4ce99b57faae36eacddb137"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform actions before mesh is created.  <br /></td></tr>
+<tr class="memitem:a189b29a1078f8df20b41dd8c56c61da9" id="r_a189b29a1078f8df20b41dd8c56c61da9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a189b29a1078f8df20b41dd8c56c61da9">initialize</a> () override</td></tr>
+<tr class="memitem:afc05f6fdc3249057b999238b1b476499" id="r_afc05f6fdc3249057b999238b1b476499"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afc05f6fdc3249057b999238b1b476499">post_advance_work</a> () override</td></tr>
+<tr class="memitem:a42919adb1aafe635db90a2a4e8e9d5d1" id="r_a42919adb1aafe635db90a2a4e8e9d5d1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a42919adb1aafe635db90a2a4e8e9d5d1">output_actions</a> () override</td></tr>
+<tr class="memitem:a7567680bff6d6265ce5a5e670c62d523" id="r_a7567680bff6d6265ce5a5e670c62d523"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7567680bff6d6265ce5a5e670c62d523">post_regrid_actions</a> () override</td></tr>
+<tr class="memitem:a3a85746bff3c3fb9996c6f22b76f8083" id="r_a3a85746bff3c3fb9996c6f22b76f8083"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3a85746bff3c3fb9996c6f22b76f8083">add_averaging</a> (const std::string &amp;field_name, const std::string &amp;avg_type=&quot;ReAveraging&quot;)</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:adc3f276773c1af33e6413804e70efc67" id="r_adc3f276773c1af33e6413804e70efc67"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adc3f276773c1af33e6413804e70efc67">identifier</a> ()</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:aa2dbc902c5b308d25994298c485bbca2" id="r_aa2dbc902c5b308d25994298c485bbca2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa2dbc902c5b308d25994298c485bbca2">m_sim</a></td></tr>
+<tr class="memitem:a28f6d120cf250c783faebfc624ad0171" id="r_a28f6d120cf250c783faebfc624ad0171"><td class="memItemLeft" align="right" valign="top">const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a28f6d120cf250c783faebfc624ad0171">m_label</a></td></tr>
+<tr class="memitem:aedc095db68034cfd5f783beca5c2e02f" id="r_aedc095db68034cfd5f783beca5c2e02f"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1averaging_1_1_field_time_average.html">FieldTimeAverage</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aedc095db68034cfd5f783beca5c2e02f">m_averages</a></td></tr>
+<tr class="memdesc:aedc095db68034cfd5f783beca5c2e02f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector containing all registered field averagers.  <br /></td></tr>
+<tr class="memitem:a38eeafab886de846510fb2491f27cabd" id="r_a38eeafab886de846510fb2491f27cabd"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::string, <a class="el" href="classamr__wind_1_1averaging_1_1_field_time_average.html">FieldTimeAverage</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a38eeafab886de846510fb2491f27cabd">m_registered</a></td></tr>
+<tr class="memdesc:a38eeafab886de846510fb2491f27cabd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fields registered so far to avoid duplication.  <br /></td></tr>
+<tr class="memitem:a865beaa6611d50fec72aeecb0c195c56" id="r_a865beaa6611d50fec72aeecb0c195c56"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a865beaa6611d50fec72aeecb0c195c56">m_start_time</a> {0.0_rt}</td></tr>
+<tr class="memdesc:a865beaa6611d50fec72aeecb0c195c56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time to start averaging the fields.  <br /></td></tr>
+<tr class="memitem:abc0b9b4776f86a2cb61b33f5cd83fd35" id="r_abc0b9b4776f86a2cb61b33f5cd83fd35"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abc0b9b4776f86a2cb61b33f5cd83fd35">m_stop_time</a> {std::numeric_limits&lt;amrex::Real&gt;::max()}</td></tr>
+<tr class="memdesc:abc0b9b4776f86a2cb61b33f5cd83fd35"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time to stop averaging the fields.  <br /></td></tr>
+<tr class="memitem:abc570bc707d57ced4de22351872c7a42" id="r_abc570bc707d57ced4de22351872c7a42"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abc570bc707d57ced4de22351872c7a42">m_filter</a> {<a class="el" href="namespaceamr__wind_1_1constants.html#abec95c34da71524c85927f9874a6368a">amr_wind::constants::LARGE_NUM</a>}</td></tr>
+<tr class="memdesc:abc570bc707d57ced4de22351872c7a42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time averaging window (in seconds)  <br /></td></tr>
+<tr class="memitem:ae08722cd3b612d938c94af81179ef510" id="r_ae08722cd3b612d938c94af81179ef510"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae08722cd3b612d938c94af81179ef510">m_time_interval</a> {-1.}</td></tr>
+<tr class="memdesc:ae08722cd3b612d938c94af81179ef510"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time averaging time interval (in seconds)  <br /></td></tr>
+<tr class="memitem:a22f2da3c86e1d13bb632414f18f05b1c" id="r_a22f2da3c86e1d13bb632414f18f05b1c"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a22f2da3c86e1d13bb632414f18f05b1c">m_accumulated_avg_time_interval</a> {0.}</td></tr>
+<tr class="memdesc:a22f2da3c86e1d13bb632414f18f05b1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accumulated averaging time interval.  <br /></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>A collection of time-averaged quantities </p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a4e859e1f61c9baa3c810b2fafe6f6f4b" name="a4e859e1f61c9baa3c810b2fafe6f6f4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e859e1f61c9baa3c810b2fafe6f6f4b">&#9670;&#160;</a></span>TimeAveraging()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::averaging::TimeAveraging::TimeAveraging </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>sim</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>label</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a58f68baf49496914e1d6724c316f17ea" name="a58f68baf49496914e1d6724c316f17ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58f68baf49496914e1d6724c316f17ea">&#9670;&#160;</a></span>~TimeAveraging()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::averaging::TimeAveraging::~TimeAveraging </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a3a85746bff3c3fb9996c6f22b76f8083" name="a3a85746bff3c3fb9996c6f22b76f8083"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a85746bff3c3fb9996c6f22b76f8083">&#9670;&#160;</a></span>add_averaging()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; amr_wind::averaging::TimeAveraging::add_averaging </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>field_name</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>avg_type</em></span><span class="paramdefsep"> = </span><span class="paramdefval">&quot;ReAveraging&quot;</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adc3f276773c1af33e6413804e70efc67" name="adc3f276773c1af33e6413804e70efc67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc3f276773c1af33e6413804e70efc67">&#9670;&#160;</a></span>identifier()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::averaging::TimeAveraging::identifier </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a189b29a1078f8df20b41dd8c56c61da9" name="a189b29a1078f8df20b41dd8c56c61da9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a189b29a1078f8df20b41dd8c56c61da9">&#9670;&#160;</a></span>initialize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::averaging::TimeAveraging::initialize </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a42919adb1aafe635db90a2a4e8e9d5d1" name="a42919adb1aafe635db90a2a4e8e9d5d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42919adb1aafe635db90a2a4e8e9d5d1">&#9670;&#160;</a></span>output_actions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::averaging::TimeAveraging::output_actions </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afc05f6fdc3249057b999238b1b476499" name="afc05f6fdc3249057b999238b1b476499"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc05f6fdc3249057b999238b1b476499">&#9670;&#160;</a></span>post_advance_work()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::averaging::TimeAveraging::post_advance_work </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7567680bff6d6265ce5a5e670c62d523" name="a7567680bff6d6265ce5a5e670c62d523"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7567680bff6d6265ce5a5e670c62d523">&#9670;&#160;</a></span>post_regrid_actions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::averaging::TimeAveraging::post_regrid_actions </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aeeb3ab38d4ce99b57faae36eacddb137" name="aeeb3ab38d4ce99b57faae36eacddb137"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeeb3ab38d4ce99b57faae36eacddb137">&#9670;&#160;</a></span>pre_init_actions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::averaging::TimeAveraging::pre_init_actions </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Perform actions before mesh is created. </p>
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a22f2da3c86e1d13bb632414f18f05b1c" name="a22f2da3c86e1d13bb632414f18f05b1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22f2da3c86e1d13bb632414f18f05b1c">&#9670;&#160;</a></span>m_accumulated_avg_time_interval</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::averaging::TimeAveraging::m_accumulated_avg_time_interval {0.}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Accumulated averaging time interval. </p>
+
+</div>
+</div>
+<a id="aedc095db68034cfd5f783beca5c2e02f" name="aedc095db68034cfd5f783beca5c2e02f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aedc095db68034cfd5f783beca5c2e02f">&#9670;&#160;</a></span>m_averages</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;std::unique_ptr&lt;<a class="el" href="classamr__wind_1_1averaging_1_1_field_time_average.html">FieldTimeAverage</a>&gt; &gt; amr_wind::averaging::TimeAveraging::m_averages</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Vector containing all registered field averagers. </p>
+
+</div>
+</div>
+<a id="abc570bc707d57ced4de22351872c7a42" name="abc570bc707d57ced4de22351872c7a42"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc570bc707d57ced4de22351872c7a42">&#9670;&#160;</a></span>m_filter</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::averaging::TimeAveraging::m_filter {<a class="el" href="namespaceamr__wind_1_1constants.html#abec95c34da71524c85927f9874a6368a">amr_wind::constants::LARGE_NUM</a>}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Time averaging window (in seconds) </p>
+
+</div>
+</div>
+<a id="a28f6d120cf250c783faebfc624ad0171" name="a28f6d120cf250c783faebfc624ad0171"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28f6d120cf250c783faebfc624ad0171">&#9670;&#160;</a></span>m_label</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string amr_wind::averaging::TimeAveraging::m_label</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a38eeafab886de846510fb2491f27cabd" name="a38eeafab886de846510fb2491f27cabd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38eeafab886de846510fb2491f27cabd">&#9670;&#160;</a></span>m_registered</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::map&lt;std::string, <a class="el" href="classamr__wind_1_1averaging_1_1_field_time_average.html">FieldTimeAverage</a>*&gt; amr_wind::averaging::TimeAveraging::m_registered</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Fields registered so far to avoid duplication. </p>
+
+</div>
+</div>
+<a id="aa2dbc902c5b308d25994298c485bbca2" name="aa2dbc902c5b308d25994298c485bbca2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2dbc902c5b308d25994298c485bbca2">&#9670;&#160;</a></span>m_sim</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; amr_wind::averaging::TimeAveraging::m_sim</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a865beaa6611d50fec72aeecb0c195c56" name="a865beaa6611d50fec72aeecb0c195c56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a865beaa6611d50fec72aeecb0c195c56">&#9670;&#160;</a></span>m_start_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::averaging::TimeAveraging::m_start_time {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Time to start averaging the fields. </p>
+
+</div>
+</div>
+<a id="abc0b9b4776f86a2cb61b33f5cd83fd35" name="abc0b9b4776f86a2cb61b33f5cd83fd35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc0b9b4776f86a2cb61b33f5cd83fd35">&#9670;&#160;</a></span>m_stop_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::averaging::TimeAveraging::m_stop_time {std::numeric_limits&lt;amrex::Real&gt;::max()}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Time to stop averaging the fields. </p>
+
+</div>
+</div>
+<a id="ae08722cd3b612d938c94af81179ef510" name="ae08722cd3b612d938c94af81179ef510"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae08722cd3b612d938c94af81179ef510">&#9670;&#160;</a></span>m_time_interval</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::averaging::TimeAveraging::m_time_interval {-1.}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Time averaging time interval (in seconds) </p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/averaging/<a class="el" href="_time_averaging_8_h_source.html">TimeAveraging.H</a></li>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/averaging/<a class="el" href="_time_averaging_8cpp.html">TimeAveraging.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

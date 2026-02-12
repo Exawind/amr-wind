@@ -1,0 +1,23 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$structamr__wind_1_1actuator_1_1_actuator_type.html" title=" " alt="" coords="5,241,153,281"/>
+<area shape="rect" id="Node000001" href="$structamr__wind_1_1actuator_1_1_disk_type.html" title=" " alt="" coords="201,69,349,109"/>
+<area shape="poly" id="edge34_Node000000_Node000001" title=" " alt="" coords="112,230,249,108,253,112,115,234"/>
+<area shape="rect" id="Node000004" href="$structamr__wind_1_1actuator_1_1_turbine_type.html" title=" " alt="" coords="201,241,349,281"/>
+<area shape="poly" id="edge37_Node000000_Node000004" title=" " alt="" coords="167,259,201,259,201,264,167,264"/>
+<area shape="rect" id="Node000008" href="$structamr__wind_1_1actuator_1_1_wing_type.html" title=" " alt="" coords="201,400,349,440"/>
+<area shape="poly" id="edge41_Node000000_Node000008" title=" " alt="" coords="118,288,251,398,247,402,114,292"/>
+<area shape="rect" id="Node000002" href="$structamr__wind_1_1actuator_1_1_joukowsky.html" title=" " alt="" coords="441,5,589,45"/>
+<area shape="poly" id="edge35_Node000001_Node000002" title=" " alt="" coords="362,63,440,42,442,48,364,69"/>
+<area shape="rect" id="Node000003" href="$structamr__wind_1_1actuator_1_1_uniform_ct.html" title=" " alt="" coords="441,69,589,109"/>
+<area shape="poly" id="edge36_Node000001_Node000003" title=" " alt="" coords="363,87,441,87,441,92,363,92"/>
+<area shape="rect" id="Node000005" href="$structamr__wind_1_1actuator_1_1_turbine_from_ext_solver.html" title=" " alt="" coords="411,133,620,203"/>
+<area shape="poly" id="edge38_Node000004_Node000005" title=" " alt="" coords="339,234,425,200,427,205,341,239"/>
+<area shape="rect" id="Node000006" href="$structamr__wind_1_1actuator_1_1_turbine_from_ext_solver.html" title=" " alt="" coords="397,227,633,296"/>
+<area shape="poly" id="edge39_Node000004_Node000006" title=" " alt="" coords="363,259,397,259,397,264,363,264"/>
+<area shape="rect" id="Node000007" href="$structamr__wind_1_1actuator_1_1_turbine_from_ext_solver.html" title=" " alt="" coords="405,321,625,375"/>
+<area shape="poly" id="edge40_Node000004_Node000007" title=" " alt="" coords="341,284,398,305,434,318,432,323,396,311,339,289"/>
+<area shape="rect" id="Node000009" href="$structamr__wind_1_1actuator_1_1_fixed_wing.html" title=" " alt="" coords="441,400,589,440"/>
+<area shape="poly" id="edge42_Node000008_Node000009" title=" " alt="" coords="363,417,441,417,441,423,363,423"/>
+<area shape="rect" id="Node000010" href="$structamr__wind_1_1actuator_1_1_flat_plate.html" title=" " alt="" coords="441,464,589,504"/>
+<area shape="poly" id="edge43_Node000008_Node000010" title=" " alt="" coords="364,441,442,462,440,467,362,446"/>
+</map>

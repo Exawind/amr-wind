@@ -1,0 +1,14 @@
+.. meta::879db72ea8df9181b56af21c616f06c6816df7306b21e7631f2c472a8fba2de21ac404027e5411ccaaf3be5aa18414b2f5dfe6499bd072b43e2587d98d96f8af
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/udfs/BurggrafLid.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/physics/udfs/BurggrafLid.H File Reference
+======================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _burggraf_lid_8_h.html

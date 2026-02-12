@@ -1,0 +1,14 @@
+.. meta::bd4769fc7be955e48876adae07495c06dbea39fe4f31a44b2722dcc47bee5d88a5a7a4213dfadb53deb0c15145402be3a0dc6fa8457bc5364600730570a0f5e0
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ib::CylinderData Struct Reference
+
+CylinderData Struct Reference
+=============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ib_1_1_cylinder_data.html

@@ -1,0 +1,14 @@
+.. meta::95fd1da9ec8d7a9aee6b178555149f8df6c7d26961d61a18cf9ff6c419af3e6aac09517a2804ebc65a5a8579744b0cfd5b504e48163e1fe1f06c1979676042b4
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/core/Physics.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/core/Physics.H Source File
+=======================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _physics_8_h_source.html

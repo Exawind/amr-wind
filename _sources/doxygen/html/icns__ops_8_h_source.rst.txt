@@ -1,0 +1,14 @@
+.. meta::6604421b7c33ab95bd85af0f41cfd5d3f9698b77a8ff7620686fb3be6214cfece4aac0dcba9fe36757dd91d5172aa20e3f138ec680053bccabc1227127d70d2f
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/icns/icns_ops.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/equation\_systems/icns/icns\_ops.H Source File
+===========================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: icns__ops_8_h_source.html

@@ -1,0 +1,14 @@
+.. meta::a556a2ed784873a37e31abdab9bb1276cb347002935f0ef069b92d8321525b6e17c048d4c68b61095dd1b8f74dfae30cc2438cb83aef88c1722f9e3acec1bb2a
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::UpdateVelOp&lt; TurbineKynema, SrcTrait &gt; Struct Template Reference
+
+UpdateVelOp&lt; TurbineKynema, SrcTrait &gt; Struct Template Reference
+======================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1ops_1_1_update_vel_op_3_01_turbine_kynema_00_01_src_trait_01_4.html

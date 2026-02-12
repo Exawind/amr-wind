@@ -1,0 +1,14 @@
+.. meta::7d400c217dab06032ae146b6470c02b01ed53f6558ac4e754d2e460d524523ea440ea31ba554107d32e5c857bd23ee2b1ac99f600c0de109712c4f6db73e26d9
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/mesh_mapping_models/ChannelFlowMap.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/mesh\_mapping\_models/ChannelFlowMap.H Source File
+===============================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _channel_flow_map_8_h_source.html

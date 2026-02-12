@@ -1,0 +1,282 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/linear_interpolation.H File Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/linear_interpolation.H File Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/linear__interpolation_8_h.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="home-runner-work-amr-wind-amr-wind-amr-wind-utilities-linear-interpolation-h-file-reference">
+<h1>/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/linear_interpolation.H File Reference<a class="headerlink" href="#home-runner-work-amr-wind-amr-wind-amr-wind-utilities-linear-interpolation-h-file-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/linear_interpolation.H File Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="dir_d85575251dd712327fe3cf057fa568b4.html">amr-wind</a></li><li class="navelem"><a href="dir_212148f97b8bb53ebaebb3bf8a8b5de4.html">amr-wind</a></li><li class="navelem"><a href="dir_e9168f3bfea397a173489332f8554c97.html">utilities</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#namespaces">Namespaces</a> &#124;
+<a href="#enum-members">Enumerations</a> &#124;
+<a href="#func-members">Functions</a>  </div>
+  <div class="headertitle"><div class="title">linear_interpolation.H File Reference</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;AMReX_Gpu.H&quot;</code><br />
+<code>#include &quot;AMReX_REAL.H&quot;</code><br />
+<code>#include &quot;AMReX_Extension.H&quot;</code><br />
+</div><div class="textblock"><div class="dynheader">
+Include dependency graph for linear_interpolation.H:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="linear__interpolation_8_h__incl.svg" width="454" height="139"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</div><div class="textblock"><div class="dynheader">
+This graph shows which files directly or indirectly include this file:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" loading="lazy" frameborder="0" src="linear__interpolation_8_h__dep__incl.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+</div>
+<p><a href="linear__interpolation_8_h_source.html">Go to the source code of this file.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:amr_5Fwind_3A_3Ainterp_3A_3AIndex" id="r_amr_5Fwind_3A_3Ainterp_3A_3AIndex"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1interp_1_1_index.html">amr_wind::interp::Index</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-namespaces" class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:amr_5Fwind" id="r_amr_5Fwind"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceamr__wind.html">amr_wind</a></td></tr>
+<tr class="memdesc:namespaceamr__wind"><td class="mdescLeft">&#160;</td><td class="mdescRight">This test case is intended as an evaluation of the momentum advection scheme. <br /></td></tr>
+<tr class="memitem:amr_5Fwind_3A_3Ainterp" id="r_amr_5Fwind_3A_3Ainterp"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceamr__wind_1_1interp.html">amr_wind::interp</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-enum-members" class="groupheader"><a id="enum-members" name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:abd52c50f35fabb017cb708778321ede5" id="r_abd52c50f35fabb017cb708778321ede5"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceamr__wind_1_1interp.html#abd52c50f35fabb017cb708778321ede5">amr_wind::interp::Limits</a> : int { <a class="el" href="namespaceamr__wind_1_1interp.html#abd52c50f35fabb017cb708778321ede5aee3e9e533a2530a35ae6092ff5ac6f16">amr_wind::interp::LOWLIM</a> = -2
+, <a class="el" href="namespaceamr__wind_1_1interp.html#abd52c50f35fabb017cb708778321ede5a26c3945e7c9cf7dc79efc95e8f3a118d">amr_wind::interp::UPLIM</a> = -1
+, <a class="el" href="namespaceamr__wind_1_1interp.html#abd52c50f35fabb017cb708778321ede5ac9f1a6384b1c466d4612f513bd8e13ea">amr_wind::interp::VALID</a> = 0
+ }</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a4d24b363221ea83b60e7712e5dd29ef8" id="r_a4d24b363221ea83b60e7712e5dd29ef8"><td class="memTemplParams" colspan="2">template&lt;typename It, typename T&gt; </td></tr>
+<tr class="memitem:a4d24b363221ea83b60e7712e5dd29ef8 template"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <a class="el" href="structamr__wind_1_1interp_1_1_index.html">Index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceamr__wind_1_1interp.html#a4d24b363221ea83b60e7712e5dd29ef8">amr_wind::interp::check_bounds</a> (const It begin, const It end, const T &amp;x)</td></tr>
+<tr class="memitem:a62063f7f0cbbf77b3d297900dd24d282" id="r_a62063f7f0cbbf77b3d297900dd24d282"><td class="memTemplParams" colspan="2">template&lt;typename It, typename T&gt; </td></tr>
+<tr class="memitem:a62063f7f0cbbf77b3d297900dd24d282 template"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <a class="el" href="structamr__wind_1_1interp_1_1_index.html">Index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceamr__wind_1_1interp.html#a62063f7f0cbbf77b3d297900dd24d282">amr_wind::interp::bisection_search</a> (const It begin, const It end, const T &amp;x)</td></tr>
+<tr class="memitem:ae2c8b7de60c61f86e4c5c5aab80f8221" id="r_ae2c8b7de60c61f86e4c5c5aab80f8221"><td class="memTemplParams" colspan="2">template&lt;typename It, typename T&gt; </td></tr>
+<tr class="memitem:ae2c8b7de60c61f86e4c5c5aab80f8221 template"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <a class="el" href="structamr__wind_1_1interp_1_1_index.html">Index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceamr__wind_1_1interp.html#ae2c8b7de60c61f86e4c5c5aab80f8221">amr_wind::interp::nearest_search</a> (const It begin, const It end, const T &amp;x)</td></tr>
+<tr class="memitem:a1caf55521ce007f49422cb6bfe32f135" id="r_a1caf55521ce007f49422cb6bfe32f135"><td class="memTemplParams" colspan="2">template&lt;typename It, typename T&gt; </td></tr>
+<tr class="memitem:a1caf55521ce007f49422cb6bfe32f135 template"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <a class="el" href="structamr__wind_1_1interp_1_1_index.html">Index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceamr__wind_1_1interp.html#a1caf55521ce007f49422cb6bfe32f135">amr_wind::interp::find_index</a> (const It begin, const It end, const T &amp;x, const int hint=1)</td></tr>
+<tr class="memitem:ae7273df0dd4eafa5df10a7961ed37aec" id="r_ae7273df0dd4eafa5df10a7961ed37aec"><td class="memTemplParams" colspan="2">template&lt;typename C1, typename C2&gt; </td></tr>
+<tr class="memitem:ae7273df0dd4eafa5df10a7961ed37aec template"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE std::iterator_traits&lt; C2 &gt;::value_type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceamr__wind_1_1interp.html#ae7273df0dd4eafa5df10a7961ed37aec">amr_wind::interp::linear_impl</a> (const C1 xbegin, const C2 yinp, const typename std::iterator_traits&lt; C1 &gt;::value_type &amp;xout, const <a class="el" href="structamr__wind_1_1interp_1_1_index.html">Index</a> &amp;idx, const int ncomp=1, const int comp=0)</td></tr>
+<tr class="memitem:ae4cff076be2b6498f1b003779319207a" id="r_ae4cff076be2b6498f1b003779319207a"><td class="memTemplParams" colspan="2">template&lt;typename C1, typename C2&gt; </td></tr>
+<tr class="memitem:ae4cff076be2b6498f1b003779319207a template"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE std::iterator_traits&lt; C2 &gt;::value_type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceamr__wind_1_1interp.html#ae4cff076be2b6498f1b003779319207a">amr_wind::interp::linear</a> (const C1 xbegin, const C1 xend, const C2 yinp, const typename std::iterator_traits&lt; C1 &gt;::value_type &amp;xout, const int ncomp=1, const int comp=0)</td></tr>
+<tr class="memitem:aab8d53d96236456ccb31402c96cea85e" id="r_aab8d53d96236456ccb31402c96cea85e"><td class="memTemplParams" colspan="2">template&lt;typename C1, typename C2&gt; </td></tr>
+<tr class="memitem:aab8d53d96236456ccb31402c96cea85e template"><td class="memItemLeft" align="right" valign="top">C2::value_type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceamr__wind_1_1interp.html#aab8d53d96236456ccb31402c96cea85e">amr_wind::interp::linear</a> (const C1 &amp;xinp, const C2 &amp;yinp, const typename C1::value_type &amp;xout, const int ncomp=1, const int comp=0)</td></tr>
+<tr class="memitem:ad934b8278c2006cfb2781501564bb59a" id="r_ad934b8278c2006cfb2781501564bb59a"><td class="memTemplParams" colspan="2">template&lt;typename C1, typename C2&gt; </td></tr>
+<tr class="memitem:ad934b8278c2006cfb2781501564bb59a template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceamr__wind_1_1interp.html#ad934b8278c2006cfb2781501564bb59a">amr_wind::interp::linear_monotonic</a> (const C1 &amp;xinp, const C2 &amp;yinp, const C1 &amp;xout, C2 &amp;yout, const int ncomp=1, const int comp=0)</td></tr>
+<tr class="memitem:a242bcce248fb8e89b8b89c317e2b61e5" id="r_a242bcce248fb8e89b8b89c317e2b61e5"><td class="memTemplParams" colspan="2">template&lt;typename C1, typename C2&gt; </td></tr>
+<tr class="memitem:a242bcce248fb8e89b8b89c317e2b61e5 template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceamr__wind_1_1interp.html#a242bcce248fb8e89b8b89c317e2b61e5">amr_wind::interp::linear</a> (const C1 &amp;xinp, const C2 &amp;yinp, const C1 &amp;xout, C2 &amp;yout, const int ncomp=1, const int comp=0)</td></tr>
+<tr class="memitem:a936eba82bf2b93e8bfa50f7b061e99f1" id="r_a936eba82bf2b93e8bfa50f7b061e99f1"><td class="memTemplParams" colspan="2">template&lt;typename C1, typename C2&gt; </td></tr>
+<tr class="memitem:a936eba82bf2b93e8bfa50f7b061e99f1 template"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE std::iterator_traits&lt; C2 &gt;::value_type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceamr__wind_1_1interp.html#a936eba82bf2b93e8bfa50f7b061e99f1">amr_wind::interp::linear_angle</a> (const C1 xbegin, const C1 xend, const C2 yinp, const typename std::iterator_traits&lt; C1 &gt;::value_type &amp;xout, const typename std::iterator_traits&lt; C1 &gt;::value_type &amp;upper_bound)</td></tr>
+<tr class="memitem:adcb7b1c5e75a9b51f872d9cda3e04304" id="r_adcb7b1c5e75a9b51f872d9cda3e04304"><td class="memTemplParams" colspan="2">template&lt;typename C1, typename C2&gt; </td></tr>
+<tr class="memitem:adcb7b1c5e75a9b51f872d9cda3e04304 template"><td class="memItemLeft" align="right" valign="top">C2::value_type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceamr__wind_1_1interp.html#adcb7b1c5e75a9b51f872d9cda3e04304">amr_wind::interp::linear_angle</a> (const C1 &amp;xinp, const C2 &amp;yinp, const typename C1::value_type &amp;xout, const typename C1::value_type &amp;upper_bound)</td></tr>
+<tr class="memitem:a27d75d263de38fc9da1022dd09901f3a" id="r_a27d75d263de38fc9da1022dd09901f3a"><td class="memTemplParams" colspan="2">template&lt;typename C1, typename C2&gt; </td></tr>
+<tr class="memitem:a27d75d263de38fc9da1022dd09901f3a template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceamr__wind_1_1interp.html#a27d75d263de38fc9da1022dd09901f3a">amr_wind::interp::linear_angle</a> (const C1 &amp;xinp, const C2 &amp;yinp, const C1 &amp;xout, C2 &amp;yout, const typename C1::value_type &amp;upper_bound)</td></tr>
+<tr class="memitem:af8db5f57cb7dfab82e887d11579cce00" id="r_af8db5f57cb7dfab82e887d11579cce00"><td class="memTemplParams" colspan="2">template&lt;typename C1, typename C2&gt; </td></tr>
+<tr class="memitem:af8db5f57cb7dfab82e887d11579cce00 template"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE std::iterator_traits&lt; C2 &gt;::value_type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceamr__wind_1_1interp.html#af8db5f57cb7dfab82e887d11579cce00">amr_wind::interp::bilinear_impl</a> (const C1 xbegin, const C1 ybegin, const int ny, const C2 zinp, const typename std::iterator_traits&lt; C1 &gt;::value_type &amp;xout, const typename std::iterator_traits&lt; C1 &gt;::value_type &amp;yout, const <a class="el" href="structamr__wind_1_1interp_1_1_index.html">Index</a> &amp;xidx, const <a class="el" href="structamr__wind_1_1interp_1_1_index.html">Index</a> &amp;yidx)</td></tr>
+<tr class="memitem:acec324a8e8fff4491d72eb0f34602add" id="r_acec324a8e8fff4491d72eb0f34602add"><td class="memTemplParams" colspan="2">template&lt;typename C1, typename C2&gt; </td></tr>
+<tr class="memitem:acec324a8e8fff4491d72eb0f34602add template"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE std::iterator_traits&lt; C2 &gt;::value_type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceamr__wind_1_1interp.html#acec324a8e8fff4491d72eb0f34602add">amr_wind::interp::bilinear</a> (const C1 xbegin, const C1 xend, const C1 ybegin, const C1 yend, const C2 zinp, const typename std::iterator_traits&lt; C1 &gt;::value_type &amp;xout, const typename std::iterator_traits&lt; C1 &gt;::value_type &amp;yout)</td></tr>
+<tr class="memitem:adec479ac62a206a49ecc5dd70e555d38" id="r_adec479ac62a206a49ecc5dd70e555d38"><td class="memTemplParams" colspan="2">template&lt;typename C1, typename C2&gt; </td></tr>
+<tr class="memitem:adec479ac62a206a49ecc5dd70e555d38 template"><td class="memItemLeft" align="right" valign="top">C2::value_type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceamr__wind_1_1interp.html#adec479ac62a206a49ecc5dd70e555d38">amr_wind::interp::bilinear</a> (const C1 &amp;xinp, const C1 &amp;yinp, const C2 &amp;zinp, const typename C1::value_type &amp;xout, const typename C1::value_type &amp;yout)</td></tr>
+</table>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

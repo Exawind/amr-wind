@@ -1,0 +1,14 @@
+.. meta::c11286b8e75ff58bc85aa241d5411173febb4f089b4437d1f8d0864b922a4104bb887dc1110b6b1c4401b2f3074c38354f341d5d93c5af6cf27ab3060f15f864
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/multiphase/ZalesakDisk.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/physics/multiphase/ZalesakDisk.cpp File Reference
+==============================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _zalesak_disk_8cpp.html

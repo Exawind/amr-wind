@@ -1,0 +1,14 @@
+.. meta::e8266feb2dfaca5504840b24be125e9c239cdb923a94c5ce03852e097d520304c52440cbb5a887e77e2508d066b8ee312e5e5165ce5538b934de228f823f5ec8
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/LidarSampler.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/LidarSampler.cpp File Reference
+===============================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _lidar_sampler_8cpp.html

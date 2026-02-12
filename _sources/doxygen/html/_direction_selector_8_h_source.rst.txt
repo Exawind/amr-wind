@@ -1,0 +1,14 @@
+.. meta::4b093998e290b92bb16f0253793b4738d8a45142c74db7a06a7650506209a359163b976a86fb2f1a35c89b758c7f4e36243c3fa50458ee93822ba63eab65d2de
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/DirectionSelector.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/DirectionSelector.H Source File
+======================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _direction_selector_8_h_source.html

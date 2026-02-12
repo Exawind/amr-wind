@@ -1,0 +1,14 @@
+.. meta::9a039921d07be15961a61234439be6c8303e38cd16dc29867df6f9575e6c921ec2427efcf471d9a5e391fe03dadc4236b0c1dfa49cbc4c7c6e5c3bb59b75fe12
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/ShearStress.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/wind\_energy/ShearStress.H File Reference
+======================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _shear_stress_8_h.html

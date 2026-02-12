@@ -1,0 +1,703 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::SloshingTank Class Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::SloshingTank Class Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/classamr__wind_1_1_sloshing_tank.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="sloshingtank-class-reference">
+<h1>SloshingTank Class Reference<a class="headerlink" href="#sloshingtank-class-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::SloshingTank Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="classamr__wind_1_1_sloshing_tank.html">SloshingTank</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
+<a href="classamr__wind_1_1_sloshing_tank-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::SloshingTank Class Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_sloshing_tank_8_h_source.html">SloshingTank.H</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for amr_wind::SloshingTank:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1_sloshing_tank__inherit__graph.svg" width="190" height="139"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for amr_wind::SloshingTank:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1_sloshing_tank__coll__graph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a3c90415b8e4989bc533395dfacc193cf" id="r_a3c90415b8e4989bc533395dfacc193cf"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3c90415b8e4989bc533395dfacc193cf">SloshingTank</a> (<a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;sim)</td></tr>
+<tr class="memitem:a433e07bf7f32796c19a268a2bb437870" id="r_a433e07bf7f32796c19a268a2bb437870"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a433e07bf7f32796c19a268a2bb437870">~SloshingTank</a> () override=default</td></tr>
+<tr class="memitem:a2d1448626b60a03f0ff86acd2ef79c65" id="r_a2d1448626b60a03f0ff86acd2ef79c65"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2d1448626b60a03f0ff86acd2ef79c65">initialize_fields</a> (int level, const amrex::Geometry &amp;geom) override</td></tr>
+<tr class="memdesc:a2d1448626b60a03f0ff86acd2ef79c65"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the levelset and velocity fields for Sloshing Tank simulations.  <br /></td></tr>
+<tr class="memitem:ac49fbcd4496b6140809ce273e533809b" id="r_ac49fbcd4496b6140809ce273e533809b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac49fbcd4496b6140809ce273e533809b">post_init_actions</a> () override</td></tr>
+<tr class="memitem:a9c7c940d4ee2259dff156437af1d4a04" id="r_a9c7c940d4ee2259dff156437af1d4a04"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9c7c940d4ee2259dff156437af1d4a04">post_regrid_actions</a> () override</td></tr>
+<tr class="memitem:a46e408c7850bb49a1b881c31059eba43" id="r_a46e408c7850bb49a1b881c31059eba43"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a46e408c7850bb49a1b881c31059eba43">pre_advance_work</a> () override</td></tr>
+<tr class="memitem:a9d94465fc39ea2521a6ca1df0c5eb749" id="r_a9d94465fc39ea2521a6ca1df0c5eb749"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9d94465fc39ea2521a6ca1df0c5eb749">post_advance_work</a> () override</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a3522f267a47d6df41cbfd17d2f6b197b" id="r_a3522f267a47d6df41cbfd17d2f6b197b"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3522f267a47d6df41cbfd17d2f6b197b">identifier</a> ()</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:afdb10306b143c19499155162c95c158e" id="r_afdb10306b143c19499155162c95c158e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afdb10306b143c19499155162c95c158e">m_velocity</a></td></tr>
+<tr class="memitem:a33da667460af50f82eda3a48e12472e9" id="r_a33da667460af50f82eda3a48e12472e9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a33da667460af50f82eda3a48e12472e9">m_levelset</a></td></tr>
+<tr class="memitem:ae999a14c98f2a4a4d15c7fe2df525076" id="r_ae999a14c98f2a4a4d15c7fe2df525076"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae999a14c98f2a4a4d15c7fe2df525076">m_pressure</a></td></tr>
+<tr class="memitem:afb52a50d8621e4b0d972cead88503439" id="r_afb52a50d8621e4b0d972cead88503439"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afb52a50d8621e4b0d972cead88503439">m_amplitude</a> {0.1_rt}</td></tr>
+<tr class="memdesc:afb52a50d8621e4b0d972cead88503439"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initial free surface amplitude magnitude.  <br /></td></tr>
+<tr class="memitem:a8a4a4aea6676b2f0608997b61edf3126" id="r_a8a4a4aea6676b2f0608997b61edf3126"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8a4a4aea6676b2f0608997b61edf3126">m_kappa</a> {0.25_rt}</td></tr>
+<tr class="memdesc:a8a4a4aea6676b2f0608997b61edf3126"><td class="mdescLeft">&#160;</td><td class="mdescRight">Peak enhancement factor.  <br /></td></tr>
+<tr class="memitem:a57193a96f4464c2a289c481fa13bcae5" id="r_a57193a96f4464c2a289c481fa13bcae5"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a57193a96f4464c2a289c481fa13bcae5">m_waterlevel</a> {0.0_rt}</td></tr>
+<tr class="memdesc:a57193a96f4464c2a289c481fa13bcae5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initial zero-level free-surface water depth.  <br /></td></tr>
+<tr class="memitem:ac661322f332de0f02aef0ec812912a5e" id="r_ac661322f332de0f02aef0ec812912a5e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac661322f332de0f02aef0ec812912a5e">m_init_p</a> {false}</td></tr>
+<tr class="memitem:a582ac86883f8f21c55bb2def62c4911e" id="r_a582ac86883f8f21c55bb2def62c4911e"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a582ac86883f8f21c55bb2def62c4911e">m_rho1</a> {1000.}</td></tr>
+<tr class="memdesc:a582ac86883f8f21c55bb2def62c4911e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stuff to get from <a class="el" href="classamr__wind_1_1_multi_phase.html">MultiPhase</a> physics.  <br /></td></tr>
+<tr class="memitem:aa6180dc4efa58e2a32094b5fc514d9d3" id="r_aa6180dc4efa58e2a32094b5fc514d9d3"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa6180dc4efa58e2a32094b5fc514d9d3">m_rho2</a> {1.}</td></tr>
+<tr class="memitem:ab98a8f58965e37d021fd8981675a37d1" id="r_ab98a8f58965e37d021fd8981675a37d1"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab98a8f58965e37d021fd8981675a37d1">m_gravity</a> {0.0_rt, 0.0_rt, -9.81_rt}</td></tr>
+</table>
+<a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a3c90415b8e4989bc533395dfacc193cf" name="a3c90415b8e4989bc533395dfacc193cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c90415b8e4989bc533395dfacc193cf">&#9670;&#160;</a></span>SloshingTank()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::SloshingTank::SloshingTank </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>sim</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel explicit">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a433e07bf7f32796c19a268a2bb437870" name="a433e07bf7f32796c19a268a2bb437870"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a433e07bf7f32796c19a268a2bb437870">&#9670;&#160;</a></span>~SloshingTank()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::SloshingTank::~SloshingTank </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a3522f267a47d6df41cbfd17d2f6b197b" name="a3522f267a47d6df41cbfd17d2f6b197b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3522f267a47d6df41cbfd17d2f6b197b">&#9670;&#160;</a></span>identifier()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::SloshingTank::identifier </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2d1448626b60a03f0ff86acd2ef79c65" name="a2d1448626b60a03f0ff86acd2ef79c65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d1448626b60a03f0ff86acd2ef79c65">&#9670;&#160;</a></span>initialize_fields()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::SloshingTank::initialize_fields </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>level</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Geometry &amp;</td>          <td class="paramname"><span class="paramname"><em>geom</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Initialize the levelset and velocity fields for Sloshing Tank simulations. </p>
+<p>Initialize the velocity and levelset fields at the beginning of the simulation. </p>
+
+</div>
+</div>
+<a id="a9d94465fc39ea2521a6ca1df0c5eb749" name="a9d94465fc39ea2521a6ca1df0c5eb749"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d94465fc39ea2521a6ca1df0c5eb749">&#9670;&#160;</a></span>post_advance_work()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::SloshingTank::post_advance_work </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac49fbcd4496b6140809ce273e533809b" name="ac49fbcd4496b6140809ce273e533809b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac49fbcd4496b6140809ce273e533809b">&#9670;&#160;</a></span>post_init_actions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::SloshingTank::post_init_actions </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9c7c940d4ee2259dff156437af1d4a04" name="a9c7c940d4ee2259dff156437af1d4a04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c7c940d4ee2259dff156437af1d4a04">&#9670;&#160;</a></span>post_regrid_actions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::SloshingTank::post_regrid_actions </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a46e408c7850bb49a1b881c31059eba43" name="a46e408c7850bb49a1b881c31059eba43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46e408c7850bb49a1b881c31059eba43">&#9670;&#160;</a></span>pre_advance_work()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::SloshingTank::pre_advance_work </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="afb52a50d8621e4b0d972cead88503439" name="afb52a50d8621e4b0d972cead88503439"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb52a50d8621e4b0d972cead88503439">&#9670;&#160;</a></span>m_amplitude</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::SloshingTank::m_amplitude {0.1_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Initial free surface amplitude magnitude. </p>
+
+</div>
+</div>
+<a id="ab98a8f58965e37d021fd8981675a37d1" name="ab98a8f58965e37d021fd8981675a37d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab98a8f58965e37d021fd8981675a37d1">&#9670;&#160;</a></span>m_gravity</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Real&gt; amr_wind::SloshingTank::m_gravity {0.0_rt, 0.0_rt, -9.81_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac661322f332de0f02aef0ec812912a5e" name="ac661322f332de0f02aef0ec812912a5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac661322f332de0f02aef0ec812912a5e">&#9670;&#160;</a></span>m_init_p</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::SloshingTank::m_init_p {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8a4a4aea6676b2f0608997b61edf3126" name="a8a4a4aea6676b2f0608997b61edf3126"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a4a4aea6676b2f0608997b61edf3126">&#9670;&#160;</a></span>m_kappa</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::SloshingTank::m_kappa {0.25_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Peak enhancement factor. </p>
+
+</div>
+</div>
+<a id="a33da667460af50f82eda3a48e12472e9" name="a33da667460af50f82eda3a48e12472e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33da667460af50f82eda3a48e12472e9">&#9670;&#160;</a></span>m_levelset</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a>&amp; amr_wind::SloshingTank::m_levelset</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae999a14c98f2a4a4d15c7fe2df525076" name="ae999a14c98f2a4a4d15c7fe2df525076"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae999a14c98f2a4a4d15c7fe2df525076">&#9670;&#160;</a></span>m_pressure</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a>&amp; amr_wind::SloshingTank::m_pressure</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a582ac86883f8f21c55bb2def62c4911e" name="a582ac86883f8f21c55bb2def62c4911e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a582ac86883f8f21c55bb2def62c4911e">&#9670;&#160;</a></span>m_rho1</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::SloshingTank::m_rho1 {1000.}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stuff to get from <a class="el" href="classamr__wind_1_1_multi_phase.html">MultiPhase</a> physics. </p>
+
+</div>
+</div>
+<a id="aa6180dc4efa58e2a32094b5fc514d9d3" name="aa6180dc4efa58e2a32094b5fc514d9d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6180dc4efa58e2a32094b5fc514d9d3">&#9670;&#160;</a></span>m_rho2</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::SloshingTank::m_rho2 {1.}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afdb10306b143c19499155162c95c158e" name="afdb10306b143c19499155162c95c158e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afdb10306b143c19499155162c95c158e">&#9670;&#160;</a></span>m_velocity</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a>&amp; amr_wind::SloshingTank::m_velocity</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a57193a96f4464c2a289c481fa13bcae5" name="a57193a96f4464c2a289c481fa13bcae5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57193a96f4464c2a289c481fa13bcae5">&#9670;&#160;</a></span>m_waterlevel</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::SloshingTank::m_waterlevel {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Initial zero-level free-surface water depth. </p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/physics/multiphase/<a class="el" href="_sloshing_tank_8_h_source.html">SloshingTank.H</a></li>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/physics/multiphase/<a class="el" href="_sloshing_tank_8cpp.html">SloshingTank.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

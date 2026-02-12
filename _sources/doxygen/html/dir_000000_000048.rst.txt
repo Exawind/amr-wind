@@ -1,0 +1,14 @@
+.. meta::ff7b45ad7cf3a33a21adafb683ab9edb8aebe5361857a8d414e918e8a43142a75f095eef06f47104e000191c18895b1e410ee010822c3575cd796f1d52a83dcc
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/actuator -&gt; turbine Relation
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/wind\_energy/actuator -&gt; turbine Relation
+=========================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: dir_000000_000048.html

@@ -1,0 +1,14 @@
+.. meta::2f320c470320afba32e658913cd8526929bac31f49aaa6c1e24e617e8e73ec26c6d1acf85d8cabafd0280dfb2bb069d6990437e3323a609b9d089f97a08684c5
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::icns::DragForcing Class Reference
+
+DragForcing Class Reference
+===========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1pde_1_1icns_1_1_drag_forcing.html

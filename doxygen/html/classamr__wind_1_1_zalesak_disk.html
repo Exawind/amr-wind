@@ -1,0 +1,684 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::ZalesakDisk Class Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::ZalesakDisk Class Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/classamr__wind_1_1_zalesak_disk.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="zalesakdisk-class-reference">
+<h1>ZalesakDisk Class Reference<a class="headerlink" href="#zalesakdisk-class-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::ZalesakDisk Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="classamr__wind_1_1_zalesak_disk.html">ZalesakDisk</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
+<a href="classamr__wind_1_1_zalesak_disk-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::ZalesakDisk Class Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_zalesak_disk_8_h_source.html">ZalesakDisk.H</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for amr_wind::ZalesakDisk:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1_zalesak_disk__inherit__graph.svg" width="186" height="139"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for amr_wind::ZalesakDisk:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1_zalesak_disk__coll__graph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a6e86f0679a9df7cfbb3a7c9fd47741bc" id="r_a6e86f0679a9df7cfbb3a7c9fd47741bc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6e86f0679a9df7cfbb3a7c9fd47741bc">ZalesakDisk</a> (<a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;sim)</td></tr>
+<tr class="memitem:afa5515a4c48fcc828bdc484c7c1b890b" id="r_afa5515a4c48fcc828bdc484c7c1b890b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afa5515a4c48fcc828bdc484c7c1b890b">~ZalesakDisk</a> () override=default</td></tr>
+<tr class="memitem:afdc9d458f172cfdc73cf896130289b09" id="r_afdc9d458f172cfdc73cf896130289b09"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afdc9d458f172cfdc73cf896130289b09">initialize_fields</a> (int level, const amrex::Geometry &amp;geom) override</td></tr>
+<tr class="memdesc:afdc9d458f172cfdc73cf896130289b09"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the levelset and velocity fields for Vortex Patch simulations.  <br /></td></tr>
+<tr class="memitem:a269797317507a86a6928f10bd91da61c" id="r_a269797317507a86a6928f10bd91da61c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a269797317507a86a6928f10bd91da61c">post_init_actions</a> () override</td></tr>
+<tr class="memitem:a72e722eb593c3e109602ff9470bf151f" id="r_a72e722eb593c3e109602ff9470bf151f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a72e722eb593c3e109602ff9470bf151f">post_regrid_actions</a> () override</td></tr>
+<tr class="memitem:a3ba127d226cdcd799260b5f8a3aa4173" id="r_a3ba127d226cdcd799260b5f8a3aa4173"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3ba127d226cdcd799260b5f8a3aa4173">pre_advance_work</a> () override</td></tr>
+<tr class="memitem:a487fea7356ed18fe3509355ca4fce722" id="r_a487fea7356ed18fe3509355ca4fce722"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a487fea7356ed18fe3509355ca4fce722">post_advance_work</a> () override</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:ab22322a26650df8219bb00df2c4a42c7" id="r_ab22322a26650df8219bb00df2c4a42c7"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab22322a26650df8219bb00df2c4a42c7">identifier</a> ()</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a28259afdd6d9d2adc711bebfa402fb8c" id="r_a28259afdd6d9d2adc711bebfa402fb8c"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a28259afdd6d9d2adc711bebfa402fb8c">m_sim</a></td></tr>
+<tr class="memitem:aa2e8018bff308a66050cc7f982b85829" id="r_aa2e8018bff308a66050cc7f982b85829"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa2e8018bff308a66050cc7f982b85829">m_velocity</a></td></tr>
+<tr class="memitem:a4fa3404b4060548a3d946a0e59a579ce" id="r_a4fa3404b4060548a3d946a0e59a579ce"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4fa3404b4060548a3d946a0e59a579ce">m_levelset</a></td></tr>
+<tr class="memitem:a6e16fb764a756788ae6932fc9256fc9f" id="r_a6e16fb764a756788ae6932fc9256fc9f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6e16fb764a756788ae6932fc9256fc9f">m_density</a></td></tr>
+<tr class="memitem:a8ea80cba5684bd999879d0ed9ac82d6c" id="r_a8ea80cba5684bd999879d0ed9ac82d6c"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8ea80cba5684bd999879d0ed9ac82d6c">m_loc</a> {0.5_rt, 0.72_rt, 0.24_rt}</td></tr>
+<tr class="memdesc:a8ea80cba5684bd999879d0ed9ac82d6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initial <a class="el" href="classamr__wind_1_1_zalesak_disk.html">ZalesakDisk</a> location.  <br /></td></tr>
+<tr class="memitem:a0a1daf0bf17777ccc95736d9de8a8357" id="r_a0a1daf0bf17777ccc95736d9de8a8357"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0a1daf0bf17777ccc95736d9de8a8357">m_radius</a> {0.16_rt}</td></tr>
+<tr class="memdesc:a0a1daf0bf17777ccc95736d9de8a8357"><td class="mdescLeft">&#160;</td><td class="mdescRight">sphere radius value  <br /></td></tr>
+<tr class="memitem:a231f32a5f8b81cb82e1bf569dd2a2761" id="r_a231f32a5f8b81cb82e1bf569dd2a2761"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a231f32a5f8b81cb82e1bf569dd2a2761">m_halfwidth</a> {0.04_rt}</td></tr>
+<tr class="memdesc:a231f32a5f8b81cb82e1bf569dd2a2761"><td class="mdescLeft">&#160;</td><td class="mdescRight">slot half width value  <br /></td></tr>
+<tr class="memitem:a9792d1670a80c49089845d24c3d94546" id="r_a9792d1670a80c49089845d24c3d94546"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9792d1670a80c49089845d24c3d94546">m_depth</a> {0.2_rt}</td></tr>
+<tr class="memdesc:a9792d1670a80c49089845d24c3d94546"><td class="mdescLeft">&#160;</td><td class="mdescRight">slot depth  <br /></td></tr>
+<tr class="memitem:a8358073496be2a44ce128b4a3cd96876" id="r_a8358073496be2a44ce128b4a3cd96876"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8358073496be2a44ce128b4a3cd96876">m_TT</a> {6.0_rt}</td></tr>
+<tr class="memdesc:a8358073496be2a44ce128b4a3cd96876"><td class="mdescLeft">&#160;</td><td class="mdescRight">prescribed velocity period  <br /></td></tr>
+</table>
+<a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a6e86f0679a9df7cfbb3a7c9fd47741bc" name="a6e86f0679a9df7cfbb3a7c9fd47741bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e86f0679a9df7cfbb3a7c9fd47741bc">&#9670;&#160;</a></span>ZalesakDisk()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::ZalesakDisk::ZalesakDisk </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>sim</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel explicit">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afa5515a4c48fcc828bdc484c7c1b890b" name="afa5515a4c48fcc828bdc484c7c1b890b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa5515a4c48fcc828bdc484c7c1b890b">&#9670;&#160;</a></span>~ZalesakDisk()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::ZalesakDisk::~ZalesakDisk </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="ab22322a26650df8219bb00df2c4a42c7" name="ab22322a26650df8219bb00df2c4a42c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab22322a26650df8219bb00df2c4a42c7">&#9670;&#160;</a></span>identifier()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::ZalesakDisk::identifier </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afdc9d458f172cfdc73cf896130289b09" name="afdc9d458f172cfdc73cf896130289b09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afdc9d458f172cfdc73cf896130289b09">&#9670;&#160;</a></span>initialize_fields()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ZalesakDisk::initialize_fields </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>level</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Geometry &amp;</td>          <td class="paramname"><span class="paramname"><em>geom</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Initialize the levelset and velocity fields for Vortex Patch simulations. </p>
+<p>Initialize the velocity and levelset fields at the beginning of the simulation.</p>
+<dl class="section see"><dt>See also</dt><dd>amr_wind::ZalesakDiskFieldInit </dd></dl>
+
+</div>
+</div>
+<a id="a487fea7356ed18fe3509355ca4fce722" name="a487fea7356ed18fe3509355ca4fce722"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a487fea7356ed18fe3509355ca4fce722">&#9670;&#160;</a></span>post_advance_work()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ZalesakDisk::post_advance_work </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a269797317507a86a6928f10bd91da61c" name="a269797317507a86a6928f10bd91da61c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a269797317507a86a6928f10bd91da61c">&#9670;&#160;</a></span>post_init_actions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ZalesakDisk::post_init_actions </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a72e722eb593c3e109602ff9470bf151f" name="a72e722eb593c3e109602ff9470bf151f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72e722eb593c3e109602ff9470bf151f">&#9670;&#160;</a></span>post_regrid_actions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ZalesakDisk::post_regrid_actions </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3ba127d226cdcd799260b5f8a3aa4173" name="a3ba127d226cdcd799260b5f8a3aa4173"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ba127d226cdcd799260b5f8a3aa4173">&#9670;&#160;</a></span>pre_advance_work()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ZalesakDisk::pre_advance_work </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a6e16fb764a756788ae6932fc9256fc9f" name="a6e16fb764a756788ae6932fc9256fc9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e16fb764a756788ae6932fc9256fc9f">&#9670;&#160;</a></span>m_density</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a>&amp; amr_wind::ZalesakDisk::m_density</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9792d1670a80c49089845d24c3d94546" name="a9792d1670a80c49089845d24c3d94546"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9792d1670a80c49089845d24c3d94546">&#9670;&#160;</a></span>m_depth</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::ZalesakDisk::m_depth {0.2_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>slot depth </p>
+
+</div>
+</div>
+<a id="a231f32a5f8b81cb82e1bf569dd2a2761" name="a231f32a5f8b81cb82e1bf569dd2a2761"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a231f32a5f8b81cb82e1bf569dd2a2761">&#9670;&#160;</a></span>m_halfwidth</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::ZalesakDisk::m_halfwidth {0.04_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>slot half width value </p>
+
+</div>
+</div>
+<a id="a4fa3404b4060548a3d946a0e59a579ce" name="a4fa3404b4060548a3d946a0e59a579ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4fa3404b4060548a3d946a0e59a579ce">&#9670;&#160;</a></span>m_levelset</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a>&amp; amr_wind::ZalesakDisk::m_levelset</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8ea80cba5684bd999879d0ed9ac82d6c" name="a8ea80cba5684bd999879d0ed9ac82d6c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ea80cba5684bd999879d0ed9ac82d6c">&#9670;&#160;</a></span>m_loc</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Real&gt; amr_wind::ZalesakDisk::m_loc {0.5_rt, 0.72_rt, 0.24_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Initial <a class="el" href="classamr__wind_1_1_zalesak_disk.html">ZalesakDisk</a> location. </p>
+
+</div>
+</div>
+<a id="a0a1daf0bf17777ccc95736d9de8a8357" name="a0a1daf0bf17777ccc95736d9de8a8357"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a1daf0bf17777ccc95736d9de8a8357">&#9670;&#160;</a></span>m_radius</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::ZalesakDisk::m_radius {0.16_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>sphere radius value </p>
+
+</div>
+</div>
+<a id="a28259afdd6d9d2adc711bebfa402fb8c" name="a28259afdd6d9d2adc711bebfa402fb8c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28259afdd6d9d2adc711bebfa402fb8c">&#9670;&#160;</a></span>m_sim</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; amr_wind::ZalesakDisk::m_sim</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8358073496be2a44ce128b4a3cd96876" name="a8358073496be2a44ce128b4a3cd96876"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8358073496be2a44ce128b4a3cd96876">&#9670;&#160;</a></span>m_TT</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::ZalesakDisk::m_TT {6.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>prescribed velocity period </p>
+
+</div>
+</div>
+<a id="aa2e8018bff308a66050cc7f982b85829" name="aa2e8018bff308a66050cc7f982b85829"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2e8018bff308a66050cc7f982b85829">&#9670;&#160;</a></span>m_velocity</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a>&amp; amr_wind::ZalesakDisk::m_velocity</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/physics/multiphase/<a class="el" href="_zalesak_disk_8_h_source.html">ZalesakDisk.H</a></li>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/physics/multiphase/<a class="el" href="_zalesak_disk_8cpp.html">ZalesakDisk.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

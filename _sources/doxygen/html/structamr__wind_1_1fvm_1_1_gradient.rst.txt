@@ -1,0 +1,14 @@
+.. meta::c801210edc0586b8708e778ec854e5f8544118bcd2b3cb66558452c2cf596c30ad8e3d47a0a459898564d30d9c75289fc57cbc1b06dda4abc9960c7ac0c63d2b
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::fvm::Gradient&lt; FTypeIn, FTypeOut &gt; Struct Template Reference
+
+Gradient&lt; FTypeIn, FTypeOut &gt; Struct Template Reference
+=============================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1fvm_1_1_gradient.html

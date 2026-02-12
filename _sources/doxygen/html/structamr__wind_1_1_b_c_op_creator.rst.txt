@@ -1,0 +1,14 @@
+.. meta::3b5cad20ec6374161045ca39b4f42244a95d80a75d0b60cbd45da5080b8842b57787fd46a3ca9a697a932b068f56770a5863b850bfad1e982712bed7373354f9
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::BCOpCreator&lt; InflowOp, WallOp &gt; Struct Template Reference
+
+BCOpCreator&lt; InflowOp, WallOp &gt; Struct Template Reference
+===============================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1_b_c_op_creator.html

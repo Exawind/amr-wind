@@ -1,0 +1,14 @@
+.. meta::70267a01e1ea8246263a41adc48b433b1a930159113d9cfcbdafb3c8b60686abeed8c3a7faabad1f1a279e3b6e663351362bc35391f0860cd901665c401c460a
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::icns::BodyForce Class Reference
+
+BodyForce Class Reference
+=========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1pde_1_1icns_1_1_body_force.html

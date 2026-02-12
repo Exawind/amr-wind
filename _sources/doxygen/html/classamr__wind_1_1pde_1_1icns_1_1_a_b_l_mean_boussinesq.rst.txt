@@ -1,0 +1,14 @@
+.. meta::374ce27efb3e28d2b936dc28d993903dd5fff4c0c17f4e06509cdaeff9c770b667cd8f4573bb1ce60e83dabf9d359fe11f334d9a25ecbd848094cf5d038ea7cb
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::icns::ABLMeanBoussinesq Class Reference
+
+ABLMeanBoussinesq Class Reference
+=================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1pde_1_1icns_1_1_a_b_l_mean_boussinesq.html

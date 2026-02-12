@@ -1,0 +1,14 @@
+.. meta::d00918bb62051836dbc4b2ad7157c7ce4c8ae8035a042bb4e813fa72fd91a86528a75e15bcb76c23e95f47ab0b884ad5fe634e29e66dc2d5b97f695cbfb2466f
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/actuator/wing/wing_ops.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/wind\_energy/actuator/wing/wing\_ops.H File Reference
+==================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: wing__ops_8_h.html

@@ -1,0 +1,14 @@
+.. meta::3c23497a0f80e117ea16a17b72d967e892796220a4864e59c97fefeeeecaacd568de9554bb99d13a231deb939593685ee1e361e8db3a75147aa19cc6d25f37d6
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ScalarAdvection Class Reference
+
+ScalarAdvection Class Reference
+===============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_scalar_advection.html

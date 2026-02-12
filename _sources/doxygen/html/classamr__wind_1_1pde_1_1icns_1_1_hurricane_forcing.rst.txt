@@ -1,0 +1,14 @@
+.. meta::a39e324115ef18e97a5016bb321b1156d7cd98896970bea7469eea98392270707ccc0de374701f18442c07027510ad2011e8716a7abaf7db7c809e0de427d207
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::icns::HurricaneForcing Class Reference
+
+HurricaneForcing Class Reference
+================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1pde_1_1icns_1_1_hurricane_forcing.html

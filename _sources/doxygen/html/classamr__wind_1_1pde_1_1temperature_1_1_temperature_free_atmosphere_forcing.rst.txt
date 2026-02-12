@@ -1,0 +1,14 @@
+.. meta::5b5954c02e7e7d33850ae35362c8081e01224644ddcec94b42b821c58a88bb57dc3714412a30627abb59953461dfbea520b99333852835ab58698e225386ef10
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::temperature::TemperatureFreeAtmosphereForcing Class Reference
+
+TemperatureFreeAtmosphereForcing Class Reference
+================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1pde_1_1temperature_1_1_temperature_free_atmosphere_forcing.html
