@@ -448,7 +448,7 @@ void ABLTempWallFunc::wall_model(
                     const amrex::Real zeta = z / m_monin_obukhov_length;
                     const amrex::Real psi_m = mo.calc_psi_m(zeta);
                     const amrex::Real kappa = mo.kappa;
-                    const amrex::Real gravity_mod = 9.81;
+                    const amrex::Real gravity_mod = 9.81_rt;
                     const amrex::Real abl_z0 = mo.z0;
                     const amrex::Real monin_obukhov_length =
                         m_monin_obukhov_length;
