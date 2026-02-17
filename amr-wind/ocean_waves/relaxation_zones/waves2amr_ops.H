@@ -186,7 +186,9 @@ void time_interpolate_wave_fields(
     const amrex::Real t_new,
     const amrex::Real t_future)
 {
-    const amrex::Real b = (t_new - t_old) / (t_future - t_old + 1.0e-16_rt);
+    const amrex::Real b =
+        (t_new - t_old) /
+        (t_future - t_old + std::numeric_limits<amrex::Real>::epsilon());
     const amrex::Real a = 1.0_rt - b;
     amr_wind::field_ops::lincomb(
         lvs_field, a, lvs_field, 0, b, future_lvs_field, 0, 0, 1,

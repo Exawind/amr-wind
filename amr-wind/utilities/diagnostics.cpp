@@ -164,7 +164,7 @@ amrex::Real amr_wind::diagnostics::get_vel_loc(
                 bool mask_check = (mask_arr(i, j, k) > 0);
                 bool loc_check =
                     (amrex::Math::abs(vel_max - vel_arr(i, j, k, vdir)) <
-                     1.0e-10_rt);
+                     std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt);
                 loc_fab = amrex::max<amrex::Real>(
                     loc_fab, (mask_check && loc_check ? loc : problo[ldir]));
             });
@@ -242,7 +242,7 @@ amrex::Real amr_wind::diagnostics::get_macvel_loc(
                     (mask_arr(i, j, k) + mask_arr(ii, jj, kk) > 0);
                 bool loc_check =
                     (amrex::Math::abs(mvel_max - mvel_arr(i, j, k)) <
-                     1.0e-10_rt);
+                     std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt);
                 loc_fab = amrex::max<amrex::Real>(
                     loc_fab, (mask_check && loc_check ? loc : problo[ldir]));
             });

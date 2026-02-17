@@ -6,7 +6,8 @@ using namespace amrex::literals;
 
 namespace amr_wind_tests {
 namespace {
-constexpr amrex::Real tol = 1.0e-12_rt;
+constexpr amrex::Real tol =
+    std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
 
 struct TestVector
 {

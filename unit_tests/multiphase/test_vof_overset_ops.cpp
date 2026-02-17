@@ -796,7 +796,9 @@ TEST_F(VOFOversetOps, alpha_flux)
     // Check results
     amrex::Real error_total = check_alpha_flux_impl(flux_x, dir);
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
-    EXPECT_NEAR(error_total, 0.0_rt, 1.0e-15_rt);
+    EXPECT_NEAR(
+        error_total, 0.0_rt,
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e1_rt);
 
     // -- Variations in y direction -- //
     dir = 1;
@@ -807,7 +809,9 @@ TEST_F(VOFOversetOps, alpha_flux)
     // Check results
     error_total = check_alpha_flux_impl(flux_y, dir);
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
-    EXPECT_NEAR(error_total, 0.0_rt, 1.0e-15_rt);
+    EXPECT_NEAR(
+        error_total, 0.0_rt,
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e1_rt);
 
     // -- Variations in z direction -- //
     dir = 2;
@@ -818,7 +822,9 @@ TEST_F(VOFOversetOps, alpha_flux)
     // Check results
     error_total = check_alpha_flux_impl(flux_z, dir);
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
-    EXPECT_NEAR(error_total, 0.0_rt, 1.0e-15_rt);
+    EXPECT_NEAR(
+        error_total, 0.0_rt,
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e1_rt);
 }
 
 TEST_F(VOFOversetOps, velocity_face)
@@ -848,7 +854,9 @@ TEST_F(VOFOversetOps, velocity_face)
     // Check results
     amrex::Real error_total = check_velocity_face_impl(flux_x, dir);
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
-    EXPECT_NEAR(error_total, 0.0_rt, 1.0e-15_rt);
+    EXPECT_NEAR(
+        error_total, 0.0_rt,
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e1_rt);
 
     // -- Variations in y direction -- //
     dir = 1;
@@ -859,7 +867,9 @@ TEST_F(VOFOversetOps, velocity_face)
     // Check results
     error_total = check_velocity_face_impl(flux_y, dir);
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
-    EXPECT_NEAR(error_total, 0.0_rt, 1.0e-15_rt);
+    EXPECT_NEAR(
+        error_total, 0.0_rt,
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e1_rt);
 
     // -- Variations in z direction -- //
     dir = 2;
@@ -870,7 +880,9 @@ TEST_F(VOFOversetOps, velocity_face)
     // Check results
     error_total = check_velocity_face_impl(flux_z, dir);
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
-    EXPECT_NEAR(error_total, 0.0_rt, 1.0e-15_rt);
+    EXPECT_NEAR(
+        error_total, 0.0_rt,
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e1_rt);
 }
 
 TEST_F(VOFOversetOps, gp_rho_face)
@@ -905,7 +917,9 @@ TEST_F(VOFOversetOps, gp_rho_face)
     amrex::Real error_total =
         check_gp_rho_face_impl(flux_x, dir, rho_liq, rho_gas);
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
-    EXPECT_NEAR(error_total, 0.0_rt, 1.0e-15_rt);
+    EXPECT_NEAR(
+        error_total, 0.0_rt,
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e1_rt);
 
     // -- Variations in y direction -- //
     dir = 1;
@@ -916,7 +930,9 @@ TEST_F(VOFOversetOps, gp_rho_face)
     // Check results
     error_total = check_gp_rho_face_impl(flux_y, dir, rho_liq, rho_gas);
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
-    EXPECT_NEAR(error_total, 0.0_rt, 1.0e-15_rt);
+    EXPECT_NEAR(
+        error_total, 0.0_rt,
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e1_rt);
 
     // -- Variations in z direction -- //
     dir = 2;
@@ -927,7 +943,9 @@ TEST_F(VOFOversetOps, gp_rho_face)
     // Check results
     error_total = check_gp_rho_face_impl(flux_z, dir, rho_liq, rho_gas);
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
-    EXPECT_NEAR(error_total, 0.0_rt, 1.0e-15_rt);
+    EXPECT_NEAR(
+        error_total, 0.0_rt,
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e1_rt);
 }
 
 TEST_F(VOFOversetOps, pseudo_vscale_dt)
@@ -943,7 +961,8 @@ TEST_F(VOFOversetOps, pseudo_vscale_dt)
     auto& iblank = repo.declare_int_field("iblank_cell", 1, nghost);
     iblank.setVal(-1);
     constexpr amrex::Real margin = 0.1_rt;
-    constexpr amrex::Real convg_tol = 1.0e-8_rt;
+    constexpr amrex::Real convg_tol =
+        std::numeric_limits<float>::epsilon() * 1.0e1_rt;
     // With vof and target_vof arrays, max vof removed is 50%, doubling pdt
     constexpr amrex::Real pdt_answer = 2.0_rt;
     // With a single level, pseudo velocity scale should be dx of lev 0
@@ -1091,7 +1110,9 @@ TEST_F(VOFOversetOps, psource_manual)
     // Check difference
     amrex::Real error_total = check_psrc_manual_impl(psrc, psmn);
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
-    EXPECT_NEAR(error_total, 0.0_rt, 1.0e-10_rt);
+    EXPECT_NEAR(
+        error_total, 0.0_rt,
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt);
 }
 
 TEST_F(VOFOversetOps, projection_masks)
@@ -1123,8 +1144,12 @@ TEST_F(VOFOversetOps, projection_masks)
     amrex::Real error_cell = check_iblank_cell_impl(mask_cell);
     amrex::ParallelDescriptor::ReduceRealSum(error_node);
     amrex::ParallelDescriptor::ReduceRealSum(error_cell);
-    EXPECT_NEAR(error_node, 0.0_rt, 1.0e-10_rt);
-    EXPECT_NEAR(error_cell, 0.0_rt, 1.0e-10_rt);
+    EXPECT_NEAR(
+        error_node, 0.0_rt,
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt);
+    EXPECT_NEAR(
+        error_cell, 0.0_rt,
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt);
 
     // Change mask_cell to default (single-phase) approach
     amr_wind::overset_ops::revert_mask_cell_after_mac(repo);
@@ -1132,7 +1157,9 @@ TEST_F(VOFOversetOps, projection_masks)
     // Check against expectations
     error_cell = check_iblank_cell_default_impl(mask_cell);
     amrex::ParallelDescriptor::ReduceRealSum(error_cell);
-    EXPECT_NEAR(error_cell, 0.0_rt, 1.0e-10_rt);
+    EXPECT_NEAR(
+        error_cell, 0.0_rt,
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt);
 }
 
 } // namespace amr_wind_tests

@@ -51,7 +51,7 @@ amrex::Real MOData::calc_psi_h(amrex::Real zeta) const
 
 void MOData::update_fluxes(int max_iters)
 {
-    constexpr amrex::Real eps = 1.0e-16_rt;
+    constexpr amrex::Real eps = std::numeric_limits<amrex::Real>::epsilon();
     amrex::Real zeta = 0.0_rt;
     amrex::Real utau_iter = 0.0_rt;
 

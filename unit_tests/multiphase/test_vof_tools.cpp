@@ -135,7 +135,11 @@ levelset_to_vof_test_impl(const amrex::Real deltax, amr_wind::Field& levelset)
                         i, j, k, 2.0_rt * dx, levelset_arr);
 
                     // Perform checks in multiphase cells
-                    if (vof > 1.0e-12_rt && vof < 1.0_rt - 1.0e-12_rt) {
+                    if (vof > std::numeric_limits<amrex::Real>::epsilon() *
+                                  1.0e4_rt &&
+                        vof < 1.0_rt -
+                                  std::numeric_limits<amrex::Real>::epsilon() *
+                                      1.0e4_rt) {
                         // Integrate to get VOF, check error
                         amrex::Real approx_vof = amrex::min<amrex::Real>(
                             1.0_rt,
@@ -146,13 +150,16 @@ levelset_to_vof_test_impl(const amrex::Real deltax, amr_wind::Field& levelset)
                     }
 
                     // Perform checks in single-phase cells
-                    if (vof <= 1.0e-12_rt) {
+                    if (vof <= std::numeric_limits<amrex::Real>::epsilon() *
+                                   1.0e4_rt) {
                         // Interface should be more than half cell away,
                         // negative levelset value
                         error += amrex::max<amrex::Real>(
                             0.0_rt, 0.5_rt * dx + levelset_arr(i, j, k));
                     }
-                    if (vof >= 1.0_rt - 1.0e-12_rt) {
+                    if (vof >=
+                        1.0_rt - std::numeric_limits<amrex::Real>::epsilon() *
+                                     1.0e4_rt) {
                         // Interface should be more than half cell away,
                         // positive levelset value
                         error += amrex::max<amrex::Real>(
@@ -303,7 +310,9 @@ TEST_F(VOFToolTest, levelset_to_vof)
     init_lvs(0, m_dx, levelset);
     error_total = levelset_to_vof_test_impl(m_dx, levelset);
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
-    EXPECT_NEAR(error_total, 0.0_rt, 1e-12);
+    EXPECT_NEAR(
+        error_total, 0.0_rt,
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
     //  profile 1: parabola
     init_lvs(1, m_dx, levelset);
     error_total = levelset_to_vof_test_impl(m_dx, levelset);
@@ -342,7 +351,9 @@ TEST_F(VOFToolTest, replace_masked_vof)
     // Check results
     amrex::Real error_total = initvof_test_impl(vof_mod);
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
-    EXPECT_NEAR(error_total, 0.0_rt, 1.0e-15_rt);
+    EXPECT_NEAR(
+        error_total, 0.0_rt,
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e1_rt);
 }
 
 } // namespace amr_wind_tests

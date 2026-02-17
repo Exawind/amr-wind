@@ -1454,10 +1454,8 @@ void ABLBoundaryPlane::write_data(
 
         if ((blo[normal] == dlo[normal] && ori.isLow()) ||
             (bhi[normal] == dhi[normal] && ori.isHigh())) {
-            min_lo[perp[0]] =
-                amrex::min<amrex::Real>(min_lo[perp[0]], blo[perp[0]]);
-            min_lo[perp[1]] =
-                amrex::min<amrex::Real>(min_lo[perp[1]], blo[perp[1]]);
+            min_lo[perp[0]] = amrex::min(min_lo[perp[0]], blo[perp[0]]);
+            min_lo[perp[1]] = amrex::min(min_lo[perp[1]], blo[perp[1]]);
         }
     }
     amrex::ParallelDescriptor::ReduceIntMin(min_lo.begin(), min_lo.size());

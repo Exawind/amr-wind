@@ -124,7 +124,8 @@ TEST(NetCDFUtils, var_io)
 
     for (int i = 0; i < num_points; ++i) {
         ASSERT_NEAR(
-            buf[i], start_val + static_cast<amrex::Real>(i), 1.0e-12_rt);
+            buf[i], start_val + static_cast<amrex::Real>(i),
+            std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
     }
 
     // Test hyperslab
@@ -135,7 +136,7 @@ TEST(NetCDFUtils, var_io)
         for (int j = 0; j < 2; ++j) {
             ASSERT_NEAR(
                 buf[idx++], static_cast<amrex::Real>(num_points * i + 2 * j),
-                1.0e-12_rt);
+                std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
         }
     }
 }

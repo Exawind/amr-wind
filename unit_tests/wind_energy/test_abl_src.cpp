@@ -62,7 +62,8 @@ using ICNSFields =
 
 TEST_F(ABLMeshTest, abl_forcing)
 {
-    constexpr amrex::Real tol = 1.0e-12_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
     populate_parameters();
     initialize_mesh();
 
@@ -123,7 +124,8 @@ TEST_F(ABLMeshTest, abl_forcing)
 
 TEST_F(ABLMeshTest, body_force)
 {
-    constexpr amrex::Real tol = 1.0e-12_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
     populate_parameters();
     initialize_mesh();
 
@@ -182,7 +184,8 @@ TEST_F(ABLMeshTest, body_force)
 
 TEST_F(ABLMeshTest, geostrophic_forcing)
 {
-    constexpr amrex::Real tol = 1.0e-12_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
     populate_parameters();
 
     amrex::ParmParse pp("CoriolisForcing");
@@ -221,7 +224,8 @@ TEST_F(ABLMeshTest, geostrophic_forcing)
 
 TEST_F(ABLMeshTest, rayleigh_damping)
 {
-    constexpr amrex::Real tol = 1.0e-12_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
     populate_parameters();
     initialize_mesh();
 
@@ -315,7 +319,8 @@ TEST_F(ABLMeshTest, rayleigh_damping)
 
 TEST_F(ABLMeshTest, hurricane_forcing)
 {
-    constexpr amrex::Real tol = 1.0e-12_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
     populate_parameters();
     {
         amrex::ParmParse pp("CoriolisForcing");
@@ -394,7 +399,8 @@ TEST_F(ABLMeshTest, hurricane_forcing)
 
 TEST_F(ABLMeshTest, coriolis_const_vel)
 {
-    constexpr amrex::Real tol = 1.0e-12_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
     constexpr amrex::Real corfac =
         2.0_rt * amr_wind::utils::two_pi() / 86164.091_rt;
     // Latitude is set to 45 degrees in the input file so sinphi = cosphi
@@ -477,7 +483,8 @@ TEST_F(ABLMeshTest, coriolis_height_variation)
 {
     // ABL unit test mesh has 64 cells in z
     constexpr int kdim = 63;
-    constexpr amrex::Real tol = 1.0e-12_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
     constexpr amrex::Real corfac =
         2.0_rt * amr_wind::utils::two_pi() / 86164.091_rt;
     // Latitude is set to 45 degrees in the input file so sinphi = cosphi
@@ -542,7 +549,8 @@ void init_abl_temperature_field(
 TEST_F(ABLMeshTest, boussinesq)
 {
     constexpr int kdim = 7;
-    constexpr amrex::Real tol = 1.0e-12_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
 
     // Initialize parameters
     populate_parameters();
@@ -590,7 +598,8 @@ TEST_F(ABLMeshTest, boussinesq)
 TEST_F(ABLMeshTest, boussinesq_nph)
 {
     constexpr int kdim = 7;
-    constexpr amrex::Real tol = 1.0e-12_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
 
     // Initialize parameters
     populate_parameters();
@@ -661,7 +670,8 @@ void init_density_field(
 TEST_F(ABLMeshTest, densitybuoyancy)
 {
     constexpr int kdim = 7;
-    constexpr amrex::Real tol = 1.0e-12_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
 
     // Initialize parameters
     populate_parameters();

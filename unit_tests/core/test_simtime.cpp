@@ -1,8 +1,3 @@
-/** \file test_simtime.cpp
- *
- *  Unit tests for amr_wind::SimTime
- */
-
 #include "aw_test_utils/AmrexTest.H"
 #include "AMReX_ParmParse.H"
 #include "amr-wind/core/SimTime.H"
@@ -16,7 +11,6 @@ namespace {
 
 void build_simtime_params()
 {
-
     amrex::ParmParse pp("time");
     pp.add("stop_time", 2.0_rt);
     pp.add("max_step", 10);
@@ -41,7 +35,8 @@ TEST_F(SimTimeTest, init)
     amr_wind::SimTime time;
     time.parse_parameters();
 
-    constexpr amrex::Real tol = 1.0e-12_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
     EXPECT_EQ(time.time_index(), 0);
     EXPECT_NEAR(time.current_time(), 0.0_rt, tol);
     EXPECT_NEAR(time.max_cfl(), 0.45_rt, tol);
@@ -258,19 +253,23 @@ TEST_F(SimTimeTest, enforce_dt_out)
     // Should not change if already correct
     amrex::Real result =
         get_enforced_dt_for_output(0.1_rt, 3.9_rt, 2.0_rt, 1.0e-3_rt);
-    EXPECT_NEAR(result, 0.1_rt, 1.0e-12_rt);
+    EXPECT_NEAR(
+        result, 0.1_rt, std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
 
     // Should not change if short of interval
     result = get_enforced_dt_for_output(
         0.1_rt, 3.9_rt - 2.0_rt * 5.0e-4_rt, 2.0_rt, 1.0e-3_rt);
-    EXPECT_NEAR(result, 0.1_rt, 1.0e-12_rt);
+    EXPECT_NEAR(
+        result, 0.1_rt, std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
 
     // Should not change if starting near interval
     result = get_enforced_dt_for_output(0.1_rt, 4.0_rt, 2.0_rt, 1.0e-3_rt);
-    EXPECT_NEAR(result, 0.1_rt, 1.0e-12_rt);
+    EXPECT_NEAR(
+        result, 0.1_rt, std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
     result = get_enforced_dt_for_output(
         0.1_rt, 4.0_rt - 2.0_rt * 0.99e-3_rt, 2.0_rt, 1.0e-3_rt);
-    EXPECT_NEAR(result, 0.1_rt, 1.0e-12_rt);
+    EXPECT_NEAR(
+        result, 0.1_rt, std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
     // Past the tolerance, will change
     result = get_enforced_dt_for_output(
         0.1_rt, 4.0_rt - 2.0_rt * 1.01e-3_rt, 2.0_rt, 1.0e-3_rt);
@@ -278,7 +277,9 @@ TEST_F(SimTimeTest, enforce_dt_out)
 
     // Shortens dt if overlapping with intervals
     result = get_enforced_dt_for_output(0.1_rt, 3.95_rt, 2.0_rt, 1.0e-3_rt);
-    EXPECT_NEAR(result, 0.05_rt, 1.0e-12_rt);
+    EXPECT_NEAR(
+        result, 0.05_rt,
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
 }
 
 TEST_F(SimTimeTest, enforce_timeinterval)
@@ -315,7 +316,9 @@ TEST_F(SimTimeTest, enforce_timeinterval)
         }
     }
     EXPECT_EQ(plot_counter, 2);
-    EXPECT_NEAR(plot_time_sum, 1.5_rt, 1.0e-8_rt);
+    EXPECT_NEAR(
+        plot_time_sum, 1.5_rt,
+        std::numeric_limits<float>::epsilon() * 1.0e1_rt);
     EXPECT_EQ(plot_step_sum, 2 + 6);
 }
 
@@ -332,7 +335,9 @@ TEST_F(SimTimeTest, enforce_timeinterval_bigtimetol)
         pp.add("enforce_plot_time_dt", true);
 
         // Choose values that could give issues
-        pp.add("enforce_plot_dt_reltol", 1.0e-8_rt);
+        pp.add(
+            "enforce_plot_dt_reltol",
+            std::numeric_limits<float>::epsilon() * 1.0e1_rt);
         pp.add("plot_time_interval_reltol", 1.0e0_rt);
 
         pp.add("stop_time", 1.0_rt);
@@ -356,7 +361,9 @@ TEST_F(SimTimeTest, enforce_timeinterval_bigtimetol)
         }
     }
     EXPECT_EQ(plot_counter, 2);
-    EXPECT_NEAR(plot_time_sum, 1.5_rt, 1.0e-8_rt);
+    EXPECT_NEAR(
+        plot_time_sum, 1.5_rt,
+        std::numeric_limits<float>::epsilon() * 1.0e1_rt);
     EXPECT_EQ(plot_step_sum, 2 + 6);
 }
 
@@ -374,7 +381,9 @@ TEST_F(SimTimeTest, enforce_timeinterval_bigdttol)
 
         // Weak enforcement of plot time interval on dt
         pp.add("enforce_plot_dt_reltol", 1.0e0_rt);
-        pp.add("plot_time_interval_reltol", 1.0e-8_rt);
+        pp.add(
+            "plot_time_interval_reltol",
+            std::numeric_limits<float>::epsilon() * 1.0e1_rt);
 
         pp.add("stop_time", 1.0_rt);
         pp.add("max_step", 10);
@@ -400,7 +409,9 @@ TEST_F(SimTimeTest, enforce_timeinterval_bigdttol)
     // (reaching t = 1.0_rt). Ordinary plot time interval tolerance ensures that
     // plot files are still written at the first step after interval is passed.
     EXPECT_EQ(plot_counter, 2);
-    EXPECT_NEAR(plot_time_sum, 0.8_rt + 1.0_rt, 1.0e-8_rt);
+    EXPECT_NEAR(
+        plot_time_sum, 0.8_rt + 1.0_rt,
+        std::numeric_limits<float>::epsilon() * 1.0e1_rt);
     EXPECT_EQ(plot_step_sum, 2 + 3);
 }
 
@@ -443,7 +454,9 @@ TEST_F(SimTimeTest, enforce_timeinterval_delay)
         }
     }
     EXPECT_EQ(plot_counter, 1);
-    EXPECT_NEAR(plot_time_sum, 1.0_rt, 1.0e-8_rt);
+    EXPECT_NEAR(
+        plot_time_sum, 1.0_rt,
+        std::numeric_limits<float>::epsilon() * 1.0e1_rt);
     // dt should not shorten for t = 0.5_rt
     EXPECT_GT(time2, 0.5_rt);
     // leading to fewer steps
@@ -484,7 +497,9 @@ TEST_F(SimTimeTest, enforce_chkpt_timeinterval)
         }
     }
     EXPECT_EQ(chkpt_counter, 2);
-    EXPECT_NEAR(chkpt_time_sum, 1.5_rt, 1.0e-8_rt);
+    EXPECT_NEAR(
+        chkpt_time_sum, 1.5_rt,
+        std::numeric_limits<float>::epsilon() * 1.0e1_rt);
     EXPECT_EQ(chkpt_step_sum, 2 + 6);
 }
 

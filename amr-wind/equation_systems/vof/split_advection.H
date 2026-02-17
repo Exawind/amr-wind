@@ -23,7 +23,8 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE void eulerian_implicit(
     amrex::Array4<amrex::Real> const& vofL,
     amrex::Array4<amrex::Real> const& vofR)
 {
-    constexpr amrex::Real tiny = 1.0e-12_rt;
+    constexpr amrex::Real tiny =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
     amrex::Real mx = 0.0_rt, my = 0.0_rt, mz = 0.0_rt, alpha = 0.0_rt;
     amrex::Real x0, deltax;
     amrex::Real aL = velL * dtdx;

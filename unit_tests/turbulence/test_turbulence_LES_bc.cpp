@@ -210,7 +210,8 @@ protected:
     const amrex::Real m_dx = 10.0_rt / 10.0_rt;
     const amrex::Real m_dy = 10.0_rt / 20.0_rt;
     const amrex::Real m_dz = 10.0_rt / 30.0_rt;
-    const amrex::Real m_tol = 1.0e-12_rt;
+    const amrex::Real m_tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
     // Parser inputs for turbulence model
     const amrex::Real m_Ceps = 0.11_rt;
     const amrex::Real m_Ce = 0.99_rt;

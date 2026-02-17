@@ -160,7 +160,7 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
                 maxpy + search_radius, maxpz + search_radius);
         } else if (amrex::toLower(wdata.motion_type) == "linear") {
             // Extend bounding box in case of velocity
-            constexpr amrex::Real tiny = 1.0e-8_rt;
+            constexpr amrex::Real tiny = std::numeric_limits<float>::epsilon();
             // If velocity is present, assume wing can travel entire domain
             const bool up_ = wdata.vel_tr.x() > tiny;
             const amrex::Real up_ext =

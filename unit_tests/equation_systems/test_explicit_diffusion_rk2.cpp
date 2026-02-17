@@ -134,13 +134,13 @@ TEST_F(ExplicitDiffusionRK2Test, old_approach)
     auto max_diff = utils::field_max(tke);
     const auto abs_diff_tke = amrex::max<amrex::Real>(-min_diff, max_diff);
     // We know this approach is wrong, so expect error to be greater
-    EXPECT_GT(abs_diff_tke, 1.0e-8_rt);
+    EXPECT_GT(abs_diff_tke, std::numeric_limits<float>::epsilon() * 1.0e1_rt);
 
     // As a sanity check for the test, confirm that diff_term is not 0
     min_diff = utils::field_min(diff_old);
     max_diff = utils::field_max(diff_old);
     const auto abs_diff_term = amrex::max<amrex::Real>(-min_diff, max_diff);
-    EXPECT_GT(abs_diff_term, 1.0e-8_rt);
+    EXPECT_GT(abs_diff_term, std::numeric_limits<float>::epsilon() * 1.0e1_rt);
 }
 
 TEST_F(ExplicitDiffusionRK2Test, correct_approach)
@@ -166,13 +166,15 @@ TEST_F(ExplicitDiffusionRK2Test, correct_approach)
     auto min_diff = utils::field_min(tke);
     auto max_diff = utils::field_max(tke);
     const auto abs_diff_tke = amrex::max<amrex::Real>(-min_diff, max_diff);
-    EXPECT_LT(abs_diff_tke, 1.0e-8_rt);
+    EXPECT_LT(
+        abs_diff_tke, std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
 
     // As a sanity check for the test, confirm that diff_term is not 0
     min_diff = utils::field_min(diff_new);
     max_diff = utils::field_max(diff_new);
     const auto abs_diff_term = amrex::max<amrex::Real>(-min_diff, max_diff);
-    EXPECT_GT(abs_diff_term, 1.0e-8_rt);
+    EXPECT_GT(
+        abs_diff_term, std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
 }
 
 } // namespace amr_wind_tests

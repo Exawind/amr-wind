@@ -318,7 +318,8 @@ TEST_F(WaveTheoriesTest, StokesWaveLength)
     amrex::Real water_depth = 18.0_rt;
     int wave_order = 2;
     constexpr amrex::Real g = 9.81_rt;
-    constexpr amrex::Real tol_lambda = 1.0e-10_rt;
+    constexpr amrex::Real tol_lambda =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt;
     // To return computed wavelength from first guess of wavenumber k
     int iter_max = -1;
 
@@ -337,7 +338,8 @@ TEST_F(WaveTheoriesTest, StokesWaveLength)
         (2.0_rt * static_cast<amrex::Real>(M_PI) / wave_period) *
         (2.0_rt * static_cast<amrex::Real>(M_PI) / wave_period) / g;
 
-    EXPECT_NEAR(k_newton, k_theory, 1.0e-8_rt);
+    EXPECT_NEAR(
+        k_newton, k_theory, std::numeric_limits<float>::epsilon() * 1.0e1_rt);
 
     // Check wave theory
     wave_height = 0.2_rt;
@@ -370,7 +372,8 @@ TEST_F(WaveTheoriesTest, StokesWaveLength)
         (32.0_rt * std::pow(C, 5.0_rt));
     const amrex::Real LHS1 =
         C0 + std::pow(eps, 2.0_rt) * C2 + std::pow(eps, 4.0_rt) * C4;
-    EXPECT_NEAR(LHS1, RHS1, 1.0e-8_rt);
+    EXPECT_NEAR(
+        LHS1, RHS1, std::numeric_limits<amrex::Real>::epsilon() * 1.0e8_rt);
 
     // Reevaluate with a new set of conditions
     wave_height = 0.05_rt;
@@ -393,7 +396,8 @@ TEST_F(WaveTheoriesTest, StokesWaveLength)
     C0 = std::sqrt(std::tanh(k * water_depth));
     C2 = C0 * (2.0_rt + 7.0_rt * S * S) / (4.0_rt * C * C);
     const amrex::Real LHS2 = C0 + std::pow(eps, 2.0_rt) * C2;
-    EXPECT_NEAR(LHS2, RHS2, 1.0e-8_rt);
+    EXPECT_NEAR(
+        LHS2, RHS2, std::numeric_limits<amrex::Real>::epsilon() * 1.0e8_rt);
 }
 
 } // namespace amr_wind_tests

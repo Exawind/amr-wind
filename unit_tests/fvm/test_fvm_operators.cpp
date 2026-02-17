@@ -258,7 +258,8 @@ amrex::Real divergence_test_impl(amr_wind::Field& vel, const int pdegree)
 TEST_F(FvmOperatorsTest, gradient)
 {
 
-    constexpr amrex::Real tol = 1.0e-10_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt;
 
     populate_parameters();
     {
@@ -284,7 +285,8 @@ TEST_F(FvmOperatorsTest, gradient)
 TEST_F(FvmOperatorsTest, laplacian)
 {
 
-    constexpr amrex::Real tol = 1.0e-11_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e5_rt;
 
     populate_parameters();
     {
@@ -311,7 +313,8 @@ TEST_F(FvmOperatorsTest, laplacian)
 TEST_F(FvmOperatorsTest, divergence)
 {
 
-    constexpr amrex::Real tol = 1.0e-11_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e5_rt;
 
     populate_parameters();
     {

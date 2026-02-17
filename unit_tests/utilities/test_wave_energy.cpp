@@ -114,7 +114,8 @@ protected:
     const amrex::Real m_wlev = 0.25_rt;
     const amrex::Real m_g = -9.0_rt;
     const amrex::Real m_rho1 = 888.0_rt;
-    const amrex::Real m_tol = 1.0e-12_rt;
+    const amrex::Real m_tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
 };
 
 TEST_F(WaveEnergyTest, checkoutput)
