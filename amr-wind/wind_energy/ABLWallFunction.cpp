@@ -237,8 +237,11 @@ void ABLVelWallFunc::wall_model(
     }
     const auto& mo = m_wall_func.mo();
     const bool has_terrain = repo.int_field_exists("terrain_blank");
+    const bool has_roughness = repo.field_exists("terrainz0");
     const auto* m_terrain_blank =
         has_terrain ? &repo.get_int_field("terrain_blank") : nullptr;
+    const auto* m_terrainz0 =
+        has_roughness ? &repo.get_field("terrainz0") : nullptr;
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = repo.mesh().Geom(lev);
         const auto& domain = geom.Domain();
@@ -264,17 +267,22 @@ void ABLVelWallFunc::wall_model(
             const auto& blank_arr =
                 has_terrain ? (*m_terrain_blank)(lev).const_array(mfi)
                             : amrex::Array4<int>();
+            const auto& z0_arr = has_roughness
+                                     ? (*m_terrainz0)(lev).const_array(mfi)
+                                     : amrex::Array4<amrex::Real>();
             if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
                 velocity.bc_type()[zlo] == BC::wall_model) {
                 if (m_wall_het_model == "mol") {
                     const amrex::Real z = 0.5_rt * dx[2];
                     const amrex::Real zeta = z / m_monin_obukhov_length;
                     const amrex::Real psi_m = mo.calc_psi_m(zeta);
-                    const amrex::Real z0 = mo.z0;
+                    const amrex::Real abl_z0 = mo.z0;
                     const amrex::Real kappa = mo.kappa;
                     amrex::ParallelFor(
                         amrex::bdryLo(bx, idim),
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                            const amrex::Real z0 =
+                                has_roughness ? z0_arr(i, j, k, 0) : abl_z0;
                             const amrex::Real mu = eta(i, j, k);
                             const amrex::Real uu = vold_arr(i, j, k, 0);
                             const amrex::Real vv = vold_arr(i, j, k, 1);
@@ -400,6 +408,9 @@ void ABLTempWallFunc::wall_model(
     const bool has_terrain = repo.int_field_exists("terrain_blank");
     const auto* m_terrain_blank =
         has_terrain ? &repo.get_int_field("terrain_blank") : nullptr;
+    const bool has_roughness = repo.field_exists("terrainz0");
+    const auto* m_terrainz0 =
+        has_roughness ? &repo.get_field("terrainz0") : nullptr;
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = repo.mesh().Geom(lev);
         const auto& domain = geom.Domain();
@@ -427,21 +438,25 @@ void ABLTempWallFunc::wall_model(
             const auto& blank_arr =
                 has_terrain ? (*m_terrain_blank)(lev).const_array(mfi)
                             : amrex::Array4<int>();
-
+            const auto& z0_arr = has_roughness
+                                     ? (*m_terrainz0)(lev).const_array(mfi)
+                                     : amrex::Array4<amrex::Real>();
             if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
                 temperature.bc_type()[zlo] == BC::wall_model) {
                 if (m_wall_het_model == "mol") {
                     const amrex::Real z = 0.5_rt * dx[2];
                     const amrex::Real zeta = z / m_monin_obukhov_length;
                     const amrex::Real psi_m = mo.calc_psi_m(zeta);
-                    const amrex::Real z0 = mo.z0;
                     const amrex::Real kappa = mo.kappa;
                     const amrex::Real gravity_mod = 9.81_rt;
+                    const amrex::Real abl_z0 = mo.z0;
                     const amrex::Real monin_obukhov_length =
                         m_monin_obukhov_length;
                     amrex::ParallelFor(
                         amrex::bdryLo(bx, idim),
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                            const amrex::Real z0 =
+                                (has_roughness) ? z0_arr(i, j, k, 0) : abl_z0;
                             const amrex::Real alphaT = eta(i, j, k);
                             const amrex::Real uu = vold_arr(i, j, k, 0);
                             const amrex::Real vv = vold_arr(i, j, k, 1);
