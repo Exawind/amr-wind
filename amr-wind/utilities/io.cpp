@@ -1,17 +1,13 @@
-#include <AMReX_ParmParse.H>
-#include <AMReX_PlotFileUtil.H>
 #include "amr-wind/incflo.H"
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/utilities/io_utils.H"
 #include "amr-wind/utilities/console_io.H"
 #include "amr-wind/utilities/IOManager.H"
+#include "AMReX_ParmParse.H"
+#include "AMReX_PlotFileUtil.H"
 #include "AMReX_REAL.H"
 
 using namespace amrex::literals;
-
-namespace {
-const std::string level_prefix{"Level_"};
-}
 
 void incflo::ReadCheckpointFile()
 {
