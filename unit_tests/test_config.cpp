@@ -22,10 +22,10 @@ namespace amr_wind_tests {
 
 TEST(Configuration, Build)
 {
-    const std::string dirty_tag =
-        (amr_wind::version::amr_wind_dirty_repo == "DIRTY")
-            ? ("-" + amr_wind::version::amr_wind_dirty_repo)
-            : "";
+    std::string dirty_tag = "";
+    if (amr_wind::version::amr_wind_dirty_repo == "DIRTY") {
+        dirty_tag = "-" + amr_wind::version::amr_wind_dirty_repo;
+    }
     const std::string awind_git_sha =
         amr_wind::version::amr_wind_git_sha + dirty_tag;
     const char* amrex_git = amrex::buildInfoGetGitHash(2);

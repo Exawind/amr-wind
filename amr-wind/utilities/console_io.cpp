@@ -109,9 +109,10 @@ void print_banner(MPI_Comm comm, std::ostream& out)
     ctime_r(&etimet, time_buf.begin());
     const std::string tstamp(time_buf.begin());
 
-    const std::string dirty_tag = (version::amr_wind_dirty_repo == "DIRTY")
-                                      ? ("-" + version::amr_wind_dirty_repo)
-                                      : "";
+    std::string dirty_tag = "";
+    if (version::amr_wind_dirty_repo == "DIRTY") {
+        dirty_tag = "-" + version::amr_wind_dirty_repo;
+    }
     const std::string awind_version = version::amr_wind_version + dirty_tag;
     const std::string awind_git_sha = version::amr_wind_git_sha + dirty_tag;
 
