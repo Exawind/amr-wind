@@ -81,7 +81,8 @@ void BreakingWaves::initialize_fields(int level, const amrex::Geometry& geom)
         [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
             const amrex::Real x = problo[0] + (i + 0.5_rt) * dx[0];
             const amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
-            const amrex::Real kappa = 2.0_rt * std::numbers::pi / lambda;
+            const amrex::Real kappa =
+                2.0_rt * std::numbers::pi_v<amrex::Real> / lambda;
             const amrex::Real epsilon = alpha * kappa;
             // Compute free surface amplitude
             const amrex::Real eta =
@@ -113,11 +114,11 @@ void BreakingWaves::initialize_fields(int level, const amrex::Geometry& geom)
                 smooth_heaviside = 0.0_rt;
             } else {
                 smooth_heaviside =
-                    0.5_rt *
-                    (1.0_rt + phi_arrs[nbx](i, j, k) / eps +
-                     1.0_rt / std::numbers::pi *
-                         std::sin(
-                             phi_arrs[nbx](i, j, k) * std::numbers::pi / eps));
+                    0.5_rt * (1.0_rt + phi_arrs[nbx](i, j, k) / eps +
+                              1.0_rt / std::numbers::pi_v<amrex::Real> *
+                                  std::sin(
+                                      phi_arrs[nbx](i, j, k) *
+                                      std::numbers::pi_v<amrex::Real> / eps));
             }
             rho_arrs[nbx](i, j, k) =
                 rho1 * smooth_heaviside + rho2 * (1.0_rt - smooth_heaviside);

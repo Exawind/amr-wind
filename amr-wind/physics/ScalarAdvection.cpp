@@ -25,7 +25,8 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real GaussianPulseFV::operator()(
     amrex::Real val = 0.0_rt;
     if (std::abs(x - x0) < 6.0_rt * x_width) {
         val =
-            std::sqrt(std::numbers::pi / 2.0_rt) * amplitude * x_width *
+            std::sqrt(std::numbers::pi_v<amrex::Real> / 2.0_rt) * amplitude *
+            x_width *
             (std::erf((x - x0 + dx / 2.0_rt) / (std::sqrt(2.0_rt) * x_width)) -
              std::erf((x - x0 - dx / 2.0_rt) / (std::sqrt(2.0_rt) * x_width))) /
             dx;
@@ -51,7 +52,8 @@ TwoDimGaussianPulseFV::operator()(
     if (std::abs(x - x0) < 6.0_rt * x_width &&
         std::abs(y - y0) < 6.0_rt * y_width) {
         val =
-            std::numbers::pi / 2.0_rt * amplitude * x_width * y_width *
+            std::numbers::pi_v<amrex::Real> / 2.0_rt * amplitude * x_width *
+            y_width *
             (std::erf((x - x0 + dx / 2.0_rt) / (std::sqrt(2.0_rt) * x_width)) -
              std::erf((x - x0 - dx / 2.0_rt) / (std::sqrt(2.0_rt) * x_width))) *
             (std::erf((y - y0 + dy / 2.0_rt) / (std::sqrt(2.0_rt) * y_width)) -

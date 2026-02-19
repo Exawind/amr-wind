@@ -103,7 +103,8 @@ void init_epsilon(datatype& data)
     {
         const auto& cd = tdata.nacelle_cd;
         const auto& area = tdata.nacelle_area;
-        const auto eps = std::sqrt(2.0_rt / std::numbers::pi * cd * area);
+        const auto eps =
+            std::sqrt(2.0_rt / std::numbers::pi_v<amrex::Real> * cd * area);
 
         auto& nac_eps = data.grid().epsilon[0];
         nac_eps.x() = amrex::max<amrex::Real>(eps, tdata.eps_min.x());

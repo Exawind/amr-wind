@@ -61,18 +61,18 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real CollidingRings::operator()(
             perturbation_amplitude *
             std::cos(perturbation_modes[i] * theta - perturbation_phases_2[i]);
     }
-    amrex::Real vortheta_1 = -Gamma /
-                             (std::numbers::pi * std::pow(delta, 2.0_rt)) *
-                             std::exp(
-                                 -(std::pow(z + dz / 2.0_rt, 2.0_rt) +
-                                   std::pow((r * (1.0_rt + dr1) - R), 2.0_rt)) /
-                                 std::pow(delta, 2.0_rt));
-    amrex::Real vortheta_2 = Gamma /
-                             (std::numbers::pi * std::pow(delta, 2.0_rt)) *
-                             std::exp(
-                                 -(std::pow(z - dz / 2.0_rt, 2.0_rt) +
-                                   std::pow((r * (1.0_rt + dr2) - R), 2.0_rt)) /
-                                 std::pow(delta, 2.0_rt));
+    amrex::Real vortheta_1 =
+        -Gamma / (std::numbers::pi_v<amrex::Real> * std::pow(delta, 2.0_rt)) *
+        std::exp(
+            -(std::pow(z + dz / 2.0_rt, 2.0_rt) +
+              std::pow((r * (1.0_rt + dr1) - R), 2.0_rt)) /
+            std::pow(delta, 2.0_rt));
+    amrex::Real vortheta_2 =
+        Gamma / (std::numbers::pi_v<amrex::Real> * std::pow(delta, 2.0_rt)) *
+        std::exp(
+            -(std::pow(z - dz / 2.0_rt, 2.0_rt) +
+              std::pow((r * (1.0_rt + dr2) - R), 2.0_rt)) /
+            std::pow(delta, 2.0_rt));
     return vortheta_1 + vortheta_2;
 }
 

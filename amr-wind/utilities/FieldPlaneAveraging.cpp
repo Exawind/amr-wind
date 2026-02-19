@@ -118,7 +118,7 @@ FPlaneAveraging<FType>::line_average_interpolated(amrex::Real x, int comp) const
     int ind = 0;
 
     if (x > m_xlo + 0.5_rt * m_dx) {
-        ind = static_cast<int>(floor((x - m_xlo) / m_dx - 0.5_rt));
+        ind = static_cast<int>(std::floor((x - m_xlo) / m_dx - 0.5_rt));
         const amrex::Real x1 = m_xlo + (ind + 0.5_rt) * m_dx;
         c = (x - x1) / m_dx;
     }
@@ -211,7 +211,7 @@ amrex::Real FPlaneAveraging<FType>::line_derivative_interpolated(
     int ind = 0;
 
     if (x > m_xlo + 0.5_rt * m_dx) {
-        ind = static_cast<int>(floor((x - m_xlo) / m_dx - 0.5_rt));
+        ind = static_cast<int>(std::floor((x - m_xlo) / m_dx - 0.5_rt));
         const amrex::Real x1 = m_xlo + (ind + 0.5_rt) * m_dx;
         c = (x - x1) / m_dx;
     }
@@ -470,7 +470,7 @@ VelPlaneAveraging::line_hvelmag_average_interpolated(amrex::Real x) const
     int ind = 0;
 
     if (x > m_xlo + 0.5_rt * m_dx) {
-        ind = static_cast<int>(floor((x - m_xlo) / m_dx - 0.5_rt));
+        ind = static_cast<int>(std::floor((x - m_xlo) / m_dx - 0.5_rt));
         const amrex::Real x1 = m_xlo + (ind + 0.5_rt) * m_dx;
         c = (x - x1) / m_dx;
     }

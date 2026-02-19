@@ -366,7 +366,7 @@ void RadarSampler::new_cone()
 
     vs::Vector tc_axis = canon_vector ^ init_axis;
     amrex::Real tc_angle = std::acos(init_axis & canon_vector) * 180.0_rt /
-                           static_cast<amrex::Real>(std::numbers::pi);
+                           std::numbers::pi_v<amrex::Real>;
 
     // Initial cone points along input-file-given axis and is full size
     for (int i = 0; i < num_points_cone(); ++i) {

@@ -365,8 +365,6 @@ SyntheticTurbulence::SyntheticTurbulence(const CFDSim& sim)
     amrex::Abort(
         "SyntheticTurbulence: AMR-Wind was not built with NetCDF support.");
 #endif
-    const amrex::Real pi = std::acos(-1.0_rt);
-
     amrex::ParmParse pp("SynthTurb");
 
     // NetCDF file containing the turbulence data
@@ -440,7 +438,8 @@ SyntheticTurbulence::SyntheticTurbulence(const CFDSim& sim)
     m_mean_wind_type = mean_wind_type;
     // Smearing factors
     pp.get("gauss_smearing_factor", m_epsilon);
-    m_gauss_scaling = 1.0_rt / (m_epsilon * std::sqrt(pi));
+    m_gauss_scaling =
+        1.0_rt / (m_epsilon * std::sqrt(std::numbers::pi_v<amrex::Real>));
 
     // Time offsets if any...
     pp.query("time_offset", m_time_offset);

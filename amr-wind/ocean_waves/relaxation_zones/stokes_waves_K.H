@@ -34,8 +34,7 @@ AMREX_FORCE_INLINE amrex::Real stokes_wave_length(
     const int iter_max)
 {
     // Calculate constants and derivatives that do not change with iteration
-    const amrex::Real omega =
-        2.0_rt * static_cast<amrex::Real>(std::numbers::pi) / T;
+    const amrex::Real omega = 2.0_rt * std::numbers::pi_v<amrex::Real> / T;
     const amrex::Real depsdk = H / 2.0_rt;
 
     // Begin Newton-Raphson iterations
@@ -146,7 +145,7 @@ AMREX_FORCE_INLINE amrex::Real stokes_wave_length(
         return -3;
     }
     // Return wavelength calculated from wavenumber
-    return 2.0_rt * static_cast<amrex::Real>(std::numbers::pi) / k;
+    return 2.0_rt * std::numbers::pi_v<amrex::Real> / k;
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_coefficients(
@@ -174,8 +173,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_coefficients(
 {
 
     amrex::Real kd = wavenumber * water_depth;
-    if (kd > 50.0_rt * static_cast<amrex::Real>(std::numbers::pi)) {
-        kd = 50.0_rt * static_cast<amrex::Real>(std::numbers::pi);
+    if (kd > 50.0_rt * std::numbers::pi_v<amrex::Real>) {
+        kd = 50.0_rt * std::numbers::pi_v<amrex::Real>;
     }
 
     // Exponential definition of S = sech(2kd)
@@ -299,7 +298,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_waves(
     amrex::Real& w_w)
 {
     const amrex::Real wavenumber =
-        2.0_rt * static_cast<amrex::Real>(std::numbers::pi) / wavelength;
+        2.0_rt * std::numbers::pi_v<amrex::Real> / wavelength;
 
     // some parameters
     amrex::Real c0{0.0_rt};
@@ -369,8 +368,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_waves(
         // Upper bound for deep water case
         // This ensure finite values of velocity for large kd's
         amrex::Real nkdz = n * wavenumber * (water_depth + (z - zsl));
-        if (nkdz > 50.0_rt * static_cast<amrex::Real>(std::numbers::pi)) {
-            nkdz = 50.0_rt * static_cast<amrex::Real>(std::numbers::pi);
+        if (nkdz > 50.0_rt * std::numbers::pi_v<amrex::Real>) {
+            nkdz = 50.0_rt * std::numbers::pi_v<amrex::Real>;
         }
         u_w += std::pow(eps, static_cast<amrex::Real>(n)) *
                static_cast<amrex::Real>(n) * a[n - 1] * std::cosh(nkdz) *

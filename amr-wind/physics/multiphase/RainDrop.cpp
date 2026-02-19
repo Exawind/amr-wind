@@ -89,11 +89,10 @@ void RainDrop::initialize_fields(int level, const amrex::Geometry& geom)
                 } else {
                     vof = 0.5_rt *
                           (1.0_rt + work_arrs[nbx](i, j, k) / eps +
-                           1.0_rt / static_cast<amrex::Real>(std::numbers::pi) *
+                           1.0_rt / std::numbers::pi_v<amrex::Real> *
                                std::sin(
                                    work_arrs[nbx](i, j, k) *
-                                   static_cast<amrex::Real>(std::numbers::pi) /
-                                   eps));
+                                   std::numbers::pi_v<amrex::Real> / eps));
                 }
             }
             const amrex::Real dens = (1.0_rt - vof) * rhog + vof * rhol;

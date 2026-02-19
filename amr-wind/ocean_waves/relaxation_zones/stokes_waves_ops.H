@@ -81,7 +81,7 @@ struct ReadInputsOp<StokesWaves>
         if (!pp.contains("wave_phase_offset_radians")) {
             pp.query("wave_phase_offset_degrees", wdata.wave_phase_offset);
             wdata.wave_phase_offset *=
-                static_cast<amrex::Real>(std::numbers::pi) / 180.0_rt;
+                std::numbers::pi_v<amrex::Real> / 180.0_rt;
         } else if (pp.contains("wave_phase_offset_degrees")) {
             amrex::Abort(
                 "ReadInputsOp<StokesWaves> : wave phase offset is specified in "

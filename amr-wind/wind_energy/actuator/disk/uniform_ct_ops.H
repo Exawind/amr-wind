@@ -88,7 +88,8 @@ struct ComputeForceOp<UniformCt, ActSrcDisk>
             const amrex::Real r = (ip + 0.5_rt) * dr;
             const amrex::Real rp = r + dr * 0.5_rt;
             const amrex::Real rm = r - dr * 0.5_rt;
-            const amrex::Real a = std::numbers::pi * (rp * rp - rm * rm);
+            const amrex::Real a =
+                std::numbers::pi_v<amrex::Real> * (rp * rp - rm * rm);
             // disk force should always point in direction of the normal
             grid.force[ip] = (aeroPressure * a) * normal;
         }
@@ -100,8 +101,8 @@ struct ComputeForceOp<UniformCt, ActSrcDisk>
             std::cout << "turbine" << data.info().id << " thrust: " << ct
                       << std::endl;
             const amrex::Real cp = 0.5_rt * (ct + ct * std::sqrt(1.0_rt - ct));
-            const amrex::Real area =
-                std::numbers::pi * 0.25_rt * ddata.diameter * ddata.diameter;
+            const amrex::Real area = std::numbers::pi_v<amrex::Real> * 0.25_rt *
+                                     ddata.diameter * ddata.diameter;
             const amrex::Real power =
                 cp * 0.5_rt * rho * std::pow(uInfSqr, 1.5_rt) * area;
 

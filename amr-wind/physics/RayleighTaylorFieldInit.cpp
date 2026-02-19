@@ -39,7 +39,9 @@ void RayleighTaylorFieldInit::operator()(
         const amrex::Real r2d = amrex::min<amrex::Real>(
             std::hypot((x - splitx), (y - splity)), 0.5_rt * L_x);
         const amrex::Real pertheight =
-            0.5_rt - 0.01_rt * std::cos(2.0_rt * std::numbers::pi * r2d / L_x);
+            0.5_rt -
+            0.01_rt *
+                std::cos(2.0_rt * std::numbers::pi_v<amrex::Real> * r2d / L_x);
 
         density(i, j, k) =
             rho_1 + ((rho_2 - rho_1) / 2.0_rt) *

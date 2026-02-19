@@ -67,7 +67,7 @@ void initialize_levelset(
                 2.0_rt * dx *
                 (1.0_rt + std::cos(
                               (static_cast<amrex::Real>(i) - 1.2_rt) /
-                              std::numbers::pi));
+                              std::numbers::pi_v<amrex::Real>));
         }
         // Subtract from local height
         lvs_arr(i, j, k) -= dx * (static_cast<amrex::Real>(k) + 0.5_rt);

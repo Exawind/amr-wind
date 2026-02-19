@@ -284,7 +284,7 @@ TEST(LinearInterpolation, lin_interp_angle)
     // Upper bound is 2pi because y is in radians
     interp::linear_angle(
         xvec, yvec_rad, xtest, ytest_rad,
-        2.0_rt * static_cast<amrex::Real>(std::numbers::pi));
+        2.0_rt * std::numbers::pi_v<amrex::Real>);
     for (size_t i = 0; i < xtest.size(); ++i) {
         EXPECT_NEAR(
             ytest_deg[i], ygold_deg[i],

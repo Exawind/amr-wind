@@ -66,7 +66,7 @@ void RayleighDamping::operator()(
             coeff = 0.0_rt;
         } else if (probhi[2] - z > dFull) {
             coeff = 0.5_rt * std::cos(
-                                 static_cast<amrex::Real>(std::numbers::pi) *
+                                 std::numbers::pi_v<amrex::Real> *
                                  (probhi[2] - dFull - z) / dRD) +
                     0.5_rt;
         } else {

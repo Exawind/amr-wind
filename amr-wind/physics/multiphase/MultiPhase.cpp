@@ -323,11 +323,10 @@ void MultiPhase::set_density_via_levelset()
                     smooth_heaviside =
                         0.5_rt *
                         (1.0_rt + phi_arrs[nbx](i, j, k) / eps +
-                         1.0_rt / static_cast<amrex::Real>(std::numbers::pi) *
+                         1.0_rt / std::numbers::pi_v<amrex::Real> *
                              std::sin(
                                  phi_arrs[nbx](i, j, k) *
-                                 static_cast<amrex::Real>(std::numbers::pi) /
-                                 eps));
+                                 std::numbers::pi_v<amrex::Real> / eps));
                 }
                 rho_arrs[nbx](i, j, k) =
                     captured_rho1 * smooth_heaviside +

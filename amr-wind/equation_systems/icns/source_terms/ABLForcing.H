@@ -57,7 +57,7 @@ public:
                 m_time_table, m_speed_table, new_time);
             const amrex::Real new_dir = ::amr_wind::interp::linear_angle(
                 m_time_table, m_direction_table, new_time,
-                2.0_rt * static_cast<amrex::Real>(std::numbers::pi));
+                2.0_rt * std::numbers::pi_v<amrex::Real>);
 
             m_target_vel[0] = new_spd * std::cos(new_dir);
             m_target_vel[1] = new_spd * std::sin(new_dir);

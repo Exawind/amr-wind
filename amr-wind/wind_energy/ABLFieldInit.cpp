@@ -345,10 +345,12 @@ void ABLFieldInit::operator()(
     // profiles specified in the input file or the general profiles from
     // a netcdf input
     if (m_perturb_vel) {
-        const amrex::Real aval =
-            m_Uperiods * 2.0_rt * std::numbers::pi / (probhi[1] - problo[1]);
-        const amrex::Real bval =
-            m_Vperiods * 2.0_rt * std::numbers::pi / (probhi[0] - problo[0]);
+        const amrex::Real aval = m_Uperiods * 2.0_rt *
+                                 std::numbers::pi_v<amrex::Real> /
+                                 (probhi[1] - problo[1]);
+        const amrex::Real bval = m_Vperiods * 2.0_rt *
+                                 std::numbers::pi_v<amrex::Real> /
+                                 (probhi[0] - problo[0]);
         const amrex::Real ufac = m_deltaU * std::exp(0.5_rt) / m_ref_height;
         const amrex::Real vfac = m_deltaV * std::exp(0.5_rt) / m_ref_height;
         const amrex::Real ref_height = m_ref_height;

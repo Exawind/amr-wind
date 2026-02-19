@@ -145,8 +145,7 @@ protected:
     std::string m_label;
     int m_id{-1};
 
-    amrex::Real m_radtodeg{
-        180.0_rt / static_cast<amrex::Real>(std::numbers::pi)};
+    amrex::Real m_radtodeg{180.0_rt / std::numbers::pi_v<amrex::Real>};
 
     amrex::Vector<amrex::Real> m_start;
     amrex::Vector<amrex::Real> m_end;

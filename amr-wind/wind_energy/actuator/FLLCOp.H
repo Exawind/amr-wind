@@ -118,7 +118,8 @@ struct FLLCOp
                     vs::mag(vel), vs::DTraits<amrex::Real>::eps());
 
                 auto coefficient =
-                    1.0_rt / (-4.0_rt * std::numbers::pi * r_dis * vmag);
+                    1.0_rt /
+                    (-4.0_rt * std::numbers::pi_v<amrex::Real> * r_dis * vmag);
                 const auto cLes =
                     1.0_rt - std::exp(-r_dis * r_dis / (eps_les * eps_les));
                 const auto cOpt =
@@ -229,7 +230,8 @@ struct FLLCOp
          */
         for (int ip = 0; ip < npts; ++ip) {
 
-            const auto coefficient = 1.0_rt / (2.0_rt * std::numbers::pi);
+            const auto coefficient =
+                1.0_rt / (2.0_rt * std::numbers::pi_v<amrex::Real>);
 
             for (int jp = 0; jp < dr.size(); ++jp) {
 

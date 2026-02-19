@@ -515,8 +515,8 @@ TEST_F(TurbLESTest, test_kosovic_setup_calc)
     const amrex::Real visc = 1.0e-5_rt;
     const amrex::Real kosovic_Cs = std::sqrt(
         8.0_rt * (1.0_rt + Cb) /
-        (27.0_rt *
-         static_cast<amrex::Real>(std::numbers::pi * std::numbers::pi)));
+        (27.0_rt * std::numbers::pi_v<amrex::Real> *
+         std::numbers::pi_v<amrex::Real>));
     {
         amrex::ParmParse pp("turbulence");
         pp.add("model", (std::string) "Kosovic");

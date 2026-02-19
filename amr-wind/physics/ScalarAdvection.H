@@ -70,8 +70,8 @@ private:
     amrex::Real m_y_width{0.01_rt};
 
     //! Wave numbers
-    amrex::Real m_x_wavenumber{16 * std::numbers::pi};
-    amrex::Real m_y_wavenumber{16 * std::numbers::pi};
+    amrex::Real m_x_wavenumber{16.0_rt * std::numbers::pi_v<amrex::Real>};
+    amrex::Real m_y_wavenumber{16.0_rt * std::numbers::pi_v<amrex::Real>};
 
     //! Initial wave/pulse shape
     std::string m_shape{"gaussian"};

@@ -269,11 +269,11 @@ TEST_F(ABLMeshTest, rayleigh_damping)
     const amrex::Array<amrex::Real, 5> golds{
         1.0_rt, 1.0_rt,
         0.5_rt * std::cos(
-                     static_cast<amrex::Real>(std::numbers::pi) *
+                     std::numbers::pi_v<amrex::Real> *
                      (1000.0_rt - 50.0_rt - test_heights[2]) / 200.0_rt) +
             0.5_rt,
         0.5_rt * std::cos(
-                     static_cast<amrex::Real>(std::numbers::pi) *
+                     std::numbers::pi_v<amrex::Real> *
                      (1000.0_rt - 50.0_rt - test_heights[3]) / 200.0_rt) +
             0.5_rt,
         0.0_rt};

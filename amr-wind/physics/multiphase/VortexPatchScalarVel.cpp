@@ -69,27 +69,20 @@ void VortexPatchScalarVel::initialize_fields(
             const amrex::Real yf = problo[1] + j * dx[1];
             const amrex::Real zf = problo[2] + k * dx[2];
             uf_arrs[nbx](i, j, k) =
-                2.0_rt *
-                std::sin(static_cast<amrex::Real>(std::numbers::pi) * xf) *
-                std::sin(static_cast<amrex::Real>(std::numbers::pi) * xf) *
-                std::sin(
-                    2.0_rt * static_cast<amrex::Real>(std::numbers::pi) * y) *
-                std::sin(
-                    2.0_rt * static_cast<amrex::Real>(std::numbers::pi) * z);
+                2.0_rt * std::sin(std::numbers::pi_v<amrex::Real> * xf) *
+                std::sin(std::numbers::pi_v<amrex::Real> * xf) *
+                std::sin(2.0_rt * std::numbers::pi_v<amrex::Real> * y) *
+                std::sin(2.0_rt * std::numbers::pi_v<amrex::Real> * z);
             vf_arrs[nbx](i, j, k) =
-                -std::sin(static_cast<amrex::Real>(std::numbers::pi) * yf) *
-                std::sin(static_cast<amrex::Real>(std::numbers::pi) * yf) *
-                std::sin(
-                    2.0_rt * static_cast<amrex::Real>(std::numbers::pi) * x) *
-                std::sin(
-                    2.0_rt * static_cast<amrex::Real>(std::numbers::pi) * z);
+                -std::sin(std::numbers::pi_v<amrex::Real> * yf) *
+                std::sin(std::numbers::pi_v<amrex::Real> * yf) *
+                std::sin(2.0_rt * std::numbers::pi_v<amrex::Real> * x) *
+                std::sin(2.0_rt * std::numbers::pi_v<amrex::Real> * z);
             wf_arrs[nbx](i, j, k) =
-                -std::sin(static_cast<amrex::Real>(std::numbers::pi) * zf) *
-                std::sin(static_cast<amrex::Real>(std::numbers::pi) * zf) *
-                std::sin(
-                    2.0_rt * static_cast<amrex::Real>(std::numbers::pi) * x) *
-                std::sin(
-                    2.0_rt * static_cast<amrex::Real>(std::numbers::pi) * y);
+                -std::sin(std::numbers::pi_v<amrex::Real> * zf) *
+                std::sin(std::numbers::pi_v<amrex::Real> * zf) *
+                std::sin(2.0_rt * std::numbers::pi_v<amrex::Real> * x) *
+                std::sin(2.0_rt * std::numbers::pi_v<amrex::Real> * y);
             // Only the x component is nonzero
             vel_arrs[nbx](i, j, k, 1) = 0.0_rt;
             vel_arrs[nbx](i, j, k, 2) = 0.0_rt;
@@ -105,12 +98,11 @@ void VortexPatchScalarVel::initialize_fields(
                 smooth_heaviside = 0.0_rt;
             } else {
                 smooth_heaviside =
-                    0.5_rt *
-                    (1.0_rt + phi_arrs[nbx](i, j, k) / eps +
-                     1.0_rt / static_cast<amrex::Real>(std::numbers::pi) *
-                         std::sin(
-                             phi_arrs[nbx](i, j, k) *
-                             static_cast<amrex::Real>(std::numbers::pi) / eps));
+                    0.5_rt * (1.0_rt + phi_arrs[nbx](i, j, k) / eps +
+                              1.0_rt / std::numbers::pi_v<amrex::Real> *
+                                  std::sin(
+                                      phi_arrs[nbx](i, j, k) *
+                                      std::numbers::pi_v<amrex::Real> / eps));
             }
             rho_arrs[nbx](i, j, k) =
                 rho1 * smooth_heaviside + rho2 * (1.0_rt - smooth_heaviside);
@@ -126,11 +118,10 @@ void VortexPatchScalarVel::initialize_fields(
                 vel_arrs[nbx](i, j, k, 0) =
                     0.5_rt *
                     (1.0_rt + phi_arrs[nbx](i, j, k) / eps_vel +
-                     1.0_rt / static_cast<amrex::Real>(std::numbers::pi) *
+                     1.0_rt / std::numbers::pi_v<amrex::Real> *
                          std::sin(
                              phi_arrs[nbx](i, j, k) *
-                             static_cast<amrex::Real>(std::numbers::pi) /
-                             eps_vel));
+                             std::numbers::pi_v<amrex::Real> / eps_vel));
             }
         });
     amrex::Gpu::streamSynchronize();
@@ -166,39 +157,23 @@ void VortexPatchScalarVel::pre_advance_work()
                 const amrex::Real yf = problo[1] + j * dx[1];
                 const amrex::Real zf = problo[2] + k * dx[2];
                 uf_arrs[nbx](i, j, k) =
-                    2.0_rt *
-                    std::sin(static_cast<amrex::Real>(std::numbers::pi) * xf) *
-                    std::sin(static_cast<amrex::Real>(std::numbers::pi) * xf) *
-                    std::sin(
-                        2.0_rt * static_cast<amrex::Real>(std::numbers::pi) *
-                        y) *
-                    std::sin(
-                        2.0_rt * static_cast<amrex::Real>(std::numbers::pi) *
-                        z) *
-                    std::cos(
-                        static_cast<amrex::Real>(std::numbers::pi) * time / TT);
+                    2.0_rt * std::sin(std::numbers::pi_v<amrex::Real> * xf) *
+                    std::sin(std::numbers::pi_v<amrex::Real> * xf) *
+                    std::sin(2.0_rt * std::numbers::pi_v<amrex::Real> * y) *
+                    std::sin(2.0_rt * std::numbers::pi_v<amrex::Real> * z) *
+                    std::cos(std::numbers::pi_v<amrex::Real> * time / TT);
                 vf_arrs[nbx](i, j, k) =
-                    -std::sin(static_cast<amrex::Real>(std::numbers::pi) * yf) *
-                    std::sin(static_cast<amrex::Real>(std::numbers::pi) * yf) *
-                    std::sin(
-                        2.0_rt * static_cast<amrex::Real>(std::numbers::pi) *
-                        x) *
-                    std::sin(
-                        2.0_rt * static_cast<amrex::Real>(std::numbers::pi) *
-                        z) *
-                    std::cos(
-                        static_cast<amrex::Real>(std::numbers::pi) * time / TT);
+                    -std::sin(std::numbers::pi_v<amrex::Real> * yf) *
+                    std::sin(std::numbers::pi_v<amrex::Real> * yf) *
+                    std::sin(2.0_rt * std::numbers::pi_v<amrex::Real> * x) *
+                    std::sin(2.0_rt * std::numbers::pi_v<amrex::Real> * z) *
+                    std::cos(std::numbers::pi_v<amrex::Real> * time / TT);
                 wf_arrs[nbx](i, j, k) =
-                    -std::sin(static_cast<amrex::Real>(std::numbers::pi) * zf) *
-                    std::sin(static_cast<amrex::Real>(std::numbers::pi) * zf) *
-                    std::sin(
-                        2.0_rt * static_cast<amrex::Real>(std::numbers::pi) *
-                        x) *
-                    std::sin(
-                        2.0_rt * static_cast<amrex::Real>(std::numbers::pi) *
-                        y) *
-                    std::cos(
-                        static_cast<amrex::Real>(std::numbers::pi) * time / TT);
+                    -std::sin(std::numbers::pi_v<amrex::Real> * zf) *
+                    std::sin(std::numbers::pi_v<amrex::Real> * zf) *
+                    std::sin(2.0_rt * std::numbers::pi_v<amrex::Real> * x) *
+                    std::sin(2.0_rt * std::numbers::pi_v<amrex::Real> * y) *
+                    std::cos(std::numbers::pi_v<amrex::Real> * time / TT);
             });
         amrex::Gpu::streamSynchronize();
         u_mac.FillBoundary(geom[lev].periodicity());

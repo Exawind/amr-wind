@@ -67,20 +67,16 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
             const amrex::Real y = problo[1] + (j + 0.5_rt) * dx[1];
             const amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
 
-            uf_arrs[nbx](i, j, k) = 2.0_rt *
-                                    static_cast<amrex::Real>(std::numbers::pi) /
-                                    TT * (0.5_rt - y);
-            vf_arrs[nbx](i, j, k) = 2.0_rt *
-                                    static_cast<amrex::Real>(std::numbers::pi) /
-                                    TT * (x - 0.5_rt);
+            uf_arrs[nbx](i, j, k) =
+                2.0_rt * std::numbers::pi_v<amrex::Real> / TT * (0.5_rt - y);
+            vf_arrs[nbx](i, j, k) =
+                2.0_rt * std::numbers::pi_v<amrex::Real> / TT * (x - 0.5_rt);
             wf_arrs[nbx](i, j, k) = 0.0_rt;
 
             vel_arrs[nbx](i, j, k, 0) =
-                2.0_rt * static_cast<amrex::Real>(std::numbers::pi) / TT *
-                (0.5_rt - y);
+                2.0_rt * std::numbers::pi_v<amrex::Real> / TT * (0.5_rt - y);
             vel_arrs[nbx](i, j, k, 1) =
-                2.0_rt * static_cast<amrex::Real>(std::numbers::pi) / TT *
-                (x - 0.5_rt);
+                2.0_rt * std::numbers::pi_v<amrex::Real> / TT * (x - 0.5_rt);
             vel_arrs[nbx](i, j, k, 2) = 0.0_rt;
 
             // First define the sphere
@@ -133,12 +129,11 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
                 smooth_heaviside = 0.0_rt;
             } else {
                 smooth_heaviside =
-                    0.5_rt *
-                    (1.0_rt + phi_arrs[nbx](i, j, k) / eps +
-                     1.0_rt / static_cast<amrex::Real>(std::numbers::pi) *
-                         std::sin(
-                             phi_arrs[nbx](i, j, k) *
-                             static_cast<amrex::Real>(std::numbers::pi) / eps));
+                    0.5_rt * (1.0_rt + phi_arrs[nbx](i, j, k) / eps +
+                              1.0_rt / std::numbers::pi_v<amrex::Real> *
+                                  std::sin(
+                                      phi_arrs[nbx](i, j, k) *
+                                      std::numbers::pi_v<amrex::Real> / eps));
             }
             rho_arrs[nbx](i, j, k) =
                 rho1 * smooth_heaviside + rho2 * (1.0_rt - smooth_heaviside);
@@ -173,12 +168,12 @@ void ZalesakDisk::pre_advance_work()
                 const amrex::Real x = problo[0] + (i + 0.5_rt) * dx[0];
                 const amrex::Real y = problo[1] + (j + 0.5_rt) * dx[1];
 
-                uf_arrs[nbx](i, j, k) =
-                    2.0_rt * static_cast<amrex::Real>(std::numbers::pi) / TT *
-                    (0.5_rt - y);
-                vf_arrs[nbx](i, j, k) =
-                    2.0_rt * static_cast<amrex::Real>(std::numbers::pi) / TT *
-                    (x - 0.5_rt);
+                uf_arrs[nbx](i, j, k) = 2.0_rt *
+                                        std::numbers::pi_v<amrex::Real> / TT *
+                                        (0.5_rt - y);
+                vf_arrs[nbx](i, j, k) = 2.0_rt *
+                                        std::numbers::pi_v<amrex::Real> / TT *
+                                        (x - 0.5_rt);
                 wf_arrs[nbx](i, j, k) = 0.0_rt;
             });
         amrex::Gpu::streamSynchronize();
@@ -206,12 +201,12 @@ void ZalesakDisk::post_advance_work()
                 const amrex::Real x = problo[0] + (i + 0.5_rt) * dx[0];
                 const amrex::Real y = problo[1] + (j + 0.5_rt) * dx[1];
 
-                vel_arrs[nbx](i, j, k, 0) =
-                    2.0_rt * static_cast<amrex::Real>(std::numbers::pi) / TT *
-                    (0.5_rt - y);
-                vel_arrs[nbx](i, j, k, 1) =
-                    2.0_rt * static_cast<amrex::Real>(std::numbers::pi) / TT *
-                    (x - 0.5_rt);
+                vel_arrs[nbx](i, j, k, 0) = 2.0_rt *
+                                            std::numbers::pi_v<amrex::Real> /
+                                            TT * (0.5_rt - y);
+                vel_arrs[nbx](i, j, k, 1) = 2.0_rt *
+                                            std::numbers::pi_v<amrex::Real> /
+                                            TT * (x - 0.5_rt);
                 vel_arrs[nbx](i, j, k, 2) = 0.0_rt;
             });
     }

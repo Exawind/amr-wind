@@ -487,8 +487,7 @@ TEST_F(SamplingTest, quadrature)
     namespace vs = amr_wind::vs;
     namespace su = amr_wind::sampling::sampling_utils;
     int ntheta = 5;
-    amrex::Real gammav =
-        0.25_rt * static_cast<amrex::Real>(std::numbers::pi) / 180.0_rt;
+    amrex::Real gammav = 0.25_rt * std::numbers::pi_v<amrex::Real> / 180.0_rt;
     std::vector<amrex::Real> weights = {
         0.0_rt, 0.0_rt, 0.0_rt, 0.0_rt, 0.0_rt, 0.0_rt, 0.0_rt,
         0.0_rt, 0.0_rt, 0.0_rt, 0.0_rt, 0.0_rt, 0.0_rt, 0.0_rt,

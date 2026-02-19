@@ -112,18 +112,15 @@ void spherical_cap_quadrature(
 
     // avoid ntheta multiplicity at the center
     rays[0] = vs::Vector(0, 0, 1);
-    weights[0] =
-        (2.0_rt * static_cast<amrex::Real>(std::numbers::pi) * weights1D[0]);
+    weights[0] = (2.0_rt * std::numbers::pi_v<amrex::Real> * weights1D[0]);
 
-    const auto theta_weight =
-        2.0_rt * static_cast<amrex::Real>(std::numbers::pi) / ntheta;
+    const auto theta_weight = 2.0_rt * std::numbers::pi_v<amrex::Real> / ntheta;
     for (int j = 1; j < nphi; ++j) {
         const auto tau = abscissae1D[j];
         for (int i = 0; i < ntheta; ++i) {
             int r_idx = i + (j - 1) * ntheta + 1;
             const amrex::Real theta =
-                (2.0_rt * static_cast<amrex::Real>(std::numbers::pi) / ntheta) *
-                i;
+                (2.0_rt * std::numbers::pi_v<amrex::Real> / ntheta) * i;
             const auto xr = std::sqrt(1.0_rt - tau * tau) * std::cos(theta);
             const auto yr = std::sqrt(1.0_rt - tau * tau) * std::sin(theta);
             const auto zr = tau;

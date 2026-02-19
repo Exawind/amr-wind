@@ -58,10 +58,8 @@ ramp(const amrex::Real time, const amrex::Real ramp_period)
     amrex::Real f = 1.0_rt;
     if (time < ramp_period) {
         f = time / ramp_period -
-            (1.0_rt / static_cast<amrex::Real>(std::numbers::pi)) *
-                std::sin(
-                    static_cast<amrex::Real>(std::numbers::pi) *
-                    (time / ramp_period));
+            (1.0_rt / std::numbers::pi_v<amrex::Real>)*std::sin(
+                std::numbers::pi_v<amrex::Real> * (time / ramp_period));
     }
     return f;
 }

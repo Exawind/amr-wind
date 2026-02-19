@@ -173,7 +173,7 @@ TEST_F(ABLOffshoreMeshTest, abl_forcing)
         const amrex::Array<amrex::Real, 5> coeff_golds{
             0.0_rt, 0.0_rt, 0.0_rt,
             -0.5_rt * std::cos(
-                          static_cast<amrex::Real>(std::numbers::pi) *
+                          std::numbers::pi_v<amrex::Real> *
                           (test_heights[3] - waterlev - ht0) / ht1) +
                 0.5_rt,
             1.0_rt};
@@ -273,7 +273,7 @@ TEST_F(ABLOffshoreMeshTest, geostrophic_forcing)
     const amrex::Array<amrex::Real, 5> coeff_golds{
         0.0_rt, 0.0_rt, 0.0_rt,
         -0.5_rt * std::cos(
-                      static_cast<amrex::Real>(std::numbers::pi) *
+                      std::numbers::pi_v<amrex::Real> *
                       (test_heights[3] - waterlev - ht0) / ht1) +
             0.5_rt,
         1.0_rt};
