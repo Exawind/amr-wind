@@ -1,6 +1,7 @@
 #ifndef TURBINE_EXTERNAL_UTILS_H
 #define TURBINE_EXTERNAL_UTILS_H
 
+#include <numbers>
 #include "amr-wind/wind_energy/actuator/turbine/turbine_utils.H"
 #include "amr-wind/wind_energy/actuator/actuator_ops.H"
 #include "amr-wind/wind_energy/actuator/actuator_utils.H"
@@ -102,8 +103,7 @@ void init_epsilon(datatype& data)
     {
         const auto& cd = tdata.nacelle_cd;
         const auto& area = tdata.nacelle_area;
-        const auto eps =
-            std::sqrt(2.0_rt / ::amr_wind::utils::pi() * cd * area);
+        const auto eps = std::sqrt(2.0_rt / std::numbers::pi * cd * area);
 
         auto& nac_eps = data.grid().epsilon[0];
         nac_eps.x() = amrex::max<amrex::Real>(eps, tdata.eps_min.x());

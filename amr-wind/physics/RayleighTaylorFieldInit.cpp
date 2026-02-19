@@ -26,7 +26,6 @@ void RayleighTaylorFieldInit::operator()(
     const auto& problo = geom.ProbLoArray();
     const auto& probhi = geom.ProbHiArray();
 
-    static constexpr auto pi = static_cast<amrex::Real>(std::numbers::pi);
     const amrex::Real rho_1 = m_rho_lo;
     const amrex::Real rho_2 = m_rho_hi;
     const amrex::Real splitx = 0.5_rt * (problo[0] + probhi[0]);
@@ -40,7 +39,7 @@ void RayleighTaylorFieldInit::operator()(
         const amrex::Real r2d = amrex::min<amrex::Real>(
             std::hypot((x - splitx), (y - splity)), 0.5_rt * L_x);
         const amrex::Real pertheight =
-            0.5_rt - 0.01_rt * std::cos(2.0_rt * pi * r2d / L_x);
+            0.5_rt - 0.01_rt * std::cos(2.0_rt * std::numbers::pi * r2d / L_x);
 
         density(i, j, k) =
             rho_1 + ((rho_2 - rho_1) / 2.0_rt) *
