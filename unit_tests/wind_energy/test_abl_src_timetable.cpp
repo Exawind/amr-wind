@@ -1,7 +1,7 @@
+#include <numbers>
 #include "aw_test_utils/MeshTest.H"
 #include "aw_test_utils/iter_tools.H"
 #include "aw_test_utils/test_utils.H"
-
 #include "amr-wind/wind_energy/ABL.H"
 #include "amr-wind/equation_systems/icns/icns.H"
 #include "amr-wind/equation_systems/icns/icns_ops.H"
@@ -197,14 +197,16 @@ TEST_F(ABLSrcTimeTableTest, abl)
         abl_forcing(lev, mfi, bx, amr_wind::FieldState::New, src_arr);
     });
     // Velocity at hub height is 8 at 0deg and target is 8 at 2.5deg
-    target_force[0] =
-        (8.0_rt * std::cos(static_cast<amrex::Real>(M_PI) / 180.0_rt * 2.5_rt) -
-         init_vel[0]) /
-        m_dt;
-    target_force[1] =
-        (8.0_rt * std::sin(static_cast<amrex::Real>(M_PI) / 180.0_rt * 2.5_rt) -
-         init_vel[1]) /
-        m_dt;
+    target_force[0] = (8.0_rt * std::cos(
+                                    static_cast<amrex::Real>(std::numbers::pi) /
+                                    180.0_rt * 2.5_rt) -
+                       init_vel[0]) /
+                      m_dt;
+    target_force[1] = (8.0_rt * std::sin(
+                                    static_cast<amrex::Real>(std::numbers::pi) /
+                                    180.0_rt * 2.5_rt) -
+                       init_vel[1]) /
+                      m_dt;
     for (int i = 0; i < AMREX_SPACEDIM; ++i) {
         const auto min_val = utils::field_min(src_term, i);
         const auto max_val = utils::field_max(src_term, i);
@@ -292,16 +294,18 @@ TEST_F(ABLSrcTimeTableTest, bodyforce)
         });
         // Forces correspond to ABL Forcing from other test
         const amrex::Vector<amrex::Real> init_vel{8.0_rt, 0.0_rt, 0.0_rt};
-        target_force[0] = (8.0_rt * std::cos(
-                                        static_cast<amrex::Real>(M_PI) /
-                                        180.0_rt * angles[n]) -
-                           init_vel[0]) /
-                          m_dt;
-        target_force[1] = (8.0_rt * std::sin(
-                                        static_cast<amrex::Real>(M_PI) /
-                                        180.0_rt * angles[n]) -
-                           init_vel[1]) /
-                          m_dt;
+        target_force[0] =
+            (8.0_rt * std::cos(
+                          static_cast<amrex::Real>(std::numbers::pi) /
+                          180.0_rt * angles[n]) -
+             init_vel[0]) /
+            m_dt;
+        target_force[1] =
+            (8.0_rt * std::sin(
+                          static_cast<amrex::Real>(std::numbers::pi) /
+                          180.0_rt * angles[n]) -
+             init_vel[1]) /
+            m_dt;
         for (int i = 0; i < AMREX_SPACEDIM; ++i) {
             const auto min_val = utils::field_min(src_term, i);
             const auto max_val = utils::field_max(src_term, i);
@@ -329,8 +333,10 @@ TEST_F(ABLSrcTimeTableTest, geostrophic)
         std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
     // Default Coriolis parameters
     const amrex::Real cf =
-        2.0_rt * (2.0_rt * static_cast<amrex::Real>(M_PI) / 86164.091_rt) *
-        std::sin(static_cast<amrex::Real>(M_PI) / 180.0_rt * 90.0_rt);
+        2.0_rt *
+        (2.0_rt * static_cast<amrex::Real>(std::numbers::pi) / 86164.091_rt) *
+        std::sin(
+            static_cast<amrex::Real>(std::numbers::pi) / 180.0_rt * 90.0_rt);
 
     // Write target wind file
     write_target_velocity_file(m_tvel_fname);
@@ -399,8 +405,12 @@ TEST_F(ABLSrcTimeTableTest, geostrophic)
     });
     // New target velocity is 8 at 1.25deg (nph velocity)
     const amrex::Vector<amrex::Real> targ_vel{
-        8.0_rt * std::cos(static_cast<amrex::Real>(M_PI) / 180.0_rt * 1.25_rt),
-        8.0_rt * std::sin(static_cast<amrex::Real>(M_PI) / 180.0_rt * 1.25_rt),
+        8.0_rt * std::cos(
+                     static_cast<amrex::Real>(std::numbers::pi) / 180.0_rt *
+                     1.25_rt),
+        8.0_rt * std::sin(
+                     static_cast<amrex::Real>(std::numbers::pi) / 180.0_rt *
+                     1.25_rt),
         0.0_rt};
     target_force[0] = -cf * targ_vel[1];
     target_force[1] = cf * targ_vel[0];

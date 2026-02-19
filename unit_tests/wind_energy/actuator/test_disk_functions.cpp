@@ -1,3 +1,4 @@
+#include <numbers>
 #include "gtest/gtest.h"
 #include "amr-wind/wind_energy/actuator/disk/disk_ops.H"
 #include "AMReX_REAL.H"
@@ -36,7 +37,8 @@ protected:
         const auto params = GetParam();
         m_computer = std::make_unique<ops::base::AreaComputer>(
             params.radius, params.num_points_r, params.num_points_theta);
-        m_area = static_cast<amrex::Real>(M_PI) * params.radius * params.radius;
+        m_area = static_cast<amrex::Real>(std::numbers::pi) * params.radius *
+                 params.radius;
     }
     std::unique_ptr<ops::base::AreaComputer> m_computer;
     amrex::Real m_area;

@@ -1,3 +1,4 @@
+#include <numbers>
 #include "gtest/gtest.h"
 #include "aw_test_utils/MeshTest.H"
 #include "amr-wind/turbulence/TurbulenceModel.H"
@@ -514,7 +515,8 @@ TEST_F(TurbLESTest, test_kosovic_setup_calc)
     const amrex::Real visc = 1.0e-5_rt;
     const amrex::Real kosovic_Cs = std::sqrt(
         8.0_rt * (1.0_rt + Cb) /
-        (27.0_rt * static_cast<amrex::Real>(M_PI * M_PI)));
+        (27.0_rt *
+         static_cast<amrex::Real>(std::numbers::pi * std::numbers::pi)));
     {
         amrex::ParmParse pp("turbulence");
         pp.add("model", (std::string) "Kosovic");
