@@ -1,4 +1,5 @@
 #include <cmath>
+#include <numbers>
 
 #include "amr-wind/physics/RayleighTaylorFieldInit.H"
 #include "AMReX_Gpu.H"
@@ -25,7 +26,7 @@ void RayleighTaylorFieldInit::operator()(
     const auto& problo = geom.ProbLoArray();
     const auto& probhi = geom.ProbHiArray();
 
-    static constexpr auto pi = static_cast<amrex::Real>(M_PI);
+    static constexpr auto pi = static_cast<amrex::Real>(std::numbers::pi);
     const amrex::Real rho_1 = m_rho_lo;
     const amrex::Real rho_2 = m_rho_hi;
     const amrex::Real splitx = 0.5_rt * (problo[0] + probhi[0]);

@@ -1,9 +1,10 @@
 #ifndef WAVES_UTILS_H_
 #define WAVES_UTILS_H_
 
-#include <AMReX_FArrayBox.H>
 #include <cmath>
+#include <numbers>
 #include "amr-wind/utilities/constants.H"
+#include "AMReX_FArrayBox.H"
 #include "AMReX_REAL.H"
 
 using namespace amrex::literals;
@@ -57,8 +58,10 @@ ramp(const amrex::Real time, const amrex::Real ramp_period)
     amrex::Real f = 1.0_rt;
     if (time < ramp_period) {
         f = time / ramp_period -
-            (1.0_rt / static_cast<amrex::Real>(M_PI)) *
-                std::sin(static_cast<amrex::Real>(M_PI) * (time / ramp_period));
+            (1.0_rt / static_cast<amrex::Real>(std::numbers::pi)) *
+                std::sin(
+                    static_cast<amrex::Real>(std::numbers::pi) *
+                    (time / ramp_period));
     }
     return f;
 }

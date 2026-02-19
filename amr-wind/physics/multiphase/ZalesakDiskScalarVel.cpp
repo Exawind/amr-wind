@@ -1,3 +1,4 @@
+#include <numbers>
 #include "amr-wind/physics/multiphase/MultiPhase.H"
 #include "amr-wind/physics/multiphase/ZalesakDiskScalarVel.H"
 #include "amr-wind/CFDSim.H"
@@ -100,10 +101,12 @@ void ZalesakDiskScalarVel::initialize_fields(
             const amrex::Real y = problo[1] + (j + 0.5_rt) * dx[1];
             const amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
 
-            uf_arrs[nbx](i, j, k) =
-                2.0_rt * static_cast<amrex::Real>(M_PI) / TT * (0.5_rt - y);
-            vf_arrs[nbx](i, j, k) =
-                2.0_rt * static_cast<amrex::Real>(M_PI) / TT * (x - 0.5_rt);
+            uf_arrs[nbx](i, j, k) = 2.0_rt *
+                                    static_cast<amrex::Real>(std::numbers::pi) /
+                                    TT * (0.5_rt - y);
+            vf_arrs[nbx](i, j, k) = 2.0_rt *
+                                    static_cast<amrex::Real>(std::numbers::pi) /
+                                    TT * (x - 0.5_rt);
             wf_arrs[nbx](i, j, k) = 0.0_rt;
 
             vel_arrs[nbx](i, j, k, 1) = 0.0_rt;
@@ -159,11 +162,12 @@ void ZalesakDiskScalarVel::initialize_fields(
                 smooth_heaviside = 0.0_rt;
             } else {
                 smooth_heaviside =
-                    0.5_rt * (1.0_rt + phi_arrs[nbx](i, j, k) / eps +
-                              1.0_rt / static_cast<amrex::Real>(M_PI) *
-                                  std::sin(
-                                      phi_arrs[nbx](i, j, k) *
-                                      static_cast<amrex::Real>(M_PI) / eps));
+                    0.5_rt *
+                    (1.0_rt + phi_arrs[nbx](i, j, k) / eps +
+                     1.0_rt / static_cast<amrex::Real>(std::numbers::pi) *
+                         std::sin(
+                             phi_arrs[nbx](i, j, k) *
+                             static_cast<amrex::Real>(std::numbers::pi) / eps));
             }
             rho_arrs[nbx](i, j, k) =
                 rho1 * smooth_heaviside + rho2 * (1.0_rt - smooth_heaviside);
@@ -209,9 +213,11 @@ void ZalesakDiskScalarVel::pre_advance_work()
                 const amrex::Real y = problo[1] + (j + 0.5_rt) * dx[1];
 
                 uf_arrs[nbx](i, j, k) =
-                    2.0_rt * static_cast<amrex::Real>(M_PI) / TT * (0.5_rt - y);
+                    2.0_rt * static_cast<amrex::Real>(std::numbers::pi) / TT *
+                    (0.5_rt - y);
                 vf_arrs[nbx](i, j, k) =
-                    2.0_rt * static_cast<amrex::Real>(M_PI) / TT * (x - 0.5_rt);
+                    2.0_rt * static_cast<amrex::Real>(std::numbers::pi) / TT *
+                    (x - 0.5_rt);
                 wf_arrs[nbx](i, j, k) = 0.0_rt;
             });
         amrex::Gpu::streamSynchronize();
@@ -315,7 +321,8 @@ amrex::Real ZalesakDiskScalarVel::compute_error(const Field& field)
                 const amrex::Real u = fld_bx(i, j, k, comp);
                 const amrex::Real u_exact = f_exact(
                     xc, yc, zc, x, y, z, radius,
-                    time * 2.0_rt * static_cast<amrex::Real>(M_PI) / TT);
+                    time * 2.0_rt * static_cast<amrex::Real>(std::numbers::pi) /
+                        TT);
                 const amrex::Real cell_vol =
                     dx[0] * fac_x * dx[1] * fac_y * dx[2] * fac_z;
 

@@ -1,6 +1,7 @@
 #ifndef MOSD_H
 #define MOSD_H
 
+#include <numbers>
 #include "AMReX_AmrCore.H"
 #include "AMReX.H"
 #include "AMReX_REAL.H"
@@ -51,8 +52,8 @@ struct MOSD
             (Heavi_arg + std::abs(Heavi_arg)) / (2.0_rt * Heavi_arg);
 
         // Calculating the magnitude of the stress
-        return (1.0_rt / static_cast<amrex::Real>(M_PI)) * ur_mag * ur_mag *
-               grad_eta_wave * grad_eta_wave * Heavi *
+        return (1.0_rt / static_cast<amrex::Real>(std::numbers::pi)) * ur_mag *
+               ur_mag * grad_eta_wave * grad_eta_wave * Heavi *
                (unit_nor == 0 ? n_x : n_y);
     }
 };

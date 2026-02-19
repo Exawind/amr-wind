@@ -70,12 +70,12 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void form_drag_calculations(
         (Heavi_arg + std::abs(Heavi_arg)) / (2.0_rt * Heavi_arg);
 
     // Stress in each direction
-    const amrex::Real tau_xz = (1.0_rt / static_cast<amrex::Real>(M_PI)) *
-                               ur_mag * ur_mag * grad_eta_wave * grad_eta_wave *
-                               Heavi * n_x;
-    const amrex::Real tau_yz = (1.0_rt / static_cast<amrex::Real>(M_PI)) *
-                               ur_mag * ur_mag * grad_eta_wave * grad_eta_wave *
-                               Heavi * n_y;
+    const amrex::Real tau_xz =
+        (1.0_rt / static_cast<amrex::Real>(std::numbers::pi)) * ur_mag *
+        ur_mag * grad_eta_wave * grad_eta_wave * Heavi * n_x;
+    const amrex::Real tau_yz =
+        (1.0_rt / static_cast<amrex::Real>(std::numbers::pi)) * ur_mag *
+        ur_mag * grad_eta_wave * grad_eta_wave * Heavi * n_y;
 
     // Drag terms from waves added to log law
     Dxz += -tau_xz / dx[2];

@@ -118,7 +118,8 @@ void ABLForcing::operator()(
                 } else {
                     // Ramp from 0 to 1 over second interval
                     fac = 0.5_rt - 0.5_rt * std::cos(
-                                                static_cast<amrex::Real>(M_PI) *
+                                                static_cast<amrex::Real>(
+                                                    std::numbers::pi) *
                                                 (z - wlev - wrht0) / wrht1);
                 }
             }

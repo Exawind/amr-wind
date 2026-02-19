@@ -182,18 +182,27 @@ void new_wing_position_velocity(
         // Velocity is unchanged
     } else if (amrex::toLower(motion) == "sine") {
         // Calculate displacement using sine
-        disp.x() =
-            svec.x() *
-            (std::sin(2.0_rt * static_cast<amrex::Real>(M_PI) * tnp1 / period) -
-             std::sin(2.0_rt * static_cast<amrex::Real>(M_PI) * tn / period));
-        disp.y() =
-            svec.y() *
-            (std::sin(2.0_rt * static_cast<amrex::Real>(M_PI) * tnp1 / period) -
-             std::sin(2.0_rt * static_cast<amrex::Real>(M_PI) * tn / period));
-        disp.z() =
-            svec.z() *
-            (std::sin(2.0_rt * static_cast<amrex::Real>(M_PI) * tnp1 / period) -
-             std::sin(2.0_rt * static_cast<amrex::Real>(M_PI) * tn / period));
+        disp.x() = svec.x() *
+                   (std::sin(
+                        2.0_rt * static_cast<amrex::Real>(std::numbers::pi) *
+                        tnp1 / period) -
+                    std::sin(
+                        2.0_rt * static_cast<amrex::Real>(std::numbers::pi) *
+                        tn / period));
+        disp.y() = svec.y() *
+                   (std::sin(
+                        2.0_rt * static_cast<amrex::Real>(std::numbers::pi) *
+                        tnp1 / period) -
+                    std::sin(
+                        2.0_rt * static_cast<amrex::Real>(std::numbers::pi) *
+                        tn / period));
+        disp.z() = svec.z() *
+                   (std::sin(
+                        2.0_rt * static_cast<amrex::Real>(std::numbers::pi) *
+                        tnp1 / period) -
+                    std::sin(
+                        2.0_rt * static_cast<amrex::Real>(std::numbers::pi) *
+                        tn / period));
         // The translational velocity over the time step is disp/dt
         vtr.x() = disp.x() /
                   (tnp1 - tn + std::numeric_limits<amrex::Real>::epsilon());

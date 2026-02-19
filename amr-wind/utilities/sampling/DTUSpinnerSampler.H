@@ -104,10 +104,13 @@ private:
     long m_ntotal{1};
 
     int m_update_count{0};
-    const amrex::Real m_radtodeg{180.0_rt / static_cast<amrex::Real>(M_PI)};
-    const amrex::Real m_pi{static_cast<amrex::Real>(M_PI)};
-    const amrex::Real m_twopi{2.0_rt * static_cast<amrex::Real>(M_PI)};
-    const amrex::Real m_threepi{3.0_rt * static_cast<amrex::Real>(M_PI)};
+    const amrex::Real m_radtodeg{
+        180.0_rt / static_cast<amrex::Real>(std::numbers::pi)};
+    const amrex::Real m_pi{static_cast<amrex::Real>(std::numbers::pi)};
+    const amrex::Real m_twopi{
+        2.0_rt * static_cast<amrex::Real>(std::numbers::pi)};
+    const amrex::Real m_threepi{
+        3.0_rt * static_cast<amrex::Real>(std::numbers::pi)};
     amrex::Real m_time_sampling{0.0_rt};
     PrismParameters m_InnerPrism;
     PrismParameters m_OuterPrism;

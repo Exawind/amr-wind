@@ -1,3 +1,4 @@
+#include <numbers>
 #include "amr-wind/physics/multiphase/MultiPhase.H"
 #include "amr-wind/physics/multiphase/DamBreak.H"
 #include "amr-wind/CFDSim.H"
@@ -71,11 +72,12 @@ void DamBreak::initialize_fields(int level, const amrex::Geometry& geom)
                 smooth_heaviside = 0.0_rt;
             } else {
                 smooth_heaviside =
-                    0.5_rt * (1.0_rt + phi_arrs[nbx](i, j, k) / eps +
-                              1.0_rt / static_cast<amrex::Real>(M_PI) *
-                                  std::sin(
-                                      phi_arrs[nbx](i, j, k) *
-                                      static_cast<amrex::Real>(M_PI) / eps));
+                    0.5_rt *
+                    (1.0_rt + phi_arrs[nbx](i, j, k) / eps +
+                     1.0_rt / static_cast<amrex::Real>(std::numbers::pi) *
+                         std::sin(
+                             phi_arrs[nbx](i, j, k) *
+                             static_cast<amrex::Real>(std::numbers::pi) / eps));
             }
             rho_arrs[nbx](i, j, k) =
                 rho1 * smooth_heaviside + rho2 * (1.0_rt - smooth_heaviside);

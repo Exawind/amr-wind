@@ -126,7 +126,7 @@ void GeostrophicForcing::operator()(
             amr_wind::interp::linear(m_time_table, m_speed_table, nph_time);
         const amrex::Real nph_dir = amr_wind::interp::linear_angle(
             m_time_table, m_direction_table, nph_time,
-            2.0_rt * static_cast<amrex::Real>(M_PI));
+            2.0_rt * static_cast<amrex::Real>(std::numbers::pi));
 
         const amrex::Real target_u = nph_spd * std::cos(nph_dir);
         const amrex::Real target_v = nph_spd * std::sin(nph_dir);
@@ -147,10 +147,10 @@ void GeostrophicForcing::operator()(
                     wfac = 0.0_rt;
                 } else {
                     // Ramp from 0 to 1 over second interval
-                    wfac =
-                        0.5_rt - 0.5_rt * std::cos(
-                                              static_cast<amrex::Real>(M_PI) *
-                                              (z - wlev - wrht0) / wrht1);
+                    wfac = 0.5_rt - 0.5_rt * std::cos(
+                                                 static_cast<amrex::Real>(
+                                                     std::numbers::pi) *
+                                                 (z - wlev - wrht0) / wrht1);
                 }
             }
             // Check for presence of liquid (like a droplet)

@@ -215,7 +215,7 @@ void ABLFieldInit::operator()(
     const amrex::Array4<amrex::Real>& density,
     const amrex::Array4<amrex::Real>& temperature) const
 {
-    const auto pi = static_cast<amrex::Real>(M_PI);
+    const auto pi = static_cast<amrex::Real>(std::numbers::pi);
     const auto& dx = geom.CellSizeArray();
     const auto& problo = geom.ProbLoArray();
     const auto& probhi = geom.ProbHiArray();

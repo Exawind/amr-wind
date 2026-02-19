@@ -1,13 +1,14 @@
+#include <numbers>
 #include "amr-wind/physics/multiphase/MultiPhase.H"
 #include "amr-wind/equation_systems/vof/volume_fractions.H"
 #include "amr-wind/physics/multiphase/hydrostatic_ops.H"
 #include "amr-wind/CFDSim.H"
-#include "AMReX_ParmParse.H"
 #include "amr-wind/fvm/filter.H"
 #include "amr-wind/core/field_ops.H"
 #include "amr-wind/equation_systems/BCOps.H"
-#include <AMReX_MultiFabUtil.H>
 #include "amr-wind/core/SimTime.H"
+#include "AMReX_ParmParse.H"
+#include "AMReX_MultiFabUtil.H"
 #include "AMReX_REAL.H"
 
 using namespace amrex::literals;
@@ -322,10 +323,11 @@ void MultiPhase::set_density_via_levelset()
                     smooth_heaviside =
                         0.5_rt *
                         (1.0_rt + phi_arrs[nbx](i, j, k) / eps +
-                         1.0_rt / static_cast<amrex::Real>(M_PI) *
+                         1.0_rt / static_cast<amrex::Real>(std::numbers::pi) *
                              std::sin(
                                  phi_arrs[nbx](i, j, k) *
-                                 static_cast<amrex::Real>(M_PI) / eps));
+                                 static_cast<amrex::Real>(std::numbers::pi) /
+                                 eps));
                 }
                 rho_arrs[nbx](i, j, k) =
                     captured_rho1 * smooth_heaviside +

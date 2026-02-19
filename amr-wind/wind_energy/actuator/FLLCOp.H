@@ -1,6 +1,7 @@
 #ifndef FLLCOP_H
 #define FLLCOP_H
 
+#include <numbers>
 #include "amr-wind/wind_energy/actuator/actuator_types.H"
 #include "amr-wind/wind_energy/actuator/FLLC.H"
 #include "amr-wind/utilities/linear_interpolation.H"
@@ -117,7 +118,7 @@ struct FLLCOp
                     vs::mag(vel), vs::DTraits<amrex::Real>::eps());
 
                 auto coefficient =
-                    1.0_rt / (-4.0_rt * amr_wind::utils::pi() * r_dis * vmag);
+                    1.0_rt / (-4.0_rt * std::numbers::pi * r_dis * vmag);
                 const auto cLes =
                     1.0_rt - std::exp(-r_dis * r_dis / (eps_les * eps_les));
                 const auto cOpt =
@@ -126,7 +127,7 @@ struct FLLCOp
                 // The sign of the induced velocity depends on which side of the
                 // blade we are on
                 if (ip < jp) {
-                    coefficient *= -1;
+                    coefficient *= -1.0_rt;
                 }
 
                 u_les[ip] = u_les[ip] - dG[jp] * coefficient * cLes;
@@ -228,7 +229,7 @@ struct FLLCOp
          */
         for (int ip = 0; ip < npts; ++ip) {
 
-            const auto coefficient = 1.0_rt / (2.0_rt * amr_wind::utils::pi());
+            const auto coefficient = 1.0_rt / (2.0_rt * std::numbers::pi);
 
             for (int jp = 0; jp < dr.size(); ++jp) {
 
