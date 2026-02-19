@@ -1,6 +1,7 @@
 #ifndef ACTSRCDISKOP_TURBINE_H_
 #define ACTSRCDISKOP_TURBINE_H_
 
+#include <numbers>
 #include "AMReX_REAL.H"
 #include "amr-wind/wind_energy/actuator/actuator_ops.H"
 #include "amr-wind/wind_energy/actuator/actuator_utils.H"
@@ -109,7 +110,8 @@ operator()(const int lev, const amrex::MFIter& mfi, const amrex::Geometry& geom)
     // assume constant dr same for all blades
     const auto* host_pos = tdata.blades[0].pos.data();
     const amrex::Real dR = vs::mag_sqr(host_pos[0] - host_pos[1]);
-    const amrex::Real dT = 2.0_rt * ::amr_wind::utils::pi() / tdata.num_blades;
+    const amrex::Real dT =
+        2.0_rt * std::numbers::pi_v<amrex::Real> / tdata.num_blades;
     // assume these will be copied to device by the lambda capture...
     const vs::Vector m_normal(tdata.rotor_frame.x());
     const vs::Vector m_origin(tdata.rot_center);

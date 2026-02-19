@@ -1,9 +1,10 @@
+#include <numbers>
+#include <vector>
+#include <numeric>
 #include "aw_test_utils/AmrexTest.H"
 #include "amr-wind/utilities/linear_interpolation.H"
 #include "amr-wind/utilities/trig_ops.H"
 #include "AMReX_Random.H"
-#include <vector>
-#include <numeric>
 #include "AMReX_REAL.H"
 
 using namespace amrex::literals;
@@ -283,7 +284,7 @@ TEST(LinearInterpolation, lin_interp_angle)
     // Upper bound is 2pi because y is in radians
     interp::linear_angle(
         xvec, yvec_rad, xtest, ytest_rad,
-        2.0_rt * static_cast<amrex::Real>(M_PI));
+        2.0_rt * std::numbers::pi_v<amrex::Real>);
     for (size_t i = 0; i < xtest.size(); ++i) {
         EXPECT_NEAR(
             ytest_deg[i], ygold_deg[i],

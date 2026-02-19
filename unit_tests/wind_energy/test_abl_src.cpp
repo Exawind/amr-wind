@@ -1,10 +1,8 @@
+#include <numbers>
 #include "abl_test_utils.H"
 #include "amr-wind/utilities/trig_ops.H"
 #include "aw_test_utils/iter_tools.H"
 #include "aw_test_utils/test_utils.H"
-
-#include "AMReX_Gpu.H"
-#include "AMReX_Random.H"
 #include "amr-wind/equation_systems/icns/icns.H"
 #include "amr-wind/equation_systems/icns/icns_ops.H"
 #include "amr-wind/equation_systems/icns/MomentumSource.H"
@@ -17,6 +15,8 @@
 #include "amr-wind/equation_systems/icns/source_terms/HurricaneForcing.H"
 #include "amr-wind/equation_systems/icns/source_terms/RayleighDamping.H"
 #include "amr-wind/equation_systems/temperature/source_terms/HurricaneTempForcing.H"
+#include "AMReX_Gpu.H"
+#include "AMReX_Random.H"
 #include "AMReX_REAL.H"
 
 using namespace amrex::literals;
@@ -269,11 +269,11 @@ TEST_F(ABLMeshTest, rayleigh_damping)
     const amrex::Array<amrex::Real, 5> golds{
         1.0_rt, 1.0_rt,
         0.5_rt * std::cos(
-                     static_cast<amrex::Real>(M_PI) *
+                     std::numbers::pi_v<amrex::Real> *
                      (1000.0_rt - 50.0_rt - test_heights[2]) / 200.0_rt) +
             0.5_rt,
         0.5_rt * std::cos(
-                     static_cast<amrex::Real>(M_PI) *
+                     std::numbers::pi_v<amrex::Real> *
                      (1000.0_rt - 50.0_rt - test_heights[3]) / 200.0_rt) +
             0.5_rt,
         0.0_rt};

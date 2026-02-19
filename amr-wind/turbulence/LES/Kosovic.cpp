@@ -27,8 +27,8 @@ Kosovic<Transport>::Kosovic(CFDSim& sim)
     pp.query("Cb", m_Cb);
     m_Cs = std::sqrt(
         8.0_rt * (1.0_rt + m_Cb) /
-        (27.0_rt * static_cast<amrex::Real>(M_PI) *
-         static_cast<amrex::Real>(M_PI)));
+        (27.0_rt * std::numbers::pi_v<amrex::Real> *
+         std::numbers::pi_v<amrex::Real>));
     m_C1 = std::sqrt(960.0_rt) * m_Cb / (7.0_rt * (1.0_rt + m_Cb) * m_Sk);
     m_C2 = m_C1;
     pp.query("surfaceRANS", m_surfaceRANS);

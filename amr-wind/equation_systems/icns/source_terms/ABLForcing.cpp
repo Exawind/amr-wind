@@ -117,9 +117,10 @@ void ABLForcing::operator()(
                     fac = 0.0_rt;
                 } else {
                     // Ramp from 0 to 1 over second interval
-                    fac = 0.5_rt - 0.5_rt * std::cos(
-                                                static_cast<amrex::Real>(M_PI) *
-                                                (z - wlev - wrht0) / wrht1);
+                    fac =
+                        0.5_rt - 0.5_rt * std::cos(
+                                              std::numbers::pi_v<amrex::Real> *
+                                              (z - wlev - wrht0) / wrht1);
                 }
             }
             // Check for presence of liquid (like a droplet)

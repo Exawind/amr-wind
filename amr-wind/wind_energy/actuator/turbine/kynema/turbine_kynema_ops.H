@@ -83,7 +83,7 @@ struct ReadInputsOp<TurbineKynema, SrcTrait>
         if (!pp.contains("rot_speed_radps")) {
             pp.query("rot_speed_rpm", tf.rotational_speed);
             tf.rotational_speed *=
-                2.0_rt * static_cast<amrex::Real>(M_PI) / 60.0_rt;
+                2.0_rt * std::numbers::pi_v<amrex::Real> / 60.0_rt;
         }
         // Initial generator speed
         pp.query("generator_power_init", tf.generator_power);
@@ -97,7 +97,7 @@ struct ReadInputsOp<TurbineKynema, SrcTrait>
         pp.query("yaw_rad", tf.yaw);
         if (!pp.contains("yaw_rad")) {
             pp.query("yaw_deg", tf.yaw);
-            tf.yaw *= static_cast<amrex::Real>(M_PI) / 180.0_rt;
+            tf.yaw *= std::numbers::pi_v<amrex::Real> / 180.0_rt;
         }
         // Generator efficiency
         pp.query("generator_efficiency", tf.generator_efficiency);

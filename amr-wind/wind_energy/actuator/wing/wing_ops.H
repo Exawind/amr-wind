@@ -203,7 +203,8 @@ struct ComputeForceOp<
                 qfac /= (amrex::Real)npts;
                 // Convert 3D Gaussian factor to 2D factor
                 constexpr amrex::Real G2D_from_3D =
-                    0.31830988618379067_rt / 0.17958712212516656_rt;
+                    std::numbers::inv_pi_v<amrex::Real> /
+                    0.17958712212516656_rt;
                 qfac *= G2D_from_3D;
                 // Get rid of epsilon in spanwise direction
                 const amrex::Real eps_span = grid.epsilon[ip][1];

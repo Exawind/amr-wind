@@ -104,9 +104,9 @@ namespace ops::base {
 
 AreaComputer::AreaComputer(
     const amrex::Real radius, const int num_r, const int num_theta)
-    : m_area(static_cast<amrex::Real>(M_PI) * radius * radius)
+    : m_area(std::numbers::pi_v<amrex::Real> * radius * radius)
     , m_geometry_factor(
-          radius * radius / num_r / num_r * static_cast<amrex::Real>(M_PI) /
+          radius * radius / num_r / num_r * std::numbers::pi_v<amrex::Real> /
           num_theta)
 {}
 

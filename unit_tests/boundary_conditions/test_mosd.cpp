@@ -15,7 +15,8 @@ protected:
 
     amrex::Real get_u_loglaw(const amrex::Real utau) const
     {
-        return utau * (1.0_rt / 0.4_rt * std::log(m_zref * utau / m_nu) + 5);
+        return utau *
+               (1.0_rt / 0.4_rt * std::log(m_zref * utau / m_nu) + 5.0_rt);
     }
 
     // vertical location (z = dx)
@@ -42,7 +43,7 @@ TEST_F(MOSDTest, test_mosd)
     const amrex::Real unit_nor = 0.0_rt;
     {
         const amrex::Real tau_wave_expected = 0.0_rt;
-        const amrex::Real x_c = 3.141592_rt;
+        const amrex::Real x_c = std::numbers::pi_v<amrex::Real>;
         EXPECT_NEAR(
             md.get_dyn_tau(u_dx, v_dx, x_c, unit_nor), tau_wave_expected,
             m_tol);

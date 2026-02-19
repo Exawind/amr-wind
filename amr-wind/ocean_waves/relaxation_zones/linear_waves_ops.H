@@ -33,7 +33,7 @@ struct ReadInputsOp<LinearWaves>
         if (!pp.contains("wave_phase_offset_radians")) {
             pp.query("wave_phase_offset_degrees", wdata.wave_phase_offset);
             wdata.wave_phase_offset *=
-                static_cast<amrex::Real>(M_PI) / 180.0_rt;
+                std::numbers::pi_v<amrex::Real> / 180.0_rt;
         } else if (pp.contains("wave_phase_offset_degrees")) {
             amrex::Abort(
                 "ReadInputsOp<LinearWaves> : wave phase offset is specified in "
@@ -91,7 +91,7 @@ struct InitDataOp<LinearWaves>
                 const amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
 
                 const amrex::Real wave_number =
-                    2.0_rt * static_cast<amrex::Real>(M_PI) / wave_length;
+                    2.0_rt * std::numbers::pi_v<amrex::Real> / wave_length;
                 const amrex::Real omega = std::pow(
                     wave_number * g * std::tanh(wave_number * water_depth),
                     0.5_rt);
@@ -182,7 +182,7 @@ struct UpdateTargetFieldsOp<LinearWaves>
                     const amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
 
                     const amrex::Real wave_number =
-                        2.0_rt * static_cast<amrex::Real>(M_PI) / wave_length;
+                        2.0_rt * std::numbers::pi_v<amrex::Real> / wave_length;
                     const amrex::Real omega = std::pow(
                         wave_number * g * std::tanh(wave_number * water_depth),
                         0.5_rt);

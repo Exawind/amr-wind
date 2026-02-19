@@ -1,3 +1,4 @@
+#include <numbers>
 #include "aw_test_utils/MeshTest.H"
 #include "aw_test_utils/iter_tools.H"
 #include "aw_test_utils/test_utils.H"
@@ -83,7 +84,7 @@ TEST_F(WaveTheoriesTest, StokesWavesFreeSurfaceProfile)
     amrex::Real wavenumber = 2.0_rt;
     amrex::Real water_depth = 0.376991_rt;
     amrex::Real wavelength =
-        2.0_rt * static_cast<amrex::Real>(M_PI) / wavenumber;
+        2.0_rt * std::numbers::pi_v<amrex::Real> / wavenumber;
     amrex::Real wave_height = 0.1_rt;
     amrex::Real zsl = 0.0_rt;
     amrex::Real x = 0.0_rt;
@@ -151,11 +152,11 @@ TEST_F(WaveTheoriesTest, StokesWavesFreeSurfaceProfile)
     water_depth = 100.0_rt;
     wave_height = 0.16_rt;
     wavenumber = 0.156_rt;
-    wavelength = 2.0_rt * static_cast<amrex::Real>(M_PI) / wavenumber;
+    wavelength = 2.0_rt * std::numbers::pi_v<amrex::Real> / wavenumber;
     zsl = 0.0_rt;
     x = 4.0_rt;
     z = 0.0_rt;
-    phase_offset = static_cast<amrex::Real>(M_PI);
+    phase_offset = std::numbers::pi_v<amrex::Real>;
     time = 2.7_rt;
     eta = 0.0_rt;
     u_w = 0.0_rt;
@@ -221,7 +222,7 @@ TEST_F(WaveTheoriesTest, StokesWavesVelocityComponents)
     constexpr amrex::Real wavenumber = 2.0_rt;
     constexpr amrex::Real water_depth = 0.376991_rt;
     constexpr amrex::Real wavelength =
-        2.0_rt * static_cast<amrex::Real>(M_PI) / wavenumber;
+        2.0_rt * std::numbers::pi_v<amrex::Real> / wavenumber;
     constexpr amrex::Real wave_height = 0.1_rt;
     constexpr amrex::Real zsl = 0.0_rt;
     constexpr amrex::Real x = 0.0_rt;
@@ -330,13 +331,13 @@ TEST_F(WaveTheoriesTest, StokesWaveLength)
             iter_max);
 
     const amrex::Real k_newton =
-        2.0_rt * static_cast<amrex::Real>(M_PI) / lambda;
+        2.0_rt * std::numbers::pi_v<amrex::Real> / lambda;
 
     // Compare with expected wavenumber from theory k = omega^2/g, where omega =
     // 2Pi/wave_period
     const amrex::Real k_theory =
-        (2.0_rt * static_cast<amrex::Real>(M_PI) / wave_period) *
-        (2.0_rt * static_cast<amrex::Real>(M_PI) / wave_period) / g;
+        (2.0_rt * std::numbers::pi_v<amrex::Real> / wave_period) *
+        (2.0_rt * std::numbers::pi_v<amrex::Real> / wave_period) / g;
 
     EXPECT_NEAR(
         k_newton, k_theory, std::numeric_limits<float>::epsilon() * 1.0e1_rt);
@@ -354,8 +355,8 @@ TEST_F(WaveTheoriesTest, StokesWaveLength)
 
     // Relation to check is Eq.(24) from course notes:
     // https://www.caee.utexas.edu/prof/kinnas/ce358/oenotes/kinnas_stokes11.pdf
-    amrex::Real k = 2.0_rt * static_cast<amrex::Real>(M_PI) / lambda;
-    const amrex::Real RHS1 = 2.0_rt * static_cast<amrex::Real>(M_PI) /
+    amrex::Real k = 2.0_rt * std::numbers::pi_v<amrex::Real> / lambda;
+    const amrex::Real RHS1 = 2.0_rt * std::numbers::pi_v<amrex::Real> /
                              (wave_period * std::sqrt(g * k));
 
     amrex::Real S = 1.0_rt / std::cosh(2.0_rt * k * water_depth);
@@ -385,8 +386,8 @@ TEST_F(WaveTheoriesTest, StokesWaveLength)
         wave_period, water_depth, wave_height, wave_order, g, tol_lambda,
         iter_max);
 
-    k = 2.0_rt * static_cast<amrex::Real>(M_PI) / lambda;
-    const amrex::Real RHS2 = 2.0_rt * static_cast<amrex::Real>(M_PI) /
+    k = 2.0_rt * std::numbers::pi_v<amrex::Real> / lambda;
+    const amrex::Real RHS2 = 2.0_rt * std::numbers::pi_v<amrex::Real> /
                              (wave_period * std::sqrt(g * k));
 
     S = 1.0_rt / std::cosh(2.0_rt * k * water_depth);

@@ -47,7 +47,7 @@ void required_parameters(JoukowskyData& meta, const utils::ActParser& pp)
     pp.getarr("rpm", meta.angular_velocity);
     // Convert from rpm to rad/s
     for (amrex::Real& i : meta.angular_velocity) {
-        i *= static_cast<amrex::Real>(M_PI) / 30.0_rt;
+        i *= std::numbers::pi_v<amrex::Real> / 30.0_rt;
     }
 }
 

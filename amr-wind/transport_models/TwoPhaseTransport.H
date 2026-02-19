@@ -1,6 +1,7 @@
 #ifndef TWOPHASETRANSPORT_H
 #define TWOPHASETRANSPORT_H
 
+#include <numbers>
 #include "amr-wind/physics/multiphase/MultiPhase.H"
 #include "amr-wind/transport_models/TransportModel.H"
 #include "AMReX_ParmParse.H"
@@ -184,10 +185,11 @@ public:
                             smooth_heaviside =
                                 0.5_rt *
                                 (1.0_rt + phi_arrs[nbx](i, j, k) / eps +
-                                 1.0_rt / static_cast<amrex::Real>(M_PI) *
+                                 1.0_rt / std::numbers::pi_v<amrex::Real> *
                                      std::sin(
                                          phi_arrs[nbx](i, j, k) *
-                                         static_cast<amrex::Real>(M_PI) / eps));
+                                         std::numbers::pi_v<amrex::Real> /
+                                         eps));
                         }
                         visc_arrs[nbx](i, j, k) =
                             mu1 * smooth_heaviside +
@@ -254,10 +256,11 @@ public:
                             smooth_heaviside =
                                 0.5_rt *
                                 (1.0_rt + phi_arrs[nbx](i, j, k) / eps +
-                                 1.0_rt / static_cast<amrex::Real>(M_PI) *
+                                 1.0_rt / std::numbers::pi_v<amrex::Real> *
                                      std::sin(
                                          phi_arrs[nbx](i, j, k) *
-                                         static_cast<amrex::Real>(M_PI) / eps));
+                                         std::numbers::pi_v<amrex::Real> /
+                                         eps));
                         }
                         visc_arrs[nbx](i, j, k) =
                             mu1 / Pr1 * smooth_heaviside +
@@ -355,10 +358,10 @@ public:
                         smooth_heaviside =
                             0.5_rt *
                             (1.0_rt + phi_arr(i, j, k) / eps +
-                             1.0_rt / static_cast<amrex::Real>(M_PI) *
+                             1.0_rt / std::numbers::pi_v<amrex::Real> *
                                  std::sin(
                                      phi_arr(i, j, k) *
-                                     static_cast<amrex::Real>(M_PI) / eps));
+                                     std::numbers::pi_v<amrex::Real> / eps));
                     }
                     beta(i, j, k) *= (1.0_rt - smooth_heaviside);
                 });

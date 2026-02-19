@@ -1,6 +1,7 @@
 #ifndef ScalarAdvection_H
 #define ScalarAdvection_H
 
+#include <numbers>
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/core/Field.H"
 #include "amr-wind/utilities/trig_ops.H"
@@ -69,8 +70,8 @@ private:
     amrex::Real m_y_width{0.01_rt};
 
     //! Wave numbers
-    amrex::Real m_x_wavenumber{16 * utils::pi()};
-    amrex::Real m_y_wavenumber{16 * utils::pi()};
+    amrex::Real m_x_wavenumber{16.0_rt * std::numbers::pi_v<amrex::Real>};
+    amrex::Real m_y_wavenumber{16.0_rt * std::numbers::pi_v<amrex::Real>};
 
     //! Initial wave/pulse shape
     std::string m_shape{"gaussian"};

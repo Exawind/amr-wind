@@ -1,8 +1,8 @@
+#include <numbers>
 #include "abloffshore_test_utils.H"
 #include "amr-wind/utilities/trig_ops.H"
 #include "aw_test_utils/iter_tools.H"
 #include "aw_test_utils/test_utils.H"
-
 #include "AMReX_Gpu.H"
 #include "AMReX_Random.H"
 #include "AMReX_REAL.H"
@@ -12,7 +12,6 @@
 #include "amr-wind/equation_systems/icns/source_terms/ABLForcing.H"
 #include "amr-wind/equation_systems/icns/source_terms/GeostrophicForcing.H"
 #include "amr-wind/equation_systems/icns/source_terms/BoussinesqBuoyancy.H"
-
 #include "amr-wind/physics/multiphase/MultiPhase.H"
 
 using namespace amrex::literals;
@@ -174,7 +173,7 @@ TEST_F(ABLOffshoreMeshTest, abl_forcing)
         const amrex::Array<amrex::Real, 5> coeff_golds{
             0.0_rt, 0.0_rt, 0.0_rt,
             -0.5_rt * std::cos(
-                          static_cast<amrex::Real>(M_PI) *
+                          std::numbers::pi_v<amrex::Real> *
                           (test_heights[3] - waterlev - ht0) / ht1) +
                 0.5_rt,
             1.0_rt};
@@ -274,7 +273,7 @@ TEST_F(ABLOffshoreMeshTest, geostrophic_forcing)
     const amrex::Array<amrex::Real, 5> coeff_golds{
         0.0_rt, 0.0_rt, 0.0_rt,
         -0.5_rt * std::cos(
-                      static_cast<amrex::Real>(M_PI) *
+                      std::numbers::pi_v<amrex::Real> *
                       (test_heights[3] - waterlev - ht0) / ht1) +
             0.5_rt,
         1.0_rt};

@@ -126,7 +126,7 @@ void GeostrophicForcing::operator()(
             amr_wind::interp::linear(m_time_table, m_speed_table, nph_time);
         const amrex::Real nph_dir = amr_wind::interp::linear_angle(
             m_time_table, m_direction_table, nph_time,
-            2.0_rt * static_cast<amrex::Real>(M_PI));
+            2.0_rt * std::numbers::pi_v<amrex::Real>);
 
         const amrex::Real target_u = nph_spd * std::cos(nph_dir);
         const amrex::Real target_v = nph_spd * std::sin(nph_dir);
@@ -149,7 +149,7 @@ void GeostrophicForcing::operator()(
                     // Ramp from 0 to 1 over second interval
                     wfac =
                         0.5_rt - 0.5_rt * std::cos(
-                                              static_cast<amrex::Real>(M_PI) *
+                                              std::numbers::pi_v<amrex::Real> *
                                               (z - wlev - wrht0) / wrht1);
                 }
             }

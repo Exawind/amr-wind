@@ -29,13 +29,15 @@ struct Forest
     {
         amrex::Real treelaimax = 0.0_rt;
         if (m_type_forest == 2) {
-            const amrex::Real treeZm = m_laimax_forest * m_height_forest;
+            const amrex::Real captured_height_forest = m_height_forest;
+            const amrex::Real treeZm = m_laimax_forest * captured_height_forest;
             const int n = 100;
             const amrex::Real int_0_fh = amr_wind::utils::trapz(
-                0, m_height_forest - constants::TIGHT_TOL, n,
+                0, captured_height_forest - constants::TIGHT_TOL, n,
                 [=](const amrex::Real x) noexcept {
                     const amrex::Real ratio =
-                        (m_height_forest - treeZm) / (m_height_forest - x);
+                        (captured_height_forest - treeZm) /
+                        (captured_height_forest - x);
                     const auto exponent = (x < treeZm) ? 6.0_rt : 0.5_rt;
                     return std::pow(ratio, exponent) *
                            std::exp(exponent * (1 - ratio));

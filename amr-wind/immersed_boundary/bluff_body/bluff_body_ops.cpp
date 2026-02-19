@@ -1,3 +1,4 @@
+#include <numbers>
 #include "amr-wind/immersed_boundary/bluff_body/bluff_body_ops.H"
 #include "amr-wind/core/MultiParser.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
@@ -60,13 +61,21 @@ void apply_mms_vel(CFDSim& sim)
 
                 if (phi_arrs[nbx](i, j, k) <= 0) {
                     varrs[nbx](i, j, k, 0) =
-                        u0 - std::cos(utils::pi() * (x - u0 * t)) *
-                                 std::sin(utils::pi() * (y - v0 * t)) *
-                                 std::exp(-2.0_rt * omega * t);
+                        u0 -
+                        std::cos(
+                            std::numbers::pi_v<amrex::Real> * (x - u0 * t)) *
+                            std::sin(
+                                std::numbers::pi_v<amrex::Real> *
+                                (y - v0 * t)) *
+                            std::exp(-2.0_rt * omega * t);
                     varrs[nbx](i, j, k, 1) =
-                        v0 + std::sin(utils::pi() * (x - u0 * t)) *
-                                 std::cos(utils::pi() * (y - v0 * t)) *
-                                 std::exp(-2.0_rt * omega * t);
+                        v0 +
+                        std::sin(
+                            std::numbers::pi_v<amrex::Real> * (x - u0 * t)) *
+                            std::cos(
+                                std::numbers::pi_v<amrex::Real> *
+                                (y - v0 * t)) *
+                            std::exp(-2.0_rt * omega * t);
                     varrs[nbx](i, j, k, 2) = 0.0_rt;
                 }
             });

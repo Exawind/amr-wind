@@ -136,7 +136,7 @@ void ChannelFlow::initialize_fields(
     const auto perturb_vel = m_perturb_vel;
     const auto perturb_fac = m_perturb_fac;
     const auto perturb_amp = perturb_fac * m_utau;
-    const auto pi = static_cast<amrex::Real>(M_PI);
+    const auto pi = std::numbers::pi_v<amrex::Real>;
     const auto& problo = geom.ProbLoArray();
     const auto& probhi = geom.ProbHiArray();
     const auto& dx = geom.CellSizeArray();

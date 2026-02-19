@@ -1,3 +1,4 @@
+#include <numbers>
 #include "aw_test_utils/MeshTest.H"
 #include "aw_test_utils/iter_tools.H"
 #include "aw_test_utils/test_utils.H"
@@ -66,7 +67,7 @@ void initialize_levelset(
                 2.0_rt * dx *
                 (1.0_rt + std::cos(
                               (static_cast<amrex::Real>(i) - 1.2_rt) /
-                              amr_wind::utils::pi()));
+                              std::numbers::pi_v<amrex::Real>));
         }
         // Subtract from local height
         lvs_arr(i, j, k) -= dx * (static_cast<amrex::Real>(k) + 0.5_rt);

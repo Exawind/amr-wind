@@ -173,7 +173,7 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
             auto& f = ddata.tip_correction;
             for (int i = 0; i < f.size(); ++i) {
                 const auto x = (i + 0.5_rt) * dx;
-                f[i] = 2.0_rt / static_cast<amrex::Real>(M_PI) *
+                f[i] = 2.0_rt / std::numbers::pi_v<amrex::Real> *
                        std::acos(
                            std::exp(
                                -0.5_rt * ddata.num_blades *
@@ -309,7 +309,7 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
 
         // equation 20
         const amrex::Real eq_20_denominator = amrex::max<amrex::Real>(
-            0.5_rt * static_cast<amrex::Real>(M_PI) * ddata.density *
+            0.5_rt * std::numbers::pi_v<amrex::Real> * ddata.density *
                 std::pow(ddata.radius(), 2.0_rt) * std::pow(U_ref, 3.0_rt),
             machine_eps);
 

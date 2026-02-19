@@ -52,7 +52,7 @@ option(AMR_WIND_ENABLE_W2A "Enable Waves2AMR library" OFF)
 option(AMR_WIND_ENABLE_FFT "Enable FFT solver for MAC projection" OFF)
 
 #Options for C++
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 

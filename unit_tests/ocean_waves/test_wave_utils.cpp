@@ -1,3 +1,4 @@
+#include <numbers>
 #include "aw_test_utils/MeshTest.H"
 #include "aw_test_utils/iter_tools.H"
 #include "aw_test_utils/test_utils.H"
@@ -130,8 +131,8 @@ TEST_F(WaveUtilsTest, ramp)
         amr_wind::ocean_waves::utils::ramp(ramp_period + 1.0_rt, ramp_period);
 
     const amrex::Real f_ramp_middle_gold =
-        0.5_rt - std::sin(static_cast<amrex::Real>(M_PI) * 0.5_rt) /
-                     static_cast<amrex::Real>(M_PI);
+        0.5_rt - std::sin(std::numbers::pi_v<amrex::Real> * 0.5_rt) /
+                     std::numbers::pi_v<amrex::Real>;
 
     EXPECT_NEAR(f_ramp_begin, 0.0_rt, tol);
     EXPECT_NEAR(f_ramp_middle, f_ramp_middle_gold, tol);

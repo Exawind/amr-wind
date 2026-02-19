@@ -45,11 +45,11 @@ void build_turbine(
         .SetRotorApexToHub(0.)
         .SetHubDiameter(wio_hub["diameter"].as<amrex::Real>())
         .SetConeAngle(
-            wio_hub["cone_angle"].as<amrex::Real>() * std::numbers::pi /
-            180.0_rt)
+            wio_hub["cone_angle"].as<amrex::Real>() *
+            std::numbers::pi_v<amrex::Real> / 180.0_rt)
         .SetShaftTiltAngle(
             wio_drivetrain["outer_shape"]["uptilt"].as<amrex::Real>() *
-            std::numbers::pi / 180.0_rt)
+            std::numbers::pi_v<amrex::Real> / 180.0_rt)
         .SetTowerAxisToRotorApex(
             wio_drivetrain["outer_shape"]["overhang"].as<amrex::Real>())
         .SetTowerTopToRotorApex(
@@ -100,7 +100,8 @@ void build_turbine(
             blade_twist["values"].as<std::vector<amrex::Real>>();
         for (auto i : std::views::iota(0U, twist_grid.size())) {
             blade_builder.AddRefAxisTwist(
-                twist_grid[i], -twist_values[i] * std::numbers::pi / 180.0_rt);
+                twist_grid[i],
+                -twist_values[i] * std::numbers::pi_v<amrex::Real> / 180.0_rt);
         }
 
         const auto inertia_matrix =
@@ -352,8 +353,8 @@ int build_aero(
     for (const auto& af : airfoil_io) {
         const auto s = af["spanwise_position"].as<amrex::Real>();
         const auto chord = af["chord"].as<amrex::Real>();
-        const auto twist =
-            af["twist"].as<amrex::Real>() * std::numbers::pi / 180.0_rt;
+        const auto twist = af["twist"].as<amrex::Real>() *
+                           std::numbers::pi_v<amrex::Real> / 180.0_rt;
         const auto section_offset_x = af["section_offset_x"].as<amrex::Real>();
         const auto section_offset_y = af["section_offset_y"].as<amrex::Real>();
         const auto aerodynamic_center =
@@ -361,7 +362,7 @@ int build_aero(
         auto aoa = af["polars"][0]["re_sets"][0]["cl"]["grid"]
                        .as<std::vector<amrex::Real>>();
         std::ranges::transform(aoa, std::begin(aoa), [](auto degrees) {
-            return degrees * std::numbers::pi / 180.0_rt;
+            return degrees * std::numbers::pi_v<amrex::Real> / 180.0_rt;
         });
         const auto cl = af["polars"][0]["re_sets"][0]["cl"]["values"]
                             .as<std::vector<amrex::Real>>();
