@@ -14,58 +14,58 @@ namespace {
 // perform a direct update using setVal for constant properties, but a copy from
 // laminar field to effective field for non-constant transport properties.
 
-template <
-    typename Transport>
+template <typename Transport>
 inline void laminar_visc_update(
     Field& evisc, Laminar<Transport>& /*unused*/, const Transport& transport)
-requires Transport::constant_properties {
+    requires Transport::constant_properties
+{
     evisc.setVal(transport.viscosity());
 }
 
-template <
-    typename Transport>
+template <typename Transport>
 inline void laminar_visc_update(
     Field& evisc, Laminar<Transport>& lam, const Transport& /*unused*/)
-requires (!Transport::constant_properties) {
+    requires(!Transport::constant_properties)
+{
     field_ops::copy(evisc, *lam.mu(), 0, 0, evisc.num_comp(), evisc.num_grow());
 }
 
-template <
-    typename Transport>
+template <typename Transport>
 inline void laminar_alpha_update(
     Field& evisc, Laminar<Transport>& /*unused*/, const Transport& transport)
-requires Transport::constant_properties {
+    requires Transport::constant_properties
+{
     evisc.setVal(transport.thermal_diffusivity());
 }
 
-template <
-    typename Transport>
+template <typename Transport>
 inline void laminar_alpha_update(
     Field& evisc, Laminar<Transport>& lam, const Transport& /*unused*/)
-requires (!Transport::constant_properties) {
+    requires(!Transport::constant_properties)
+{
     field_ops::copy(
         evisc, *lam.alpha(), 0, 0, evisc.num_comp(), evisc.num_grow());
 }
 
-template <
-    typename Transport>
+template <typename Transport>
 inline void laminar_scal_diff_update(
     Field& evisc,
     Laminar<Transport>& /*unused*/,
     const Transport& transport,
     const std::string& name)
-requires Transport::constant_properties {
+    requires Transport::constant_properties
+{
     evisc.setVal(transport.viscosity() / transport.laminar_schmidt(name));
 }
 
-template <
-    typename Transport>
+template <typename Transport>
 inline void laminar_scal_diff_update(
     Field& evisc,
     Laminar<Transport>& lam,
     const Transport& /*unused*/,
     const std::string& name)
-requires (!Transport::constant_properties) {
+    requires(!Transport::constant_properties)
+{
     field_ops::copy(
         evisc, *lam.scalar_diffusivity(name), 0, 0, evisc.num_comp(),
         evisc.num_grow());
