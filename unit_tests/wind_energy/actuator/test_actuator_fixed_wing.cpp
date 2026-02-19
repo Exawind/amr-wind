@@ -238,10 +238,10 @@ struct ComputeForceOp<::amr_wind_tests::FixedWing, ActSrcLine>
 template <>
 struct ProcessOutputsOp<::amr_wind_tests::FixedWing, ActSrcLine>
 {
-    ProcessOutputsOp(::amr_wind_tests::FixedWing::DataType&) {}
-    void operator()(::amr_wind_tests::FixedWing::DataType&) {}
-    void read_io_options(const utils::ActParser&) {}
-    void prepare_outputs(const std::string&) {}
+    ProcessOutputsOp(::amr_wind_tests::FixedWing::DataType& /**/) {}
+    void operator()(::amr_wind_tests::FixedWing::DataType& /**/) {}
+    void read_io_options(const utils::ActParser& /**/) {}
+    void prepare_outputs(const std::string& /**/) {}
     void write_outputs() {}
 };
 
