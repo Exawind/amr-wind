@@ -16,20 +16,18 @@ namespace turb_base_impl {
 // avoid creation of an intermediate scratch buffer.
 
 template <
-    typename Transport,
-    std::enable_if_t<Transport::constant_properties>* = nullptr>
+    typename Transport>
 inline void visc_update(Field& evisc, Field& tvisc, Transport& transport)
-{
+requires Transport::constant_properties {
     evisc.setVal(transport.viscosity());
     field_ops::saxpy(
         evisc, 1.0_rt, tvisc, 0, 0, evisc.num_comp(), evisc.num_grow());
 }
 
 template <
-    typename Transport,
-    std::enable_if_t<Transport::constant_properties>* = nullptr>
+    typename Transport>
 inline void alpha_update(Field& evisc, Field& tvisc, Transport& transport)
-{
+requires Transport::constant_properties {
     evisc.setVal(transport.thermal_diffusivity());
     field_ops::saxpy(
         evisc, 1.0_rt / transport.turbulent_prandtl(), tvisc, 0, 0,
@@ -37,11 +35,10 @@ inline void alpha_update(Field& evisc, Field& tvisc, Transport& transport)
 }
 
 template <
-    typename Transport,
-    std::enable_if_t<Transport::constant_properties>* = nullptr>
+    typename Transport>
 inline void scal_diff_update(
     Field& evisc, Field& tvisc, Transport& transport, const std::string& name)
-{
+requires Transport::constant_properties {
     evisc.setVal(transport.viscosity() / transport.laminar_schmidt(name));
     field_ops::saxpy(
         evisc, 1.0_rt / transport.turbulent_schmidt(name), tvisc, 0, 0,
@@ -49,10 +46,9 @@ inline void scal_diff_update(
 }
 
 template <
-    typename Transport,
-    std::enable_if_t<!Transport::constant_properties>* = nullptr>
+    typename Transport>
 inline void visc_update(Field& evisc, Field& tvisc, Transport& transport)
-{
+requires (!Transport::constant_properties) {
     auto lam_mu = transport.mu();
     field_ops::lincomb(
         evisc, 1.0_rt, *lam_mu, 0, 1.0_rt, tvisc, 0, 0, evisc.num_comp(),
@@ -60,10 +56,9 @@ inline void visc_update(Field& evisc, Field& tvisc, Transport& transport)
 }
 
 template <
-    typename Transport,
-    std::enable_if_t<!Transport::constant_properties>* = nullptr>
+    typename Transport>
 inline void alpha_update(Field& evisc, Field& tvisc, Transport& transport)
-{
+requires (!Transport::constant_properties) {
     auto lam_alpha = transport.alpha();
     field_ops::lincomb(
         evisc, 1.0_rt, *lam_alpha, 0, 1.0_rt / transport.turbulent_prandtl(),
@@ -71,11 +66,10 @@ inline void alpha_update(Field& evisc, Field& tvisc, Transport& transport)
 }
 
 template <
-    typename Transport,
-    std::enable_if_t<!Transport::constant_properties>* = nullptr>
+    typename Transport>
 inline void scal_diff_update(
     Field& evisc, Field& tvisc, Transport& transport, const std::string& name)
-{
+requires (!Transport::constant_properties) {
     auto lam_mu = transport.mu();
     field_ops::lincomb(
         evisc, 1.0_rt / transport.laminar_schmidt(name), *lam_mu, 0,

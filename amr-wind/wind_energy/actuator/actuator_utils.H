@@ -69,7 +69,8 @@ gaussian3d(const vs::Vector& dist, const vs::Vector& eps)
 AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
 gaussian1d(const amrex::Real& dist, const amrex::Real& eps)
 {
-    const amrex::Real fac = 0.5641895835477563_rt;
+    const amrex::Real fac =
+        std::numbers::inv_sqrtpi_v<amrex::Real>; // 0.5641895835477563_rt;
     if (std::abs(dist / eps) >= 16.0_rt) {
         return 0.0_rt;
     }
