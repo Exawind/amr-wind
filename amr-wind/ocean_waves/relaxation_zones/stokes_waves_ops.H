@@ -132,8 +132,8 @@ struct InitDataOp<StokesWaves>
         amrex::ParallelFor(
             velocity(level), amrex::IntVect(3),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                const amrex::Real x = problo[0] + (i + 0.5_rt) * dx[0];
-                const amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
+                const amrex::Real x = problo[0] + ((i + 0.5_rt) * dx[0]);
+                const amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);
 
                 // Wave profile
                 amrex::Real eta_w{0.0_rt}, u_w{0.0_rt}, v_w{0.0_rt},
@@ -158,7 +158,7 @@ struct InitDataOp<StokesWaves>
 
                 const amrex::Real phi = local_profile[3] - z;
                 const amrex::Real cell_length_2D =
-                    std::sqrt(dx[0] * dx[0] + dx[2] * dx[2]);
+                    std::sqrt((dx[0] * dx[0]) + (dx[2] * dx[2]));
                 if (phi + cell_length_2D >= 0) {
                     vel[nbx](i, j, k, 0) = local_profile[0];
                     vel[nbx](i, j, k, 1) = local_profile[1];
@@ -208,8 +208,8 @@ struct UpdateTargetFieldsOp<StokesWaves>
                 ow_velocity(lev), amrex::IntVect(3),
                 [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                     const amrex::Real x = amrex::max<amrex::Real>(
-                        problo[0], problo[0] + (i + 0.5_rt) * dx[0]);
-                    const amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
+                        problo[0], problo[0] + ((i + 0.5_rt) * dx[0]));
+                    const amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);
 
                     amrex::Real eta{0.0_rt}, u_w{0.0_rt}, v_w{0.0_rt},
                         w_w{0.0_rt};
@@ -221,7 +221,7 @@ struct UpdateTargetFieldsOp<StokesWaves>
 
                     phi[nbx](i, j, k) = eta - z;
                     const amrex::Real cell_length_2D =
-                        std::sqrt(dx[0] * dx[0] + dx[2] * dx[2]);
+                        std::sqrt((dx[0] * dx[0]) + (dx[2] * dx[2]));
                     if (phi[nbx](i, j, k) + cell_length_2D >= 0) {
                         // Wave velocity within a cell of interface
                         vel[nbx](i, j, k, 0) = u_w;

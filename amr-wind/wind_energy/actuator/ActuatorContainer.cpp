@@ -252,7 +252,7 @@ void ActuatorContainer::populate_field_buffers()
                 const auto idx = offsets[iproc] + pp.idata(0);
 
                 for (int n = 0; n < NumPStructReal; ++n) {
-                    buffer_pointer[idx * NumPStructReal + n] = pp.rdata(n);
+                    buffer_pointer[(idx * NumPStructReal) + n] = pp.rdata(n);
                 }
             });
         }
@@ -274,10 +274,10 @@ void ActuatorContainer::populate_field_buffers()
         const int ioff = m_proc_offsets[amrex::ParallelDescriptor::MyProc()];
         for (int i = 0; i < npts; ++i) {
             for (int j = 0; j < AMREX_SPACEDIM; ++j) {
-                vel_arr[i][j] = buff_host[(ioff + i) * NumPStructReal + j];
+                vel_arr[i][j] = buff_host[((ioff + i) * NumPStructReal) + j];
             }
             den_arr[i] =
-                buff_host[(ioff + i) * NumPStructReal + AMREX_SPACEDIM];
+                buff_host[((ioff + i) * NumPStructReal) + AMREX_SPACEDIM];
         }
     }
 }
@@ -336,14 +336,14 @@ void ActuatorContainer::interpolate_fields(
                 // velocity
                 for (int ic = 0; ic < AMREX_SPACEDIM; ++ic) {
                     pp.rdata(ic) =
-                        wx_lo * wy_lo * wz_lo * varr(i, j, k, ic) +
-                        wx_lo * wy_lo * wz_hi * varr(i, j, k + 1, ic) +
-                        wx_lo * wy_hi * wz_lo * varr(i, j + 1, k, ic) +
-                        wx_lo * wy_hi * wz_hi * varr(i, j + 1, k + 1, ic) +
-                        wx_hi * wy_lo * wz_lo * varr(i + 1, j, k, ic) +
-                        wx_hi * wy_lo * wz_hi * varr(i + 1, j, k + 1, ic) +
-                        wx_hi * wy_hi * wz_lo * varr(i + 1, j + 1, k, ic) +
-                        wx_hi * wy_hi * wz_hi * varr(i + 1, j + 1, k + 1, ic);
+                        (wx_lo * wy_lo * wz_lo * varr(i, j, k, ic)) +
+                        (wx_lo * wy_lo * wz_hi * varr(i, j, k + 1, ic)) +
+                        (wx_lo * wy_hi * wz_lo * varr(i, j + 1, k, ic)) +
+                        (wx_lo * wy_hi * wz_hi * varr(i, j + 1, k + 1, ic)) +
+                        (wx_hi * wy_lo * wz_lo * varr(i + 1, j, k, ic)) +
+                        (wx_hi * wy_lo * wz_hi * varr(i + 1, j, k + 1, ic)) +
+                        (wx_hi * wy_hi * wz_lo * varr(i + 1, j + 1, k, ic)) +
+                        (wx_hi * wy_hi * wz_hi * varr(i + 1, j + 1, k + 1, ic));
 
                     // Reset position vectors so that the particles return back
                     // to the MPI ranks with the turbines upon redistribution
@@ -352,14 +352,14 @@ void ActuatorContainer::interpolate_fields(
 
                 // density
                 pp.rdata(AMREX_SPACEDIM) =
-                    wx_lo * wy_lo * wz_lo * darr(i, j, k) +
-                    wx_lo * wy_lo * wz_hi * darr(i, j, k + 1) +
-                    wx_lo * wy_hi * wz_lo * darr(i, j + 1, k) +
-                    wx_lo * wy_hi * wz_hi * darr(i, j + 1, k + 1) +
-                    wx_hi * wy_lo * wz_lo * darr(i + 1, j, k) +
-                    wx_hi * wy_lo * wz_hi * darr(i + 1, j, k + 1) +
-                    wx_hi * wy_hi * wz_lo * darr(i + 1, j + 1, k) +
-                    wx_hi * wy_hi * wz_hi * darr(i + 1, j + 1, k + 1);
+                    (wx_lo * wy_lo * wz_lo * darr(i, j, k)) +
+                    (wx_lo * wy_lo * wz_hi * darr(i, j, k + 1)) +
+                    (wx_lo * wy_hi * wz_lo * darr(i, j + 1, k)) +
+                    (wx_lo * wy_hi * wz_hi * darr(i, j + 1, k + 1)) +
+                    (wx_hi * wy_lo * wz_lo * darr(i + 1, j, k)) +
+                    (wx_hi * wy_lo * wz_hi * darr(i + 1, j, k + 1)) +
+                    (wx_hi * wy_hi * wz_lo * darr(i + 1, j + 1, k)) +
+                    (wx_hi * wy_hi * wz_hi * darr(i + 1, j + 1, k + 1));
             });
         }
     }
@@ -402,9 +402,12 @@ void ActuatorContainer::compute_local_coordinates()
             const int* lo = bx.loVect();
 
             auto& pvec = m_proc_pos[iproc];
-            pvec.x() = geom.ProbLo()[0] + (lo[0] + 0.5_rt) * geom.CellSize()[0];
-            pvec.y() = geom.ProbLo()[1] + (lo[1] + 0.5_rt) * geom.CellSize()[1];
-            pvec.z() = geom.ProbLo()[2] + (lo[2] + 0.5_rt) * geom.CellSize()[2];
+            pvec.x() =
+                geom.ProbLo()[0] + ((lo[0] + 0.5_rt) * geom.CellSize()[0]);
+            pvec.y() =
+                geom.ProbLo()[1] + ((lo[1] + 0.5_rt) * geom.CellSize()[1]);
+            pvec.z() =
+                geom.ProbLo()[2] + ((lo[2] + 0.5_rt) * geom.CellSize()[2]);
 
             // Indicate that we have found a point and it is safe to exit the
             // loop

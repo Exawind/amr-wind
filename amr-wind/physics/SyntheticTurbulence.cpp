@@ -26,8 +26,8 @@ struct LinearShearOp
     AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
     operator()(amrex::Real ht) const
     {
-        amrex::Real vel =
-            m_vstart + (m_vstop - m_vstart) * (ht - m_hmin) / (m_hmax - m_hmin);
+        amrex::Real vel = m_vstart + ((m_vstop - m_vstart) * (ht - m_hmin) /
+                                      (m_hmax - m_hmin));
         return amrex::max(m_vstart, amrex::min(vel, m_vstop));
     }
 };
@@ -230,8 +230,8 @@ void get_lr_indices(
     int& il,
     int& ir)
 {
-    const amrex::Real xbox =
-        xin - std::floor(xin / turb_grid.box_len[dir]) * turb_grid.box_len[dir];
+    const amrex::Real xbox = xin - (std::floor(xin / turb_grid.box_len[dir]) *
+                                    turb_grid.box_len[dir]);
 
     il = static_cast<int>(std::floor(xbox / turb_grid.dx[dir]));
     ir = il + 1;
@@ -262,8 +262,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void get_lr_indices(
     amrex::Real& rxl,
     amrex::Real& rxr)
 {
-    const amrex::Real xbox =
-        xin - std::floor(xin / turb_grid.box_len[dir]) * turb_grid.box_len[dir];
+    const amrex::Real xbox = xin - (std::floor(xin / turb_grid.box_len[dir]) *
+                                    turb_grid.box_len[dir]);
 
     il = static_cast<int>(std::floor(xbox / turb_grid.dx[dir]));
     ir = il + 1;
@@ -271,7 +271,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void get_lr_indices(
         ir -= turb_grid.box_dims[dir];
     }
 
-    const amrex::Real xfrac = xbox - turb_grid.dx[dir] * il;
+    const amrex::Real xfrac = xbox - (turb_grid.dx[dir] * il);
     rxr = xfrac / turb_grid.dx[dir];
     rxl = (1.0_rt - rxr);
 }
@@ -287,8 +287,8 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE bool find_point_in_box(
     const SynthTurbDeviceData& t_grid, const vs::Vector& pt, InterpWeights& wt)
 {
     // Get y and z w.r.t. the lower corner of the grid
-    const amrex::Real yy = pt[1] + t_grid.box_len[1] * 0.5_rt;
-    const amrex::Real zz = pt[2] + t_grid.box_len[2] * 0.5_rt;
+    const amrex::Real yy = pt[1] + (t_grid.box_len[1] * 0.5_rt);
+    const amrex::Real zz = pt[2] + (t_grid.box_len[2] * 0.5_rt);
     bool inBox =
         ((yy >= 0.0_rt) && (yy <= t_grid.box_len[1]) && (zz >= 0.0_rt) &&
          (zz <= t_grid.box_len[2]));
@@ -310,42 +310,42 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE void interp_perturb_vel(
     const int nynz = t_grid.box_dims[1] * t_grid.box_dims[2];
     // Indices of the 2-D cell that contains the sampling point
     amrex::Array<int, 4> qidx = {
-        wt.jl * nz + wt.kl, wt.jr * nz + wt.kl, wt.jr * nz + wt.kr,
-        wt.jl * nz + wt.kr};
+        (wt.jl * nz) + wt.kl, (wt.jr * nz) + wt.kl, (wt.jr * nz) + wt.kr,
+        (wt.jl * nz) + wt.kr};
 
     vs::Vector vel_l, vel_r;
 
     // Left quad (t = t)
-    vel_l[0] = wt.yl * wt.zl * t_grid.uvel[qidx[0]] +
-               wt.yr * wt.zl * t_grid.uvel[qidx[1]] +
-               wt.yr * wt.zr * t_grid.uvel[qidx[2]] +
-               wt.yl * wt.zr * t_grid.uvel[qidx[3]];
-    vel_l[1] = wt.yl * wt.zl * t_grid.vvel[qidx[0]] +
-               wt.yr * wt.zl * t_grid.vvel[qidx[1]] +
-               wt.yr * wt.zr * t_grid.vvel[qidx[2]] +
-               wt.yl * wt.zr * t_grid.vvel[qidx[3]];
-    vel_l[2] = wt.yl * wt.zl * t_grid.wvel[qidx[0]] +
-               wt.yr * wt.zl * t_grid.wvel[qidx[1]] +
-               wt.yr * wt.zr * t_grid.wvel[qidx[2]] +
-               wt.yl * wt.zr * t_grid.wvel[qidx[3]];
+    vel_l[0] = (wt.yl * wt.zl * t_grid.uvel[qidx[0]]) +
+               (wt.yr * wt.zl * t_grid.uvel[qidx[1]]) +
+               (wt.yr * wt.zr * t_grid.uvel[qidx[2]]) +
+               (wt.yl * wt.zr * t_grid.uvel[qidx[3]]);
+    vel_l[1] = (wt.yl * wt.zl * t_grid.vvel[qidx[0]]) +
+               (wt.yr * wt.zl * t_grid.vvel[qidx[1]]) +
+               (wt.yr * wt.zr * t_grid.vvel[qidx[2]]) +
+               (wt.yl * wt.zr * t_grid.vvel[qidx[3]]);
+    vel_l[2] = (wt.yl * wt.zl * t_grid.wvel[qidx[0]]) +
+               (wt.yr * wt.zl * t_grid.wvel[qidx[1]]) +
+               (wt.yr * wt.zr * t_grid.wvel[qidx[2]]) +
+               (wt.yl * wt.zr * t_grid.wvel[qidx[3]]);
 
     for (int& i : qidx) {
         i += nynz;
     }
 
     // Right quad (t = t+delta_t)
-    vel_r[0] = wt.yl * wt.zl * t_grid.uvel[qidx[0]] +
-               wt.yr * wt.zl * t_grid.uvel[qidx[1]] +
-               wt.yr * wt.zr * t_grid.uvel[qidx[2]] +
-               wt.yl * wt.zr * t_grid.uvel[qidx[3]];
-    vel_r[1] = wt.yl * wt.zl * t_grid.vvel[qidx[0]] +
-               wt.yr * wt.zl * t_grid.vvel[qidx[1]] +
-               wt.yr * wt.zr * t_grid.vvel[qidx[2]] +
-               wt.yl * wt.zr * t_grid.vvel[qidx[3]];
-    vel_r[2] = wt.yl * wt.zl * t_grid.wvel[qidx[0]] +
-               wt.yr * wt.zl * t_grid.wvel[qidx[1]] +
-               wt.yr * wt.zr * t_grid.wvel[qidx[2]] +
-               wt.yl * wt.zr * t_grid.wvel[qidx[3]];
+    vel_r[0] = (wt.yl * wt.zl * t_grid.uvel[qidx[0]]) +
+               (wt.yr * wt.zl * t_grid.uvel[qidx[1]]) +
+               (wt.yr * wt.zr * t_grid.uvel[qidx[2]]) +
+               (wt.yl * wt.zr * t_grid.uvel[qidx[3]]);
+    vel_r[1] = (wt.yl * wt.zl * t_grid.vvel[qidx[0]]) +
+               (wt.yr * wt.zl * t_grid.vvel[qidx[1]]) +
+               (wt.yr * wt.zr * t_grid.vvel[qidx[2]]) +
+               (wt.yl * wt.zr * t_grid.vvel[qidx[3]]);
+    vel_r[2] = (wt.yl * wt.zl * t_grid.wvel[qidx[0]]) +
+               (wt.yr * wt.zl * t_grid.wvel[qidx[1]]) +
+               (wt.yr * wt.zr * t_grid.wvel[qidx[2]]) +
+               (wt.yl * wt.zr * t_grid.wvel[qidx[3]]);
 
     // Interpolation in time
     vel = wt.xl * vel_l + wt.xr * vel_r;
@@ -590,9 +590,9 @@ void SyntheticTurbulence::update_impl(
                 vs::Vector vel_g;
 
                 vs::Vector xyz_g{
-                    problo[0] + (i + 0.5_rt) * dx,
-                    problo[1] + (j + 0.5_rt) * dy,
-                    problo[2] + (k + 0.5_rt) * dz};
+                    problo[0] + ((i + 0.5_rt) * dx),
+                    problo[1] + ((j + 0.5_rt) * dy),
+                    problo[2] + ((k + 0.5_rt) * dz)};
 
                 // Transform position vector from global inertial
                 // reference frame to local reference frame attached to
@@ -621,7 +621,7 @@ void SyntheticTurbulence::update_impl(
                     const amrex::Real v_mag = vs::mag(vel_g);
                     // (V_n + 1/2 v_n) in Eq. 10
                     const amrex::Real v_mag_total =
-                        (velfunc(xyz_g[sdir]) + 0.5_rt * v_mag);
+                        (velfunc(xyz_g[sdir]) + (0.5_rt * v_mag));
 
                     // Smearing factor (see Eq. 11). The normal direction to
                     // the grid is the x-axis of the local reference frame

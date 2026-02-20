@@ -62,12 +62,12 @@ void VortexPatchScalarVel::initialize_fields(
 
     amrex::ParallelFor(
         velocity, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-            const amrex::Real x = problo[0] + (i + 0.5_rt) * dx[0];
-            const amrex::Real y = problo[1] + (j + 0.5_rt) * dx[1];
-            const amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
-            const amrex::Real xf = problo[0] + i * dx[0];
-            const amrex::Real yf = problo[1] + j * dx[1];
-            const amrex::Real zf = problo[2] + k * dx[2];
+            const amrex::Real x = problo[0] + ((i + 0.5_rt) * dx[0]);
+            const amrex::Real y = problo[1] + ((j + 0.5_rt) * dx[1]);
+            const amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);
+            const amrex::Real xf = problo[0] + (i * dx[0]);
+            const amrex::Real yf = problo[1] + (j * dx[1]);
+            const amrex::Real zf = problo[2] + (k * dx[2]);
             uf_arrs[nbx](i, j, k) =
                 2.0_rt * std::sin(std::numbers::pi_v<amrex::Real> * xf) *
                 std::sin(std::numbers::pi_v<amrex::Real> * xf) *
@@ -89,8 +89,8 @@ void VortexPatchScalarVel::initialize_fields(
 
             phi_arrs[nbx](i, j, k) =
                 radius - std::sqrt(
-                             (x - xc) * (x - xc) + (y - yc) * (y - yc) +
-                             (z - zc) * (z - zc));
+                             ((x - xc) * (x - xc)) + ((y - yc) * (y - yc)) +
+                             ((z - zc) * (z - zc)));
             amrex::Real smooth_heaviside;
             if (phi_arrs[nbx](i, j, k) > eps) {
                 smooth_heaviside = 1.0_rt;
@@ -104,8 +104,8 @@ void VortexPatchScalarVel::initialize_fields(
                                       phi_arrs[nbx](i, j, k) *
                                       std::numbers::pi_v<amrex::Real> / eps));
             }
-            rho_arrs[nbx](i, j, k) =
-                rho1 * smooth_heaviside + rho2 * (1.0_rt - smooth_heaviside);
+            rho_arrs[nbx](i, j, k) = (rho1 * smooth_heaviside) +
+                                     (rho2 * (1.0_rt - smooth_heaviside));
 
             // Smoothed step function for u velocity, which is treated as a
             // scalar, much more smoothed than levelset and not based on the
@@ -131,7 +131,7 @@ void VortexPatchScalarVel::initialize_fields(
 void VortexPatchScalarVel::pre_advance_work()
 {
     const auto& time =
-        m_sim.time().current_time() + 0.5_rt * m_sim.time().delta_t();
+        m_sim.time().current_time() + (0.5_rt * m_sim.time().delta_t());
 
     const int nlevels = m_sim.repo().num_active_levels();
     const auto& geom = m_sim.mesh().Geom();
@@ -150,12 +150,12 @@ void VortexPatchScalarVel::pre_advance_work()
         amrex::ParallelFor(
             m_velocity(lev), amrex::IntVect(1),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                const amrex::Real x = problo[0] + (i + 0.5_rt) * dx[0];
-                const amrex::Real y = problo[1] + (j + 0.5_rt) * dx[1];
-                const amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
-                const amrex::Real xf = problo[0] + i * dx[0];
-                const amrex::Real yf = problo[1] + j * dx[1];
-                const amrex::Real zf = problo[2] + k * dx[2];
+                const amrex::Real x = problo[0] + ((i + 0.5_rt) * dx[0]);
+                const amrex::Real y = problo[1] + ((j + 0.5_rt) * dx[1]);
+                const amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);
+                const amrex::Real xf = problo[0] + (i * dx[0]);
+                const amrex::Real yf = problo[1] + (j * dx[1]);
+                const amrex::Real zf = problo[2] + (k * dx[2]);
                 uf_arrs[nbx](i, j, k) =
                     2.0_rt * std::sin(std::numbers::pi_v<amrex::Real> * xf) *
                     std::sin(std::numbers::pi_v<amrex::Real> * xf) *

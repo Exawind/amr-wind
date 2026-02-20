@@ -63,9 +63,9 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
     amrex::ParallelFor(
         levelset, amrex::IntVect(1),
         [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-            const amrex::Real x = problo[0] + (i + 0.5_rt) * dx[0];
-            const amrex::Real y = problo[1] + (j + 0.5_rt) * dx[1];
-            const amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
+            const amrex::Real x = problo[0] + ((i + 0.5_rt) * dx[0]);
+            const amrex::Real y = problo[1] + ((j + 0.5_rt) * dx[1]);
+            const amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);
 
             uf_arrs[nbx](i, j, k) =
                 2.0_rt * std::numbers::pi_v<amrex::Real> / TT * (0.5_rt - y);
@@ -81,8 +81,8 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
 
             // First define the sphere
             const amrex::Real r = std::sqrt(
-                (x - xc) * (x - xc) + (y - yc) * (y - yc) +
-                (z - zc) * (z - zc));
+                ((x - xc) * (x - xc)) + ((y - yc) * (y - yc)) +
+                ((z - zc) * (z - zc)));
             phi_arrs[nbx](i, j, k) = radius - r;
 
             // Then the slot
@@ -97,7 +97,7 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
 
             // Additional distance if past sphere (distance to corners)
             const amrex::Real reduced_radius =
-                std::sqrt(radius * radius - hwidth * hwidth);
+                std::sqrt((radius * radius) - (hwidth * hwidth));
             const amrex::Real r_2D =
                 std::sqrt(std::pow(y - yc, 2.0_rt) + std::pow(z - zc, 2.0_rt));
             const amrex::Real sd_r = -std::sqrt(
@@ -135,8 +135,8 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
                                       phi_arrs[nbx](i, j, k) *
                                       std::numbers::pi_v<amrex::Real> / eps));
             }
-            rho_arrs[nbx](i, j, k) =
-                rho1 * smooth_heaviside + rho2 * (1.0_rt - smooth_heaviside);
+            rho_arrs[nbx](i, j, k) = (rho1 * smooth_heaviside) +
+                                     (rho2 * (1.0_rt - smooth_heaviside));
         });
     amrex::Gpu::streamSynchronize();
 
@@ -165,8 +165,8 @@ void ZalesakDisk::pre_advance_work()
         amrex::ParallelFor(
             m_velocity(lev), amrex::IntVect(1),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                const amrex::Real x = problo[0] + (i + 0.5_rt) * dx[0];
-                const amrex::Real y = problo[1] + (j + 0.5_rt) * dx[1];
+                const amrex::Real x = problo[0] + ((i + 0.5_rt) * dx[0]);
+                const amrex::Real y = problo[1] + ((j + 0.5_rt) * dx[1]);
 
                 uf_arrs[nbx](i, j, k) = 2.0_rt *
                                         std::numbers::pi_v<amrex::Real> / TT *
@@ -198,8 +198,8 @@ void ZalesakDisk::post_advance_work()
         amrex::ParallelFor(
             m_velocity(lev),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                const amrex::Real x = problo[0] + (i + 0.5_rt) * dx[0];
-                const amrex::Real y = problo[1] + (j + 0.5_rt) * dx[1];
+                const amrex::Real x = problo[0] + ((i + 0.5_rt) * dx[0]);
+                const amrex::Real y = problo[1] + ((j + 0.5_rt) * dx[1]);
 
                 vel_arrs[nbx](i, j, k, 0) = 2.0_rt *
                                             std::numbers::pi_v<amrex::Real> /

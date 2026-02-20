@@ -77,7 +77,7 @@ struct ComputeRHSOp<Levelset, Scheme>
                 field(lev),
                 [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                     phi_arrs[nbx](i, j, k) = phi_o_arrs[nbx](i, j, k) +
-                                             dt * ddt_o_arrs[nbx](i, j, k);
+                                             (dt * ddt_o_arrs[nbx](i, j, k));
                     // Defer n+1/2 update to the time-stepping algorithm
                     // phi_nph(i, j, k) = 0.5_rt * (phi(i, j, k) + phi_o(i, j,
                     // k));
@@ -108,8 +108,8 @@ struct ComputeRHSOp<Levelset, Scheme>
                 [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                     phi_arrs[nbx](i, j, k) =
                         phi_o_arrs[nbx](i, j, k) +
-                        dt * 0.5_rt *
-                            (ddt_o_arrs[nbx](i, j, k) + ddt_arrs[nbx](i, j, k));
+                        (dt * 0.5_rt *
+                         (ddt_o_arrs[nbx](i, j, k) + ddt_arrs[nbx](i, j, k)));
                     // Defer n+1/2 update to time-stepping algorithm
                     // phi_nph(i, j, k) =
                     //     0.5_rt * (phi(i, j, k) + phi_o(i, j, k));

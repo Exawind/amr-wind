@@ -113,11 +113,11 @@ public:
     //! Number of probe locations in a cone
     long num_points_cone() const
     {
-        return m_npts + m_ntheta * m_npts * (m_nphi - 1);
+        return m_npts + (m_ntheta * m_npts * (m_nphi - 1));
     }
 
     //! Number of probe locations in a spherical cap
-    long num_points_quad() const { return 1 + m_ntheta * (m_nphi - 1); }
+    long num_points_quad() const { return 1 + (m_ntheta * (m_nphi - 1)); }
 
     static void line_average(
         const std::vector<amrex::Real>& weights,

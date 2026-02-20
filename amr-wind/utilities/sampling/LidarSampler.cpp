@@ -81,11 +81,11 @@ bool LidarSampler::update_sampling_locations()
         ::amr_wind::interp::linear(m_time_table, m_elevation_table, time));
 
     // Coordinate transform spherical to cartesian
-    m_end[0] = m_start[0] + m_length * std::cos(current_azimuth) *
-                                std::sin(current_elevation);
-    m_end[1] = m_start[1] + m_length * std::sin(current_azimuth) *
-                                std::sin(current_elevation);
-    m_end[2] = m_start[2] + m_length * std::cos(current_elevation);
+    m_end[0] = m_start[0] + (m_length * std::cos(current_azimuth) *
+                             std::sin(current_elevation));
+    m_end[1] = m_start[1] + (m_length * std::sin(current_azimuth) *
+                             std::sin(current_elevation));
+    m_end[2] = m_start[2] + (m_length * std::cos(current_elevation));
 
     return true;
 }

@@ -39,15 +39,15 @@ void RainDrop::initialize_fields(int level, const amrex::Geometry& geom)
     const auto& phi_arrs = levelset.arrays();
     amrex::ParallelFor(
         velocity, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-            const amrex::Real x = problo[0] + (i + 0.5_rt) * dx[0];
-            const amrex::Real y = problo[1] + (j + 0.5_rt) * dx[1];
-            const amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
+            const amrex::Real x = problo[0] + ((i + 0.5_rt) * dx[0]);
+            const amrex::Real y = problo[1] + ((j + 0.5_rt) * dx[1]);
+            const amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);
 
             // Calculate level-set
             phi_arrs[nbx](i, j, k) =
                 radius - std::sqrt(
-                             (x - xc) * (x - xc) + (y - yc) * (y - yc) +
-                             (z - zc) * (z - zc));
+                             ((x - xc) * (x - xc)) + ((y - yc) * (y - yc)) +
+                             ((z - zc) * (z - zc)));
         });
     amrex::Gpu::streamSynchronize();
 
@@ -95,7 +95,7 @@ void RainDrop::initialize_fields(int level, const amrex::Geometry& geom)
                                    std::numbers::pi_v<amrex::Real> / eps));
                 }
             }
-            const amrex::Real dens = (1.0_rt - vof) * rhog + vof * rhol;
+            const amrex::Real dens = ((1.0_rt - vof) * rhog) + (vof * rhol);
             vel_arrs[nbx](i, j, k, 0) = vof * rhol * vptr[0] / dens;
             vel_arrs[nbx](i, j, k, 1) = vof * rhol * vptr[1] / dens;
             vel_arrs[nbx](i, j, k, 2) = vof * rhol * vptr[2] / dens;

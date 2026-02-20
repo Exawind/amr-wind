@@ -137,12 +137,12 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(
             mu_turb(lev),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 amrex::Real gko =
-                    (gradK_arrs[nbx](i, j, k, 0) *
-                         gradOmega_arrs[nbx](i, j, k, 0) +
-                     gradK_arrs[nbx](i, j, k, 1) *
-                         gradOmega_arrs[nbx](i, j, k, 1) +
-                     gradK_arrs[nbx](i, j, k, 2) *
-                         gradOmega_arrs[nbx](i, j, k, 2));
+                    ((gradK_arrs[nbx](i, j, k, 0) *
+                      gradOmega_arrs[nbx](i, j, k, 0)) +
+                     (gradK_arrs[nbx](i, j, k, 1) *
+                      gradOmega_arrs[nbx](i, j, k, 1)) +
+                     (gradK_arrs[nbx](i, j, k, 2) *
+                      gradOmega_arrs[nbx](i, j, k, 2)));
 
                 amrex::Real cdkomega = amrex::max<amrex::Real>(
                     std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt,
@@ -171,8 +171,8 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(
                     amrex::max<amrex::Real>(tmp2, tmp3), tmp1);
                 amrex::Real tmp_f1 = std::tanh(arg1 * arg1 * arg1 * arg1);
 
-                amrex::Real alpha = tmp_f1 * (alpha1 - alpha2) + alpha2;
-                amrex::Real beta = tmp_f1 * (beta1 - beta2) + beta2;
+                amrex::Real alpha = (tmp_f1 * (alpha1 - alpha2)) + alpha2;
+                amrex::Real beta = (tmp_f1 * (beta1 - beta2)) + beta2;
 
                 amrex::Real arg2 = amrex::max<amrex::Real>(2.0_rt * tmp2, tmp3);
                 amrex::Real f2 = std::tanh(arg2 * arg2);
@@ -184,9 +184,9 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(
 
                 // Buoyancy term
                 amrex::Real tmpB =
-                    -(gravity[0] * gradrho_arrs[nbx](i, j, k, 0) +
-                      gravity[1] * gradrho_arrs[nbx](i, j, k, 1) +
-                      gravity[2] * gradrho_arrs[nbx](i, j, k, 2));
+                    -((gravity[0] * gradrho_arrs[nbx](i, j, k, 0)) +
+                      (gravity[1] * gradrho_arrs[nbx](i, j, k, 1)) +
+                      (gravity[2] * gradrho_arrs[nbx](i, j, k, 2)));
 
                 buoy_arrs[nbx](i, j, k) =
                     Bfac * tmpB *
@@ -204,10 +204,10 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(
                 const amrex::Real diss_amb =
                     beta_star * rho_arrs[nbx](i, j, k) * sdr_amb * tke_amb;
 
-                diss_arrs[nbx](i, j, k) = -beta_star * rho_arrs[nbx](i, j, k) *
-                                              tke_arrs[nbx](i, j, k) *
-                                              sdr_arrs[nbx](i, j, k) +
-                                          diss_amb;
+                diss_arrs[nbx](i, j, k) =
+                    (-beta_star * rho_arrs[nbx](i, j, k) *
+                     tke_arrs[nbx](i, j, k) * sdr_arrs[nbx](i, j, k)) +
+                    diss_amb;
 
                 tke_lhs_arrs[nbx](i, j, k) = beta_star *
                                              rho_arrs[nbx](i, j, k) *
@@ -270,8 +270,8 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(
                         production_omega + cross_diffusion;
 
                     sdr_diss_arrs[nbx](i, j, k) =
-                        -rho_arrs[nbx](i, j, k) * beta *
-                            sdr_arrs[nbx](i, j, k) * sdr_arrs[nbx](i, j, k) +
+                        (-rho_arrs[nbx](i, j, k) * beta *
+                         sdr_arrs[nbx](i, j, k) * sdr_arrs[nbx](i, j, k)) +
                         sdr_diss_amb;
 
                     sdr_lhs_arrs[nbx](i, j, k) =
@@ -309,9 +309,9 @@ void KOmegaSST<Transport>::update_scalar_diff(
                 [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                     deff_arrs[nbx](i, j, k) =
                         lam_mu_arrs[nbx](i, j, k) +
-                        (f1_arrs[nbx](i, j, k) * (sigma_k1 - sigma_k2) +
-                         sigma_k2) *
-                            mu_arrs[nbx](i, j, k);
+                        ((f1_arrs[nbx](i, j, k) * (sigma_k1 - sigma_k2) +
+                          sigma_k2) *
+                         mu_arrs[nbx](i, j, k));
                 });
         }
         amrex::Gpu::streamSynchronize();
@@ -330,9 +330,10 @@ void KOmegaSST<Transport>::update_scalar_diff(
                 [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                     deff_arrs[nbx](i, j, k) =
                         lam_mu_arrs[nbx](i, j, k) +
-                        (f1_arrs[nbx](i, j, k) * (sigma_omega1 - sigma_omega2) +
-                         sigma_omega2) *
-                            mu_arrs[nbx](i, j, k);
+                        ((f1_arrs[nbx](i, j, k) *
+                              (sigma_omega1 - sigma_omega2) +
+                          sigma_omega2) *
+                         mu_arrs[nbx](i, j, k));
                 });
         }
         amrex::Gpu::streamSynchronize();

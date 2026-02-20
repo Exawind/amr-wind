@@ -29,12 +29,13 @@ struct MOSD
 
         // Building the wave surface, gradients, wave velocities and unit normal
         const amrex::Real dx_eta_wave =
-            -amplitude * wavenumber * std::sin(wavenumber * xc - omega * time);
+            -amplitude * wavenumber *
+            std::sin((wavenumber * xc) - (omega * time));
         const amrex::Real dy_eta_wave = 0;
         const amrex::Real dt_eta_wave =
-            amplitude * omega * std::sin(wavenumber * xc - omega * time);
-        const amrex::Real grad_eta_wave =
-            std::sqrt(dx_eta_wave * dx_eta_wave + dy_eta_wave * dy_eta_wave);
+            amplitude * omega * std::sin((wavenumber * xc) - (omega * time));
+        const amrex::Real grad_eta_wave = std::sqrt(
+            (dx_eta_wave * dx_eta_wave) + (dy_eta_wave * dy_eta_wave));
         const amrex::Real Cx_wave = -dt_eta_wave * dx_eta_wave *
                                     (1.0_rt / (grad_eta_wave * grad_eta_wave));
         const amrex::Real Cy_wave = -dt_eta_wave * dy_eta_wave *
@@ -46,8 +47,9 @@ struct MOSD
         const amrex::Real u_r = u_dx - Cx_wave;
         const amrex::Real v_r = v_dx - Cy_wave;
         const amrex::Real ur_mag =
-            std::sqrt(u_r * u_r * n_x * n_x + v_r * v_r * n_y * n_y);
-        const amrex::Real Heavi_arg = (u_r * dx_eta_wave + v_r * dy_eta_wave);
+            std::sqrt((u_r * u_r * n_x * n_x) + (v_r * v_r * n_y * n_y));
+        const amrex::Real Heavi_arg =
+            ((u_r * dx_eta_wave) + (v_r * dy_eta_wave));
         const amrex::Real Heavi =
             (Heavi_arg + std::abs(Heavi_arg)) / (2.0_rt * Heavi_arg);
 

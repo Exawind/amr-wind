@@ -72,7 +72,7 @@ void RadarSampler::initialize(const std::string& key)
     // Set initial m_end but isn't used for anything
     m_end.resize(AMREX_SPACEDIM);
     for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-        m_end[d] = m_axis[d] * m_beam_length + m_start[d];
+        m_end[d] = (m_axis[d] * m_beam_length) + m_start[d];
     }
 
     // Set initial periodic time to half-way point of forward sweep
@@ -109,19 +109,19 @@ void RadarSampler::check_bounds()
     for (int d = 0; d < AMREX_SPACEDIM; ++d) {
         if (m_start[d] < (prob_lo[d] + bounds_tol)) {
             all_ok = false;
-            m_start[d] = prob_lo[d] + 10 * bounds_tol;
+            m_start[d] = prob_lo[d] + (10 * bounds_tol);
         }
         if (m_start[d] > (prob_hi[d] - bounds_tol)) {
             all_ok = false;
-            m_start[d] = prob_hi[d] - 10 * bounds_tol;
+            m_start[d] = prob_hi[d] - (10 * bounds_tol);
         }
         if (m_end[d] < (prob_lo[d] + bounds_tol)) {
             all_ok = false;
-            m_end[d] = prob_lo[d] + 10 * bounds_tol;
+            m_end[d] = prob_lo[d] + (10 * bounds_tol);
         }
         if (m_end[d] > (prob_hi[d] - bounds_tol)) {
             all_ok = false;
-            m_end[d] = prob_hi[d] - 10 * bounds_tol;
+            m_end[d] = prob_hi[d] - (10 * bounds_tol);
         }
     }
     if (!all_ok) {
@@ -140,7 +140,7 @@ amrex::Real RadarSampler::periodic_time()
 {
     m_periodic_time =
         m_radar_time -
-        std::floor(m_radar_time / total_sweep_time()) * total_sweep_time();
+        (std::floor(m_radar_time / total_sweep_time()) * total_sweep_time());
     return m_periodic_time;
 }
 
@@ -148,7 +148,7 @@ amrex::Real RadarSampler::periodic_time()
 int RadarSampler::sweep_count() const
 {
     const amrex::Real sweep_time =
-        m_sweep_angle / m_angular_speed + m_reset_time;
+        (m_sweep_angle / m_angular_speed) + m_reset_time;
     return static_cast<int>(std::floor(m_radar_time / sweep_time));
 }
 
@@ -162,7 +162,7 @@ RadarSampler::phase RadarSampler::determine_operation_phase() const
         current_phase = phase::FORWARD;
     } else if (m_periodic_time < phase_time + m_reset_time) {
         current_phase = phase::FORWARD_PAUSE;
-    } else if (m_periodic_time < 2.0_rt * phase_time + m_reset_time) {
+    } else if (m_periodic_time < (2.0_rt * phase_time) + m_reset_time) {
         current_phase = phase::REVERSE;
     } else {
         current_phase = phase::REVERSE_PAUSE;
@@ -175,14 +175,14 @@ amrex::Real RadarSampler::determine_current_sweep_angle() const
 {
     switch (determine_operation_phase()) {
     case phase::FORWARD: {
-        return m_angular_speed * m_periodic_time - m_sweep_angle / 2.0_rt;
+        return (m_angular_speed * m_periodic_time) - (m_sweep_angle / 2.0_rt);
     }
     case phase::FORWARD_PAUSE: {
         return m_sweep_angle / 2.0_rt;
     }
     case phase::REVERSE: {
-        return 3.0_rt * m_sweep_angle / 2.0_rt -
-               m_angular_speed * (m_periodic_time - m_reset_time);
+        return (3.0_rt * m_sweep_angle / 2.0_rt) -
+               (m_angular_speed * (m_periodic_time - m_reset_time));
     }
     default: {
         return -m_sweep_angle / 2.0_rt;
@@ -268,7 +268,7 @@ bool RadarSampler::update_sampling_locations()
                 vs::Vector rotated_point(
                     sampling_utils::rotate_euler_vector(
                         elevation_axis, elevation_angle, swept_point));
-                const amrex::Long point_index = i + k * m_cone_size;
+                const amrex::Long point_index = i + (k * m_cone_size);
                 m_current_cones[point_index][0] = rotated_point[0] + m_start[0];
                 m_current_cones[point_index][1] = rotated_point[1] + m_start[1];
                 m_current_cones[point_index][2] = rotated_point[2] + m_start[2];
@@ -292,7 +292,7 @@ bool RadarSampler::update_sampling_locations()
             amrex::Long cq_idx = k * num_points_quad();
 
             for (int i = 0; i < m_cone_size; ++i) {
-                const amrex::Long point_index = i + k * m_cone_size;
+                const amrex::Long point_index = i + (k * m_cone_size);
                 m_current_cones[point_index][0] = m_fill_val;
                 m_current_cones[point_index][1] = m_fill_val;
                 m_current_cones[point_index][2] = m_fill_val;
@@ -356,7 +356,7 @@ void RadarSampler::new_cone()
 
     for (int n = 0; n < m_npts; ++n) {
         for (int j = 0; j < nquad; ++j) {
-            const amrex::Long pt_idx = j + n * nquad;
+            const amrex::Long pt_idx = j + (n * nquad);
             const auto radius = dx[2] * n;
             m_initial_cone[pt_idx][0] = radius * m_rays[j][0];
             m_initial_cone[pt_idx][1] = radius * m_rays[j][1];
@@ -374,9 +374,9 @@ void RadarSampler::new_cone()
             m_initial_cone[i][0], m_initial_cone[i][1], m_initial_cone[i][2]);
         vs::Vector new_rot(
             sampling_utils::rotate_euler_vector(tc_axis, tc_angle, temp_loc));
-        m_initial_cone[i][0] = new_rot[0] * m_beam_length + m_start[0];
-        m_initial_cone[i][1] = new_rot[1] * m_beam_length + m_start[1];
-        m_initial_cone[i][2] = new_rot[2] * m_beam_length + m_start[2];
+        m_initial_cone[i][0] = (new_rot[0] * m_beam_length) + m_start[0];
+        m_initial_cone[i][1] = (new_rot[1] * m_beam_length) + m_start[1];
+        m_initial_cone[i][2] = (new_rot[2] * m_beam_length) + m_start[2];
     }
 }
 
@@ -395,7 +395,7 @@ void RadarSampler::calc_lineofsight_velocity(
 
     for (int k = 0; k < m_ntotal; k++) {
         for (int i = 0; i < m_cone_size; ++i) {
-            const amrex::Long p_idx = i + k * m_cone_size;
+            const amrex::Long p_idx = i + (k * m_cone_size);
             const amrex::Long cq_idx = i % num_points_quad();
             vs::Vector temp_vel(
                 velocity_raw[p_idx][0], velocity_raw[p_idx][1],
@@ -455,7 +455,7 @@ void RadarSampler::line_average(
         amrex::Real weight_sum = 0.0_rt;
         amrex::Real average = 0.0_rt;
         for (int j = 0; j < nquad; ++j) {
-            const int point_idx = nquad * n + j;
+            const int point_idx = (nquad * n) + j;
             weight_sum += weights[j];
             average += weights[j] * values[point_idx];
         }
@@ -522,9 +522,9 @@ void RadarSampler::cone_axis_locations(SampleLocType& axis_locs) const
 {
     for (int k = 0; k < m_ntotal; k++) {
         for (int i = 0; i < m_npts; ++i) {
-            const amrex::Long pi = i + k * m_npts;
+            const amrex::Long pi = i + (k * m_npts);
             const amrex::Long ci =
-                i * num_points_quad() + k * num_points_cone();
+                (i * num_points_quad()) + (k * num_points_cone());
             const amrex::RealVect loc = {AMREX_D_DECL(
                 m_prior_cones[ci][0], m_prior_cones[ci][1],
                 m_prior_cones[ci][2])};

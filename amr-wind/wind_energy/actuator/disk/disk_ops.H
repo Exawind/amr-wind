@@ -161,9 +161,9 @@ struct UpdateVelOp<
         for (int i = 0; i < num_r; i++) {
             const auto weight = area.weight(i);
             for (int j = 0; j < num_t; ++j) {
-                density += grid.density[j + i * num_t] * weight;
-                refVel = refVel + grid.vel[j + i * num_t] * weight;
-                diskVel = diskVel + grid.vel[j + i * num_t + np] * weight;
+                density += grid.density[j + (i * num_t)] * weight;
+                refVel = refVel + (grid.vel[j + (i * num_t)] * weight);
+                diskVel = diskVel + (grid.vel[j + (i * num_t) + np] * weight);
             }
         }
     }

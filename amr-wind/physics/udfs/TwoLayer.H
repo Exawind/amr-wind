@@ -36,7 +36,7 @@ struct TwoLayer
         {
             const auto* problo = geom.ProbLo();
             const auto* dx = geom.CellSize();
-            const auto z = problo[2] + (iv[2] + 0.5_rt) * dx[2];
+            const auto z = problo[2] + ((iv[2] + 0.5_rt) * dx[2]);
 
             amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> vel;
             if (z >= z_part) {

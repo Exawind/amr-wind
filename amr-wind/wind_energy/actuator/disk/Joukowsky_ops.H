@@ -230,10 +230,10 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
         // q0 = --------------------------------------------------------------
         //                            a1
 
-        const amrex::Real term1 = std::pow(a2 * lambda + a3 * S0, 2.0_rt);
+        const amrex::Real term1 = std::pow((a2 * lambda) + (a3 * S0), 2.0_rt);
         const amrex::Real term2 =
             a1 * (0.5_rt * Ct - 2.0_rt * a4 * lambda * S0 - a5 * S0 * S0);
-        const amrex::Real term3 = a2 * lambda + a3 * S0;
+        const amrex::Real term3 = (a2 * lambda) + (a3 * S0);
 
         const amrex::Real numerator = std::sqrt(term1 + term2) - term3;
 
@@ -295,8 +295,8 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
                 const amrex::Real f_awc =
                     ddata.awc_amplitude *
                     std::cos(
-                        ddata.awc_angular_frequency * current_time -
-                        ddata.awc_azimuthal_mode * theta_angle +
+                        (ddata.awc_angular_frequency * current_time) -
+                        (ddata.awc_azimuthal_mode * theta_angle) +
                         ddata.awc_clocking_angle);
 
                 grid.force[ip] = ((1 + f_awc) * f_z * ddata.normal_vec +

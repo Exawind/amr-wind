@@ -73,7 +73,7 @@ void HurricaneForcing::operator()(
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         amrex::IntVect iv(i, j, k);
-        const amrex::Real ht = problo[idir] + (iv[idir] + 0.5_rt) * dx[idir];
+        const amrex::Real ht = problo[idir] + ((iv[idir] + 0.5_rt) * dx[idir]);
 
         const amrex::Real umean =
             amr_wind::interp::linear(heights, heights_end, vals, ht, 3, 0);
@@ -85,8 +85,8 @@ void HurricaneForcing::operator()(
         const amrex::Real dVdR_z = dVdR * (Vzh - ht) / Vzh;
         // Compute the LES terms as presented in George Bryan's paper
         const amrex::Real M1LES =
-            umean * umean / R + vmean * V_z / R - (f * V_z + V_z * V_z / R);
-        const amrex::Real M2LES = -umean * dVdR_z - umean * V_z / R;
+            (umean * umean / R) + (vmean * V_z / R) - (f * V_z + V_z * V_z / R);
+        const amrex::Real M2LES = (-umean * dVdR_z) - (umean * V_z / R);
 
         src_term(i, j, k, 0) += M1LES;
         src_term(i, j, k, 1) += M2LES;

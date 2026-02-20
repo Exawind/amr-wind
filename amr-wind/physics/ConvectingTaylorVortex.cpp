@@ -22,9 +22,9 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real UExact::operator()(
     const amrex::Real y,
     const amrex::Real t) const
 {
-    return u0 - std::cos(std::numbers::pi_v<amrex::Real> * (x - u0 * t)) *
-                    std::sin(std::numbers::pi_v<amrex::Real> * (y - v0 * t)) *
-                    std::exp(-2.0_rt * omega * t);
+    return u0 - (std::cos(std::numbers::pi_v<amrex::Real> * (x - u0 * t)) *
+                 std::sin(std::numbers::pi_v<amrex::Real> * (y - v0 * t)) *
+                 std::exp(-2.0_rt * omega * t));
 }
 
 AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real VExact::operator()(
@@ -35,9 +35,9 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real VExact::operator()(
     const amrex::Real y,
     const amrex::Real t) const
 {
-    return v0 + std::sin(std::numbers::pi_v<amrex::Real> * (x - u0 * t)) *
-                    std::cos(std::numbers::pi_v<amrex::Real> * (y - v0 * t)) *
-                    std::exp(-2.0_rt * omega * t);
+    return v0 + (std::sin(std::numbers::pi_v<amrex::Real> * (x - u0 * t)) *
+                 std::cos(std::numbers::pi_v<amrex::Real> * (y - v0 * t)) *
+                 std::exp(-2.0_rt * omega * t));
 }
 
 AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real WExact::operator()(
@@ -175,10 +175,10 @@ void ConvectingTaylorVortex::initialize_fields(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real x = mesh_mapping
                                     ? (nu_cc(i, j, k, 0))
-                                    : (prob_lo[0] + (i + 0.5_rt) * dx[0]);
+                                    : (prob_lo[0] + ((i + 0.5_rt) * dx[0]));
                 amrex::Real y = mesh_mapping
                                     ? (nu_cc(i, j, k, 1))
-                                    : (prob_lo[1] + (j + 0.5_rt) * dx[1]);
+                                    : (prob_lo[1] + ((j + 0.5_rt) * dx[1]));
 
                 vel(i, j, k, 0) = u_exact(u0, v0, omega, x, y, 0.0_rt);
                 vel(i, j, k, 1) = v_exact(u0, v0, omega, x, y, 0.0_rt);
@@ -201,9 +201,9 @@ void ConvectingTaylorVortex::initialize_fields(
             amrex::ParallelFor(
                 nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     amrex::Real x = mesh_mapping ? (nu_nd(i, j, k, 0))
-                                                 : (prob_lo[0] + i * dx[0]);
+                                                 : (prob_lo[0] + (i * dx[0]));
                     amrex::Real y = mesh_mapping ? (nu_nd(i, j, k, 1))
-                                                 : (prob_lo[1] + j * dx[1]);
+                                                 : (prob_lo[1] + (j * dx[1]));
 
                     pres(i, j, k, 0) =
                         -0.25_rt *
@@ -288,10 +288,10 @@ amrex::Real ConvectingTaylorVortex::compute_error(const Field& field)
 
                 amrex::Real x = mesh_mapping
                                     ? (nu_cc[box_no](i, j, k, 0))
-                                    : (prob_lo[0] + (i + 0.5_rt) * dx[0]);
+                                    : (prob_lo[0] + ((i + 0.5_rt) * dx[0]));
                 amrex::Real y = mesh_mapping
                                     ? (nu_cc[box_no](i, j, k, 1))
-                                    : (prob_lo[1] + (j + 0.5_rt) * dx[1]);
+                                    : (prob_lo[1] + ((j + 0.5_rt) * dx[1]));
                 amrex::Real fac_x =
                     mesh_mapping ? (fac_arr[box_no](i, j, k, 0)) : 1.0_rt;
                 amrex::Real fac_y =

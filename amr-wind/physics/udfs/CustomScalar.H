@@ -34,9 +34,9 @@ struct CustomScalar
             // Compute quantities to set the field values. For example:
             const auto* problo = geom.ProbLo();
             const auto* dx = geom.CellSize();
-            const auto x = problo[0] + (iv[0] + 0.5_rt) * dx[0];
-            const auto y = problo[1] + (iv[1] + 0.5_rt) * dx[1];
-            const auto z = problo[2] + (iv[2] + 0.5_rt) * dx[2];
+            const auto x = problo[0] + ((iv[0] + 0.5_rt) * dx[0]);
+            const auto y = problo[1] + ((iv[1] + 0.5_rt) * dx[1]);
+            const auto z = problo[2] + ((iv[2] + 0.5_rt) * dx[2]);
             const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> vel = {
                 1.0_rt, 0.0_rt, 0.0_rt};
 

@@ -56,7 +56,7 @@ void HurricaneTempForcing::operator()(
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         amrex::IntVect iv(i, j, k);
-        const amrex::Real ht = problo[idir] + (iv[idir] + 0.5_rt) * dx[idir];
+        const amrex::Real ht = problo[idir] + ((iv[idir] + 0.5_rt) * dx[idir]);
 
         /*const amrex::Real umean =
             vals[3 * il + 0] + ((vals[3 * ir + 0] - vals[3 * il + 0]) /

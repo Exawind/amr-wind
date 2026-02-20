@@ -65,7 +65,7 @@ void AMD<Transport>::update_turbulent_viscosity(
     const auto& tpa_deriv = m_pa_temp.line_deriv();
     amrex::Vector<amrex::Real> tpa_coord(tpa_deriv.size(), 0.0_rt);
     for (int i = 0; i < m_pa_temp.ncell_line(); ++i) {
-        tpa_coord[i] = m_pa_temp.xlo() + (0.5_rt + i) * m_pa_temp.dx();
+        tpa_coord[i] = m_pa_temp.xlo() + ((0.5_rt + i) * m_pa_temp.dx());
     }
     amrex::Gpu::DeviceVector<amrex::Real> tpa_deriv_d(tpa_deriv.size(), 0.0_rt);
     amrex::Gpu::DeviceVector<amrex::Real> tpa_coord_d(tpa_coord.size(), 0.0_rt);

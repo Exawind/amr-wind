@@ -19,8 +19,8 @@ AMREX_FORCE_INLINE amrex::Real get_enforced_dt_for_output(
 {
     // Tolerance for being slightly under is relative to requested interval
     return amrex::min<amrex::Real>(
-        dt,
-        (std::floor(cur_time / interval + tol) + 1.0_rt) * interval - cur_time);
+        dt, ((std::floor((cur_time / interval) + tol) + 1.0_rt) * interval) -
+                cur_time);
 }
 } // namespace
 

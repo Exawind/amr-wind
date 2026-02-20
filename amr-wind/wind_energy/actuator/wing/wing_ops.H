@@ -220,11 +220,12 @@ struct ComputeForceOp<
 
             // Determine unit vector parallel and perpendicular to velocity
             const auto drag_dir =
-                (blade_x * windvector.x() + blade_z * windvector.z()).unit();
+                ((blade_x * windvector.x()) + (blade_z * windvector.z()))
+                    .unit();
             const auto lift_dir = (drag_dir ^ blade_y).unit();
 
             // Compute force on fluid from this section of wing
-            grid.force[ip] = -(lift_dir * lift + drag * drag_dir);
+            grid.force[ip] = -((lift_dir * lift) + (drag * drag_dir));
 
             // In global coords, zero disabled force components
             grid.force[ip] *= force_coord_flags_vec;

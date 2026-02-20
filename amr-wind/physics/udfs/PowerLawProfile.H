@@ -39,7 +39,7 @@ struct PowerLawProfile
         {
             const auto* problo = geom.ProbLo();
             const auto* dx = geom.CellSize();
-            const auto zco = problo[idir] + (iv[idir] + 0.5_rt) * dx[idir];
+            const auto zco = problo[idir] + ((iv[idir] + 0.5_rt) * dx[idir]);
 
             const amrex::Real zeff = zco - zoffset;
             amrex::Real pfac =

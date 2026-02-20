@@ -102,13 +102,14 @@ struct ComputeRHSOp
                             mesh_mapping ? (detJ_arrs[nbx](i, j, k)) : 1.0_rt;
 
                         fld_arrs[nbx](i, j, k, n) =
-                            rho_o_arrs[nbx](i, j, k) * det_j *
-                                fld_o_arrs[nbx](i, j, k, n) +
-                            static_cast<amrex::Real>(imask_arrs[nbx](i, j, k)) *
-                                dt *
-                                (ddt_o_arrs[nbx](i, j, k, n) +
-                                 det_j * src_arrs[nbx](i, j, k, n) +
-                                 factor * diff_arrs[nbx](i, j, k, n));
+                            (rho_o_arrs[nbx](i, j, k) * det_j *
+                             fld_o_arrs[nbx](i, j, k, n)) +
+                            (static_cast<amrex::Real>(
+                                 imask_arrs[nbx](i, j, k)) *
+                             dt *
+                             (ddt_o_arrs[nbx](i, j, k, n) +
+                              det_j * src_arrs[nbx](i, j, k, n) +
+                              factor * diff_arrs[nbx](i, j, k, n)));
 
                         fld_arrs[nbx](i, j, k, n) /= rho_arrs[nbx](i, j, k);
 
@@ -125,12 +126,13 @@ struct ComputeRHSOp
                             mesh_mapping ? (detJ_arrs[nbx](i, j, k)) : 1.0_rt;
 
                         fld_arrs[nbx](i, j, k, n) =
-                            det_j * fld_o_arrs[nbx](i, j, k, n) +
-                            static_cast<amrex::Real>(imask_arrs[nbx](i, j, k)) *
-                                dt *
-                                (ddt_o_arrs[nbx](i, j, k, n) +
-                                 det_j * src_arrs[nbx](i, j, k, n) +
-                                 factor * diff_arrs[nbx](i, j, k, n));
+                            (det_j * fld_o_arrs[nbx](i, j, k, n)) +
+                            (static_cast<amrex::Real>(
+                                 imask_arrs[nbx](i, j, k)) *
+                             dt *
+                             (ddt_o_arrs[nbx](i, j, k, n) +
+                              det_j * src_arrs[nbx](i, j, k, n) +
+                              factor * diff_arrs[nbx](i, j, k, n)));
 
                         if (difftype == DiffusionType::Explicit) {
                             fld_arrs[nbx](i, j, k, n) /= det_j;
@@ -222,15 +224,16 @@ struct ComputeRHSOp
                             mesh_mapping ? (detJ_arrs[nbx](i, j, k)) : 1.0_rt;
 
                         fld_arrs[nbx](i, j, k, n) =
-                            rho_o_arrs[nbx](i, j, k) * det_j *
-                                fld_o_arrs[nbx](i, j, k, n) +
-                            static_cast<amrex::Real>(imask_arrs[nbx](i, j, k)) *
-                                dt *
-                                (0.5_rt * (ddt_o_arrs[nbx](i, j, k, n) +
-                                           ddt_arrs[nbx](i, j, k, n)) +
-                                 ofac * diff_o_arrs[nbx](i, j, k, n) +
-                                 nfac * diff_arrs[nbx](i, j, k, n) +
-                                 det_j * src_arrs[nbx](i, j, k, n));
+                            (rho_o_arrs[nbx](i, j, k) * det_j *
+                             fld_o_arrs[nbx](i, j, k, n)) +
+                            (static_cast<amrex::Real>(
+                                 imask_arrs[nbx](i, j, k)) *
+                             dt *
+                             (0.5_rt * (ddt_o_arrs[nbx](i, j, k, n) +
+                                        ddt_arrs[nbx](i, j, k, n)) +
+                              ofac * diff_o_arrs[nbx](i, j, k, n) +
+                              nfac * diff_arrs[nbx](i, j, k, n) +
+                              det_j * src_arrs[nbx](i, j, k, n)));
 
                         fld_arrs[nbx](i, j, k, n) /= rho_arrs[nbx](i, j, k);
 
@@ -247,14 +250,15 @@ struct ComputeRHSOp
                             mesh_mapping ? (detJ_arrs[nbx](i, j, k)) : 1.0_rt;
 
                         fld_arrs[nbx](i, j, k, n) =
-                            det_j * fld_o_arrs[nbx](i, j, k, n) +
-                            static_cast<amrex::Real>(imask_arrs[nbx](i, j, k)) *
-                                dt *
-                                (0.5_rt * (ddt_o_arrs[nbx](i, j, k, n) +
-                                           ddt_arrs[nbx](i, j, k, n)) +
-                                 ofac * diff_o_arrs[nbx](i, j, k, n) +
-                                 nfac * diff_arrs[nbx](i, j, k, n) +
-                                 det_j * src_arrs[nbx](i, j, k, n));
+                            (det_j * fld_o_arrs[nbx](i, j, k, n)) +
+                            (static_cast<amrex::Real>(
+                                 imask_arrs[nbx](i, j, k)) *
+                             dt *
+                             (0.5_rt * (ddt_o_arrs[nbx](i, j, k, n) +
+                                        ddt_arrs[nbx](i, j, k, n)) +
+                              ofac * diff_o_arrs[nbx](i, j, k, n) +
+                              nfac * diff_arrs[nbx](i, j, k, n) +
+                              det_j * src_arrs[nbx](i, j, k, n)));
 
                         if (difftype == DiffusionType::Explicit) {
                             fld_arrs[nbx](i, j, k, n) /= det_j;

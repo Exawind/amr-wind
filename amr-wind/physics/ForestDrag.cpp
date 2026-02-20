@@ -59,13 +59,13 @@ void ForestDrag::initialize_fields(int level, const amrex::Geometry& geom)
                 const auto* forests_ptr = d_forests.data();
                 amrex::ParallelFor(
                     bxi, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        const auto x = prob_lo[0] + (i + 0.5_rt) * dx[0];
-                        const auto y = prob_lo[1] + (j + 0.5_rt) * dx[1];
-                        const auto z = prob_lo[2] + (k + 0.5_rt) * dx[2];
+                        const auto x = prob_lo[0] + ((i + 0.5_rt) * dx[0]);
+                        const auto y = prob_lo[1] + ((j + 0.5_rt) * dx[1]);
+                        const auto z = prob_lo[2] + ((k + 0.5_rt) * dx[2]);
                         const auto& fst = forests_ptr[nf];
                         const auto radius = std::sqrt(
-                            (x - fst.m_x_forest) * (x - fst.m_x_forest) +
-                            (y - fst.m_y_forest) * (y - fst.m_y_forest));
+                            ((x - fst.m_x_forest) * (x - fst.m_x_forest)) +
+                            ((y - fst.m_y_forest) * (y - fst.m_y_forest)));
                         if (z <= fst.m_height_forest &&
                             radius <= (0.5_rt * fst.m_diameter_forest)) {
                             const auto treelaimax = fst.lm();

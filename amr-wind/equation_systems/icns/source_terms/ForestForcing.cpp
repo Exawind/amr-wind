@@ -32,7 +32,8 @@ void ForestForcing::operator()(
         const amrex::Real ux = vel(i, j, k, 0);
         const amrex::Real uy = vel(i, j, k, 1);
         const amrex::Real uz = vel(i, j, k, 2);
-        const amrex::Real windspeed = std::sqrt(ux * ux + uy * uy + uz * uz);
+        const amrex::Real windspeed =
+            std::sqrt((ux * ux) + (uy * uy) + (uz * uz));
         src_term(i, j, k, 0) -= forest_drag(i, j, k) * ux * windspeed;
         src_term(i, j, k, 1) -= forest_drag(i, j, k) * uy * windspeed;
         src_term(i, j, k, 2) -= forest_drag(i, j, k) * uz * windspeed;

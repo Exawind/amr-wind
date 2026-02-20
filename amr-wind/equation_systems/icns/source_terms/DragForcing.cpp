@@ -24,15 +24,17 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real viscous_drag_calculations(
     const amrex::Real kappa,
     const amrex::Real non_neutral_neighbour)
 {
-    const amrex::Real m2 = std::sqrt(ux2r * ux2r + uy2r * uy2r);
+    const amrex::Real m2 = std::sqrt((ux2r * ux2r) + (uy2r * uy2r));
     const amrex::Real ustar =
         m2 * kappa / (std::log(1.5_rt * dz / z0) - non_neutral_neighbour);
-    Dxz += -ustar * ustar * ux1r /
-           (amr_wind::constants::EPS + std::sqrt(ux1r * ux1r + uy1r * uy1r)) /
-           dz;
-    Dyz += -ustar * ustar * uy1r /
-           (amr_wind::constants::EPS + std::sqrt(ux1r * ux1r + uy1r * uy1r)) /
-           dz;
+    Dxz +=
+        -ustar * ustar * ux1r /
+        (amr_wind::constants::EPS + std::sqrt((ux1r * ux1r) + (uy1r * uy1r))) /
+        dz;
+    Dyz +=
+        -ustar * ustar * uy1r /
+        (amr_wind::constants::EPS + std::sqrt((ux1r * ux1r) + (uy1r * uy1r))) /
+        dz;
     return ustar;
 }
 
@@ -57,15 +59,15 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void form_drag_calculations(
     const amrex::Real dx_eta_wave = -n_x / 32.0_rt / dx[0];
     const amrex::Real dy_eta_wave = -n_y / 32.0_rt / dx[1];
     const amrex::Real grad_eta_wave =
-        std::sqrt(dx_eta_wave * dx_eta_wave + dy_eta_wave * dy_eta_wave);
+        std::sqrt((dx_eta_wave * dx_eta_wave) + (dy_eta_wave * dy_eta_wave));
     n_x = dx_eta_wave / grad_eta_wave;
     n_y = dy_eta_wave / grad_eta_wave;
 
     // Relative velocity while considering interface normal
     const amrex::Real ur_mag =
-        std::sqrt(ux1r * ux1r * n_x * n_x + uy1r * uy1r * n_y * n_y);
+        std::sqrt((ux1r * ux1r * n_x * n_x) + (uy1r * uy1r * n_y * n_y));
     // Heaviside function changes behavior for velocity surplus/deficit
-    const amrex::Real Heavi_arg = (ux1r * dx_eta_wave + uy1r * dy_eta_wave);
+    const amrex::Real Heavi_arg = ((ux1r * dx_eta_wave) + (uy1r * dy_eta_wave));
     const amrex::Real Heavi =
         (Heavi_arg + std::abs(Heavi_arg)) / (2.0_rt * Heavi_arg);
 
@@ -213,9 +215,9 @@ void DragForcing::operator()(
                   0.5_rt * dx[2] / m_monin_obukhov_length, m_beta_m, m_gamma_m)
             : 0.0_rt;
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-        const amrex::Real x = prob_lo[0] + (i + 0.5_rt) * dx[0];
-        const amrex::Real y = prob_lo[1] + (j + 0.5_rt) * dx[1];
-        const amrex::Real z = prob_lo[2] + (k + 0.5_rt) * dx[2];
+        const amrex::Real x = prob_lo[0] + ((i + 0.5_rt) * dx[0]);
+        const amrex::Real y = prob_lo[1] + ((j + 0.5_rt) * dx[1]);
+        const amrex::Real z = prob_lo[2] + ((k + 0.5_rt) * dx[2]);
         amrex::Real xstart_damping = 0.0_rt;
         amrex::Real ystart_damping = 0.0_rt;
         amrex::Real xend_damping = 0.0_rt;
@@ -253,13 +255,14 @@ void DragForcing::operator()(
         amrex::Real Dyz = 0.0_rt;
         amrex::Real bc_forcing_x = 0.0_rt;
         amrex::Real bc_forcing_y = 0.0_rt;
-        const amrex::Real m = std::sqrt(ux1 * ux1 + uy1 * uy1 + uz1 * uz1);
+        const amrex::Real m =
+            std::sqrt((ux1 * ux1) + (uy1 * uy1) + (uz1 * uz1));
         if (drag(i, j, k) == 1 && (!is_laminar)) {
             // Check if close enough to interface to use current cell or below
             int k_off = -1;
             if (is_waves) {
                 const amrex::Real cell_length_2D =
-                    std::sqrt(dx[0] * dx[0] + dx[2] * dx[2]);
+                    std::sqrt((dx[0] * dx[0]) + (dx[2] * dx[2]));
                 if (target_lvs_arr(i, j, k) + cell_length_2D >= 0) {
                     // Current cell will be used for wave velocity
                     k_off = 0;
@@ -289,12 +292,14 @@ void DragForcing::operator()(
             const amrex::Real uTarget =
                 ustar / kappa *
                 (std::log(0.5_rt * dx[2] / z0) - non_neutral_cell);
-            const amrex::Real uxTarget = uTarget * ux2r /
-                                         (amr_wind::constants::EPS +
-                                          std::sqrt(ux2r * ux2r + uy2r * uy2r));
-            const amrex::Real uyTarget = uTarget * uy2r /
-                                         (amr_wind::constants::EPS +
-                                          std::sqrt(ux2r * ux2r + uy2r * uy2r));
+            const amrex::Real uxTarget =
+                uTarget * ux2r /
+                (amr_wind::constants::EPS +
+                 std::sqrt((ux2r * ux2r) + (uy2r * uy2r)));
+            const amrex::Real uyTarget =
+                uTarget * uy2r /
+                (amr_wind::constants::EPS +
+                 std::sqrt((ux2r * ux2r) + (uy2r * uy2r)));
             // BC forcing pushes nonrelative velocity toward target velocity
             bc_forcing_x = -(uxTarget - ux1) / dt;
             bc_forcing_y = -(uyTarget - uy1) / dt;
@@ -312,19 +317,19 @@ void DragForcing::operator()(
         const amrex::Real CdM = amrex::min<amrex::Real>(
             Cd / (m + amr_wind::constants::EPS), cd_max / scale_factor);
         src_term(i, j, k, 0) -=
-            (CdM * m * (ux1 - target_u) * blank(i, j, k) + Dxz * drag(i, j, k) +
-             bc_forcing_x * drag(i, j, k) +
-             (xstart_damping + xend_damping + ystart_damping + yend_damping) *
-                 (ux1 - sponge_density * spongeVelX));
+            ((CdM * m * (ux1 - target_u) * blank(i, j, k)) +
+             (Dxz * drag(i, j, k)) + (bc_forcing_x * drag(i, j, k)) +
+             ((xstart_damping + xend_damping + ystart_damping + yend_damping) *
+              (ux1 - sponge_density * spongeVelX)));
         src_term(i, j, k, 1) -=
-            (CdM * m * (uy1 - target_v) * blank(i, j, k) + Dyz * drag(i, j, k) +
-             bc_forcing_y * drag(i, j, k) +
-             (xstart_damping + xend_damping + ystart_damping + yend_damping) *
-                 (uy1 - sponge_density * spongeVelY));
+            ((CdM * m * (uy1 - target_v) * blank(i, j, k)) +
+             (Dyz * drag(i, j, k)) + (bc_forcing_y * drag(i, j, k)) +
+             ((xstart_damping + xend_damping + ystart_damping + yend_damping) *
+              (uy1 - sponge_density * spongeVelY)));
         src_term(i, j, k, 2) -=
-            (CdM * m * (uz1 - target_w) * blank(i, j, k) +
-             (xstart_damping + xend_damping + ystart_damping + yend_damping) *
-                 (uz1 - sponge_density * spongeVelZ));
+            ((CdM * m * (uz1 - target_w) * blank(i, j, k)) +
+             ((xstart_damping + xend_damping + ystart_damping + yend_damping) *
+              (uz1 - sponge_density * spongeVelZ)));
     });
 }
 

@@ -95,7 +95,7 @@ void DragTempForcing::operator()(
         const amrex::Real uz1 = vel(i, j, k, 2);
         const amrex::Real theta = temperature(i, j, k, 0);
         const amrex::Real theta2 = temperature(i, j, k + 1, 0);
-        const amrex::Real wspd = std::sqrt(ux1 * ux1 + uy1 * uy1);
+        const amrex::Real wspd = std::sqrt((ux1 * ux1) + (uy1 * uy1));
         const amrex::Real ustar =
             wspd * kappa / (std::log(1.5_rt * dx[2] / z0) - psi_m);
         //! We do not know the actual temperature so use cell above
@@ -103,18 +103,19 @@ void DragTempForcing::operator()(
             theta * ustar * ustar /
             (kappa * gravity_mod * monin_obukhov_length);
         const amrex::Real surf_temp =
-            theta2 - thetastar / kappa *
-                         (std::log(1.5_rt * dx[2] / z0) - psi_h_neighbour);
+            theta2 - (thetastar / kappa *
+                      (std::log(1.5_rt * dx[2] / z0) - psi_h_neighbour));
         const amrex::Real tTarget =
             surf_temp +
-            thetastar / kappa * (std::log(0.5_rt * dx[2] / z0) - psi_h_cell);
+            (thetastar / kappa * (std::log(0.5_rt * dx[2] / z0) - psi_h_cell));
         const amrex::Real bc_forcing_t = -(tTarget - theta) / dt;
-        const amrex::Real m = std::sqrt(ux1 * ux1 + uy1 * uy1 + uz1 * uz1);
+        const amrex::Real m =
+            std::sqrt((ux1 * ux1) + (uy1 * uy1) + (uz1 * uz1));
         const amrex::Real Cd = amrex::min<amrex::Real>(
             drag_coefficient / (m + tiny), cd_max / dx[2]);
         src_term(i, j, k, 0) -=
-            (Cd * (theta - T0) * blank(i, j, k, 0) +
-             bc_forcing_t * drag(i, j, k));
+            ((Cd * (theta - T0) * blank(i, j, k, 0)) +
+             (bc_forcing_t * drag(i, j, k)));
     });
 }
 

@@ -56,26 +56,24 @@ void apply_mms_vel(CFDSim& sim)
         amrex::ParallelFor(
             levelset(lev), levelset.num_grow(),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                const amrex::Real x = problo[0] + (i + 0.5_rt) * dx[0];
-                const amrex::Real y = problo[1] + (j + 0.5_rt) * dx[1];
+                const amrex::Real x = problo[0] + ((i + 0.5_rt) * dx[0]);
+                const amrex::Real y = problo[1] + ((j + 0.5_rt) * dx[1]);
 
                 if (phi_arrs[nbx](i, j, k) <= 0) {
                     varrs[nbx](i, j, k, 0) =
                         u0 -
-                        std::cos(
-                            std::numbers::pi_v<amrex::Real> * (x - u0 * t)) *
-                            std::sin(
-                                std::numbers::pi_v<amrex::Real> *
-                                (y - v0 * t)) *
-                            std::exp(-2.0_rt * omega * t);
+                        (std::cos(
+                             std::numbers::pi_v<amrex::Real> * (x - u0 * t)) *
+                         std::sin(
+                             std::numbers::pi_v<amrex::Real> * (y - v0 * t)) *
+                         std::exp(-2.0_rt * omega * t));
                     varrs[nbx](i, j, k, 1) =
                         v0 +
-                        std::sin(
-                            std::numbers::pi_v<amrex::Real> * (x - u0 * t)) *
-                            std::cos(
-                                std::numbers::pi_v<amrex::Real> *
-                                (y - v0 * t)) *
-                            std::exp(-2.0_rt * omega * t);
+                        (std::sin(
+                             std::numbers::pi_v<amrex::Real> * (x - u0 * t)) *
+                         std::cos(
+                             std::numbers::pi_v<amrex::Real> * (y - v0 * t)) *
+                         std::exp(-2.0_rt * omega * t));
                     varrs[nbx](i, j, k, 2) = 0.0_rt;
                 }
             });

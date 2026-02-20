@@ -84,12 +84,12 @@ void FreeSurfaceSampler::initialize(const std::string& key)
         for (int i = 0; i < m_npts_dir[0]; ++i) {
             // Initialize output values to 0.0_rt
             for (int ni = 0; ni < m_ninst; ++ni) {
-                m_out[idx * m_ninst + ni] = m_start[m_coorddir];
+                m_out[(idx * m_ninst) + ni] = m_start[m_coorddir];
             }
             // Grid direction 1
-            m_grid_locs[idx][0] = m_start[m_gc0] + dxs0 * i;
+            m_grid_locs[idx][0] = m_start[m_gc0] + (dxs0 * i);
             // Grid direction 2
-            m_grid_locs[idx][1] = m_start[m_gc1] + dxs1 * j;
+            m_grid_locs[idx][1] = m_start[m_gc1] + (dxs1 * j);
 
             ++idx;
         }
@@ -139,9 +139,9 @@ void FreeSurfaceSampler::initialize(const std::string& key)
                     amrex::Loop(bx, [=, &ns_fab](int i, int j, int k) noexcept {
                         // Cell location
                         amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> xm;
-                        xm[0] = plo[0] + (i + 0.5_rt) * dx[0];
-                        xm[1] = plo[1] + (j + 0.5_rt) * dx[1];
-                        xm[2] = plo[2] + (k + 0.5_rt) * dx[2];
+                        xm[0] = plo[0] + ((i + 0.5_rt) * dx[0]);
+                        xm[1] = plo[1] + ((j + 0.5_rt) * dx[1]);
+                        xm[2] = plo[2] + ((k + 0.5_rt) * dx[2]);
                         int n0_f = 0;
                         int n0_a = 0;
                         int n1_f = 0;
@@ -160,9 +160,9 @@ void FreeSurfaceSampler::initialize(const std::string& key)
                                 (xm[gc0] + 0.5_rt * dx[gc0] - s_gc0) / dxs0));
                             // Edge case of phi
                             if (std::abs(
-                                    xm[gc0] + 0.5_rt * dx[gc0] - phi[gc0]) <
+                                    xm[gc0] + (0.5_rt * dx[gc0]) - phi[gc0]) <
                                     eps &&
-                                std::abs(s_gc0 + n0_a * dxs0 - phi[gc0]) <
+                                std::abs(s_gc0 + (n0_a * dxs0) - phi[gc0]) <
                                     eps) {
                                 ++n0_a;
                             }
@@ -188,9 +188,9 @@ void FreeSurfaceSampler::initialize(const std::string& key)
                                 (xm[gc1] + 0.5_rt * dx[gc1] - s_gc1) / dxs1));
                             // Edge case of phi
                             if (std::abs(
-                                    xm[gc1] + 0.5_rt * dx[gc1] - phi[gc1]) <
+                                    xm[gc1] + (0.5_rt * dx[gc1]) - phi[gc1]) <
                                     eps &&
-                                std::abs(s_gc1 + n1_a * dxs1 - phi[gc1]) <
+                                std::abs(s_gc1 + (n1_a * dxs1) - phi[gc1]) <
                                     eps) {
                                 ++n1_a;
                             }
@@ -256,9 +256,9 @@ void FreeSurfaceSampler::initialize(const std::string& key)
                 vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     // Cell location
                     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> xm;
-                    xm[0] = plo[0] + (i + 0.5_rt) * dx[0];
-                    xm[1] = plo[1] + (j + 0.5_rt) * dx[1];
-                    xm[2] = plo[2] + (k + 0.5_rt) * dx[2];
+                    xm[0] = plo[0] + ((i + 0.5_rt) * dx[0]);
+                    xm[1] = plo[1] + ((j + 0.5_rt) * dx[1]);
+                    xm[2] = plo[2] + ((k + 0.5_rt) * dx[2]);
                     int n0_f = 0;
                     int n0_a = 0;
                     int n1_f = 0;
@@ -276,9 +276,9 @@ void FreeSurfaceSampler::initialize(const std::string& key)
                         n0_a = static_cast<int>(std::ceil(
                             (xm[gc0] + 0.5_rt * dx[gc0] - s_gc0) / dxs0));
                         // Edge case of phi
-                        if (std::abs(xm[gc0] + 0.5_rt * dx[gc0] - phi[gc0]) <
+                        if (std::abs(xm[gc0] + (0.5_rt * dx[gc0]) - phi[gc0]) <
                                 eps &&
-                            std::abs(s_gc0 + n0_a * dxs0 - phi[gc0]) < eps) {
+                            std::abs(s_gc0 + (n0_a * dxs0) - phi[gc0]) < eps) {
                             ++n0_a;
                         }
                         // Bounds
@@ -302,9 +302,9 @@ void FreeSurfaceSampler::initialize(const std::string& key)
                         n1_a = static_cast<int>(std::ceil(
                             (xm[gc1] + 0.5_rt * dx[gc1] - s_gc1) / dxs1));
                         // Edge case of phi
-                        if (std::abs(xm[gc1] + 0.5_rt * dx[gc1] - phi[gc1]) <
+                        if (std::abs(xm[gc1] + (0.5_rt * dx[gc1]) - phi[gc1]) <
                                 eps &&
-                            std::abs(s_gc1 + n1_a * dxs1 - phi[gc1]) < eps) {
+                            std::abs(s_gc1 + (n1_a * dxs1) - phi[gc1]) < eps) {
                             ++n1_a;
                         }
                         // Bounds
@@ -320,9 +320,10 @@ void FreeSurfaceSampler::initialize(const std::string& key)
                     for (int n0 = n0_f; n0 < n0_a; ++n0) {
                         for (int n1 = n1_f; n1 < n1_a; ++n1) {
                             // Save index and location
-                            idx_arr(i, j, k, ns) = n1 * ntps0 + n0;
-                            loc_arr(i, j, k, 2 * ns) = s_gc0 + n0 * dxs0;
-                            loc_arr(i, j, k, 2 * ns + 1) = s_gc1 + n1 * dxs1;
+                            idx_arr(i, j, k, ns) = (n1 * ntps0) + n0;
+                            loc_arr(i, j, k, 2 * ns) = s_gc0 + (n0 * dxs0);
+                            loc_arr(i, j, k, (2 * ns) + 1) =
+                                s_gc1 + (n1 * dxs1);
                             // Advance to next point
                             ++ns;
                             // if ns gets to max components, break
@@ -354,19 +355,19 @@ void FreeSurfaceSampler::check_bounds()
     for (int d = 0; d < AMREX_SPACEDIM; ++d) {
         if (m_start[d] < (prob_lo[d] + bounds_tol)) {
             all_ok = false;
-            m_start[d] = prob_lo[d] + 10 * bounds_tol;
+            m_start[d] = prob_lo[d] + (10 * bounds_tol);
         }
         if (m_start[d] > (prob_hi[d] - bounds_tol)) {
             all_ok = false;
-            m_start[d] = prob_hi[d] - 10 * bounds_tol;
+            m_start[d] = prob_hi[d] - (10 * bounds_tol);
         }
         if (m_end[d] < (prob_lo[d] + bounds_tol)) {
             all_ok = false;
-            m_end[d] = prob_lo[d] + 10 * bounds_tol;
+            m_end[d] = prob_lo[d] + (10 * bounds_tol);
         }
         if (m_end[d] > (prob_hi[d] - bounds_tol)) {
             all_ok = false;
-            m_end[d] = prob_hi[d] - 10 * bounds_tol;
+            m_end[d] = prob_hi[d] - (10 * bounds_tol);
         }
     }
     if (!all_ok) {
@@ -403,9 +404,9 @@ void FreeSurfaceSampler::sampling_locations(
                 amrex::RealVect loc;
                 loc[m_gc0] = m_grid_locs[idx][0];
                 loc[m_gc1] = m_grid_locs[idx][1];
-                loc[m_coorddir] = m_out[idx * m_ninst + ni];
+                loc[m_coorddir] = m_out[(idx * m_ninst) + ni];
                 if (utils::contains(box, loc, plo, dxinv)) {
-                    sample_locs.push_back(loc, idx * m_ninst + ni);
+                    sample_locs.push_back(loc, (idx * m_ninst) + ni);
                 }
             }
             ++idx;
@@ -479,9 +480,9 @@ bool FreeSurfaceSampler::update_sampling_locations()
                     vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         // Cell location
                         amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> xm;
-                        xm[0] = plo[0] + (i + 0.5_rt) * dx[0];
-                        xm[1] = plo[1] + (j + 0.5_rt) * dx[1];
-                        xm[2] = plo[2] + (k + 0.5_rt) * dx[2];
+                        xm[0] = plo[0] + ((i + 0.5_rt) * dx[0]);
+                        xm[1] = plo[1] + ((j + 0.5_rt) * dx[1]);
+                        xm[2] = plo[2] + ((k + 0.5_rt) * dx[2]);
                         bool linear_on =
                             use_linear && (xm[0] >= xhi - lx_linear);
                         // Loop number of components
@@ -491,10 +492,11 @@ bool FreeSurfaceSampler::update_sampling_locations()
                             // Proceed if there is sample point at this i,j,k,n
                             // and that cell height is below previous instance
                             if (idx >= 0 && dlst_ptr[amrex::max(0, idx)] >
-                                                xm[dir] + 0.5_rt * dx[dir]) {
+                                                xm[dir] + (0.5_rt * dx[dir])) {
                                 // Get sample locations from field loc
                                 amrex::Real loc0 = loc_arr(i, j, k, 2 * n);
-                                amrex::Real loc1 = loc_arr(i, j, k, 2 * n + 1);
+                                amrex::Real loc1 =
+                                    loc_arr(i, j, k, (2 * n) + 1);
 
                                 // Indices and slope variables
                                 // Get modified indices for checking up
@@ -513,9 +515,9 @@ bool FreeSurfaceSampler::update_sampling_locations()
                                 const bool single_phase_below_interface =
                                     (ni % 2 == 0 &&
                                      vof_arr(i, j, k) >=
-                                         1.0_rt - std::numeric_limits<
-                                                      amrex::Real>::epsilon() *
-                                                      1.0e4_rt) ||
+                                         1.0_rt - (std::numeric_limits<
+                                                       amrex::Real>::epsilon() *
+                                                   1.0e4_rt)) ||
                                     (ni % 2 != 0 &&
                                      vof_arr(i, j, k) <=
                                          std::numeric_limits<
@@ -523,9 +525,9 @@ bool FreeSurfaceSampler::update_sampling_locations()
                                              1.0e4_rt);
                                 const bool multiphase =
                                     vof_arr(i, j, k) <
-                                        (1.0_rt - std::numeric_limits<
-                                                      amrex::Real>::epsilon() *
-                                                      1.0e4_rt) &&
+                                        (1.0_rt - (std::numeric_limits<
+                                                       amrex::Real>::epsilon() *
+                                                   1.0e4_rt)) &&
                                     vof_arr(i, j, k) >
                                         std::numeric_limits<
                                             amrex::Real>::epsilon() *
@@ -603,15 +605,16 @@ bool FreeSurfaceSampler::update_sampling_locations()
                                         ht = xm[dir];
                                     } else {
                                         // Intersect 2D point with plane
-                                        ht = (xm[dir] - 0.5_rt * dx[dir]) +
-                                             (alpha -
+                                        ht =
+                                            (xm[dir] - 0.5_rt * dx[dir]) +
+                                            ((alpha -
                                               mg1 * dxi[gc0] *
                                                   (loc0 - (xm[gc0] -
                                                            0.5_rt * dx[gc0])) -
                                               mg2 * dxi[gc1] *
                                                   (loc1 - (xm[gc1] -
                                                            0.5_rt * dx[gc1]))) /
-                                                 (mdr * dxi[dir]);
+                                             (mdr * dxi[dir]));
                                     }
                                 }
                                 if (calc_flag_diffuse) {
@@ -651,29 +654,31 @@ bool FreeSurfaceSampler::update_sampling_locations()
                                     slope_0 *= dxi[gc0];
                                     slope_1 *= dxi[gc1];
                                     // Trilinear interpolation for vof
-                                    const amrex::Real vof_c = vof_arr(i, j, k) +
-                                                              slope_0 * dist_0 +
-                                                              slope_1 * dist_1;
+                                    const amrex::Real vof_c =
+                                        vof_arr(i, j, k) + (slope_0 * dist_0) +
+                                        (slope_1 * dist_1);
                                     // Extrapolate to cell edge (0.5_rt) plus a
                                     // factor of safety (0.1_rt) because
                                     // reconstruction is not identical in
                                     // neighboring cells
                                     const amrex::Real vof_r =
-                                        vof_c + 0.6_rt * slope_dir_r * dx[dir];
+                                        vof_c +
+                                        (0.6_rt * slope_dir_r * dx[dir]);
                                     const amrex::Real vof_l =
-                                        vof_c - 0.6_rt * slope_dir_l * dx[dir];
+                                        vof_c -
+                                        (0.6_rt * slope_dir_l * dx[dir]);
                                     // Check for intersect with 0.5_rt
                                     if ((vof_c - 0.5_rt) * (vof_r - 0.5_rt) <=
                                         0.) {
                                         ht = xm[dir] +
-                                             (0.5_rt - vof_c) /
-                                                 (slope_dir_r + constants::EPS);
+                                             ((0.5_rt - vof_c) /
+                                              (slope_dir_r + constants::EPS));
                                     } else if (
                                         (vof_c - 0.5_rt) * (vof_l - 0.5_rt) <=
                                         0.) {
                                         ht = xm[dir] +
-                                             (0.5_rt - vof_c) /
-                                                 (slope_dir_l + constants::EPS);
+                                             ((0.5_rt - vof_c) /
+                                              (slope_dir_l + constants::EPS));
                                     } else {
                                         // Skip if no intersection
                                         ht = plo[dir];
@@ -683,17 +688,17 @@ bool FreeSurfaceSampler::update_sampling_locations()
                                 if (calc_flag || calc_flag_diffuse) {
                                     // If interface is below lower
                                     // bound, continue to look
-                                    if (ht < xm[dir] - 0.5_rt * dx[dir]) {
+                                    if (ht < xm[dir] - (0.5_rt * dx[dir])) {
                                         ht = plo[dir];
                                     }
                                     // If interface is above upper
                                     // bound, limit it
                                     if (ht >
-                                        xm[dir] + 0.5_rt * dx[dir] *
-                                                      (1.0_rt +
-                                                       std::numeric_limits<
-                                                           float>::epsilon())) {
-                                        ht = xm[dir] + 0.5_rt * dx[dir];
+                                        xm[dir] + (0.5_rt * dx[dir] *
+                                                   (1.0_rt +
+                                                    std::numeric_limits<
+                                                        float>::epsilon()))) {
+                                        ht = xm[dir] + (0.5_rt * dx[dir]);
                                     }
                                     // Save interface location by atomic max
                                     amrex::Gpu::Atomic::Max(&dout_ptr[idx], ht);
@@ -710,12 +715,12 @@ bool FreeSurfaceSampler::update_sampling_locations()
             &m_out[static_cast<long>(ni) * m_npts]);
         // Make consistent across parallelization
         for (int n = 0; n < m_npts; n++) {
-            amrex::ParallelDescriptor::ReduceRealMax(m_out[ni * m_npts + n]);
+            amrex::ParallelDescriptor::ReduceRealMax(m_out[(ni * m_npts) + n]);
         }
         // Copy last m_out to device vector of results of last instance
         amrex::Gpu::copy(
             amrex::Gpu::hostToDevice, &m_out[static_cast<long>(ni) * m_npts],
-            &m_out[(ni + 1) * m_npts - 1] + 1, dout_last.begin());
+            &m_out[((ni + 1) * m_npts) - 1] + 1, dout_last.begin());
         // Reset current output device vector
         const auto coorddir = m_coorddir;
         amrex::ParallelFor(m_npts, [=] AMREX_GPU_DEVICE(int n) {
@@ -783,9 +788,9 @@ void FreeSurfaceSampler::post_regrid_actions()
                 vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     // Cell location
                     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> xm;
-                    xm[0] = plo[0] + (i + 0.5_rt) * dx[0];
-                    xm[1] = plo[1] + (j + 0.5_rt) * dx[1];
-                    xm[2] = plo[2] + (k + 0.5_rt) * dx[2];
+                    xm[0] = plo[0] + ((i + 0.5_rt) * dx[0]);
+                    xm[1] = plo[1] + ((j + 0.5_rt) * dx[1]);
+                    xm[2] = plo[2] + ((k + 0.5_rt) * dx[2]);
                     int n0_f = 0;
                     int n0_a = 0;
                     int n1_f = 0;
@@ -803,9 +808,9 @@ void FreeSurfaceSampler::post_regrid_actions()
                         n0_a = (int)std::ceil(
                             (xm[gc0] + 0.5_rt * dx[gc0] - s_gc0) / dxs0);
                         // Edge case of phi
-                        if (std::abs(xm[gc0] + 0.5_rt * dx[gc0] - phi[gc0]) <
+                        if (std::abs(xm[gc0] + (0.5_rt * dx[gc0]) - phi[gc0]) <
                                 eps &&
-                            std::abs(s_gc0 + n0_a * dxs0 - phi[gc0]) < eps) {
+                            std::abs(s_gc0 + (n0_a * dxs0) - phi[gc0]) < eps) {
                             ++n0_a;
                         }
                         // Bounds
@@ -829,9 +834,9 @@ void FreeSurfaceSampler::post_regrid_actions()
                         n1_a = (int)std::ceil(
                             (xm[gc1] + 0.5_rt * dx[gc1] - s_gc1) / dxs1);
                         // Edge case of phi
-                        if (std::abs(xm[gc1] + 0.5_rt * dx[gc1] - phi[gc1]) <
+                        if (std::abs(xm[gc1] + (0.5_rt * dx[gc1]) - phi[gc1]) <
                                 eps &&
-                            std::abs(s_gc1 + n1_a * dxs1 - phi[gc1]) < eps) {
+                            std::abs(s_gc1 + (n1_a * dxs1) - phi[gc1]) < eps) {
                             ++n1_a;
                         }
                         // Bounds
@@ -847,9 +852,10 @@ void FreeSurfaceSampler::post_regrid_actions()
                     for (int n0 = n0_f; n0 < n0_a; ++n0) {
                         for (int n1 = n1_f; n1 < n1_a; ++n1) {
                             // Save index and location
-                            idx_arr(i, j, k, ns) = n1 * ntps0 + n0;
-                            loc_arr(i, j, k, 2 * ns) = s_gc0 + n0 * dxs0;
-                            loc_arr(i, j, k, 2 * ns + 1) = s_gc1 + n1 * dxs1;
+                            idx_arr(i, j, k, ns) = (n1 * ntps0) + n0;
+                            loc_arr(i, j, k, 2 * ns) = s_gc0 + (n0 * dxs0);
+                            loc_arr(i, j, k, (2 * ns) + 1) =
+                                s_gc1 + (n1 * dxs1);
                             // Advance to next point
                             ++ns;
                             // if ns gets to max components, break

@@ -64,15 +64,15 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real amd_base_muvel(
     amrex::Real denom = 0;
     for (int ii = 0; ii < AMREX_SPACEDIM; ++ii) {
         for (int jj = 0; jj < AMREX_SPACEDIM; ++jj) {
-            denom = denom + gradVel(i, j, k, ii * AMREX_SPACEDIM + jj) *
-                                gradVel(i, j, k, ii * AMREX_SPACEDIM + jj);
+            denom = denom + (gradVel(i, j, k, (ii * AMREX_SPACEDIM) + jj) *
+                             gradVel(i, j, k, (ii * AMREX_SPACEDIM) + jj));
             amrex::Real sij =
-                0.5_rt * (gradVel(i, j, k, ii * AMREX_SPACEDIM + jj) +
-                          gradVel(i, j, k, jj * AMREX_SPACEDIM + ii));
+                0.5_rt * (gradVel(i, j, k, (ii * AMREX_SPACEDIM) + jj) +
+                          gradVel(i, j, k, (jj * AMREX_SPACEDIM) + ii));
             for (int kk = 0; kk < AMREX_SPACEDIM; ++kk) {
-                amrex::Real dkui = gradVel(i, j, k, ii * AMREX_SPACEDIM + kk);
-                amrex::Real dkuj = gradVel(i, j, k, jj * AMREX_SPACEDIM + kk);
-                num_shear = num_shear + dkui * dkuj * dx[kk] * dx[kk] * sij;
+                amrex::Real dkui = gradVel(i, j, k, (ii * AMREX_SPACEDIM) + kk);
+                amrex::Real dkuj = gradVel(i, j, k, (jj * AMREX_SPACEDIM) + kk);
+                num_shear = num_shear + (dkui * dkuj * dx[kk] * dx[kk] * sij);
             }
         }
     }

@@ -118,12 +118,12 @@ void CurvatureRefinement::operator()(
 
             const auto curv_mag =
                 std::abs(
-                    phix * phix * phiyy - 2. * phix * phiy * phixy +
-                    phiy * phiy * phixx + phix * phix * phizz -
-                    2. * phix * phiz * phixz + phiz * phiz * phixx +
-                    phiy * phiy * phizz - 2. * phiy * phiz * phiyz +
-                    phiz * phiz * phiyy) /
-                std::pow(phix * phix + phiy * phiy + phiz * phiz, 1.5_rt);
+                    (phix * phix * phiyy) - (2. * phix * phiy * phixy) +
+                    (phiy * phiy * phixx) + (phix * phix * phizz) -
+                    (2. * phix * phiz * phixz) + (phiz * phiz * phixx) +
+                    (phiy * phiy * phizz) - (2. * phiy * phiz * phiyz) +
+                    (phiz * phiz * phiyy)) /
+                std::pow((phix * phix) + (phiy * phiy) + (phiz * phiz), 1.5_rt);
             const auto curv_min = amrex::min<amrex::Real>(
                 curv_val, std::cbrt(idx[0] * idx[1] * idx[2]));
             if (curv_mag > curv_min) {

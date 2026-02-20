@@ -51,27 +51,27 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real CollidingRings::operator()(
 {
     amrex::Real dr1 = 0.0_rt;
     for (int i = 0; i < num_modes; ++i) {
-        dr1 +=
-            perturbation_amplitude *
-            std::cos(perturbation_modes[i] * theta - perturbation_phases_1[i]);
+        dr1 += perturbation_amplitude *
+               std::cos(
+                   (perturbation_modes[i] * theta) - perturbation_phases_1[i]);
     }
     amrex::Real dr2 = 0.0_rt;
     for (int i = 0; i < num_modes; ++i) {
-        dr2 +=
-            perturbation_amplitude *
-            std::cos(perturbation_modes[i] * theta - perturbation_phases_2[i]);
+        dr2 += perturbation_amplitude *
+               std::cos(
+                   (perturbation_modes[i] * theta) - perturbation_phases_2[i]);
     }
     amrex::Real vortheta_1 =
         -Gamma / (std::numbers::pi_v<amrex::Real> * std::pow(delta, 2.0_rt)) *
         std::exp(
-            -(std::pow(z + dz / 2.0_rt, 2.0_rt) +
-              std::pow((r * (1.0_rt + dr1) - R), 2.0_rt)) /
+            -(std::pow(z + (dz / 2.0_rt), 2.0_rt) +
+              std::pow(((r * (1.0_rt + dr1)) - R), 2.0_rt)) /
             std::pow(delta, 2.0_rt));
     amrex::Real vortheta_2 =
         Gamma / (std::numbers::pi_v<amrex::Real> * std::pow(delta, 2.0_rt)) *
         std::exp(
-            -(std::pow(z - dz / 2.0_rt, 2.0_rt) +
-              std::pow((r * (1.0_rt + dr2) - R), 2.0_rt)) /
+            -(std::pow(z - (dz / 2.0_rt), 2.0_rt) +
+              std::pow(((r * (1.0_rt + dr2)) - R), 2.0_rt)) /
             std::pow(delta, 2.0_rt));
     return vortheta_1 + vortheta_2;
 }
@@ -178,9 +178,9 @@ void VortexRing::initialize_velocity(const VortexRingType& vorticity_theta)
 
             amrex::ParallelFor(
                 nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real x = problo[0] + i * dx[0];
-                    const amrex::Real y = problo[1] + j * dx[1];
-                    const amrex::Real z = problo[2] + k * dx[2];
+                    const amrex::Real x = problo[0] + (i * dx[0]);
+                    const amrex::Real y = problo[1] + (j * dx[1]);
+                    const amrex::Real z = problo[2] + (k * dx[2]);
                     const amrex::Real r =
                         std::sqrt(std::pow(x, 2.0_rt) + std::pow(y, 2.0_rt));
                     const amrex::Real theta = std::atan2(y, x);

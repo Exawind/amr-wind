@@ -32,39 +32,39 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void youngs_finite_difference_normal(
     amrex::Real mm1 =
         volfrac(i - 1, j - 1, k - 1) + volfrac(i - 1, j - 1, k + 1) +
         volfrac(i - 1, j + 1, k - 1) + volfrac(i - 1, j + 1, k + 1) +
-        2.0_rt * (volfrac(i - 1, j - 1, k) + volfrac(i - 1, j + 1, k) +
-                  volfrac(i - 1, j, k - 1) + volfrac(i - 1, j, k + 1)) +
-        4.0_rt * volfrac(i - 1, j, k);
+        (2.0_rt * (volfrac(i - 1, j - 1, k) + volfrac(i - 1, j + 1, k) +
+                   volfrac(i - 1, j, k - 1) + volfrac(i - 1, j, k + 1))) +
+        (4.0_rt * volfrac(i - 1, j, k));
     amrex::Real mm2 =
         volfrac(i + 1, j - 1, k - 1) + volfrac(i + 1, j - 1, k + 1) +
         volfrac(i + 1, j + 1, k - 1) + volfrac(i + 1, j + 1, k + 1) +
-        2.0_rt * (volfrac(i + 1, j - 1, k) + volfrac(i + 1, j + 1, k) +
-                  volfrac(i + 1, j, k - 1) + volfrac(i + 1, j, k + 1)) +
-        4.0_rt * volfrac(i + 1, j, k);
+        (2.0_rt * (volfrac(i + 1, j - 1, k) + volfrac(i + 1, j + 1, k) +
+                   volfrac(i + 1, j, k - 1) + volfrac(i + 1, j, k + 1))) +
+        (4.0_rt * volfrac(i + 1, j, k));
     mx = mm1 - mm2;
 
     mm1 = volfrac(i - 1, j - 1, k - 1) + volfrac(i - 1, j - 1, k + 1) +
           volfrac(i + 1, j - 1, k - 1) + volfrac(i + 1, j - 1, k + 1) +
-          2.0_rt * (volfrac(i - 1, j - 1, k) + volfrac(i + 1, j - 1, k) +
-                    volfrac(i, j - 1, k - 1) + volfrac(i, j - 1, k + 1)) +
-          4.0_rt * volfrac(i, j - 1, k);
+          (2.0_rt * (volfrac(i - 1, j - 1, k) + volfrac(i + 1, j - 1, k) +
+                     volfrac(i, j - 1, k - 1) + volfrac(i, j - 1, k + 1))) +
+          (4.0_rt * volfrac(i, j - 1, k));
     mm2 = volfrac(i - 1, j + 1, k - 1) + volfrac(i - 1, j + 1, k + 1) +
           volfrac(i + 1, j + 1, k - 1) + volfrac(i + 1, j + 1, k + 1) +
-          2.0_rt * (volfrac(i - 1, j + 1, k) + volfrac(i + 1, j + 1, k) +
-                    volfrac(i, j + 1, k - 1) + volfrac(i, j + 1, k + 1)) +
-          4.0_rt * volfrac(i, j + 1, k);
+          (2.0_rt * (volfrac(i - 1, j + 1, k) + volfrac(i + 1, j + 1, k) +
+                     volfrac(i, j + 1, k - 1) + volfrac(i, j + 1, k + 1))) +
+          (4.0_rt * volfrac(i, j + 1, k));
     my = mm1 - mm2;
 
     mm1 = volfrac(i - 1, j - 1, k - 1) + volfrac(i - 1, j + 1, k - 1) +
           volfrac(i + 1, j - 1, k - 1) + volfrac(i + 1, j + 1, k - 1) +
-          2.0_rt * (volfrac(i - 1, j, k - 1) + volfrac(i + 1, j, k - 1) +
-                    volfrac(i, j - 1, k - 1) + volfrac(i, j + 1, k - 1)) +
-          4.0_rt * volfrac(i, j, k - 1);
+          (2.0_rt * (volfrac(i - 1, j, k - 1) + volfrac(i + 1, j, k - 1) +
+                     volfrac(i, j - 1, k - 1) + volfrac(i, j + 1, k - 1))) +
+          (4.0_rt * volfrac(i, j, k - 1));
     mm2 = volfrac(i - 1, j - 1, k + 1) + volfrac(i - 1, j + 1, k + 1) +
           volfrac(i + 1, j - 1, k + 1) + volfrac(i + 1, j + 1, k + 1) +
-          2.0_rt * (volfrac(i - 1, j, k + 1) + volfrac(i + 1, j, k + 1) +
-                    volfrac(i, j - 1, k + 1) + volfrac(i, j + 1, k + 1)) +
-          4.0_rt * volfrac(i, j, k + 1);
+          (2.0_rt * (volfrac(i - 1, j, k + 1) + volfrac(i + 1, j, k + 1) +
+                     volfrac(i, j - 1, k + 1) + volfrac(i, j + 1, k + 1))) +
+          (4.0_rt * volfrac(i, j, k + 1));
     mz = mm1 - mm2;
 }
 
@@ -91,38 +91,38 @@ youngs_finite_difference_normal_neumann(
 
     amrex::Real mm1 = volfrac(im1, jm1, km1) + volfrac(im1, jm1, kp1) +
                       volfrac(im1, jp1, km1) + volfrac(im1, jp1, kp1) +
-                      2.0_rt * (volfrac(im1, jm1, k) + volfrac(im1, jp1, k) +
-                                volfrac(im1, j, km1) + volfrac(im1, j, kp1)) +
-                      4.0_rt * volfrac(im1, j, k);
+                      (2.0_rt * (volfrac(im1, jm1, k) + volfrac(im1, jp1, k) +
+                                 volfrac(im1, j, km1) + volfrac(im1, j, kp1))) +
+                      (4.0_rt * volfrac(im1, j, k));
     amrex::Real mm2 = volfrac(ip1, jm1, km1) + volfrac(ip1, jm1, kp1) +
                       volfrac(ip1, jp1, km1) + volfrac(ip1, jp1, kp1) +
-                      2.0_rt * (volfrac(ip1, jm1, k) + volfrac(ip1, jp1, k) +
-                                volfrac(ip1, j, km1) + volfrac(ip1, j, kp1)) +
-                      4.0_rt * volfrac(ip1, j, k);
+                      (2.0_rt * (volfrac(ip1, jm1, k) + volfrac(ip1, jp1, k) +
+                                 volfrac(ip1, j, km1) + volfrac(ip1, j, kp1))) +
+                      (4.0_rt * volfrac(ip1, j, k));
     mx = mm1 - mm2;
 
     mm1 = volfrac(im1, jm1, km1) + volfrac(im1, jm1, kp1) +
           volfrac(ip1, jm1, km1) + volfrac(ip1, jm1, kp1) +
-          2.0_rt * (volfrac(im1, jm1, k) + volfrac(ip1, jm1, k) +
-                    volfrac(i, jm1, km1) + volfrac(i, jm1, kp1)) +
-          4.0_rt * volfrac(i, jm1, k);
+          (2.0_rt * (volfrac(im1, jm1, k) + volfrac(ip1, jm1, k) +
+                     volfrac(i, jm1, km1) + volfrac(i, jm1, kp1))) +
+          (4.0_rt * volfrac(i, jm1, k));
     mm2 = volfrac(im1, jp1, km1) + volfrac(im1, jp1, kp1) +
           volfrac(ip1, jp1, km1) + volfrac(ip1, jp1, kp1) +
-          2.0_rt * (volfrac(im1, jp1, k) + volfrac(ip1, jp1, k) +
-                    volfrac(i, jp1, km1) + volfrac(i, jp1, kp1)) +
-          4.0_rt * volfrac(i, jp1, k);
+          (2.0_rt * (volfrac(im1, jp1, k) + volfrac(ip1, jp1, k) +
+                     volfrac(i, jp1, km1) + volfrac(i, jp1, kp1))) +
+          (4.0_rt * volfrac(i, jp1, k));
     my = mm1 - mm2;
 
     mm1 = volfrac(im1, jm1, km1) + volfrac(im1, jp1, km1) +
           volfrac(ip1, jm1, km1) + volfrac(ip1, jp1, km1) +
-          2.0_rt * (volfrac(im1, j, km1) + volfrac(ip1, j, km1) +
-                    volfrac(i, jm1, km1) + volfrac(i, jp1, km1)) +
-          4.0_rt * volfrac(i, j, km1);
+          (2.0_rt * (volfrac(im1, j, km1) + volfrac(ip1, j, km1) +
+                     volfrac(i, jm1, km1) + volfrac(i, jp1, km1))) +
+          (4.0_rt * volfrac(i, j, km1));
     mm2 = volfrac(im1, jm1, kp1) + volfrac(im1, jp1, kp1) +
           volfrac(ip1, jm1, kp1) + volfrac(ip1, jp1, kp1) +
-          2.0_rt * (volfrac(im1, j, kp1) + volfrac(ip1, j, kp1) +
-                    volfrac(i, jm1, kp1) + volfrac(i, jp1, kp1)) +
-          4.0_rt * volfrac(i, j, kp1);
+          (2.0_rt * (volfrac(im1, j, kp1) + volfrac(ip1, j, kp1) +
+                     volfrac(i, jm1, kp1) + volfrac(i, jp1, kp1))) +
+          (4.0_rt * volfrac(i, j, kp1));
     mz = mm1 - mm2;
 }
 
@@ -305,7 +305,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real volume_intercept(
     amrex::Real m12 = m1 + m2;
     amrex::Real pr = amrex::max<amrex::Real>(6.0_rt * m1 * m2 * m3, const_tiny);
     amrex::Real V1 = m1 * m1 * m1 / pr;
-    amrex::Real V2 = V1 + 0.5_rt * (m2 - m1) / m3;
+    amrex::Real V2 = V1 + (0.5_rt * (m2 - m1) / m3);
 
     amrex::Real mm, V3;
     if (m3 < m12) {
@@ -324,8 +324,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real volume_intercept(
     if (ch < V1) {
         alpha = std::cbrt(pr * ch); // case (1)
     } else if (ch < V2) {
-        alpha =
-            0.50_rt * (m1 + std::sqrt(m1 * m1 + 8.0_rt * m2 * m3 * (ch - V1)));
+        alpha = 0.50_rt *
+                (m1 + std::sqrt((m1 * m1) + (8.0_rt * m2 * m3 * (ch - V1))));
     } else if (ch < V3) {
         p = 2.0_rt * m1 * m2;
         q = 1.5_rt * m1 * m2 * (m12 - 2.0_rt * m3 * ch);
@@ -335,11 +335,11 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real volume_intercept(
                 q / (p * p12 + std::numeric_limits<amrex::Real>::epsilon())) /
             3.0_rt;
         cs = std::cos(teta);
-        alpha = p12 * (std::sqrt(3.0_rt * (1.0_rt - cs * cs)) - cs) + m12;
+        alpha = (p12 * (std::sqrt(3.0_rt * (1.0_rt - cs * cs)) - cs)) + m12;
     } else if (m12 < m3) {
-        alpha = m3 * ch + 0.5_rt * mm;
+        alpha = (m3 * ch) + (0.5_rt * mm);
     } else {
-        p = m1 * (m2 + m3) + m2 * m3 - 0.25_rt;
+        p = (m1 * (m2 + m3)) + (m2 * m3) - 0.25_rt;
         q = 1.5_rt * m1 * m2 * m3 * (0.5_rt - ch);
         p12 = std::sqrt(p);
         teta =
@@ -347,7 +347,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real volume_intercept(
                 q / (p * p12 + std::numeric_limits<amrex::Real>::epsilon())) /
             3.0_rt;
         cs = std::cos(teta);
-        alpha = p12 * (std::sqrt(3.0_rt * (1.0_rt - cs * cs)) - cs) + 0.5_rt;
+        alpha = (p12 * (std::sqrt(3.0_rt * (1.0_rt - cs * cs)) - cs)) + 0.5_rt;
     }
 
     if (volF > 0.5_rt) {
@@ -377,7 +377,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real cut_volume(
     amrex::Real al;
 
     // move origin to x0
-    al = alpha - m1 * r0;
+    al = alpha - (m1 * r0);
 
     // reflect the figure when negative coefficients
     al = al + amrex::max<amrex::Real>(0.0_rt, -m1 * dr0) +
@@ -386,7 +386,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real cut_volume(
 
     // normalized equation: m1*y1 + m2*y2 + m3*y3 = alh, with 0 <= m1 <= m2 <=
     // m3 the problem is then solved again in the unit cube
-    amrex::Real tmp = std::abs(m1) * dr0 + std::abs(m2) + std::abs(m3);
+    amrex::Real tmp = (std::abs(m1) * dr0) + std::abs(m2) + std::abs(m3);
     amrex::Real n1 = std::abs(m1) / tmp; // need positive coefficients
     amrex::Real n2 = std::abs(m2) / tmp;
     amrex::Real n3 = std::abs(m3) / tmp;
@@ -426,8 +426,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real cut_volume(
         if (a < vm1) {
             v = a * a * a / (6.0_rt * vm1 * vm2 * vm3);
         } else if (a < vm2) {
-            v = a * (a - vm1) / (2.0_rt * vm2 * vm3) +
-                vm1 * vm1 / (6.0_rt * vm2 * vm3 + const_tiny);
+            v = (a * (a - vm1) / (2.0_rt * vm2 * vm3)) +
+                (vm1 * vm1 / (6.0_rt * vm2 * vm3 + const_tiny));
         } else if (a < amrex::min(vm12, vm3)) {
             v = (a * a * (3.0_rt * vm12 - a) + vm1 * vm1 * (vm1 - 3.0_rt * a) +
                  vm2 * vm2 * (vm2 - 3.0_rt * a)) /

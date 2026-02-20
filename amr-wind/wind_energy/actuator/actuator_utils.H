@@ -52,7 +52,8 @@ gaussian3d(const vs::Vector& dist, const vs::Vector& eps)
         constexpr amrex::Real fac = 0.17958712212516656_rt;
         const amrex::Real eps_fac = eps.x() * eps.y() * eps.z();
         return (fac / eps_fac) *
-               std::exp(-rr.x() * rr.x() - rr.y() * rr.y() - rr.z() * rr.z());
+               std::exp(
+                   (-rr.x() * rr.x()) - (rr.y() * rr.y()) - (rr.z() * rr.z()));
     }
 
     return 0.0_rt;
@@ -127,7 +128,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE vs::Vector delta_pnts_cyl(
 AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
 linear_basis_1d(const amrex::Real distance, const amrex::Real dX)
 {
-    return amrex::max<amrex::Real>(0.0_rt, 1.0_rt - distance / dX) / dX;
+    return amrex::max<amrex::Real>(0.0_rt, 1.0_rt - (distance / dX)) / dX;
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE vs::Vector compute_tangential_vector(

@@ -86,8 +86,8 @@ struct ComputeForceOp<UniformCt, ActSrcDisk>
 
         for (int ip = 0; ip < npts; ++ip) {
             const amrex::Real r = (ip + 0.5_rt) * dr;
-            const amrex::Real rp = r + dr * 0.5_rt;
-            const amrex::Real rm = r - dr * 0.5_rt;
+            const amrex::Real rp = r + (dr * 0.5_rt);
+            const amrex::Real rm = r - (dr * 0.5_rt);
             const amrex::Real a =
                 std::numbers::pi_v<amrex::Real> * (rp * rp - rm * rm);
             // disk force should always point in direction of the normal

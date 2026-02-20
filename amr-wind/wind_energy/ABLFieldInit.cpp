@@ -237,7 +237,7 @@ void ABLFieldInit::operator()(
 
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                const amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
+                const amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);
 
                 density(i, j, k) = rho_init;
                 const auto idx = interp::bisection_search(th, th_end, z);
@@ -257,9 +257,9 @@ void ABLFieldInit::operator()(
         const bool terrain_aligned_profile = m_terrain_aligned_profile;
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                amrex::Real x = problo[0] + (i + 0.5_rt) * dx[0];
-                amrex::Real y = problo[1] + (j + 0.5_rt) * dx[1];
-                amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
+                amrex::Real x = problo[0] + ((i + 0.5_rt) * dx[0]);
+                amrex::Real y = problo[1] + ((j + 0.5_rt) * dx[1]);
+                amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);
                 const amrex::Real terrainHt =
                     terrain_aligned_profile
                         ? interp::bilinear(
@@ -308,7 +308,7 @@ void ABLFieldInit::operator()(
 
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                const amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
+                const amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);
 
                 density(i, j, k) = rho_init;
                 // Mean velocity field
@@ -321,7 +321,7 @@ void ABLFieldInit::operator()(
                     if ((z > th[iz]) && (z <= th[iz + 1])) {
                         const amrex::Real slope =
                             (tv[iz + 1] - tv[iz]) / (th[iz + 1] - th[iz]);
-                        theta = tv[iz] + (z - th[iz]) * slope;
+                        theta = tv[iz] + ((z - th[iz]) * slope);
                     }
                 }
 
@@ -329,14 +329,14 @@ void ABLFieldInit::operator()(
 
                 if (linear_profile) {
                     velocity(i, j, k, 0) =
-                        bottom_u_vel + z * (top_u_vel - bottom_u_vel) /
-                                           (probhi[2] - problo[2]);
+                        bottom_u_vel + (z * (top_u_vel - bottom_u_vel) /
+                                        (probhi[2] - problo[2]));
                     velocity(i, j, k, 1) =
-                        bottom_v_vel + z * (top_v_vel - bottom_v_vel) /
-                                           (probhi[2] - problo[2]);
+                        bottom_v_vel + (z * (top_v_vel - bottom_v_vel) /
+                                        (probhi[2] - problo[2]));
                     velocity(i, j, k, 2) =
-                        bottom_w_vel + z * (top_w_vel - bottom_w_vel) /
-                                           (probhi[2] - problo[2]);
+                        bottom_w_vel + (z * (top_w_vel - bottom_w_vel) /
+                                        (probhi[2] - problo[2]));
                 }
             });
     }
@@ -357,9 +357,9 @@ void ABLFieldInit::operator()(
 
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                const amrex::Real x = problo[0] + (i + 0.5_rt) * dx[0];
-                const amrex::Real y = problo[1] + (j + 0.5_rt) * dx[1];
-                const amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
+                const amrex::Real x = problo[0] + ((i + 0.5_rt) * dx[0]);
+                const amrex::Real y = problo[1] + ((j + 0.5_rt) * dx[1]);
+                const amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);
                 const amrex::Real xl = x - problo[0];
                 const amrex::Real yl = y - problo[1];
                 const amrex::Real zl = z / ref_height;
@@ -398,7 +398,7 @@ void ABLFieldInit::perturb_temperature(
             bx, [=] AMREX_GPU_DEVICE(
                     int i, int j, int k,
                     const amrex::RandomEngine& engine) noexcept {
-                const amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
+                const amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);
                 if (z < theta_cutoff_height) {
                     theta(i, j, k) = delta_t * amrex::RandomNormal(
                                                    theta_gauss_mean,
@@ -438,9 +438,9 @@ void ABLFieldInit::init_tke(
         amrex::ParallelFor(
             tke_mf,
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                amrex::Real x = problo[0] + (i + 0.5_rt) * dx[0];
-                amrex::Real y = problo[1] + (j + 0.5_rt) * dx[1];
-                amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
+                amrex::Real x = problo[0] + ((i + 0.5_rt) * dx[0]);
+                amrex::Real y = problo[1] + ((j + 0.5_rt) * dx[1]);
+                amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);
                 const amrex::Real terrainHt =
                     terrain_aligned_profile
                         ? interp::bilinear(
@@ -461,12 +461,12 @@ void ABLFieldInit::init_tke(
         amrex::ParallelFor(
             tke_mf,
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                const amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
+                const amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);
 
                 if (z < tke_cutoff_height) {
                     tke_arrs[nbx](i, j, k) =
                         tke_init_factor *
-                        std::pow(1.0_rt - z / tke_cutoff_height, 3.0_rt);
+                        std::pow(1.0_rt - (z / tke_cutoff_height), 3.0_rt);
                 } else {
                     tke_arrs[nbx](i, j, k) = tiny;
                 }

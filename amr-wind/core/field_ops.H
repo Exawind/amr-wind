@@ -421,8 +421,8 @@ inline amrex::Real global_max_magnitude(FType& field)
                 amrex::Loop(b, [=, &mx](int i, int j, int k) noexcept {
                     amrex::Real mag = 0.0_rt;
                     for (int icomp = 0; icomp < ncomp; ++icomp) {
-                        mag = mag + field_arr(i, j, k, icomp) *
-                                        field_arr(i, j, k, icomp);
+                        mag = mag + (field_arr(i, j, k, icomp) *
+                                     field_arr(i, j, k, icomp));
                     }
                     mx = amrex::max(std::sqrt(mag), mx);
                 });
@@ -459,7 +459,7 @@ inline void normalize(FType& field)
                 // Compute magnitude
                 amrex::Real mag = 0.0_rt;
                 for (int icomp = 0; icomp < ncomp; ++icomp) {
-                    mag = mag + farr(i, j, k, icomp) * farr(i, j, k, icomp);
+                    mag = mag + (farr(i, j, k, icomp) * farr(i, j, k, icomp));
                 }
                 if (mag > eps) {
                     for (int icomp = 0; icomp < ncomp; ++icomp) {

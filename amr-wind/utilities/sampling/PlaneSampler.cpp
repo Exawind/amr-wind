@@ -84,26 +84,27 @@ void PlaneSampler::check_bounds()
     for (int d = 0; d < AMREX_SPACEDIM; ++d) {
         if (amrex::Math::abs(m_origin[d] + m_axis1[d] - prob_lo[d]) <
             2.0_rt * tol) {
-            m_axis1[d] = prob_lo[d] - m_origin[d] + 2.0_rt * tol;
+            m_axis1[d] = prob_lo[d] - m_origin[d] + (2.0_rt * tol);
         }
         if (amrex::Math::abs(m_origin[d] + m_axis1[d] - prob_hi[d]) <
             2.0_rt * tol) {
-            m_axis1[d] = prob_hi[d] - m_origin[d] - 2.0_rt * tol;
+            m_axis1[d] = prob_hi[d] - m_origin[d] - (2.0_rt * tol);
         }
         if (amrex::Math::abs(m_origin[d] + m_axis2[d] - prob_lo[d]) <
             2.0_rt * tol) {
-            m_axis2[d] = prob_lo[d] - m_origin[d] + 2.0_rt * tol;
+            m_axis2[d] = prob_lo[d] - m_origin[d] + (2.0_rt * tol);
         }
         if (amrex::Math::abs(m_origin[d] + m_axis2[d] - prob_hi[d]) <
             2.0_rt * tol) {
-            m_axis2[d] = prob_hi[d] - m_origin[d] - 2.0_rt * tol;
+            m_axis2[d] = prob_hi[d] - m_origin[d] - (2.0_rt * tol);
         }
     }
 
     const int nplanes = static_cast<int>(m_poffsets.size());
     for (int k = 0; k < nplanes; ++k) {
         for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-            const auto point = m_origin[d] + m_poffsets[k] * m_offset_vector[d];
+            const auto point =
+                m_origin[d] + (m_poffsets[k] * m_offset_vector[d]);
             const amrex::Vector<amrex::Real> points = {
                 point, point + m_axis1[d], point + m_axis2[d]};
             for (const auto& pt : points) {
@@ -151,8 +152,8 @@ void PlaneSampler::sampling_locations(
             for (int i = 0; i < m_npts_dir[0]; ++i) {
                 amrex::RealVect loc;
                 for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-                    loc[d] = m_origin[d] + dx[d] * i + dy[d] * j +
-                             m_poffsets[k] * m_offset_vector[d];
+                    loc[d] = m_origin[d] + (dx[d] * i) + (dy[d] * j) +
+                             (m_poffsets[k] * m_offset_vector[d]);
                 }
                 if (utils::contains(box, loc, plo, dxinv)) {
                     sample_locs.push_back(loc, idx);

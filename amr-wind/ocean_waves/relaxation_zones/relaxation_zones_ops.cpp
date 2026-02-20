@@ -99,11 +99,11 @@ void modify_target_fields_for_beach(
                 // domain limits
                 const amrex::Real x = amrex::min<amrex::Real>(
                     amrex::max<amrex::Real>(
-                        problo[0] + (i + 0.5_rt) * dx[0], problo[0]),
+                        problo[0] + ((i + 0.5_rt) * dx[0]), problo[0]),
                     probhi[0]);
                 // z is for distance function and needs to exceed domain limits
                 // so norms can be calculated when converted to vof
-                const amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
+                const amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);
 
                 auto target_ls = target_ls_arrs[nbx];
                 auto target_vel = target_vel_arrs[nbx];
@@ -188,11 +188,11 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 const amrex::Real x = amrex::min<amrex::Real>(
                     amrex::max<amrex::Real>(
-                        problo[0] + (i + 0.5_rt) * dx[0], problo[0]),
+                        problo[0] + ((i + 0.5_rt) * dx[0]), problo[0]),
                     probhi[0]);
                 const amrex::Real y = amrex::min<amrex::Real>(
                     amrex::max<amrex::Real>(
-                        problo[1] + (j + 0.5_rt) * dx[1], problo[1]),
+                        problo[1] + ((j + 0.5_rt) * dx[1]), problo[1]),
                     probhi[1]);
 
                 auto vel = vel_arrs[nbx];
@@ -263,8 +263,8 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
                     amrex::Real fvel_liq =
                         (target_volfrac(i, j, k) > vof_tiny) ? 1.0_rt : 0.0_rt;
                     fvel_liq = in_beach ? 1.0_rt : fvel_liq;
-                    amrex::Real rho_ = rho1 * volfrac(i, j, k) +
-                                       rho2 * (1.0_rt - volfrac(i, j, k));
+                    amrex::Real rho_ = (rho1 * volfrac(i, j, k)) +
+                                       (rho2 * (1.0_rt - volfrac(i, j, k)));
                     for (int n = 0; n < vel.nComp(); ++n) {
                         // Get updated liquid velocity
                         amrex::Real vel_liq = vel(i, j, k, n);
@@ -289,8 +289,8 @@ void apply_relaxation_zones(CFDSim& sim, const RelaxZonesBaseData& wdata)
 
                     // Make sure that density is updated before entering the
                     // solution
-                    rho(i, j, k) = rho1 * volfrac(i, j, k) +
-                                   rho2 * (1.0_rt - volfrac(i, j, k));
+                    rho(i, j, k) = (rho1 * volfrac(i, j, k)) +
+                                   (rho2 * (1.0_rt - volfrac(i, j, k)));
                 }
             });
     }

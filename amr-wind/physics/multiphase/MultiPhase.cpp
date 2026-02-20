@@ -329,8 +329,8 @@ void MultiPhase::set_density_via_levelset()
                                  std::numbers::pi_v<amrex::Real> / eps));
                 }
                 rho_arrs[nbx](i, j, k) =
-                    captured_rho1 * smooth_heaviside +
-                    captured_rho2 * (1.0_rt - smooth_heaviside);
+                    (captured_rho1 * smooth_heaviside) +
+                    (captured_rho2 * (1.0_rt - smooth_heaviside));
             });
     }
     amrex::Gpu::streamSynchronize();
@@ -352,8 +352,8 @@ void MultiPhase::set_density_via_vof(amr_wind::FieldState fstate)
             density, m_density.num_grow(),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 rho_arrs[nbx](i, j, k) =
-                    captured_rho1 * F_arrs[nbx](i, j, k) +
-                    captured_rho2 * (1.0_rt - F_arrs[nbx](i, j, k));
+                    (captured_rho1 * F_arrs[nbx](i, j, k)) +
+                    (captured_rho2 * (1.0_rt - F_arrs[nbx](i, j, k)));
             });
     }
     amrex::Gpu::streamSynchronize();
@@ -400,16 +400,16 @@ void MultiPhase::calculate_advected_facedensity()
                 bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     // Volume terms at each face become density terms
                     if (xbx.contains(i, j, k)) {
-                        aa_x(i, j, k) = c_r1 * aa_x(i, j, k) +
-                                        c_r2 * (1.0_rt - aa_x(i, j, k));
+                        aa_x(i, j, k) = (c_r1 * aa_x(i, j, k)) +
+                                        (c_r2 * (1.0_rt - aa_x(i, j, k)));
                     }
                     if (ybx.contains(i, j, k)) {
-                        aa_y(i, j, k) = c_r1 * aa_y(i, j, k) +
-                                        c_r2 * (1.0_rt - aa_y(i, j, k));
+                        aa_y(i, j, k) = (c_r1 * aa_y(i, j, k)) +
+                                        (c_r2 * (1.0_rt - aa_y(i, j, k)));
                     }
                     if (zbx.contains(i, j, k)) {
-                        aa_z(i, j, k) = c_r1 * aa_z(i, j, k) +
-                                        c_r2 * (1.0_rt - aa_z(i, j, k));
+                        aa_z(i, j, k) = (c_r1 * aa_z(i, j, k)) +
+                                        (c_r2 * (1.0_rt - aa_z(i, j, k)));
                     }
                 });
         }
@@ -449,7 +449,7 @@ void MultiPhase::levelset2vof()
                 const amrex::Real alpha =
                     (phi_arrs[nbx](i, j, k) < -eps)
                         ? -1.0_rt
-                        : phi_arrs[nbx](i, j, k) / normL1 + 0.5_rt;
+                        : (phi_arrs[nbx](i, j, k) / normL1) + 0.5_rt;
                 if (alpha >= 1.0_rt) {
                     volfrac_arrs[nbx](i, j, k) = 1.0_rt;
                 } else if (alpha <= 0.0_rt) {
@@ -527,7 +527,7 @@ void MultiPhase::levelset2vof(
                 const amrex::Real alpha =
                     (phi_arrs[nbx](i, j, k) < -eps)
                         ? -1.0_rt
-                        : phi_arrs[nbx](i, j, k) / normL1 + 0.5_rt;
+                        : (phi_arrs[nbx](i, j, k) / normL1) + 0.5_rt;
                 if (alpha >= 1.0_rt) {
                     volfrac_arrs[nbx](i, j, k) = 1.0_rt;
                 } else if (alpha <= 0.0_rt) {

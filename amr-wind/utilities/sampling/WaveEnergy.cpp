@@ -155,7 +155,7 @@ amrex::Real WaveEnergy::calculate_potential_energy()
                             (vof_arr(i, j, k + 1) > vof_arr(i, j, k)) ? -1 : 1;
                         const amrex::Real zl =
                             probloz +
-                            (kk + dir * 0.5_rt * vof_arr(i, j, k)) * dz;
+                            ((kk + dir * 0.5_rt * vof_arr(i, j, k)) * dz);
                         Wave_Energy_Fab += cell_vol * mask_arr(i, j, k) *
                                            vof_arr(i, j, k) * g * zl;
                     });
@@ -173,7 +173,8 @@ void WaveEnergy::output_actions()
     BL_PROFILE("amr-wind::WaveEnergy::output_actions");
 
     m_wave_kinetic_energy = calculate_kinetic_energy() / m_escl;
-    m_wave_potential_energy = calculate_potential_energy() / m_escl + m_pe_off;
+    m_wave_potential_energy =
+        (calculate_potential_energy() / m_escl) + m_pe_off;
 
     write_ascii();
 }
