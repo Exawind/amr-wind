@@ -59,12 +59,12 @@ void VortexPatch::initialize_fields(int level, const amrex::Geometry& geom)
 
     amrex::ParallelFor(
         velocity, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-            const amrex::Real x = problo[0] + (i + 0.5_rt) * dx[0];
-            const amrex::Real y = problo[1] + (j + 0.5_rt) * dx[1];
-            const amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
-            const amrex::Real xf = problo[0] + i * dx[0];
-            const amrex::Real yf = problo[1] + j * dx[1];
-            const amrex::Real zf = problo[2] + k * dx[2];
+            const amrex::Real x = problo[0] + ((i + 0.5_rt) * dx[0]);
+            const amrex::Real y = problo[1] + ((j + 0.5_rt) * dx[1]);
+            const amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);
+            const amrex::Real xf = problo[0] + (i * dx[0]);
+            const amrex::Real yf = problo[1] + (j * dx[1]);
+            const amrex::Real zf = problo[2] + (k * dx[2]);
             uf_arrs[nbx](i, j, k) =
                 2.0_rt * std::sin(std::numbers::pi_v<amrex::Real> * xf) *
                 std::sin(std::numbers::pi_v<amrex::Real> * xf) *
@@ -99,8 +99,8 @@ void VortexPatch::initialize_fields(int level, const amrex::Geometry& geom)
 
             phi_arrs[nbx](i, j, k) =
                 radius - std::sqrt(
-                             (x - xc) * (x - xc) + (y - yc) * (y - yc) +
-                             (z - zc) * (z - zc));
+                             ((x - xc) * (x - xc)) + ((y - yc) * (y - yc)) +
+                             ((z - zc) * (z - zc)));
             amrex::Real smooth_heaviside;
             if (phi_arrs[nbx](i, j, k) > eps) {
                 smooth_heaviside = 1.0_rt;
@@ -114,8 +114,8 @@ void VortexPatch::initialize_fields(int level, const amrex::Geometry& geom)
                                       phi_arrs[nbx](i, j, k) *
                                       std::numbers::pi_v<amrex::Real> / eps));
             }
-            rho_arrs[nbx](i, j, k) =
-                rho1 * smooth_heaviside + rho2 * (1.0_rt - smooth_heaviside);
+            rho_arrs[nbx](i, j, k) = (rho1 * smooth_heaviside) +
+                                     (rho2 * (1.0_rt - smooth_heaviside));
         });
     amrex::Gpu::streamSynchronize();
 }
@@ -123,7 +123,7 @@ void VortexPatch::initialize_fields(int level, const amrex::Geometry& geom)
 void VortexPatch::pre_advance_work()
 {
     const auto& time =
-        m_sim.time().current_time() + 0.5_rt * m_sim.time().delta_t();
+        m_sim.time().current_time() + (0.5_rt * m_sim.time().delta_t());
 
     const int nlevels = m_sim.repo().num_active_levels();
     const auto& geom = m_sim.mesh().Geom();
@@ -142,12 +142,12 @@ void VortexPatch::pre_advance_work()
         amrex::ParallelFor(
             m_velocity(lev), amrex::IntVect(1),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                const amrex::Real x = problo[0] + (i + 0.5_rt) * dx[0];
-                const amrex::Real y = problo[1] + (j + 0.5_rt) * dx[1];
-                const amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
-                const amrex::Real xf = problo[0] + i * dx[0];
-                const amrex::Real yf = problo[1] + j * dx[1];
-                const amrex::Real zf = problo[2] + k * dx[2];
+                const amrex::Real x = problo[0] + ((i + 0.5_rt) * dx[0]);
+                const amrex::Real y = problo[1] + ((j + 0.5_rt) * dx[1]);
+                const amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);
+                const amrex::Real xf = problo[0] + (i * dx[0]);
+                const amrex::Real yf = problo[1] + (j * dx[1]);
+                const amrex::Real zf = problo[2] + (k * dx[2]);
                 uf_arrs[nbx](i, j, k) =
                     2.0_rt * std::sin(std::numbers::pi_v<amrex::Real> * xf) *
                     std::sin(std::numbers::pi_v<amrex::Real> * xf) *
@@ -190,9 +190,9 @@ void VortexPatch::post_advance_work()
         amrex::ParallelFor(
             m_velocity(lev), amrex::IntVect(1),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                const amrex::Real x = problo[0] + (i + 0.5_rt) * dx[0];
-                const amrex::Real y = problo[1] + (j + 0.5_rt) * dx[1];
-                const amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
+                const amrex::Real x = problo[0] + ((i + 0.5_rt) * dx[0]);
+                const amrex::Real y = problo[1] + ((j + 0.5_rt) * dx[1]);
+                const amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);
                 vel_arrs[nbx](i, j, k, 0) =
                     2.0_rt * std::sin(std::numbers::pi_v<amrex::Real> * x) *
                     std::sin(std::numbers::pi_v<amrex::Real> * x) *

@@ -38,7 +38,7 @@ struct ComputeRHSOp<Density, Scheme>
                 field(lev),
                 [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                     rho_arrs[nbx](i, j, k) = rho_o_arrs[nbx](i, j, k) +
-                                             dt * ddt_o_arrs[nbx](i, j, k);
+                                             (dt * ddt_o_arrs[nbx](i, j, k));
                     // Defer n+1/2 update to the time-stepping algorithm
                     // rho_nph(i, j, k) = 0.5_rt * (rho(i, j, k) + rho_o(i, j,
                     // k));
@@ -69,8 +69,8 @@ struct ComputeRHSOp<Density, Scheme>
                 [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                     rho_arrs[nbx](i, j, k) =
                         rho_o_arrs[nbx](i, j, k) +
-                        dt * 0.5_rt *
-                            (ddt_o_arrs[nbx](i, j, k) + ddt_arrs[nbx](i, j, k));
+                        (dt * 0.5_rt *
+                         (ddt_o_arrs[nbx](i, j, k) + ddt_arrs[nbx](i, j, k)));
                     // Defer n+1/2 update to time-stepping algorithm
                     // rho_nph(i, j, k) =
                     //     0.5_rt * (rho(i, j, k) + rho_o(i, j, k));

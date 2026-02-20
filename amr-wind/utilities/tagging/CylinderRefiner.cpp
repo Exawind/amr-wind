@@ -67,9 +67,9 @@ void CylinderRefiner::operator()(
     const auto& dx = geom.CellSizeArray();
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-        const amrex::Real x = problo[0] + (i + 0.5_rt) * dx[0];
-        const amrex::Real y = problo[1] + (j + 0.5_rt) * dx[1];
-        const amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
+        const amrex::Real x = problo[0] + ((i + 0.5_rt) * dx[0]);
+        const amrex::Real y = problo[1] + ((j + 0.5_rt) * dx[1]);
+        const amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);
 
         // Position vector of the cell center
         const vs::Vector pt(x, y, z);
@@ -80,7 +80,7 @@ void CylinderRefiner::operator()(
 
         // Check if the point lies in between the cylinder extents along axis
         if ((daxis >= 0) && (daxis <= magax)) {
-            const amrex::Real d2 = (pvec & pvec) - (daxis * daxis) / magax;
+            const amrex::Real d2 = (pvec & pvec) - ((daxis * daxis) / magax);
 
             // Check if the cell center lies within the radius specified
             if ((d2 <= outer) && (d2 >= inner)) {

@@ -184,7 +184,7 @@ struct ShearStressDonelan
         if (wspd_mean <= 5.0_rt) {
             Cd = 0.001_rt;
         } else if (wspd_mean < 25.0_rt && wspd_mean > 5.0_rt) {
-            Cd = 0.001_rt + c * (wspd_mean - 5.0_rt);
+            Cd = 0.001_rt + (c * (wspd_mean - 5.0_rt));
         } else {
             Cd = 0.0024_rt;
         }
@@ -200,7 +200,7 @@ struct ShearStressDonelan
         if (wspd_mean <= 5) {
             Cd = 0.001_rt;
         } else if (wspd_mean < 25.0_rt && wspd_mean > 5.0_rt) {
-            Cd = 0.001_rt + c * (wspd_mean - 5.0_rt);
+            Cd = 0.001_rt + (c * (wspd_mean - 5.0_rt));
         } else {
             Cd = 0.0024_rt;
         }

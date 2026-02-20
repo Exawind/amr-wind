@@ -163,7 +163,7 @@ void SimTime::set_current_cfl(
     bool use_init_dt{false};
     const amrex::Real cd_cfl = conv_cfl + diff_cfl;
     const amrex::Real cfl_unit_time =
-        cd_cfl + std::sqrt(cd_cfl * cd_cfl + 4.0_rt * src_cfl);
+        cd_cfl + std::sqrt((cd_cfl * cd_cfl) + (4.0_rt * src_cfl));
     if ((m_adaptive && !m_is_init) &&
         (cfl_unit_time < std::numeric_limits<amrex::Real>::epsilon())) {
         // First timestep, starting from t = 0, is special case
@@ -354,7 +354,7 @@ bool SimTime::write_plot_file() const
          ((m_time_index - m_plt_start_index) % m_plt_interval == 0)) ||
         ((m_plt_t_interval > 0.0_rt) &&
          (m_new_time + tol - m_plt_t_delay >= 0.0_rt) &&
-         ((m_new_time - m_plt_start_time + tol) / m_plt_t_interval -
+         (((m_new_time - m_plt_start_time + tol) / m_plt_t_interval) -
               std::floor(
                   (m_new_time - m_plt_start_time + tol) / m_plt_t_interval) <
           m_dt[0] / m_plt_t_interval)));
@@ -370,7 +370,7 @@ bool SimTime::write_checkpoint() const
          ((m_time_index - m_chkpt_start_index) % m_chkpt_interval == 0)) ||
         ((m_chkpt_t_interval > 0.0_rt) &&
          (m_new_time + tol - m_chkpt_t_delay >= 0.0_rt) &&
-         ((m_new_time - m_chkpt_start_time + tol) / m_chkpt_t_interval -
+         (((m_new_time - m_chkpt_start_time + tol) / m_chkpt_t_interval) -
               std::floor(
                   (m_new_time - m_chkpt_start_time + tol) /
                   m_chkpt_t_interval) <
@@ -385,7 +385,7 @@ bool SimTime::write_last_plot_file() const
         ((m_plt_interval > 0) &&
          ((m_time_index - m_plt_start_index) % m_plt_interval != 0)) ||
         ((m_plt_t_interval > 0.0_rt) &&
-         ((m_new_time - m_plt_start_time + tol) / m_plt_t_interval -
+         (((m_new_time - m_plt_start_time + tol) / m_plt_t_interval) -
               std::floor(
                   (m_new_time - m_plt_start_time + tol) / m_plt_t_interval) >=
           m_dt[0] / m_plt_t_interval)));
@@ -399,7 +399,7 @@ bool SimTime::write_last_checkpoint() const
         ((m_chkpt_interval > 0) &&
          ((m_time_index - m_chkpt_start_index) % m_chkpt_interval != 0)) ||
         ((m_chkpt_t_interval > 0.0_rt) &&
-         ((m_new_time - m_chkpt_start_time + tol) / m_chkpt_t_interval -
+         (((m_new_time - m_chkpt_start_time + tol) / m_chkpt_t_interval) -
               std::floor(
                   (m_new_time - m_chkpt_start_time + tol) /
                   m_chkpt_t_interval) >=

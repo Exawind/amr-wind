@@ -256,7 +256,7 @@ void populate_normal_vector(
                 i, j, k, ibdy, jbdy, kbdy, vof[nbx], mx, my, mz);
             // Normalize normal
             mmag = std::sqrt(
-                mx * mx + my * my + mz * mz +
+                (mx * mx) + (my * my) + (mz * mz) +
                 std::numeric_limits<amrex::Real>::epsilon());
             // Save normal
             normvec[nbx](i, j, k, 0) = mx / mmag;
@@ -633,9 +633,9 @@ void equate_field(amrex::MultiFab& mf_dest, const amrex::MultiFab& mf_src)
     amrex::ParallelFor(
         mf_dest, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
             dest[nbx](i, j, k) = std::sqrt(
-                src[nbx](i, j, k, 0) * src[nbx](i, j, k, 0) +
-                src[nbx](i, j, k, 1) * src[nbx](i, j, k, 1) +
-                src[nbx](i, j, k, 2) * src[nbx](i, j, k, 2));
+                (src[nbx](i, j, k, 0) * src[nbx](i, j, k, 0)) +
+                (src[nbx](i, j, k, 1) * src[nbx](i, j, k, 1)) +
+                (src[nbx](i, j, k, 2) * src[nbx](i, j, k, 2)));
         });
 }
 

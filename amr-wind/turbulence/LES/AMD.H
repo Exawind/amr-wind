@@ -83,26 +83,28 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real amd_muvel(
     amrex::Real num_buoy = 0.0_rt;
     amrex::Real denom = 0.0_rt;
     const int n_ind = amr_wind::direction_selector(i, j, k, normal_dir);
-    const amrex::Real h = nlo + (n_ind + 0.5_rt) * dx[normal_dir];
+    const amrex::Real h = nlo + ((n_ind + 0.5_rt) * dx[normal_dir]);
     const amrex::Real gradTbar_h = amr_wind::interp::linear(
         gradTbar_coord_begin, gradTbar_coord_end, gradTbar, h);
     for (int ii = 0; ii < AMREX_SPACEDIM; ++ii) {
         // This should operate only on the wall normal velocity
         num_buoy +=
-            gradVel(i, j, k, normal_dir * AMREX_SPACEDIM + ii) *
+            gradVel(i, j, k, (normal_dir * AMREX_SPACEDIM) + ii) *
             (gradT(i, j, k, ii) - ((ii == normal_dir) ? gradTbar_h : 0.0_rt)) *
             dx[ii] * dx[ii];
 
         for (int jj = 0; jj < AMREX_SPACEDIM; ++jj) {
-            const amrex::Real diuj = gradVel(i, j, k, ii * AMREX_SPACEDIM + jj);
-            const amrex::Real djui = gradVel(i, j, k, jj * AMREX_SPACEDIM + ii);
+            const amrex::Real diuj =
+                gradVel(i, j, k, (ii * AMREX_SPACEDIM) + jj);
+            const amrex::Real djui =
+                gradVel(i, j, k, (jj * AMREX_SPACEDIM) + ii);
             denom += diuj * diuj;
             const amrex::Real sij = 0.5_rt * (diuj + djui);
             for (int kk = 0; kk < AMREX_SPACEDIM; ++kk) {
                 const amrex::Real dkui =
-                    gradVel(i, j, k, ii * AMREX_SPACEDIM + kk);
+                    gradVel(i, j, k, (ii * AMREX_SPACEDIM) + kk);
                 const amrex::Real dkuj =
-                    gradVel(i, j, k, jj * AMREX_SPACEDIM + kk);
+                    gradVel(i, j, k, (jj * AMREX_SPACEDIM) + kk);
                 num_shear += dkui * dkuj * dx[kk] * dx[kk] * sij;
             }
         }
@@ -131,7 +133,8 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real amd_thermal_diff(
         const amrex::Real diT = gradT(i, j, k, ii);
         denom += diT * diT;
         for (int kk = 0; kk < AMREX_SPACEDIM; ++kk) {
-            const amrex::Real dkui = gradVel(i, j, k, ii * AMREX_SPACEDIM + kk);
+            const amrex::Real dkui =
+                gradVel(i, j, k, (ii * AMREX_SPACEDIM) + kk);
             const amrex::Real dkT = gradT(i, j, k, kk);
             num += dkui * diT * dkT * dx[kk] * dx[kk];
         }

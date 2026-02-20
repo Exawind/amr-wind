@@ -104,8 +104,8 @@ void ABLAnelastic::initialize_isentropic_hse()
 
         // Initial guess
         dens[0] = m_reference_density_constant;
-        pres[0] =
-            m_bottom_reference_pressure + half_dx * dens[0] * m_gravity[m_axis];
+        pres[0] = m_bottom_reference_pressure +
+                  (half_dx * dens[0] * m_gravity[m_axis]);
 
         // We do a Newton iteration to satisfy the EOS & HSE (with constant
         // theta) at the surface
@@ -116,7 +116,7 @@ void ABLAnelastic::initialize_isentropic_hse()
         for (int iter = 0; (iter < max_iterations) && (!converged_hse);
              iter++) {
             p_hse = m_bottom_reference_pressure +
-                    half_dx * dens[0] * m_gravity[m_axis];
+                    (half_dx * dens[0] * m_gravity[m_axis]);
             p_eos = eos.p_rth(dens[0], ref_theta);
 
             const amrex::Real p_diff = p_hse - p_eos;
@@ -145,7 +145,7 @@ void ABLAnelastic::initialize_isentropic_hse()
             for (int iter = 0; (iter < max_iterations) && (!converged_hse);
                  iter++) {
                 const amrex::Real dens_avg = 0.5_rt * (dens[k - 1] + dens[k]);
-                p_hse = pres[k - 1] + dx * dens_avg * m_gravity[m_axis];
+                p_hse = pres[k - 1] + (dx * dens_avg * m_gravity[m_axis]);
                 p_eos = eos.p_rth(dens[k], ref_theta);
 
                 const amrex::Real p_diff = p_hse - p_eos;

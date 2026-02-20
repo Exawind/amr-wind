@@ -23,7 +23,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real free_surface_to_vof(
         volfrac = 0.0_rt;
     } else if (std::abs(eta - z) < dz / 2.0_rt) {
         if (eta <= z) {
-            volfrac = 1.0_rt - (z - eta + dz / 2.0_rt) / dz;
+            volfrac = 1.0_rt - ((z - eta + dz / 2.0_rt) / dz);
         } else {
             volfrac = (eta - z + dz / 2.0_rt) / dz;
         }
@@ -36,8 +36,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
 gamma_generate(const amrex::Real x, const amrex::Real gen_length)
 {
     const amrex::Real xtilde = amrex::max<amrex::Real>(
-        amrex::min<amrex::Real>(1.0_rt - x / gen_length, 1.0_rt), 0.0_rt);
-    return (1.0_rt - std::expm1(std::pow(xtilde, 3.5_rt)) / std::expm1(1.0_rt));
+        amrex::min<amrex::Real>(1.0_rt - (x / gen_length), 1.0_rt), 0.0_rt);
+    return (
+        1.0_rt - (std::expm1(std::pow(xtilde, 3.5_rt)) / std::expm1(1.0_rt)));
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real gamma_absorb(
@@ -49,7 +50,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real gamma_absorb(
         amrex::min<amrex::Real>(
             x / (absorb_length * absorb_length_factor), 1.0_rt),
         0.0_rt);
-    return (1.0_rt - std::expm1(std::pow(xtilde, 3.5_rt)) / std::expm1(1.0_rt));
+    return (
+        1.0_rt - (std::expm1(std::pow(xtilde, 3.5_rt)) / std::expm1(1.0_rt)));
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
@@ -57,9 +59,9 @@ ramp(const amrex::Real time, const amrex::Real ramp_period)
 {
     amrex::Real f = 1.0_rt;
     if (time < ramp_period) {
-        f = time / ramp_period -
-            (1.0_rt / std::numbers::pi_v<amrex::Real>)*std::sin(
-                std::numbers::pi_v<amrex::Real> * (time / ramp_period));
+        f = (time / ramp_period) -
+            ((1.0_rt / std::numbers::pi_v<amrex::Real>)*std::sin(
+                std::numbers::pi_v<amrex::Real> * (time / ramp_period)));
     }
     return f;
 }
@@ -69,7 +71,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real combine_linear(
     const amrex::Real target,
     const amrex::Real current)
 {
-    return (1.0_rt - factor) * target + factor * current;
+    return ((1.0_rt - factor) * target) + (factor * current);
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE WaveVec harmonize_profiles_1d(

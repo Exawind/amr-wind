@@ -79,7 +79,7 @@ void TemperatureFreeAtmosphereForcing::operator()(
         const amrex::Real cell_terrain_height =
             (has_terrain) ? terrain_height(i, j, k) : 0.0_rt;
         const amrex::Real z = amrex::max<amrex::Real>(
-            prob_lo[2] + (k + 0.5_rt) * dx[2] - cell_terrain_height,
+            prob_lo[2] + ((k + 0.5_rt) * dx[2]) - cell_terrain_height,
             0.5_rt * dx[2]);
         const amrex::Real zi = amrex::max<amrex::Real>(
             (z - sponge_start) / (prob_hi[2] - sponge_start), 0.0_rt);
@@ -107,9 +107,9 @@ void TemperatureFreeAtmosphereForcing::operator()(
         const int sponge_north = m_sponge_north;
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                const amrex::Real x = prob_lo[0] + (i + 0.5_rt) * dx[0];
-                const amrex::Real y = prob_lo[1] + (j + 0.5_rt) * dx[1];
-                const amrex::Real z = prob_lo[2] + (k + 0.5_rt) * dx[2];
+                const amrex::Real x = prob_lo[0] + ((i + 0.5_rt) * dx[0]);
+                const amrex::Real y = prob_lo[1] + ((j + 0.5_rt) * dx[1]);
+                const amrex::Real z = prob_lo[2] + ((k + 0.5_rt) * dx[2]);
                 amrex::Real xstart_damping = 0;
                 amrex::Real ystart_damping = 0;
                 amrex::Real xend_damping = 0;

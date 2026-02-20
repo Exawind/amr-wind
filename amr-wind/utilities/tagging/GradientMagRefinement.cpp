@@ -74,7 +74,7 @@ void GradientMagRefinement::operator()(
                 0.5_rt * (farrs[nbx](i, j, k + 1) - farrs[nbx](i, j, k - 1)) *
                 idx[2];
 
-            const auto grad_mag = sqrt(gx * gx + gy * gy + gz * gz);
+            const auto grad_mag = sqrt((gx * gx) + (gy * gy) + (gz * gz));
             if (grad_mag > gradmag_val) {
                 tag_arrs[nbx](i, j, k) = amrex::TagBox::SET;
             }

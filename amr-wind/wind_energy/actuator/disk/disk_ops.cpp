@@ -356,8 +356,8 @@ amrex::RealBox compute_bounding_box(const DiskBaseData& meta)
 
     const auto& cc = meta.center;
     const amrex::Real nl = meta.epsilon * 3.0_rt; // length scale in normal dir
-    const amrex::Real dl = meta.diameter * 0.5_rt +
-                           meta.dr * 2.0_rt; // length scale in plane of disk
+    const amrex::Real dl = (meta.diameter * 0.5_rt) +
+                           (meta.dr * 2.0_rt); // length scale in plane of disk
     const auto dvec = norm * nl + cVec * dl + vs::Vector::khat() * dl;
     const auto p1 = cc - dvec; // front
     const auto p2 = cc + dvec; // back

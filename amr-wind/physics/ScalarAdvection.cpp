@@ -77,7 +77,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real SquarePulseFV::operator()(
     const amrex::Real /*unused*/) const
 {
     amrex::Real val = 0.0_rt;
-    if (std::abs(std::abs(x - x0) - x_width / 2.0_rt) < dx / 2.0_rt) {
+    if (std::abs(std::abs(x - x0) - (x_width / 2.0_rt)) < dx / 2.0_rt) {
         val = amplitude * (x_width / 2.0_rt - std::abs(x - x0) + dx / 2.0_rt) /
               dx;
     } else if (std::abs(x - x0) < x_width / 2.0_rt) {
@@ -109,9 +109,9 @@ GaussianWavePacketFV::operator()(
     amrex::Real cell_integral = 0.0_rt;
     for (int i = 0; i < AMREX_SPACEDIM; ++i) {
         cell_integral =
-            cell_integral + w_i[i] * pointwise_function(
-                                         x + dx_i[i] * 0.5_rt * dx, x0,
-                                         amplitude, x_width, x_wavenumber);
+            cell_integral + (w_i[i] * pointwise_function(
+                                          x + (dx_i[i] * 0.5_rt * dx), x0,
+                                          amplitude, x_width, x_wavenumber));
     }
     return cell_integral / 2.0_rt;
 }
@@ -233,8 +233,8 @@ void ScalarAdvection::initialize_scalar(const Shape& scalar_function)
 
             amrex::ParallelFor(
                 nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real x = problo[0] + (i + 0.5_rt) * dx[0];
-                    const amrex::Real y = problo[1] + (j + 0.5_rt) * dx[1];
+                    const amrex::Real x = problo[0] + ((i + 0.5_rt) * dx[0]);
+                    const amrex::Real y = problo[1] + ((j + 0.5_rt) * dx[1]);
                     scalar_arr(i, j, k, 0) = scalar_function(
                         x, y, dx[0], dx[1], x0, y0, amplitude, x_width, y_width,
                         x_wavenumber, y_wavenumber);
@@ -289,8 +289,8 @@ ScalarAdvection::compute_error(const Shape& scalar_function)
             amrex::TypeList<amrex::Real>{}, scalar, amrex::IntVect(0),
             [=] AMREX_GPU_DEVICE(int box_no, int i, int j, int k)
                 -> amrex::GpuTuple<amrex::Real> {
-                const amrex::Real x = problo[0] + (i + 0.5_rt) * dx[0];
-                const amrex::Real y = problo[1] + (j + 0.5_rt) * dx[1];
+                const amrex::Real x = problo[0] + ((i + 0.5_rt) * dx[0]);
+                const amrex::Real y = problo[1] + ((j + 0.5_rt) * dx[1]);
                 auto const& scalar_bx = scalar_arr[box_no];
                 auto const& mask_bx = mask_arr[box_no];
                 const amrex::Real s = scalar_bx(i, j, k, 0);

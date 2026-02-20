@@ -141,8 +141,8 @@ public:
             (m_out_time_interval > 0.0_rt) &&
             ((time + tol - m_out_time_delay >= 0.0_rt) &&
              (time + tol -
-                  std::floor((time + tol) / m_out_time_interval) *
-                      m_out_time_interval <
+                  (std::floor((time + tol) / m_out_time_interval) *
+                   m_out_time_interval) <
               dt));
 
         return (step_based || time_based);

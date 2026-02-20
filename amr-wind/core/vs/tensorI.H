@@ -227,17 +227,17 @@ quaternion(const Vector& axis, const amrex::Real angle)
     const amrex::Real q3 = sval * axis.z() / vmag;
 
     Tensor t;
-    t.xx() = q0 * q0 + q1 * q1 - q2 * q2 - q3 * q3;
+    t.xx() = (q0 * q0) + (q1 * q1) - (q2 * q2) - (q3 * q3);
     t.xy() = 2.0_rt * (q1 * q2 - q0 * q3);
     t.xz() = 2.0_rt * (q0 * q2 + q1 * q3);
 
     t.yx() = 2.0_rt * (q1 * q2 + q0 * q3);
-    t.yy() = q0 * q0 - q1 * q1 + q2 * q2 - q3 * q3;
+    t.yy() = (q0 * q0) - (q1 * q1) + (q2 * q2) - (q3 * q3);
     t.yz() = 2.0_rt * (q2 * q3 - q0 * q1);
 
     t.zx() = 2.0_rt * (q1 * q3 - q0 * q2);
     t.zy() = 2.0_rt * (q0 * q1 + q2 * q3);
-    t.zz() = q0 * q0 - q1 * q1 - q2 * q2 + q3 * q3;
+    t.zz() = (q0 * q0) - (q1 * q1) - (q2 * q2) + (q3 * q3);
 
     return t;
 }

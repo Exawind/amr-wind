@@ -160,9 +160,9 @@ void ABLMesoscaleForcing::indirect_forcing_init()
             for (int iht = 0; iht < m_nht; iht++) {
                 zTz(irow, icol) =
                     zTz(irow, icol) +
-                    m_W[iht] * std::pow(
-                                   m_zht[iht] * m_scaleFact,
-                                   static_cast<amrex::Real>(icol + irow));
+                    (m_W[iht] * std::pow(
+                                    m_zht[iht] * m_scaleFact,
+                                    static_cast<amrex::Real>(icol + irow)));
             }
             // amrex::Print()<< "Z^T W Z ["<<irow<<","<<icol<<"] : " <<
             // zTz(irow,icol) << std::endl;
@@ -177,47 +177,55 @@ void ABLMesoscaleForcing::invert_mat(
     // cppcheck-suppress constParameterReference
     amrex::Array2D<amrex::Real, 0, 3, 0, 3>& im)
 {
-    amrex::Real A2323 = m(2, 2) * m(3, 3) - m(2, 3) * m(3, 2);
-    amrex::Real A1323 = m(2, 1) * m(3, 3) - m(2, 3) * m(3, 1);
-    amrex::Real A1223 = m(2, 1) * m(3, 2) - m(2, 2) * m(3, 1);
-    amrex::Real A0323 = m(2, 0) * m(3, 3) - m(2, 3) * m(3, 0);
-    amrex::Real A0223 = m(2, 0) * m(3, 2) - m(2, 2) * m(3, 0);
-    amrex::Real A0123 = m(2, 0) * m(3, 1) - m(2, 1) * m(3, 0);
-    amrex::Real A2313 = m(1, 2) * m(3, 3) - m(1, 3) * m(3, 2);
-    amrex::Real A1313 = m(1, 1) * m(3, 3) - m(1, 3) * m(3, 1);
-    amrex::Real A1213 = m(1, 1) * m(3, 2) - m(1, 2) * m(3, 1);
-    amrex::Real A2312 = m(1, 2) * m(2, 3) - m(1, 3) * m(2, 2);
-    amrex::Real A1312 = m(1, 1) * m(2, 3) - m(1, 3) * m(2, 1);
-    amrex::Real A1212 = m(1, 1) * m(2, 2) - m(1, 2) * m(2, 1);
-    amrex::Real A0313 = m(1, 0) * m(3, 3) - m(1, 3) * m(3, 0);
-    amrex::Real A0213 = m(1, 0) * m(3, 2) - m(1, 2) * m(3, 0);
-    amrex::Real A0312 = m(1, 0) * m(2, 3) - m(1, 3) * m(2, 0);
-    amrex::Real A0212 = m(1, 0) * m(2, 2) - m(1, 2) * m(2, 0);
-    amrex::Real A0113 = m(1, 0) * m(3, 1) - m(1, 1) * m(3, 0);
-    amrex::Real A0112 = m(1, 0) * m(2, 1) - m(1, 1) * m(2, 0);
+    amrex::Real A2323 = (m(2, 2) * m(3, 3)) - (m(2, 3) * m(3, 2));
+    amrex::Real A1323 = (m(2, 1) * m(3, 3)) - (m(2, 3) * m(3, 1));
+    amrex::Real A1223 = (m(2, 1) * m(3, 2)) - (m(2, 2) * m(3, 1));
+    amrex::Real A0323 = (m(2, 0) * m(3, 3)) - (m(2, 3) * m(3, 0));
+    amrex::Real A0223 = (m(2, 0) * m(3, 2)) - (m(2, 2) * m(3, 0));
+    amrex::Real A0123 = (m(2, 0) * m(3, 1)) - (m(2, 1) * m(3, 0));
+    amrex::Real A2313 = (m(1, 2) * m(3, 3)) - (m(1, 3) * m(3, 2));
+    amrex::Real A1313 = (m(1, 1) * m(3, 3)) - (m(1, 3) * m(3, 1));
+    amrex::Real A1213 = (m(1, 1) * m(3, 2)) - (m(1, 2) * m(3, 1));
+    amrex::Real A2312 = (m(1, 2) * m(2, 3)) - (m(1, 3) * m(2, 2));
+    amrex::Real A1312 = (m(1, 1) * m(2, 3)) - (m(1, 3) * m(2, 1));
+    amrex::Real A1212 = (m(1, 1) * m(2, 2)) - (m(1, 2) * m(2, 1));
+    amrex::Real A0313 = (m(1, 0) * m(3, 3)) - (m(1, 3) * m(3, 0));
+    amrex::Real A0213 = (m(1, 0) * m(3, 2)) - (m(1, 2) * m(3, 0));
+    amrex::Real A0312 = (m(1, 0) * m(2, 3)) - (m(1, 3) * m(2, 0));
+    amrex::Real A0212 = (m(1, 0) * m(2, 2)) - (m(1, 2) * m(2, 0));
+    amrex::Real A0113 = (m(1, 0) * m(3, 1)) - (m(1, 1) * m(3, 0));
+    amrex::Real A0112 = (m(1, 0) * m(2, 1)) - (m(1, 1) * m(2, 0));
 
     amrex::Real det =
-        m(0, 0) * (m(1, 1) * A2323 - m(1, 2) * A1323 + m(1, 3) * A1223) -
-        m(0, 1) * (m(1, 0) * A2323 - m(1, 2) * A0323 + m(1, 3) * A0223) +
-        m(0, 2) * (m(1, 0) * A1323 - m(1, 1) * A0323 + m(1, 3) * A0123) -
-        m(0, 3) * (m(1, 0) * A1223 - m(1, 1) * A0223 + m(1, 2) * A0123);
+        (m(0, 0) * (m(1, 1) * A2323 - m(1, 2) * A1323 + m(1, 3) * A1223)) -
+        (m(0, 1) * (m(1, 0) * A2323 - m(1, 2) * A0323 + m(1, 3) * A0223)) +
+        (m(0, 2) * (m(1, 0) * A1323 - m(1, 1) * A0323 + m(1, 3) * A0123)) -
+        (m(0, 3) * (m(1, 0) * A1223 - m(1, 1) * A0223 + m(1, 2) * A0123));
     det = 1.0_rt / det;
 
     im(0, 0) = det * (m(1, 1) * A2323 - m(1, 2) * A1323 + m(1, 3) * A1223);
-    im(0, 1) = det * -(m(0, 1) * A2323 - m(0, 2) * A1323 + m(0, 3) * A1223);
+    im(0, 1) =
+        det * -((m(0, 1) * A2323) - (m(0, 2) * A1323) + (m(0, 3) * A1223));
     im(0, 2) = det * (m(0, 1) * A2313 - m(0, 2) * A1313 + m(0, 3) * A1213);
-    im(0, 3) = det * -(m(0, 1) * A2312 - m(0, 2) * A1312 + m(0, 3) * A1212);
-    im(1, 0) = det * -(m(1, 0) * A2323 - m(1, 2) * A0323 + m(1, 3) * A0223);
+    im(0, 3) =
+        det * -((m(0, 1) * A2312) - (m(0, 2) * A1312) + (m(0, 3) * A1212));
+    im(1, 0) =
+        det * -((m(1, 0) * A2323) - (m(1, 2) * A0323) + (m(1, 3) * A0223));
     im(1, 1) = det * (m(0, 0) * A2323 - m(0, 2) * A0323 + m(0, 3) * A0223);
-    im(1, 2) = det * -(m(0, 0) * A2313 - m(0, 2) * A0313 + m(0, 3) * A0213);
+    im(1, 2) =
+        det * -((m(0, 0) * A2313) - (m(0, 2) * A0313) + (m(0, 3) * A0213));
     im(1, 3) = det * (m(0, 0) * A2312 - m(0, 2) * A0312 + m(0, 3) * A0212);
     im(2, 0) = det * (m(1, 0) * A1323 - m(1, 1) * A0323 + m(1, 3) * A0123);
-    im(2, 1) = det * -(m(0, 0) * A1323 - m(0, 1) * A0323 + m(0, 3) * A0123);
+    im(2, 1) =
+        det * -((m(0, 0) * A1323) - (m(0, 1) * A0323) + (m(0, 3) * A0123));
     im(2, 2) = det * (m(0, 0) * A1313 - m(0, 1) * A0313 + m(0, 3) * A0113);
-    im(2, 3) = det * -(m(0, 0) * A1312 - m(0, 1) * A0312 + m(0, 3) * A0112);
-    im(3, 0) = det * -(m(1, 0) * A1223 - m(1, 1) * A0223 + m(1, 2) * A0123);
+    im(2, 3) =
+        det * -((m(0, 0) * A1312) - (m(0, 1) * A0312) + (m(0, 3) * A0112));
+    im(3, 0) =
+        det * -((m(1, 0) * A1223) - (m(1, 1) * A0223) + (m(1, 2) * A0123));
     im(3, 1) = det * (m(0, 0) * A1223 - m(0, 1) * A0223 + m(0, 2) * A0123);
-    im(3, 2) = det * -(m(0, 0) * A1213 - m(0, 1) * A0213 + m(0, 2) * A0113);
+    im(3, 2) =
+        det * -((m(0, 0) * A1213) - (m(0, 1) * A0213) + (m(0, 2) * A0113));
     im(3, 3) = det * (m(0, 0) * A1212 - m(0, 1) * A0212 + m(0, 2) * A0112);
 }
 
@@ -268,8 +276,8 @@ void ABLMesoscaleForcing::constant_forcing_transition(
     // as the slope decreases linearly to 0
     for (int iht = hLevelBlend1; iht <= hLevelBlendMax; iht++) {
         amrex::Real slope =
-            slope0 + dslope * (m_zht[iht] - m_zht[hLevelBlend1]);
-        error[iht] = error[iht - 1] + slope * (m_zht[iht] - m_zht[iht - 1]);
+            slope0 + (dslope * (m_zht[iht] - m_zht[hLevelBlend1]));
+        error[iht] = error[iht - 1] + (slope * (m_zht[iht] - m_zht[iht - 1]));
     }
 
     // set the remaining levels above hLevelBlendMax to the last value
@@ -285,8 +293,8 @@ void ABLMesoscaleForcing::blend_forcings(
 {
     amrex::Print() << "Blending forcings" << std::endl;
     for (int iht = 0; iht < m_nht; iht++) {
-        error[iht] =
-            m_blend[iht] * lower[iht] + (1.0_rt - m_blend[iht]) * upper[iht];
+        error[iht] = (m_blend[iht] * lower[iht]) +
+                     ((1.0_rt - m_blend[iht]) * upper[iht]);
     }
 }
 

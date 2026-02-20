@@ -22,11 +22,12 @@ static void define_rho0(
         amrex::ParallelFor(
             rho0(lev),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                const amrex::Real zbtm = problo[2] + k * dx[2];
+                const amrex::Real zbtm = problo[2] + (k * dx[2]);
                 const amrex::Real vof = amrex::max<amrex::Real>(
                     amrex::min<amrex::Real>(1.0_rt, (wlev - zbtm) / dx[2]),
                     0.0_rt);
-                rho0_arrs[nbx](i, j, k) = vof * rho1 + (1.0_rt - vof) * rho2;
+                rho0_arrs[nbx](i, j, k) =
+                    (vof * rho1) + ((1.0_rt - vof) * rho2);
             });
     }
     amrex::Gpu::streamSynchronize();
@@ -48,7 +49,7 @@ static void define_p0(
         amrex::ParallelFor(
             p0(lev), p0.num_grow(),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                const amrex::Real z = problo[2] + k * dx[2];
+                const amrex::Real z = problo[2] + (k * dx[2]);
                 // Integrated (top-down in z) phase heights to pressure node
                 const amrex::Real ih_g = amrex::max<amrex::Real>(
                     0.0_rt, amrex::min(probhi[2] - wlev, probhi[2] - z));
@@ -56,7 +57,7 @@ static void define_p0(
                     0.0_rt,
                     amrex::min<amrex::Real>(wlev - z, wlev - problo[2]));
                 // Integrated rho at pressure node
-                const amrex::Real irho = rho1 * ih_l + rho2 * ih_g;
+                const amrex::Real irho = (rho1 * ih_l) + (rho2 * ih_g);
 
                 // Add term to reference pressure
                 p0_arrs[nbx](i, j, k) = -irho * grav_z;

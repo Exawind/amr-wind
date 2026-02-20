@@ -31,7 +31,7 @@ void KwSSTSrc::operator()(
     const amrex::Real factor = (fstate == FieldState::NPH) ? 0.5_rt : 1.0_rt;
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         src_term(i, j, k) += shear_prod_arr(i, j, k) +
-                             factor * diss_arr(i, j, k) + buoy_arr(i, j, k);
+                             (factor * diss_arr(i, j, k)) + buoy_arr(i, j, k);
     });
 }
 

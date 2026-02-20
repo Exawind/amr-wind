@@ -152,8 +152,8 @@ public:
                     [=] AMREX_GPU_DEVICE(
                         int nbx, int i, int j, int k) noexcept {
                         visc_arrs[nbx](i, j, k) =
-                            mu1 * volfrac_arrs[nbx](i, j, k) +
-                            mu2 * (1.0_rt - volfrac_arrs[nbx](i, j, k));
+                            (mu1 * volfrac_arrs[nbx](i, j, k)) +
+                            (mu2 * (1.0_rt - volfrac_arrs[nbx](i, j, k)));
                     });
             }
             amrex::Gpu::streamSynchronize();
@@ -192,8 +192,8 @@ public:
                                          eps));
                         }
                         visc_arrs[nbx](i, j, k) =
-                            mu1 * smooth_heaviside +
-                            mu2 * (1.0_rt - smooth_heaviside);
+                            (mu1 * smooth_heaviside) +
+                            (mu2 * (1.0_rt - smooth_heaviside));
                     });
             }
             amrex::Gpu::streamSynchronize();
@@ -224,8 +224,8 @@ public:
                     [=] AMREX_GPU_DEVICE(
                         int nbx, int i, int j, int k) noexcept {
                         thdiff_arrs[nbx](i, j, k) =
-                            mu1 / Pr1 * volfrac_arrs[nbx](i, j, k) +
-                            mu2 / Pr2 * (1.0_rt - volfrac_arrs[nbx](i, j, k));
+                            (mu1 / Pr1 * volfrac_arrs[nbx](i, j, k)) +
+                            (mu2 / Pr2 * (1.0_rt - volfrac_arrs[nbx](i, j, k)));
                     });
             }
 
@@ -263,8 +263,8 @@ public:
                                          eps));
                         }
                         visc_arrs[nbx](i, j, k) =
-                            mu1 / Pr1 * smooth_heaviside +
-                            mu2 / Pr2 * (1.0_rt - smooth_heaviside);
+                            (mu1 / Pr1 * smooth_heaviside) +
+                            (mu2 / Pr2 * (1.0_rt - smooth_heaviside));
                     });
             }
         }

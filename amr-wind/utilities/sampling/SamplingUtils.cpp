@@ -9,11 +9,11 @@ namespace amr_wind::sampling::sampling_utils {
 vs::Vector reflect(vs::Vector line, vs::Vector vec)
 {
     vs::Tensor ref(
-        1 - 2 * line.x() * line.x(), -2 * line.x() * line.y(),
+        1 - (2 * line.x() * line.x()), -2 * line.x() * line.y(),
         -2 * line.x() * line.z(), -2 * line.y() * line.x(),
-        1 - 2 * line.y() * line.y(), -2 * line.y() * line.z(),
+        1 - (2 * line.y() * line.y()), -2 * line.y() * line.z(),
         -2 * line.z() * line.x(), -2 * line.z() * line.y(),
-        1 - 2 * line.z() * line.z());
+        1 - (2 * line.z() * line.z()));
 
     return vec & ref;
 }
@@ -99,8 +99,8 @@ void spherical_cap_quadrature(
     std::transform(
         abscissae1D.cbegin(), abscissae1D.cend(), abscissae1D.begin(),
         [gammav](amrex::Real s) {
-            return 0.5_rt * (1.0_rt - std::cos(gammav)) * (-s) +
-                   0.5_rt * (1.0_rt + std::cos(gammav));
+            return (0.5_rt * (1.0_rt - std::cos(gammav)) * (-s)) +
+                   (0.5_rt * (1.0_rt + std::cos(gammav)));
         });
     std::transform(
         weights1D.cbegin(), weights1D.cend(), weights1D.begin(),
@@ -118,11 +118,11 @@ void spherical_cap_quadrature(
     for (int j = 1; j < nphi; ++j) {
         const auto tau = abscissae1D[j];
         for (int i = 0; i < ntheta; ++i) {
-            int r_idx = i + (j - 1) * ntheta + 1;
+            int r_idx = i + ((j - 1) * ntheta) + 1;
             const amrex::Real theta =
                 (2.0_rt * std::numbers::pi_v<amrex::Real> / ntheta) * i;
-            const auto xr = std::sqrt(1.0_rt - tau * tau) * std::cos(theta);
-            const auto yr = std::sqrt(1.0_rt - tau * tau) * std::sin(theta);
+            const auto xr = std::sqrt(1.0_rt - (tau * tau)) * std::cos(theta);
+            const auto yr = std::sqrt(1.0_rt - (tau * tau)) * std::sin(theta);
             const auto zr = tau;
             auto ray = vs::Vector(xr, yr, zr);
             ray.normalize();
@@ -145,7 +145,7 @@ void spherical_cap_truncated_normal(
     // cap -> -1 . Weights are already for a [-1,1] range from the generator
     std::transform(
         xlocs.cbegin(), xlocs.cend(), xlocs.begin(),
-        [](amrex::Real x) { return 2 * x - 1; });
+        [](amrex::Real x) { return (2 * x) - 1; });
     // half range to start, then mapped back to [-1,1]
     std::transform(
         xweights.cbegin(), xweights.cend(), xweights.begin(),

@@ -129,12 +129,12 @@ void KLAxell<Transport>::update_turbulent_viscosity(
                 mu_turb(lev),
                 [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                     amrex::Real stratification =
-                        -(gradT_arrs[nbx](i, j, k, 0) * gravity[0] +
-                          gradT_arrs[nbx](i, j, k, 1) * gravity[1] +
-                          gradT_arrs[nbx](i, j, k, 2) * gravity[2]) *
+                        -((gradT_arrs[nbx](i, j, k, 0) * gravity[0]) +
+                          (gradT_arrs[nbx](i, j, k, 1) * gravity[1]) +
+                          (gradT_arrs[nbx](i, j, k, 2) * gravity[2])) *
                         beta_arrs[nbx](i, j, k);
                     const amrex::Real z = amrex::max<amrex::Real>(
-                        problo[2] + (k + 0.5_rt) * dz - ht_arrs[nbx](i, j, k),
+                        problo[2] + ((k + 0.5_rt) * dz) - ht_arrs[nbx](i, j, k),
                         0.5_rt * dz);
                     const amrex::Real lscale_s =
                         (lambda * kappa * z) / (lambda + kappa * z);
@@ -153,8 +153,8 @@ void KLAxell<Transport>::update_turbulent_viscosity(
                     Rt = (Rt > Rtc)
                              ? Rt
                              : amrex::max<amrex::Real>(
-                                   Rt, Rt - std::pow(Rt - Rtc, 2.0_rt) /
-                                                (Rt + Rtmin - 2.0_rt * Rtc));
+                                   Rt, Rt - (std::pow(Rt - Rtc, 2.0_rt) /
+                                             (Rt + Rtmin - 2.0_rt * Rtc)));
                     tlscale_arrs[nbx](i, j, k) =
                         (stratification > 0)
                             ? std::sqrt(
@@ -164,8 +164,8 @@ void KLAxell<Transport>::update_turbulent_viscosity(
                             : lscale_s *
                                   std::sqrt(
                                       1.0_rt -
-                                      std::pow(Cmu, 6.0_rt) *
-                                          std::pow(Cb_unstable, -2.0_rt) * Rt);
+                                      (std::pow(Cmu, 6.0_rt) *
+                                       std::pow(Cb_unstable, -2.0_rt) * Rt));
                     tlscale_arrs[nbx](i, j, k) =
                         (stratification > 0)
                             ? amrex::min<amrex::Real>(
@@ -207,11 +207,11 @@ void KLAxell<Transport>::update_turbulent_viscosity(
                 mu_turb(lev),
                 [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                     amrex::Real stratification =
-                        -(gradT_arrs[nbx](i, j, k, 0) * gravity[0] +
-                          gradT_arrs[nbx](i, j, k, 1) * gravity[1] +
-                          gradT_arrs[nbx](i, j, k, 2) * gravity[2]) *
+                        -((gradT_arrs[nbx](i, j, k, 0) * gravity[0]) +
+                          (gradT_arrs[nbx](i, j, k, 1) * gravity[1]) +
+                          (gradT_arrs[nbx](i, j, k, 2) * gravity[2])) *
                         beta_arrs[nbx](i, j, k);
-                    const amrex::Real z = problo[2] + (k + 0.5_rt) * dz;
+                    const amrex::Real z = problo[2] + ((k + 0.5_rt) * dz);
                     const amrex::Real lscale_s =
                         (lambda * kappa * z) / (lambda + kappa * z);
                     const amrex::Real lscale_b =
@@ -229,8 +229,8 @@ void KLAxell<Transport>::update_turbulent_viscosity(
                     Rt = (Rt > Rtc)
                              ? Rt
                              : amrex::max<amrex::Real>(
-                                   Rt, Rt - std::pow(Rt - Rtc, 2.0_rt) /
-                                                (Rt + Rtmin - 2.0_rt * Rtc));
+                                   Rt, Rt - (std::pow(Rt - Rtc, 2.0_rt) /
+                                             (Rt + Rtmin - 2.0_rt * Rtc)));
                     tlscale_arrs[nbx](i, j, k) =
                         (stratification > 0)
                             ? std::sqrt(
@@ -240,8 +240,8 @@ void KLAxell<Transport>::update_turbulent_viscosity(
                             : lscale_s *
                                   std::sqrt(
                                       1.0_rt -
-                                      std::pow(Cmu, 6.0_rt) *
-                                          std::pow(Cb_unstable, -2.0_rt) * Rt);
+                                      (std::pow(Cmu, 6.0_rt) *
+                                       std::pow(Cb_unstable, -2.0_rt) * Rt));
                     tlscale_arrs[nbx](i, j, k) =
                         (stratification > 0)
                             ? amrex::min<amrex::Real>(
@@ -312,9 +312,9 @@ void KLAxell<Transport>::update_alphaeff(Field& alphaeff)
             mu_turb(lev),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 amrex::Real stratification =
-                    -(gradT_arrs[nbx](i, j, k, 0) * gravity[0] +
-                      gradT_arrs[nbx](i, j, k, 1) * gravity[1] +
-                      gradT_arrs[nbx](i, j, k, 2) * gravity[2]) *
+                    -((gradT_arrs[nbx](i, j, k, 0) * gravity[0]) +
+                      (gradT_arrs[nbx](i, j, k, 1) * gravity[1]) +
+                      (gradT_arrs[nbx](i, j, k, 2) * gravity[2])) *
                     beta_arrs[nbx](i, j, k);
                 amrex::Real epsilon = std::pow(Cmu, 3.0_rt) *
                                       std::pow(tke_arrs[nbx](i, j, k), 1.5_rt) /
@@ -324,13 +324,13 @@ void KLAxell<Transport>::update_alphaeff(Field& alphaeff)
                     stratification;
                 Rt = (Rt > Rtc) ? Rt
                                 : amrex::max<amrex::Real>(
-                                      Rt, Rt - std::pow(Rt - Rtc, 2.0_rt) /
-                                                   (Rt + Rtmin - 2.0_rt * Rtc));
+                                      Rt, Rt - (std::pow(Rt - Rtc, 2.0_rt) /
+                                                (Rt + Rtmin - 2.0_rt * Rtc)));
                 const amrex::Real prandtlRt =
                     (1.0_rt + 0.193_rt * Rt) / (1.0_rt + 0.0302_rt * Rt);
                 alphaeff_arrs[nbx](i, j, k) =
                     lam_diff_arrs[nbx](i, j, k) +
-                    muturb_arrs[nbx](i, j, k) / prandtlRt;
+                    (muturb_arrs[nbx](i, j, k) / prandtlRt);
             });
     }
     amrex::Gpu::streamSynchronize();

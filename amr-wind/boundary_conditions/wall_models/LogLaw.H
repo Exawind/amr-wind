@@ -47,9 +47,9 @@ struct LogLaw
             // Get wspd for a given utau from log-law
             wspd_pred = utau * (std::log(zplus) / kappa + B);
             wspd_deriv =
-                (1.0_rt + std::log(zplus)) / kappa + B; // d(wspd)/d(utau)
-            utau =
-                utau - (wspd_pred - wspd) / wspd_deriv; // Newton-Raphson update
+                ((1.0_rt + std::log(zplus)) / kappa) + B; // d(wspd)/d(utau)
+            utau = utau -
+                   ((wspd_pred - wspd) / wspd_deriv); // Newton-Raphson update
             ++iter;
         }
         if (iter == max_iters) {

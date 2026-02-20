@@ -61,7 +61,7 @@ void multiphase::split_advection_step(
     }
 
     // Average down fluxes for current component
-    const int dir = 2 - (isweep + iorder) % 3;
+    const int dir = 2 - ((isweep + iorder) % 3);
     for (int lev = nlevels - 1; lev > 0; --lev) {
         amrex::IntVect rr =
             geom[lev].Domain().size() / geom[lev - 1].Domain().size();

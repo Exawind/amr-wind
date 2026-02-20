@@ -120,12 +120,13 @@ struct Curvature
                     (cp1 * phiz_ip1 + c * phiz + cm1 * phiz_im1) * idx[0];
 
                 curphi(i, j, k, n) =
-                    -(phix * phix * phiyy - 2.0_rt * phix * phiy * phixy +
-                      phiy * phiy * phixx + phix * phix * phizz -
-                      2.0_rt * phix * phiz * phixz + phiz * phiz * phixx +
-                      phiy * phiy * phizz - 2.0_rt * phiy * phiz * phiyz +
-                      phiz * phiz * phiyy) /
-                    std::pow(phix * phix + phiy * phiy + phiz * phiz, 1.5_rt);
+                    -((phix * phix * phiyy) - (2.0_rt * phix * phiy * phixy) +
+                      (phiy * phiy * phixx) + (phix * phix * phizz) -
+                      (2.0_rt * phix * phiz * phixz) + (phiz * phiz * phixx) +
+                      (phiy * phiy * phizz) - (2.0_rt * phiy * phiz * phiyz) +
+                      (phiz * phiz * phiyy)) /
+                    std::pow(
+                        (phix * phix) + (phiy * phiy) + (phiz * phiz), 1.5_rt);
             });
     }
 

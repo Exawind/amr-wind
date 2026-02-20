@@ -200,7 +200,8 @@ void ABLStats::calc_tke_diffusion(
             diffusion(lev),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 diffusion_arrs[nbx](i, j, k) =
-                    (tke_arrs[nbx](i, j, k) - tke_old_arrs[nbx](i, j, k)) / dt -
+                    ((tke_arrs[nbx](i, j, k) - tke_old_arrs[nbx](i, j, k)) /
+                     dt) -
                     conv_arrs[nbx](i, j, k) - shear_prod_arrs[nbx](i, j, k) -
                     buoy_prod_arrs[nbx](i, j, k) +
                     dissipation_arrs[nbx](i, j, k);

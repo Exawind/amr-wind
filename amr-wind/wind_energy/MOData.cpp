@@ -23,9 +23,9 @@ amrex::Real MOData::calc_psi_m(
     if (zeta > 0) {
         return -gamma_m * zeta;
     }
-    const amrex::Real x = std::sqrt(std::sqrt(1.0_rt - beta_m * zeta));
-    return 2.0_rt * std::log(0.5_rt * (1.0_rt + x)) +
-           std::log(0.5_rt * (1.0_rt + x * x)) - 2.0_rt * std::atan(x) +
+    const amrex::Real x = std::sqrt(std::sqrt(1.0_rt - (beta_m * zeta)));
+    return (2.0_rt * std::log(0.5_rt * (1.0_rt + x))) +
+           std::log(0.5_rt * (1.0_rt + x * x)) - (2.0_rt * std::atan(x)) +
            utils::half_pi();
 }
 
@@ -40,7 +40,7 @@ amrex::Real MOData::calc_psi_h(
     if (zeta > 0) {
         return -gamma_h * zeta;
     }
-    const amrex::Real x = std::sqrt(1 - beta_h * zeta);
+    const amrex::Real x = std::sqrt(1 - (beta_h * zeta));
     return 2.0_rt * std::log(0.5_rt * (1 + x));
 }
 
@@ -65,8 +65,8 @@ void MOData::update_fluxes(int max_iters)
         utau_iter = utau;
         switch (alg_type) {
         case ThetaCalcType::HEAT_FLUX:
-            surf_temp = surf_temp_flux * (std::log(zref / z0t) - psi_h) /
-                            (utau * kappa) +
+            surf_temp = (surf_temp_flux * (std::log(zref / z0t) - psi_h) /
+                         (utau * kappa)) +
                         theta_mean;
             break;
 

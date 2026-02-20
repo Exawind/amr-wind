@@ -70,11 +70,13 @@ struct InitDataOp<Cylinder>
                 const auto& bx = mfi.growntilebox();
                 amrex::ParallelFor(
                     bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        const amrex::Real x = problo[0] + (i + 0.5_rt) * dx[0];
-                        const amrex::Real y = problo[1] + (j + 0.5_rt) * dx[1];
+                        const amrex::Real x =
+                            problo[0] + ((i + 0.5_rt) * dx[0]);
+                        const amrex::Real y =
+                            problo[1] + ((j + 0.5_rt) * dx[1]);
                         const amrex::Real phi_glob = phi(i, j, k);
                         const amrex::Real r = std::sqrt(
-                            (x - x0) * (x - x0) + (y - y0) * (y - y0));
+                            ((x - x0) * (x - x0)) + ((y - y0) * (y - y0)));
 
                         const amrex::Real phi_loc = r - R;
 
@@ -86,11 +88,11 @@ struct InitDataOp<Cylinder>
                 const auto& epsilon_node = mask_node(lev).array(mfi);
                 amrex::ParallelFor(
                     nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        const amrex::Real x = problo[0] + i * dx[0];
-                        const amrex::Real y = problo[1] + j * dx[1];
+                        const amrex::Real x = problo[0] + (i * dx[0]);
+                        const amrex::Real y = problo[1] + (j * dx[1]);
 
                         const amrex::Real r = std::sqrt(
-                            (x - x0) * (x - x0) + (y - y0) * (y - y0));
+                            ((x - x0) * (x - x0)) + ((y - y0) * (y - y0)));
 
                         if (r <= R) {
                             epsilon_node(i, j, k) = 0;

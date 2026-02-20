@@ -132,9 +132,9 @@ void OneEqKsgsM84<Transport>::update_turbulent_viscosity(
             mu_turb(lev),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 amrex::Real stratification =
-                    -(gradT_arrs[nbx](i, j, k, 0) * gravity[0] +
-                      gradT_arrs[nbx](i, j, k, 1) * gravity[1] +
-                      gradT_arrs[nbx](i, j, k, 2) * gravity[2]) *
+                    -((gradT_arrs[nbx](i, j, k, 0) * gravity[0]) +
+                      (gradT_arrs[nbx](i, j, k, 1) * gravity[1]) +
+                      (gradT_arrs[nbx](i, j, k, 2) * gravity[2])) *
                     beta_arrs[nbx](i, j, k);
                 if (stratification >
                     std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt) {
@@ -194,8 +194,8 @@ void OneEqKsgsM84<Transport>::update_alphaeff(Field& alphaeff)
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 alphaeff_arrs[nbx](i, j, k) =
                     lam_diff_arrs[nbx](i, j, k) +
-                    muturb_arrs[nbx](i, j, k) *
-                        (1.0_rt + 2.0_rt * tlscale_arrs[nbx](i, j, k) / ds);
+                    (muturb_arrs[nbx](i, j, k) *
+                     (1.0_rt + 2.0_rt * tlscale_arrs[nbx](i, j, k) / ds));
             });
     }
     amrex::Gpu::streamSynchronize();

@@ -59,9 +59,9 @@ void ActuatorSourceTagging::post_advance_work()
                 [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                     const auto src = src_arrs[nbx];
                     const amrex::Real srcmag = std::sqrt(
-                        src(i, j, k, 0) * src(i, j, k, 0) +
-                        src(i, j, k, 1) * src(i, j, k, 1) +
-                        src(i, j, k, 2) * src(i, j, k, 2));
+                        (src(i, j, k, 0) * src(i, j, k, 0)) +
+                        (src(i, j, k, 1) * src(i, j, k, 1)) +
+                        (src(i, j, k, 2) * src(i, j, k, 2)));
 
                     if (srcmag > src_threshold) {
                         tracer_arrs[nbx](i, j, k) = 1.0_rt;

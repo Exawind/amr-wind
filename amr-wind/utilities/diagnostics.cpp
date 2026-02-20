@@ -160,7 +160,7 @@ amrex::Real amr_wind::diagnostics::get_vel_loc(
             amrex::Loop(bx, [=, &loc_fab](int i, int j, int k) noexcept {
                 int idx = (ldir == 0 ? i : (ldir == 1 ? j : k));
                 amrex::Real offset = 0.5_rt;
-                amrex::Real loc = problo[ldir] + (idx + offset) * dx[ldir];
+                amrex::Real loc = problo[ldir] + ((idx + offset) * dx[ldir]);
                 bool mask_check = (mask_arr(i, j, k) > 0);
                 bool loc_check =
                     (amrex::Math::abs(vel_max - vel_arr(i, j, k, vdir)) <
@@ -237,7 +237,7 @@ amrex::Real amr_wind::diagnostics::get_macvel_loc(
                 int kk = k - (vdir == 2 ? 1 : 0);
                 int idx = (ldir == 0 ? i : (ldir == 1 ? j : k));
                 amrex::Real offset = (ldir == vdir ? 0.0_rt : 0.5_rt);
-                amrex::Real loc = problo[ldir] + (idx + offset) * dx[ldir];
+                amrex::Real loc = problo[ldir] + ((idx + offset) * dx[ldir]);
                 bool mask_check =
                     (mask_arr(i, j, k) + mask_arr(ii, jj, kk) > 0);
                 bool loc_check =

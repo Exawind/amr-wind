@@ -33,19 +33,19 @@ void RayleighTaylorFieldInit::operator()(
     const amrex::Real L_x = probhi[0] - problo[0];
 
     amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-        const amrex::Real x = problo[0] + (i + 0.5_rt) * dx[0];
-        const amrex::Real y = problo[1] + (j + 0.5_rt) * dx[1];
-        const amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
+        const amrex::Real x = problo[0] + ((i + 0.5_rt) * dx[0]);
+        const amrex::Real y = problo[1] + ((j + 0.5_rt) * dx[1]);
+        const amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);
         const amrex::Real r2d = amrex::min<amrex::Real>(
             std::hypot((x - splitx), (y - splity)), 0.5_rt * L_x);
         const amrex::Real pertheight =
             0.5_rt -
-            0.01_rt *
-                std::cos(2.0_rt * std::numbers::pi_v<amrex::Real> * r2d / L_x);
+            (0.01_rt *
+             std::cos(2.0_rt * std::numbers::pi_v<amrex::Real> * r2d / L_x));
 
         density(i, j, k) =
-            rho_1 + ((rho_2 - rho_1) / 2.0_rt) *
-                        (1.0_rt + std::tanh((z - pertheight) / 0.005_rt));
+            rho_1 + (((rho_2 - rho_1) / 2.0_rt) *
+                     (1.0_rt + std::tanh((z - pertheight) / 0.005_rt)));
     });
 }
 

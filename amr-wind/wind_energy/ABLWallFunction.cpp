@@ -158,10 +158,10 @@ void ABLWallFunction::update_umean(
         if (!m_temp_table) {
             m_mo.surf_temp =
                 m_surf_temp_init +
-                m_surf_temp_rate *
-                    amrex::max<amrex::Real>(
-                        time.current_time() - m_surf_temp_rate_tstart, 0.0_rt) /
-                    3600.0_rt;
+                (m_surf_temp_rate *
+                 amrex::max<amrex::Real>(
+                     time.current_time() - m_surf_temp_rate_tstart, 0.0_rt) /
+                 3600.0_rt);
         } else {
             m_mo.surf_temp = amr_wind::interp::linear(
                 m_surf_temp_time, m_surf_temp_value, time.current_time());
@@ -279,7 +279,7 @@ void ABLVelWallFunc::wall_model(
                             const amrex::Real uu = vold_arr(i, j, k, 0);
                             const amrex::Real vv = vold_arr(i, j, k, 1);
                             const amrex::Real wspd =
-                                std::sqrt(uu * uu + vv * vv);
+                                std::sqrt((uu * uu) + (vv * vv));
                             const amrex::Real drag = std::log(z / z0) - psi_m;
                             const amrex::Real ustar = wspd * kappa / drag;
                             // Dirichlet BC
@@ -306,7 +306,7 @@ void ABLVelWallFunc::wall_model(
                             const amrex::Real uu = vold_arr(i, j, k, 0);
                             const amrex::Real vv = vold_arr(i, j, k, 1);
                             const amrex::Real wspd =
-                                std::sqrt(uu * uu + vv * vv);
+                                std::sqrt((uu * uu) + (vv * vv));
 
                             // Dirichlet BC
                             varr(i, j, k - 1, 2) = 0.0_rt;
@@ -446,7 +446,7 @@ void ABLTempWallFunc::wall_model(
                             const amrex::Real uu = vold_arr(i, j, k, 0);
                             const amrex::Real vv = vold_arr(i, j, k, 1);
                             const amrex::Real wspd =
-                                std::sqrt(uu * uu + vv * vv);
+                                std::sqrt((uu * uu) + (vv * vv));
                             const amrex::Real theta2 = told_arr(i, j, k);
                             const amrex::Real drag = std::log(z / z0) - psi_m;
                             const amrex::Real ustar = wspd * kappa / drag;
@@ -469,7 +469,7 @@ void ABLTempWallFunc::wall_model(
                             const amrex::Real uu = vold_arr(i, j, k, 0);
                             const amrex::Real vv = vold_arr(i, j, k, 1);
                             const amrex::Real wspd =
-                                std::sqrt(uu * uu + vv * vv);
+                                std::sqrt((uu * uu) + (vv * vv));
                             const amrex::Real theta2 = told_arr(i, j, k);
                             const amrex::Real blankTerrain =
                                 (has_terrain) ? 1 - blank_arr(i, j, k, 0)

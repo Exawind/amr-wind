@@ -64,7 +64,7 @@ public:
                     const amrex::RealVect coord = {AMREX_D_DECL(
                         prob_lo[0] + (i + 0.5_rt) * dx[0],
                         prob_lo[1] + (j + 0.5_rt) * dx[1],
-                        prob_lo[2] + (k + 0.5_rt) * dx[2])};
+                        prob_lo[2] + ((k + 0.5_rt) * dx[2]))};
 
                     if ((farrs[nbx](i, j, k) > fld_err) &&
                         (tagging_box.contains(coord))) {
@@ -81,7 +81,7 @@ public:
                     const amrex::RealVect coord = {AMREX_D_DECL(
                         prob_lo[0] + (i + 0.5_rt) * dx[0],
                         prob_lo[1] + (j + 0.5_rt) * dx[1],
-                        prob_lo[2] + (k + 0.5_rt) * dx[2])};
+                        prob_lo[2] + ((k + 0.5_rt) * dx[2]))};
                     const auto axp =
                         std::abs(farrs[nbx](i + 1, j, k) - farrs[nbx](i, j, k));
                     const auto ayp =

@@ -30,7 +30,7 @@ void SDRSrc::operator()(
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         src_term(i, j, k) +=
-            factor * sdr_diss_arr(i, j, k) + sdr_src_arr(i, j, k);
+            (factor * sdr_diss_arr(i, j, k)) + sdr_src_arr(i, j, k);
     });
 }
 

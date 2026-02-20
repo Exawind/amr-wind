@@ -588,7 +588,8 @@ void ABLBoundaryPlane::write_bndry_native_header(const std::string& chkname)
                         const auto plo = geom.ProbLo(normal);
                         bndry_dom.setSmall(normal, lo - m_out_rad);
                         bndry_dom.setBig(normal, lo);
-                        bndry_prob.setLo(normal, plo - m_out_rad * dx[normal]);
+                        bndry_prob.setLo(
+                            normal, plo - (m_out_rad * dx[normal]));
                         bndry_prob.setHi(normal, plo + dx[normal]);
                     } else {
                         const int hi = bndry_dom.bigEnd(normal);
@@ -596,7 +597,8 @@ void ABLBoundaryPlane::write_bndry_native_header(const std::string& chkname)
                         bndry_dom.setSmall(normal, hi);
                         bndry_dom.setBig(normal, hi + m_out_rad);
                         bndry_prob.setLo(normal, phi - dx[normal]);
-                        bndry_prob.setHi(normal, phi + m_out_rad * dx[normal]);
+                        bndry_prob.setHi(
+                            normal, phi + (m_out_rad * dx[normal]));
                     }
                     bndry_geoms[lev] = amrex::Geometry(bndry_dom, &bndry_prob);
                     amrex::Box minBox = m_mesh.boxArray(lev).minimalBox();
@@ -1158,7 +1160,7 @@ void ABLBoundaryPlane::read_file(const bool nph_target_time)
 
     // populate planes and interpolate
     const amrex::Real time =
-        nph_target_time ? m_time.current_time() + 0.5_rt * m_time.delta_t()
+        nph_target_time ? m_time.current_time() + (0.5_rt * m_time.delta_t())
                         : m_time.new_time();
 
     if (m_out_fmt == "erf-multiblock") {

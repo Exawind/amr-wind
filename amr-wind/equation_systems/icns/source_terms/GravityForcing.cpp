@@ -66,7 +66,7 @@ void GravityForcing::operator()(
         const amrex::Real factor =
             (!ipt ? 1.0_rt
                   : 1.0_rt -
-                        (ir0 ? rho0_arr(i, j, k) : mr0c) / rho_arr(i, j, k));
+                        ((ir0 ? rho0_arr(i, j, k) : mr0c) / rho_arr(i, j, k)));
 
         vel_forces(i, j, k, 0) += gravity[0] * factor;
         vel_forces(i, j, k, 1) += gravity[1] * factor;

@@ -113,7 +113,7 @@ void ABLMeanBoussinesq::operator()(
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         amrex::IntVect iv(i, j, k);
-        const amrex::Real ht = problo[idir] + (iv[idir] + 0.5_rt) * dx[idir];
+        const amrex::Real ht = problo[idir] + ((iv[idir] + 0.5_rt) * dx[idir]);
         const amrex::Real T0 = ref_theta_arr(i, j, k);
         const amrex::Real temp =
             amr_wind::interp::linear(theights, theights_end, tvals, ht);

@@ -113,14 +113,15 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     using DType1 = typename std::iterator_traits<C1>::value_type;
 
     if ((idx.lim == Limits::LOWLIM) || (idx.lim == Limits::UPLIM)) {
-        return yinp[ncomp * idx.idx + comp];
+        return yinp[(ncomp * idx.idx) + comp];
     }
     static constexpr DType1 eps = std::numeric_limits<float>::epsilon();
     const int j = idx.idx;
     const auto denom = (xbegin[j + 1] - xbegin[j]);
     const auto facR = (denom > eps) ? ((xout - xbegin[j]) / denom) : 1.0_rt;
     const auto facL = static_cast<DType1>(1.0_rt) - facR;
-    return facL * yinp[ncomp * j + comp] + facR * yinp[ncomp * (j + 1) + comp];
+    return (facL * yinp[(ncomp * j) + comp]) +
+           (facR * yinp[(ncomp * (j + 1)) + comp]);
 }
 
 template <typename C1, typename C2>
@@ -173,15 +174,15 @@ inline void linear_monotonic(
             find_index(xinp.data(), (xinp.data() + xinp.size()), x, hint);
 
         if ((idx.lim == Limits::LOWLIM) || (idx.lim == Limits::UPLIM)) {
-            yout[i] = yinp[ncomp * idx.idx + comp];
+            yout[i] = yinp[(ncomp * idx.idx) + comp];
         } else if (idx.lim == Limits::VALID) {
             int j = idx.idx;
             const auto denom = (xinp[j + 1] - xinp[j]);
             const auto facR = (denom > eps) ? ((x - xinp[j]) / denom) : 1.0_rt;
             const auto facL =
                 static_cast<typename C1::value_type>(1.0_rt) - facR;
-            yout[i] = facL * yinp[ncomp * j + comp] +
-                      facR * yinp[ncomp * (j + 1) + comp];
+            yout[i] = (facL * yinp[(ncomp * j) + comp]) +
+                      (facR * yinp[(ncomp * (j + 1)) + comp]);
             ;
         }
         hint = idx.idx + 1;
@@ -238,8 +239,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     const auto hb = 0.5_rt * upper_bound;
     const auto ohb = 1.5_rt * upper_bound;
     return yinp[j] +
-           (std::fmod((std::fmod(yinp[j + 1] - yinp[j], ub) + ohb), ub) - hb) *
-               R;
+           ((std::fmod((std::fmod(yinp[j + 1] - yinp[j], ub) + ohb), ub) - hb) *
+            R);
 }
 
 template <typename C1, typename C2>
@@ -292,7 +293,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
 
     if ((xidx.lim == Limits::LOWLIM) || (xidx.lim == Limits::UPLIM) ||
         (yidx.lim == Limits::LOWLIM) || (yidx.lim == Limits::UPLIM)) {
-        return zinp[xidx.idx * ny + yidx.idx];
+        return zinp[(xidx.idx * ny) + yidx.idx];
     }
 
     const int i = xidx.idx;
@@ -306,13 +307,13 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     const auto yfacR = (ydenom > eps) ? ((yout - ybegin[j]) / ydenom) : 1.0_rt;
     const auto yfacL = static_cast<DType1>(1.0_rt) - yfacR;
 
-    const auto z00 = zinp[i * ny + j];
-    const auto z10 = zinp[(i + 1) * ny + j];
-    const auto z01 = zinp[i * ny + (j + 1)];
-    const auto z11 = zinp[(i + 1) * ny + (j + 1)];
+    const auto z00 = zinp[(i * ny) + j];
+    const auto z10 = zinp[((i + 1) * ny) + j];
+    const auto z01 = zinp[(i * ny) + (j + 1)];
+    const auto z11 = zinp[((i + 1) * ny) + (j + 1)];
 
-    return z00 * xfacL * yfacL + z10 * xfacR * yfacL + z01 * xfacL * yfacR +
-           z11 * xfacR * yfacR;
+    return (z00 * xfacL * yfacL) + (z10 * xfacR * yfacL) +
+           (z01 * xfacL * yfacR) + (z11 * xfacR * yfacR);
 }
 
 template <typename C1, typename C2>

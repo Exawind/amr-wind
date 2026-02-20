@@ -176,14 +176,14 @@ public:
             const amrex::Real wy_lo = 1.0_rt - wy_hi;
             const amrex::Real wz_lo = 1.0_rt - wz_hi;
 
-            parr[ip] = wx_lo * wy_lo * wz_lo * farr(i, j, k, ic) +
-                       wx_lo * wy_lo * wz_hi * farr(i, j, k + 1, ic) +
-                       wx_lo * wy_hi * wz_lo * farr(i, j + 1, k, ic) +
-                       wx_lo * wy_hi * wz_hi * farr(i, j + 1, k + 1, ic) +
-                       wx_hi * wy_lo * wz_lo * farr(i + 1, j, k, ic) +
-                       wx_hi * wy_lo * wz_hi * farr(i + 1, j, k + 1, ic) +
-                       wx_hi * wy_hi * wz_lo * farr(i + 1, j + 1, k, ic) +
-                       wx_hi * wy_hi * wz_hi * farr(i + 1, j + 1, k + 1, ic);
+            parr[ip] = (wx_lo * wy_lo * wz_lo * farr(i, j, k, ic)) +
+                       (wx_lo * wy_lo * wz_hi * farr(i, j, k + 1, ic)) +
+                       (wx_lo * wy_hi * wz_lo * farr(i, j + 1, k, ic)) +
+                       (wx_lo * wy_hi * wz_hi * farr(i, j + 1, k + 1, ic)) +
+                       (wx_hi * wy_lo * wz_lo * farr(i + 1, j, k, ic)) +
+                       (wx_hi * wy_lo * wz_hi * farr(i + 1, j, k + 1, ic)) +
+                       (wx_hi * wy_hi * wz_lo * farr(i + 1, j + 1, k, ic)) +
+                       (wx_hi * wy_hi * wz_hi * farr(i + 1, j + 1, k + 1, ic));
         });
     }
 

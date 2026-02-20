@@ -54,8 +54,8 @@ void read_inputs(
     const auto& rad = 0.5_rt * tinfo.rotor_diameter;
     const auto& hh = tinfo.hub_height;
     tinfo.bound_box = amrex::RealBox(
-        bp.x() - 1.25_rt * rad, bp.y() - 1.25_rt * rad, bp.z() - 1.25_rt * rad,
-        bp.x() + 1.25_rt * rad, bp.y() + 1.25_rt * rad, bp.z() + 1.25_rt * rad + hh
+        bp.x() - (1.25_rt * rad), bp.y() - (1.25_rt * rad), bp.z() - (1.25_rt * rad),
+        bp.x() + (1.25_rt * rad), bp.y() + (1.25_rt * rad), bp.z() + (1.25_rt * rad) + hh
     );
     // clang-format on
 }

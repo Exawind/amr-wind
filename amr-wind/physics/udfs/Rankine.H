@@ -36,11 +36,11 @@ struct Rankine
         {
             const auto* problo = geom.ProbLo();
             const auto* dx = geom.CellSize();
-            const auto x = problo[0] + (iv[0] + 0.5_rt) * dx[0];
-            const auto y = problo[1] + (iv[1] + 0.5_rt) * dx[1];
+            const auto x = problo[0] + ((iv[0] + 0.5_rt) * dx[0]);
+            const auto y = problo[1] + ((iv[1] + 0.5_rt) * dx[1]);
             const auto xr = x - (start_location[0] + vel_ref[0] * time);
             const auto yr = y - (start_location[1] + vel_ref[1] * time);
-            const auto r = sqrt(xr * xr + yr * yr);
+            const auto r = sqrt((xr * xr) + (yr * yr));
             const auto Vazi = (r <= Rmax) ? r / Rmax * Umax : Rmax / r * Umax;
             const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> vel = {
                 AMREX_D_DECL(

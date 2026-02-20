@@ -262,12 +262,12 @@ struct FLLCOp
                     auto exp_les = std::exp(-r_dis * r_dis / eps_les2);
                     auto exp_opt = std::exp(-r_dis * r_dis / eps_opt2);
 
-                    k_les = exp_les / eps_les2 + 1.0_rt /
-                                                     (2.0_rt * r_dis * r_dis) *
-                                                     (exp_les - 1.0_rt);
-                    k_opt = exp_opt / eps_opt2 + 1.0_rt /
-                                                     (2.0_rt * r_dis * r_dis) *
-                                                     (exp_opt - 1.0_rt);
+                    k_les = (exp_les / eps_les2) +
+                            (1.0_rt / (2.0_rt * r_dis * r_dis) *
+                             (exp_les - 1.0_rt));
+                    k_opt = (exp_opt / eps_opt2) +
+                            (1.0_rt / (2.0_rt * r_dis * r_dis) *
+                             (exp_opt - 1.0_rt));
                 }
 
                 u_les[ip] =

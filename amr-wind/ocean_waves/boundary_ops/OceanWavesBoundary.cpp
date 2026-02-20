@@ -233,8 +233,9 @@ void OceanWavesBoundary::set_density(
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     // Assume density is correct for gas phase only
-                    arr(i, j, k) = targ_vof(i, j, k) * rho1 +
-                                   (1.0_rt - targ_vof(i, j, k)) * arr(i, j, k);
+                    arr(i, j, k) =
+                        (targ_vof(i, j, k) * rho1) +
+                        ((1.0_rt - targ_vof(i, j, k)) * arr(i, j, k));
                 });
         }
     }

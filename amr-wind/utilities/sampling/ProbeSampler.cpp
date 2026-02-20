@@ -53,7 +53,7 @@ void ProbeSampler::initialize(const std::string& key)
         for (int i = 0; i < npts_file; ++i) {
             amrex::RealVect loc;
             for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-                loc[d] = locs_file[i][d] + m_poffset * m_offset_vector[d];
+                loc[d] = locs_file[i][d] + (m_poffset * m_offset_vector[d]);
             }
             m_probes.push_back(loc, idx);
             ++idx;
@@ -75,11 +75,11 @@ void ProbeSampler::check_bounds()
         for (int d = 0; d < AMREX_SPACEDIM; ++d) {
             if (probe_locs[i][d] < (prob_lo[d] + bounds_tol)) {
                 all_ok = false;
-                probe_locs[i][d] = prob_lo[d] + 10 * bounds_tol;
+                probe_locs[i][d] = prob_lo[d] + (10 * bounds_tol);
             }
             if (probe_locs[i][d] > (prob_hi[d] - bounds_tol)) {
                 all_ok = false;
-                probe_locs[i][d] = prob_hi[d] - 10 * bounds_tol;
+                probe_locs[i][d] = prob_hi[d] - (10 * bounds_tol);
             }
         }
     }

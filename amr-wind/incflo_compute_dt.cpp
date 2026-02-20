@@ -119,9 +119,10 @@ void incflo::compute_dt()
                             mesh_mapping ? (fac_arr[box_no](i, j, k, 2))
                                          : 1.0_rt;
 
-                        result = std::abs(v_bx(i, j, k, 0)) * dxinv[0] / fac_x +
-                                 std::abs(v_bx(i, j, k, 1)) * dxinv[1] / fac_y +
-                                 std::abs(v_bx(i, j, k, 2)) * dxinv[2] / fac_z;
+                        result =
+                            (std::abs(v_bx(i, j, k, 0)) * dxinv[0] / fac_x) +
+                            (std::abs(v_bx(i, j, k, 1)) * dxinv[1] / fac_y) +
+                            (std::abs(v_bx(i, j, k, 2)) * dxinv[2] / fac_z);
 
                         const auto mask =
                             static_cast<amrex::Real>(mask_arr[box_no](i, j, k));

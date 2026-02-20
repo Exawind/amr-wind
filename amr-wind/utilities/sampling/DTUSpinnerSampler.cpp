@@ -118,14 +118,14 @@ vs::Vector DTUSpinnerSampler::generate_lidar_pattern(
     vs::Vector axis(1, 0, 0);
     vs::Vector ground(0, 0, 1);
 
-    amrex::Real innerTheta = InnerPrism.theta0 + InnerPrism.rot * time * 360;
-    amrex::Real outerTheta = OuterPrism.theta0 + OuterPrism.rot * time * 360;
+    amrex::Real innerTheta = InnerPrism.theta0 + (InnerPrism.rot * time * 360);
+    amrex::Real outerTheta = OuterPrism.theta0 + (OuterPrism.rot * time * 360);
 
     // NOLINTBEGIN(readability-suspicious-call-argument)
     auto reflection_1 = sampling_utils::rotate_euler_vec(
         axis, innerTheta,
         sampling_utils::rotate_euler_vec(
-            ground, -(InnerPrism.azimuth / 2 + 90), axis));
+            ground, -((InnerPrism.azimuth / 2) + 90), axis));
 
     auto reflection_2 = sampling_utils::rotate_euler_vec(
         axis, outerTheta,
@@ -181,9 +181,9 @@ void DTUSpinnerSampler::sampling_locations(
             const amrex::RealVect loc = {AMREX_D_DECL(
                 m_start[0 + offset] + i * dx[0],
                 m_start[1 + offset] + i * dx[1],
-                m_start[2 + offset] + i * dx[2])};
+                m_start[2 + offset] + (i * dx[2]))};
             if (utils::contains(box, loc, plo, dxinv)) {
-                sample_locs.push_back(loc, i + k * m_beam_points);
+                sample_locs.push_back(loc, i + (k * m_beam_points));
             }
         }
     }
@@ -406,48 +406,48 @@ bool DTUSpinnerSampler::update_sampling_locations()
                 // atan2
                 amrex::Real step_hub_yaw =
                     m_last_hub_yaw +
-                    (std::fmod(
-                         std::fmod(m_hub_yaw - m_last_hub_yaw, m_twopi) +
-                             m_threepi,
-                         m_twopi) -
-                     m_pi) *
-                        srat;
+                    ((std::fmod(
+                          std::fmod(m_hub_yaw - m_last_hub_yaw, m_twopi) +
+                              m_threepi,
+                          m_twopi) -
+                      m_pi) *
+                     srat);
                 amrex::Real step_hub_tilt =
                     m_last_hub_tilt +
-                    (std::fmod(
-                         std::fmod(m_hub_tilt - m_last_hub_tilt, m_twopi) +
-                             m_threepi,
-                         m_twopi) -
-                     m_pi) *
-                        srat;
+                    ((std::fmod(
+                          std::fmod(m_hub_tilt - m_last_hub_tilt, m_twopi) +
+                              m_threepi,
+                          m_twopi) -
+                      m_pi) *
+                     srat);
                 amrex::Real step_hub_roll =
                     m_last_hub_roll +
-                    (std::fmod(
-                         std::fmod(m_hub_roll - m_last_hub_roll, m_twopi) +
-                             m_threepi,
-                         m_twopi) -
-                     m_pi) *
-                        srat;
+                    ((std::fmod(
+                          std::fmod(m_hub_roll - m_last_hub_roll, m_twopi) +
+                              m_threepi,
+                          m_twopi) -
+                      m_pi) *
+                     srat);
 
                 // Rotate beam unit vector
                 beam_vector = adjust_lidar_pattern(
-                    beam_vector, m_fixed_yaw + step_hub_yaw * m_radtodeg,
-                    m_fixed_tilt + step_hub_tilt * m_radtodeg,
-                    m_fixed_roll + step_hub_roll * m_radtodeg);
+                    beam_vector, m_fixed_yaw + (step_hub_yaw * m_radtodeg),
+                    m_fixed_tilt + (step_hub_tilt * m_radtodeg),
+                    m_fixed_roll + (step_hub_roll * m_radtodeg));
 
                 // Interpolate lidar center
                 for (int d = 0; d < AMREX_SPACEDIM; ++d) {
                     m_step_lidar_center[d] =
-                        (step / m_ns) *
-                            (m_lidar_center[d] - m_last_lidar_center[d]) +
+                        ((step / m_ns) *
+                         (m_lidar_center[d] - m_last_lidar_center[d])) +
                         m_last_lidar_center[d];
                 }
 
                 // Beam start and end points
                 for (int d = 0; d < AMREX_SPACEDIM; ++d) {
                     m_start[d + offset] = m_step_lidar_center[d];
-                    m_end[d + offset] =
-                        m_step_lidar_center[d] + beam_vector[d] * m_beam_length;
+                    m_end[d + offset] = m_step_lidar_center[d] +
+                                        (beam_vector[d] * m_beam_length);
                 }
 
                 m_time_sampling += dt_s;

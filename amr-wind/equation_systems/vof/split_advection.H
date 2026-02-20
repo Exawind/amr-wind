@@ -92,14 +92,14 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE void balance_eulerian_fluxes(
 {
 
     if (dir == 0) {
-        volfrac(i, j, k) += (fluxF(i, j, k) - fluxF(i + 1, j, k)) * dxi +
-                            fluxC(i, j, k) * (velR - velL);
+        volfrac(i, j, k) += ((fluxF(i, j, k) - fluxF(i + 1, j, k)) * dxi) +
+                            (fluxC(i, j, k) * (velR - velL));
     } else if (dir == 1) {
-        volfrac(i, j, k) += (fluxF(i, j, k) - fluxF(i, j + 1, k)) * dxi +
-                            fluxC(i, j, k) * (velR - velL);
+        volfrac(i, j, k) += ((fluxF(i, j, k) - fluxF(i, j + 1, k)) * dxi) +
+                            (fluxC(i, j, k) * (velR - velL));
     } else if (dir == 2) {
-        volfrac(i, j, k) += (fluxF(i, j, k) - fluxF(i, j, k + 1)) * dxi +
-                            fluxC(i, j, k) * (velR - velL);
+        volfrac(i, j, k) += ((fluxF(i, j, k) - fluxF(i, j, k + 1)) * dxi) +
+                            (fluxC(i, j, k) * (velR - velL));
     }
     // Do clipping
     volfrac(i, j, k) = amrex::max<amrex::Real>(

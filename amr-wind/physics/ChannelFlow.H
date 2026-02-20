@@ -24,12 +24,12 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real analytical_smagorinsky_profile(
     const amrex::Real Cs2 = Cs * Cs;
     const amrex::Real dx2 = dx * dx;
     const amrex::Real Cs2dx2 = Cs2 * dx2;
-    return -mu / (rho * Cs2dx2) * h +
-           Cs2dx2 / (3 * dpdx) *
-               std::pow(
-                   (2.0_rt / Cs2dx2 * dpdx * h +
-                    (mu / (rho * Cs2dx2)) * (mu / (rho * Cs2dx2)) + C1),
-                   3.0_rt / 2.0_rt) +
+    return (-mu / (rho * Cs2dx2) * h) +
+           (Cs2dx2 / (3 * dpdx) *
+            std::pow(
+                ((2.0_rt / Cs2dx2 * dpdx * h) +
+                 ((mu / (rho * Cs2dx2)) * (mu / (rho * Cs2dx2))) + C1),
+                3.0_rt / 2.0_rt)) +
            C0;
 }
 
