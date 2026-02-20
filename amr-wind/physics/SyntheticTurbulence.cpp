@@ -43,7 +43,11 @@ public:
         amrex::Real vel_stop,
         int shear_dir)
         : MeanProfile(0.5_rt * (vel_start + vel_stop), shear_dir)
-        , m_op{h_min, h_max, vel_start, vel_stop}
+        , m_op{
+              .m_hmin = h_min,
+              .m_hmax = h_max,
+              .m_vstart = vel_start,
+              .m_vstop = vel_stop}
     {}
 
     ~LinearShearProfile() override = default;
@@ -86,7 +90,13 @@ public:
         amrex::Real umin,
         amrex::Real umax)
         : MeanProfile(ref_vel, shear_dir)
-        , m_op{ref_vel, ref_height, alpha, h_offset, umin, umax}
+        , m_op{
+              .m_ref_vel = ref_vel,
+              .m_ref_height = ref_height,
+              .m_alpha = alpha,
+              .m_hoffset = h_offset,
+              .m_umin = umin,
+              .m_umax = umax}
     {}
 
     ~PowerLawProfile() override = default;

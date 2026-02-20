@@ -180,7 +180,7 @@ void FPlaneAveragingFine<FType>::operator()()
 
     m_last_updated_index = m_time.time_index();
 
-    std::fill(m_line_average.begin(), m_line_average.end(), 0.0_rt);
+    std::ranges::fill(m_line_average, 0.0_rt);
 
     switch (m_axis) {
     case 0:
@@ -469,10 +469,9 @@ void VelPlaneAveragingFine::operator()()
     // velocity averages
     FieldPlaneAveragingFine::operator()();
 
-    std::fill(
-        m_line_hvelmag_average.begin(), m_line_hvelmag_average.end(), 0.0_rt);
-    std::fill(m_line_Su_average.begin(), m_line_Su_average.end(), 0.0_rt);
-    std::fill(m_line_Sv_average.begin(), m_line_Sv_average.end(), 0.0_rt);
+    std::ranges::fill(m_line_hvelmag_average, 0.0_rt);
+    std::ranges::fill(m_line_Su_average, 0.0_rt);
+    std::ranges::fill(m_line_Sv_average, 0.0_rt);
 
     switch (m_axis) {
     case 0:

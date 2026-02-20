@@ -20,9 +20,8 @@ struct ComputeRHSOp<Density, Scheme>
     {
         // Field states for diffusion and advection terms. In Godunov scheme
         // these terms only have one state.
-        auto fstate = std::is_same<Scheme, fvm::Godunov>::value
-                          ? FieldState::New
-                          : FieldState::Old;
+        auto fstate = std::is_same_v<Scheme, fvm::Godunov> ? FieldState::New
+                                                           : FieldState::Old;
 
         const int nlevels = fields.repo.num_active_levels();
         auto& field = fields.field;
