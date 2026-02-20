@@ -130,7 +130,7 @@ void DerivedQtyMgr::filter(const std::set<std::string>& erase)
     // first erase from the unordered map
     amrex::Vector<decltype(m_obj_map)::key_type> keys_to_erase;
     for (int i = 0; i < m_derived_vec.size(); i++) {
-        if (erase.find(m_derived_vec[i]->name()) != erase.end()) {
+        if (erase.contains(m_derived_vec[i]->name())) {
             auto it = std::find_if(
                 m_obj_map.begin(), m_obj_map.end(),
                 [&i](auto&& p) { return p.second == i; });
