@@ -2,6 +2,7 @@
 #define VOLUME_FRACTIONS_H_
 
 #include <AMReX_FArrayBox.H>
+#include <algorithm>
 #include <cmath>
 #include "amr-wind/utilities/constants.H"
 #include "AMReX_REAL.H"
@@ -254,12 +255,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void mixed_youngs_central_normal(
     t0 = std::abs(m(3, 0));
     t1 = std::abs(m(3, 1));
     t2 = std::abs(m(3, 2));
-    if (t1 > t0) {
-        t0 = t1;
-    }
-    if (t2 > t0) {
-        t0 = t2;
-    }
+    t0 = amrex::max<amrex::Real>(t1, t0);
+    t0 = amrex::max<amrex::Real>(t2, t0);
 
     if (std::abs(m(cn, cn)) > t0 && t0 > 0.0_rt) {
         // second t0 condition is to ensure nonzero normal magnitude
@@ -287,8 +284,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real volume_intercept(
     // (3) "limit ch (0.d0 < ch < 0.5d0)"
     // (4) "calculate alpha"
 
-    amrex::Real m1 = amrex::min(b1, b2);
-    amrex::Real m3 = amrex::max(b1, b2);
+    amrex::Real m1 = amrex::min<amrex::Real>(b1, b2);
+    amrex::Real m3 = amrex::max<amrex::Real>(b1, b2);
     amrex::Real m2 = b3;
 
     amrex::Real tmp;
@@ -397,8 +394,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real cut_volume(
         amrex::min<amrex::Real>(al, 1.0_rt - al); // limit to: 0 < alh < 1/2
 
     // Order coefficients
-    amrex::Real b1 = amrex::min(n1 * dr0, n2); // order coefficients
-    amrex::Real b3 = amrex::max(n1 * dr0, n2);
+    amrex::Real b1 =
+        amrex::min<amrex::Real>(n1 * dr0, n2); // order coefficients
+    amrex::Real b3 = amrex::max<amrex::Real>(n1 * dr0, n2);
     amrex::Real b2 = n3;
 
     if (b2 < b1) {
@@ -518,8 +516,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool interface_band(
         for (int jj = -n_band; jj <= n_band; ++jj) {
             for (int kk = -n_band; kk <= n_band; ++kk) {
                 amrex::Real VOF = volfrac(i + ii, j + jj, k + kk);
-                VOF_max = amrex::max(VOF_max, VOF);
-                VOF_min = amrex::min(VOF_min, VOF);
+                VOF_max = amrex::max<amrex::Real>(VOF_max, VOF);
+                VOF_min = amrex::min<amrex::Real>(VOF_min, VOF);
                 if (VOF < 1.0_rt - tiny && VOF > tiny) {
                     VOF_mid = true;
                 }
