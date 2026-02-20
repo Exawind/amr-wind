@@ -228,7 +228,7 @@ void Field::fillpatch_sibling_fields(
             &((*fields[0])(lev)), &((*fields[1])(lev)), &((*fields[2])(lev)))};
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM> cfabs;
         if (lev > 0) {
-            for (int i = 0; i < static_cast<int>(fields.size()); i++) {
+            for (int i = 0; std::cmp_less(i, fields.size()); i++) {
                 cfabs[i] = &((*fields[i])(lev - 1));
             }
         }

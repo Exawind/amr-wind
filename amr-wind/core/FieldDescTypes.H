@@ -13,10 +13,10 @@ namespace amr_wind {
  */
 enum class FieldState : int {
     NP1 = 0,   ///< Latest state, also aliased to `New`
-    N = 1,         ///< Previous state, also aliased to `Old`
-    NM1 = 2,       ///< State at `(n - 1)` th timestep
-    NPH = 3,       ///< State at `(n + 1/2)` (intermediate) timestep
-    NMH = 4,       ///< State at `(n - 1/2)` timestep
+    N = 1,     ///< Previous state, also aliased to `Old`
+    NM1 = 2,   ///< State at `(n - 1)` th timestep
+    NPH = 3,   ///< State at `(n + 1/2)` (intermediate) timestep
+    NMH = 4,   ///< State at `(n - 1/2)` timestep
     New = NP1, ///< Same as FieldState::NP1
     Old = N,   ///< Same as FieldState::N
 };
