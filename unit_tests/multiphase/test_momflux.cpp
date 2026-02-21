@@ -68,7 +68,7 @@ void get_accuracy(
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
         const int icheck = (dir == 0) ? i : ((dir == 1) ? j : k);
         // x is face location
-        const amrex::Real x = problo[dir] + icheck * dx[dir];
+        const amrex::Real x = problo[dir] + (icheck * dx[dir]);
         // Check that MAC velocity is as expected, unchanged
         err_arr(i, j, k, 0) = std::abs(um(i, j, k) - varr[0]);
         err_arr(i, j, k, 1) = std::abs(vm(i, j, k) - varr[1]);
@@ -82,14 +82,15 @@ void get_accuracy(
         if (x == 0.5_rt) {
             // Center face (coming from left cell)
             amrex::Real advvof = 1.0_rt;
-            amrex::Real advrho = rho1 * advvof + rho2 * (1.0_rt - advvof);
+            amrex::Real advrho = (rho1 * advvof) + (rho2 * (1.0_rt - advvof));
             err_arr(i, j, k, 6) = std::abs(rf(i, j, k) - advrho);
         } else {
             if (x == 0.0_rt) {
                 // Left face (coming from right cell, periodic
                 // BC)
                 amrex::Real advvof = 0.0_rt;
-                amrex::Real advrho = rho1 * advvof + rho2 * (1.0_rt - advvof);
+                amrex::Real advrho =
+                    (rho1 * advvof) + (rho2 * (1.0_rt - advvof));
                 err_arr(i, j, k, 6) = std::abs(rf(i, j, k) - advrho);
             }
         }
@@ -99,13 +100,13 @@ void get_accuracy(
             // Left cell (gas entering, liquid leaving)
             err_arr(i, j, k, 7) = std::abs(
                 dqdt(i, j, k, dir) -
-                vel_val * vel_val * (rho2 - rho1) / 0.5_rt);
+                (vel_val * vel_val * (rho2 - rho1) / 0.5_rt));
         } else {
             if (icheck == 1) {
                 // Right cell (liquid entering, gas leaving)
                 err_arr(i, j, k, 7) = std::abs(
                     dqdt(i, j, k, dir) -
-                    vel_val * vel_val * (rho1 - rho2) / 0.5_rt);
+                    (vel_val * vel_val * (rho1 - rho2) / 0.5_rt));
             }
         }
     });

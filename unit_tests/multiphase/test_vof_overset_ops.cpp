@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "aw_test_utils/MeshTest.H"
 #include "aw_test_utils/iter_tools.H"
 #include "aw_test_utils/test_utils.H"
@@ -183,8 +185,8 @@ void init_gp_rho_etc(
                     gp_arr(i, j, k, 1) = 3.5_rt;
                     gp_arr(i, j, k, 2) = 4.5_rt;
                 }
-                rho_arr(i, j, k) = rho1 * vof_arr(i, j, k) +
-                                   rho2 * (1.0_rt - vof_arr(i, j, k));
+                rho_arr(i, j, k) = (rho1 * vof_arr(i, j, k)) +
+                                   (rho2 * (1.0_rt - vof_arr(i, j, k)));
             });
     });
 }
@@ -434,17 +436,18 @@ void calc_psrc(
                 (fz(i, j, k, 8) + fz(i, j - 1, k, 8) + fz(i - 1, j, k, 8) +
                  fz(i - 1, j - 1, k, 8) + tiny);
             // Normalize vector
-            amrex::Real nmag = std::sqrt(n0 * n0 + n1 * n1 + n2 * n2) + tiny;
+            amrex::Real nmag =
+                std::sqrt((n0 * n0) + (n1 * n1) + (n2 * n2)) + tiny;
             n0 /= nmag;
             n1 /= nmag;
             n2 /= nmag;
 
             // Perform double contraction
-            psmn(i, j, k) = fxgpx_flux * n0 * n0 + fxgpy_flux * n0 * n1 +
-                            fxgpz_flux * n0 * n2 + fygpx_flux * n1 * n0 +
-                            fygpy_flux * n1 * n1 + fygpz_flux * n1 * n2 +
-                            fzgpx_flux * n2 * n0 + fzgpy_flux * n2 * n1 +
-                            fzgpz_flux * n2 * n2;
+            psmn(i, j, k) = (fxgpx_flux * n0 * n0) + (fxgpy_flux * n0 * n1) +
+                            (fxgpz_flux * n0 * n2) + (fygpx_flux * n1 * n0) +
+                            (fygpy_flux * n1 * n1) + (fygpz_flux * n1 * n2) +
+                            (fzgpx_flux * n2 * n0) + (fzgpy_flux * n2 * n1) +
+                            (fzgpz_flux * n2 * n2);
         });
     });
 }
@@ -592,7 +595,7 @@ amrex::Real check_gp_rho_face_impl(
                     if (idx == 0) {
                         // gphi > 0, uwpind from the "left"
                         const amrex::Real rho_answer =
-                            rho1 * 0.41_rt + rho2 * (1.0_rt - 0.41_rt);
+                            (rho1 * 0.41_rt) + (rho2 * (1.0_rt - 0.41_rt));
                         amrex::Real flux_answer = 1.0_rt / rho_answer;
                         error += std::abs(f_arr(i, j, k, 0) - flux_answer);
                         flux_answer = 2.0_rt / rho_answer;
@@ -602,7 +605,7 @@ amrex::Real check_gp_rho_face_impl(
                     } else if (idx == 1) {
                         // gphi < 0, upwind from the "right"
                         const amrex::Real rho_answer =
-                            rho1 * 0.2_rt + rho2 * (1.0_rt - 0.2_rt);
+                            (rho1 * 0.2_rt) + (rho2 * (1.0_rt - 0.2_rt));
                         amrex::Real flux_answer = 2.0_rt / rho_answer;
                         error += std::abs(f_arr(i, j, k, 0) - flux_answer);
                         flux_answer = 3.0_rt / rho_answer;
@@ -612,9 +615,9 @@ amrex::Real check_gp_rho_face_impl(
                     } else if (idx == 2) {
                         // gphi = 0, average both sides
                         const amrex::Real rho_r =
-                            rho1 * 0.2_rt + rho2 * (1.0_rt - 0.2_rt);
+                            (rho1 * 0.2_rt) + (rho2 * (1.0_rt - 0.2_rt));
                         const amrex::Real rho_l =
-                            rho1 * 0.2_rt + rho2 * (1.0_rt - 0.2_rt);
+                            (rho1 * 0.2_rt) + (rho2 * (1.0_rt - 0.2_rt));
                         amrex::Real flux_answer =
                             0.5_rt * (2.5_rt / rho_r + 2.0_rt / rho_l);
                         error += std::abs(f_arr(i, j, k, 0) - flux_answer);
@@ -968,7 +971,7 @@ TEST_F(VOFOversetOps, pseudo_vscale_dt)
     // With a single level, pseudo velocity scale should be dx of lev 0
     const auto dx_lev0 = repo.mesh().Geom(0).CellSizeArray();
     const amrex::Real pvs_answer =
-        std::min(std::min(dx_lev0[0], dx_lev0[1]), dx_lev0[2]);
+        std::min({dx_lev0[0], dx_lev0[1], dx_lev0[2]});
 
     // Pseudo-velocity scale, should be the smallest dx in iblank region
     const auto& iblank_cell = repo.get_int_field("iblank_cell");

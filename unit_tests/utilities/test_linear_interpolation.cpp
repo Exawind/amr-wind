@@ -136,7 +136,7 @@ TEST(LinearInterpolation, lin_interp_single)
 {
     namespace interp = amr_wind::interp;
 
-    const amrex::Real mult_fac = 2.0_rt + 10.0_rt * amrex::Random();
+    const amrex::Real mult_fac = 2.0_rt + (10.0_rt * amrex::Random());
     std::vector<amrex::Real> xvec(10), yvec(10);
     std::iota(xvec.begin(), xvec.end(), 0.0_rt);
     std::transform(
@@ -161,11 +161,12 @@ TEST(LinearInterpolation, lin_interp_single_multicomponent)
     std::vector<amrex::Real> yvec(static_cast<unsigned long>(ncomp * 10));
     std::iota(xvec.begin(), xvec.end(), 0.0_rt);
     const amrex::Vector<amrex::Real> mult_facs = {
-        2.0_rt + 10.0_rt * amrex::Random(), 2.0_rt + 10.0_rt * amrex::Random(),
-        2.0_rt + 10.0_rt * amrex::Random()};
+        2.0_rt + (10.0_rt * amrex::Random()),
+        2.0_rt + (10.0_rt * amrex::Random()),
+        2.0_rt + (10.0_rt * amrex::Random())};
     for (int i = 0; i < static_cast<int>(xvec.size()); i++) {
         for (int n = 0; n < ncomp; n++) {
-            yvec[ncomp * i + n] = mult_facs[n] * xvec[i];
+            yvec[(ncomp * i) + n] = mult_facs[n] * xvec[i];
         }
     }
 
@@ -184,8 +185,8 @@ TEST(LinearInterpolation, bilin_interp_single)
 {
     namespace interp = amr_wind::interp;
 
-    const amrex::Real mult_facx = 2.0_rt + 10.0_rt * amrex::Random();
-    const amrex::Real mult_facy = 2.0_rt + 10.0_rt * amrex::Random();
+    const amrex::Real mult_facx = 2.0_rt + (10.0_rt * amrex::Random());
+    const amrex::Real mult_facy = 2.0_rt + (10.0_rt * amrex::Random());
     std::vector<amrex::Real> xvec(10), yvec(5);
     std::vector<amrex::Real> zvec(xvec.size() * yvec.size());
     std::iota(xvec.begin(), xvec.end(), 0.0_rt);
@@ -193,7 +194,7 @@ TEST(LinearInterpolation, bilin_interp_single)
 
     for (int i = 0; i < static_cast<int>(xvec.size()); i++) {
         for (int j = 0; j < static_cast<int>(yvec.size()); j++) {
-            zvec[i * yvec.size() + j] =
+            zvec[(i * yvec.size()) + j] =
                 mult_facx * xvec[i] * mult_facy * yvec[j];
         }
     }
@@ -214,7 +215,7 @@ TEST(LinearInterpolation, lin_interp)
 {
     namespace interp = amr_wind::interp;
 
-    const amrex::Real mult_fac = 2.0_rt + 10.0_rt * amrex::Random();
+    const amrex::Real mult_fac = 2.0_rt + (10.0_rt * amrex::Random());
     std::vector<amrex::Real> xvec(10), yvec(10);
     std::iota(xvec.begin(), xvec.end(), 0.0_rt);
     std::transform(
@@ -236,7 +237,7 @@ TEST(LinearInterpolation, lin_monotonic)
 {
     namespace interp = amr_wind::interp;
 
-    const amrex::Real mult_fac = 2.0_rt + 10.0_rt * amrex::Random();
+    const amrex::Real mult_fac = 2.0_rt + (10.0_rt * amrex::Random());
     std::vector<amrex::Real> xvec(10), yvec(10);
     std::iota(xvec.begin(), xvec.end(), 0.0_rt);
     std::transform(

@@ -21,9 +21,9 @@ void init_scalar(amr_wind::Field& scalar)
         amrex::ParallelFor(
             scalar(lev), scalar.num_grow(),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
-                sarrs[nbx](i, j, k) = 1.0_rt + i * i +
-                                      0.2_rt * (j - 1) * (j - 1) +
-                                      0.01_rt * (k + 1) * (k + 1) * (k + 1);
+                sarrs[nbx](i, j, k) = 1.0_rt + (i * i) +
+                                      (0.2_rt * (j - 1) * (j - 1)) +
+                                      (0.01_rt * (k + 1) * (k + 1) * (k + 1));
             });
     }
     amrex::Gpu::streamSynchronize();

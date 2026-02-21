@@ -30,11 +30,11 @@ amrex::Real density_test_impl(
                 amrex::Real error = 0.0_rt;
 
                 amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
-                    const amrex::Real zbtm = problo[2] + k * dx[2];
+                    const amrex::Real zbtm = problo[2] + (k * dx[2]);
                     amrex::Real vof = (wlev - zbtm) / dx[2];
                     vof = amrex::max<amrex::Real>(vof, 0.0_rt);
                     vof = amrex::min<amrex::Real>(vof, 1.0_rt);
-                    amrex::Real dens = vof * rho1 + (1.0_rt - vof) * rho2;
+                    amrex::Real dens = (vof * rho1) + ((1.0_rt - vof) * rho2);
                     error += std::abs(rho0_arr(i, j, k) - dens);
                 });
 
@@ -72,7 +72,7 @@ amrex::Real pressure_test_impl(
                 amrex::Real error = 0.0_rt;
 
                 amrex::Loop(nbx, [=, &error](int i, int j, int k) noexcept {
-                    const amrex::Real znode = problo[2] + k * dx[2];
+                    const amrex::Real znode = problo[2] + (k * dx[2]);
                     amrex::Real ht_g = probhi[2] - wlev;
                     amrex::Real ht_l = wlev - problo[2];
                     // Limit by location

@@ -258,7 +258,7 @@ TEST_F(SimTimeTest, enforce_dt_out)
 
     // Should not change if short of interval
     result = get_enforced_dt_for_output(
-        0.1_rt, 3.9_rt - 2.0_rt * 5.0e-4_rt, 2.0_rt, 1.0e-3_rt);
+        0.1_rt, 3.9_rt - (2.0_rt * 5.0e-4_rt), 2.0_rt, 1.0e-3_rt);
     EXPECT_NEAR(
         result, 0.1_rt, std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
 
@@ -267,12 +267,12 @@ TEST_F(SimTimeTest, enforce_dt_out)
     EXPECT_NEAR(
         result, 0.1_rt, std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
     result = get_enforced_dt_for_output(
-        0.1_rt, 4.0_rt - 2.0_rt * 0.99e-3_rt, 2.0_rt, 1.0e-3_rt);
+        0.1_rt, 4.0_rt - (2.0_rt * 0.99e-3_rt), 2.0_rt, 1.0e-3_rt);
     EXPECT_NEAR(
         result, 0.1_rt, std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
     // Past the tolerance, will change
     result = get_enforced_dt_for_output(
-        0.1_rt, 4.0_rt - 2.0_rt * 1.01e-3_rt, 2.0_rt, 1.0e-3_rt);
+        0.1_rt, 4.0_rt - (2.0_rt * 1.01e-3_rt), 2.0_rt, 1.0e-3_rt);
     EXPECT_LT(result, 0.1_rt);
 
     // Shortens dt if overlapping with intervals

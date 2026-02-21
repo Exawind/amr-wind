@@ -276,7 +276,7 @@ TEST_F(ActFlatPlateTest, actuator_init)
     }
     {
         for (int i = 0; i < 2; ++i) {
-            amrex::Real zloc = 8.0_rt + 16.0_rt * i;
+            amrex::Real zloc = 8.0_rt + (16.0_rt * i);
             amrex::ParmParse pp("Actuator." + actuators[i]);
             pp.addarr(
                 "start", amrex::Vector<amrex::Real>{16.0_rt, 12.0_rt, zloc});
@@ -314,7 +314,7 @@ TEST_F(ActFlatPlateTest, flat_plate_init)
     }
     {
         for (int i = 0; i < 2; ++i) {
-            amrex::Real zloc = 8.0_rt + 16.0_rt * i;
+            amrex::Real zloc = 8.0_rt + (16.0_rt * i);
             amrex::ParmParse pp("Actuator." + actuators[i]);
             pp.addarr(
                 "start", amrex::Vector<amrex::Real>{16.0_rt, 12.0_rt, zloc});

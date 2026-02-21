@@ -58,8 +58,8 @@ void init_field3(amr_wind::Field& fld, amrex::Real srate)
         amrex::ParallelFor(
             fld(lev), fld.num_grow(), fld.num_comp(),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
-                const amrex::Real z = problo[2] + (k + offset) * dx[2];
-                farrs[nbx](i, j, k, n) = z / 2.0_rt * srate + 2.0_rt;
+                const amrex::Real z = problo[2] + ((k + offset) * dx[2]);
+                farrs[nbx](i, j, k, n) = (z / 2.0_rt * srate) + 2.0_rt;
             });
     }
     amrex::Gpu::streamSynchronize();
@@ -83,7 +83,7 @@ void init_field1(amr_wind::Field& fld, amrex::Real tgrad)
         amrex::ParallelFor(
             fld(lev), fld.num_grow(),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                const amrex::Real z = problo[2] + (k + offset) * dx[2];
+                const amrex::Real z = problo[2] + ((k + offset) * dx[2]);
 
                 farrs[nbx](i, j, k, 0) = z * tgrad;
             });
@@ -256,8 +256,8 @@ TEST_F(TurbLESTestBC, test_1eqKsgs_noslip)
     const amrex::Real wz_wallcell = uz_wallcell;
 
     const amrex::Real s_naive = std::sqrt(
-        2.0_rt * wz_wallcell * wz_wallcell +
-        2.0_rt * uz_wallcell * uz_wallcell);
+        (2.0_rt * wz_wallcell * wz_wallcell) +
+        (2.0_rt * uz_wallcell * uz_wallcell));
     // Check for different value just above wall due to BC
     auto shear_wall =
         get_val_at_kindex(shear_prod, muturb, 0, 0) / 10.0_rt / 20.0_rt;
@@ -270,8 +270,8 @@ TEST_F(TurbLESTestBC, test_1eqKsgs_noslip)
         m_dz;
     const amrex::Real wz_wallface = uz_wallface;
     const amrex::Real s_true = std::sqrt(
-        2.0_rt * wz_wallface * wz_wallface +
-        2.0_rt * uz_wallface * uz_wallface);
+        (2.0_rt * wz_wallface * wz_wallface) +
+        (2.0_rt * uz_wallface * uz_wallface));
     EXPECT_NEAR(shear_wall, s_true, m_tol);
 }
 
@@ -304,7 +304,7 @@ TEST_F(TurbLESTestBC, test_1eqKsgs_slip)
                                  uz_bulk * 0.5_rt * m_dz + 2.0_rt - 0.0_rt) /
                                 m_dz;
     const amrex::Real s_true =
-        std::sqrt(2.0_rt * wz_wall * wz_wall + 2.0_rt * uz_bulk * uz_bulk);
+        std::sqrt((2.0_rt * wz_wall * wz_wall) + (2.0_rt * uz_bulk * uz_bulk));
     EXPECT_NEAR(shear_wall, s_true, m_tol);
 }
 
@@ -351,7 +351,7 @@ TEST_F(TurbLESTestBC, test_1eqKsgs_wallmodel)
                                  uz_bulk * 0.5_rt * m_dz + 2.0_rt - 0.0_rt) /
                                 m_dz;
     const amrex::Real s_true =
-        std::sqrt(2.0_rt * wz_wall * wz_wall + 2.0_rt * uz_bulk * uz_bulk);
+        std::sqrt((2.0_rt * wz_wall * wz_wall) + (2.0_rt * uz_bulk * uz_bulk));
     EXPECT_NEAR(shear_wall, s_true, m_tol);
 }
 
@@ -400,14 +400,14 @@ TEST_F(TurbLESTestBC, test_1eqKsgs_wallmodel_failnofillpatch)
                                  uz_bulk * 0.5_rt * m_dz + 2.0_rt - 0.0_rt) /
                                 m_dz;
     const amrex::Real s_true =
-        std::sqrt(2.0_rt * wz_wall * wz_wall + 2.0_rt * uz_bulk * uz_bulk);
+        std::sqrt((2.0_rt * wz_wall * wz_wall) + (2.0_rt * uz_bulk * uz_bulk));
     // This is checking the correct value -- without the fillpatch, it is wrong
     // (passing test indicates fillpatch is needed after diffusion performed)
     EXPECT_GT(std::abs(shear_wall - s_true), m_tol);
 
     // Shear value at the wall used by wall model
     const amrex::Real zref = 0.5_rt * m_dz;
-    const amrex::Real uref = zref * uz_bulk + 2.0_rt;
+    const amrex::Real uref = (zref * uz_bulk) + 2.0_rt;
     const amrex::Real vmag_ref = std::sqrt(2.0_rt * uref * uref);
     const amrex::Real utau = kappa * vmag_ref / (std::log(zref / z0));
     const amrex::Real uz_wm =
@@ -422,7 +422,8 @@ TEST_F(TurbLESTestBC, test_1eqKsgs_wallmodel_failnofillpatch)
 
     // Naive answer, assumes wall Dirichlet
     const amrex::Real s_naive = std::sqrt(
-        2.0_rt * wz_wall * wz_wall + 2.0_rt * uz_wmdirichlet * uz_wmdirichlet);
+        (2.0_rt * wz_wall * wz_wall) +
+        (2.0_rt * uz_wmdirichlet * uz_wmdirichlet));
     // This is checking the wrong value
     // (passing test indicates it is wrong in expected way w/out fillpatch)
     EXPECT_NEAR(shear_wall, s_naive, std::abs(shear_wall) * m_tol);
@@ -466,8 +467,8 @@ TEST_F(TurbLESTestBC, test_1eqKsgs_zerogradient)
     // Neumann is applied to w as well
     const amrex::Real wz_wallface_neumann = uz_wallface_neumann;
     const amrex::Real s_true = std::sqrt(
-        2.0_rt * wz_wallface_neumann * wz_wallface_neumann +
-        2.0_rt * uz_wallface_neumann * uz_wallface_neumann);
+        (2.0_rt * wz_wallface_neumann * wz_wallface_neumann) +
+        (2.0_rt * uz_wallface_neumann * uz_wallface_neumann));
     EXPECT_NEAR(shear_wall, s_true, m_tol);
 }
 
@@ -513,8 +514,8 @@ TEST_F(TurbLESTestBC, test_1eqKsgs_symmetricwall)
          4.0_rt / 3.0_rt * (0.0_rt)) /
         m_dz;
     const amrex::Real s_true = std::sqrt(
-        2.0_rt * wz_wallface * wz_wallface +
-        2.0_rt * uz_wallface_neumann * uz_wallface_neumann);
+        (2.0_rt * wz_wallface * wz_wallface) +
+        (2.0_rt * uz_wallface_neumann * uz_wallface_neumann));
     EXPECT_NEAR(shear_wall, s_true, m_tol);
 }
 

@@ -51,7 +51,7 @@ TEST_F(ABLMeshTest, abl_initialization)
         const amrex::Real dz = mesh().Geom(0).CellSize(2);
         const amrex::Real min_temp_gold = 300.0_rt;
         const amrex::Real max_temp_gold =
-            308.75_rt - (308.75_rt - 308.0_rt) / 250.0_rt * (0.5_rt * dz);
+            308.75_rt - ((308.75_rt - 308.0_rt) / 250.0_rt * (0.5_rt * dz));
         amrex::Real min_temp, max_temp;
         utils::field_minmax(nlevels, temperature, min_temp, max_temp);
         EXPECT_NEAR(min_temp, min_temp_gold, tol);

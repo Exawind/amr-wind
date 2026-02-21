@@ -37,7 +37,7 @@ amrex::Real get_val_at_height(
             amrex::Real error = 0;
 
             amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
-                const amrex::Real z = ploz + (0.5_rt + k) * dz;
+                const amrex::Real z = ploz + ((0.5_rt + k) * dz);
                 // Check if current cell is closest to desired height
                 if (z - height < 0.5_rt * dz && z - height >= -0.5_rt * dz) {
                     // Add field value to output
@@ -60,14 +60,14 @@ void init_abl_temperature_field(
     const auto& plo = geom.ProbLoArray();
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-        const amrex::Real z = plo[2] + (k + 0.5_rt) * dx[2];
+        const amrex::Real z = plo[2] + ((k + 0.5_rt) * dx[2]);
 
         // potential temperature profile
         if (z < bottom) {
             trac(i, j, k, 0) = 300.0_rt;
         } else if (z < 250.0_rt) {
             trac(i, j, k, 0) =
-                300.0_rt + (z - bottom) / (250.0_rt - bottom) * 8.0_rt;
+                300.0_rt + ((z - bottom) / (250.0_rt - bottom) * 8.0_rt);
         } else {
             trac(i, j, k, 0) = 308.0_rt;
         }
@@ -83,8 +83,8 @@ void init_vof_field(
     const auto& plo = geom.ProbLoArray();
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-        const amrex::Real z_btm = plo[2] + k * dx[2];
-        const amrex::Real z_top = plo[2] + (k + 1) * dx[2];
+        const amrex::Real z_btm = plo[2] + (k * dx[2]);
+        const amrex::Real z_top = plo[2] + ((k + 1) * dx[2]);
 
         // vof profile for flat interface
         if (z_btm >= wlev) {
@@ -166,15 +166,15 @@ TEST_F(ABLOffshoreMeshTest, abl_forcing)
         const amrex::Real ht0 = 10.0_rt;
         const amrex::Real ht1 = 30.0_rt;
         const amrex::Array<amrex::Real, 5> test_heights{
-            waterlev - dz, waterlev + 0.5_rt * ht0, waterlev + 2.0_rt * dz,
-            std::floor((waterlev + ht0 + ht1 - dz) / dz) * dz + 0.5_rt * dz,
+            waterlev - dz, waterlev + (0.5_rt * ht0), waterlev + (2.0_rt * dz),
+            (std::floor((waterlev + ht0 + ht1 - dz) / dz) * dz) + (0.5_rt * dz),
             waterlev + ht0 + ht1 + dz};
         // Expected values of coeff for each location
         const amrex::Array<amrex::Real, 5> coeff_golds{
             0.0_rt, 0.0_rt, 0.0_rt,
-            -0.5_rt * std::cos(
-                          std::numbers::pi_v<amrex::Real> *
-                          (test_heights[3] - waterlev - ht0) / ht1) +
+            (-0.5_rt * std::cos(
+                           std::numbers::pi_v<amrex::Real> *
+                           (test_heights[3] - waterlev - ht0) / ht1)) +
                 0.5_rt,
             1.0_rt};
 
@@ -266,15 +266,15 @@ TEST_F(ABLOffshoreMeshTest, geostrophic_forcing)
     const amrex::Real ht0 = 10.0_rt;
     const amrex::Real ht1 = 30.0_rt;
     const amrex::Array<amrex::Real, 5> test_heights{
-        waterlev - dz, waterlev + 0.5_rt * ht0, waterlev + 2.0_rt * dz,
-        std::floor((waterlev + ht0 + ht1 - dz) / dz) * dz + 0.5_rt * dz,
+        waterlev - dz, waterlev + (0.5_rt * ht0), waterlev + (2.0_rt * dz),
+        (std::floor((waterlev + ht0 + ht1 - dz) / dz) * dz) + (0.5_rt * dz),
         waterlev + ht0 + ht1 + dz};
     // Expected values of coeff for each location
     const amrex::Array<amrex::Real, 5> coeff_golds{
         0.0_rt, 0.0_rt, 0.0_rt,
-        -0.5_rt * std::cos(
-                      std::numbers::pi_v<amrex::Real> *
-                      (test_heights[3] - waterlev - ht0) / ht1) +
+        (-0.5_rt * std::cos(
+                       std::numbers::pi_v<amrex::Real> *
+                       (test_heights[3] - waterlev - ht0) / ht1)) +
             0.5_rt,
         1.0_rt};
 

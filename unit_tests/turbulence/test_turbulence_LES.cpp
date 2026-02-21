@@ -30,7 +30,7 @@ void init_field3(amr_wind::Field& fld, amrex::Real srate)
             fld(lev), fld.num_grow(), fld.num_comp(),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
                 const amrex::IntVect iv(i, j, k);
-                const amrex::Real xc = problo[n] + (iv[n] + offset) * dx[n];
+                const amrex::Real xc = problo[n] + ((iv[n] + offset) * dx[n]);
                 farrs[nbx](i, j, k, n) = xc / std::sqrt(6.0_rt) * srate;
             });
     }
@@ -55,9 +55,9 @@ void init_field_amd(amr_wind::Field& fld, amrex::Real scale)
         amrex::ParallelFor(
             fld(lev), fld.num_grow(),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                const amrex::Real x = problo[0] + (i + offset) * dx[0];
-                const amrex::Real y = problo[1] + (j + offset) * dx[1];
-                const amrex::Real z = problo[2] + (k + offset) * dx[2];
+                const amrex::Real x = problo[0] + ((i + offset) * dx[0]);
+                const amrex::Real y = problo[1] + ((j + offset) * dx[1]);
+                const amrex::Real z = problo[2] + ((k + offset) * dx[2]);
 
                 farrs[nbx](i, j, k, 0) = 1 * x / std::sqrt(6.0_rt) * scale;
                 farrs[nbx](i, j, k, 1) = -2 * y / std::sqrt(6.0_rt) * scale;
@@ -85,9 +85,9 @@ void init_field_incomp(amr_wind::Field& fld, amrex::Real scale)
         amrex::ParallelFor(
             fld(lev), fld.num_grow(),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                const amrex::Real x = problo[0] + (i + offset) * dx[0];
-                const amrex::Real y = problo[1] + (j + offset) * dx[1];
-                const amrex::Real z = problo[2] + (k + offset) * dx[2];
+                const amrex::Real x = problo[0] + ((i + offset) * dx[0]);
+                const amrex::Real y = problo[1] + ((j + offset) * dx[1]);
+                const amrex::Real z = problo[2] + ((k + offset) * dx[2]);
 
                 farrs[nbx](i, j, k, 0) = 1.0_rt * x * scale;
                 farrs[nbx](i, j, k, 1) = -2.0_rt * y * scale;
@@ -115,7 +115,7 @@ void init_field1(amr_wind::Field& fld, amrex::Real tgrad)
         amrex::ParallelFor(
             fld(lev), fld.num_grow(),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                const amrex::Real z = problo[2] + (k + offset) * dx[2];
+                const amrex::Real z = problo[2] + ((k + offset) * dx[2]);
 
                 farrs[nbx](i, j, k, 0) = z * tgrad;
             });
