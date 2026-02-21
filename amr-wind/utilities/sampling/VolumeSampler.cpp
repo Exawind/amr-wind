@@ -95,7 +95,7 @@ void VolumeSampler::sampling_locations(
         for (int j = 0; j < m_npts_dir[1]; ++j) {
             for (int i = 0; i < m_npts_dir[0]; ++i) {
                 const amrex::RealVect loc = {AMREX_D_DECL(
-                    m_lo[0] + dx[0] * i, m_lo[1] + dx[1] * j,
+                    m_lo[0] + (dx[0] * i), m_lo[1] + (dx[1] * j),
                     m_lo[2] + (dx[2] * k))};
                 if (utils::contains(box, loc, plo, dxinv)) {
                     sample_locs.push_back(loc, idx);

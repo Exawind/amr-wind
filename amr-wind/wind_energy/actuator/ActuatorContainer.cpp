@@ -1,12 +1,10 @@
+#include <algorithm>
 #include "amr-wind/wind_energy/actuator/ActuatorContainer.H"
 #include "amr-wind/wind_energy/actuator/Actuator.H"
 #include "amr-wind/core/gpu_utils.H"
 #include "amr-wind/core/Field.H"
-
 #include "AMReX_Scan.H"
-
-#include <AMReX_Print.H>
-#include <algorithm>
+#include "AMReX_Print.H"
 #include "AMReX_REAL.H"
 
 using namespace amrex::literals;

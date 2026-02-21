@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "SecondMomentAveraging.H"
 #include "AMReX_REAL.H"
 
@@ -97,8 +99,7 @@ void SecondMomentAveraging::operator()()
 
     m_last_updated_index = m_plane_average1.last_updated_index();
 
-    std::fill(
-        m_second_moments_line.begin(), m_second_moments_line.end(), 0.0_rt);
+    std::ranges::fill(m_second_moments_line, 0.0_rt);
 
     const auto& field1 = m_plane_average1.field();
     const auto& field2 = m_plane_average2.field();

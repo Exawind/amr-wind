@@ -1,5 +1,7 @@
 #ifndef INDEX_OPERATIONS_H
 #define INDEX_OPERATIONS_H
+#include <algorithm>
+
 #include "AMReX_REAL.H"
 #include "AMReX_Vector.H"
 #include "AMReX_Box.H"
@@ -17,10 +19,10 @@ AMREX_FORCE_INLINE int closest_index(
     const amrex::Real value,
     const amrex::Real tol = 0.0_rt)
 {
-    auto it = std::upper_bound(vec.begin(), vec.end(), value);
+    auto it = std::ranges::upper_bound(vec, value);
     if (it == vec.end()) {
         // Try again with tolerance added
-        it = std::upper_bound(vec.begin(), vec.end(), value - tol);
+        it = std::ranges::upper_bound(vec, value - tol);
     }
     AMREX_ALWAYS_ASSERT(it != vec.end());
 

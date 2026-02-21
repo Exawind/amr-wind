@@ -1,6 +1,7 @@
 #ifndef STOKES_WAVES_H_
 #define STOKES_WAVES_H_
 
+#include <algorithm>
 #include <cmath>
 #include <numbers>
 #include "AMReX_FArrayBox.H"
@@ -173,9 +174,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_coefficients(
 {
 
     amrex::Real kd = wavenumber * water_depth;
-    if (kd > 50.0_rt * std::numbers::pi_v<amrex::Real>) {
-        kd = 50.0_rt * std::numbers::pi_v<amrex::Real>;
-    }
+    kd = amrex::min<amrex::Real>(kd, 50.0_rt * std::numbers::pi_v<amrex::Real>);
 
     // Exponential definition of S = sech(2kd)
     amrex::Real S =
@@ -368,9 +367,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_waves(
         // Upper bound for deep water case
         // This ensure finite values of velocity for large kd's
         amrex::Real nkdz = n * wavenumber * (water_depth + (z - zsl));
-        if (nkdz > 50.0_rt * std::numbers::pi_v<amrex::Real>) {
-            nkdz = 50.0_rt * std::numbers::pi_v<amrex::Real>;
-        }
+        nkdz = amrex::min<amrex::Real>(
+            nkdz, 50.0_rt * std::numbers::pi_v<amrex::Real>);
         u_w += std::pow(eps, static_cast<amrex::Real>(n)) *
                static_cast<amrex::Real>(n) * a[n - 1] * std::cosh(nkdz) *
                std::cos(static_cast<amrex::Real>(n) * phase);

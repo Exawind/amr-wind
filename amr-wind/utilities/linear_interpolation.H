@@ -28,13 +28,13 @@ check_bounds(const It begin, const It end, const T& x)
     const int sz = static_cast<int>(end - begin);
 
     if ((sz < 2) || (x < *begin)) {
-        return Index{0, Limits::LOWLIM};
+        return Index{.idx = 0, .lim = Limits::LOWLIM};
     }
     if (x > *(begin + (sz - 1))) {
-        return Index{sz - 1, Limits::UPLIM};
+        return Index{.idx = sz - 1, .lim = Limits::UPLIM};
     }
 
-    return Index{0, Limits::VALID};
+    return Index{.idx = 0, .lim = Limits::VALID};
 }
 
 template <typename It, typename T>

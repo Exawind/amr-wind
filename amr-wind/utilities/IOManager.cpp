@@ -78,7 +78,7 @@ void IOManager::initialize_io()
     // also added the variable explicitly in the input file)
     if (m_output_default_vars) {
         for (const auto& name : m_pltvars_default) {
-            if (skip_outputs.find(name) == skip_outputs.end()) {
+            if (!skip_outputs.contains(name)) {
                 outputs.insert(name);
             }
         }

@@ -1,6 +1,8 @@
 #ifndef FIELDFILLPATCHOPS_H
 #define FIELDFILLPATCHOPS_H
 
+#include <utility>
+
 #include "amr-wind/core/Field.H"
 #include "amr-wind/core/SimTime.H"
 #include "amr-wind/core/FieldDescTypes.H"
@@ -278,9 +280,8 @@ public:
         const amrex::Vector<amrex::BCRec>& physbc_bcrec,
         const FieldState /*fstate = FieldState::New*/) override
     {
-
         if (lev == 0) {
-            for (int i = 0; i < static_cast<int>(mfabs.size()); i++) {
+            for (int i = 0; std::cmp_less(i, mfabs.size()); i++) {
                 amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> physbc(
                     m_mesh.Geom(lev), physbc_bcrec, bc_functor_face(i));
                 amrex::FillPatchSingleLevel(

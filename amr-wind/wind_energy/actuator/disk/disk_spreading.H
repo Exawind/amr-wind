@@ -245,7 +245,7 @@ public:
     {}
     void initialize(const std::string& key)
     {
-        if (std::is_same<UniformCt, typename OwnerType::TraitType>::value) {
+        if (std::is_same_v<UniformCt, typename OwnerType::TraitType>) {
             if (key == "UniformGaussian") {
                 m_function = &SpreadingFunction::uniform_gaussian_spreading;
             } else if (key == "LinearBasis") {
