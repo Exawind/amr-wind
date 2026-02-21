@@ -73,9 +73,9 @@ void initialize_relaxation_zone_field(
     amrex::Real gen_length)
 {
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-        const amrex::Real x = xlo + (i + 0.5_rt) * dx;
+        const amrex::Real x = xlo + ((i + 0.5_rt) * dx);
         amrex::Real xtilde = amrex::max<amrex::Real>(
-            amrex::min<amrex::Real>(1.0_rt - x / gen_length, 1.0_rt), 0.0_rt);
+            amrex::min<amrex::Real>(1.0_rt - (x / gen_length), 1.0_rt), 0.0_rt);
         theor_farr(i, j, k) =
             std::expm1(std::pow(xtilde, 3.5_rt)) / std::expm1(1.0_rt);
     });
@@ -112,15 +112,15 @@ void apply_relaxation_zone_field(
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 const amrex::Real x = amrex::min<amrex::Real>(
                     amrex::max<amrex::Real>(
-                        problo[0] + (i + 0.5_rt) * dx[0], problo[0]),
+                        problo[0] + ((i + 0.5_rt) * dx[0]), problo[0]),
                     probhi[0]);
                 if (x <= problo[0] + gen_length) {
                     const amrex::Real Gamma =
                         amr_wind::ocean_waves::utils::gamma_generate(
                             x - problo[0], gen_length);
                     comp_arrs[nbx](i, j, k) =
-                        targ_arrs[nbx](i, j, k) * (1.0_rt - Gamma) +
-                        comp_arrs[nbx](i, j, k) * Gamma;
+                        (targ_arrs[nbx](i, j, k) * (1.0_rt - Gamma)) +
+                        (comp_arrs[nbx](i, j, k) * Gamma);
                 }
             });
     }
@@ -224,8 +224,8 @@ void make_target_density(
             ow_vof(lev), amrex::IntVect(2),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 ow_vof_arrs[nbx](i, j, k) =
-                    rho1 * ow_vof_arrs[nbx](i, j, k) +
-                    rho2 * (1.0_rt - ow_vof_arrs[nbx](i, j, k));
+                    (rho1 * ow_vof_arrs[nbx](i, j, k)) +
+                    (rho2 * (1.0_rt - ow_vof_arrs[nbx](i, j, k)));
             });
     }
     amrex::Gpu::streamSynchronize();

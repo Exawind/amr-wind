@@ -33,15 +33,15 @@ void initialize_scalar(
     amrex::ParallelFor(grow(bx, 1), [=] AMREX_GPU_DEVICE(int i, int j, int k) {
         const amrex::Real x = amrex::min(
             amrex::max<amrex::Real>(
-                problo[0] + (i + 0.5_rt) * dx[0], problo[0]),
+                problo[0] + ((i + 0.5_rt) * dx[0]), problo[0]),
             probhi[0]);
         const amrex::Real y = amrex::min(
             amrex::max<amrex::Real>(
-                problo[1] + (j + 0.5_rt) * dx[1], problo[1]),
+                problo[1] + ((j + 0.5_rt) * dx[1]), problo[1]),
             probhi[1]);
         const amrex::Real z = amrex::min(
             amrex::max<amrex::Real>(
-                problo[2] + (k + 0.5_rt) * dx[2], problo[2]),
+                problo[2] + ((k + 0.5_rt) * dx[2]), problo[2]),
             probhi[2]);
 
         scalar_arr(i, j, k) =
@@ -83,9 +83,9 @@ amrex::Real filtering_test_impl(amr_wind::Field& scalar, const int pdegree)
                 amrex::Real error = 0.0_rt;
 
                 amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
-                    const amrex::Real x = problo[0] + (i + 0.5_rt) * dx[0];
-                    const amrex::Real y = problo[1] + (j + 0.5_rt) * dx[1];
-                    const amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
+                    const amrex::Real x = problo[0] + ((i + 0.5_rt) * dx[0]);
+                    const amrex::Real y = problo[1] + ((j + 0.5_rt) * dx[1]);
+                    const amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);
 
                     error += std::abs(
                         filter_arr(i, j, k) -

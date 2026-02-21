@@ -50,13 +50,13 @@ void auxiliary_fill_boundary(
                         dest(i, j, k, n) =
                             static_cast<amrex::Real>(comp + n + 1);
                         idx(i + shift_to_cc[0], j + shift_to_cc[1],
-                            k + shift_to_cc[2], 3 * comp + 3 * n) =
+                            k + shift_to_cc[2], (3 * comp) + (3 * n)) =
                             shift_to_cc[0];
                         idx(i + shift_to_cc[0], j + shift_to_cc[1],
-                            k + shift_to_cc[2], 3 * comp + 3 * n + 1) =
+                            k + shift_to_cc[2], (3 * comp) + (3 * n) + 1) =
                             shift_to_cc[1];
                         idx(i + shift_to_cc[0], j + shift_to_cc[1],
-                            k + shift_to_cc[2], 3 * comp + 3 * n + 2) =
+                            k + shift_to_cc[2], (3 * comp) + (3 * n) + 2) =
                             shift_to_cc[2];
                     });
             }

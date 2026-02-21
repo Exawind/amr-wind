@@ -111,7 +111,7 @@ TEST_F(ABLMeshTest, stats_tke_diffusion)
     constexpr amrex::Real val_tke = 1.6_rt;
     constexpr amrex::Real val_tkeold = 1.0_rt;
     constexpr amrex::Real dt = 0.1_rt;
-    constexpr amrex::Real expected_diff = (val_tke - val_tkeold) / dt -
+    constexpr amrex::Real expected_diff = ((val_tke - val_tkeold) / dt) -
                                           val_conv - val_shear - val_buoy +
                                           val_dissip;
 

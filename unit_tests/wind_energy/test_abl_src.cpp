@@ -42,7 +42,7 @@ amrex::Real get_val_at_height(
             amrex::Real error = 0.0_rt;
 
             amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
-                const amrex::Real z = ploz + (0.5_rt + k) * dz;
+                const amrex::Real z = ploz + ((0.5_rt + k) * dz);
                 // Check if current cell is closest to desired height
                 if (std::abs(z - height) < 0.5_rt * dz) {
                     // Add field value to output
@@ -261,20 +261,20 @@ TEST_F(ABLMeshTest, rayleigh_damping)
     // 3: above bottom of graded damping zone
     // 4: below bottom of graded damping (no damping)
     const amrex::Array<amrex::Real, 5> test_heights{
-        phiz - 0.1_rt, phiz - 50.0_rt + 0.5_rt * dz,
-        phiz - dz * (0.5_rt + std::ceil(50.0_rt / dz)),
-        phiz - dz * (-0.5_rt + std::ceil(250.0_rt / dz)),
-        phiz - 250.0_rt - 0.5_rt * dz};
+        phiz - 0.1_rt, phiz - 50.0_rt + (0.5_rt * dz),
+        phiz - (dz * (0.5_rt + std::ceil(50.0_rt / dz))),
+        phiz - (dz * (-0.5_rt + std::ceil(250.0_rt / dz))),
+        phiz - 250.0_rt - (0.5_rt * dz)};
     // Expected values of coeff for each location
     const amrex::Array<amrex::Real, 5> golds{
         1.0_rt, 1.0_rt,
-        0.5_rt * std::cos(
-                     std::numbers::pi_v<amrex::Real> *
-                     (1000.0_rt - 50.0_rt - test_heights[2]) / 200.0_rt) +
+        (0.5_rt * std::cos(
+                      std::numbers::pi_v<amrex::Real> *
+                      (1000.0_rt - 50.0_rt - test_heights[2]) / 200.0_rt)) +
             0.5_rt,
-        0.5_rt * std::cos(
-                     std::numbers::pi_v<amrex::Real> *
-                     (1000.0_rt - 50.0_rt - test_heights[3]) / 200.0_rt) +
+        (0.5_rt * std::cos(
+                      std::numbers::pi_v<amrex::Real> *
+                      (1000.0_rt - 50.0_rt - test_heights[3]) / 200.0_rt)) +
             0.5_rt,
         0.0_rt};
 
@@ -376,12 +376,12 @@ TEST_F(ABLMeshTest, hurricane_forcing)
         (18000.0_rt - (1000.0_rt - 0.5_rt * dz)) / 18000.0_rt;
     const amrex::Real ratio_bottom = (18000.0_rt - 0.5_rt * dz) / 18000.0_rt;
     const amrex::Array<amrex::Real, AMREX_SPACEDIM> golds_max{
-        {-corfac * 40.0_rt * ratio_top -
-             40.0_rt * ratio_top * 40.0_rt * ratio_top / 40000.0_rt,
+        {(-corfac * 40.0_rt * ratio_top) -
+             (40.0_rt * ratio_top * 40.0_rt * ratio_top / 40000.0_rt),
          0.0_rt, 0.0_rt}};
     const amrex::Array<amrex::Real, AMREX_SPACEDIM> golds_min{
-        {-corfac * ratio_bottom * 40.0_rt -
-             ratio_bottom * 40.0_rt * ratio_bottom * 40.0_rt / 40000.0_rt,
+        {(-corfac * ratio_bottom * 40.0_rt) -
+             (ratio_bottom * 40.0_rt * ratio_bottom * 40.0_rt / 40000.0_rt),
          0.0_rt, 0.0_rt}};
 
     for (int i = 0; i < AMREX_SPACEDIM; ++i) {
@@ -406,7 +406,8 @@ TEST_F(ABLMeshTest, coriolis_const_vel)
     // Latitude is set to 45 degrees in the input file so sinphi = cosphi
     const amrex::Real latfac = std::sin(amr_wind::utils::radians(45.0_rt));
     // Initialize a random value for the velocity component
-    const amrex::Real vel_comp = 10.0_rt + 5.0_rt * (amrex::Random() - 0.5_rt);
+    const amrex::Real vel_comp =
+        10.0_rt + (5.0_rt * (amrex::Random() - 0.5_rt));
 
     // Initialize parameters
     populate_parameters();
@@ -537,7 +538,7 @@ void init_abl_temperature_field(
             trac(i, j, k, 0) = 300.0_rt;
         } else if (z < 750.0_rt) {
             trac(i, j, k, 0) =
-                300.0_rt + (z - 650.0_rt) / (750.0_rt - 650.0_rt) * 8.0_rt;
+                300.0_rt + ((z - 650.0_rt) / (750.0_rt - 650.0_rt) * 8.0_rt);
         } else {
             trac(i, j, k, 0) = 308.0_rt;
         }

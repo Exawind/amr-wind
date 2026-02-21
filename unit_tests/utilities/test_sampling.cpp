@@ -38,9 +38,9 @@ void init_field(amr_wind::Field& fld)
         amrex::ParallelFor(
             fld(lev), fld.num_grow(), ncomp,
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
-                const amrex::Real x = problo[0] + (i + offset) * dx[0];
-                const amrex::Real y = problo[1] + (j + offset) * dx[1];
-                const amrex::Real z = problo[2] + (k + offset) * dx[2];
+                const amrex::Real x = problo[0] + ((i + offset) * dx[0]);
+                const amrex::Real y = problo[1] + ((j + offset) * dx[1]);
+                const amrex::Real z = problo[2] + ((k + offset) * dx[2]);
                 farrs[nbx](i, j, k, n) = x + y + z;
             });
     }

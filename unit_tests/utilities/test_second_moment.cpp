@@ -77,8 +77,8 @@ void add_linear(
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const amrex::GpuArray<amrex::Real, 3> x = {
-            xlo[0] + (i + 0.5_rt) * dx[0], xlo[1] + (j + 0.5_rt) * dx[1],
-            xlo[2] + (k + 0.5_rt) * dx[2]};
+            xlo[0] + ((i + 0.5_rt) * dx[0]), xlo[1] + ((j + 0.5_rt) * dx[1]),
+            xlo[2] + ((k + 0.5_rt) * dx[2])};
         velocity(i, j, k, 0) += a[0] * x[dir];
         velocity(i, j, k, 1) += a[1] * x[dir];
         velocity(i, j, k, 2) += a[2] * x[dir];
@@ -129,14 +129,14 @@ TEST_F(SecondMomentAveragingTest, test_linear)
     const amrex::Real L = probhi[dir] - problo[dir];
     const amrex::Real dx = L / ((amrex::Real)n);
     const amrex::Real hchLo =
-        problo[dir] + 0.5_rt * mesh().Geom(0).CellSizeArray()[dir];
+        problo[dir] + (0.5_rt * mesh().Geom(0).CellSizeArray()[dir]);
     const amrex::Real hchHi =
-        probhi[dir] - 0.5_rt * mesh().Geom(0).CellSizeArray()[dir];
+        probhi[dir] - (0.5_rt * mesh().Geom(0).CellSizeArray()[dir]);
 
     // test along a line at n equidistant points
     for (int i = 0; i < n; ++i) {
 
-        const amrex::Real x = problo[dir] + i * dx;
+        const amrex::Real x = problo[dir] + (i * dx);
 
         const amrex::Array<amrex::Real, 3> u = {
             pa.line_average_interpolated(x, 0),
@@ -182,8 +182,8 @@ void add_periodic(
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const amrex::GpuArray<amrex::Real, 3> x = {
-            xlo[0] + (i + 0.5_rt) * dx[0], xlo[1] + (j + 0.5_rt) * dx[1],
-            xlo[2] + (k + 0.5_rt) * dx[2]};
+            xlo[0] + ((i + 0.5_rt) * dx[0]), xlo[1] + ((j + 0.5_rt) * dx[1]),
+            xlo[2] + ((k + 0.5_rt) * dx[2])};
         for (int d = 0; d < 3; ++d) {
             velocity(i, j, k, 0) += std::cos(a[d] * x[d]);
             velocity(i, j, k, 1) += std::sin(a[d] * x[d]);

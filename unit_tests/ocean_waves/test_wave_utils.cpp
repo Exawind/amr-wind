@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <numbers>
 #include "aw_test_utils/MeshTest.H"
 #include "aw_test_utils/iter_tools.H"
@@ -27,16 +28,16 @@ TEST_F(WaveUtilsTest, free_surface_to_vof)
         amr_wind::ocean_waves::utils::free_surface_to_vof(zsl, zsl, dz);
     const amrex::Real vof_half_above =
         amr_wind::ocean_waves::utils::free_surface_to_vof(
-            zsl, zsl + 0.25_rt * dz, dz);
+            zsl, zsl + (0.25_rt * dz), dz);
     const amrex::Real vof_half_below =
         amr_wind::ocean_waves::utils::free_surface_to_vof(
-            zsl, zsl - 0.25_rt * dz, dz);
+            zsl, zsl - (0.25_rt * dz), dz);
     const amrex::Real vof_exactly_above =
         amr_wind::ocean_waves::utils::free_surface_to_vof(
-            zsl, zsl + 0.5_rt * dz, dz);
+            zsl, zsl + (0.5_rt * dz), dz);
     const amrex::Real vof_exactly_below =
         amr_wind::ocean_waves::utils::free_surface_to_vof(
-            zsl, zsl - 0.5_rt * dz, dz);
+            zsl, zsl - (0.5_rt * dz), dz);
 
     EXPECT_NEAR(vof_fully_above, 0.0_rt, tol);
     EXPECT_NEAR(vof_fully_below, 1.0_rt, tol);
@@ -67,8 +68,8 @@ TEST_F(WaveUtilsTest, gamma_generate)
             zone_length + 1.0_rt, zone_length);
 
     const amrex::Real gamma_middle_gold =
-        1.0_rt - (std::exp(std::pow(0.5_rt, 3.5_rt)) - 1.0_rt) /
-                     (std::exp(1.0_rt) - 1.0_rt);
+        1.0_rt - ((std::exp(std::pow(0.5_rt, 3.5_rt)) - 1.0_rt) /
+                  (std::exp(1.0_rt) - 1.0_rt));
 
     EXPECT_NEAR(gamma_past_left, 0.0_rt, tol);
     EXPECT_NEAR(gamma_left, 0.0_rt, tol);
@@ -101,8 +102,8 @@ TEST_F(WaveUtilsTest, gamma_absorb)
             zone_length, zone_length, 2.0_rt);
 
     const amrex::Real gamma_middle_gold =
-        1.0_rt - (std::exp(std::pow(0.5_rt, 3.5_rt)) - 1.0_rt) /
-                     (std::exp(1.0_rt) - 1.0_rt);
+        1.0_rt - ((std::exp(std::pow(0.5_rt, 3.5_rt)) - 1.0_rt) /
+                  (std::exp(1.0_rt) - 1.0_rt));
 
     EXPECT_NEAR(gamma_past_left, 1.0_rt, tol);
     EXPECT_NEAR(gamma_left, 1.0_rt, tol);
@@ -131,8 +132,8 @@ TEST_F(WaveUtilsTest, ramp)
         amr_wind::ocean_waves::utils::ramp(ramp_period + 1.0_rt, ramp_period);
 
     const amrex::Real f_ramp_middle_gold =
-        0.5_rt - std::sin(std::numbers::pi_v<amrex::Real> * 0.5_rt) /
-                     std::numbers::pi_v<amrex::Real>;
+        0.5_rt - (std::sin(std::numbers::pi_v<amrex::Real> * 0.5_rt) /
+                  std::numbers::pi_v<amrex::Real>);
 
     EXPECT_NEAR(f_ramp_begin, 0.0_rt, tol);
     EXPECT_NEAR(f_ramp_middle, f_ramp_middle_gold, tol);
@@ -199,7 +200,7 @@ TEST_F(WaveUtilsTest, harmonize_profiles)
     result = amr_wind::ocean_waves::utils::harmonize_profiles_1d(
         x, problo_x, gen_length, probhi_x, beach_length, left, bulk, right);
     const amrex::Real Gamma_r = amr_wind::ocean_waves::utils::gamma_absorb(
-        x - (probhi_x - beach_length) + 0.5_rt * beach_length,
+        x - (probhi_x - beach_length) + (0.5_rt * beach_length),
         0.5_rt * beach_length, 1.0_rt);
     for (int n = 0; n < 4; ++n) {
         EXPECT_NEAR(
@@ -237,9 +238,9 @@ TEST_F(WaveUtilsTest, gamma_xy)
                                        0.5_rt * zone_length};
     const amrex::Real gm =
         1.0_rt -
-        (std::exp(std::pow(1.0_rt - x[x.size() - 1] / zone_length, 3.5_rt)) -
-         1.0_rt) /
-            (std::exp(1.0_rt) - 1.0_rt);
+        ((std::exp(std::pow(1.0_rt - (x[x.size() - 1] / zone_length), 3.5_rt)) -
+          1.0_rt) /
+         (std::exp(1.0_rt) - 1.0_rt));
     const amrex::Vector<amrex::Real> gold_gamma{0.0_rt, 0.0_rt, 0.0_rt, 0.0_rt,
                                                 1.0_rt, 1.0_rt, gm};
 
@@ -256,8 +257,8 @@ TEST_F(WaveUtilsTest, gamma_xy)
         const amrex::Real gamma_yhi =
             amr_wind::ocean_waves::utils::gamma_absorb(
                 y[n] - (1.0_rt - zone_length), zone_length, 1.0_rt);
-        const amrex::Real gamma = std::min(
-            std::min(gamma_xhi, gamma_xlo), std::min(gamma_yhi, gamma_ylo));
+        const amrex::Real gamma =
+            std::min({gamma_xhi, gamma_xlo, gamma_yhi, gamma_ylo});
         EXPECT_NEAR(gamma, gold_gamma[n], tol);
     }
 }

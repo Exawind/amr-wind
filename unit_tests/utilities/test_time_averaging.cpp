@@ -119,7 +119,7 @@ TEST_F(TimeAveragingTest, phase_linear)
                 amrex::min<amrex::Real>(time.new_time(), m_fwidth),
                 2.0_rt * m_dt);
             const amrex::Real old_avg_time =
-                amrex::max<amrex::Real>(avg_time - 2.0_rt * m_dt, 0.0_rt);
+                amrex::max<amrex::Real>(avg_time - (2.0_rt * m_dt), 0.0_rt);
             avg_val =
                 (avg_val * (old_avg_time) + 2.0_rt * m_dt * fval) / avg_time;
             EXPECT_NEAR(max_f, avg_val, m_tol);

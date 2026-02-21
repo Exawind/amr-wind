@@ -25,7 +25,7 @@ void init_vof(amr_wind::Field& vof_fld, amrex::Real water_level)
         amrex::ParallelFor(
             vof_fld(lev), vof_fld.num_grow(),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                const amrex::Real z = problo[2] + (k + offset) * dx[2];
+                const amrex::Real z = problo[2] + ((k + offset) * dx[2]);
                 const amrex::Real local_vof = amrex::min<amrex::Real>(
                     1.0_rt,
                     amrex::max<amrex::Real>(
@@ -57,17 +57,17 @@ void init_vof_multival(
         amrex::ParallelFor(
             vof_fld(lev), vof_fld.num_grow(),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                const amrex::Real z = problo[2] + (k + offset) * dx[2];
+                const amrex::Real z = problo[2] + ((k + offset) * dx[2]);
                 amrex::Real local_vof;
                 // Above wl1
-                if (z - offset * dx[2] > wl1) {
+                if (z - (offset * dx[2]) > wl1) {
                     local_vof = amrex::min<amrex::Real>(
                         1.0_rt,
                         amrex::max<amrex::Real>(
                             0.0_rt, (wl0 - (z - offset * dx[2])) / dx[2]));
                 } else {
                     // Above wl0
-                    if (z - offset * dx[2] > wl2) {
+                    if (z - (offset * dx[2]) > wl2) {
                         local_vof = amrex::min<amrex::Real>(
                             1.0_rt,
                             amrex::max<amrex::Real>(
@@ -107,14 +107,14 @@ void init_vof_slope(
         amrex::ParallelFor(
             vof_fld(lev), vof_fld.num_grow(),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                const amrex::Real x = problo[0] + (i + offset) * dx[0];
-                const amrex::Real y = problo[1] + (j + offset) * dx[1];
-                const amrex::Real z = problo[2] + (k + offset) * dx[2];
+                const amrex::Real x = problo[0] + ((i + offset) * dx[0]);
+                const amrex::Real y = problo[1] + ((j + offset) * dx[1]);
+                const amrex::Real z = problo[2] + ((k + offset) * dx[2]);
 
                 // Find height of interface at current x, y
                 const amrex::Real local_ht =
-                    water_level + slope * (x - 0.5_rt * domain_length) +
-                    slope * (y - 0.5_rt * domain_length);
+                    water_level + (slope * (x - 0.5_rt * domain_length)) +
+                    (slope * (y - 0.5_rt * domain_length));
 
                 const amrex::Real local_vof = amrex::min<amrex::Real>(
                     1.0_rt,
@@ -142,11 +142,11 @@ void init_vof_diffuse(amr_wind::Field& vof_fld, amrex::Real water_level)
         amrex::ParallelFor(
             vof_fld(lev), vof_fld.num_grow(),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                const amrex::Real z = problo[2] + (k + offset) * dx[2];
+                const amrex::Real z = problo[2] + ((k + offset) * dx[2]);
                 const amrex::Real local_vof = amrex::min<amrex::Real>(
-                    1.0_rt,
-                    amrex::max<amrex::Real>(
-                        0.0_rt, 0.5_rt + 0.25_rt * (water_level - z) / dx[2]));
+                    1.0_rt, amrex::max<amrex::Real>(
+                                0.0_rt, 0.5_rt + (0.25_rt * (water_level - z) /
+                                                  dx[2])));
                 farrs[nbx](i, j, k) = local_vof;
             });
     }
@@ -170,7 +170,7 @@ void init_vof_outliers(
         amrex::ParallelFor(
             vof_fld(lev), vof_fld.num_grow(),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                const amrex::Real z = problo[2] + (k + offset) * dx[2];
+                const amrex::Real z = problo[2] + ((k + offset) * dx[2]);
                 if (std::abs(water_level - z) < 0.5_rt * dx[2]) {
                     farrs[nbx](i, j, k) =
                         (water_level - (z - 0.5_rt * dx[2])) / dx[2];
@@ -572,15 +572,15 @@ TEST_F(FreeSurfaceTest, sloped)
     // Calculate expected output values
     amrex::Vector<amrex::Real> out_vec(static_cast<long>(npts * npts), 0.0_rt);
     // Step in x, then y
-    out_vec[0] = (m_water_level2 + slope * (-1.0_rt - 1.0_rt));
-    out_vec[1] = (m_water_level2 + slope * (+0.0_rt - 1.0_rt));
-    out_vec[2] = (m_water_level2 + slope * (+1.0_rt - 1.0_rt));
-    out_vec[3] = (m_water_level2 + slope * (-1.0_rt + 0.0_rt));
-    out_vec[4] = (m_water_level2 + slope * (+0.0_rt + 0.0_rt));
-    out_vec[5] = (m_water_level2 + slope * (+1.0_rt + 0.0_rt));
-    out_vec[6] = (m_water_level2 + slope * (-1.0_rt + 1.0_rt));
-    out_vec[7] = (m_water_level2 + slope * (+0.0_rt + 1.0_rt));
-    out_vec[8] = (m_water_level2 + slope * (+1.0_rt + 1.0_rt));
+    out_vec[0] = (m_water_level2 + (slope * (-1.0_rt - 1.0_rt)));
+    out_vec[1] = (m_water_level2 + (slope * (+0.0_rt - 1.0_rt)));
+    out_vec[2] = (m_water_level2 + (slope * (+1.0_rt - 1.0_rt)));
+    out_vec[3] = (m_water_level2 + (slope * (-1.0_rt + 0.0_rt)));
+    out_vec[4] = (m_water_level2 + (slope * (+0.0_rt + 0.0_rt)));
+    out_vec[5] = (m_water_level2 + (slope * (+1.0_rt + 0.0_rt)));
+    out_vec[6] = (m_water_level2 + (slope * (-1.0_rt + 1.0_rt)));
+    out_vec[7] = (m_water_level2 + (slope * (+0.0_rt + 1.0_rt)));
+    out_vec[8] = (m_water_level2 + (slope * (+1.0_rt + 1.0_rt)));
     // Check output value
     int nout = tool.check_output_vec("~", out_vec);
     ASSERT_EQ(nout, npts * npts);
@@ -737,7 +737,7 @@ TEST_F(FreeSurfaceTest, point_outliers)
     // Linear interpolation will get different value
     amrex::Real local_vof = (water_lev - 60.0_rt) / 2.0_rt;
     amrex::Real water_lev_linear =
-        61.0_rt + (0.5_rt - local_vof) * (2.0_rt / (0.1_rt - local_vof));
+        61.0_rt + ((0.5_rt - local_vof) * (2.0_rt / (0.1_rt - local_vof)));
 
     // Check output value
     int nout = tool.check_output("~", water_lev_linear);
@@ -750,7 +750,7 @@ TEST_F(FreeSurfaceTest, point_outliers)
     init_vof_outliers(vof, water_lev, false);
     tool.update_sampling_locations();
     water_lev_linear =
-        61.0_rt + (0.5_rt - local_vof) * (2.0_rt / (0.0_rt - local_vof));
+        61.0_rt + ((0.5_rt - local_vof) * (2.0_rt / (0.0_rt - local_vof)));
     nout = tool.check_output("~", water_lev_linear);
     ASSERT_EQ(nout, 1);
     nsloc = tool.check_sloc("~");
@@ -762,13 +762,13 @@ TEST_F(FreeSurfaceTest, point_outliers)
     tool.update_sampling_locations();
     local_vof = (water_lev - 60.0_rt) / 2.0_rt;
     water_lev_linear =
-        61.0_rt - (0.5_rt - local_vof) * (2.0_rt / (1.0_rt - local_vof));
+        61.0_rt - ((0.5_rt - local_vof) * (2.0_rt / (1.0_rt - local_vof)));
     nout = tool.check_output("~", water_lev_linear);
     ASSERT_EQ(nout, 1);
     init_vof_outliers(vof, water_lev, false);
     tool.update_sampling_locations();
     water_lev_linear =
-        61.0_rt - (0.5_rt - local_vof) * (2.0_rt / (0.9_rt - local_vof));
+        61.0_rt - ((0.5_rt - local_vof) * (2.0_rt / (0.9_rt - local_vof)));
     nout = tool.check_output("~", water_lev_linear);
     ASSERT_EQ(nout, 1);
     nsloc = tool.check_sloc("~");
@@ -830,12 +830,12 @@ TEST_F(FreeSurfaceTest, point_diffuse_in_single_phase)
     const amrex::Real vof_pxy =
         (water_lev_diffuse + 4.0_rt * vof_slope - 60.0_rt) / 2.0_rt;
     const amrex::Real vof_c =
-        vof_cell + 2.0_rt * (vof_pxy - vof_cell) / 4.0_rt * (2.0_rt - 0.1_rt);
+        vof_cell + (2.0_rt * (vof_pxy - vof_cell) / 4.0_rt * (2.0_rt - 0.1_rt));
     const amrex::Real slope_z = (vof_cell - vof_mz) / 2.0_rt;
     const amrex::Real ht =
-        61.0_rt + (0.5_rt - vof_c) / (slope_z + amr_wind::constants::EPS);
+        61.0_rt + ((0.5_rt - vof_c) / (slope_z + amr_wind::constants::EPS));
     const amrex::Real ht_est =
-        water_lev_diffuse + 2.0_rt * vof_slope * (2.0_rt - 0.1_rt);
+        water_lev_diffuse + (2.0_rt * vof_slope * (2.0_rt - 0.1_rt));
     int nout = tool.check_output("~", ht);
     ASSERT_EQ(nout, 1);
     // The linear interpolation answer should be close to the naive calc

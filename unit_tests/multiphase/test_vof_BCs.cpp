@@ -14,7 +14,7 @@ void initialize_volume_fractions(
     const amrex::Box& bx, const amrex::Array4<amrex::Real>& vof_arr)
 {
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-        vof_arr(i, j, k) = 1.0_rt - 0.1_rt * (i + j + k);
+        vof_arr(i, j, k) = 1.0_rt - (0.1_rt * (i + j + k));
     });
 }
 
@@ -63,17 +63,17 @@ void get_accuracy_vofsol(
                     amrex::Real ref_val = vof_bdyval; // case 0
                     if (vof_distr == 1) {
                         // hoextrap
-                        ref_val = 1.0_rt - 0.1_rt * (i + j + k);
+                        ref_val = 1.0_rt - (0.1_rt * (i + j + k));
                     } else if (vof_distr == 2) {
                         // foextrap
                         const int ii = amrex::max(0, amrex::min(1, i));
                         const int jj = amrex::max(0, amrex::min(1, j));
                         const int kk = amrex::max(0, amrex::min(1, k));
-                        ref_val = 1.0_rt - 0.1_rt * (ii + jj + kk);
+                        ref_val = 1.0_rt - (0.1_rt * (ii + jj + kk));
                     }
                     // Check against reference value
                     const amrex::Real wt_ref =
-                        wt1 * ref_val + wt2 * (1.0_rt - ref_val);
+                        (wt1 * ref_val) + (wt2 * (1.0_rt - ref_val));
                     err_arr(i, j, k, 0) = std::abs(vof_arr(i, j, k) - wt_ref);
                 }
             }
@@ -140,7 +140,7 @@ void get_accuracy_advalpha(
                     // Check whether flux is nonzero
                     constexpr amrex::Real advvof = 0.0_rt;
                     const amrex::Real advrho =
-                        rho1 * advvof + rho2 * (1.0_rt - advvof);
+                        (rho1 * advvof) + (rho2 * (1.0_rt - advvof));
                     if (nonzero_flux) {
                         err_arr(i, j, k, 0) =
                             af(i, j, k) > 0.0_rt ? 0.0_rt : 1.0_rt;

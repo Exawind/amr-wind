@@ -93,13 +93,13 @@ void init_field_linear(
                 if (k < 0) {
                     off += 0.5_rt;
                 }
-                if (k > 8 * (lev + 1) - 1) {
+                if (k > (8 * (lev + 1)) - 1) {
                     off -= 0.5_rt;
                 }
                 const amrex::GpuArray<amrex::Real, 3> x = {
-                    problo[0] + (i + 0.5_rt) * dx[0],
-                    problo[1] + (j + 0.5_rt) * dx[1],
-                    problo[2] + (k + off) * dx[2]};
+                    problo[0] + ((i + 0.5_rt) * dx[0]),
+                    problo[1] + ((j + 0.5_rt) * dx[1]),
+                    problo[2] + ((k + off) * dx[2])};
                 farrs[nbx](i, j, k, 0) = x[dir] * a[0];
                 farrs[nbx](i, j, k, 1) = x[dir] * a[1];
                 farrs[nbx](i, j, k, 2) = x[dir] * a[2];
@@ -138,7 +138,7 @@ TEST_F(FieldPlaneAveragingFineTest, test_linear_fine_only)
     // test along a line at n equidistant points in the fine zone
     for (int i = 0; i < n; ++i) {
 
-        const amrex::Real z = z_fine_lo + i * dz;
+        const amrex::Real z = z_fine_lo + (i * dz);
 
         const amrex::Array<amrex::Real, 3> u = {
             pa_fine.line_average_interpolated(z, 0),
@@ -193,7 +193,7 @@ TEST_F(FieldPlaneAveragingFineTest, test_linear)
     // test along a line spanning domain, from first point to last
     for (int i = 0; i < n_more; ++i) {
 
-        const amrex::Real z = half_dz_pa + i * dz;
+        const amrex::Real z = half_dz_pa + (i * dz);
 
         const amrex::Array<amrex::Real, 3> u = {
             pa_fine.line_average_interpolated(z, 0),
