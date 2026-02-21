@@ -1,0 +1,14 @@
+.. meta::19fb5e62edaab5aa82fa9d58e704a21718568169a49f4d09eee94ac4bccc0644a43a9b680d74c66b049571fb635bd1d736553b73e5300c1c20c5016204d6a90a
+
+:orphan:
+
+.. title:: AMR-Wind API: exw_fast Namespace Reference
+
+exw\_fast Namespace Reference
+=============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: namespaceexw__fast.html

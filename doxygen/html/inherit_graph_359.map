@@ -1,0 +1,17 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" title=" " alt="" coords="5,141,176,166"/>
+<area shape="rect" id="Node000001" href="$classamr__wind_1_1sampling_1_1_free_surface_sampler.html" title=" " alt="" coords="224,5,385,45"/>
+<area shape="poly" id="edge220_Node000000_Node000001" title=" " alt="" coords="116,130,164,93,223,55,247,43,249,48,225,60,167,97,119,134"/>
+<area shape="rect" id="Node000002" href="$classamr__wind_1_1sampling_1_1_line_sampler.html" title=" " alt="" coords="227,69,382,109"/>
+<area shape="poly" id="edge221_Node000000_Node000002" title=" " alt="" coords="146,134,236,107,238,112,148,139"/>
+<area shape="rect" id="Node000005" href="$classamr__wind_1_1sampling_1_1_plane_sampler.html" title=" " alt="" coords="227,133,382,173"/>
+<area shape="poly" id="edge224_Node000000_Node000005" title=" " alt="" coords="190,151,227,151,227,156,190,156"/>
+<area shape="rect" id="Node000006" href="$classamr__wind_1_1sampling_1_1_probe_sampler.html" title=" " alt="" coords="227,197,382,237"/>
+<area shape="poly" id="edge225_Node000000_Node000006" title=" " alt="" coords="148,168,238,195,236,200,146,173"/>
+<area shape="rect" id="Node000007" href="$classamr__wind_1_1sampling_1_1_radar_sampler.html" title=" " alt="" coords="227,261,382,301"/>
+<area shape="poly" id="edge226_Node000000_Node000007" title=" " alt="" coords="119,173,167,209,225,247,249,259,247,264,223,252,164,214,116,177"/>
+<area shape="rect" id="Node000003" href="$classamr__wind_1_1sampling_1_1_lidar_sampler.html" title=" " alt="" coords="433,69,588,109"/>
+<area shape="poly" id="edge222_Node000002_Node000003" title=" " alt="" coords="396,87,433,87,433,92,396,92"/>
+<area shape="rect" id="Node000004" href="$classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html" title=" " alt="" coords="636,69,797,109"/>
+<area shape="poly" id="edge223_Node000003_Node000004" title=" " alt="" coords="602,87,636,87,636,92,602,92"/>
+</map>

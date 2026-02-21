@@ -1,0 +1,14 @@
+.. meta::5d454c2a1c564a0743669516be91f449da25ff4413d0ce498d3716c600ced00176c1a6e2306e3ffd94cf22f075af04d6a9e6d22957de5102369791aa1d724568
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/icns/source_terms/DragForcing.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/equation\_systems/icns/source\_terms/DragForcing.cpp File Reference
+================================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _drag_forcing_8cpp.html

@@ -1,0 +1,14 @@
+.. meta::72dfa9f6889aad08ca1fc3833c277b06f97d51c651b8a8638675b18d9e7cf9fc8d50ca2b515e773e45485861c68308d8d5c8cfdb7fb62e8a4fc28ea463c09ea2
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/core/ExtSolver.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/core/ExtSolver.H Source File
+=========================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _ext_solver_8_h_source.html

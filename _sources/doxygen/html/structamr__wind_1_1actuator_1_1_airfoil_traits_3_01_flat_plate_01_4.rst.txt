@@ -1,0 +1,14 @@
+.. meta::91684f25952a50d46e18df0fcaa91326be1eb2856ef7833eab54f14c41b8986f96c8f2721378c9c1f74534c16c6ad2b3b7d5dff20b2f26fa787f45b4ce8bf13c
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::AirfoilTraits&lt; FlatPlate &gt; Struct Reference
+
+AirfoilTraits&lt; FlatPlate &gt; Struct Reference
+=================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1_airfoil_traits_3_01_flat_plate_01_4.html

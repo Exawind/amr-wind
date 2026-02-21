@@ -1,0 +1,644 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::MeshMap Class Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::MeshMap Class Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/classamr__wind_1_1_mesh_map.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="meshmap-class-reference">
+<h1>MeshMap Class Reference<a class="headerlink" href="#meshmap-class-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::MeshMap Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="classamr__wind_1_1_mesh_map.html">MeshMap</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a> &#124;
+<a href="classamr__wind_1_1_mesh_map-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::MeshMap Class Reference<span class="mlabels"><span class="mlabel abstract">abstract</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_mesh_map_8_h_source.html">MeshMap.H</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for amr_wind::MeshMap:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1_mesh_map__inherit__graph.svg" width="191" height="236"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for amr_wind::MeshMap:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1_mesh_map__coll__graph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a719369ac18790a046281ae2ab01ff4c2" id="r_a719369ac18790a046281ae2ab01ff4c2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a719369ac18790a046281ae2ab01ff4c2">~MeshMap</a> () override=default</td></tr>
+<tr class="memitem:ace9563e291ad9063c236755adbf279d5" id="r_ace9563e291ad9063c236755adbf279d5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ace9563e291ad9063c236755adbf279d5">declare_mapping_fields</a> (const <a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;, int)</td></tr>
+<tr class="memdesc:ace9563e291ad9063c236755adbf279d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">declare mesh mapping fields  <br /></td></tr>
+<tr class="memitem:a0f7d5c82dfdb25278d817f1bdd0f10a1" id="r_a0f7d5c82dfdb25278d817f1bdd0f10a1"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0f7d5c82dfdb25278d817f1bdd0f10a1">create_map</a> (int, const amrex::Geometry &amp;)=0</td></tr>
+<tr class="memdesc:a0f7d5c82dfdb25278d817f1bdd0f10a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct mesh scaling field.  <br /></td></tr>
+<tr class="inherit_header pub_methods_structamr__wind_1_1_factory"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_structamr__wind_1_1_factory')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="structamr__wind_1_1_factory.html">amr_wind::Factory&lt; MeshMap &gt;</a></td></tr>
+<tr class="memitem:aa6fca890ed3550c62d0f65b8d3bc07ad inherit pub_methods_structamr__wind_1_1_factory" id="r_aa6fca890ed3550c62d0f65b8d3bc07ad"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1_factory.html#aa6fca890ed3550c62d0f65b8d3bc07ad">~Factory</a> ()=default</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:aebf08acf3bf750cbf6f0e35e64d77bb7" id="r_aebf08acf3bf750cbf6f0e35e64d77bb7"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aebf08acf3bf750cbf6f0e35e64d77bb7">base_identifier</a> ()</td></tr>
+<tr class="inherit_header pub_static_methods_structamr__wind_1_1_factory"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_static_methods_structamr__wind_1_1_factory')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Static Public Member Functions inherited from <a class="el" href="structamr__wind_1_1_factory.html">amr_wind::Factory&lt; MeshMap &gt;</a></td></tr>
+<tr class="memitem:a12435a8cce5e3b4e95324d3b638ca6a2 inherit pub_static_methods_structamr__wind_1_1_factory" id="r_a12435a8cce5e3b4e95324d3b638ca6a2"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1_mesh_map.html">MeshMap</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1_factory.html#a12435a8cce5e3b4e95324d3b638ca6a2">create</a> (const std::string &amp;key, Args... args)</td></tr>
+<tr class="memitem:a8d98edcc6f1e14d11dc8626d75498548 inherit pub_static_methods_structamr__wind_1_1_factory" id="r_a8d98edcc6f1e14d11dc8626d75498548"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1_factory.html#a8d98edcc6f1e14d11dc8626d75498548">print</a> (std::ostream &amp;os)</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:ae68868ed4ab6ddeacfc1503d7a449f3d" id="r_ae68868ed4ab6ddeacfc1503d7a449f3d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae68868ed4ab6ddeacfc1503d7a449f3d">m_mesh_scale_fac_cc</a> {nullptr}</td></tr>
+<tr class="memitem:a905ada7fa134bff27f181cc95795d183" id="r_a905ada7fa134bff27f181cc95795d183"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a905ada7fa134bff27f181cc95795d183">m_mesh_scale_fac_nd</a> {nullptr}</td></tr>
+<tr class="memitem:ab78104753f2d7e07d24259bf1efc66a7" id="r_ab78104753f2d7e07d24259bf1efc66a7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab78104753f2d7e07d24259bf1efc66a7">m_mesh_scale_fac_xf</a> {nullptr}</td></tr>
+<tr class="memitem:ac0ddde141407f5e1bdfcad4c9747cc2f" id="r_ac0ddde141407f5e1bdfcad4c9747cc2f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac0ddde141407f5e1bdfcad4c9747cc2f">m_mesh_scale_fac_yf</a> {nullptr}</td></tr>
+<tr class="memitem:a932aa9f670418ce297e51d275da85322" id="r_a932aa9f670418ce297e51d275da85322"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a932aa9f670418ce297e51d275da85322">m_mesh_scale_fac_zf</a> {nullptr}</td></tr>
+<tr class="memitem:a4862640efffca61783ef1a0ae5409b07" id="r_a4862640efffca61783ef1a0ae5409b07"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4862640efffca61783ef1a0ae5409b07">m_mesh_scale_detJ_cc</a> {nullptr}</td></tr>
+<tr class="memitem:a0797385333303452807c49a2a3568cd8" id="r_a0797385333303452807c49a2a3568cd8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0797385333303452807c49a2a3568cd8">m_mesh_scale_detJ_nd</a> {nullptr}</td></tr>
+<tr class="memitem:ae09627b4c0185f8f4f90ed3a5ce6d71d" id="r_ae09627b4c0185f8f4f90ed3a5ce6d71d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae09627b4c0185f8f4f90ed3a5ce6d71d">m_mesh_scale_detJ_xf</a> {nullptr}</td></tr>
+<tr class="memitem:ae26343f237799b6e10c0cc18fe3ba7bc" id="r_ae26343f237799b6e10c0cc18fe3ba7bc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae26343f237799b6e10c0cc18fe3ba7bc">m_mesh_scale_detJ_yf</a> {nullptr}</td></tr>
+<tr class="memitem:a196e8d4c6aa3ccd0528bb176a8eb2af9" id="r_a196e8d4c6aa3ccd0528bb176a8eb2af9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a196e8d4c6aa3ccd0528bb176a8eb2af9">m_mesh_scale_detJ_zf</a> {nullptr}</td></tr>
+<tr class="memitem:a7e8fbadc59adc1f988ecafa08058b5b6" id="r_a7e8fbadc59adc1f988ecafa08058b5b6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7e8fbadc59adc1f988ecafa08058b5b6">m_non_uniform_coord_cc</a> {nullptr}</td></tr>
+<tr class="memitem:ad9bd17c6139ce393f6ed2b028b716575" id="r_ad9bd17c6139ce393f6ed2b028b716575"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad9bd17c6139ce393f6ed2b028b716575">m_non_uniform_coord_nd</a> {nullptr}</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pub_attribs_structamr__wind_1_1_factory"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_attribs_structamr__wind_1_1_factory')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Attributes inherited from <a class="el" href="structamr__wind_1_1_factory.html">amr_wind::Factory&lt; MeshMap &gt;</a></td></tr>
+<tr class="memitem:a691df3b8a05db92b3de7712f18cfe8b8 inherit pub_attribs_structamr__wind_1_1_factory" id="r_a691df3b8a05db92b3de7712f18cfe8b8"><td class="memItemLeft" align="right" valign="top">friend&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1_factory.html#a691df3b8a05db92b3de7712f18cfe8b8">Base</a></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Abstract representation of different mesh mapping models</p>
+<p>This class defines an abstract API that represents the notion of some mesh mapping that will be used to scale the mesh. The most common use-case for this class is to perform RANS simulations. </p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a719369ac18790a046281ae2ab01ff4c2" name="a719369ac18790a046281ae2ab01ff4c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a719369ac18790a046281ae2ab01ff4c2">&#9670;&#160;</a></span>~MeshMap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::MeshMap::~MeshMap </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="aebf08acf3bf750cbf6f0e35e64d77bb7" name="aebf08acf3bf750cbf6f0e35e64d77bb7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aebf08acf3bf750cbf6f0e35e64d77bb7">&#9670;&#160;</a></span>base_identifier()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::MeshMap::base_identifier </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0f7d5c82dfdb25278d817f1bdd0f10a1" name="a0f7d5c82dfdb25278d817f1bdd0f10a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f7d5c82dfdb25278d817f1bdd0f10a1">&#9670;&#160;</a></span>create_map()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void amr_wind::MeshMap::create_map </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Geometry &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel pure-virtual">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct mesh scaling field. </p>
+
+</div>
+</div>
+<a id="ace9563e291ad9063c236755adbf279d5" name="ace9563e291ad9063c236755adbf279d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace9563e291ad9063c236755adbf279d5">&#9670;&#160;</a></span>declare_mapping_fields()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::MeshMap::declare_mapping_fields </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>sim</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>nghost</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>declare mesh mapping fields </p>
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a4862640efffca61783ef1a0ae5409b07" name="a4862640efffca61783ef1a0ae5409b07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4862640efffca61783ef1a0ae5409b07">&#9670;&#160;</a></span>m_mesh_scale_detJ_cc</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a>* amr_wind::MeshMap::m_mesh_scale_detJ_cc {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0797385333303452807c49a2a3568cd8" name="a0797385333303452807c49a2a3568cd8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0797385333303452807c49a2a3568cd8">&#9670;&#160;</a></span>m_mesh_scale_detJ_nd</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a>* amr_wind::MeshMap::m_mesh_scale_detJ_nd {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae09627b4c0185f8f4f90ed3a5ce6d71d" name="ae09627b4c0185f8f4f90ed3a5ce6d71d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae09627b4c0185f8f4f90ed3a5ce6d71d">&#9670;&#160;</a></span>m_mesh_scale_detJ_xf</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a>* amr_wind::MeshMap::m_mesh_scale_detJ_xf {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae26343f237799b6e10c0cc18fe3ba7bc" name="ae26343f237799b6e10c0cc18fe3ba7bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae26343f237799b6e10c0cc18fe3ba7bc">&#9670;&#160;</a></span>m_mesh_scale_detJ_yf</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a>* amr_wind::MeshMap::m_mesh_scale_detJ_yf {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a196e8d4c6aa3ccd0528bb176a8eb2af9" name="a196e8d4c6aa3ccd0528bb176a8eb2af9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a196e8d4c6aa3ccd0528bb176a8eb2af9">&#9670;&#160;</a></span>m_mesh_scale_detJ_zf</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a>* amr_wind::MeshMap::m_mesh_scale_detJ_zf {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae68868ed4ab6ddeacfc1503d7a449f3d" name="ae68868ed4ab6ddeacfc1503d7a449f3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae68868ed4ab6ddeacfc1503d7a449f3d">&#9670;&#160;</a></span>m_mesh_scale_fac_cc</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a>* amr_wind::MeshMap::m_mesh_scale_fac_cc {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a905ada7fa134bff27f181cc95795d183" name="a905ada7fa134bff27f181cc95795d183"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a905ada7fa134bff27f181cc95795d183">&#9670;&#160;</a></span>m_mesh_scale_fac_nd</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a>* amr_wind::MeshMap::m_mesh_scale_fac_nd {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab78104753f2d7e07d24259bf1efc66a7" name="ab78104753f2d7e07d24259bf1efc66a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab78104753f2d7e07d24259bf1efc66a7">&#9670;&#160;</a></span>m_mesh_scale_fac_xf</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a>* amr_wind::MeshMap::m_mesh_scale_fac_xf {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac0ddde141407f5e1bdfcad4c9747cc2f" name="ac0ddde141407f5e1bdfcad4c9747cc2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0ddde141407f5e1bdfcad4c9747cc2f">&#9670;&#160;</a></span>m_mesh_scale_fac_yf</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a>* amr_wind::MeshMap::m_mesh_scale_fac_yf {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a932aa9f670418ce297e51d275da85322" name="a932aa9f670418ce297e51d275da85322"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a932aa9f670418ce297e51d275da85322">&#9670;&#160;</a></span>m_mesh_scale_fac_zf</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a>* amr_wind::MeshMap::m_mesh_scale_fac_zf {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7e8fbadc59adc1f988ecafa08058b5b6" name="a7e8fbadc59adc1f988ecafa08058b5b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e8fbadc59adc1f988ecafa08058b5b6">&#9670;&#160;</a></span>m_non_uniform_coord_cc</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a>* amr_wind::MeshMap::m_non_uniform_coord_cc {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad9bd17c6139ce393f6ed2b028b716575" name="ad9bd17c6139ce393f6ed2b028b716575"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9bd17c6139ce393f6ed2b028b716575">&#9670;&#160;</a></span>m_non_uniform_coord_nd</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a>* amr_wind::MeshMap::m_non_uniform_coord_nd {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/core/<a class="el" href="_mesh_map_8_h_source.html">MeshMap.H</a></li>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/core/<a class="el" href="_mesh_map_8cpp.html">MeshMap.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,11 @@
+<map id="amr_wind::pde::icns::ABLMeanBoussinesq" name="amr_wind::pde::icns::ABLMeanBoussinesq">
+<area shape="rect" id="Node000001" title=" " alt="" coords="915,49,1080,89"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="591,5,779,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="793,42,915,57,914,62,792,48"/>
+<area shape="rect" id="Node000003" href="$classamr__wind_1_1transport_1_1_transport_model.html" title=" " alt="" coords="608,85,761,125"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="775,94,890,82,914,79,915,84,891,87,775,100"/>
+<area shape="rect" id="Node000004" href="$structamr__wind_1_1_factory.html" title=" " alt="" coords="372,77,541,132"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="555,102,608,102,608,107,555,107"/>
+<area shape="rect" id="Node000005" href="$structamr__wind_1_1_factory.html" title=" " alt="" coords="5,85,157,125"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="171,102,371,102,371,107,171,107"/>
+</map>

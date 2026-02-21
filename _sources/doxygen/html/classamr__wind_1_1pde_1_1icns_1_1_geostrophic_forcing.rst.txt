@@ -1,0 +1,14 @@
+.. meta::2ec548eece1f90261d84bb4ebb4ddd0e93a726db22105c6e42fa4f492e655f5b78feffab3bb03b82c3be4c10c2d3a673cde4e31b4496f63e0faaa84a0ae09b09
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::icns::GeostrophicForcing Class Reference
+
+GeostrophicForcing Class Reference
+==================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html

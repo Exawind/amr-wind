@@ -1,0 +1,14 @@
+.. meta::cac534b5dcee6ed247a45eb000e9dde6097be47ca3837b924b9c3e4693a2e61e77e083a30e2f02d1361901f06d5bb01a0371de750ae10dde9edac788cfb07708
+
+:orphan:
+
+.. title:: AMR-Wind API: ext_turb::FastSolverData Struct Reference
+
+FastSolverData Struct Reference
+===============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structext__turb_1_1_fast_solver_data.html

@@ -1,0 +1,14 @@
+.. meta::0d511dc738635ca3bde6c82337dd67a4edb84000e9ac48336b51df5a45e72862b142308a76de517b0d17768b45bb4796708975f1d5e80c0c0d8ea13baf912602
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::InitDataOp&lt; ActTrait, SrcTrait, typename &gt; Struct Template Reference
+
+InitDataOp&lt; ActTrait, SrcTrait, typename &gt; Struct Template Reference
+==========================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1ops_1_1_init_data_op.html

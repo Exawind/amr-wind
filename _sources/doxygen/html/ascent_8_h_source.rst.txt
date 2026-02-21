@@ -1,0 +1,14 @@
+.. meta::5ed3cfa07250fbb3e71792dfba3044a8bed4245be753b75530795d149f3e3e251212007b0129a8d0a46d9826725f11d88fa3c8166fa905d74f5b96acfc480ddc
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/ascent/ascent.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/ascent/ascent.H Source File
+==================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: ascent_8_h_source.html

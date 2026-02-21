@@ -1,0 +1,14 @@
+.. meta::30299c3970d34c84b2d7eaa25fc422ee3e3f451db51d4fd08b0147ae92b11b1bd3abd4e258362ddcc2b44873e30728a60ef0e1fa803164c70424d9905bc70635
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::sampling::RadarSampler Class Reference
+
+RadarSampler Class Reference
+============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1sampling_1_1_radar_sampler.html

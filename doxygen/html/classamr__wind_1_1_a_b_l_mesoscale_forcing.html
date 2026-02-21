@@ -1,0 +1,1040 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::ABLMesoscaleForcing Class Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::ABLMesoscaleForcing Class Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/classamr__wind_1_1_a_b_l_mesoscale_forcing.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ablmesoscaleforcing-class-reference">
+<h1>ABLMesoscaleForcing Class Reference<a class="headerlink" href="#ablmesoscaleforcing-class-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::ABLMesoscaleForcing Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html">ABLMesoscaleForcing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a> &#124;
+<a href="classamr__wind_1_1_a_b_l_mesoscale_forcing-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::ABLMesoscaleForcing Class Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_a_b_l_mesoscale_forcing_8_h_source.html">ABLMesoscaleForcing.H</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for amr_wind::ABLMesoscaleForcing:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1_a_b_l_mesoscale_forcing__inherit__graph.svg" width="500" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for amr_wind::ABLMesoscaleForcing:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1_a_b_l_mesoscale_forcing__coll__graph.svg" width="395" height="455"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a2f111a56eaa38a0972bb08793bdf3982" id="r_a2f111a56eaa38a0972bb08793bdf3982"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2f111a56eaa38a0972bb08793bdf3982">ABLMesoscaleForcing</a> (const <a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;sim, const std::string &amp;identifier)</td></tr>
+<tr class="memitem:a66f67f4d2010884976e79d53770ccd14" id="r_a66f67f4d2010884976e79d53770ccd14"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a66f67f4d2010884976e79d53770ccd14">indirect_forcing_init</a> ()</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:af341168767e3a68bc06042a1eb463569" id="r_af341168767e3a68bc06042a1eb463569"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af341168767e3a68bc06042a1eb463569">invert_mat</a> (const amrex::Array2D&lt; amrex::Real, 0, 3, 0, 3 &gt; &amp;m, amrex::Array2D&lt; amrex::Real, 0, 3, 0, 3 &gt; &amp;im)</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:a30a096803c3467416c82fbef6bac5adb" id="r_a30a096803c3467416c82fbef6bac5adb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a30a096803c3467416c82fbef6bac5adb">set_transition_weighting</a> ()</td></tr>
+<tr class="memitem:acf509970c0fe0010b358071e292a6dc2" id="r_acf509970c0fe0010b358071e292a6dc2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acf509970c0fe0010b358071e292a6dc2">update_weights</a> ()</td></tr>
+<tr class="memitem:a23b2e25e49e37c40a07403bbe8651af3" id="r_a23b2e25e49e37c40a07403bbe8651af3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a23b2e25e49e37c40a07403bbe8651af3">have_forcing_transition</a> ()</td></tr>
+<tr class="memitem:a319240fccf7ad28201984d4dbf2f162d" id="r_a319240fccf7ad28201984d4dbf2f162d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a319240fccf7ad28201984d4dbf2f162d">forcing_to_constant</a> ()</td></tr>
+<tr class="memitem:afe348445873484cb296bf12c68838e69" id="r_afe348445873484cb296bf12c68838e69"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afe348445873484cb296bf12c68838e69">constant_forcing_transition</a> (amrex::Vector&lt; amrex::Real &gt; &amp;error)</td></tr>
+<tr class="memitem:a1a961f82890d89b5fdaf66b434da4728" id="r_a1a961f82890d89b5fdaf66b434da4728"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1a961f82890d89b5fdaf66b434da4728">blend_forcings</a> (const amrex::Vector&lt; amrex::Real &gt; &amp;lower, const amrex::Vector&lt; amrex::Real &gt; &amp;upper, amrex::Vector&lt; amrex::Real &gt; &amp;error)</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:a24e42c66d085ac8f5d5faee04272128a" id="r_a24e42c66d085ac8f5d5faee04272128a"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_sim_time.html">SimTime</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a24e42c66d085ac8f5d5faee04272128a">m_time</a></td></tr>
+<tr class="memitem:aafe283c3efc00a3abc26bf7cbace5611" id="r_aafe283c3efc00a3abc26bf7cbace5611"><td class="memItemLeft" align="right" valign="top">const amrex::AmrCore &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aafe283c3efc00a3abc26bf7cbace5611">m_mesh</a></td></tr>
+<tr class="memitem:ac9345c0ae27166dc9a4b10aa9fcc1239" id="r_ac9345c0ae27166dc9a4b10aa9fcc1239"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac9345c0ae27166dc9a4b10aa9fcc1239">m_idx_time</a> {0}</td></tr>
+<tr class="memitem:a85bae77483880c3d24588cd67ec646e7" id="r_a85bae77483880c3d24588cd67ec646e7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a85bae77483880c3d24588cd67ec646e7">m_axis</a> {2}</td></tr>
+<tr class="memitem:a7964ba51367fb71029b2eacb7064b3ff" id="r_a7964ba51367fb71029b2eacb7064b3ff"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7964ba51367fb71029b2eacb7064b3ff">m_forcing_scheme</a></td></tr>
+<tr class="memitem:ab1b2a31e6a00d1675fb3315dd8f0c41d" id="r_ab1b2a31e6a00d1675fb3315dd8f0c41d"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab1b2a31e6a00d1675fb3315dd8f0c41d">m_gain_coeff</a></td></tr>
+<tr class="memitem:a59006b3dd6d3ac9cac990be497c82d31" id="r_a59006b3dd6d3ac9cac990be497c82d31"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a59006b3dd6d3ac9cac990be497c82d31">m_debug</a> {false}</td></tr>
+<tr class="memitem:a8769b1a783ebe89bdf3f5062835dc75b" id="r_a8769b1a783ebe89bdf3f5062835dc75b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8769b1a783ebe89bdf3f5062835dc75b">m_tendency</a> {false}</td></tr>
+<tr class="memitem:a2255688d4b7caa7cde36acce8738955c" id="r_a2255688d4b7caa7cde36acce8738955c"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2255688d4b7caa7cde36acce8738955c">m_zht</a></td></tr>
+<tr class="memitem:a4df54637a16ffd77da6bfed980f4359c" id="r_a4df54637a16ffd77da6bfed980f4359c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4df54637a16ffd77da6bfed980f4359c">m_nht</a> {0}</td></tr>
+<tr class="memitem:a8bcaa8576b4c2442a0594c76851b2eee" id="r_a8bcaa8576b4c2442a0594c76851b2eee"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8bcaa8576b4c2442a0594c76851b2eee">m_norm_zmax</a> = 0</td></tr>
+<tr class="memitem:a4bc0a067ab09a08f05c031a23c09e084" id="r_a4bc0a067ab09a08f05c031a23c09e084"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4bc0a067ab09a08f05c031a23c09e084">m_scaleFact</a></td></tr>
+<tr class="memitem:ac57b8b2517fb46663164483c18deb28e" id="r_ac57b8b2517fb46663164483c18deb28e"><td class="memItemLeft" align="right" valign="top">amrex::Array2D&lt; amrex::Real, 0, 3, 0, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac57b8b2517fb46663164483c18deb28e">m_im_zTz</a></td></tr>
+<tr class="memitem:a26371fd8736ad1095d47f53bfc10fa93" id="r_a26371fd8736ad1095d47f53bfc10fa93"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a26371fd8736ad1095d47f53bfc10fa93">m_forcing_transition</a></td></tr>
+<tr class="memitem:a35c7e372acb32d20e4f8a2c2d270ba05" id="r_a35c7e372acb32d20e4f8a2c2d270ba05"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a35c7e372acb32d20e4f8a2c2d270ba05">m_transition_height</a></td></tr>
+<tr class="memitem:a09127c1fdd0a7779ae6e10331c738735" id="r_a09127c1fdd0a7779ae6e10331c738735"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a09127c1fdd0a7779ae6e10331c738735">m_update_transition_height</a> {false}</td></tr>
+<tr class="memitem:aff87b3719eb06f8023a0244f71f4465a" id="r_aff87b3719eb06f8023a0244f71f4465a"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aff87b3719eb06f8023a0244f71f4465a">m_transition_thickness</a></td></tr>
+<tr class="memitem:a45aaf17fefeb7c8fdaeac41658768976" id="r_a45aaf17fefeb7c8fdaeac41658768976"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a45aaf17fefeb7c8fdaeac41658768976">m_weighting_heights</a></td></tr>
+<tr class="memitem:afb2d74902558325b3142e279373085e1" id="r_afb2d74902558325b3142e279373085e1"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afb2d74902558325b3142e279373085e1">m_weighting_values</a></td></tr>
+<tr class="memitem:a7d0b954f52442bb7b440bb8818034d8c" id="r_a7d0b954f52442bb7b440bb8818034d8c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7d0b954f52442bb7b440bb8818034d8c">m_user_specified_weighting</a> {false}</td></tr>
+<tr class="memitem:af26cd91381fde28d5bf4505efdd5a03b" id="r_af26cd91381fde28d5bf4505efdd5a03b"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af26cd91381fde28d5bf4505efdd5a03b">m_W</a></td></tr>
+<tr class="memitem:af9640589ed849f649194232649c9c168" id="r_af9640589ed849f649194232649c9c168"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af9640589ed849f649194232649c9c168">m_blending_heights</a></td></tr>
+<tr class="memitem:a81c32019c5131f0a38bc66b923e644e6" id="r_a81c32019c5131f0a38bc66b923e644e6"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a81c32019c5131f0a38bc66b923e644e6">m_blending_values</a></td></tr>
+<tr class="memitem:a5a9c3dec44c5ceee3080fd6f513d77d8" id="r_a5a9c3dec44c5ceee3080fd6f513d77d8"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5a9c3dec44c5ceee3080fd6f513d77d8">m_blend</a></td></tr>
+</table>
+<a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a2f111a56eaa38a0972bb08793bdf3982" name="a2f111a56eaa38a0972bb08793bdf3982"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f111a56eaa38a0972bb08793bdf3982">&#9670;&#160;</a></span>ABLMesoscaleForcing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::ABLMesoscaleForcing::ABLMesoscaleForcing </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>sim</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>identifier</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a1a961f82890d89b5fdaf66b434da4728" name="a1a961f82890d89b5fdaf66b434da4728"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a961f82890d89b5fdaf66b434da4728">&#9670;&#160;</a></span>blend_forcings()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ABLMesoscaleForcing::blend_forcings </td>
+          <td>(</td>
+          <td class="paramtype">const amrex::Vector&lt; amrex::Real &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>lower</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Vector&lt; amrex::Real &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>upper</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Vector&lt; amrex::Real &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>error</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afe348445873484cb296bf12c68838e69" name="afe348445873484cb296bf12c68838e69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe348445873484cb296bf12c68838e69">&#9670;&#160;</a></span>constant_forcing_transition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ABLMesoscaleForcing::constant_forcing_transition </td>
+          <td>(</td>
+          <td class="paramtype">amrex::Vector&lt; amrex::Real &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>error</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a319240fccf7ad28201984d4dbf2f162d" name="a319240fccf7ad28201984d4dbf2f162d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a319240fccf7ad28201984d4dbf2f162d">&#9670;&#160;</a></span>forcing_to_constant()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::ABLMesoscaleForcing::forcing_to_constant </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a23b2e25e49e37c40a07403bbe8651af3" name="a23b2e25e49e37c40a07403bbe8651af3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23b2e25e49e37c40a07403bbe8651af3">&#9670;&#160;</a></span>have_forcing_transition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::ABLMesoscaleForcing::have_forcing_transition </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a66f67f4d2010884976e79d53770ccd14" name="a66f67f4d2010884976e79d53770ccd14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66f67f4d2010884976e79d53770ccd14">&#9670;&#160;</a></span>indirect_forcing_init()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ABLMesoscaleForcing::indirect_forcing_init </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af341168767e3a68bc06042a1eb463569" name="af341168767e3a68bc06042a1eb463569"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af341168767e3a68bc06042a1eb463569">&#9670;&#160;</a></span>invert_mat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ABLMesoscaleForcing::invert_mat </td>
+          <td>(</td>
+          <td class="paramtype">const amrex::Array2D&lt; amrex::Real, 0, 3, 0, 3 &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>m</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array2D&lt; amrex::Real, 0, 3, 0, 3 &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>im</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a30a096803c3467416c82fbef6bac5adb" name="a30a096803c3467416c82fbef6bac5adb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30a096803c3467416c82fbef6bac5adb">&#9670;&#160;</a></span>set_transition_weighting()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ABLMesoscaleForcing::set_transition_weighting </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acf509970c0fe0010b358071e292a6dc2" name="acf509970c0fe0010b358071e292a6dc2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf509970c0fe0010b358071e292a6dc2">&#9670;&#160;</a></span>update_weights()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ABLMesoscaleForcing::update_weights </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a85bae77483880c3d24588cd67ec646e7" name="a85bae77483880c3d24588cd67ec646e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85bae77483880c3d24588cd67ec646e7">&#9670;&#160;</a></span>m_axis</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::ABLMesoscaleForcing::m_axis {2}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5a9c3dec44c5ceee3080fd6f513d77d8" name="a5a9c3dec44c5ceee3080fd6f513d77d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a9c3dec44c5ceee3080fd6f513d77d8">&#9670;&#160;</a></span>m_blend</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Real&gt; amr_wind::ABLMesoscaleForcing::m_blend</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af9640589ed849f649194232649c9c168" name="af9640589ed849f649194232649c9c168"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9640589ed849f649194232649c9c168">&#9670;&#160;</a></span>m_blending_heights</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Real&gt; amr_wind::ABLMesoscaleForcing::m_blending_heights</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a81c32019c5131f0a38bc66b923e644e6" name="a81c32019c5131f0a38bc66b923e644e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81c32019c5131f0a38bc66b923e644e6">&#9670;&#160;</a></span>m_blending_values</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Real&gt; amr_wind::ABLMesoscaleForcing::m_blending_values</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a59006b3dd6d3ac9cac990be497c82d31" name="a59006b3dd6d3ac9cac990be497c82d31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59006b3dd6d3ac9cac990be497c82d31">&#9670;&#160;</a></span>m_debug</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::ABLMesoscaleForcing::m_debug {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7964ba51367fb71029b2eacb7064b3ff" name="a7964ba51367fb71029b2eacb7064b3ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7964ba51367fb71029b2eacb7064b3ff">&#9670;&#160;</a></span>m_forcing_scheme</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::ABLMesoscaleForcing::m_forcing_scheme</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a26371fd8736ad1095d47f53bfc10fa93" name="a26371fd8736ad1095d47f53bfc10fa93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26371fd8736ad1095d47f53bfc10fa93">&#9670;&#160;</a></span>m_forcing_transition</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::ABLMesoscaleForcing::m_forcing_transition</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab1b2a31e6a00d1675fb3315dd8f0c41d" name="ab1b2a31e6a00d1675fb3315dd8f0c41d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1b2a31e6a00d1675fb3315dd8f0c41d">&#9670;&#160;</a></span>m_gain_coeff</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::ABLMesoscaleForcing::m_gain_coeff</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">{</div>
+<div class="line">        0.2_rt}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ac9345c0ae27166dc9a4b10aa9fcc1239" name="ac9345c0ae27166dc9a4b10aa9fcc1239"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9345c0ae27166dc9a4b10aa9fcc1239">&#9670;&#160;</a></span>m_idx_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::ABLMesoscaleForcing::m_idx_time {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac57b8b2517fb46663164483c18deb28e" name="ac57b8b2517fb46663164483c18deb28e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac57b8b2517fb46663164483c18deb28e">&#9670;&#160;</a></span>m_im_zTz</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Array2D&lt;amrex::Real, 0, 3, 0, 3&gt; amr_wind::ABLMesoscaleForcing::m_im_zTz</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aafe283c3efc00a3abc26bf7cbace5611" name="aafe283c3efc00a3abc26bf7cbace5611"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafe283c3efc00a3abc26bf7cbace5611">&#9670;&#160;</a></span>m_mesh</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const amrex::AmrCore&amp; amr_wind::ABLMesoscaleForcing::m_mesh</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4df54637a16ffd77da6bfed980f4359c" name="a4df54637a16ffd77da6bfed980f4359c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4df54637a16ffd77da6bfed980f4359c">&#9670;&#160;</a></span>m_nht</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::ABLMesoscaleForcing::m_nht {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8bcaa8576b4c2442a0594c76851b2eee" name="a8bcaa8576b4c2442a0594c76851b2eee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8bcaa8576b4c2442a0594c76851b2eee">&#9670;&#160;</a></span>m_norm_zmax</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::ABLMesoscaleForcing::m_norm_zmax = 0</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4bc0a067ab09a08f05c031a23c09e084" name="a4bc0a067ab09a08f05c031a23c09e084"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4bc0a067ab09a08f05c031a23c09e084">&#9670;&#160;</a></span>m_scaleFact</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::ABLMesoscaleForcing::m_scaleFact</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">        1.0e-3_rt</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a8769b1a783ebe89bdf3f5062835dc75b" name="a8769b1a783ebe89bdf3f5062835dc75b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8769b1a783ebe89bdf3f5062835dc75b">&#9670;&#160;</a></span>m_tendency</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::ABLMesoscaleForcing::m_tendency {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a24e42c66d085ac8f5d5faee04272128a" name="a24e42c66d085ac8f5d5faee04272128a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24e42c66d085ac8f5d5faee04272128a">&#9670;&#160;</a></span>m_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_sim_time.html">SimTime</a>&amp; amr_wind::ABLMesoscaleForcing::m_time</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a35c7e372acb32d20e4f8a2c2d270ba05" name="a35c7e372acb32d20e4f8a2c2d270ba05"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35c7e372acb32d20e4f8a2c2d270ba05">&#9670;&#160;</a></span>m_transition_height</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::ABLMesoscaleForcing::m_transition_height</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aff87b3719eb06f8023a0244f71f4465a" name="aff87b3719eb06f8023a0244f71f4465a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff87b3719eb06f8023a0244f71f4465a">&#9670;&#160;</a></span>m_transition_thickness</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::ABLMesoscaleForcing::m_transition_thickness</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a09127c1fdd0a7779ae6e10331c738735" name="a09127c1fdd0a7779ae6e10331c738735"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09127c1fdd0a7779ae6e10331c738735">&#9670;&#160;</a></span>m_update_transition_height</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::ABLMesoscaleForcing::m_update_transition_height {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7d0b954f52442bb7b440bb8818034d8c" name="a7d0b954f52442bb7b440bb8818034d8c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d0b954f52442bb7b440bb8818034d8c">&#9670;&#160;</a></span>m_user_specified_weighting</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::ABLMesoscaleForcing::m_user_specified_weighting {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af26cd91381fde28d5bf4505efdd5a03b" name="af26cd91381fde28d5bf4505efdd5a03b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af26cd91381fde28d5bf4505efdd5a03b">&#9670;&#160;</a></span>m_W</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Real&gt; amr_wind::ABLMesoscaleForcing::m_W</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a45aaf17fefeb7c8fdaeac41658768976" name="a45aaf17fefeb7c8fdaeac41658768976"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45aaf17fefeb7c8fdaeac41658768976">&#9670;&#160;</a></span>m_weighting_heights</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Real&gt; amr_wind::ABLMesoscaleForcing::m_weighting_heights</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afb2d74902558325b3142e279373085e1" name="afb2d74902558325b3142e279373085e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb2d74902558325b3142e279373085e1">&#9670;&#160;</a></span>m_weighting_values</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Real&gt; amr_wind::ABLMesoscaleForcing::m_weighting_values</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2255688d4b7caa7cde36acce8738955c" name="a2255688d4b7caa7cde36acce8738955c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2255688d4b7caa7cde36acce8738955c">&#9670;&#160;</a></span>m_zht</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Real&gt; amr_wind::ABLMesoscaleForcing::m_zht</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/<a class="el" href="_a_b_l_mesoscale_forcing_8_h_source.html">ABLMesoscaleForcing.H</a></li>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/<a class="el" href="_a_b_l_mesoscale_forcing_8cpp.html">ABLMesoscaleForcing.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

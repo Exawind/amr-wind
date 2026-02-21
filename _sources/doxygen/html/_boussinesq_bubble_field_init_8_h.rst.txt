@@ -1,0 +1,14 @@
+.. meta::0164c10be77e5e6e03d6787897f73577d82ea6048f58969d2235156bfb9c0d433dad9d6051bfa823590fef8409adcba5f9f61547d16852e00f5627c86de2e039
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/BoussinesqBubbleFieldInit.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/physics/BoussinesqBubbleFieldInit.H File Reference
+===============================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _boussinesq_bubble_field_init_8_h.html

@@ -1,0 +1,7 @@
+<map id="amr_wind::pde::DensitySource" name="amr_wind::pde::DensitySource">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,240,225,265"/>
+<area shape="rect" id="Node000002" href="$structamr__wind_1_1_factory.html" title=" " alt="" coords="34,136,197,191"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="118,204,118,240,113,240,113,204"/>
+<area shape="rect" id="Node000003" href="$structamr__wind_1_1_factory.html" title=" " alt="" coords="39,5,191,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="118,59,118,136,113,136,113,59"/>
+</map>

@@ -1,0 +1,14 @@
+.. meta::af37fd39ade7971a846125759bd5e739e1c1bb13d80c8c92c98e8980c4eb3a2681feacc7afa4a69a73452fc8293a67f4f659ec1842e6bab83f38746df8ca15e3
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::BCVelocity Class Reference
+
+BCVelocity Class Reference
+==========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_b_c_velocity.html

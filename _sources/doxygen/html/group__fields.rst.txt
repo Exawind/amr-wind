@@ -1,0 +1,14 @@
+.. meta::306951b0b10a65d5a069252ef98a904ad183d25ca61c4502593973fd167156b6932e087a9a37978c0595f3615961d8540fddd3909c261329fed751d862fd6f24
+
+:orphan:
+
+.. title:: AMR-Wind API: Field management
+
+Field management
+================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: group__fields.html

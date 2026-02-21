@@ -1,0 +1,14 @@
+.. meta::4169ba245ab8846a73be1bea4e6b2c5ced3f6cba81d64e5bd9a2ae907830abc7bbc0c05365d438affb6d049d49cb41c24c7b190fc557c3fad3c966a35c4d127f
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/multiphase/VortexPatchScalarVel.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/physics/multiphase/VortexPatchScalarVel.cpp File Reference
+=======================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _vortex_patch_scalar_vel_8cpp.html

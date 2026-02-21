@@ -1,0 +1,14 @@
+.. meta::fa811f424ad783d89d36debae41a904b3e2ee97818f0a71e2d6cfdcf796e85d8a367fea579912b12d96b9471cc33027004e094a1f1a2b96574336aa5e0af8b78
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::DiskType Struct Reference
+
+DiskType Struct Reference
+=========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1_disk_type.html

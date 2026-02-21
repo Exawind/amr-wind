@@ -1,0 +1,14 @@
+.. meta::d093b08eb48bb9fbe827f2daa982c9942fa4d69fc3224143ebf4f7503370cdaafeb8bf0e61604d05d8e3e453bc35cdae64560de172e53f867137f474ffb8d6d2
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::FieldBCDirichlet Struct Reference
+
+FieldBCDirichlet Struct Reference
+=================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1_field_b_c_dirichlet.html

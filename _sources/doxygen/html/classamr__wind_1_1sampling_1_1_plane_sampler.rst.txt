@@ -1,0 +1,14 @@
+.. meta::ab0810e59c02342090782099f796ca82265f849bd0fd49a59273bacd7c1ba392575d77c2143258ca3cb45a10b47bd2ec58755b291498975b58b08a039afce657
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::sampling::PlaneSampler Class Reference
+
+PlaneSampler Class Reference
+============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1sampling_1_1_plane_sampler.html

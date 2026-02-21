@@ -1,0 +1,14 @@
+.. meta::6e8e0475403c0758942c5ce0737ec8d788968fff2273a2227264ed3b999f7564d53ae8fc28af005be4c9b0f1f5db9f699a07be9359acf177cfa68c34850fb570
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::temperature::PerturbationForcing Class Reference
+
+PerturbationForcing Class Reference
+===================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1pde_1_1temperature_1_1_perturbation_forcing.html

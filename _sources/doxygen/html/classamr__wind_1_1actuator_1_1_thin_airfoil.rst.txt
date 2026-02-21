@@ -1,0 +1,14 @@
+.. meta::0a46b91491ce2d95ad76737be9bcb7cb692e2445f43d379d39850b26365d811e29aa2cb55990af99f55aea9e9eb0610dfff37d7207b87ada303cc9bbc1b77927
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ThinAirfoil Class Reference
+
+ThinAirfoil Class Reference
+===========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1actuator_1_1_thin_airfoil.html
