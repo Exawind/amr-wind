@@ -503,7 +503,7 @@ jobs:
       - name: Check
         working-directory: ${{runner.workspace}}/build-clang-tidy
         run: |
-          cmake --build . --parallel ${{env.NPROCS}} 2>&1 | tee -a clang-tidy-full-report.txt
+          make -j ${{env.NPROCS}} 2>&1 | tee -a clang-tidy-full-report.txt
           cat clang-tidy-full-report.txt | egrep "Warning:|Error:|warning:|error:" | grep -v "submods" | sort | uniq | \
             awk 'BEGIN{i=0}{print $0}{i++}END{print "Warnings: "i}' > clang-tidy-ci-report.txt
       - name: Ccache Report
