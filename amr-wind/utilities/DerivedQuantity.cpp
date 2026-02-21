@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <string>
 #include <algorithm>
 
@@ -13,7 +14,7 @@ namespace {
 inline std::string strip_spaces(const std::string& inp)
 {
     std::string str(inp);
-    str.erase(std::remove(str.begin(), str.end(), ' '), str.end());
+    str.erase(std::remove(str.begin(), str.end(), ' '), str.end()); // NOLINT
     return str;
 }
 
@@ -131,9 +132,8 @@ void DerivedQtyMgr::filter(const std::set<std::string>& erase)
     amrex::Vector<decltype(m_obj_map)::key_type> keys_to_erase;
     for (int i = 0; i < m_derived_vec.size(); i++) {
         if (erase.contains(m_derived_vec[i]->name())) {
-            auto it = std::find_if(
-                m_obj_map.begin(), m_obj_map.end(),
-                [&i](auto&& p) { return p.second == i; });
+            auto it = std::ranges::find_if(
+                m_obj_map, [&i](auto&& p) { return p.second == i; });
             keys_to_erase.emplace_back(it->first);
         }
     }
@@ -143,8 +143,8 @@ void DerivedQtyMgr::filter(const std::set<std::string>& erase)
 
     // then erase from the derived vec
     m_derived_vec.erase(
-        std::remove_if(
-            m_derived_vec.begin(), m_derived_vec.end(),
+        std::remove_if( //NOLINT
+            m_derived_vec.begin(), m_derived_vec.end(), //NOLINT
             [=](const auto& qty) {
                 return erase.find(qty->name()) != erase.end();
             }),

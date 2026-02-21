@@ -1,6 +1,8 @@
 #ifndef Joukowsky_OPS_H_
 #define Joukowsky_OPS_H_
 
+#include <algorithm>
+
 #include "amr-wind/wind_energy/actuator/disk/Joukowsky.H"
 #include "amr-wind/wind_energy/actuator/disk/disk_ops.H"
 #include "amr-wind/utilities/linear_interpolation.H"
@@ -94,8 +96,7 @@ struct InitDataOp<Joukowsky, ActSrcDisk>
         meta.f_normal.resize(meta.num_vel_pts_r);
         meta.f_theta.resize(meta.num_force_pts);
 
-        std::fill(
-            meta.tip_correction.begin(), meta.tip_correction.end(), 1.0_rt);
+        std::ranges::fill(meta.tip_correction, 1.0_rt);
 
         if (meta.use_root_correction) {
             const amrex::Real dx = 1.0_rt / meta.num_vel_pts_r;
@@ -114,9 +115,7 @@ struct InitDataOp<Joukowsky, ActSrcDisk>
                     1.0_rt - std::exp(-a * std::pow((i + 0.5_rt) * factor, b));
             }
         } else {
-            std::fill(
-                meta.root_correction.begin(), meta.root_correction.end(),
-                1.0_rt);
+            std::ranges::fill(meta.root_correction, 1.0_rt);
         }
 
         joukowsky::update_disk_points(data);
