@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -172,9 +173,8 @@ void Sampling::update_sampling_locations()
         updated_position.push_back(updated_pos);
     }
 
-    if (std::any_of(
-            updated_position.begin(), updated_position.end(),
-            [](const auto& v) { return v; })) {
+    if (std::ranges::any_of(
+            updated_position, [](const auto& v) { return v; })) {
         update_container();
     }
 }

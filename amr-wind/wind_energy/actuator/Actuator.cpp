@@ -123,9 +123,10 @@ void Actuator::post_regrid_actions()
 {
     BL_PROFILE("amr-wind::actuator::Actuator::post_regrid_actions");
 
-    const bool compute_root_proc = std::any_of(
-        m_actuators.begin(), m_actuators.end(),
-        [](const auto& act) { return act->info().root_proc == -1; });
+    const bool compute_root_proc =
+        std::ranges::any_of(m_actuators, [](const auto& act) {
+            return act->info().root_proc == -1;
+        });
     if (compute_root_proc) {
         amrex::Vector<int> act_proc_count(
             amrex::ParallelDescriptor::NProcs(), 0);
