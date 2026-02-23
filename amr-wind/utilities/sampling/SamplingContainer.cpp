@@ -83,7 +83,7 @@ void SamplingContainer::initialize_particles(
         int offset = 0;
         for (int iprobe = 0; iprobe < nprobes; iprobe++) {
             const auto& probe = samplers[iprobe];
-            auto sample_locs = vec_sample_locs[iprobe];
+            const auto& sample_locs = vec_sample_locs[iprobe];
             const auto& locs = sample_locs.locations();
             const int npts = static_cast<int>(locs.size());
             if (npts == 0) {

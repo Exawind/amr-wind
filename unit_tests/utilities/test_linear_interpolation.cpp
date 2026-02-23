@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <numbers>
+#include <utility>
 #include <vector>
 #include <numeric>
 #include "aw_test_utils/AmrexTest.H"
@@ -165,7 +166,7 @@ TEST(LinearInterpolation, lin_interp_single_multicomponent)
         2.0_rt + (10.0_rt * amrex::Random()),
         2.0_rt + (10.0_rt * amrex::Random()),
         2.0_rt + (10.0_rt * amrex::Random())};
-    for (int i = 0; i < static_cast<int>(xvec.size()); i++) {
+    for (int i = 0; std::cmp_less(i, xvec.size()); i++) {
         for (int n = 0; n < ncomp; n++) {
             yvec[(ncomp * i) + n] = mult_facs[n] * xvec[i];
         }
@@ -193,8 +194,8 @@ TEST(LinearInterpolation, bilin_interp_single)
     std::iota(xvec.begin(), xvec.end(), 0.0_rt);
     std::iota(yvec.begin(), yvec.end(), 0.0_rt);
 
-    for (int i = 0; i < static_cast<int>(xvec.size()); i++) {
-        for (int j = 0; j < static_cast<int>(yvec.size()); j++) {
+    for (int i = 0; std::cmp_less(i, xvec.size()); i++) {
+        for (int j = 0; std::cmp_less(j, yvec.size()); j++) {
             zvec[(i * yvec.size()) + j] =
                 mult_facx * xvec[i] * mult_facy * yvec[j];
         }

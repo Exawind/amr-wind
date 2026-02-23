@@ -1,3 +1,5 @@
+#include <utility>
+
 #include "aw_test_utils/AmrexTest.H"
 #include "amr-wind/utilities/tensor_ops.H"
 #include "AMReX_REAL.H"
@@ -59,7 +61,7 @@ void impl_vec_normalize()
     const auto np = tv.size();
     amrex::ParallelFor(1, [=] AMREX_GPU_DEVICE(int /*unused*/) {
         amr_wind::utils::vec_normalize(pvec);
-        for (int i = 0; i < static_cast<int>(np); i++) {
+        for (int i = 0; std::cmp_less(i, np); i++) {
             ddata[i] = pvec[i];
         }
     });
