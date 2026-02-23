@@ -6,6 +6,9 @@
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/wind_energy/ABL.H"
 #include "amr-wind/physics/multiphase/MultiPhase.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind {
 
@@ -127,7 +130,7 @@ void OceanWavesBoundary::set_velocity(
                             if (terrain_blank_flags(
                                     iv + shift_to_cc + shift_to_interior) ==
                                 1) {
-                                arr(iv, dcomp + n) = 0.0;
+                                arr(iv, dcomp + n) = 0.0_rt;
                             }
                         }
                     }
@@ -192,7 +195,7 @@ void OceanWavesBoundary::set_density(
     amrex::MultiFab& mfab) const
 {
 
-    if (!m_activate_ow_bndry || m_rho1 < 0.0) {
+    if (!m_activate_ow_bndry || m_rho1 < 0.0_rt) {
         return;
     }
 
@@ -230,8 +233,9 @@ void OceanWavesBoundary::set_density(
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     // Assume density is correct for gas phase only
-                    arr(i, j, k) = targ_vof(i, j, k) * rho1 +
-                                   (1.0 - targ_vof(i, j, k)) * arr(i, j, k);
+                    arr(i, j, k) =
+                        (targ_vof(i, j, k) * rho1) +
+                        ((1.0_rt - targ_vof(i, j, k)) * arr(i, j, k));
                 });
         }
     }
@@ -317,7 +321,7 @@ void OceanWavesBoundary::set_inflow_sibling_velocity(
                             // boundary velocity to 0
                             if (terrain_blank_flags(
                                     cc_iv + shift_to_interior) == 1) {
-                                marr(i, j, k, 0) = 0.0;
+                                marr(i, j, k, 0) = 0.0_rt;
                             }
                         }
                     });

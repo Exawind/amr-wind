@@ -3,6 +3,9 @@
 
 #include "amr-wind/utilities/DerivedQuantity.H"
 #include "amr-wind/utilities/io_utils.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind {
 namespace {
@@ -90,7 +93,7 @@ void DerivedQtyMgr::operator()(ScratchField& fld, const int scomp) const
         (*qty)(fld, icomp);
         icomp += qty->num_comp();
     }
-    fld.fillpatch(0.0);
+    fld.fillpatch(0.0_rt);
 }
 
 int DerivedQtyMgr::num_comp() const noexcept
@@ -127,7 +130,7 @@ void DerivedQtyMgr::filter(const std::set<std::string>& erase)
     // first erase from the unordered map
     amrex::Vector<decltype(m_obj_map)::key_type> keys_to_erase;
     for (int i = 0; i < m_derived_vec.size(); i++) {
-        if (erase.find(m_derived_vec[i]->name()) != erase.end()) {
+        if (erase.contains(m_derived_vec[i]->name())) {
             auto it = std::find_if(
                 m_obj_map.begin(), m_obj_map.end(),
                 [&i](auto&& p) { return p.second == i; });

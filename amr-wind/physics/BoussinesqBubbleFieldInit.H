@@ -9,6 +9,8 @@
 #include "AMReX_Vector.H"
 #include "AMReX_Gpu.H"
 
+using namespace amrex::literals;
+
 namespace amr_wind {
 
 /** Initialize BoussinesqBubble fields
@@ -30,19 +32,19 @@ public:
 
 private:
     //! Initial bubble location
-    amrex::Vector<amrex::Real> m_loc{0.25, 0.25, 0.5};
+    amrex::Vector<amrex::Real> m_loc{0.25_rt, 0.25_rt, 0.5_rt};
 
     //! Initial density field
-    amrex::Real m_rho{1.0};
+    amrex::Real m_rho{1.0_rt};
 
     //! tracer inner value
-    amrex::Real m_tracer_inner{0.0};
+    amrex::Real m_tracer_inner{0.0_rt};
 
     //! tracer outer value
-    amrex::Real m_tracer_outer{0.01};
+    amrex::Real m_tracer_outer{0.01_rt};
 
     //! tracer bubble radius value
-    amrex::Real m_tracer_radius{0.1};
+    amrex::Real m_tracer_radius{0.1_rt};
 };
 
 } // namespace amr_wind

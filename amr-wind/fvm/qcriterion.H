@@ -2,6 +2,9 @@
 #define QCRITERION_H
 
 #include "amr-wind/fvm/fvm_utils.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::fvm {
 
@@ -78,19 +81,26 @@ struct Qcriterion
                       cm1 * phi(i, j, k - 1, 2)) *
                      idx[2];
 
-                const amrex::Real S2 =
-                    std::pow(ux, 2) + std::pow(vy, 2) + std::pow(wz, 2) +
-                    0.5 * std::pow(uy + vx, 2) + 0.5 * std::pow(vz + wy, 2) +
-                    0.5 * std::pow(wx + uz, 2);
+                const amrex::Real S2 = std::pow(ux, 2.0_rt) +
+                                       std::pow(vy, 2.0_rt) +
+                                       std::pow(wz, 2.0_rt) +
+                                       (0.5_rt * std::pow(uy + vx, 2.0_rt)) +
+                                       (0.5_rt * std::pow(vz + wy, 2.0_rt)) +
+                                       (0.5_rt * std::pow(wx + uz, 2.0_rt));
 
-                const amrex::Real W2 = 0.5 * std::pow(uy - vx, 2) +
-                                       0.5 * std::pow(vz - wy, 2) +
-                                       0.5 * std::pow(wx - uz, 2);
+                const amrex::Real W2 = (0.5_rt * std::pow(uy - vx, 2.0_rt)) +
+                                       (0.5_rt * std::pow(vz - wy, 2.0_rt)) +
+                                       (0.5_rt * std::pow(wx - uz, 2.0_rt));
                 if (nondim) {
                     qcritphi(i, j, k) =
-                        0.5 * (W2 / amrex::max(1e-14, S2) - 1.0);
+                        0.5_rt *
+                        (W2 / amrex::max<amrex::Real>(
+                                  std::numeric_limits<amrex::Real>::epsilon() *
+                                      1.0e2_rt,
+                                  S2) -
+                         1.0_rt);
                 } else {
-                    qcritphi(i, j, k) = 0.5 * (W2 - S2);
+                    qcritphi(i, j, k) = 0.5_rt * (W2 - S2);
                 }
             });
     }

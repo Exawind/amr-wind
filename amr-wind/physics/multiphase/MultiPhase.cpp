@@ -1,13 +1,17 @@
+#include <numbers>
 #include "amr-wind/physics/multiphase/MultiPhase.H"
 #include "amr-wind/equation_systems/vof/volume_fractions.H"
 #include "amr-wind/physics/multiphase/hydrostatic_ops.H"
 #include "amr-wind/CFDSim.H"
-#include "AMReX_ParmParse.H"
 #include "amr-wind/fvm/filter.H"
 #include "amr-wind/core/field_ops.H"
 #include "amr-wind/equation_systems/BCOps.H"
-#include <AMReX_MultiFabUtil.H>
 #include "amr-wind/core/SimTime.H"
+#include "AMReX_ParmParse.H"
+#include "AMReX_MultiFabUtil.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind {
 
@@ -29,7 +33,7 @@ MultiPhase::MultiPhase(CFDSim& sim)
         m_vof = &(vof_eqn.fields().field);
         // Create levelset as a auxiliary field only !
         m_levelset = &(m_sim.repo().get_field("levelset"));
-        const amrex::Real levelset_default = 0.0;
+        const amrex::Real levelset_default = 0.0_rt;
         BCFillPatchExtrap bc_ls(*m_levelset);
         bc_ls(levelset_default);
         m_levelset->fillpatch(sim.time().current_time());
@@ -47,7 +51,7 @@ MultiPhase::MultiPhase(CFDSim& sim)
         m_vof = &(vof_eqn.fields().field);
         // Create levelset as a auxiliary field only !
         m_levelset = &(m_sim.repo().get_field("levelset"));
-        const amrex::Real levelset_default = 0.0;
+        const amrex::Real levelset_default = 0.0_rt;
         BCScalar bc_ls(*m_levelset);
         bc_ls(levelset_default);
     }
@@ -85,7 +89,6 @@ InterfaceCapturingMethod MultiPhase::interface_capturing_method() const
 
 void MultiPhase::post_init_actions()
 {
-
     const auto& io_mgr = m_sim.io_manager();
     if (!io_mgr.is_restart()) {
         switch (m_interface_capturing_method) {
@@ -206,7 +209,7 @@ amrex::Real MultiPhase::volume_fraction_sum()
     const auto& geom = m_sim.mesh().Geom();
     const auto& mesh = m_sim.mesh();
 
-    amrex::Real total_volume_frac = 0.0;
+    amrex::Real total_volume_frac = 0.0_rt;
 
     for (int lev = 0; lev < nlevels; ++lev) {
         amrex::iMultiFab level_mask;
@@ -232,7 +235,7 @@ amrex::Real MultiPhase::volume_fraction_sum()
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& volfrac,
                 amrex::Array4<int const> const& mask_arr) -> amrex::Real {
-                amrex::Real vol_fab = 0.0;
+                amrex::Real vol_fab = 0.0_rt;
                 amrex::Loop(bx, [=, &vol_fab](int i, int j, int k) noexcept {
                     vol_fab += volfrac(i, j, k) * mask_arr(i, j, k) * cell_vol;
                 });
@@ -251,7 +254,7 @@ amrex::Real MultiPhase::momentum_sum(int n)
     const auto& geom = m_sim.mesh().Geom();
     const auto& mesh = m_sim.mesh();
 
-    amrex::Real total_momentum = 0.0;
+    amrex::Real total_momentum = 0.0_rt;
 
     for (int lev = 0; lev < nlevels; ++lev) {
         amrex::iMultiFab level_mask;
@@ -279,7 +282,7 @@ amrex::Real MultiPhase::momentum_sum(int n)
                 amrex::Array4<amrex::Real const> const& vel,
                 amrex::Array4<amrex::Real const> const& dens,
                 amrex::Array4<int const> const& mask_arr) -> amrex::Real {
-                amrex::Real vol_fab = 0.0;
+                amrex::Real vol_fab = 0.0_rt;
                 amrex::Loop(bx, [=, &vol_fab](int i, int j, int k) noexcept {
                     vol_fab += vel(i, j, k, n) * dens(i, j, k) *
                                mask_arr(i, j, k) * cell_vol;
@@ -305,7 +308,7 @@ void MultiPhase::set_density_via_levelset()
 
         const auto& phi_arrs = levelset.const_arrays();
         const auto& rho_arrs = density.arrays();
-        const amrex::Real eps = std::cbrt(2. * dx[0] * dx[1] * dx[2]);
+        const amrex::Real eps = std::cbrt(2.0_rt * dx[0] * dx[1] * dx[2]);
         const amrex::Real captured_rho1 = m_rho1;
         const amrex::Real captured_rho2 = m_rho2;
         amrex::ParallelFor(
@@ -313,19 +316,21 @@ void MultiPhase::set_density_via_levelset()
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 amrex::Real smooth_heaviside;
                 if (phi_arrs[nbx](i, j, k) > eps) {
-                    smooth_heaviside = 1.0;
+                    smooth_heaviside = 1.0_rt;
                 } else if (phi_arrs[nbx](i, j, k) < -eps) {
-                    smooth_heaviside = 0.;
+                    smooth_heaviside = 0.0_rt;
                 } else {
                     smooth_heaviside =
-                        0.5 *
-                        (1.0 + phi_arrs[nbx](i, j, k) / eps +
-                         1.0 / M_PI *
-                             std::sin(phi_arrs[nbx](i, j, k) * M_PI / eps));
+                        0.5_rt *
+                        (1.0_rt + phi_arrs[nbx](i, j, k) / eps +
+                         1.0_rt / std::numbers::pi_v<amrex::Real> *
+                             std::sin(
+                                 phi_arrs[nbx](i, j, k) *
+                                 std::numbers::pi_v<amrex::Real> / eps));
                 }
                 rho_arrs[nbx](i, j, k) =
-                    captured_rho1 * smooth_heaviside +
-                    captured_rho2 * (1.0 - smooth_heaviside);
+                    (captured_rho1 * smooth_heaviside) +
+                    (captured_rho2 * (1.0_rt - smooth_heaviside));
             });
     }
     amrex::Gpu::streamSynchronize();
@@ -347,8 +352,8 @@ void MultiPhase::set_density_via_vof(amr_wind::FieldState fstate)
             density, m_density.num_grow(),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 rho_arrs[nbx](i, j, k) =
-                    captured_rho1 * F_arrs[nbx](i, j, k) +
-                    captured_rho2 * (1.0 - F_arrs[nbx](i, j, k));
+                    (captured_rho1 * F_arrs[nbx](i, j, k)) +
+                    (captured_rho2 * (1.0_rt - F_arrs[nbx](i, j, k)));
             });
     }
     amrex::Gpu::streamSynchronize();
@@ -358,8 +363,8 @@ void MultiPhase::set_nph_density()
 {
 
     amr_wind::field_ops::lincomb(
-        m_density.state(amr_wind::FieldState::NPH), 0.5,
-        m_density.state(amr_wind::FieldState::Old), 0, 0.5, m_density, 0, 0,
+        m_density.state(amr_wind::FieldState::NPH), 0.5_rt,
+        m_density.state(amr_wind::FieldState::Old), 0, 0.5_rt, m_density, 0, 0,
         m_density.num_comp(), 1);
 }
 
@@ -395,16 +400,16 @@ void MultiPhase::calculate_advected_facedensity()
                 bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     // Volume terms at each face become density terms
                     if (xbx.contains(i, j, k)) {
-                        aa_x(i, j, k) =
-                            c_r1 * aa_x(i, j, k) + c_r2 * (1.0 - aa_x(i, j, k));
+                        aa_x(i, j, k) = (c_r1 * aa_x(i, j, k)) +
+                                        (c_r2 * (1.0_rt - aa_x(i, j, k)));
                     }
                     if (ybx.contains(i, j, k)) {
-                        aa_y(i, j, k) =
-                            c_r1 * aa_y(i, j, k) + c_r2 * (1.0 - aa_y(i, j, k));
+                        aa_y(i, j, k) = (c_r1 * aa_y(i, j, k)) +
+                                        (c_r2 * (1.0_rt - aa_y(i, j, k)));
                     }
                     if (zbx.contains(i, j, k)) {
-                        aa_z(i, j, k) =
-                            c_r1 * aa_z(i, j, k) + c_r2 * (1.0 - aa_z(i, j, k));
+                        aa_z(i, j, k) = (c_r1 * aa_z(i, j, k)) +
+                                        (c_r2 * (1.0_rt - aa_z(i, j, k)));
                     }
                 });
         }
@@ -425,16 +430,16 @@ void MultiPhase::levelset2vof()
 
         const auto& phi_arrs = levelset.const_arrays();
         const auto& volfrac_arrs = vof.arrays();
-        const amrex::Real eps = 2. * std::cbrt(dx[0] * dx[1] * dx[2]);
+        const amrex::Real eps = 2.0_rt * std::cbrt(dx[0] * dx[1] * dx[2]);
         amrex::ParallelFor(
             levelset,
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 amrex::Real mx, my, mz;
                 multiphase::youngs_finite_difference_normal(
                     i, j, k, phi_arrs[nbx], mx, my, mz);
-                mx = std::abs(mx / 32.);
-                my = std::abs(my / 32.);
-                mz = std::abs(mz / 32.);
+                mx = std::abs(mx / 32.0_rt);
+                my = std::abs(my / 32.0_rt);
+                mz = std::abs(mz / 32.0_rt);
                 const amrex::Real normL1 = (mx + my + mz);
                 mx = mx / normL1;
                 my = my / normL1;
@@ -443,15 +448,15 @@ void MultiPhase::levelset2vof()
                 // interface
                 const amrex::Real alpha =
                     (phi_arrs[nbx](i, j, k) < -eps)
-                        ? -1.0
-                        : phi_arrs[nbx](i, j, k) / normL1 + 0.5;
-                if (alpha >= 1.0) {
-                    volfrac_arrs[nbx](i, j, k) = 1.0;
-                } else if (alpha <= 0.0) {
-                    volfrac_arrs[nbx](i, j, k) = 0.0;
+                        ? -1.0_rt
+                        : (phi_arrs[nbx](i, j, k) / normL1) + 0.5_rt;
+                if (alpha >= 1.0_rt) {
+                    volfrac_arrs[nbx](i, j, k) = 1.0_rt;
+                } else if (alpha <= 0.0_rt) {
+                    volfrac_arrs[nbx](i, j, k) = 0.0_rt;
                 } else {
-                    volfrac_arrs[nbx](i, j, k) =
-                        multiphase::cut_volume(mx, my, mz, alpha, 0.0, 1.0);
+                    volfrac_arrs[nbx](i, j, k) = multiphase::cut_volume(
+                        mx, my, mz, alpha, 0.0_rt, 1.0_rt);
                 }
             });
     }
@@ -476,7 +481,7 @@ void MultiPhase::levelset2vof(
         const auto& phi_arrs = levelset.const_arrays();
         const auto& volfrac_arrs = vof.arrays();
         const auto& iblank_arrs = iblank_cell(lev).const_arrays();
-        const amrex::Real eps = 2. * std::cbrt(dx[0] * dx[1] * dx[2]);
+        const amrex::Real eps = 2.0_rt * std::cbrt(dx[0] * dx[1] * dx[2]);
         amrex::ParallelFor(
             levelset,
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
@@ -510,9 +515,9 @@ void MultiPhase::levelset2vof(
                 amrex::Real mx, my, mz;
                 multiphase::youngs_finite_difference_normal_neumann(
                     i, j, k, ibdy, jbdy, kbdy, phi_arrs[nbx], mx, my, mz);
-                mx = std::abs(mx / 32.);
-                my = std::abs(my / 32.);
-                mz = std::abs(mz / 32.);
+                mx = std::abs(mx / 32.0_rt);
+                my = std::abs(my / 32.0_rt);
+                mz = std::abs(mz / 32.0_rt);
                 const amrex::Real normL1 = (mx + my + mz);
                 mx = mx / normL1;
                 my = my / normL1;
@@ -521,15 +526,15 @@ void MultiPhase::levelset2vof(
                 // interface
                 const amrex::Real alpha =
                     (phi_arrs[nbx](i, j, k) < -eps)
-                        ? -1.0
-                        : phi_arrs[nbx](i, j, k) / normL1 + 0.5;
-                if (alpha >= 1.0) {
-                    volfrac_arrs[nbx](i, j, k) = 1.0;
-                } else if (alpha <= 0.0) {
-                    volfrac_arrs[nbx](i, j, k) = 0.0;
+                        ? -1.0_rt
+                        : (phi_arrs[nbx](i, j, k) / normL1) + 0.5_rt;
+                if (alpha >= 1.0_rt) {
+                    volfrac_arrs[nbx](i, j, k) = 1.0_rt;
+                } else if (alpha <= 0.0_rt) {
+                    volfrac_arrs[nbx](i, j, k) = 0.0_rt;
                 } else {
-                    volfrac_arrs[nbx](i, j, k) =
-                        multiphase::cut_volume(mx, my, mz, alpha, 0.0, 1.0);
+                    volfrac_arrs[nbx](i, j, k) = multiphase::cut_volume(
+                        mx, my, mz, alpha, 0.0_rt, 1.0_rt);
                 }
             });
     }

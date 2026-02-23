@@ -1,11 +1,15 @@
 #ifndef INDEX_OPERATIONS_H
 #define INDEX_OPERATIONS_H
-#include <AMReX_REAL.H>
-#include <AMReX_Vector.H>
-#include <AMReX_Box.H>
-#include <AMReX_RealBox.H>
-#include <AMReX_RealVect.H>
-#include <AMReX_Geometry.H>
+#include <algorithm>
+
+#include "AMReX_REAL.H"
+#include "AMReX_Vector.H"
+#include "AMReX_Box.H"
+#include "AMReX_RealBox.H"
+#include "AMReX_RealVect.H"
+#include "AMReX_Geometry.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::utils {
 
@@ -13,17 +17,17 @@ namespace amr_wind::utils {
 AMREX_FORCE_INLINE int closest_index(
     const amrex::Vector<amrex::Real>& vec,
     const amrex::Real value,
-    const amrex::Real tol = 0.0)
+    const amrex::Real tol = 0.0_rt)
 {
-    auto it = std::upper_bound(vec.begin(), vec.end(), value);
+    auto it = std::ranges::upper_bound(vec, value);
     if (it == vec.end()) {
         // Try again with tolerance added
-        it = std::upper_bound(vec.begin(), vec.end(), value - tol);
+        it = std::ranges::upper_bound(vec, value - tol);
     }
     AMREX_ALWAYS_ASSERT(it != vec.end());
 
     const int idx = static_cast<int>(std::distance(vec.begin(), it));
-    return std::max(idx - 1, 0);
+    return amrex::max(idx - 1, 0);
 }
 
 //! Return indices perpendicular to normal

@@ -1,7 +1,7 @@
 #ifndef NODAL_PROJECTION_OPS_H
 #define NODAL_PROJECTION_OPS_H
 
-#include <AMReX_BC_TYPES.H>
+#include "AMReX_BC_TYPES.H"
 #include "amr-wind/core/field_ops.H"
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/wind_energy/ABL.H"

@@ -5,6 +5,9 @@
 #include "AMReX_ParmParse.H"
 #include "AMReX_Gpu.H"
 #include "AMReX_Random.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::pde::temperature {
 
@@ -111,9 +114,9 @@ void TemperatureFreeAtmosphereForcing::operator()(
         const int sponge_north = m_sponge_north;
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                const amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
-                const amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
-                const amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];
+                const amrex::Real x = prob_lo[0] + ((i + 0.5_rt) * dx[0]);
+                const amrex::Real y = prob_lo[1] + ((j + 0.5_rt) * dx[1]);
+                const amrex::Real z = prob_lo[2] + ((k + 0.5_rt) * dx[2]);
                 amrex::Real xstart_damping = 0;
                 amrex::Real ystart_damping = 0;
                 amrex::Real xend_damping = 0;
@@ -122,8 +125,9 @@ void TemperatureFreeAtmosphereForcing::operator()(
                     (x - start_east) / (prob_hi[0] - start_east);
                 amrex::Real xi_start =
                     (start_west - x) / (start_west - prob_lo[0]);
-                xi_start = sponge_west * std::max(xi_start, 0.0);
-                xi_end = sponge_east * std::max(xi_end, 0.0);
+                xi_start =
+                    sponge_west * amrex::max<amrex::Real>(xi_start, 0.0_rt);
+                xi_end = sponge_east * amrex::max<amrex::Real>(xi_end, 0.0_rt);
                 xstart_damping =
                     sponge_west * sponge_strength * xi_start * xi_start;
                 xend_damping = sponge_east * sponge_strength * xi_end * xi_end;
@@ -131,8 +135,9 @@ void TemperatureFreeAtmosphereForcing::operator()(
                     (y - start_north) / (prob_hi[1] - start_north);
                 amrex::Real yi_start =
                     (start_south - y) / (start_south - prob_lo[1]);
-                yi_start = sponge_south * std::max(yi_start, 0.0);
-                yi_end = sponge_north * std::max(yi_end, 0.0);
+                yi_start =
+                    sponge_south * amrex::max<amrex::Real>(yi_start, 0.0_rt);
+                yi_end = sponge_north * amrex::max<amrex::Real>(yi_end, 0.0_rt);
                 ystart_damping = sponge_strength * yi_start * yi_start;
                 yend_damping = sponge_strength * yi_end * yi_end;
                 const amrex::Real ref_temp =

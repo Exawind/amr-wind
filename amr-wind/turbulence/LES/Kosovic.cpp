@@ -10,6 +10,8 @@
 #include "AMReX_ParmParse.H"
 #include "amr-wind/wind_energy/ABL.H"
 
+using namespace amrex::literals;
+
 namespace amr_wind {
 namespace turbulence {
 
@@ -25,8 +27,11 @@ Kosovic<Transport>::Kosovic(CFDSim& sim)
 {
     amrex::ParmParse pp("Kosovic");
     pp.query("Cb", m_Cb);
-    m_Cs = std::sqrt(8 * (1 + m_Cb) / (27 * M_PI * M_PI));
-    m_C1 = std::sqrt(960) * m_Cb / (7 * (1 + m_Cb) * m_Sk);
+    m_Cs = std::sqrt(
+        8.0_rt * (1.0_rt + m_Cb) /
+        (27.0_rt * std::numbers::pi_v<amrex::Real> *
+         std::numbers::pi_v<amrex::Real>));
+    m_C1 = std::sqrt(960.0_rt) * m_Cb / (7.0_rt * (1.0_rt + m_Cb) * m_Sk);
     m_C2 = m_C1;
     pp.query("surfaceRANS", m_surfaceRANS);
     if (m_surfaceRANS) {
@@ -113,9 +118,10 @@ void Kosovic<Transport>::update_turbulent_viscosity(
                                     : amrex::MultiArray4<const int>();
         const auto& height_arrs = has_terrain
                                       ? (*m_terrain_height)(lev).const_arrays()
-                                      : amrex::MultiArray4<const double>();
-        const auto& z0_arrs = has_terrain ? (*m_terrain_z0)(lev).const_arrays()
-                                          : amrex::MultiArray4<const double>();
+                                      : amrex::MultiArray4<const amrex::Real>();
+        const auto& z0_arrs = has_terrain
+                                  ? (*m_terrain_z0)(lev).const_arrays()
+                                  : amrex::MultiArray4<const amrex::Real>();
         const amrex::Real monin_obukhov_length = m_monin_obukhov_length;
         const amrex::Real kappa = m_kappa;
         const amrex::Real surface_roughness_z0 = m_surface_roughness_z0;
@@ -129,28 +135,31 @@ void Kosovic<Transport>::update_turbulent_viscosity(
             mu_turb(lev),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 const amrex::Real rho = rho_arrs[nbx](i, j, k);
-                amrex::Real x3 = problo[2] + (k + 0.5) * dz;
+                amrex::Real x3 = problo[2] + ((k + 0.5_rt) * dz);
                 x3 = (has_terrain)
-                         ? std::max(x3 - height_arrs[nbx](i, j, k, 0), 0.5 * dz)
+                         ? amrex::max<amrex::Real>(
+                               x3 - height_arrs[nbx](i, j, k, 0), 0.5_rt * dz)
                          : x3;
                 const amrex::Real fmu = std::exp(-x3 / locSwitchLoc);
                 const amrex::Real phiM =
                     (monin_obukhov_length < 0)
-                        ? std::pow(1 - 16 * x3 / monin_obukhov_length, -0.25)
-                        : 1 + 5 * x3 / monin_obukhov_length;
+                        ? std::pow(
+                              1.0_rt - (16.0_rt * x3 / monin_obukhov_length),
+                              -0.25_rt)
+                        : 1.0_rt + (5.0_rt * x3 / monin_obukhov_length);
                 const amrex::Real wall_distance =
                     (has_terrain)
-                        ? std::max(
-                              (k + 1) * dz - height_arrs[nbx](i, j, k, 0), dz)
+                        ? amrex::max<amrex::Real>(
+                              ((k + 1) * dz) - height_arrs[nbx](i, j, k, 0), dz)
                         : (k + 1) * dz;
                 const amrex::Real ransL =
-                    std::pow(0.41 * wall_distance / phiM, 2);
+                    std::pow(0.41_rt * wall_distance / phiM, 2.0_rt);
                 amrex::Real turnOff = std::exp(-x3 / locLESTurnOff);
                 amrex::Real viscosityScale =
-                    locSurfaceFactor *
-                        (std::pow(1 - fmu, locSurfaceRANSExp) * smag_factor +
-                         std::pow(fmu, locSurfaceRANSExp) * ransL) +
-                    (1 - locSurfaceFactor) * smag_factor;
+                    (locSurfaceFactor *
+                     (std::pow(1.0_rt - fmu, locSurfaceRANSExp) * smag_factor +
+                      std::pow(fmu, locSurfaceRANSExp) * ransL)) +
+                    ((1.0_rt - locSurfaceFactor) * smag_factor);
                 const amrex::Real blankTerrain =
                     (has_terrain) ? 1 - blank_arrs[nbx](i, j, k, 0) : 1.0;
                 amrex::Real mut = mu_arrs[nbx](i, j, k);
@@ -172,26 +181,30 @@ void Kosovic<Transport>::update_turbulent_viscosity(
                 // log-law
                 const amrex::Real ux = vel_arrs[nbx](i, j, k + 1, 0);
                 const amrex::Real uy = vel_arrs[nbx](i, j, k + 1, 1);
-                const amrex::Real m = std::sqrt(ux * ux + uy * uy);
+                const amrex::Real m = std::sqrt((ux * ux) + (uy * uy));
                 const amrex::Real local_z0 =
-                    (has_terrain) ? std::max(z0_arrs[nbx](i, j, k, 0), 1e-4)
+                    (has_terrain) ? amrex::max<amrex::Real>(
+                                        z0_arrs[nbx](i, j, k, 0), 1.0e-4_rt)
                                   : surface_roughness_z0;
                 // ustar from neighbor cell above
                 const amrex::Real ustar =
                     m * kappa /
-                    (std::log(1.5 * dz / local_z0) - non_neutral_neighbour);
+                    (std::log(1.5_rt * dz / local_z0) - non_neutral_neighbour);
                 const amrex::Real ux0 = vel_arrs[nbx](i, j, k, 0);
                 const amrex::Real uy0 = vel_arrs[nbx](i, j, k, 1);
-                const amrex::Real m0 = std::sqrt(ux0 * ux0 + uy0 * uy0);
+                const amrex::Real m0 = std::sqrt((ux0 * ux0) + (uy0 * uy0));
                 const amrex::Real uxm1 = vel_arrs[nbx](i, j, k - 1, 0);
                 const amrex::Real uym1 = vel_arrs[nbx](i, j, k - 1, 1);
-                const amrex::Real mm1 = std::sqrt(uxm1 * uxm1 + uym1 * uym1);
-                const amrex::Real dMdz = std::max((m0 - mm1) / dz, 0.01);
-                amrex::Real mut_loglaw = 2 * ustar * ustar * rho / dMdz;
+                const amrex::Real mm1 =
+                    std::sqrt((uxm1 * uxm1) + (uym1 * uym1));
+                const amrex::Real dMdz =
+                    amrex::max<amrex::Real>((m0 - mm1) / dz, 0.01_rt);
+                amrex::Real mut_loglaw = 2.0_rt * ustar * ustar * rho / dMdz;
                 const amrex::Real drag =
-                    (has_terrain) ? drag_arrs[nbx](i, j, k, 0) : 0.0;
+                    (has_terrain) ? drag_arrs[nbx](i, j, k, 0) : 0.0_rt;
                 mu_arrs[nbx](i, j, k) =
-                    mu_arrs[nbx](i, j, k) * (1 - drag) + drag * mut_loglaw;
+                    (mu_arrs[nbx](i, j, k) * (1.0_rt - drag)) +
+                    (drag * mut_loglaw);
                 amrex::Real stressScale =
                     locSurfaceFactor *
                         (std::pow(1 - fmu, locSurfaceRANSExp) * smag_factor *
@@ -230,7 +243,7 @@ void Kosovic<Transport>::update_alphaeff(Field& alphaeff)
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
                 alphaeff_arrs[nbx](i, j, k) =
                     lam_diff_arrs[nbx](i, j, k) +
-                    muCoeff * muturb_arrs[nbx](i, j, k);
+                    (muCoeff * muturb_arrs[nbx](i, j, k));
             });
     }
     amrex::Gpu::streamSynchronize();

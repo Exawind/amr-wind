@@ -3,6 +3,9 @@
 
 #include "AMReX_Geometry.H"
 #include "AMReX_Gpu.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind {
 
@@ -29,9 +32,10 @@ struct BurggrafLid
         {
             const auto* problo = geom.ProbLo();
             const auto* dx = geom.CellSize();
-            const auto x = problo[idir] + (iv[idir] + 0.5) * dx[idir];
+            const auto x = problo[idir] + ((iv[idir] + 0.5_rt) * dx[idir]);
             amrex::Real val =
-                16 * (std::pow(x, 4) - 2 * std::pow(x, 3) + std::pow(x, 2));
+                16.0_rt * (std::pow(x, 4.0_rt) - 2.0_rt * std::pow(x, 3.0_rt) +
+                           std::pow(x, 2.0_rt));
             amrex::RealArray uvec = {val};
 
             field(iv[0], iv[1], iv[2], dcomp + comp) = uvec[orig_comp + comp];

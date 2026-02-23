@@ -11,6 +11,8 @@
 #include <AMReX_REAL.H>
 #include <memory>
 
+using namespace amrex::literals;
+
 namespace amr_wind::pde::temperature {
 
 ABLMesoForcingTemp::ABLMesoForcingTemp(const CFDSim& sim)
@@ -39,7 +41,6 @@ ABLMesoForcingTemp::~ABLMesoForcingTemp() = default;
 
 void ABLMesoForcingTemp::mean_temperature_init(const ABLMesoscaleInput& ncfile)
 {
-
     const int num_meso_ht = ncfile.nheights();
     m_error_meso_avg_theta.resize(num_meso_ht);
     m_meso_theta_vals.resize(num_meso_ht);
@@ -119,7 +120,6 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
     const FieldPlaneAveragingFine& tavg,
     std::unique_ptr<ABLMesoscaleInput> const& ncfile)
 {
-
     amrex::Real currtime;
     currtime = m_time.current_time();
     const auto& dt = m_time.delta_t();
@@ -162,19 +162,21 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
 
         // form Z^T W y
         for (int i = 0; i < 4; i++) {
-            ezP_T[i] = 0.0;
+            ezP_T[i] = 0.0_rt;
 
             for (int ih = 0; ih < m_nht; ih++) {
-                ezP_T[i] = ezP_T[i] + error_T[ih] * m_W[ih] *
-                                          std::pow(m_zht[ih] * m_scaleFact, i);
+                ezP_T[i] = ezP_T[i] + (error_T[ih] * m_W[ih] *
+                                       std::pow(
+                                           m_zht[ih] * m_scaleFact,
+                                           static_cast<amrex::Real>(i)));
             }
         }
 
         for (int i = 0; i < 4; i++) {
-            m_poly_coeff_theta[i] = 0.0;
+            m_poly_coeff_theta[i] = 0.0_rt;
             for (int j = 0; j < 4; j++) {
                 m_poly_coeff_theta[i] =
-                    m_poly_coeff_theta[i] + m_im_zTz(i, j) * ezP_T[j];
+                    m_poly_coeff_theta[i] + (m_im_zTz(i, j) * ezP_T[j]);
             }
         }
 
@@ -185,11 +187,12 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
         amrex::Vector<amrex::Real> error_T_direct(m_nht);
         for (int ih = 0; ih < m_nht; ih++) {
             error_T_direct[ih] = error_T[ih];
-            error_T[ih] = 0.0;
+            error_T[ih] = 0.0_rt;
             for (int j = 0; j < 4; j++) {
-                error_T[ih] =
-                    error_T[ih] + m_poly_coeff_theta[j] *
-                                      std::pow(m_zht[ih] * m_scaleFact, j);
+                error_T[ih] = error_T[ih] + (m_poly_coeff_theta[j] *
+                                             std::pow(
+                                                 m_zht[ih] * m_scaleFact,
+                                                 static_cast<amrex::Real>(j)));
             }
 
             if (m_debug) {
@@ -259,7 +262,7 @@ void ABLMesoForcingTemp::operator()(
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         amrex::IntVect iv(i, j, k);
-        const amrex::Real ht = problo[idir] + (iv[idir] + 0.5) * dx[idir];
+        const amrex::Real ht = problo[idir] + ((iv[idir] + 0.5_rt) * dx[idir]);
         const amrex::Real theta_err = amr_wind::interp::linear(
             theights_begin, theights_end, theta_error_val, ht);
 

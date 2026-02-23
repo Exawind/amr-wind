@@ -4,6 +4,9 @@
 #include "amr-wind/wind_energy/actuator/wing/FlatPlate.H"
 #include "amr-wind/wind_energy/actuator/actuator_ops.H"
 #include "amr-wind/wind_energy/actuator/wing/wing_ops.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::actuator {
 
@@ -33,17 +36,17 @@ struct ReadInputsOp<FlatPlate, ActSrcLine>
 
         amrex::Real max_eps =
             *std::max_element(wdata.eps_inp.begin(), wdata.eps_inp.end());
-        amrex::Real search_radius = max_eps * wdata.chord_inp * 3.0;
+        amrex::Real search_radius = max_eps * wdata.chord_inp * 3.0_rt;
         const auto& p1 = wdata.start;
         const auto& p2 = wdata.end;
         // clang-format off
         info.bound_box = amrex::RealBox(
-            amrex::min(p1.x(), p2.x()) - search_radius,
-            amrex::min(p1.y(), p2.y()) - search_radius,
-            amrex::min(p1.z(), p2.z()) - search_radius,
-            amrex::max(p1.x(), p2.x()) + search_radius,
-            amrex::max(p1.y(), p2.y()) + search_radius,
-            amrex::max(p1.z(), p2.z()) + search_radius
+            amrex::min<amrex::Real>(p1.x(), p2.x()) - search_radius,
+            amrex::min<amrex::Real>(p1.y(), p2.y()) - search_radius,
+            amrex::min<amrex::Real>(p1.z(), p2.z()) - search_radius,
+            amrex::max<amrex::Real>(p1.x(), p2.x()) + search_radius,
+            amrex::max<amrex::Real>(p1.y(), p2.y()) + search_radius,
+            amrex::max<amrex::Real>(p1.z(), p2.z()) + search_radius
         );
         // clang-format on
     }

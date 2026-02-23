@@ -1,10 +1,13 @@
 #include "amr-wind/incflo.H"
 #include "amr-wind/utilities/console_io.H"
-
 #include "AMReX_FileSystem.H"
+#include "AMReX_REAL.H"
+
 #ifdef AMR_WIND_USE_KYNEMA
 #include <Kokkos_Core.hpp>
 #endif
+
+using namespace amrex::literals;
 
 int main(int argc, char* argv[])
 {
@@ -72,7 +75,8 @@ int main(int argc, char* argv[])
         BL_PROFILE("amr-wind::main()");
 
         // Start timing the program
-        amrex::Real start_time = amrex::ParallelDescriptor::second();
+        auto start_time =
+            static_cast<amrex::Real>(amrex::ParallelDescriptor::second());
         amrex::Print() << "Initializing AMR-Wind ..." << std::endl;
 
         // Default constructor. Note inheritance: incflo : AmrCore : AmrMesh.
@@ -82,8 +86,8 @@ int main(int argc, char* argv[])
         my_incflo.InitData();
 
         // Time spent on initialization
-        amrex::Real init_time =
-            amrex::ParallelDescriptor::second() - start_time;
+        auto init_time = static_cast<amrex::Real>(
+            amrex::ParallelDescriptor::second() - start_time);
         amrex::Print() << "Initialization successful. Time elapsed = "
                        << init_time << std::endl;
 
@@ -91,7 +95,8 @@ int main(int argc, char* argv[])
         my_incflo.Evolve();
 
         // Time spent in total
-        amrex::Real end_time = amrex::ParallelDescriptor::second() - start_time;
+        auto end_time = static_cast<amrex::Real>(
+            amrex::ParallelDescriptor::second() - start_time);
 
         amrex::ParallelDescriptor::ReduceRealMax(
             init_time, amrex::ParallelDescriptor::IOProcessorNumber());

@@ -1,9 +1,13 @@
 #ifndef ScalarAdvection_H
 #define ScalarAdvection_H
 
+#include <numbers>
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/core/Field.H"
 #include "amr-wind/utilities/trig_ops.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind {
 
@@ -50,30 +54,30 @@ private:
     Field* m_scalar{nullptr};
 
     //! Flow velocity in x-direction
-    amrex::Real m_u{1.0};
-    amrex::Real m_v{0.0};
+    amrex::Real m_u{1.0_rt};
+    amrex::Real m_v{0.0_rt};
 
     //! Initial wave/pulse packet location
-    amrex::Real m_x0{0.1};
-    amrex::Real m_y0{0.1};
+    amrex::Real m_x0{0.1_rt};
+    amrex::Real m_y0{0.1_rt};
 
     //! Initial wave/pulse amplitude
-    amrex::Real m_amplitude{1.0};
+    amrex::Real m_amplitude{1.0_rt};
 
     //! Initial wave/pulse width (standard deviation for GaussianPulse and
     //! GaussianWavePacket)
-    amrex::Real m_x_width{0.01};
-    amrex::Real m_y_width{0.01};
+    amrex::Real m_x_width{0.01_rt};
+    amrex::Real m_y_width{0.01_rt};
 
     //! Wave numbers
-    amrex::Real m_x_wavenumber{16 * utils::pi()};
-    amrex::Real m_y_wavenumber{16 * utils::pi()};
+    amrex::Real m_x_wavenumber{16.0_rt * std::numbers::pi_v<amrex::Real>};
+    amrex::Real m_y_wavenumber{16.0_rt * std::numbers::pi_v<amrex::Real>};
 
     //! Initial wave/pulse shape
     std::string m_shape{"gaussian"};
 
     //! Density
-    amrex::Real m_rho{1.0};
+    amrex::Real m_rho{1.0_rt};
 };
 
 struct GaussianWavePacket

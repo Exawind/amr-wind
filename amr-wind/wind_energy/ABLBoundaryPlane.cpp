@@ -7,6 +7,9 @@
 #include "amr-wind/utilities/index_operations.H"
 #include "amr-wind/utilities/constants.H"
 #include <AMReX_PlotFileUtil.H>
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind {
 
@@ -222,7 +225,7 @@ void InletData::read_data_native(
         amrex::ParallelFor(
             bx, nc, [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
                 bndry_arr(i, j, k, n) =
-                    0.5 *
+                    0.5_rt *
                     (bndry_n_arr(i, j, k, n) +
                      bndry_n_arr(
                          i + v_offset[0], j + v_offset[1], k + v_offset[2], n));
@@ -247,7 +250,7 @@ void InletData::read_data_native(
         amrex::ParallelFor(
             bx, nc, [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
                 bndry_arr(i, j, k, n) =
-                    0.5 *
+                    0.5_rt *
                     (bndry_np1_arr(i, j, k, n) +
                      bndry_np1_arr(
                          i + v_offset[0], j + v_offset[1], k + v_offset[2], n));
@@ -585,7 +588,8 @@ void ABLBoundaryPlane::write_bndry_native_header(const std::string& chkname)
                         const auto plo = geom.ProbLo(normal);
                         bndry_dom.setSmall(normal, lo - m_out_rad);
                         bndry_dom.setBig(normal, lo);
-                        bndry_prob.setLo(normal, plo - m_out_rad * dx[normal]);
+                        bndry_prob.setLo(
+                            normal, plo - (m_out_rad * dx[normal]));
                         bndry_prob.setHi(normal, plo + dx[normal]);
                     } else {
                         const int hi = bndry_dom.bigEnd(normal);
@@ -593,7 +597,8 @@ void ABLBoundaryPlane::write_bndry_native_header(const std::string& chkname)
                         bndry_dom.setSmall(normal, hi);
                         bndry_dom.setBig(normal, hi + m_out_rad);
                         bndry_prob.setLo(normal, phi - dx[normal]);
-                        bndry_prob.setHi(normal, phi + m_out_rad * dx[normal]);
+                        bndry_prob.setHi(
+                            normal, phi + (m_out_rad * dx[normal]));
                     }
                     bndry_geoms[lev] = amrex::Geometry(bndry_dom, &bndry_prob);
                     amrex::Box minBox = m_mesh.boxArray(lev).minimalBox();
@@ -706,7 +711,7 @@ void ABLBoundaryPlane::write_file()
                     ba, dm, m_in_rad, m_out_rad, m_extent_rad,
                     field.num_comp());
 
-                bndry.setVal(1.0e13);
+                bndry.setVal(1.0e13_rt);
 
                 bndry.copyFrom(
                     field(lev), 0, 0, 0, field.num_comp(),
@@ -910,9 +915,9 @@ void ABLBoundaryPlane::read_header()
         }
     } else if (m_out_fmt == "erf-multiblock") {
 
-        m_in_times.push_back(-1.0e13); // create space for storing time at erf
-                                       // old and new timestep
-        m_in_times.push_back(-1.0e13);
+        m_in_times.push_back(-1.0e13_rt); // create space for storing time at
+                                          // erf old and new timestep
+        m_in_times.push_back(-1.0e13_rt);
 
         int nc = 0;
         for (auto* fld : m_fields) {
@@ -1114,8 +1119,8 @@ amrex::Vector<amrex::BoxArray> ABLBoundaryPlane::read_bndry_native_boxarrays(
             amrex::Real gtime;
             is >> levtmp >> ngrids >> gtime;
             is >> levsteptmp;
-            amrex::Array<amrex::Real, 3> glo = {0.0};
-            amrex::Array<amrex::Real, 3> ghi = {0.0};
+            amrex::Array<amrex::Real, 3> glo = {0.0_rt};
+            amrex::Array<amrex::Real, 3> ghi = {0.0_rt};
             AMREX_ASSERT(ngrids == 1);
             for (int igrid = 0; igrid < ngrids; ++igrid) {
                 for (int idim = 0; idim < spacedim; ++idim) {
@@ -1155,7 +1160,7 @@ void ABLBoundaryPlane::read_file(const bool nph_target_time)
 
     // populate planes and interpolate
     const amrex::Real time =
-        nph_target_time ? m_time.current_time() + 0.5 * m_time.delta_t()
+        nph_target_time ? m_time.current_time() + (0.5_rt * m_time.delta_t())
                         : m_time.new_time();
 
     if (m_out_fmt == "erf-multiblock") {
@@ -1267,8 +1272,8 @@ void ABLBoundaryPlane::read_file(const bool nph_target_time)
                     ba, dm, m_in_rad, m_out_rad, m_extent_rad,
                     field.num_comp());
 
-                bndry1.setVal(1.0e13);
-                bndry2.setVal(1.0e13);
+                bndry1.setVal(1.0e13_rt);
+                bndry2.setVal(1.0e13_rt);
 
                 std::string filename1 = amrex::MultiFabFileFullPrefix(
                     lev, chkname1, level_prefix, field.name());
@@ -1451,8 +1456,8 @@ void ABLBoundaryPlane::write_data(
 
         if ((blo[normal] == dlo[normal] && ori.isLow()) ||
             (bhi[normal] == dhi[normal] && ori.isHigh())) {
-            min_lo[perp[0]] = std::min(min_lo[perp[0]], blo[perp[0]]);
-            min_lo[perp[1]] = std::min(min_lo[perp[1]], blo[perp[1]]);
+            min_lo[perp[0]] = amrex::min(min_lo[perp[0]], blo[perp[0]]);
+            min_lo[perp[1]] = amrex::min(min_lo[perp[1]], blo[perp[1]]);
         }
     }
     amrex::ParallelDescriptor::ReduceIntMin(min_lo.begin(), min_lo.size());
@@ -1539,8 +1544,9 @@ void ABLBoundaryPlane::impl_buffer_field(
             const int i0 = plane_idx(i, j, k, perp[0], lo[perp[0]]);
             const int i1 = plane_idx(i, j, k, perp[1], lo[perp[1]]);
             d_buffer[((i0 * n1) + i1) * nc + n] =
-                0.5 * (fld(i, j, k, n) + fld(i - v_offset[0], j - v_offset[1],
-                                             k - v_offset[2], n));
+                0.5_rt *
+                (fld(i, j, k, n) +
+                 fld(i - v_offset[0], j - v_offset[1], k - v_offset[2], n));
         });
 }
 #endif

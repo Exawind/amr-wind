@@ -3,6 +3,9 @@
 
 #include "AMReX_Geometry.H"
 #include "AMReX_Gpu.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind {
 
@@ -33,7 +36,7 @@ struct LinearProfile
         {
             const auto* problo = geom.ProbLo();
             const auto* dx = geom.CellSize();
-            const auto zco = problo[idir] + (iv[idir] + 0.5) * dx[idir];
+            const auto zco = problo[idir] + ((iv[idir] + 0.5_rt) * dx[idir]);
 
             amrex::Real val;
             if (zco < zmin) {
@@ -42,8 +45,8 @@ struct LinearProfile
                 val = fld_max[orig_comp + comp];
             } else {
                 val = fld_min[orig_comp + comp] +
-                      (fld_max[orig_comp + comp] - fld_min[orig_comp + comp]) *
-                          (zco - zmin) / (zmax - zmin);
+                      ((fld_max[orig_comp + comp] - fld_min[orig_comp + comp]) *
+                       (zco - zmin) / (zmax - zmin));
             }
             field(iv[0], iv[1], iv[2], dcomp + comp) = val;
         }

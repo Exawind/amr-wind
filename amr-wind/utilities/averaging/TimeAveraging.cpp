@@ -98,7 +98,7 @@ void TimeAveraging::post_advance_work()
     const auto t_tol = amr_wind::constants::LOOSE_TOL * cur_dt;
     const bool do_phase_avg =
         (m_time_interval < 0. ||
-         (cur_time - m_start_time + t_tol) / m_time_interval -
+         ((cur_time - m_start_time + t_tol) / m_time_interval) -
                  std::floor(
                      (cur_time - m_start_time + t_tol) / m_time_interval) <
              cur_dt / m_time_interval);

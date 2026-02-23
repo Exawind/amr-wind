@@ -9,6 +9,9 @@
 #include <AMReX_BndryRegister.H>
 
 #include "amr-wind/wind_energy/ABLReadERFFunction.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 class MultiBlockContainer;
 namespace amr_wind {
 
@@ -89,13 +92,13 @@ private:
     amrex::Vector<std::unique_ptr<PlaneVector>> m_data_interp;
 
     //! Time for plane at n
-    amrex::Real m_tn{-1.0};
+    amrex::Real m_tn{-1.0_rt};
 
     //! Time for plane at n + 1
-    amrex::Real m_tnp1{-1.0};
+    amrex::Real m_tnp1{-1.0_rt};
 
     //! Time for plane at interpolation
-    amrex::Real m_tinterp{-1.0};
+    amrex::Real m_tinterp{-1.0_rt};
 
     //! Map of `{variableId : component}`
     std::unordered_map<int, int> m_components;
@@ -168,7 +171,9 @@ public:
 
     bool is_data_newer_than(const amrex::Real time) const
     {
-        return (m_in_data.tinterp() - time > 1e-12);
+        return (
+            m_in_data.tinterp() - time >
+            std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
     }
 
     io_mode mode() const { return m_io_mode; }
@@ -217,7 +222,7 @@ private:
     amrex::Vector<std::string> m_planes;
 
     //! Start outputting after this time
-    amrex::Real m_out_start_time{0.0};
+    amrex::Real m_out_start_time{0.0_rt};
 
 #ifdef AMR_WIND_USE_NETCDF
     //! NetCDF time output counter

@@ -2,6 +2,9 @@
 #include "amr-wind/utilities/sampling/SamplingContainer.H"
 #include "amr-wind/utilities/sampling/SamplerBase.H"
 #include "amr-wind/core/Field.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::sampling {
 
@@ -161,11 +164,11 @@ void SamplingContainer::interpolate_derived_fields(
     }
 }
 
-void SamplingContainer::populate_buffer(std::vector<double>& buf)
+void SamplingContainer::populate_buffer(std::vector<amrex::Real>& buf)
 {
     BL_PROFILE("amr-wind::SamplingContainer::populate_buffer");
 
-    amrex::Gpu::DeviceVector<double> dbuf(buf.size(), 0.0);
+    amrex::Gpu::DeviceVector<amrex::Real> dbuf(buf.size(), 0.0_rt);
     auto* dbuf_ptr = dbuf.data();
     const int nlevels = m_mesh.finestLevel() + 1;
     for (int lev = 0; lev < nlevels; ++lev) {

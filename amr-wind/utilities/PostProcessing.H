@@ -2,9 +2,11 @@
 #define POSTPROCESSING_H
 
 #include <memory>
-
 #include "amr-wind/core/Factory.H"
 #include "AMReX_ParmParse.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 /**
  *  \defgroup utilities Utilities
@@ -98,7 +100,7 @@ public:
                 "post_processing output timing parameters are specified, but "
                 "none are valid. Please specify an output_interval (or "
                 "output_frequency) greater than 0 or an output_time_interval "
-                "greater than 0.0, or rely on the default output_interval.");
+                "greater than 0.0_rt, or rely on the default output_interval.");
         }
 
         if (has_valid_interval_present && has_valid_time_int) {
@@ -129,19 +131,18 @@ public:
         const amrex::Real dt,
         amrex::Real tol) const
     {
-
         // Choose smallest tolerance between incoming and local
-        tol = std::min(tol, m_out_time_tol * dt);
+        tol = amrex::min<amrex::Real>(tol, m_out_time_tol * dt);
 
         const bool step_based =
             (m_out_interval > 0) &&
             ((ntime - m_out_delay >= 0) && (ntime % m_out_interval == 0));
         const bool time_based =
-            (m_out_time_interval > 0.) &&
-            ((time + tol - m_out_time_delay >= 0.) &&
+            (m_out_time_interval > 0.0_rt) &&
+            ((time + tol - m_out_time_delay >= 0.0_rt) &&
              (time + tol -
-                  std::floor((time + tol) / m_out_time_interval) *
-                      m_out_time_interval <
+                  (std::floor((time + tol) / m_out_time_interval) *
+                   m_out_time_interval) <
               dt));
 
         return (step_based || time_based);
@@ -156,15 +157,16 @@ protected:
     //! Time step interval for output
     int m_out_interval{10};
     //! Time interval for output
-    amrex::Real m_out_time_interval{-1.};
+    amrex::Real m_out_time_interval{-1.0_rt};
     //! Time step delay for output
     int m_out_delay{0};
     //! Time delay for output
-    amrex::Real m_out_time_delay{0.};
+    amrex::Real m_out_time_delay{0.0_rt};
     //! Relative (to dt) tolerance for time interval output
-    amrex::Real m_out_time_tol{1e-8};
+    amrex::Real m_out_time_tol{
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt};
     //! Relative (to m_out_time_interval) tolerance for enforcing dt
-    amrex::Real m_enforce_dt_tol{1e-3};
+    amrex::Real m_enforce_dt_tol{1.0e-3_rt};
     //! Flag for enforcing time step based on output time
     bool m_enforce_dt{false};
 };

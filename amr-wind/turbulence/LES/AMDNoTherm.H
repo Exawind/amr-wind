@@ -1,13 +1,16 @@
 #ifndef AMDNOTHERM_H
 #define AMDNOTHERM_H
 
-#include <AMReX_Config.H>
-#include <AMReX_AmrCore.H>
 #include <string>
 #include "amr-wind/incflo_enums.H"
 #include "amr-wind/turbulence/TurbModelBase.H"
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/fvm/stencils.H"
+#include "AMReX_Config.H"
+#include "AMReX_AmrCore.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::turbulence {
 /** AMD LES Model
@@ -43,7 +46,7 @@ public:
 private:
     //! Poincare coefficient (default value set for 2nd order AMR-wind
     //! discretization)
-    amrex::Real m_C{0.333333333333333};
+    amrex::Real m_C{0.333333333333333_rt};
     const Field& m_vel;
     const Field& m_rho;
 };
@@ -61,22 +64,25 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real amd_base_muvel(
     amrex::Real denom = 0;
     for (int ii = 0; ii < AMREX_SPACEDIM; ++ii) {
         for (int jj = 0; jj < AMREX_SPACEDIM; ++jj) {
-            denom = denom + gradVel(i, j, k, ii * AMREX_SPACEDIM + jj) *
-                                gradVel(i, j, k, ii * AMREX_SPACEDIM + jj);
+            denom = denom + (gradVel(i, j, k, (ii * AMREX_SPACEDIM) + jj) *
+                             gradVel(i, j, k, (ii * AMREX_SPACEDIM) + jj));
             amrex::Real sij =
-                0.5 * (gradVel(i, j, k, ii * AMREX_SPACEDIM + jj) +
-                       gradVel(i, j, k, jj * AMREX_SPACEDIM + ii));
+                0.5_rt * (gradVel(i, j, k, (ii * AMREX_SPACEDIM) + jj) +
+                          gradVel(i, j, k, (jj * AMREX_SPACEDIM) + ii));
             for (int kk = 0; kk < AMREX_SPACEDIM; ++kk) {
-                amrex::Real dkui = gradVel(i, j, k, ii * AMREX_SPACEDIM + kk);
-                amrex::Real dkuj = gradVel(i, j, k, jj * AMREX_SPACEDIM + kk);
-                num_shear = num_shear + dkui * dkuj * dx[kk] * dx[kk] * sij;
+                amrex::Real dkui = gradVel(i, j, k, (ii * AMREX_SPACEDIM) + kk);
+                amrex::Real dkuj = gradVel(i, j, k, (jj * AMREX_SPACEDIM) + kk);
+                num_shear = num_shear + (dkui * dkuj * dx[kk] * dx[kk] * sij);
             }
         }
     }
-    denom = std::max(1e-15, denom);
+    denom = amrex::max<amrex::Real>(
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e1_rt, denom);
     num_shear = -C * num_shear;
 
-    return std::max(1e-15, num_shear / denom);
+    return amrex::max<amrex::Real>(
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e1_rt,
+        num_shear / denom);
 }
 
 } // namespace amr_wind::turbulence

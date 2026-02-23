@@ -169,6 +169,76 @@ jobs:
     - name: Reference Test Warning
       if: ${{matrix.build_type == 'Release' && github.event_name != 'push' && steps.ref-test.outcome != 'success'}}
       run: echo "::error::Reference test failed"
+
+  CPU-SINGLE:
+    needs: Formatting
+    runs-on: ubuntu-24.04
+    steps:
+    - name: Clone
+      uses: actions/checkout@v4
+      with: 
+        submodules: true
+    - name: Dependencies
+      run: sudo apt-get install -y libopenmpi-dev openmpi-bin libfftw3-dev
+    - name: Setup
+      run: |
+        mkdir -p ${{runner.workspace}}/golds-single
+        echo "NPROCS=$(nproc)" >> $GITHUB_ENV
+        echo "CCACHE_COMPRESS=1" >> $GITHUB_ENV
+        echo "CCACHE_COMPRESSLEVEL=10" >> $GITHUB_ENV
+        echo "CCACHE_LOGFILE=${{github.workspace}}/ccache.log.txt" >> $GITHUB_ENV
+        echo "CCACHE_MAXSIZE=100M" >> $GITHUB_ENV
+    - name: Install Ccache
+      run: |
+        wget https://github.com/ccache/ccache/releases/download/v4.8/ccache-4.8-linux-x86_64.tar.xz
+        tar xvf ccache-4.8-linux-x86_64.tar.xz
+        sudo cp -f ccache-4.8-linux-x86_64/ccache /usr/local/bin/
+    - name: Set Up Ccache
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/ccache
+        key: ccache-${{github.workflow}}-${{github.job}}-single-git-${{github.sha}}
+        restore-keys: |
+             ccache-${{github.workflow}}-${{github.job}}-single-git-
+    - name: Configure
+      run: |
+        cmake -B ${{runner.workspace}}/build-ci-single \
+          -DCMAKE_INSTALL_PREFIX:PATH=${{runner.workspace}}/install-single \
+          -DCMAKE_BUILD_TYPE:STRING=Release \
+          -DMPIEXEC_PREFLAGS:STRING=--oversubscribe \
+          -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+          -DAMR_WIND_ENABLE_MPI:BOOL=ON \
+          -DAMR_WIND_PRECISION:BOOL=SINGLE \
+          -DAMR_WIND_ENABLE_TESTS:BOOL=ON \
+          -DAMR_WIND_TEST_WITH_FCOMPARE:BOOL=OFF \
+          -DAMR_WIND_ENABLE_W2A:BOOL=OFF \
+          -DCMAKE_CXX_COMPILER_LAUNCHER:STRING=ccache \
+          ${{github.workspace}}
+    - name: Build
+      run: |
+        echo "::add-matcher::.github/problem-matchers/gcc.json"
+        ccache -z
+        set -eu -o pipefail
+        cmake --build ${{runner.workspace}}/build-ci-single --parallel ${{env.NPROCS}} 2>&1 | \
+          tee -a ${{runner.workspace}}/build-ci-single/build-output.txt
+    - name: Ccache Report
+      run: |
+        ccache -s
+        ls ~/.cache/ccache
+        du -hs ~/.cache/ccache
+    - name: Build Report
+      working-directory: ${{runner.workspace}}/build-ci-single
+      run: |
+        echo "::add-matcher::.github/problem-matchers/gcc.json"
+        egrep "Warning:|Error:|warning:|error:" build-output.txt | egrep -v "submods" \
+          | egrep -v "ld: warning:" | egrep -v "lto-wrapper: warning:" | sort | uniq \
+          | awk 'BEGIN{i=0}{print $0}{i++}END{print "Warnings: "i}' > build-output-warnings.txt
+        cat build-output-warnings.txt
+        exit $(tail -n 1 build-output-warnings.txt | awk '{print $2}')
+    - name: Test
+      working-directory: ${{runner.workspace}}/build-ci-single
+      run: ctest -LE no_ci -VV --output-on-failure
+
   GPU-Nvidia:
     name: GPU-CUDA
     needs: Formatting
@@ -428,6 +498,7 @@ jobs:
           -DAMR_WIND_TEST_WITH_FCOMPARE:BOOL=OFF \
           -DAMR_WIND_ENABLE_MASA:BOOL=OFF \
           -DAMR_WIND_ENABLE_CLANG_TIDY:BOOL=ON \
+          -DCMAKE_CXX_COMPILER_LAUNCHER:STRING=ccache \
           ${{github.workspace}}
       - name: Check
         working-directory: ${{runner.workspace}}/build-clang-tidy

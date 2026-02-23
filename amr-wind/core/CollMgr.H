@@ -24,8 +24,10 @@ public:
     using TypePtr = std::unique_ptr<Type>;
     using TypeVector = amrex::Vector<TypePtr>;
 
+private:
     CollMgr() = default;
 
+public:
     ~CollMgr() = default;
 
     CollMgr(const CollMgr&) = delete;
@@ -82,6 +84,7 @@ protected:
 
     //! Key word based lookup
     std::unordered_map<std::string, int> m_obj_map;
+    friend Collection;
 };
 
 } // namespace amr_wind

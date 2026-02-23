@@ -12,6 +12,9 @@
 #include "hydro_utils.H"
 
 #include "amr-wind/utilities/diagnostics.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::pde {
 
@@ -65,7 +68,7 @@ private:
     bool m_variable_density{false};
     bool m_mesh_mapping{false};
     bool m_is_anelastic{false};
-    amrex::Real m_rho_0{1.0};
+    amrex::Real m_rho_0{1.0_rt};
 };
 
 /** Godunov scheme for ICNS
@@ -190,7 +193,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
             // if state is NPH, then n and n+1 are known, and only
             // spatial extrapolation is performed
             const amrex::Real dt_extrap =
-                (fstate == FieldState::NPH) ? 0.0 : dt;
+                (fstate == FieldState::NPH) ? 0.0_rt : dt;
             for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
                 HydroUtils::ExtrapVelToFaces(
                     dof_field(lev), src_term(lev), u_mac(lev), v_mac(lev),
@@ -335,7 +338,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                 // if state is NPH, then n and n+1 are known, and only
                 // spatial extrapolation is performed
                 const amrex::Real dt_extrap =
-                    (fstate == FieldState::NPH) ? 0.0 : dt;
+                    (fstate == FieldState::NPH) ? 0.0_rt : dt;
 #ifdef AMREX_USE_OMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
@@ -344,7 +347,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                     const auto& bx = mfi.tilebox();
                     amrex::FArrayBox tmpfab(
                         amrex::grow(bx, 1), 1, amrex::The_Async_Arena());
-                    tmpfab.setVal<amrex::RunOn::Device>(0.0);
+                    tmpfab.setVal<amrex::RunOn::Device>(0.0_rt);
                     const auto& divu = tmpfab.array();
                     HydroUtils::ComputeFluxesOnBoxFromState(
                         bx, ICNS::ndim, mfi, q.const_array(mfi),
@@ -408,7 +411,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                 HydroUtils::ComputeDivergence(
                     bx, conv_term(lev).array(mfi), (*flux_x)(lev).array(mfi),
                     (*flux_y)(lev).array(mfi), (*flux_z)(lev).array(mfi),
-                    ICNS::ndim, geom[lev], amrex::Real(-1.0),
+                    ICNS::ndim, geom[lev], static_cast<amrex::Real>(-1.0_rt),
                     fluxes_are_area_weighted);
 
                 if (m_cons == 0) {
@@ -418,7 +421,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                         bx, divum_arr, u_mac(lev).const_array(mfi),
                         v_mac(lev).const_array(mfi),
                         w_mac(lev).const_array(mfi), 1, geom[lev],
-                        amrex::Real(1.0), false);
+                        static_cast<amrex::Real>(1.0_rt), false);
                     HydroUtils::ComputeConvectiveTerm(
                         bx, ICNS::ndim, mfi, dof_field(lev).const_array(mfi),
                         (*face_x)(lev).const_array(mfi),

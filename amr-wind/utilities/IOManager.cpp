@@ -18,6 +18,9 @@
 
 #ifdef AMR_WIND_USE_HDF5
 #include "AMReX_PlotFileUtilHDF5.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 #endif
 
 namespace amr_wind {
@@ -75,7 +78,7 @@ void IOManager::initialize_io()
     // also added the variable explicitly in the input file)
     if (m_output_default_vars) {
         for (const auto& name : m_pltvars_default) {
-            if (skip_outputs.find(name) == skip_outputs.end()) {
+            if (!skip_outputs.contains(name)) {
                 outputs.insert(name);
             }
         }
@@ -198,7 +201,7 @@ void IOManager::write_checkpoint_file(const int start_level, int end_level)
     const auto& mesh = m_sim.mesh();
     // Modify end_level if need be
     end_level = (end_level == -1) ? mesh.finestLevel() : end_level;
-    end_level = std::max(end_level, start_level);
+    end_level = amrex::max(end_level, start_level);
 
     amrex::PreBuildDirectorHierarchy(
         chkname, level_prefix, end_level + 1 - start_level, true);
@@ -280,7 +283,7 @@ void IOManager::read_checkpoint_fields(
                     }
                 }
 
-                mfab.setBndry(0.0);
+                mfab.setBndry(0.0_rt);
             }
         }
     }

@@ -1,9 +1,9 @@
 #ifndef ABLMESOFORCINGMOM
 #define ABLMESOFORCINGMOM
 
-#include <AMReX_REAL.H>
-#include <AMReX_Vector.H>
 #include <memory>
+#include "AMReX_REAL.H"
+#include "AMReX_Vector.H"
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/equation_systems/icns/MomentumSource.H"
 #include "amr-wind/core/SimTime.H"

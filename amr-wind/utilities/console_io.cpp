@@ -20,6 +20,9 @@
 #endif
 #ifdef AMR_WIND_USE_ASCENT
 #include "ascent_config.h"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 #endif
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
@@ -105,10 +108,7 @@ void print_banner(MPI_Comm comm, std::ostream& out)
     amrex::Array<char, 64> time_buf;
     ctime_r(&etimet, time_buf.begin());
     const std::string tstamp(time_buf.begin());
-
-    const std::string dirty_tag = (version::amr_wind_dirty_repo == "DIRTY")
-                                      ? ("-" + version::amr_wind_dirty_repo)
-                                      : "";
+    const std::string dirty_tag = "-" + version::amr_wind_dirty_repo;
     const std::string awind_version = version::amr_wind_version + dirty_tag;
     const std::string awind_git_sha = version::amr_wind_git_sha + dirty_tag;
 
@@ -263,7 +263,7 @@ void print_nonlinear_residual(
     }
     amrex::Gpu::streamSynchronize();
 
-    amrex::Array<amrex::Real, AMREX_SPACEDIM> rms_vel = {0.0};
+    amrex::Array<amrex::Real, AMREX_SPACEDIM> rms_vel = {0.0_rt};
 
     for (int lev = 0; lev < nlevels; ++lev) {
         for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {

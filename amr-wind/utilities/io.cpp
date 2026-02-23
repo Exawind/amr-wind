@@ -1,14 +1,13 @@
-#include <AMReX_ParmParse.H>
-#include <AMReX_PlotFileUtil.H>
 #include "amr-wind/incflo.H"
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/utilities/io_utils.H"
 #include "amr-wind/utilities/console_io.H"
 #include "amr-wind/utilities/IOManager.H"
+#include "AMReX_ParmParse.H"
+#include "AMReX_PlotFileUtil.H"
+#include "AMReX_REAL.H"
 
-namespace {
-const std::string level_prefix{"Level_"};
-}
+using namespace amrex::literals;
 
 void incflo::ReadCheckpointFile()
 {
@@ -18,8 +17,8 @@ void incflo::ReadCheckpointFile()
     amrex::Print() << "Restarting from checkpoint " << restart_file
                    << std::endl;
 
-    amrex::RealArray prob_lo = {0.0};
-    amrex::RealArray prob_hi = {0.0};
+    amrex::RealArray prob_lo = {0.0_rt};
+    amrex::RealArray prob_hi = {0.0_rt};
 
     /***************************************************************************
      * Load header: set up problem domain (including BoxArray)                 *
@@ -75,7 +74,7 @@ void incflo::ReadCheckpointFile()
         std::istringstream lis(line);
         int i = 0;
         while (lis >> word) {
-            prob_lo[i++] = std::stod(word);
+            prob_lo[i++] = static_cast<amrex::Real>(std::stod(word));
         }
     }
 
@@ -85,7 +84,7 @@ void incflo::ReadCheckpointFile()
         std::istringstream lis(line);
         int i = 0;
         while (lis >> word) {
-            prob_hi[i++] = std::stod(word);
+            prob_hi[i++] = static_cast<amrex::Real>(std::stod(word));
         }
     }
 
@@ -114,7 +113,7 @@ void incflo::ReadCheckpointFile()
 
         rep[d] = static_cast<int>(domain_ratio);
 
-        constexpr amrex::Real domain_eps = 1.0e-6;
+        constexpr amrex::Real domain_eps = 1.0e-6_rt;
         if (std::abs(static_cast<amrex::Real>(rep[d]) - domain_ratio) >
             domain_eps) {
             amrex::Abort(

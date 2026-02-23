@@ -5,6 +5,9 @@
 #include "AMReX_Array4.H"
 #include "AMReX_Geometry.H"
 #include "AMReX_MFIter.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::fvm {
 
@@ -46,27 +49,27 @@ struct Filter
                     amrex::Real f = Stencil::f01;
                     amrex::Real fm1 = Stencil::f02;
                     const amrex::Real filx =
-                        (fp1 * phi_arr(i + 1, j, k, icomp) +
-                         f * phi_arr(i, j, k, icomp) +
-                         fm1 * phi_arr(i - 1, j, k, icomp));
+                        ((fp1 * phi_arr(i + 1, j, k, icomp)) +
+                         (f * phi_arr(i, j, k, icomp)) +
+                         (fm1 * phi_arr(i - 1, j, k, icomp)));
 
                     fp1 = Stencil::f10;
                     f = Stencil::f11;
                     fm1 = Stencil::f12;
                     const amrex::Real fily =
-                        (fp1 * phi_arr(i, j + 1, k, icomp) +
-                         f * phi_arr(i, j, k, icomp) +
-                         fm1 * phi_arr(i, j - 1, k, icomp));
+                        ((fp1 * phi_arr(i, j + 1, k, icomp)) +
+                         (f * phi_arr(i, j, k, icomp)) +
+                         (fm1 * phi_arr(i, j - 1, k, icomp)));
 
                     fp1 = Stencil::f20;
                     f = Stencil::f21;
                     fm1 = Stencil::f22;
                     const amrex::Real filz =
-                        (fp1 * phi_arr(i, j, k + 1, icomp) +
-                         f * phi_arr(i, j, k, icomp) +
-                         fm1 * phi_arr(i, j, k - 1, icomp));
+                        ((fp1 * phi_arr(i, j, k + 1, icomp)) +
+                         (f * phi_arr(i, j, k, icomp)) +
+                         (fm1 * phi_arr(i, j, k - 1, icomp)));
                     filterphi_arr(i, j, k, icomp) =
-                        1. / 3. * (filx + fily + filz);
+                        1.0_rt / 3.0_rt * (filx + fily + filz);
                 }
             });
     }

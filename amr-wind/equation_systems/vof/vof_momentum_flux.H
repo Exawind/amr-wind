@@ -2,6 +2,9 @@
 #define VOF_MOMENTUM_FLUX_H
 
 #include "amr-wind/equation_systems/vof/volume_fractions.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind::multiphase {
 
@@ -85,7 +88,7 @@ static inline void hybrid_fluxes(
         amrex::MultiFab frho(
             src_term(lev).boxArray(), src_term(lev).DistributionMap(), 1,
             fvm::Godunov::nghost_src);
-        frho.setVal(0.0);
+        frho.setVal(0.0_rt);
 
         // Set up temporary arrays for NPH at boundaries
         amrex::MultiFab q_nph(
@@ -135,7 +138,7 @@ static inline void hybrid_fluxes(
             // Temporary divu
             amrex::FArrayBox divufab(
                 amrex::grow(bx, 1), 1, amrex::The_Async_Arena());
-            divufab.setVal<amrex::RunOn::Device>(0.0);
+            divufab.setVal<amrex::RunOn::Device>(0.0_rt);
             const auto& divu = divufab.array();
 
             // Compute momentum flux quantities (multiplied by face velocity)

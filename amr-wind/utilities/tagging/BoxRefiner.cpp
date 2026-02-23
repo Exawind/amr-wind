@@ -1,5 +1,8 @@
 #include "amr-wind/utilities/tagging/BoxRefiner.H"
 #include "AMReX_ParmParse.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 // Adapted from OpenFOAM/src/meshTools/sets/cellSources/rotatedBoxToCell
 
@@ -103,7 +106,7 @@ BoxRefiner::BoxRefiner(const CFDSim& /*unused*/, const std::string& key)
         }
     }
     vs::Vector search_radius = vs::Vector::zero();
-    const amrex::Real search_fraction = 0.05;
+    const amrex::Real search_fraction = 0.05_rt;
     AMREX_ALWAYS_ASSERT(search_radius.size() == min_c.size());
     for (int i = 0; i < min_c.size(); i++) {
         search_radius[i] = search_fraction * (max_c[i] - min_c[i]);
@@ -140,9 +143,9 @@ void BoxRefiner::operator()(
     const auto& dx = geom.CellSizeArray();
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-        const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-        const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
-        const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+        const amrex::Real x = problo[0] + ((i + 0.5_rt) * dx[0]);
+        const amrex::Real y = problo[1] + ((j + 0.5_rt) * dx[1]);
+        const amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);
 
         // Position vector of cell center
         const vs::Vector pt(x, y, z);
@@ -156,7 +159,7 @@ void BoxRefiner::operator()(
             // Cell center w.r.t. to face origin
             const auto ptloc = pt - forigin;
 
-            if ((ptloc & face_normals[f]) > 0.0) {
+            if ((ptloc & face_normals[f]) > 0.0_rt) {
                 inside = false;
             }
         }
