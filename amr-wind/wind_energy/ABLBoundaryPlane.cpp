@@ -7,6 +7,7 @@
 #include "amr-wind/utilities/index_operations.H"
 #include "amr-wind/utilities/constants.H"
 #include <AMReX_PlotFileUtil.H>
+#include <algorithm>
 #include "AMReX_REAL.H"
 
 using namespace amrex::literals;
@@ -555,8 +556,7 @@ void ABLBoundaryPlane::write_bndry_native_header(const std::string& chkname)
                 auto ori = oit();
                 const std::string plane = m_plane_names[ori];
 
-                if (std::find(m_planes.begin(), m_planes.end(), plane) ==
-                    m_planes.end()) {
+                if (std::ranges::find(m_planes, plane) == m_planes.end()) {
                     continue;
                 }
 
@@ -725,8 +725,7 @@ void ABLBoundaryPlane::write_file()
                     auto ori = oit();
                     const std::string plane = m_plane_names[ori];
 
-                    if (std::find(m_planes.begin(), m_planes.end(), plane) ==
-                        m_planes.end()) {
+                    if (std::ranges::find(m_planes, plane) == m_planes.end()) {
                         continue;
                     }
 
@@ -888,12 +887,11 @@ void ABLBoundaryPlane::read_header()
         for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
             auto ori = oit();
 
-            if (std::all_of(
-                    m_fields.begin(), m_fields.end(), [ori](const auto* fld) {
-                        return (
-                            (fld->bc_type()[ori] != BC::mass_inflow) &&
-                            (fld->bc_type()[ori] != BC::mass_inflow_outflow));
-                    })) {
+            if (std::ranges::all_of(m_fields, [ori](const auto* fld) {
+                    return (
+                        (fld->bc_type()[ori] != BC::mass_inflow) &&
+                        (fld->bc_type()[ori] != BC::mass_inflow_outflow));
+                })) {
                 continue;
             }
 
@@ -928,12 +926,11 @@ void ABLBoundaryPlane::read_header()
         for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
             auto ori = oit();
 
-            if (std::all_of(
-                    m_fields.begin(), m_fields.end(), [ori](const auto* fld) {
-                        return (
-                            (fld->bc_type()[ori] != BC::mass_inflow) &&
-                            (fld->bc_type()[ori] != BC::mass_inflow_outflow));
-                    })) {
+            if (std::ranges::all_of(m_fields, [ori](const auto* fld) {
+                    return (
+                        (fld->bc_type()[ori] != BC::mass_inflow) &&
+                        (fld->bc_type()[ori] != BC::mass_inflow_outflow));
+                })) {
                 continue;
             }
 

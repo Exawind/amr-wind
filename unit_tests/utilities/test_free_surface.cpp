@@ -271,15 +271,15 @@ int FreeSurfaceImpl::check_output(
     int icheck = 0;
     for (int n = 0; n < npts_tot; ++n) {
         if (op == "=") {
-            EXPECT_EQ(out[cidx * npts_tot + n], check_val);
+            EXPECT_EQ(out[(cidx * npts_tot) + n], check_val);
             ++icheck;
         } else {
             if (op == "<") {
-                EXPECT_LT(out[cidx * npts_tot + n], check_val);
+                EXPECT_LT(out[(cidx * npts_tot) + n], check_val);
                 ++icheck;
             } else {
                 if (op == "~") {
-                    EXPECT_NEAR(out[cidx * npts_tot + n], check_val, m_tol);
+                    EXPECT_NEAR(out[(cidx * npts_tot) + n], check_val, m_tol);
                     ++icheck;
                 }
             }

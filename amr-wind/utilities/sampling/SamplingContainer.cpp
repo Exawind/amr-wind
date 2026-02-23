@@ -1,4 +1,6 @@
 
+#include <algorithm>
+
 #include "amr-wind/utilities/sampling/SamplingContainer.H"
 #include "amr-wind/utilities/sampling/SamplerBase.H"
 #include "amr-wind/core/Field.H"
@@ -137,7 +139,7 @@ void SamplingContainer::initialize_particles(
     }
     // Skip this check if there is a DTUSpinnerSampler (may have out of domain
     // particles)
-    if (std::all_of(samplers.cbegin(), samplers.cend(), [](const auto& probe) {
+    if (std::ranges::all_of(samplers, [](const auto& probe) {
             return probe->sampletype() != "DTUSpinnerSampler";
         })) {
         AMREX_ALWAYS_ASSERT(m_total_particles == TotalNumberOfParticles(false));

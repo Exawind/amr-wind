@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <numbers>
 #include <vector>
 #include <numeric>
@@ -139,9 +140,9 @@ TEST(LinearInterpolation, lin_interp_single)
     const amrex::Real mult_fac = 2.0_rt + (10.0_rt * amrex::Random());
     std::vector<amrex::Real> xvec(10), yvec(10);
     std::iota(xvec.begin(), xvec.end(), 0.0_rt);
-    std::transform(
-        xvec.begin(), xvec.end(), yvec.begin(),
-        [mult_fac](const amrex::Real x) { return mult_fac * x; });
+    std::ranges::transform(xvec, yvec.begin(), [mult_fac](const amrex::Real x) {
+        return mult_fac * x;
+    });
 
     std::vector<amrex::Real> xtest{2.5_rt, 4.5_rt, 6.3_rt, 8.8_rt};
     for (const auto& x : xtest) {
@@ -218,9 +219,9 @@ TEST(LinearInterpolation, lin_interp)
     const amrex::Real mult_fac = 2.0_rt + (10.0_rt * amrex::Random());
     std::vector<amrex::Real> xvec(10), yvec(10);
     std::iota(xvec.begin(), xvec.end(), 0.0_rt);
-    std::transform(
-        xvec.begin(), xvec.end(), yvec.begin(),
-        [mult_fac](const amrex::Real x) { return mult_fac * x; });
+    std::ranges::transform(xvec, yvec.begin(), [mult_fac](const amrex::Real x) {
+        return mult_fac * x;
+    });
 
     std::vector<amrex::Real> xtest{2.5_rt, 4.5_rt, 6.3_rt, 8.8_rt};
     std::vector<amrex::Real> ytest(xtest.size());
@@ -240,9 +241,9 @@ TEST(LinearInterpolation, lin_monotonic)
     const amrex::Real mult_fac = 2.0_rt + (10.0_rt * amrex::Random());
     std::vector<amrex::Real> xvec(10), yvec(10);
     std::iota(xvec.begin(), xvec.end(), 0.0_rt);
-    std::transform(
-        xvec.begin(), xvec.end(), yvec.begin(),
-        [mult_fac](const amrex::Real x) { return mult_fac * x; });
+    std::ranges::transform(xvec, yvec.begin(), [mult_fac](const amrex::Real x) {
+        return mult_fac * x;
+    });
 
     std::vector<amrex::Real> xtest{2.5_rt, 4.5_rt, 6.3_rt, 8.8_rt};
     std::vector<amrex::Real> ytest(xtest.size());

@@ -20,7 +20,7 @@ FPlaneAveragingFine<FType>::FPlaneAveragingFine(
     , m_axis(axis_in)
     , m_comp_deriv(compute_deriv)
 {
-    AMREX_ALWAYS_ASSERT(m_axis >= 0 && m_axis < AMREX_SPACEDIM);
+    AMREX_ALWAYS_ASSERT((m_axis >= 0) && (m_axis < AMREX_SPACEDIM));
     auto geom = m_field.repo().mesh().Geom();
 
     // beginning and end of line, for now assuming line is the length of the
@@ -77,7 +77,7 @@ void FPlaneAveragingFine<FType>::convert_x_to_ind(
         c = 1.0_rt;
     }
 
-    AMREX_ALWAYS_ASSERT(ind >= 0 && ind + 1 < m_ncell_line);
+    AMREX_ALWAYS_ASSERT((ind >= 0) && ((ind + 1) < m_ncell_line));
 }
 
 template <typename FType>
@@ -135,10 +135,9 @@ template <typename FType>
 amrex::Real FPlaneAveragingFine<FType>::line_average_interpolated(
     amrex::Real x, int comp) const
 {
-
     BL_PROFILE("amr-wind::PlaneAveragingFine::line_average_interpolated");
 
-    AMREX_ALWAYS_ASSERT(comp >= 0 && comp < m_ncomp);
+    AMREX_ALWAYS_ASSERT((comp >= 0) && (comp < m_ncomp));
 
     int ind;
     amrex::Real c;
@@ -154,7 +153,7 @@ void FPlaneAveragingFine<FType>::line_average(
 {
     BL_PROFILE("amr-wind::PlaneAveragingFine::line_average");
 
-    AMREX_ALWAYS_ASSERT(comp >= 0 && comp < m_ncomp);
+    AMREX_ALWAYS_ASSERT((comp >= 0) && (comp < m_ncomp));
 
     for (int i = 0; i < m_ncell_line; i++) {
         l_vec[i] = m_line_average[(m_ncomp * i) + comp];
@@ -167,8 +166,8 @@ FPlaneAveragingFine<FType>::line_average_cell(int ind, int comp) const
 {
     BL_PROFILE("amr-wind::PlaneAveragingFine::line_average_cell");
 
-    AMREX_ALWAYS_ASSERT(comp >= 0 && comp < m_ncomp);
-    AMREX_ALWAYS_ASSERT(ind >= 0 && ind < m_ncell_line);
+    AMREX_ALWAYS_ASSERT((comp >= 0) && (comp < m_ncomp));
+    AMREX_ALWAYS_ASSERT((ind >= 0) && (ind < m_ncell_line));
 
     return m_line_average[(m_ncomp * ind) + comp];
 }
@@ -410,8 +409,8 @@ amrex::Real FPlaneAveragingFine<FType>::line_derivative_of_average_cell(
     BL_PROFILE(
         "amr-wind::FPlaneAveragingFine::line_derivative_of_average_cell");
 
-    AMREX_ALWAYS_ASSERT(comp >= 0 && comp < m_ncomp);
-    AMREX_ALWAYS_ASSERT(ind >= 0 && ind < m_ncell_line);
+    AMREX_ALWAYS_ASSERT((comp >= 0) && (comp < m_ncomp));
+    AMREX_ALWAYS_ASSERT((ind >= 0) && (ind < m_ncell_line));
 
     amrex::Real dudx;
 
@@ -439,7 +438,7 @@ amrex::Real FPlaneAveragingFine<FType>::line_derivative_interpolated(
 {
     BL_PROFILE("amr-wind::FPlaneAveragingFine::line_derivative_interpolated");
 
-    AMREX_ALWAYS_ASSERT(comp >= 0 && comp < m_ncomp);
+    AMREX_ALWAYS_ASSERT((comp >= 0) && (comp < m_ncomp));
 
     int ind;
     amrex::Real c;
