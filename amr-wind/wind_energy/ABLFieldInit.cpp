@@ -260,7 +260,7 @@ void ABLFieldInit::operator()(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                 amrex::Real y = problo[1] + (j + 0.5) * dx[1];
-		amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+                amrex::Real z = problo[2] + (k + 0.5) * dx[2];
                 const amrex::Real terrainHt =
                     terrain_aligned_profile
                         ? interp::bilinear(
@@ -355,13 +355,14 @@ void ABLFieldInit::operator()(
         const amrex::Real ufac = m_deltaU * std::exp(0.5_rt) / m_ref_height;
         const amrex::Real vfac = m_deltaV * std::exp(0.5_rt) / m_ref_height;
         const amrex::Real ref_height = m_ref_height;
-        const amrex::Real ib_height = m_ib_height;	
+        const amrex::Real ib_height = m_ib_height;
 
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                 const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
-                const amrex::Real z = std::max(problo[2] + (k + 0.5) * dx[2] - ib_height,0.1);
+                const amrex::Real z =
+                    std::max(problo[2] + (k + 0.5) * dx[2] - ib_height, 0.1);
                 const amrex::Real xl = x - problo[0];
                 const amrex::Real yl = y - problo[1];
                 const amrex::Real zl = z / ref_height;

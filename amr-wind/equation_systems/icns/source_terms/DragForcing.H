@@ -40,18 +40,18 @@ private:
     const Field& m_velocity;
     const Field* m_target_vel{nullptr};
     const Field* m_target_levelset{nullptr};
-  //amrex::Gpu::DeviceVector<amrex::Real> m_device_vel_ht;
-  //  amrex::Gpu::DeviceVector<amrex::Real> m_device_vel_vals;
-  std::string m_1d_rans;
-  amrex::Vector<amrex::Real> m_wind_heights;
-  amrex::Vector<amrex::Real> m_u_values;
-  amrex::Vector<amrex::Real> m_v_values;
-  amrex::Vector<amrex::Real> m_w_values;
-  amrex::Gpu::DeviceVector<amrex::Real> m_windht_d;
-  amrex::Gpu::DeviceVector<amrex::Real> m_prof_u_d;
-  amrex::Gpu::DeviceVector<amrex::Real> m_prof_v_d;
-  amrex::Gpu::DeviceVector<amrex::Real> m_prof_w_d;
-  
+    // amrex::Gpu::DeviceVector<amrex::Real> m_device_vel_ht;
+    //   amrex::Gpu::DeviceVector<amrex::Real> m_device_vel_vals;
+    std::string m_1d_rans;
+    amrex::Vector<amrex::Real> m_wind_heights;
+    amrex::Vector<amrex::Real> m_u_values;
+    amrex::Vector<amrex::Real> m_v_values;
+    amrex::Vector<amrex::Real> m_w_values;
+    amrex::Gpu::DeviceVector<amrex::Real> m_windht_d;
+    amrex::Gpu::DeviceVector<amrex::Real> m_prof_u_d;
+    amrex::Gpu::DeviceVector<amrex::Real> m_prof_v_d;
+    amrex::Gpu::DeviceVector<amrex::Real> m_prof_w_d;
+
     amrex::Real m_drag_coefficient{10.0};
     amrex::Real m_sponge_strength{1.0};
     amrex::Real m_sponge_density{1.0};

@@ -76,16 +76,16 @@ void TemperatureFreeAtmosphereForcing::operator()(
                                      ? (*m_terrain_height)(lev).const_array(mfi)
                                      : amrex::Array4<double>();
     auto* const m_terrain_blank =
-      (has_terrain) ? &this->m_sim.repo().get_int_field("terrain_blank")
-      : nullptr;
+        (has_terrain) ? &this->m_sim.repo().get_int_field("terrain_blank")
+                      : nullptr;
     const auto& terrain_blank = (has_terrain)
-      ? (*m_terrain_blank)(lev).const_array(mfi)
-      : amrex::Array4<int>();
+                                    ? (*m_terrain_blank)(lev).const_array(mfi)
+                                    : amrex::Array4<int>();
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const amrex::Real cell_terrain_height =
             (has_terrain) ? terrain_height(i, j, k) : 0.0;
-	const amrex::Real cell_blanking =
-	  (has_terrain)? terrain_blank(i,j,k): 0.0;
+        const amrex::Real cell_blanking =
+            (has_terrain) ? terrain_blank(i, j, k) : 0.0;
         const amrex::Real z = std::max(
             prob_lo[2] + (k + 0.5) * dx[2] - cell_terrain_height, 0.5 * dx[2]);
         const amrex::Real zi =
@@ -98,8 +98,8 @@ void TemperatureFreeAtmosphereForcing::operator()(
                                  theta_values_d, z)
                            : temperature(i, j, k);
         }
-        src_term(i, j, k, 0) -=
-	  (1-cell_blanking) / meso_timescale * (temperature(i, j, k) - ref_temp);
+        src_term(i, j, k, 0) -= (1 - cell_blanking) / meso_timescale *
+                                (temperature(i, j, k) - ref_temp);
     });
     if (m_horizontal_sponge) {
         const amrex::Real sponge_strength = m_sponge_strength;
