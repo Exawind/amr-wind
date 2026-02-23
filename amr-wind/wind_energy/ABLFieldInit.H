@@ -108,8 +108,8 @@ private:
     amrex::Real m_ref_height{50.0};
 
     //! Reference IB height
-    amrex::Real m_ib_height{0.0};
-
+  amrex::Real m_ib_height{0.0};
+  
     //! Amplitude of temperature perturbations
     amrex::Real m_delta_t{0.8};
 
