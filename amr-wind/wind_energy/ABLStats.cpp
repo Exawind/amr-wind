@@ -83,6 +83,7 @@ void ABLStats::initialize()
         m_ncells_h2 = dhi.y - dlo.y + 1;
     } else {
         amrex::Abort("m_normal_dir is not 0, 1, or 2");
+        exit(1); // to help the static analyzer
     }
     m_dn = geom.CellSize()[m_normal_dir];
 

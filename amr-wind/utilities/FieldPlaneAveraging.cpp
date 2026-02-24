@@ -22,7 +22,6 @@ FPlaneAveraging<FType>::FPlaneAveraging(
     auto geom = m_field.repo().mesh().Geom();
     // level=0 is default, could later make this an input.
     // Might only makes sense for fully covered levels
-
     m_xlo = geom[m_level].ProbLo(m_axis);
     m_dx = geom[m_level].CellSize(m_axis);
 
@@ -323,6 +322,7 @@ void FPlaneAveraging<FType>::compute_averages(
 template class FPlaneAveraging<Field>;
 template class FPlaneAveraging<ScratchField>;
 
+// NOLINTBEGIN(clang-analyzer-security.ArrayBound)
 VelPlaneAveraging::VelPlaneAveraging(CFDSim& sim, int axis_in)
     : FieldPlaneAveraging(
           sim.repo().get_field("velocity"), sim.time(), axis_in, true)
@@ -332,6 +332,7 @@ VelPlaneAveraging::VelPlaneAveraging(CFDSim& sim, int axis_in)
         m_line_hvelmag_deriv.resize(m_ncell_line, 0.0_rt);
     }
 }
+// NOLINTEND(clang-analyzer-security.ArrayBound)
 
 void VelPlaneAveraging::operator()()
 {

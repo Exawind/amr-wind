@@ -91,7 +91,8 @@ void ActuatorContainer::initialize_particles(const int total_pts)
     // from 1.
     ParticleType::NextID(1U);
     const auto id_start = ParticleType::NextID();
-    AMREX_ALWAYS_ASSERT(id_start == 1U); // NOLINT
+    AMREX_ALWAYS_ASSERT(
+        id_start == 1U); // NOLINT(modernize-use-integer-sign-comparison)
     const int iproc = amrex::ParallelDescriptor::MyProc();
 
     // Flag indicating if a tile was found where all particles were deposited.
