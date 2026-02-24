@@ -136,7 +136,7 @@ void multiphase::split_compute_fluxes(
     const auto domhi = amrex::ubound(domain);
 
     amrex::Array4<amrex::Real> vofL = makeArray4(p, bxg1, 1);
-    p += vofL.size(); // NOLINT: Value not read warning
+    p += vofL.size();
     amrex::Array4<amrex::Real> vofR = makeArray4(p, bxg1, 1);
 
     if (isweep % 3 == 0) {

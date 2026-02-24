@@ -12,7 +12,10 @@ namespace {
 inline std::string strip_spaces(const std::string& inp)
 {
     std::string str(inp);
-    str.erase(std::remove(str.begin(), str.end(), ' '), str.end()); // NOLINT
+    str.erase(
+        std::remove( // NOLINT(modernize-use-ranges)
+            str.begin(), str.end(), ' '),
+        str.end());
     return str;
 }
 
@@ -141,8 +144,8 @@ void DerivedQtyMgr::filter(const std::set<std::string>& erase)
 
     // then erase from the derived vec
     m_derived_vec.erase(
-        std::remove_if( //NOLINT
-            m_derived_vec.begin(), m_derived_vec.end(), //NOLINT
+        std::remove_if( //NOLINT(modernize-use-ranges)
+            m_derived_vec.begin(), m_derived_vec.end(),
             [=](const auto& qty) {
                 return erase.find(qty->name()) != erase.end();
             }),

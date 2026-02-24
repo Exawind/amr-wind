@@ -163,7 +163,7 @@ struct ShearStressMoeng
     amrex::Real wspd_mean;
     amrex::Real theta_surface;
     amrex::Real theta_mean;
-    amrex::Real term1; // NOLINT
+    amrex::Real term1; // NOLINT(modernize-use-default-member-init)
 };
 
 struct ShearStressDonelan

@@ -451,6 +451,7 @@ amrex::Real FPlaneAveragingFine<FType>::line_derivative_interpolated(
 template class FPlaneAveragingFine<Field>;
 template class FPlaneAveragingFine<ScratchField>;
 
+// NOLINTBEGIN(clang-analyzer-security.ArrayBound)
 VelPlaneAveragingFine::VelPlaneAveragingFine(CFDSim& sim, int axis_in)
     : FieldPlaneAveragingFine(
           sim.repo().get_field("velocity"), sim.time(), axis_in)
@@ -459,6 +460,7 @@ VelPlaneAveragingFine::VelPlaneAveragingFine(CFDSim& sim, int axis_in)
     m_line_Su_average.resize(m_ncell_line, 0.0_rt);
     m_line_Sv_average.resize(m_ncell_line, 0.0_rt);
 }
+// NOLINTEND(clang-analyzer-security.ArrayBound)
 
 void VelPlaneAveragingFine::operator()()
 {
