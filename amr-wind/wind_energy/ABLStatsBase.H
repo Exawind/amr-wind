@@ -1,6 +1,7 @@
 #ifndef ABLSTATSBASE_H
 #define ABLSTATSBASE_H
 
+#include <cstdint>
 #include "amr-wind/core/Factory.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/wind_energy/ABLWallFunction.H"
@@ -14,7 +15,7 @@ namespace pde::temperature {
 class ABLMesoForcingTemp;
 }
 
-enum class ABLStatsMode : int {
+enum class ABLStatsMode : std::uint8_t {
     computed = 0, ///! Computed using planar averages
     prescribed    ///! Prescribed as user inputs
 };

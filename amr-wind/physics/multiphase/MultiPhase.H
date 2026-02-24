@@ -1,6 +1,7 @@
 #ifndef MULTIPHASE_H
 #define MULTIPHASE_H
 
+#include <cstdint>
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/core/Field.H"
 #include "amr-wind/core/IntField.H"
@@ -21,7 +22,7 @@ using namespace amrex::literals;
  */
 namespace amr_wind {
 
-enum class InterfaceCapturingMethod {
+enum class InterfaceCapturingMethod : std::uint8_t {
     VOF, ///< Volume of fluid
     LS   ///< Levelset
 };

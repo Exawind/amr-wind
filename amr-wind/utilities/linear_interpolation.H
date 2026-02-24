@@ -9,7 +9,7 @@ using namespace amrex::literals;
 
 namespace amr_wind::interp {
 
-enum class Limits : int {
+enum class Limits : int { // NOLINT(performance-enum-size)
     LOWLIM = -2,
     UPLIM = -1,
     VALID = 0,

@@ -1,6 +1,7 @@
 #ifndef RADARSAMPLER_H
 #define RADARSAMPLER_H
 
+#include <cstdint>
 #include "amr-wind/utilities/sampling/SamplerBase.H"
 #include "amr-wind/utilities/sampling/SamplingUtils.H"
 #include "amr-wind/utilities/sampling/LineSampler.H"
@@ -36,7 +37,12 @@ public:
      */
     void initialize(const std::string& key) override;
 
-    enum class phase { FORWARD, FORWARD_PAUSE, REVERSE, REVERSE_PAUSE };
+    enum class phase : std::uint8_t {
+        FORWARD,
+        FORWARD_PAUSE,
+        REVERSE,
+        REVERSE_PAUSE
+    };
 
     //! Check and fix the bounds of the sampler so the probes are in the domain
     void check_bounds() override;
