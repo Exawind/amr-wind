@@ -399,7 +399,7 @@ void Field::to_uniform_space() noexcept
     }
     if (m_mesh_mapped) {
         amrex::Print() << "WARNING: Field already in uniform mesh space: "
-                       << m_name << std::endl;
+                       << m_name << '\n';
         return;
     }
 
@@ -429,7 +429,7 @@ void Field::to_stretched_space() noexcept
     }
     if (!m_mesh_mapped) {
         amrex::Print() << "WARNING: Field already in stretched mesh space: "
-                       << m_name << std::endl;
+                       << m_name << '\n';
         return;
     }
 

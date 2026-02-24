@@ -445,7 +445,7 @@ void ABLStats::write_ascii()
             << L << ", "
             << m_zi << ", "
             << abl_forcing[0] << ", "
-            << abl_forcing[1] << std::endl;
+            << abl_forcing[1] << '\n';
     // clang-format on
     outfile.close();
 }
@@ -454,7 +454,7 @@ void ABLStats::prepare_ascii_file()
 {
     BL_PROFILE("amr-wind::ABLStats::prepare_ascii_file");
     amrex::Print() << "WARNING: ABLStats: ASCII output will impact performance"
-                   << std::endl;
+                   << '\n';
 
     // Only I/O processor handles this file I/O
     if (!amrex::ParallelDescriptor::IOProcessor()) {
@@ -471,7 +471,7 @@ void ABLStats::prepare_ascii_file()
     outfile.open(m_ascii_file_name.c_str(), std::ios_base::out);
     outfile << "Time,   Q, Tsurf, ustar,   wstar,   L,   zi, abl_forcing_x, "
                "abl_forcing_y"
-            << std::endl;
+            << '\n';
     outfile.close();
 }
 

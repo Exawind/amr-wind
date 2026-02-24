@@ -114,7 +114,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
             godunov_scheme = godunov::scheme::PPM_NOLIM;
             amrex::Print() << "WARNING: Using advection type ppm_nolim is not "
                               "recommended. Prefer using weno_z."
-                           << std::endl;
+                           << '\n';
         } else if (amrex::toLower(godunov_type) == "bds") {
             godunov_scheme = godunov::scheme::BDS;
             // use Godunov for premac, use BDS for postmac. Eventually

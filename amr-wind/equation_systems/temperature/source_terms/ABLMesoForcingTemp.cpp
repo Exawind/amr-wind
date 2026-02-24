@@ -152,7 +152,7 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
                 ncfile->meso_times(), ncfile->meso_transition_height(),
                 currtime);
             amrex::Print() << "current transition height = "
-                           << m_transition_height << std::endl;
+                           << m_transition_height << '\n';
 
             set_transition_weighting();
             indirect_forcing_init();
@@ -182,7 +182,7 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
 
         if (m_debug) {
             amrex::Print() << "direct vs indirect temperature error profile"
-                           << std::endl;
+                           << '\n';
         }
         amrex::Vector<amrex::Real> error_T_direct(m_nht);
         for (int ih = 0; ih < m_nht; ih++) {
@@ -197,7 +197,7 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
 
             if (m_debug) {
                 amrex::Print() << m_zht[ih] << " " << error_T_direct[ih] << " "
-                               << error_T[ih] << std::endl;
+                               << error_T[ih] << '\n';
             }
         }
 
@@ -206,8 +206,7 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
 
             if (m_debug) {
                 for (int ih = 0; ih < m_nht; ih++) {
-                    amrex::Print()
-                        << m_zht[ih] << " " << error_T[ih] << std::endl;
+                    amrex::Print() << m_zht[ih] << " " << error_T[ih] << '\n';
                 }
             }
         }
@@ -218,7 +217,7 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
 
         if (m_debug) {
             for (int ih = 0; ih < m_nht; ih++) {
-                amrex::Print() << m_zht[ih] << " " << error_T[ih] << std::endl;
+                amrex::Print() << m_zht[ih] << " " << error_T[ih] << '\n';
             }
         }
     }

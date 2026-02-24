@@ -45,7 +45,7 @@ MultiPhase::MultiPhase(CFDSim& sim)
     } else {
         amrex::Print() << "Please select an interface capturing model between "
                           "VOF and Levelset: defaulting to VOF "
-                       << std::endl;
+                       << '\n';
         m_interface_capturing_method = amr_wind::InterfaceCapturingMethod::VOF;
         auto& vof_eqn = sim.pde_manager().register_transport_pde("VOF");
         m_vof = &(vof_eqn.fields().field);
@@ -184,16 +184,15 @@ void MultiPhase::post_advance_work()
             amrex::Real mom_z = momentum_sum(2) - m_q2;
             const auto& geom = m_sim.mesh().Geom();
             const amrex::Real total_vol = geom[0].ProbDomain().volume();
-            amrex::Print() << "Volume of Fluid diagnostics:" << std::endl;
+            amrex::Print() << "Volume of Fluid diagnostics:" << '\n';
             amrex::Print() << "   Water Volume Fractions Sum, Difference : "
                            << m_total_volfrac << " "
-                           << m_total_volfrac - m_sumvof0 << std::endl;
+                           << m_total_volfrac - m_sumvof0 << '\n';
             amrex::Print() << "   Air Volume Fractions Sum : "
-                           << total_vol - m_total_volfrac << std::endl;
+                           << total_vol - m_total_volfrac << '\n';
             amrex::Print() << "   Total Momentum Difference (x, y, z) : "
-                           << mom_x << " " << mom_y << " " << mom_z
-                           << std::endl;
-            amrex::Print() << " " << std::endl;
+                           << mom_x << " " << mom_y << " " << mom_z << '\n';
+            amrex::Print() << " " << '\n';
         }
         break;
     case InterfaceCapturingMethod::LS:

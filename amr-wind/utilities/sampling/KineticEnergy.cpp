@@ -109,7 +109,7 @@ void KineticEnergy::prepare_ascii_file()
 
     if (amrex::ParallelDescriptor::IOProcessor()) {
         std::ofstream f(m_out_fname.c_str());
-        f << "time_step time kinetic_energy" << std::endl;
+        f << "time_step time kinetic_energy" << '\n';
         f.close();
     }
 }
@@ -124,7 +124,7 @@ void KineticEnergy::write_ascii()
           << std::setprecision(m_precision) << std::setw(m_width)
           << m_sim.time().new_time();
         f << std::setw(m_width) << m_total_kinetic_energy;
-        f << std::endl;
+        f << '\n';
         f.close();
     }
 }

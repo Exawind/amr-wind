@@ -44,7 +44,7 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim& sim)
     m_coriolis_factor = 2.0_rt * omega * sinphi;
     ppc.query("is_horizontal", m_is_horizontal);
     amrex::Print() << "Geostrophic forcing: Coriolis factor = "
-                   << m_coriolis_factor << std::endl;
+                   << m_coriolis_factor << '\n';
 
     // Read the geostrophic wind speed vector (in m/s)
     amrex::ParmParse ppg("GeostrophicForcing");

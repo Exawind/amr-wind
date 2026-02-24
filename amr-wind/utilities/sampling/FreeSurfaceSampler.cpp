@@ -374,7 +374,7 @@ void FreeSurfaceSampler::check_bounds()
         amrex::Print()
             << "WARNING: FreeSurfaceSampler: Out of domain plane was "
                "truncated to match domain"
-            << std::endl;
+            << '\n';
     }
 }
 

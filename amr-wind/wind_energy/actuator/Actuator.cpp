@@ -38,22 +38,22 @@ void Actuator::pre_init_actions()
             << "WARNING: There are many turbines in this case. Please ensure "
                "you have consolidated common turbine options under a common "
                "prefix. For example, the following: "
-            << std::endl;
+            << '\n';
         amrex::Print() << "  Actuator.Turb1.type            = UniformCtDisk"
-                       << std::endl;
+                       << '\n';
         amrex::Print() << "  Actuator.Turb1.epsilon         = 5.0 5.0 5.0"
-                       << std::endl;
+                       << '\n';
         amrex::Print() << "  Actuator.Turb2.type            = UniformCtDisk"
-                       << std::endl;
+                       << '\n';
         amrex::Print() << "  Actuator.Turb2.epsilon         = 5.0 5.0 5.0"
-                       << std::endl;
-        amrex::Print() << "becomes: " << std::endl;
+                       << '\n';
+        amrex::Print() << "becomes: " << '\n';
         amrex::Print() << "  Actuator.UniformCtDisk.epsilon = 5.0 5.0 5.0"
-                       << std::endl;
+                       << '\n';
         amrex::Print() << "  Actuator.Turb1.type            = UniformCtDisk"
-                       << std::endl;
+                       << '\n';
         amrex::Print() << "  Actuator.Turb2.type            = UniformCtDisk"
-                       << std::endl;
+                       << '\n';
     }
 
     int cnt_turbfast = 0;

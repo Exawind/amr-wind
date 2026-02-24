@@ -344,7 +344,7 @@ bool DTUSpinnerSampler::update_sampling_locations()
         amrex::Print() << "ts_diff: " << ts_diff << "\tm_ns: " << m_ns
                        << "\tSpin Time: " << m_time_sampling
                        << "\tAMR Time: " << time << "\tn_size: " << n_size
-                       << std::endl;
+                       << '\n';
     }
 
     // Resize these variables so they can store all the locations

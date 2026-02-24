@@ -89,7 +89,7 @@ ChannelFlow::ChannelFlow(CFDSim& sim)
         (m_laminar || m_analytical_smagorinsky_test)) {
         std::ofstream f;
         f.open(m_output_fname.c_str());
-        f << std::setw(m_w) << "time" << std::setw(m_w) << "L2_u" << std::endl;
+        f << std::setw(m_w) << "time" << std::setw(m_w) << "L2_u" << '\n';
         f.close();
     }
 
@@ -430,7 +430,7 @@ void ChannelFlow::output_error()
         std::ofstream f;
         f.open(m_output_fname.c_str(), std::ios_base::app);
         f << std::setprecision(12) << std::setw(m_w) << m_time.new_time()
-          << std::setw(m_w) << u_err << std::endl;
+          << std::setw(m_w) << u_err << '\n';
         f.close();
     }
 }

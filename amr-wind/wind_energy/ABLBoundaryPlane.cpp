@@ -325,7 +325,7 @@ ABLBoundaryPlane::ABLBoundaryPlane(CFDSim& sim)
         amrex::Print()
             << "Warning: boundary output format using netcdf must link netcdf "
                "library, changing output to native format"
-            << std::endl;
+            << '\n';
         m_out_fmt = "native";
     }
 #endif
@@ -334,7 +334,7 @@ ABLBoundaryPlane::ABLBoundaryPlane(CFDSim& sim)
           (m_out_fmt == "erf-multiblock"))) {
         amrex::Print() << "Warning: boundary output format not recognized, "
                           "changing to native format"
-                       << std::endl;
+                       << '\n';
         m_out_fmt = "native";
     }
 
@@ -687,7 +687,7 @@ void ABLBoundaryPlane::write_file()
             m_filename + amrex::Concatenate("/bndry_output", t_step);
 
         amrex::Print() << "Writing ABL boundary checkpoint file " << chkname
-                       << " at time " << time << std::endl;
+                       << " at time " << time << '\n';
 
         const int nlevels = m_repo.num_active_levels();
         const std::string level_prefix = "Level_";

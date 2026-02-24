@@ -26,10 +26,10 @@ void ThirdMomentAveraging::output_line_average_ascii(
     if (step == 1) {
         // make new file
         outfile.open(filename.c_str(), std::ios_base::out);
-        outfile << "#ncell,ncomp" << std::endl;
+        outfile << "#ncell,ncomp" << '\n';
 
         outfile << m_plane_average1.ncell_line() << ", " << m_num_moments + 3
-                << std::endl;
+                << '\n';
         outfile << "#step,time,z";
 
         for (int m = 0; m < m_plane_average1.ncomp(); ++m) {
@@ -44,7 +44,7 @@ void ThirdMomentAveraging::output_line_average_ascii(
                 }
             }
         }
-        outfile << std::endl;
+        outfile << '\n';
 
     } else {
         // append file
@@ -69,7 +69,7 @@ void ThirdMomentAveraging::output_line_average_ascii(
             }
         }
 
-        outfile << std::endl;
+        outfile << '\n';
     }
 }
 

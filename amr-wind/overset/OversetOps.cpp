@@ -167,28 +167,27 @@ void OversetOps::parameter_output() const
         // Important parameters
         amrex::Print() << "\nOverset Coupling Parameters: \n"
                        << "---- Replace overset pres grad: "
-                       << m_replace_gradp_postsolve << std::endl;
+                       << m_replace_gradp_postsolve << '\n';
         amrex::Print() << "---- Perturbational pressure  : "
-                       << m_mphase->perturb_pressure() << std::endl
+                       << m_mphase->perturb_pressure() << '\n'
                        << "---- Reconstruct true pressure: "
-                       << m_mphase->reconstruct_true_pressure() << std::endl;
+                       << m_mphase->reconstruct_true_pressure() << '\n';
         amrex::Print() << "Overset Reinitialization Parameters:\n"
                        << "---- Maximum iterations   : " << m_n_iterations
-                       << std::endl
-                       << "---- Convergence tolerance: " << m_convg_tol
-                       << std::endl
+                       << '\n'
+                       << "---- Convergence tolerance: " << m_convg_tol << '\n'
                        << "---- Relative length scale: "
-                       << m_relative_length_scale << std::endl
+                       << m_relative_length_scale << '\n'
                        << "---- Upwinding VOF margin : " << m_upw_margin
-                       << std::endl;
+                       << '\n';
         if (m_verbose > 1) {
             // Less important or less used parameters
             amrex::Print() << "---- Calc. conv. interval : "
-                           << m_calc_convg_interval << std::endl
+                           << m_calc_convg_interval << '\n'
                            << "---- Target field cutoff  : " << m_target_cutoff
-                           << std::endl;
+                           << '\n';
         }
-        amrex::Print() << std::endl;
+        amrex::Print() << '\n';
     }
 }
 
@@ -368,7 +367,7 @@ void OversetOps::sharpen_nalu_data()
 
         if (m_verbose > 0) {
             amrex::Print() << "OversetOps: sharpen step " << n << "  conv. err "
-                           << err << "  tol " << m_convg_tol << std::endl;
+                           << err << "  tol " << m_convg_tol << '\n';
         }
     }
 

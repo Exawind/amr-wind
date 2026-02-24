@@ -342,7 +342,7 @@ void ZalesakDiskScalarVel::output_error()
         std::ofstream f;
         f.open(m_output_fname.c_str(), std::ios_base::app);
         f << std::setprecision(12) << std::setw(m_w) << m_sim.time().new_time()
-          << std::setw(m_w) << SC_err << std::endl;
+          << std::setw(m_w) << SC_err << '\n';
         f.close();
     }
 }

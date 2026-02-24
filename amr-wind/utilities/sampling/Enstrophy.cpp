@@ -108,7 +108,7 @@ void Enstrophy::prepare_ascii_file()
 
     if (amrex::ParallelDescriptor::IOProcessor()) {
         std::ofstream f(m_out_fname.c_str());
-        f << "time_step time enstrophy" << std::endl;
+        f << "time_step time enstrophy" << '\n';
         f.close();
     }
 }
@@ -123,7 +123,7 @@ void Enstrophy::write_ascii()
           << std::setprecision(m_precision) << std::setw(m_width)
           << m_sim.time().new_time();
         f << std::setw(m_width) << m_total_enstrophy;
-        f << std::endl;
+        f << '\n';
         f.close();
     }
 }

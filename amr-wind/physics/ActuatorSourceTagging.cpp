@@ -44,7 +44,7 @@ void ActuatorSourceTagging::post_advance_work()
         amrex::Print()
             << "Warning ActuatorSourceTagging activated but neither actuators "
                "or overset are being used"
-            << std::endl;
+            << '\n';
         return;
     }
 
