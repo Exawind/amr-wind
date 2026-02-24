@@ -71,7 +71,7 @@ VelWallFunc::VelWallFunc(Field& /*unused*/, WallFunction& wall_func)
         m_wall_shear_stress_type == "schumann" ||
         m_wall_shear_stress_type == "mosd") {
         amrex::Print() << "Shear Stress model: " << m_wall_shear_stress_type
-                       << std::endl;
+                       << '\n';
     } else {
         amrex::Abort("Shear Stress wall model input mistake");
     }

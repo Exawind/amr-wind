@@ -95,7 +95,7 @@ EkmanSpiral::EkmanSpiral(const CFDSim& sim)
         std::ofstream f;
         f.open(m_output_fname.c_str());
         f << std::setw(m_w) << "time" << std::setw(m_w) << "L2_u"
-          << std::setw(m_w) << "L2_v" << std::endl;
+          << std::setw(m_w) << "L2_v" << '\n';
         f.close();
     }
 }
@@ -195,7 +195,7 @@ void EkmanSpiral::output_error()
         std::ofstream f;
         f.open(m_output_fname.c_str(), std::ios_base::app);
         f << std::setprecision(12) << std::setw(m_w) << m_time.new_time()
-          << std::setw(m_w) << u_err << std::setw(m_w) << v_err << std::endl;
+          << std::setw(m_w) << u_err << std::setw(m_w) << v_err << '\n';
         f.close();
     }
 }

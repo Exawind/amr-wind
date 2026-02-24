@@ -91,11 +91,11 @@ struct FieldRegOp<TKE, Scheme>
             m_itype = FieldInterpolator::PiecewiseConstant;
             amrex::Print()
                 << "using PiecewiseConstant interpolation for TKE fillpatch"
-                << std::endl;
+                << '\n';
         } else {
             amrex::Print() << "using default CellConsLinear interpolation for "
                               "TKE fillpatch"
-                           << std::endl;
+                           << '\n';
         }
     }
 

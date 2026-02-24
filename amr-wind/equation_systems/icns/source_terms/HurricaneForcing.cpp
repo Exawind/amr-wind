@@ -30,7 +30,7 @@ HurricaneForcing::HurricaneForcing(const CFDSim& sim) : m_mesh(sim.mesh())
         m_coriolis_factor = (2.0_rt * utils::two_pi() / rot_time_period) *
                             std::sin(utils::radians(latitude));
         amrex::Print() << "Geostrophic forcing: Coriolis factor = "
-                       << m_coriolis_factor << std::endl;
+                       << m_coriolis_factor << '\n';
     }
 
     {

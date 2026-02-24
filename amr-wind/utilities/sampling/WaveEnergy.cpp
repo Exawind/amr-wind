@@ -191,7 +191,7 @@ void WaveEnergy::prepare_ascii_file()
 
     if (amrex::ParallelDescriptor::IOProcessor()) {
         std::ofstream f(m_out_fname.c_str());
-        f << "time_step time kinetic_energy potential_energy" << std::endl;
+        f << "time_step time kinetic_energy potential_energy" << '\n';
         f.close();
     }
 }
@@ -207,7 +207,7 @@ void WaveEnergy::write_ascii()
           << m_sim.time().new_time();
         f << std::setw(m_width) << m_wave_kinetic_energy;
         f << std::setw(m_width) << m_wave_potential_energy;
-        f << std::endl;
+        f << '\n';
         f.close();
     }
 }

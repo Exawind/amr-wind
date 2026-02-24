@@ -121,7 +121,7 @@ ConvectingTaylorVortex::ConvectingTaylorVortex(const CFDSim& sim)
         f << std::setw(m_w) << "time" << std::setw(m_w) << "L2_u"
           << std::setw(m_w) << "L2_v" << std::setw(m_w) << "L2_w"
           << std::setw(m_w) << "L2_gpx" << std::setw(m_w) << "L2_gpy"
-          << std::setw(m_w) << "L2_gpz" << std::endl;
+          << std::setw(m_w) << "L2_gpz" << '\n';
         f.close();
     }
 }
@@ -334,8 +334,7 @@ void ConvectingTaylorVortex::output_error()
         f << std::setprecision(12) << std::setw(m_w) << m_time.new_time()
           << std::setw(m_w) << u_err << std::setw(m_w) << v_err
           << std::setw(m_w) << w_err << std::setw(m_w) << gpx_err
-          << std::setw(m_w) << gpy_err << std::setw(m_w) << gpz_err
-          << std::endl;
+          << std::setw(m_w) << gpy_err << std::setw(m_w) << gpz_err << '\n';
         f.close();
     }
 }

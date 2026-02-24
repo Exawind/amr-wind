@@ -335,7 +335,7 @@ void ScalarAdvection::post_advance_work()
         for (auto i : err) {
             f << i << std::setw(m_w);
         }
-        f << std::endl;
+        f << '\n';
         f.close();
     }
 }

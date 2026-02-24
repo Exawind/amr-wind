@@ -100,13 +100,13 @@ void FPlaneAveragingFine<FType>::output_line_average_ascii(
     if (step == 1) {
         // make new file
         outfile.open(filename.c_str(), std::ios_base::out);
-        outfile << "#ncell,ncomp" << std::endl;
-        outfile << m_ncell_line << ", " << m_ncomp + 3 << std::endl;
+        outfile << "#ncell,ncomp" << '\n';
+        outfile << m_ncell_line << ", " << m_ncomp + 3 << '\n';
         outfile << "#step,time,z";
         for (int i = 0; i < m_ncomp; ++i) {
             outfile << ",<" + m_field.name() + std::to_string(i) + ">";
         }
-        outfile << std::endl;
+        outfile << '\n';
     } else {
         // append file
         outfile.open(filename.c_str(), std::ios_base::out | std::ios_base::app);
@@ -119,7 +119,7 @@ void FPlaneAveragingFine<FType>::output_line_average_ascii(
             outfile << ", " << std::scientific
                     << m_line_average[(m_ncomp * i) + n];
         }
-        outfile << std::endl;
+        outfile << '\n';
     }
 }
 
