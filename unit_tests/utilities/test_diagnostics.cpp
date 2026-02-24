@@ -258,9 +258,9 @@ TEST_F(DiagnosticsTest, Max_Vel_MultiLevel)
     // Create the refinement input file
     // Cover the whole domain for easier testing
     std::stringstream ss;
-    ss << "1 // Number of levels" << std::endl;
-    ss << "1 // Number of boxes at this level" << std::endl;
-    ss << "-5 -5 -2 5 5 2" << std::endl;
+    ss << "1 // Number of levels" << '\n';
+    ss << "1 // Number of boxes at this level" << '\n';
+    ss << "-5 -5 -2 5 5 2" << '\n';
     create_mesh_instance<RefineMesh>();
     auto& ref_vec = mesh<RefineMesh>()->refine_criteria_vec();
     ref_vec.emplace_back(std::make_unique<amr_wind::CartBoxRefinement>(sim()));
@@ -317,9 +317,9 @@ TEST_F(DiagnosticsTest, Max_MACvel_MultiLevel)
     // Create the refinement input file
     // Cover the whole domain for easier testing
     std::stringstream ss;
-    ss << "1 // Number of levels" << std::endl;
-    ss << "1 // Number of boxes at this level" << std::endl;
-    ss << "-5 -5 -2 5 5 2" << std::endl;
+    ss << "1 // Number of levels" << '\n';
+    ss << "1 // Number of boxes at this level" << '\n';
+    ss << "-5 -5 -2 5 5 2" << '\n';
     create_mesh_instance<RefineMesh>();
     auto& ref_vec = mesh<RefineMesh>()->refine_criteria_vec();
     ref_vec.emplace_back(std::make_unique<amr_wind::CartBoxRefinement>(sim()));

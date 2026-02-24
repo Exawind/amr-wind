@@ -240,7 +240,7 @@ void FieldNorms::prepare_ascii_file()
         for (const auto& m_var_name : m_var_names) {
             f << ' ' << m_var_name;
         }
-        f << std::endl;
+        f << '\n';
         f.close();
     }
 }
@@ -257,7 +257,7 @@ void FieldNorms::write_ascii()
         for (amrex::Real m_fnorm : m_fnorms) {
             f << std::setw(m_width) << m_fnorm;
         }
-        f << std::endl;
+        f << '\n';
         f.close();
     }
 }

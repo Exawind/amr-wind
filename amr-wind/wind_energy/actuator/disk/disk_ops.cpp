@@ -153,7 +153,7 @@ void collect_parse_conflicts(
     std::ostringstream& ss)
 {
     if (pp.contains(p1) && pp.contains(p2)) {
-        ss << "ActuatorDisk Conflict: " << p1 << " and " << p2 << std::endl;
+        ss << "ActuatorDisk Conflict: " << p1 << " and " << p2 << '\n';
     }
 }
 
@@ -165,7 +165,7 @@ void collect_parse_dependencies_one_way(
 {
     if (pp.contains(dependent) && !pp.contains(independent)) {
         ss << "ActuatorDisk Dependency Missing: " << independent
-           << " required with " << dependent << std::endl;
+           << " required with " << dependent << '\n';
     }
 }
 
@@ -300,7 +300,7 @@ std::ostringstream check_for_parse_conflicts(const utils::ActParser& pp)
             error_collector << "ActuatorDisk Dependency Missing: wind_speed is "
                                "required when "
                                "there is more than 1 entry for thrust_coeff"
-                            << std::endl;
+                            << '\n';
         }
     }
 
@@ -311,7 +311,7 @@ std::ostringstream check_for_parse_conflicts(const utils::ActParser& pp)
             error_collector << "ActuatorDisk Conflict: wind_speed and "
                                "thrust_coeff must have the same number of "
                                "values"
-                            << std::endl;
+                            << '\n';
         }
     }
 

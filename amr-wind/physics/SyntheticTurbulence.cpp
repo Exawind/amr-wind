@@ -486,7 +486,7 @@ SyntheticTurbulence::SyntheticTurbulence(const CFDSim& sim)
                    << "  Mean wind profile: U = "
                    << m_wind_profile->reference_velocity()
                    << " m/s; Dir = " << wind_direction
-                   << " deg; type = " << mean_wind_type << std::endl;
+                   << " deg; type = " << mean_wind_type << '\n';
 }
 
 void SyntheticTurbulence::initialize_fields(

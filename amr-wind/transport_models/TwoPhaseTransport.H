@@ -55,7 +55,7 @@ public:
                        "transport.thermal_expansion_coefficient. Ignoring the "
                        "BoussinesqBuoyancy option in favor of the transport "
                        "option."
-                    << std::endl;
+                    << '\n';
             }
         } else if (pp_boussinesq_buoyancy.contains("thermal_expansion_coeff")) {
             amrex::Print()
@@ -63,7 +63,7 @@ public:
                    "has been deprecated in favor of "
                    "transport.thermal_expansion_coefficient. Please replace "
                    "this option."
-                << std::endl;
+                << '\n';
             pp_boussinesq_buoyancy.get(
                 "thermal_expansion_coeff", m_constant_beta);
         }
@@ -77,7 +77,7 @@ public:
                        "transport.reference_temperature. Ignoring the "
                        "BoussinesqBuoyancy option in favor of the transport "
                        "option."
-                    << std::endl;
+                    << '\n';
             } else if (pp_abl.contains("reference_temperature")) {
                 amrex::Print()
                     << "WARNING: ABL.reference_temperature "
@@ -85,7 +85,7 @@ public:
                        "transport.reference_temperature. Ignoring the "
                        "ABL option in favor of the transport "
                        "option."
-                    << std::endl;
+                    << '\n';
             }
         } else if (pp_boussinesq_buoyancy.contains("reference_temperature")) {
             amrex::Print()
@@ -93,7 +93,7 @@ public:
                    "has been deprecated in favor of "
                    "transport.reference_temperature. Please replace "
                    "this option."
-                << std::endl;
+                << '\n';
             pp_boussinesq_buoyancy.get(
                 "reference_temperature", m_reference_temperature);
         } else if (pp_abl.contains("reference_temperature")) {
@@ -101,7 +101,7 @@ public:
                               "has been deprecated in favor of "
                               "transport.reference_temperature. Please replace "
                               "this option."
-                           << std::endl;
+                           << '\n';
             pp_abl.get("reference_temperature", m_reference_temperature);
         }
     }

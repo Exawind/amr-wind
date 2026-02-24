@@ -159,7 +159,7 @@ void ABLMesoForcingMom::mean_velocity_heights(
             m_transition_height = amr_wind::interp::linear(
                 meso_times, ncfile->meso_transition_height(), currtime);
             amrex::Print() << "current transition height = "
-                           << m_transition_height << std::endl;
+                           << m_transition_height << '\n';
 
             set_transition_weighting();
             indirect_forcing_init();
@@ -198,7 +198,7 @@ void ABLMesoForcingMom::mean_velocity_heights(
 
         if (m_debug) {
             amrex::Print() << "direct vs indirect velocity error profile"
-                           << std::endl;
+                           << '\n';
         }
         amrex::Vector<amrex::Real> error_U_direct(m_nht);
         amrex::Vector<amrex::Real> error_V_direct(m_nht);
@@ -221,7 +221,7 @@ void ABLMesoForcingMom::mean_velocity_heights(
             if (m_debug) {
                 amrex::Print() << m_zht[ih] << " " << error_U_direct[ih] << " "
                                << error_U[ih] << " " << error_V_direct[ih]
-                               << " " << error_V[ih] << std::endl;
+                               << " " << error_V[ih] << '\n';
             }
         }
 
@@ -232,7 +232,7 @@ void ABLMesoForcingMom::mean_velocity_heights(
             if (m_debug) {
                 for (int ih = 0; ih < m_nht; ih++) {
                     amrex::Print() << m_zht[ih] << " " << error_U[ih] << " "
-                                   << error_V[ih] << std::endl;
+                                   << error_V[ih] << '\n';
                 }
             }
         }
@@ -245,7 +245,7 @@ void ABLMesoForcingMom::mean_velocity_heights(
         if (m_debug) {
             for (int ih = 0; ih < m_nht; ih++) {
                 amrex::Print() << m_zht[ih] << " " << error_U[ih] << " "
-                               << error_V[ih] << std::endl;
+                               << error_V[ih] << '\n';
             }
         }
     }

@@ -14,7 +14,7 @@ BCIface::BCIface(Field& field) : m_field(field) {}
 void BCIface::operator()(const amrex::Real value)
 {
     amrex::Print() << "Initializing boundary conditions for " << m_field.name()
-                   << std::endl;
+                   << '\n';
     set_default_value(value);
     read_bctype();
     set_bcrec();

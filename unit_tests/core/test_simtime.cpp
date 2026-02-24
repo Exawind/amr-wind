@@ -83,7 +83,7 @@ TEST_F(SimTimeTest, time_loop)
         if (time.do_regrid()) {
             ++regrid_counter;
         }
-        std::cout << time.new_time() << std::endl;
+        std::cout << time.new_time() << '\n';
     }
     EXPECT_EQ(counter, 5);
     EXPECT_EQ(plot_counter, 5);

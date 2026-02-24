@@ -492,7 +492,7 @@ protected:
             amrex::Print()
                 << "WARNING: Changing the face interpolator to FaceLinear "
                    "because a refinement ratio is different than 2"
-                << std::endl;
+                << '\n';
             m_face_mapper = field_impl::get_interpolation_operator(
                 FieldInterpolator::FaceLinear);
         }
