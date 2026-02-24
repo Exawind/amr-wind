@@ -13,8 +13,9 @@ inline std::string strip_spaces(const std::string& inp)
 {
     std::string str(inp);
     str.erase(
-        std::remove(str.begin(), str.end(), ' '),
-        str.end()); // NOLINT(modernize-use-ranges)
+        std::remove( // NOLINT(modernize-use-ranges)
+            str.begin(), str.end(), ' '),
+        str.end());
     return str;
 }
 
