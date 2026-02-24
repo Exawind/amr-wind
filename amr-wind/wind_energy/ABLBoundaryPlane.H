@@ -1,21 +1,21 @@
 #ifndef ABLBOUNDARYPLANE_H
 #define ABLBOUNDARYPLANE_H
 
+#include <cstdint>
 #include "amr-wind/core/Field.H"
 #include "amr-wind/CFDSim.H"
-#include "AMReX_Gpu.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
 #include "amr-wind/utilities/io_utils.H"
-#include <AMReX_BndryRegister.H>
-
 #include "amr-wind/wind_energy/ABLReadERFFunction.H"
+#include "AMReX_Gpu.H"
+#include "AMReX_BndryRegister.H"
 #include "AMReX_REAL.H"
 
 using namespace amrex::literals;
 class MultiBlockContainer;
 namespace amr_wind {
 
-enum struct io_mode { output, input, undefined };
+enum struct io_mode : std::uint8_t { output, input, undefined };
 
 struct BufferData
 {

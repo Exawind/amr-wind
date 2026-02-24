@@ -2,6 +2,7 @@
 #define SAMPLINGCONTAINER_H
 
 #include <memory>
+#include <cstdint>
 
 #include "AMReX_AmrParticles.H"
 #include "amr-wind/utilities/DerivedQuantity.H"
@@ -27,7 +28,7 @@ static constexpr int SNArrayInt = 0;
  */
 struct IIx
 {
-    enum Indices {
+    enum Indices : std::uint8_t {
         uid = 0, ///< Unique identifier for this particle
         sid,     ///< Identifier of the set this particle belongs to
         nid      ///< Index within the set for this particle

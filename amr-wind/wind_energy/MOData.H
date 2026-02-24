@@ -1,6 +1,7 @@
 #ifndef MODATA_H
 #define MODATA_H
 
+#include <cstdint>
 #include "amr-wind/utilities/trig_ops.H"
 #include "AMReX_REAL.H"
 
@@ -22,7 +23,7 @@ namespace amr_wind {
  */
 struct MOData
 {
-    enum class ThetaCalcType {
+    enum class ThetaCalcType : std::uint8_t {
         HEAT_FLUX = 0,      ///< Heat-flux specified
         SURFACE_TEMPERATURE ///< Surface temperature specified
     };
