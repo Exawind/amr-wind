@@ -15,7 +15,7 @@ namespace amr_wind::actuator::ops {
 
 namespace joukowsky {
 void parse_and_gather_params(const utils::ActParser& pp, JoukowskyData& data);
-inline void
+AMREX_INLINE void
 set_current_angular_velocity(JoukowskyData& data, const amrex::Real uInfSqr)
 {
     const amrex::Real uInfMag = std::sqrt(uInfSqr);

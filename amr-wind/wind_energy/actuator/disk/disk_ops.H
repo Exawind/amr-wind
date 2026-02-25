@@ -113,7 +113,7 @@ void parse_and_gather_params(const utils::ActParser& pp, T& metaData)
     optional_parameters(metaData, pp);
 }
 
-inline amrex::Real compute_reference_velocity_sqr(DiskBaseData& data)
+AMREX_INLINE amrex::Real compute_reference_velocity_sqr(DiskBaseData& data)
 {
     const auto& normal = data.normal_vec;
     // only use velocity components normal to disk
@@ -125,7 +125,7 @@ inline amrex::Real compute_reference_velocity_sqr(DiskBaseData& data)
 
 // we use a setter function since we want to cache this variable for netcdf
 // output
-inline void
+AMREX_INLINE void
 set_thrust_coefficient(DiskBaseData& data, const amrex::Real& uInfSqr)
 {
     const amrex::Real uInfMag = std::sqrt(uInfSqr);

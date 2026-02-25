@@ -243,7 +243,8 @@ struct InitDataOp<FixedWing, ActSrcLine>
 };
 
 template <>
-inline const AirfoilTable& airfoil_lookup<FixedWing>(FixedWing::DataType& data)
+AMREX_INLINE const AirfoilTable&
+airfoil_lookup<FixedWing>(FixedWing::DataType& data)
 {
     return *data.meta().aflookup;
 }

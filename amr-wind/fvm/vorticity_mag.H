@@ -88,7 +88,7 @@ struct VorticityMag
  *  \param phi [in] The velocity vector field
  */
 template <typename FTypeIn, typename FTypeOut>
-inline void vorticity_mag(FTypeOut& vortmagphi, const FTypeIn& phi)
+void vorticity_mag(FTypeOut& vortmagphi, const FTypeIn& phi)
 {
     BL_PROFILE("amr-wind::fvm::vorticity_mag");
     VorticityMag<FTypeIn, FTypeOut> vortmag(vortmagphi, phi);
@@ -101,7 +101,7 @@ inline void vorticity_mag(FTypeOut& vortmagphi, const FTypeIn& phi)
  *  \param phi [in] The velocity vector field
  */
 template <typename FType>
-inline std::unique_ptr<ScratchField> vorticity_mag(const FType& phi)
+std::unique_ptr<ScratchField> vorticity_mag(const FType& phi)
 {
     const std::string gname = phi.name() + "_vorticity_mag";
     auto vortmagphi = phi.repo().create_scratch_field(gname, 1);

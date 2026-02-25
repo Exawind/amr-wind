@@ -84,7 +84,7 @@ struct Divergence
  *  \ingroup fvm
  */
 template <typename FTypeIn, typename FTypeOut>
-inline void divergence(FTypeOut& divphi, const FTypeIn& phi)
+void divergence(FTypeOut& divphi, const FTypeIn& phi)
 {
     BL_PROFILE("amr-wind::fvm::divergence");
     Divergence<FTypeIn, FTypeOut> grad(divphi, phi);
@@ -95,7 +95,7 @@ inline void divergence(FTypeOut& divphi, const FTypeIn& phi)
  *  \ingroup fvm
  */
 template <typename FType>
-inline std::unique_ptr<ScratchField> divergence(const FType& phi)
+std::unique_ptr<ScratchField> divergence(const FType& phi)
 {
     AMREX_ALWAYS_ASSERT(phi.num_comp() >= AMREX_SPACEDIM);
     AMREX_ALWAYS_ASSERT(phi.num_comp() % AMREX_SPACEDIM == 0);

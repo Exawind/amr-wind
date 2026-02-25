@@ -11,7 +11,7 @@ namespace amr_wind::tagging {
 namespace {
 
 //! Utility function to parse inputs and return a vector instance
-inline vs::Vector parse_vector(amrex::ParmParse& pp, const std::string& key)
+vs::Vector parse_vector(amrex::ParmParse& pp, const std::string& key)
 {
     amrex::Vector<amrex::Real> tmp;
     pp.getarr(key, tmp);
@@ -24,7 +24,7 @@ inline vs::Vector parse_vector(amrex::ParmParse& pp, const std::string& key)
  *
  *  \return Position vectors of the 8 vertices that make up the box
  */
-inline amrex::Vector<vs::Vector> compute_hex_corners(
+amrex::Vector<vs::Vector> compute_hex_corners(
     const vs::Vector& origin,
     const vs::Vector& x,
     const vs::Vector& y,
@@ -49,7 +49,7 @@ inline amrex::Vector<vs::Vector> compute_hex_corners(
  *  \param hex_nodes Coordinates of the 8 vertices that make up the box
  *  \return Face normals for the six faces that make up the hexahedral box
  */
-inline amrex::Vector<vs::Vector>
+amrex::Vector<vs::Vector>
 compute_face_normals(const amrex::Vector<vs::Vector>& hex_nodes)
 {
     amrex::Vector<vs::Vector> face_normals(6);

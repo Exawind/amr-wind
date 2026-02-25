@@ -8,7 +8,7 @@ using namespace amrex::literals;
 
 namespace amr_wind::multiphase {
 
-static inline void hybrid_fluxes(
+static AMREX_INLINE void hybrid_fluxes(
     const FieldRepo& repo,
     const int ncomp,
     const amrex::Gpu::DeviceVector<int>& iconserv,
