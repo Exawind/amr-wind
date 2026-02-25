@@ -26,8 +26,8 @@ struct TestVector
     ~TestVector() = default;
 
     amrex::Real* data() { return m_dvec.data(); }
-    const amrex::Real* data() const { return m_dvec.data(); }
-    size_t size() const { return m_hvec.size(); }
+    [[nodiscard]] const amrex::Real* data() const { return m_dvec.data(); }
+    [[nodiscard]] size_t size() const { return m_hvec.size(); }
 
 private:
     const amrex::Vector<amrex::Real> m_hvec = {1.0_rt, 2.0_rt, 3.0_rt};

@@ -21,9 +21,9 @@ class WallFunction
 public:
     explicit WallFunction(CFDSim& sim);
 
-    amrex::Real utau() const { return m_log_law.utau_mean; }
-    LogLaw log_law() const { return m_log_law; }
-    MOSD mosd() const { return m_mosd; }
+    [[nodiscard]] amrex::Real utau() const { return m_log_law.utau_mean; }
+    [[nodiscard]] LogLaw log_law() const { return m_log_law; }
+    [[nodiscard]] MOSD mosd() const { return m_mosd; }
 
     //! Update the mean velocity at a given timestep
     void update_umean();

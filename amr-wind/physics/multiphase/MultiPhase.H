@@ -65,19 +65,25 @@ public:
 
     amrex::Real momentum_sum(int n);
 
-    InterfaceCapturingMethod interface_capturing_method() const;
+    [[nodiscard]] InterfaceCapturingMethod interface_capturing_method() const;
 
-    amrex::Real rho1() const { return m_rho1; }
+    [[nodiscard]] amrex::Real rho1() const { return m_rho1; }
 
-    amrex::Real rho2() const { return m_rho2; }
+    [[nodiscard]] amrex::Real rho2() const { return m_rho2; }
 
-    amrex::Vector<amrex::Real> gravity() const { return m_gravity; }
+    [[nodiscard]] amrex::Vector<amrex::Real> gravity() const
+    {
+        return m_gravity;
+    }
 
-    amrex::Real water_level() const { return m_water_level0; }
+    [[nodiscard]] amrex::Real water_level() const { return m_water_level0; }
 
-    bool perturb_pressure() const { return m_use_perturb_pressure; }
+    [[nodiscard]] bool perturb_pressure() const
+    {
+        return m_use_perturb_pressure;
+    }
 
-    bool reconstruct_true_pressure() const
+    [[nodiscard]] bool reconstruct_true_pressure() const
     {
         return m_reconstruct_true_pressure;
     }

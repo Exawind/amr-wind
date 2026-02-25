@@ -37,11 +37,11 @@ public:
 
     virtual ~MeanProfile() = default;
 
-    amrex::Real reference_velocity() const { return m_ref_vel; }
+    [[nodiscard]] amrex::Real reference_velocity() const { return m_ref_vel; }
 
-    int shear_dir() const { return m_shear_dir; }
+    [[nodiscard]] int shear_dir() const { return m_shear_dir; }
 
-    MeanVelOp device_instance() const { return m_op; }
+    [[nodiscard]] MeanVelOp device_instance() const { return m_op; }
 
 private:
     MeanVelOp m_op;

@@ -78,15 +78,21 @@ public:
 
     void post_sample_actions() override {};
 
-    long num_points() const override { return (m_beam_points * m_ntotal); }
+    [[nodiscard]] long num_points() const override
+    {
+        return (m_beam_points * m_ntotal);
+    }
 
-    long num_output_points() const override
+    [[nodiscard]] long num_output_points() const override
     {
         return (m_beam_points * m_ntotal);
     }
 
     //! Type of this sampling object
-    std::string sampletype() const override { return identifier(); }
+    [[nodiscard]] std::string sampletype() const override
+    {
+        return identifier();
+    }
 
     void
     define_netcdf_metadata(const ncutils::NCGroup& /*unused*/) const override;

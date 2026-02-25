@@ -25,22 +25,22 @@ public:
     IntField& operator=(const IntField&) = delete;
 
     //! Name of the field
-    const std::string& name() const { return m_name; }
+    [[nodiscard]] const std::string& name() const { return m_name; }
 
     //! Unique integer ID for this field
-    unsigned id() const { return m_id; }
+    [[nodiscard]] unsigned id() const { return m_id; }
 
     //! Number of components for this field
-    int num_comp() const { return m_ncomp; }
+    [[nodiscard]] int num_comp() const { return m_ncomp; }
 
     //! Number of ghost cells
-    const amrex::IntVect& num_grow() const { return m_ngrow; }
+    [[nodiscard]] const amrex::IntVect& num_grow() const { return m_ngrow; }
 
     //! Location of the field
-    FieldLoc field_location() const { return m_floc; }
+    [[nodiscard]] FieldLoc field_location() const { return m_floc; }
 
     //! Reference to the FieldRepo that holds the fabs
-    const FieldRepo& repo() const { return m_repo; }
+    [[nodiscard]] const FieldRepo& repo() const { return m_repo; }
 
     //! Access the FAB at a given level
     amrex::iMultiFab& operator()(int lev) noexcept;
@@ -48,7 +48,8 @@ public:
 
     amrex::Vector<amrex::iMultiFab*> vec_ptrs() noexcept;
 
-    amrex::Vector<const amrex::iMultiFab*> vec_const_ptrs() const noexcept;
+    [[nodiscard]] amrex::Vector<const amrex::iMultiFab*>
+    vec_const_ptrs() const noexcept;
 
     void setVal(int value) noexcept;
 

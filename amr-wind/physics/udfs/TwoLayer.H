@@ -59,7 +59,7 @@ struct TwoLayer
 
     explicit TwoLayer(const Field& fld);
 
-    DeviceType device_instance() const { return m_op; }
+    [[nodiscard]] DeviceType device_instance() const { return m_op; }
 
     DeviceOp m_op;
 };

@@ -38,7 +38,10 @@ public:
     void post_sample_actions() override {};
 
     //! Type of this sampling object
-    std::string sampletype() const override { return identifier(); }
+    [[nodiscard]] std::string sampletype() const override
+    {
+        return identifier();
+    }
 
     void
     define_netcdf_metadata(const ncutils::NCGroup& /*unused*/) const override;

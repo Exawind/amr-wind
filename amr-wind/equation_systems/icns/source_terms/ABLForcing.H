@@ -79,9 +79,12 @@ public:
         }
     }
 
-    amrex::RealArray abl_forcing() const { return m_abl_forcing; }
+    [[nodiscard]] amrex::RealArray abl_forcing() const { return m_abl_forcing; }
 
-    amrex::Real forcing_height() const { return m_forcing_height; }
+    [[nodiscard]] amrex::Real forcing_height() const
+    {
+        return m_forcing_height;
+    }
 
 private:
     const SimTime& m_time;
