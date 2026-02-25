@@ -63,14 +63,16 @@ private:
     bool m_writeTerms{false};
     const Field& m_vel;
     const Field& m_rho;
+    const Field& m_theta;
     Field& m_Nij;
     Field& m_divNij;
     std::string m_wall_het_model{"none"};
     amrex::Real m_monin_obukhov_length{constants::LARGE_NUM};
-    amrex::Real m_kappa{0.41_rt};
-    amrex::Real m_gamma_m{5.0_rt};
-    amrex::Real m_beta_m{16.0_rt};
-    amrex::Real m_surface_roughness_z0{0.1_rt};
+    amrex::Real m_kappa{0.41};
+    amrex::Real m_gamma_m{5.0};
+    amrex::Real m_beta_m{16.0};
+    amrex::Real m_surface_roughness_z0{0.1};
+    amrex::Real m_ref_temp{300.0};
 };
 
 } // namespace amr_wind::turbulence

@@ -4,6 +4,7 @@
 #include "amr-wind/fvm/nonLinearSum.H"
 #include "amr-wind/fvm/strainrate.H"
 #include "amr-wind/fvm/divergence.H"
+#include "amr-wind/fvm/gradient.H"
 #include "AMReX_REAL.H"
 #include "AMReX_MultiFab.H"
 #include "AMReX_ParmParse.H"
@@ -20,6 +21,7 @@ Kosovic<Transport>::Kosovic(CFDSim& sim)
     : TurbModelBase<Transport>(sim)
     , m_vel(sim.repo().get_field("velocity"))
     , m_rho(sim.repo().get_field("density"))
+    , m_theta(sim.repo().get_field("temperature"))
     , m_Nij(sim.repo().declare_field("Nij", 9, 1, 1))
     , m_divNij(sim.repo().declare_field("divNij", 3))
 {
@@ -52,6 +54,7 @@ Kosovic<Transport>::Kosovic(CFDSim& sim)
     pp_abl.query("mo_gamma_m", m_gamma_m);
     pp_abl.query("mo_beta_m", m_beta_m);
     pp_abl.query("surface_roughness_z0", m_surface_roughness_z0);
+    pp_abl.query("ref_temp", m_ref_temp);
 }
 template <typename Transport>
 void Kosovic<Transport>::update_turbulent_viscosity(
@@ -64,6 +67,9 @@ void Kosovic<Transport>::update_turbulent_viscosity(
     const auto& repo = mu_turb.repo();
     const auto& vel = m_vel.state(fstate);
     const auto& den = m_rho.state(fstate);
+    auto gradT = (this->m_sim.repo()).create_scratch_field(3, 0);
+    fvm::gradient(*gradT, m_theta.state(fstate));
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{0, 0, -9.81};
     const auto& geom_vec = repo.mesh().Geom();
     const amrex::Real Cs_sqr = this->m_Cs * this->m_Cs;
     const bool has_terrain =
@@ -102,6 +108,7 @@ void Kosovic<Transport>::update_turbulent_viscosity(
         const auto& mu_arrs = mu_turb(lev).arrays();
         const auto& rho_arrs = den(lev).const_arrays();
         const auto& vel_arrs = vel(lev).const_arrays();
+        const auto& gradT_arrs = (*gradT)(lev).const_arrays();
         const auto& divNij_arrs = (this->m_divNij)(lev).arrays();
         const auto& blank_arrs = has_terrain
                                      ? (*m_terrain_blank)(lev).const_arrays()
@@ -121,8 +128,9 @@ void Kosovic<Transport>::update_turbulent_viscosity(
         const amrex::Real non_neutral_neighbour =
             (m_wall_het_model == "mol")
                 ? MOData::calc_psi_m(
-                      1.5_rt * dz / monin_obukhov_length, m_beta_m, m_gamma_m)
-                : 0.0_rt;
+                      1.5 * dz / monin_obukhov_length, m_beta_m, m_gamma_m)
+                : 0.0;
+        const amrex::Real T0 = m_ref_temp;
         amrex::ParallelFor(
             mu_turb(lev),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
@@ -153,9 +161,23 @@ void Kosovic<Transport>::update_turbulent_viscosity(
                       std::pow(fmu, locSurfaceRANSExp) * ransL)) +
                     ((1.0_rt - locSurfaceFactor) * smag_factor);
                 const amrex::Real blankTerrain =
-                    (has_terrain) ? 1 - blank_arrs[nbx](i, j, k, 0) : 1.0_rt;
-                mu_arrs[nbx](i, j, k) *=
-                    rho * viscosityScale * turnOff * blankTerrain;
+                    (has_terrain) ? 1 - blank_arrs[nbx](i, j, k, 0) : 1.0;
+                amrex::Real mut = mu_arrs[nbx](i, j, k);
+                amrex::Real stratification =
+                    -(gradT_arrs[nbx](i, j, k, 0) * gravity[0] +
+                      gradT_arrs[nbx](i, j, k, 1) * gravity[1] +
+                      gradT_arrs[nbx](i, j, k, 2) * gravity[2]) /
+                    T0;
+                amrex::Real non_linear_coeff = 1.0;
+                if (stratification > 1e-10) {
+                    stratification = std::sqrt(
+                        std::max(1e-10, mut * mut - 3.0 * stratification));
+                    non_linear_coeff = (stratification < 1e-10) ? 0 : 1;
+                } else {
+                    stratification = mut;
+                }
+                mu_arrs[nbx](i, j, k) = rho * viscosityScale * turnOff *
+                                        blankTerrain * stratification;
                 // log-law
                 const amrex::Real ux = vel_arrs[nbx](i, j, k + 1, 0);
                 const amrex::Real uy = vel_arrs[nbx](i, j, k + 1, 1);
@@ -184,18 +206,17 @@ void Kosovic<Transport>::update_turbulent_viscosity(
                     (mu_arrs[nbx](i, j, k) * (1.0_rt - drag)) +
                     (drag * mut_loglaw);
                 amrex::Real stressScale =
-                    (locSurfaceFactor *
-                     (std::pow(1.0_rt - fmu, locSurfaceRANSExp) * smag_factor *
-                          0.25_rt * locC1 +
-                      std::pow(fmu, locSurfaceRANSExp) * ransL)) +
-                    ((1.0_rt - locSurfaceFactor) * smag_factor * 0.25_rt *
-                     locC1);
-                divNij_arrs[nbx](i, j, k, 0) *=
-                    rho * stressScale * turnOff * blankTerrain;
-                divNij_arrs[nbx](i, j, k, 1) *=
-                    rho * stressScale * turnOff * blankTerrain;
-                divNij_arrs[nbx](i, j, k, 2) *=
-                    rho * stressScale * turnOff * blankTerrain;
+                    locSurfaceFactor *
+                        (std::pow(1 - fmu, locSurfaceRANSExp) * smag_factor *
+                             0.25 * locC1 +
+                         std::pow(fmu, locSurfaceRANSExp) * ransL) +
+                    (1 - locSurfaceFactor) * smag_factor * 0.25 * locC1;
+                divNij_arrs[nbx](i, j, k, 0) *= rho * stressScale * turnOff *
+                                                blankTerrain * non_linear_coeff;
+                divNij_arrs[nbx](i, j, k, 1) *= rho * stressScale * turnOff *
+                                                blankTerrain * non_linear_coeff;
+                divNij_arrs[nbx](i, j, k, 2) *= rho * stressScale * turnOff *
+                                                blankTerrain * non_linear_coeff;
             });
     }
     amrex::Gpu::streamSynchronize();
@@ -211,7 +232,7 @@ void Kosovic<Transport>::update_alphaeff(Field& alphaeff)
     auto lam_alpha = (this->m_transport).alpha();
     auto& mu_turb = this->m_mu_turb;
     auto& repo = mu_turb.repo();
-    const amrex::Real muCoeff = (m_monin_obukhov_length < 0) ? 3.0_rt : 1.0_rt;
+    const amrex::Real muCoeff = 3.0;
     const int nlevels = repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& muturb_arrs = mu_turb(lev).const_arrays();

@@ -19,7 +19,7 @@ TemperatureFreeAtmosphereForcing::TemperatureFreeAtmosphereForcing(
 {
     amrex::ParmParse pp_abl("ABL");
     //! Temperature variation as a function of height
-    pp_abl.query("meso_sponge_start", m_meso_start);
+    pp_abl.query("temp_sponge_start", m_meso_start);
     pp_abl.query("meso_timescale", m_meso_timescale);
     pp_abl.getarr("temperature_heights", m_theta_heights);
     pp_abl.getarr("temperature_values", m_theta_values);
@@ -74,15 +74,22 @@ void TemperatureFreeAtmosphereForcing::operator()(
                       : nullptr;
     const auto& terrain_height = (has_terrain)
                                      ? (*m_terrain_height)(lev).const_array(mfi)
-                                     : amrex::Array4<amrex::Real>();
+                                     : amrex::Array4<double>();
+    auto* const m_terrain_blank =
+        (has_terrain) ? &this->m_sim.repo().get_int_field("terrain_blank")
+                      : nullptr;
+    const auto& terrain_blank = (has_terrain)
+                                    ? (*m_terrain_blank)(lev).const_array(mfi)
+                                    : amrex::Array4<int>();
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const amrex::Real cell_terrain_height =
-            (has_terrain) ? terrain_height(i, j, k) : 0.0_rt;
-        const amrex::Real z = amrex::max<amrex::Real>(
-            prob_lo[2] + ((k + 0.5_rt) * dx[2]) - cell_terrain_height,
-            0.5_rt * dx[2]);
-        const amrex::Real zi = amrex::max<amrex::Real>(
-            (z - sponge_start) / (prob_hi[2] - sponge_start), 0.0_rt);
+            (has_terrain) ? terrain_height(i, j, k) : 0.0;
+        const amrex::Real cell_blanking =
+            (has_terrain) ? terrain_blank(i, j, k) : 0.0;
+        const amrex::Real z = std::max(
+            prob_lo[2] + (k + 0.5) * dx[2] - cell_terrain_height, 0.5 * dx[2]);
+        const amrex::Real zi =
+            std::max((z - sponge_start) / (prob_hi[2] - sponge_start), 0.0);
         amrex::Real ref_temp = temperature(i, j, k);
         if (zi > 0) {
             ref_temp = (vsize > 0)
@@ -91,8 +98,8 @@ void TemperatureFreeAtmosphereForcing::operator()(
                                  theta_values_d, z)
                            : temperature(i, j, k);
         }
-        src_term(i, j, k, 0) -=
-            1.0_rt / meso_timescale * (temperature(i, j, k) - ref_temp);
+        src_term(i, j, k, 0) -= (1 - cell_blanking) / meso_timescale *
+                                (temperature(i, j, k) - ref_temp);
     });
     if (m_horizontal_sponge) {
         const amrex::Real sponge_strength = m_sponge_strength;

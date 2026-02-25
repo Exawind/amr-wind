@@ -33,7 +33,7 @@ transport.laminar_prandtl                          = 0.7
 transport.turbulent_prandtl                        = 0.333
 # turbulence equation parameters 
 turbulence.model                                   = Kosovic
-Kosovic.monin_obukhov_length                       = -1e30
+Kosovic.refMOL                                     = -1e30
 # Atmospheric boundary layer
 ABL.perturb_velocity                               = false
 ABL.perturb_temperature                            = false

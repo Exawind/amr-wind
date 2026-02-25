@@ -37,8 +37,8 @@ private:
     amrex::Vector<amrex::Real> m_theta_values;
     amrex::Gpu::DeviceVector<amrex::Real> m_theta_heights_d;
     amrex::Gpu::DeviceVector<amrex::Real> m_theta_values_d;
-    amrex::Real m_meso_start{600.0_rt};
-    amrex::Real m_meso_timescale{30.0_rt};
+    amrex::Real m_meso_start{1e30};
+    amrex::Real m_meso_timescale{30};
     bool m_horizontal_sponge{false};
     amrex::Real m_sponge_strength{1.0_rt};
     amrex::Real m_sponge_density{1.0_rt};
