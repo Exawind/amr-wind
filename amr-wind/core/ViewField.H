@@ -31,14 +31,14 @@ public:
     ViewField(ViewField&&) = default;
     ViewField& operator=(ViewField&&) = default;
 
-    inline std::string name() const { return m_src.name() + "view"; }
+    std::string name() const { return m_src.name() + "view"; }
 
     //! Number of components in this subview
-    inline int num_comp() const { return m_ncomp; }
+    int num_comp() const { return m_ncomp; }
 
-    inline const amrex::IntVect& num_grow() const { return m_src.num_grow(); }
+    const amrex::IntVect& num_grow() const { return m_src.num_grow(); }
 
-    inline FieldLoc field_location() const { return m_src.field_location(); }
+    FieldLoc field_location() const { return m_src.field_location(); }
 
     //! Return the field data for a given level
     amrex::MultiFab& operator()(int lev) { return m_data[lev]; }

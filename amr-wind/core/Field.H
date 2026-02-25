@@ -122,25 +122,25 @@ public:
     ~Field();
 
     //! Name of this field (including state information)
-    inline const std::string& name() const { return m_name; }
+    const std::string& name() const { return m_name; }
 
     //! Base name (without state information)
-    inline const std::string& base_name() const { return m_info->m_basename; }
+    const std::string& base_name() const { return m_info->m_basename; }
 
     //! Unique integer identifier for this field
-    inline unsigned id() const { return m_id; }
+    unsigned id() const { return m_id; }
 
     //! Number of components for this field
-    inline int num_comp() const { return m_info->m_ncomp; }
+    int num_comp() const { return m_info->m_ncomp; }
 
     //! Ghost cells
-    inline const amrex::IntVect& num_grow() const { return m_info->m_ngrow; }
+    const amrex::IntVect& num_grow() const { return m_info->m_ngrow; }
 
     //! Number of exact time states available for this field
-    inline int num_time_states() const { return m_info->m_nstates; }
+    int num_time_states() const { return m_info->m_nstates; }
 
     //! Number of states available for this field
-    inline int num_states() const
+    int num_states() const
     {
         int ns = static_cast<int>(std::count_if(
             m_info->m_states.begin(), m_info->m_states.end(),
@@ -150,19 +150,19 @@ public:
     }
 
     //! Cell, node, or face centered field
-    inline FieldLoc field_location() const { return m_info->m_floc; }
+    FieldLoc field_location() const { return m_info->m_floc; }
 
     //! State of this field instance
-    inline FieldState field_state() const { return m_state; }
+    FieldState field_state() const { return m_state; }
 
     //! FieldRepo instance that manages this field
-    inline FieldRepo& repo() const { return m_repo; }
+    FieldRepo& repo() const { return m_repo; }
 
-    inline bool& fillpatch_on_regrid() { return m_fillpatch_on_regrid; }
-    inline bool fillpatch_on_regrid() const { return m_fillpatch_on_regrid; }
+    bool& fillpatch_on_regrid() { return m_fillpatch_on_regrid; }
+    bool fillpatch_on_regrid() const { return m_fillpatch_on_regrid; }
 
     //! Return true if the requested state exists for this field
-    inline bool query_state(const FieldState fstate) const
+    bool query_state(const FieldState fstate) const
     {
         const int fid = static_cast<int>(fstate);
         return (m_info->m_states[fid] != nullptr);
@@ -202,13 +202,13 @@ public:
     //!
     //! The data must have been created on host using the host arrays
     //!
-    inline void copy_bc_to_device() { m_info->copy_bc_to_device(); }
+    void copy_bc_to_device() { m_info->copy_bc_to_device(); }
 
     //! Return flag indicating whether BCs have been initialized
-    inline bool bc_initialized() const { return m_info->m_bc_copied_to_device; }
+    bool bc_initialized() const { return m_info->m_bc_copied_to_device; }
 
     //! Return a flag indicating whether a fillpatch Op has been registered
-    inline bool has_fillpatch_op() const
+    bool has_fillpatch_op() const
     {
         return static_cast<bool>(m_info->m_fillpatch_op);
     }
@@ -358,7 +358,7 @@ public:
         const amrex::Real time,
         const amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM> mfabs) noexcept;
 
-    inline void fillpatch(
+    void fillpatch(
         const int lev,
         const amrex::Real time,
         amrex::MultiFab& mfab,
@@ -367,7 +367,7 @@ public:
         fillpatch(lev, time, mfab, amrex::IntVect(nghost));
     }
 
-    inline void fillpatch_from_coarse(
+    void fillpatch_from_coarse(
         const int lev,
         const amrex::Real time,
         amrex::MultiFab& mfab,
@@ -376,7 +376,7 @@ public:
         fillpatch_from_coarse(lev, time, mfab, amrex::IntVect(nghost));
     }
 
-    inline void fillphysbc(
+    void fillphysbc(
         const int lev,
         const amrex::Real time,
         amrex::MultiFab& mfab,
@@ -385,7 +385,7 @@ public:
         fillphysbc(lev, time, mfab, amrex::IntVect(nghost));
     }
 
-    inline void set_inflow(
+    void set_inflow(
         const int lev,
         const amrex::Real time,
         amrex::MultiFab& mfab,
@@ -394,11 +394,11 @@ public:
         set_inflow(lev, time, mfab, amrex::IntVect(nghost));
     }
 
-    inline bool& in_uniform_space() { return m_mesh_mapped; }
-    inline bool in_uniform_space() const { return m_mesh_mapped; }
+    bool& in_uniform_space() { return m_mesh_mapped; }
+    bool in_uniform_space() const { return m_mesh_mapped; }
 
     //! Check if any of the boundaries is a mass-inflow-outflow
-    inline bool has_inout_bndry() const { return m_inout_bndry; }
+    bool has_inout_bndry() const { return m_inout_bndry; }
 
     //! Set the inout_bndry flag
     void set_inout_bndry() { m_inout_bndry = true; }

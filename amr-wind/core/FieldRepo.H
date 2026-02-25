@@ -149,7 +149,7 @@ public:
      *
      *  \sa amr_wind::FieldRepo::declare_field
      */
-    inline Field& declare_cc_field(
+    Field& declare_cc_field(
         const std::string& name,
         const int ncomp = 1,
         const int ngrow = 0,
@@ -164,7 +164,7 @@ public:
      *
      *  \sa amr_wind::FieldRepo::declare_field
      */
-    inline Field& declare_nd_field(
+    Field& declare_nd_field(
         const std::string& name,
         const int ncomp = 1,
         const int ngrow = 0,
@@ -179,7 +179,7 @@ public:
      *
      *  \sa amr_wind::FieldRepo::declare_field
      */
-    inline Field& declare_xf_field(
+    Field& declare_xf_field(
         const std::string& name,
         const int ncomp = 1,
         const int ngrow = 0,
@@ -194,7 +194,7 @@ public:
      *
      *  \sa amr_wind::FieldRepo::declare_field
      */
-    inline Field& declare_yf_field(
+    Field& declare_yf_field(
         const std::string& name,
         const int ncomp = 1,
         const int ngrow = 0,
@@ -209,7 +209,7 @@ public:
      *
      *  \sa amr_wind::FieldRepo::declare_field
      */
-    inline Field& declare_zf_field(
+    Field& declare_zf_field(
         const std::string& name,
         const int ncomp = 1,
         const int ngrow = 0,
@@ -222,7 +222,7 @@ public:
      *
      *  This is a convenience function around `declare_field`
      */
-    inline amrex::Vector<Field*> declare_face_normal_field(
+    amrex::Vector<Field*> declare_face_normal_field(
         const amrex::Vector<std::string>& names,
         const int ncomp = 1,
         const int ngrow = 0,
@@ -373,8 +373,7 @@ public:
     }
 
     //! Return factory instance at a given level
-    inline const amrex::FabFactory<amrex::FArrayBox>&
-    factory(int lev) const noexcept
+    const amrex::FabFactory<amrex::FArrayBox>& factory(int lev) const noexcept
     {
         return *m_leveldata[lev]->m_factory;
     }
@@ -385,8 +384,7 @@ protected:
      *  \param fid Unique integer field identifier for this field
      *  \param lev AMR level
      */
-    inline amrex::MultiFab&
-    get_multifab(const unsigned fid, const int lev) noexcept
+    amrex::MultiFab& get_multifab(const unsigned fid, const int lev) noexcept
     {
         BL_ASSERT(lev <= m_mesh.finestLevel());
         return m_leveldata[lev]->m_mfabs[fid];
@@ -397,8 +395,7 @@ protected:
      *  \param fid Unique integer field identifier for this field
      *  \param lev AMR level
      */
-    inline amrex::iMultiFab&
-    get_int_fab(const unsigned fid, const int lev) noexcept
+    amrex::iMultiFab& get_int_fab(const unsigned fid, const int lev) noexcept
     {
         BL_ASSERT(lev <= m_mesh.finestLevel());
         return m_leveldata[lev]->m_int_fabs[fid];

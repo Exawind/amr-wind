@@ -24,7 +24,7 @@ struct Rankine
         amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> vel_ref = {0.0_rt};
 
         AMREX_GPU_DEVICE
-        inline void operator()(
+        void operator()(
             const amrex::IntVect& iv,
             amrex::Array4<amrex::Real> const& field,
             amrex::GeometryData const& geom,

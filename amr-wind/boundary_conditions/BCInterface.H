@@ -71,8 +71,7 @@ protected:
     inline void set_default_value(const amrex::Real value);
 
     //! Set AMReX mathematical boundary types for the lower boundaries
-    inline void
-    set_bcrec_lo(int dir, amrex::BCType::mathematicalBndryTypes bcrec)
+    void set_bcrec_lo(int dir, amrex::BCType::mathematicalBndryTypes bcrec)
     {
         auto& fbcrec = m_field.bcrec();
         for (int i = 0; i < m_field.num_comp(); ++i) {
@@ -81,8 +80,7 @@ protected:
     }
 
     //! Set AMReX mathematical boundary types for the upper boundaries
-    inline void
-    set_bcrec_hi(int dir, amrex::BCType::mathematicalBndryTypes bcrec)
+    void set_bcrec_hi(int dir, amrex::BCType::mathematicalBndryTypes bcrec)
     {
         auto& fbcrec = m_field.bcrec();
         for (int i = 0; i < m_field.num_comp(); ++i) {

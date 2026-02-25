@@ -25,16 +25,16 @@ public:
     IntScratchField& operator=(const IntScratchField&) = delete;
 
     //! Name if available for this scratch field
-    inline const std::string& name() const { return m_name; }
+    const std::string& name() const { return m_name; }
 
     //! Number of components for this field
-    inline int num_comp() const { return m_ncomp; }
+    int num_comp() const { return m_ncomp; }
 
     //! Ghost cells
-    inline const amrex::IntVect& num_grow() const { return m_ngrow; }
+    const amrex::IntVect& num_grow() const { return m_ngrow; }
 
     //! Cell, node, face where the field is stored
-    inline FieldLoc field_location() const { return m_floc; }
+    FieldLoc field_location() const { return m_floc; }
 
     //! Return the field data for a given level
     amrex::iMultiFab& operator()(int lev) { return m_data[lev]; }

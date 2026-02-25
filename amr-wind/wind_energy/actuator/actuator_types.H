@@ -118,7 +118,7 @@ struct ActGrid
     /** Convenience function to resize both force/velocity data to same
      * locations
      */
-    inline void resize(int num_pts) { resize(num_pts, num_pts); }
+    void resize(int num_pts) { resize(num_pts, num_pts); }
 };
 
 /** Slice of actutator data for components (tower, blade, etc)
