@@ -1,5 +1,5 @@
-#ifndef ScalarAdvection_H
-#define ScalarAdvection_H
+#ifndef SCALARADVECTION_H
+#define SCALARADVECTION_H
 
 #include <numbers>
 #include "amr-wind/core/Physics.H"

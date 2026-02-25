@@ -1,5 +1,5 @@
-#ifndef OVERSET_OPS_K_H_
-#define OVERSET_OPS_K_H_
+#ifndef OVERSET_OPS_K_H
+#define OVERSET_OPS_K_H
 
 #include "amr-wind/core/vs/vector_space.H"
 #include <AMReX_FArrayBox.H>

@@ -1,5 +1,5 @@
-#ifndef ABLMESOFORCINGMOM
-#define ABLMESOFORCINGMOM
+#ifndef ABLMESOFORCINGMOM_H
+#define ABLMESOFORCINGMOM_H
 
 #include <memory>
 #include "AMReX_REAL.H"

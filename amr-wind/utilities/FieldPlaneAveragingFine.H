@@ -1,5 +1,5 @@
-#ifndef FieldPlaneAveragingFine_H
-#define FieldPlaneAveragingFine_H
+#ifndef FIELDPLANEAVERAGINGFINE_H
+#define FIELDPLANEAVERAGINGFINE_H
 
 #include "amr-wind/utilities/DirectionSelector.H"
 #include "amr-wind/CFDSim.H"
@@ -180,4 +180,4 @@ public: // public for GPU
 
 } // namespace amr_wind
 
-#endif /* FieldPlaneAveraging_H */
+#endif /* FieldPlaneAveragingFine_H */

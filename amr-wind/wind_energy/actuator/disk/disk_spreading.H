@@ -1,5 +1,5 @@
-#ifndef DISK_SPREADING_H_
-#define DISK_SPREADING_H_
+#ifndef DISK_SPREADING_H
+#define DISK_SPREADING_H
 
 #include "AMReX_REAL.H"
 #include "amr-wind/wind_energy/actuator/actuator_utils.H"
@@ -259,4 +259,4 @@ public:
     }
 };
 } // namespace amr_wind::actuator::ops
-#endif /* DISK_SPREADING_H_ */
+#endif /* DISK_SPREADING_H */

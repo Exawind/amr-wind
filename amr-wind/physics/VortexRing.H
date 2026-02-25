@@ -1,5 +1,5 @@
-#ifndef VortexRing_H
-#define VortexRing_H
+#ifndef VORTEXRING_H
+#define VORTEXRING_H
 
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/core/Field.H"

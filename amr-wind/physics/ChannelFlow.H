@@ -1,5 +1,5 @@
-#ifndef ChannelFlow_H
-#define ChannelFlow_H
+#ifndef CHANNELFLOW_H
+#define CHANNELFLOW_H
 
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/core/Field.H"

@@ -1,5 +1,5 @@
-#ifndef TerrainDrag_H
-#define TerrainDrag_H
+#ifndef TERRAINDRAG_H
+#define TERRAINDRAG_H
 
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/core/Field.H"

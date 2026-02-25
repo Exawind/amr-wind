@@ -1,5 +1,5 @@
-#ifndef SyntheticTurbulence_H
-#define SyntheticTurbulence_H
+#ifndef SYNTHETICTURBULENCE_H
+#define SYNTHETICTURBULENCE_H
 
 #include <string>
 #include <cmath>

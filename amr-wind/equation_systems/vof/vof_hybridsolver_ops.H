@@ -1,5 +1,5 @@
-#ifndef VOF_HYBRIDSOLVER_OPS_H_
-#define VOF_HYBRIDSOLVER_OPS_H_
+#ifndef VOF_HYBRIDSOLVER_OPS_H
+#define VOF_HYBRIDSOLVER_OPS_H
 
 #include <cmath>
 #include "amr-wind/core/FieldRepo.H"

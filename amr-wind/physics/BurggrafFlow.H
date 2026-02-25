@@ -1,5 +1,5 @@
-#ifndef BurggrafFlow_H
-#define BurggrafFlow_H
+#ifndef BURGGRAFFLOW_H
+#define BURGGRAFFLOW_H
 
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/core/Field.H"

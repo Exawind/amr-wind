@@ -1,5 +1,5 @@
-#ifndef STOKES_WAVES_H_
-#define STOKES_WAVES_H_
+#ifndef STOKES_WAVES_H
+#define STOKES_WAVES_H
 
 #include <algorithm>
 #include <cmath>

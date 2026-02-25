@@ -1,5 +1,5 @@
-#ifndef ACTSRCDISKOP_TURBINE_H_
-#define ACTSRCDISKOP_TURBINE_H_
+#ifndef ACTSRCDISKOP_TURBINE_H
+#define ACTSRCDISKOP_TURBINE_H
 
 #include <numbers>
 #include "AMReX_REAL.H"
@@ -194,4 +194,4 @@ operator()(const int lev, const amrex::MFIter& mfi, const amrex::Geometry& geom)
 }
 } // namespace amr_wind::actuator::ops
 
-#endif /* ACTSRCDISKOP_TURBINE_H_ */
+#endif /* ACTSRCDISKOP_TURBINE_H */

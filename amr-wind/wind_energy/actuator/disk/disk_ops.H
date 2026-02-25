@@ -1,5 +1,5 @@
-#ifndef DISK_OPS_H_
-#define DISK_OPS_H_
+#ifndef DISK_OPS_H
+#define DISK_OPS_H
 
 #include "amr-wind/wind_energy/actuator/disk/ActuatorDisk.H"
 #include "amr-wind/wind_energy/actuator/actuator_ops.H"
@@ -179,4 +179,4 @@ struct UpdatePosOp<
 } // namespace ops
 } // namespace amr_wind::actuator
 
-#endif /* DISK_OPS_H_ */
+#endif /* DISK_OPS_H */

@@ -1,5 +1,5 @@
-#ifndef FieldPlaneAveraging_H
-#define FieldPlaneAveraging_H
+#ifndef FIELDPLANEAVERAGING_H
+#define FIELDPLANEAVERAGING_H
 
 #include "amr-wind/utilities/DirectionSelector.H"
 #include "amr-wind/CFDSim.H"
