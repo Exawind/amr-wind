@@ -49,7 +49,7 @@ public:
     virtual ~BCIface() = default;
 
     //! Operator that performs init actions and syncs the BC data to device
-    virtual void operator()(const amrex::Real value = 0.0_rt);
+    virtual void operator()(amrex::Real value = 0.0_rt);
 
     //! User-defined functions for Dirichlet-type boundaries
     amrex::Array<const std::string, 3> get_dirichlet_udfs();
@@ -68,7 +68,7 @@ protected:
     virtual void set_bcfuncs();
 
     //! Set default BC values for the field
-    inline void set_default_value(const amrex::Real value);
+    inline void set_default_value(amrex::Real value);
 
     //! Set AMReX mathematical boundary types for the lower boundaries
     void set_bcrec_lo(int dir, amrex::BCType::mathematicalBndryTypes bcrec)

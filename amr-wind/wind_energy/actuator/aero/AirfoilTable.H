@@ -19,11 +19,10 @@ public:
 
     ~AirfoilTable();
 
-    void
-    operator()(const amrex::Real aoa, amrex::Real& cl, amrex::Real& cd) const;
+    void operator()(amrex::Real aoa, amrex::Real& cl, amrex::Real& cd) const;
 
     void operator()(
-        const amrex::Real aoa,
+        amrex::Real aoa,
         amrex::Real& cl,
         amrex::Real& cd,
         amrex::Real& cm) const;
@@ -38,7 +37,7 @@ public:
     [[nodiscard]] const VecList& polars() const { return m_polar; }
 
 protected:
-    explicit AirfoilTable(const int num_entries);
+    explicit AirfoilTable(int num_entries);
 
     void convert_aoa_to_radians();
 
@@ -52,8 +51,7 @@ protected:
 class ThinAirfoil
 {
 public:
-    void
-    operator()(const amrex::Real aoa, amrex::Real& cl, amrex::Real& cd) const;
+    void operator()(amrex::Real aoa, amrex::Real& cl, amrex::Real& cd) const;
 
     amrex::Real& cd_factor() { return m_cd_factor; }
 

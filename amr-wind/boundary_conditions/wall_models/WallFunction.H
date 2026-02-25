@@ -55,16 +55,14 @@ class VelWallFunc : public FieldBCIface
 public:
     VelWallFunc(Field& velocity, WallFunction& wall_func);
 
-    void operator()(Field& velocity, const FieldState rho_state) override;
+    void operator()(Field& velocity, FieldState rho_state) override;
 
-    static void wall_model(
-        Field& velocity, const FieldState rho_state, const amrex::Real utau);
+    static void
+    wall_model(Field& velocity, FieldState rho_state, amrex::Real utau);
 
     template <typename ShearStressSimple>
     static void wall_model(
-        Field& velocity,
-        const FieldState rho_state,
-        const ShearStressSimple& tau);
+        Field& velocity, FieldState rho_state, const ShearStressSimple& tau);
 
 private:
     WallFunction& m_wall_func;

@@ -33,7 +33,7 @@ void write_netcdf(
     const JoukowskyData& data,
     const ActInfo& info,
     const ActGrid& /*unused*/,
-    const amrex::Real time);
+    amrex::Real time);
 
 void update_disk_points(Joukowsky::DataType& data);
 

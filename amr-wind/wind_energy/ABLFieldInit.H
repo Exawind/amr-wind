@@ -40,7 +40,7 @@ public:
      *  pushes the field to device.
      */
     void perturb_temperature(
-        const int lev, const amrex::Geometry& geom, Field& temperature) const;
+        int lev, const amrex::Geometry& geom, Field& temperature) const;
 
     //! Flag indicating whether temperature field needs perturbations
     [[nodiscard]] bool add_temperature_perturbations() const

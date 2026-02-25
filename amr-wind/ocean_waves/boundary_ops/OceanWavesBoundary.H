@@ -27,28 +27,26 @@ public:
     void post_init_actions();
 
     void set_velocity(
-        const int lev,
-        const amrex::Real time,
+        int lev,
+        amrex::Real time,
         const Field& fld,
         amrex::MultiFab& mfab,
-        const int dcomp = 0,
-        const int orig_comp = 0) const;
+        int dcomp = 0,
+        int orig_comp = 0) const;
 
-    void set_vof(
-        const int lev,
-        const amrex::Real time,
-        const Field& fld,
-        amrex::MultiFab& mfab) const;
+    void
+    set_vof(int lev, amrex::Real time, const Field& fld, amrex::MultiFab& mfab)
+        const;
 
     void set_density(
-        const int lev,
-        const amrex::Real time,
+        int lev,
+        amrex::Real time,
         const Field& fld,
         amrex::MultiFab& mfab) const;
 
     void set_inflow_sibling_velocity(
-        const int lev,
-        const amrex::Real time,
+        int lev,
+        amrex::Real time,
         const Field& fld,
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM> mfabs) const;
 

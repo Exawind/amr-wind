@@ -24,7 +24,7 @@ class MultiLevelVector
 public:
     MultiLevelVector(const FieldLoc floc = FieldLoc::CELL) : m_floc(floc) {};
 
-    void resize(const int axis, const amrex::Vector<amrex::Geometry>& geom);
+    void resize(int axis, const amrex::Vector<amrex::Geometry>& geom);
 
     [[nodiscard]] const amrex::Vector<amrex::Real>&
     host_data(const int lev) const

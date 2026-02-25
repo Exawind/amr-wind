@@ -31,11 +31,7 @@ struct FieldInfo
     static constexpr int max_field_states = 5;
 
     FieldInfo(
-        std::string basename,
-        const int ncomp,
-        const int ngrow,
-        const int nstates,
-        const FieldLoc floc);
+        std::string basename, int ncomp, int ngrow, int nstates, FieldLoc floc);
 
     ~FieldInfo();
 
@@ -238,7 +234,7 @@ public:
      */
     void set_default_fillpatch_bc(
         const SimTime& time,
-        const amrex::BCType::mathematicalBndryTypes bctype =
+        amrex::BCType::mathematicalBndryTypes bctype =
             amrex::BCType::hoextrap) noexcept;
 
     /** Map field to the uniform mesh
@@ -260,8 +256,8 @@ public:
     void to_stretched_space() noexcept;
 
     //! Return field at a different time state
-    Field& state(const FieldState fstate);
-    [[nodiscard]] const Field& state(const FieldState fstate) const;
+    Field& state(FieldState fstate);
+    [[nodiscard]] const Field& state(FieldState fstate) const;
 
     //! Return MultiFab instance for a given level
     amrex::MultiFab& operator()(int lev) noexcept;
@@ -281,7 +277,7 @@ public:
     void copy_state(FieldState to_state, FieldState from_state) noexcept;
 
     //! Create a new time state after the field has been created
-    Field& create_state(const FieldState fstate) noexcept;
+    Field& create_state(FieldState fstate) noexcept;
 
     // NOTE: We break naming rules for methods here to provide 1-1 mapping with
     // the underlying MultiFab method names.
@@ -334,46 +330,46 @@ public:
             new T(*this, std::forward<Args>(args)...));
     }
 
-    void fillpatch(const amrex::Real time) noexcept;
-    void fillpatch(const amrex::Real time, amrex::IntVect ng) noexcept;
+    void fillpatch(amrex::Real time) noexcept;
+    void fillpatch(amrex::Real time, amrex::IntVect ng) noexcept;
     void fillpatch_sibling_fields(
-        const amrex::Real time,
-        const amrex::IntVect ng,
+        amrex::Real time,
+        amrex::IntVect ng,
         amrex::Array<Field*, AMREX_SPACEDIM>& fields) const noexcept;
 
-    void fillphysbc(const amrex::Real time) noexcept;
-    void fillphysbc(const amrex::Real time, const amrex::IntVect ng) noexcept;
+    void fillphysbc(amrex::Real time) noexcept;
+    void fillphysbc(amrex::Real time, amrex::IntVect ng) noexcept;
 
-    void apply_bc_funcs(const FieldState rho_state) noexcept;
+    void apply_bc_funcs(FieldState rho_state) noexcept;
 
     void fillpatch(
-        const int lev,
-        const amrex::Real time,
+        int lev,
+        amrex::Real time,
         amrex::MultiFab& mfab,
         const amrex::IntVect& nghost) noexcept;
 
     void fillpatch_from_coarse(
-        const int lev,
-        const amrex::Real time,
+        int lev,
+        amrex::Real time,
         amrex::MultiFab& mfab,
         const amrex::IntVect& nghost) noexcept;
 
     void fillphysbc(
-        const int lev,
-        const amrex::Real time,
+        int lev,
+        amrex::Real time,
         amrex::MultiFab& mfab,
         const amrex::IntVect& nghost) noexcept;
 
     void set_inflow(
-        const int lev,
-        const amrex::Real time,
+        int lev,
+        amrex::Real time,
         amrex::MultiFab& mfab,
         const amrex::IntVect& nghost) noexcept;
 
     void set_inflow_sibling_fields(
-        const int lev,
-        const amrex::Real time,
-        const amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM> mfabs) noexcept;
+        int lev,
+        amrex::Real time,
+        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM> mfabs) noexcept;
 
     void fillpatch(
         const int lev,
@@ -425,7 +421,7 @@ protected:
         FieldRepo& repo,
         std::string name,
         std::shared_ptr<FieldInfo> finfo,
-        const unsigned fid,
+        unsigned fid,
         FieldState state);
 
     //! Reference to the FieldRepository instance

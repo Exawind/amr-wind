@@ -47,8 +47,7 @@ public:
     void
     populate_netcdf_metadata(const ncutils::NCGroup& /*unused*/) const override;
     void output_netcdf_data(
-        const ncutils::NCGroup& /*unused*/,
-        const size_t /*unused*/) const override;
+        const ncutils::NCGroup& /*unused*/, size_t /*unused*/) const override;
 
     //! Name of this sampling object
     [[nodiscard]] std::string label() const override { return m_label; }

@@ -35,7 +35,7 @@ public:
 
     //! Update the turbulent viscosity field
     void update_turbulent_viscosity(
-        const FieldState fstate, const DiffusionType /*unused*/) override;
+        FieldState fstate, DiffusionType /*unused*/) override;
 
     //! Return model coefficients dictionary
     [[nodiscard]] TurbulenceModel::CoeffsDictType model_coeffs() const override;

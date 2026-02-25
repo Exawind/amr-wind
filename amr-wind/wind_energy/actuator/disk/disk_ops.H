@@ -23,7 +23,7 @@ void write_netcdf(
     const DiskBaseData& data,
     const ActInfo& info,
     const ActGrid& /*unused*/,
-    const amrex::Real time);
+    amrex::Real time);
 } // namespace disk
 
 namespace ops {
@@ -32,12 +32,11 @@ namespace base {
 class AreaComputer
 {
 public:
-    AreaComputer(
-        const amrex::Real radius, const int num_r, const int num_theta);
+    AreaComputer(amrex::Real radius, int num_r, int num_theta);
 
-    [[nodiscard]] amrex::Real area_section(const int iRadius) const;
+    [[nodiscard]] amrex::Real area_section(int iRadius) const;
 
-    [[nodiscard]] amrex::Real weight(const int iRadius) const;
+    [[nodiscard]] amrex::Real weight(int iRadius) const;
 
 private:
     const amrex::Real m_area;
@@ -103,8 +102,8 @@ void compute_disk_points(
     const DiskBaseData& meta,
     VecList& points,
     const vs::Vector& cylAxis,
-    const int offset,
-    const amrex::Real dOffset);
+    int offset,
+    amrex::Real dOffset);
 
 template <typename T>
 void parse_and_gather_params(const utils::ActParser& pp, T& metaData)

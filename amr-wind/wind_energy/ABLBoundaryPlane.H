@@ -37,14 +37,12 @@ class InletData
 public:
     InletData() = default;
 
-    void resize(const int /*size*/);
+    void resize(int /*size*/);
 
-    void define_plane(const amrex::Orientation /*ori*/);
+    void define_plane(amrex::Orientation /*ori*/);
 
     void define_level_data(
-        const amrex::Orientation /*ori*/,
-        const amrex::Box& /*bx*/,
-        const size_t /*nc*/);
+        amrex::Orientation /*ori*/, const amrex::Box& /*bx*/, size_t /*nc*/);
 
 #ifdef AMR_WIND_USE_NETCDF
     void read_data(
@@ -57,15 +55,15 @@ public:
 #endif
 
     void read_data_native(
-        const amrex::OrientationIter oit,
+        amrex::OrientationIter oit,
         amrex::BndryRegister& bndry_n,
         amrex::BndryRegister& bndry_np1,
-        const int lev,
+        int lev,
         const Field* /*fld*/,
-        const amrex::Real time,
+        amrex::Real time,
         const amrex::Vector<amrex::Real>& /*times*/);
 
-    void interpolate(const amrex::Real /*time*/);
+    void interpolate(amrex::Real /*time*/);
     [[nodiscard]] bool is_populated(amrex::Orientation /*ori*/) const;
     [[nodiscard]] const amrex::FArrayBox&
     interpolate_data(const amrex::Orientation ori, const int lev) const
@@ -144,15 +142,15 @@ public:
     [[nodiscard]] amrex::Vector<amrex::BoxArray> read_bndry_native_boxarrays(
         const std::string& chkname, const Field& field) const;
 
-    void read_file(const bool /* nph_target_time*/);
+    void read_file(bool /* nph_target_time*/);
 
     void populate_data(
-        const int /*lev*/,
-        const amrex::Real /*time*/,
+        int /*lev*/,
+        amrex::Real /*time*/,
         Field& /*fld*/,
         amrex::MultiFab& /*mfab*/,
-        const int dcomp = 0,
-        const int orig_comp = 0) const;
+        int dcomp = 0,
+        int orig_comp = 0) const;
 
 #ifdef AMR_WIND_USE_NETCDF
     static void impl_buffer_field(
@@ -169,8 +167,8 @@ public:
 
     [[nodiscard]] bool box_intersects_boundary(
         const amrex::Box& /*bx*/,
-        const int /*lev*/,
-        const amrex::Orientation /*ori*/) const;
+        int /*lev*/,
+        amrex::Orientation /*ori*/) const;
 
     [[nodiscard]] bool is_data_newer_than(const amrex::Real time) const
     {

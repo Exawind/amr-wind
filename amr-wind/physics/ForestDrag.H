@@ -112,7 +112,7 @@ public:
 
     void post_advance_work() override {}
 
-    [[nodiscard]] amrex::Vector<Forest> read_forest(const int level) const;
+    [[nodiscard]] amrex::Vector<Forest> read_forest(int level) const;
 
 private:
     CFDSim& m_sim;

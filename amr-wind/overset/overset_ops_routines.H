@@ -22,11 +22,11 @@ void revert_mask_cell_after_mac(FieldRepo& repo);
 void populate_psi(
     amrex::MultiFab& mf_psi,
     const amrex::MultiFab& mf_vof,
-    const amrex::Real i_th,
-    const amrex::Real asdf_tiny);
+    amrex::Real i_th,
+    amrex::Real asdf_tiny);
 
 // Modify a vof field to not have values that barely differ from 0 or 1
-void process_vof(amrex::MultiFab& mf_vof, const amrex::Real vof_tol);
+void process_vof(amrex::MultiFab& mf_vof, amrex::Real vof_tol);
 
 // Combine overset target vof field with current non-overset vof field
 void harmonize_vof(
@@ -52,10 +52,10 @@ void populate_sharpen_fluxes(
     const amrex::MultiFab& mf_velocity,
     const amrex::MultiFab& mf_gp,
     const amrex::MultiFab& mf_density,
-    const amrex::Real Gamma,
-    const amrex::Real margin,
-    const amrex::Real rho1,
-    const amrex::Real rho2);
+    amrex::Real Gamma,
+    amrex::Real margin,
+    amrex::Real rho1,
+    amrex::Real rho2);
 
 // Process reinitialization fluxes - zero non-internal to overset region;
 // also calculate pressure source / sink term as a function of fluxes
@@ -69,8 +69,8 @@ void process_fluxes_calc_src(
 
 amrex::Real calculate_pseudo_velocity_scale(
     const amrex::iMultiFab& mf_iblank,
-    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx,
-    const amrex::Real pvmax);
+    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx,
+    amrex::Real pvmax);
 
 // Calculate a type of CFL by measuring how much % VOF is being removed per cell
 amrex::Real calculate_pseudo_dt_flux(
@@ -79,7 +79,7 @@ amrex::Real calculate_pseudo_dt_flux(
     const amrex::MultiFab& mf_fz,
     const amrex::MultiFab& mf_vof,
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dx,
-    const amrex::Real tol);
+    amrex::Real tol);
 
 // Apply reinitialization fluxes to modify fields
 void apply_fluxes(
@@ -92,9 +92,9 @@ void apply_fluxes(
     amrex::MultiFab& mf_vel,
     amrex::MultiFab& mf_gp,
     amrex::MultiFab& mf_pressure,
-    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx,
-    const amrex::Real ptfac,
-    const amrex::Real vof_tol);
+    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx,
+    amrex::Real ptfac,
+    amrex::Real vof_tol);
 
 // Get the size of the smallest VOF flux to quantify convergence
 amrex::Real measure_convergence(
@@ -114,7 +114,7 @@ void apply_pressure_gradient(
     amrex::MultiFab& mf_vel,
     const amrex::MultiFab& mf_density,
     const amrex::MultiFab& mf_gp,
-    const amrex::Real scaling_factor);
+    amrex::Real scaling_factor);
 
 } // namespace amr_wind::overset_ops
 

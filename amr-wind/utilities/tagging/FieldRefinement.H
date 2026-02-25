@@ -38,11 +38,9 @@ public:
     //! Read input file and initialize boxarray used to refine each level
     void initialize(const std::string& key) override;
 
-    void operator()(
-        const int level,
-        amrex::TagBoxArray& tags,
-        const amrex::Real time,
-        const int ngrow) override;
+    void
+    operator()(int level, amrex::TagBoxArray& tags, amrex::Real time, int ngrow)
+        override;
 
     template <typename MF>
     void tag(const int level, amrex::TagBoxArray& tags, const MF& mfab)

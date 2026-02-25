@@ -78,13 +78,12 @@ public:
     void
     populate_netcdf_metadata(const ncutils::NCGroup& /*unused*/) const override;
     void output_netcdf_data(
-        const ncutils::NCGroup& /*unused*/,
-        const size_t /*unused*/) const override;
+        const ncutils::NCGroup& /*unused*/, size_t /*unused*/) const override;
 
     bool output_netcdf_field(
         const std::vector<amrex::Real>& output_buffer,
         ncutils::NCGroup& grp,
-        const size_t nt) override;
+        size_t nt) override;
 
     //! Name of this sampling object
     [[nodiscard]] std::string label() const override { return m_label; }
@@ -152,7 +151,7 @@ public:
 
     void calc_lineofsight_velocity(
         const std::vector<std::vector<amrex::Real>>& /*velocity_raw*/,
-        const int /*interp_idx*/) override;
+        int /*interp_idx*/) override;
 
 protected:
     const CFDSim& m_sim;

@@ -15,7 +15,6 @@ Checks: 'bugprone-*,
          readability-*,
          -readability-magic-numbers,
          -readability-isolate-declaration,
-         -readability-avoid-const-params-in-decls,
          -readability-identifier-length,
          -readability-function-cognitive-complexity,
          -readability-avoid-nested-conditional-operator'

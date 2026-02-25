@@ -70,7 +70,7 @@ public:
 
 private:
     // cppcheck-suppress noExplicitConstructor
-    ViewField(T& src, const int scomp = 0, const int ncomp = 1);
+    ViewField(T& src, int scomp = 0, int ncomp = 1);
 
     //! The base field
     T& m_src;
