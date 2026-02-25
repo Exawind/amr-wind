@@ -1,5 +1,6 @@
-#ifndef BODYFORCE_H
-#define BODYFORCE_H
+#ifndef BODYFORCE2_H
+#define BODYFORCE2_H
+// This must be BODYFORCE2_H because another BODYFORCE_H exists
 
 #include <cstddef>
 #include "amr-wind/equation_systems/temperature/TemperatureSource.H"
