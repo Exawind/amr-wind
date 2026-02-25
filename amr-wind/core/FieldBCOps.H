@@ -90,6 +90,7 @@ struct ConstDirichlet
     {}
 
     AMREX_GPU_HOST
+    // NOLINTNEXTLINE(modernize-use-nodiscard)
     DeviceType device_instance() const { return *this; }
 
     AMREX_GPU_DEVICE

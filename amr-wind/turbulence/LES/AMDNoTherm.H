@@ -28,14 +28,17 @@ public:
     explicit AMDNoTherm(CFDSim& sim);
 
     //! Model name for debugging purposes
-    std::string model_name() const override { return "AMDNoTherm"; }
+    [[nodiscard]] std::string model_name() const override
+    {
+        return "AMDNoTherm";
+    }
 
     //! Update the turbulent viscosity field
     void update_turbulent_viscosity(
         const FieldState fstate, const DiffusionType /*unused*/) override;
 
     //! Return model coefficients dictionary
-    TurbulenceModel::CoeffsDictType model_coeffs() const override;
+    [[nodiscard]] TurbulenceModel::CoeffsDictType model_coeffs() const override;
 
     //! Parse turbulence model coefficients for this model
     void parse_model_coeffs() override;

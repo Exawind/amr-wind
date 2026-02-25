@@ -26,7 +26,7 @@ public:
     explicit Kosovic(CFDSim& sim);
 
     //! Model name for debugging purposes
-    std::string model_name() const override { return "Kosovic"; }
+    [[nodiscard]] std::string model_name() const override { return "Kosovic"; }
 
     //! Update the turbulent viscosity field
     void update_turbulent_viscosity(
@@ -42,7 +42,7 @@ public:
     void parse_model_coeffs() override;
 
     //! Return model coefficients dictionary
-    TurbulenceModel::CoeffsDictType model_coeffs() const override;
+    [[nodiscard]] TurbulenceModel::CoeffsDictType model_coeffs() const override;
 
 private:
     //! Kosovic coefficient (default value set for ABL simulations)

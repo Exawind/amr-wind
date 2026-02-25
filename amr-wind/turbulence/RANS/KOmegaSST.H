@@ -45,7 +45,10 @@ public:
 
     ~KOmegaSST() override;
 
-    std::string model_name() const override { return "KOmegaSST"; }
+    [[nodiscard]] std::string model_name() const override
+    {
+        return "KOmegaSST";
+    }
 
     //! Update the turbulent viscosity field
     void update_turbulent_viscosity(
@@ -61,7 +64,7 @@ public:
     void parse_model_coeffs() override;
 
     //! Return turbulence model coefficients
-    TurbulenceModel::CoeffsDictType model_coeffs() const override;
+    [[nodiscard]] TurbulenceModel::CoeffsDictType model_coeffs() const override;
 
 protected:
     Field& m_vel;

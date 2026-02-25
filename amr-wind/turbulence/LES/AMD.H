@@ -26,7 +26,7 @@ public:
     explicit AMD(CFDSim& sim);
 
     //! Model name for debugging purposes
-    std::string model_name() const override { return "AMD"; }
+    [[nodiscard]] std::string model_name() const override { return "AMD"; }
 
     //! Update the turbulent viscosity field
     void update_turbulent_viscosity(
@@ -40,7 +40,7 @@ public:
     void update_alphaeff(Field& alphaeff) override;
 
     //! Return model coefficients dictionary
-    TurbulenceModel::CoeffsDictType model_coeffs() const override;
+    [[nodiscard]] TurbulenceModel::CoeffsDictType model_coeffs() const override;
 
     //! Parse turbulence model coefficients for this model
     void parse_model_coeffs() override;

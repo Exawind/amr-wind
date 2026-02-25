@@ -108,10 +108,10 @@ public:
 
     ~TwoPhaseTransport() override = default;
 
-    amrex::Real laminar_prandtl1() const { return m_Pr1; }
-    amrex::Real laminar_prandtl2() const { return m_Pr2; }
+    [[nodiscard]] amrex::Real laminar_prandtl1() const { return m_Pr1; }
+    [[nodiscard]] amrex::Real laminar_prandtl2() const { return m_Pr2; }
 
-    amrex::Real turbulent_prandtl() const { return m_Prt; }
+    [[nodiscard]] amrex::Real turbulent_prandtl() const { return m_Prt; }
 
     static amrex::Real laminar_schmidt(const std::string& scalar_name)
     {
@@ -287,7 +287,7 @@ public:
     }
 
     //! Return the thermal expansion coefficient
-    std::unique_ptr<ScratchField> beta() const override
+    [[nodiscard]] std::unique_ptr<ScratchField> beta() const override
     {
         auto beta = m_repo.create_scratch_field(1, m_ngrow);
         for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
@@ -368,13 +368,13 @@ public:
         }
     }
 
-    amrex::Real reference_temperature() const override
+    [[nodiscard]] amrex::Real reference_temperature() const override
     {
         return m_reference_temperature;
     }
 
     //! Return the reference temperature
-    std::unique_ptr<ScratchField> ref_theta() const override
+    [[nodiscard]] std::unique_ptr<ScratchField> ref_theta() const override
     {
         if (m_reference_temperature < 0.0_rt) {
             amrex::Abort("Reference temperature was not set");
@@ -449,7 +449,7 @@ private:
     //! Reference temperature
     amrex::Real m_reference_temperature{-1.0_rt};
 
-    InterfaceCapturingMethod get_iface_method() const
+    [[nodiscard]] InterfaceCapturingMethod get_iface_method() const
     {
         if (!m_physics_mgr.contains("MultiPhase")) {
             amrex::Abort("TwoPhaseTransport requires MultiPhase physics");

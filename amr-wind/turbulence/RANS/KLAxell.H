@@ -23,7 +23,7 @@ public:
 
     explicit KLAxell(CFDSim& sim);
 
-    std::string model_name() const override { return "KLAxell"; }
+    [[nodiscard]] std::string model_name() const override { return "KLAxell"; }
 
     //! Update the turbulent viscosity field
     void update_turbulent_viscosity(
@@ -42,7 +42,7 @@ public:
     void parse_model_coeffs() override;
 
     //! Return turbulence model coefficients
-    TurbulenceModel::CoeffsDictType model_coeffs() const override;
+    [[nodiscard]] TurbulenceModel::CoeffsDictType model_coeffs() const override;
 
 private:
     Field& m_vel;

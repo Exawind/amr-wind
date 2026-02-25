@@ -46,6 +46,7 @@ struct Slice
         return *(ptr_begin + idx);
     }
 
+    // NOLINTNEXTLINE(modernize-use-nodiscard)
     AMREX_GPU_HOST_DEVICE size_type size() const
     {
         return (ptr_end - ptr_begin);
@@ -54,10 +55,15 @@ struct Slice
     AMREX_GPU_HOST_DEVICE pointer data() { return ptr_begin; }
     AMREX_GPU_HOST_DEVICE iterator begin() { return ptr_begin; }
     AMREX_GPU_HOST_DEVICE iterator end() { return ptr_end; }
+    // NOLINTNEXTLINE(modernize-use-nodiscard)
     AMREX_GPU_HOST_DEVICE const_iterator data() const { return ptr_begin; }
+    // NOLINTNEXTLINE(modernize-use-nodiscard)
     AMREX_GPU_HOST_DEVICE const_iterator begin() const { return ptr_begin; }
+    // NOLINTNEXTLINE(modernize-use-nodiscard)
     AMREX_GPU_HOST_DEVICE const_iterator end() const { return ptr_end; }
+    // NOLINTNEXTLINE(modernize-use-nodiscard)
     AMREX_GPU_HOST_DEVICE const_iterator cbegin() const { return ptr_begin; }
+    // NOLINTNEXTLINE(modernize-use-nodiscard)
     AMREX_GPU_HOST_DEVICE const_iterator cend() const { return ptr_end; }
 };
 

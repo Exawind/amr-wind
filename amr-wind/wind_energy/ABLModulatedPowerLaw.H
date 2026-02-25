@@ -45,7 +45,7 @@ public:
         const Field& fld,
         amrex::MultiFab& mfab) const;
 
-    bool is_active() const { return m_activate_mpl; }
+    [[nodiscard]] bool is_active() const { return m_activate_mpl; }
 
 private:
     const CFDSim& m_sim;

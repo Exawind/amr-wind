@@ -140,9 +140,9 @@ struct VectorT
 
     iterator begin() noexcept { return vv.begin(); }
     iterator end() noexcept { return vv.end(); }
-    const_iterator cbegin() const noexcept { return vv.cbegin(); }
-    const_iterator cend() const noexcept { return vv.cend(); }
-    size_type size() const noexcept { return ncomp; }
+    [[nodiscard]] const_iterator cbegin() const noexcept { return vv.cbegin(); }
+    [[nodiscard]] const_iterator cend() const noexcept { return vv.cend(); }
+    [[nodiscard]] size_type size() const noexcept { return ncomp; }
 };
 
 using Vector = VectorT<amrex::Real>;

@@ -122,25 +122,31 @@ public:
     ~Field();
 
     //! Name of this field (including state information)
-    const std::string& name() const { return m_name; }
+    [[nodiscard]] const std::string& name() const { return m_name; }
 
     //! Base name (without state information)
-    const std::string& base_name() const { return m_info->m_basename; }
+    [[nodiscard]] const std::string& base_name() const
+    {
+        return m_info->m_basename;
+    }
 
     //! Unique integer identifier for this field
-    unsigned id() const { return m_id; }
+    [[nodiscard]] unsigned id() const { return m_id; }
 
     //! Number of components for this field
-    int num_comp() const { return m_info->m_ncomp; }
+    [[nodiscard]] int num_comp() const { return m_info->m_ncomp; }
 
     //! Ghost cells
-    const amrex::IntVect& num_grow() const { return m_info->m_ngrow; }
+    [[nodiscard]] const amrex::IntVect& num_grow() const
+    {
+        return m_info->m_ngrow;
+    }
 
     //! Number of exact time states available for this field
-    int num_time_states() const { return m_info->m_nstates; }
+    [[nodiscard]] int num_time_states() const { return m_info->m_nstates; }
 
     //! Number of states available for this field
-    int num_states() const
+    [[nodiscard]] int num_states() const
     {
         int ns = static_cast<int>(std::count_if(
             m_info->m_states.begin(), m_info->m_states.end(),
@@ -150,25 +156,28 @@ public:
     }
 
     //! Cell, node, or face centered field
-    FieldLoc field_location() const { return m_info->m_floc; }
+    [[nodiscard]] FieldLoc field_location() const { return m_info->m_floc; }
 
     //! State of this field instance
-    FieldState field_state() const { return m_state; }
+    [[nodiscard]] FieldState field_state() const { return m_state; }
 
     //! FieldRepo instance that manages this field
-    FieldRepo& repo() const { return m_repo; }
+    [[nodiscard]] FieldRepo& repo() const { return m_repo; }
 
     bool& fillpatch_on_regrid() { return m_fillpatch_on_regrid; }
-    bool fillpatch_on_regrid() const { return m_fillpatch_on_regrid; }
+    [[nodiscard]] bool fillpatch_on_regrid() const
+    {
+        return m_fillpatch_on_regrid;
+    }
 
     //! Return true if the requested state exists for this field
-    bool query_state(const FieldState fstate) const
+    [[nodiscard]] bool query_state(const FieldState fstate) const
     {
         const int fid = static_cast<int>(fstate);
         return (m_info->m_states[fid] != nullptr);
     }
 
-    const amrex::GpuArray<BC, AMREX_SPACEDIM * 2>& bc_type() const
+    [[nodiscard]] const amrex::GpuArray<BC, AMREX_SPACEDIM * 2>& bc_type() const
     {
         return m_info->m_bc_type;
     }
@@ -185,15 +194,19 @@ public:
     }
 
     //! Return reference to host view of BCRec array
-    amrex::Vector<amrex::BCRec>& bcrec() const { return m_info->m_bcrec; }
+    [[nodiscard]] amrex::Vector<amrex::BCRec>& bcrec() const
+    {
+        return m_info->m_bcrec;
+    }
 
-    const amrex::GpuArray<const amrex::Real*, AMREX_SPACEDIM * 2>&
+    [[nodiscard]] const amrex::GpuArray<const amrex::Real*, AMREX_SPACEDIM * 2>&
     bc_values_device() const
     {
         return m_info->m_bc_values_d;
     }
 
-    const amrex::Gpu::DeviceVector<amrex::BCRec>& bcrec_device() const
+    [[nodiscard]] const amrex::Gpu::DeviceVector<amrex::BCRec>&
+    bcrec_device() const
     {
         return m_info->m_bcrec_d;
     }
@@ -205,10 +218,13 @@ public:
     void copy_bc_to_device() { m_info->copy_bc_to_device(); }
 
     //! Return flag indicating whether BCs have been initialized
-    bool bc_initialized() const { return m_info->m_bc_copied_to_device; }
+    [[nodiscard]] bool bc_initialized() const
+    {
+        return m_info->m_bc_copied_to_device;
+    }
 
     //! Return a flag indicating whether a fillpatch Op has been registered
-    bool has_fillpatch_op() const
+    [[nodiscard]] bool has_fillpatch_op() const
     {
         return static_cast<bool>(m_info->m_fillpatch_op);
     }
@@ -245,7 +261,7 @@ public:
 
     //! Return field at a different time state
     Field& state(const FieldState fstate);
-    const Field& state(const FieldState fstate) const;
+    [[nodiscard]] const Field& state(const FieldState fstate) const;
 
     //! Return MultiFab instance for a given level
     amrex::MultiFab& operator()(int lev) noexcept;
@@ -255,7 +271,8 @@ public:
     amrex::Vector<amrex::MultiFab*> vec_ptrs() noexcept;
 
     //! Return vector of `const MultiFab*` for all levels
-    amrex::Vector<const amrex::MultiFab*> vec_const_ptrs() const noexcept;
+    [[nodiscard]] amrex::Vector<const amrex::MultiFab*>
+    vec_const_ptrs() const noexcept;
 
     //! Advance timestep for fields with multiple states
     void advance_states() noexcept;
@@ -395,10 +412,10 @@ public:
     }
 
     bool& in_uniform_space() { return m_mesh_mapped; }
-    bool in_uniform_space() const { return m_mesh_mapped; }
+    [[nodiscard]] bool in_uniform_space() const { return m_mesh_mapped; }
 
     //! Check if any of the boundaries is a mass-inflow-outflow
-    bool has_inout_bndry() const { return m_inout_bndry; }
+    [[nodiscard]] bool has_inout_bndry() const { return m_inout_bndry; }
 
     //! Set the inout_bndry flag
     void set_inout_bndry() { m_inout_bndry = true; }

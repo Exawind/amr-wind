@@ -79,7 +79,7 @@ struct Forest
         return {x0, y0, z0, x1, y1, z1};
     }
 
-    amrex::Box bounding_box(const amrex::Geometry& geom) const
+    [[nodiscard]] amrex::Box bounding_box(const amrex::Geometry& geom) const
     {
         return utils::realbox_to_box(
             real_bounding_box(geom.ProbLoArray()), geom);
@@ -112,7 +112,7 @@ public:
 
     void post_advance_work() override {}
 
-    amrex::Vector<Forest> read_forest(const int level) const;
+    [[nodiscard]] amrex::Vector<Forest> read_forest(const int level) const;
 
 private:
     CFDSim& m_sim;

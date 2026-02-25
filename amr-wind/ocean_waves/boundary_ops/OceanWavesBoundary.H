@@ -57,7 +57,10 @@ public:
         m_bndry_time = time;
     }
 
-    amrex::Real get_boundary_data_time() const { return m_bndry_time; }
+    [[nodiscard]] amrex::Real get_boundary_data_time() const
+    {
+        return m_bndry_time;
+    }
 
 private:
     const amr_wind::SimTime& m_time;

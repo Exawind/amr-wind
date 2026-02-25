@@ -52,32 +52,32 @@ struct MOData
 
     ThetaCalcType alg_type{ThetaCalcType::HEAT_FLUX};
 
-    amrex::Real phi_m() const
+    [[nodiscard]] amrex::Real phi_m() const
     {
         return std::log(zref / z0) - calc_psi_m(zref / obukhov_len);
     }
 
-    amrex::Real phi_m(amrex::Real z) const
+    [[nodiscard]] amrex::Real phi_m(amrex::Real z) const
     {
         return std::log(z / z0) - calc_psi_m(z / obukhov_len);
     }
 
-    amrex::Real phi_h() const
+    [[nodiscard]] amrex::Real phi_h() const
     {
         return std::log(zref / z0t) - calc_psi_h(zref / obukhov_len);
     }
 
-    amrex::Real phi_h(amrex::Real z) const
+    [[nodiscard]] amrex::Real phi_h(amrex::Real z) const
     {
         return std::log(z / z0t) - calc_psi_h(z / obukhov_len);
     }
 
-    amrex::Real calc_psi_m(amrex::Real zeta) const;
+    [[nodiscard]] amrex::Real calc_psi_m(amrex::Real zeta) const;
     static amrex::Real calc_psi_m(
         const amrex::Real zeta,
         const amrex::Real beta_m,
         const amrex::Real gamma_m);
-    amrex::Real calc_psi_h(amrex::Real zeta) const;
+    [[nodiscard]] amrex::Real calc_psi_h(amrex::Real zeta) const;
     static amrex::Real calc_psi_h(
         const amrex::Real zeta,
         const amrex::Real beta_h,
