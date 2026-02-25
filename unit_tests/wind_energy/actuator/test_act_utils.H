@@ -10,7 +10,7 @@ using namespace amrex::literals;
 namespace amr_wind_tests {
 
 // Utility function to populate the velocity field used for tests
-void init_field(amr_wind::Field& fld)
+inline void init_field(amr_wind::Field& fld)
 {
     const auto& mesh = fld.repo().mesh();
     const int nlevels = fld.repo().num_active_levels();
