@@ -138,7 +138,7 @@ struct Curvature
  *  \ingroup fvm
  */
 template <typename FTypeIn, typename FTypeOut>
- void curvature(FTypeOut& curphi, const FTypeIn& phi)
+void curvature(FTypeOut& curphi, const FTypeIn& phi)
 {
     BL_PROFILE("amr-wind::fvm::curvature");
     Curvature<FTypeIn, FTypeOut> cur(curphi, phi);
@@ -149,7 +149,7 @@ template <typename FTypeIn, typename FTypeOut>
  *  \ingroup fvm
  */
 template <typename FType>
- std::unique_ptr<ScratchField> curvature(const FType& phi)
+std::unique_ptr<ScratchField> curvature(const FType& phi)
 {
     const std::string gname = phi.name() + "_curvature";
     auto curphi = phi.repo().create_scratch_field(gname, phi.num_comp());

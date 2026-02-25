@@ -15,7 +15,7 @@ using namespace amrex::literals;
 
 namespace amr_wind_tests::utils {
 
-inline amrex::Real field_min(const amr_wind::Field& field, const int icomp = 0)
+ amrex::Real field_min(const amr_wind::Field& field, const int icomp = 0)
 {
     amrex::Real min_val = std::numeric_limits<amrex::Real>::max();
     for (int lev = 0; lev < field.repo().num_active_levels(); ++lev) {
@@ -25,7 +25,7 @@ inline amrex::Real field_min(const amr_wind::Field& field, const int icomp = 0)
     return min_val;
 }
 
-inline amrex::Real field_max(const amr_wind::Field& field, const int icomp = 0)
+ amrex::Real field_max(const amr_wind::Field& field, const int icomp = 0)
 {
     amrex::Real max_val = -std::numeric_limits<amrex::Real>::max();
     for (int lev = 0; lev < field.repo().num_active_levels(); ++lev) {
@@ -35,7 +35,7 @@ inline amrex::Real field_max(const amr_wind::Field& field, const int icomp = 0)
     return max_val;
 }
 
-inline amrex::Real
+ amrex::Real
 field_min(const amr_wind::ScratchField& field, const int icomp = 0)
 {
     amrex::Real min_val = std::numeric_limits<amrex::Real>::max();
@@ -46,7 +46,7 @@ field_min(const amr_wind::ScratchField& field, const int icomp = 0)
     return min_val;
 }
 
-inline amrex::Real
+ amrex::Real
 field_max(const amr_wind::ScratchField& field, const int icomp = 0)
 {
     amrex::Real max_val = -std::numeric_limits<amrex::Real>::max();
@@ -63,7 +63,7 @@ field_max(const amr_wind::ScratchField& field, const int icomp = 0)
  *  \param field MultiFabs for the levels
  *  \param ncomp The field component for which min value is desired (default: 0)
  */
-inline amrex::Real field_min(
+ amrex::Real field_min(
     const int nlevels,
     const amrex::Vector<amrex::MultiFab*>& field,
     const int ncomp = 0)
@@ -81,7 +81,7 @@ inline amrex::Real field_min(
  *  \param field MultiFabs for the levels
  *  \param ncomp The field component for which max value is desired (default: 0)
  */
-inline amrex::Real field_max(
+ amrex::Real field_max(
     const int nlevels,
     const amrex::Vector<amrex::MultiFab*>& field,
     const int ncomp = 0)
@@ -99,7 +99,7 @@ inline amrex::Real field_max(
  *  \param field MultiFabs for the levels
  *  \param min_val Array of component values that are populated
  */
-inline void field_min(
+ void field_min(
     const int nlevels,
     const amrex::Vector<amrex::MultiFab*>& field,
     amrex::Vector<amrex::Real>& min_val)
@@ -115,7 +115,7 @@ inline void field_min(
  *  \param field MultiFabs for the levels
  *  \param max_val Array of component values that are populated
  */
-inline void field_max(
+ void field_max(
     const int nlevels,
     const amrex::Vector<amrex::MultiFab*>& field,
     amrex::Vector<amrex::Real>& max_val)
@@ -125,7 +125,7 @@ inline void field_max(
     }
 }
 
-inline void field_minmax(
+ void field_minmax(
     const int nlevels,
     const amrex::Vector<amrex::MultiFab*>& field,
     amrex::Real& min_val,
@@ -136,7 +136,7 @@ inline void field_minmax(
     max_val = field_max(nlevels, field, ncomp);
 }
 
-inline void field_minmax(
+ void field_minmax(
     const int nlevels,
     const amrex::Vector<amrex::MultiFab*>& field,
     amrex::Vector<amrex::Real>& min_val,
@@ -147,7 +147,7 @@ inline void field_minmax(
 }
 
 template <typename T, typename FType>
-inline T field_probe_impl(
+ T field_probe_impl(
     const FType& field,
     const int lev,
     const int i,
@@ -176,7 +176,7 @@ inline T field_probe_impl(
     return value;
 }
 
-inline int field_probe(
+ int field_probe(
     const amr_wind::IntField& field,
     const int lev,
     const int i,
@@ -189,7 +189,7 @@ inline int field_probe(
     return value;
 }
 
-inline amrex::Real field_probe(
+ amrex::Real field_probe(
     const amr_wind::Field& field,
     const int lev,
     const int i,

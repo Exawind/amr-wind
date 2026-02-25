@@ -69,7 +69,7 @@ struct InitDataOp<FlatPlate, ActSrcLine>
 };
 
 template <>
- const ThinAirfoil& airfoil_lookup<FlatPlate>(FlatPlate::DataType& data)
+const ThinAirfoil& airfoil_lookup<FlatPlate>(FlatPlate::DataType& data)
 {
     return data.meta().aflookup;
 }

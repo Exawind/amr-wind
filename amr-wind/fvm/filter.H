@@ -85,7 +85,7 @@ struct Filter
  *  \param phi [in] Field whose filter is computed
  */
 template <typename FTypeIn, typename FTypeOut>
- void filter(FTypeOut& filterphi, const FTypeIn& phi)
+void filter(FTypeOut& filterphi, const FTypeIn& phi)
 {
     BL_PROFILE("amr-wind::fvm::filter");
     Filter<FTypeIn, FTypeOut> filtering(filterphi, phi);
@@ -98,7 +98,7 @@ template <typename FTypeIn, typename FTypeOut>
  *  \param phi [in] Field whose filter is computed
  */
 template <typename FType>
- std::unique_ptr<ScratchField> filter(const FType& phi)
+std::unique_ptr<ScratchField> filter(const FType& phi)
 {
     const std::string gname = phi.name() + "_filter";
     auto filterphi = phi.repo().create_scratch_field(gname, phi.num_comp());

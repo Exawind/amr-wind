@@ -85,7 +85,7 @@ struct Vorticity
  *  \param phi [in] The velocity vector field
  */
 template <typename FTypeIn, typename FTypeOut>
- void vorticity(FTypeOut& vortphi, const FTypeIn& phi)
+void vorticity(FTypeOut& vortphi, const FTypeIn& phi)
 {
     BL_PROFILE("amr-wind::fvm::vorticity");
     Vorticity<FTypeIn, FTypeOut> vort(vortphi, phi);
@@ -98,7 +98,7 @@ template <typename FTypeIn, typename FTypeOut>
  *  \param phi [in] The velocity vector field
  */
 template <typename FType>
- std::unique_ptr<ScratchField> vorticity(const FType& phi)
+std::unique_ptr<ScratchField> vorticity(const FType& phi)
 {
     const std::string gname = phi.name() + "_vorticity";
     auto vortphi = phi.repo().create_scratch_field(gname, AMREX_SPACEDIM);

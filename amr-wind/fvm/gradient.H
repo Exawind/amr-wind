@@ -85,7 +85,7 @@ struct Gradient
  *  \param phi [in] Field whose gradient is computed
  */
 template <typename FTypeIn, typename FTypeOut>
- void gradient(FTypeOut& gradphi, const FTypeIn& phi)
+void gradient(FTypeOut& gradphi, const FTypeIn& phi)
 {
     BL_PROFILE("amr-wind::fvm::gradient");
     Gradient<FTypeIn, FTypeOut> grad(gradphi, phi);
@@ -98,7 +98,7 @@ template <typename FTypeIn, typename FTypeOut>
  *  \param phi [in] Field whose gradient is computed
  */
 template <typename FType>
- std::unique_ptr<ScratchField> gradient(const FType& phi)
+std::unique_ptr<ScratchField> gradient(const FType& phi)
 {
     const std::string gname = phi.name() + "_gradient";
     auto gradphi =

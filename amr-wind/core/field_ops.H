@@ -36,8 +36,8 @@ namespace amr_wind::field_ops {
  *  \param [in] nghost Number of ghost cells to be updated
  */
 template <typename T1, typename T2>
- void
-add(T1& dst,
+void add(
+    T1& dst,
     const T2& src,
     int srccomp,
     int dstcomp,
@@ -64,8 +64,8 @@ add(T1& dst,
  *  \param [in] nghost Number of ghost cells to be updated
  */
 template <typename T1, typename T2>
- void
-add(T1& dst, const T2& src, int srccomp, int dstcomp, int numcomp, int nghost)
+void add(
+    T1& dst, const T2& src, int srccomp, int dstcomp, int numcomp, int nghost)
 {
     add(dst, src, srccomp, dstcomp, numcomp, amrex::IntVect(nghost));
 }
@@ -84,7 +84,7 @@ add(T1& dst, const T2& src, int srccomp, int dstcomp, int numcomp, int nghost)
  *  \param [in] nghost Number of ghost cells to be updated
  */
 template <typename T1, typename T2>
- void divide(
+void divide(
     T1& dst,
     const T2& src,
     const int srccomp,
@@ -127,7 +127,7 @@ template <typename T1, typename T2>
  *  \param [in] nghost Number of ghost cells to be updated
  */
 template <typename T1, typename T2>
- void divide(
+void divide(
     T1& dst,
     const T2& src,
     const int srccomp,
@@ -154,7 +154,7 @@ template <typename T1, typename T2>
  *  \param [in] nghost Number of ghost cells to be updated
  */
 template <typename T1, typename T2>
- void copy(
+void copy(
     T1& dst,
     const T2& src,
     const int srccomp,
@@ -182,8 +182,8 @@ template <typename T1, typename T2>
  *  \param [in] nghost Number of ghost cells to be updated
  */
 template <typename T1, typename T2>
- void
-copy(T1& dst, const T2& src, int srccomp, int dstcomp, int numcomp, int nghost)
+void copy(
+    T1& dst, const T2& src, int srccomp, int dstcomp, int numcomp, int nghost)
 {
     copy(dst, src, srccomp, dstcomp, numcomp, amrex::IntVect(nghost));
 }
@@ -202,7 +202,7 @@ copy(T1& dst, const T2& src, int srccomp, int dstcomp, int numcomp, int nghost)
  *  \param [in] nghost Number of ghost cells to be updated
  */
 template <typename T1, typename T2>
- void saxpy(
+void saxpy(
     T1& dst,
     const amrex::Real a,
     const T2& src,
@@ -232,7 +232,7 @@ template <typename T1, typename T2>
  *  \param [in] nghost Number of ghost cells to be updated
  */
 template <typename T1, typename T2>
- void saxpy(
+void saxpy(
     T1& dst,
     const amrex::Real a,
     const T2& src,
@@ -258,7 +258,7 @@ template <typename T1, typename T2>
  *  \param [in] nghost Number of ghost cells to be updated
  */
 template <typename T1, typename T2>
- void xpay(
+void xpay(
     T1& dst,
     const amrex::Real a,
     const T2& src,
@@ -288,7 +288,7 @@ template <typename T1, typename T2>
  *  \param [in] nghost Number of ghost cells to be updated
  */
 template <typename T1, typename T2>
- void xpay(
+void xpay(
     T1& dst,
     const amrex::Real a,
     const T2& src,
@@ -317,7 +317,7 @@ template <typename T1, typename T2>
  *  \param [in] nghost Number of ghost cells to be updated
  */
 template <typename T1, typename T2, typename T3>
- void lincomb(
+void lincomb(
     T1& dst,
     const amrex::Real a,
     const T2& x,
@@ -354,7 +354,7 @@ template <typename T1, typename T2, typename T3>
  *  \param [in] nghost Number of ghost cells to be updated
  */
 template <typename T1, typename T2, typename T3>
- void lincomb(
+void lincomb(
     T1& dst,
     const amrex::Real a,
     const T2& x,
@@ -379,8 +379,7 @@ template <typename T1, typename T2, typename T3>
  * \param [in] icomp Component to set the minimum bound
  */
 template <typename FType>
- void
-lower_bound(FType& field, const amrex::Real min_value, const int icomp = 0)
+void lower_bound(FType& field, const amrex::Real min_value, const int icomp = 0)
 {
     const auto& repo = field.repo();
     const int nlevels = repo.num_active_levels();
@@ -402,7 +401,7 @@ lower_bound(FType& field, const amrex::Real min_value, const int icomp = 0)
  * \param [in] field Field for global maximum magnitude
  */
 template <typename FType>
- amrex::Real global_max_magnitude(FType& field)
+amrex::Real global_max_magnitude(FType& field)
 {
     const auto& repo = field.repo();
     const auto ncomp = field.num_comp();
@@ -442,7 +441,7 @@ template <typename FType>
  * \param [in] field Field that needs to be normalized
  */
 template <typename FType>
- void normalize(FType& field)
+void normalize(FType& field)
 {
     const amrex::Real eps =
         std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;

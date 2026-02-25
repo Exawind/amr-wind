@@ -9,7 +9,7 @@ using namespace amrex::literals;
 namespace amr_wind {
 namespace {
 
- std::string strip_spaces(const std::string& inp)
+std::string strip_spaces(const std::string& inp)
 {
     std::string str(inp);
     str.erase(

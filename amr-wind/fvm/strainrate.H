@@ -100,7 +100,7 @@ struct StrainRate
  *  \param phi [in] The velocity vector field
  */
 template <typename FTypeIn, typename FTypeOut>
- void strainrate(FTypeOut& strphi, const FTypeIn& phi)
+void strainrate(FTypeOut& strphi, const FTypeIn& phi)
 {
     BL_PROFILE("amr-wind::fvm::strainrate");
     StrainRate<FTypeIn, FTypeOut> str(strphi, phi);
@@ -113,7 +113,7 @@ template <typename FTypeIn, typename FTypeOut>
  *  \param phi [in] The velocity vector field
  */
 template <typename FType>
- std::unique_ptr<ScratchField> strainrate(const FType& phi)
+std::unique_ptr<ScratchField> strainrate(const FType& phi)
 {
     const std::string gname = phi.name() + "_strainrate";
     auto strphi = phi.repo().create_scratch_field(gname, 1);

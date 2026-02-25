@@ -118,8 +118,8 @@ struct Qcriterion
  *  \param nondim [in] Flag for non-dimensional value
  */
 template <typename FTypeIn, typename FTypeOut>
- void
-q_criterion(FTypeOut& qcritphi, const FTypeIn& phi, const bool nondim = false)
+void q_criterion(
+    FTypeOut& qcritphi, const FTypeIn& phi, const bool nondim = false)
 {
     BL_PROFILE("amr-wind::fvm::q_criterion");
     Qcriterion<FTypeIn, FTypeOut> qcriterion(qcritphi, phi, nondim);
@@ -132,7 +132,7 @@ q_criterion(FTypeOut& qcritphi, const FTypeIn& phi, const bool nondim = false)
  *  \param phi [in] The velocity vector field
  */
 template <typename FType>
- std::unique_ptr<ScratchField> q_criterion(const FType& phi)
+std::unique_ptr<ScratchField> q_criterion(const FType& phi)
 {
     const std::string gname = phi.name() + "_q_criterion";
     auto qcritphi = phi.repo().create_scratch_field(gname, 1);

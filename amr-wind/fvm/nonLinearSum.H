@@ -137,7 +137,7 @@ struct NonLinearSum
  *  \param phi [in] The stress tensor  field
  */
 template <typename FTypeIn, typename FTypeOut>
- void nonlinearsum(FTypeOut& strphi, const FTypeIn& phi)
+void nonlinearsum(FTypeOut& strphi, const FTypeIn& phi)
 {
     BL_PROFILE("amr-wind::fvm::nonlinearsum");
     NonLinearSum<FTypeIn, FTypeOut> str(strphi, phi);
@@ -150,7 +150,7 @@ template <typename FTypeIn, typename FTypeOut>
  *  \param phi [in] The stress tensor  field
  */
 template <typename FType>
- std::unique_ptr<ScratchField> nonlinearsum(const FType& phi)
+std::unique_ptr<ScratchField> nonlinearsum(const FType& phi)
 {
     const std::string gname = phi.name() + "_nonlinearsum";
     auto strphi = phi.repo().create_scratch_field(gname, 9);
