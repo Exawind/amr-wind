@@ -79,8 +79,7 @@ public:
 
     /** Define the container and allocate memory for runtime components
      */
-    void setup_container(
-        const int num_real_components, const int num_int_components = 0);
+    void setup_container(int num_real_components, int num_int_components = 0);
 
     /** Create particle information for all the sampling locations
      */
@@ -113,9 +112,7 @@ public:
 
     //! Perform derived field interpolation to sampling locations
     void interpolate_derived_fields(
-        const DerivedQtyMgr& derived_mgr,
-        const FieldRepo& repo,
-        const int scomp);
+        const DerivedQtyMgr& derived_mgr, const FieldRepo& repo, int scomp);
 
     //! Populate the buffer with data for all the particles
     void populate_buffer(std::vector<amrex::Real>& buf);

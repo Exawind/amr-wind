@@ -47,51 +47,51 @@ public:
     //! Implementation that handles filling patches on a single level as well as
     //! across a coarse-fine interface.
     virtual void fillpatch(
-        const int lev,
-        const amrex::Real time,
+        int lev,
+        amrex::Real time,
         amrex::MultiFab& mfab,
         const amrex::IntVect& nghost,
-        const FieldState fstate = FieldState::New) = 0;
+        FieldState fstate = FieldState::New) = 0;
 
     //! Implementation that handles filling patches on a single level as well as
     //! across a coarse-fine interface, for an array of different fields
     virtual void fillpatch_sibling_fields(
-        const int lev,
-        const amrex::Real time,
+        int lev,
+        amrex::Real time,
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& mfabs,
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& ffabs,
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>& cfabs,
         const amrex::IntVect& nghost,
         const amrex::Vector<amrex::BCRec>& fillpatch_bcrec,
         const amrex::Vector<amrex::BCRec>& physbc_bcrec,
-        const FieldState fstate = FieldState::New) = 0;
+        FieldState fstate = FieldState::New) = 0;
 
     //! Implementation that handles filling patches from a coarse to fine level
     virtual void fillpatch_from_coarse(
-        const int lev,
-        const amrex::Real time,
+        int lev,
+        amrex::Real time,
         amrex::MultiFab& mfab,
         const amrex::IntVect& nghost,
-        const FieldState fstate = FieldState::New) = 0;
+        FieldState fstate = FieldState::New) = 0;
 
     //! Implementation that handles filling physical boundary conditions
     virtual void fillphysbc(
-        const int lev,
-        const amrex::Real time,
+        int lev,
+        amrex::Real time,
         amrex::MultiFab& mfab,
         const amrex::IntVect& nghost,
-        const FieldState fstate = FieldState::New) = 0;
+        FieldState fstate = FieldState::New) = 0;
 
     virtual void set_inflow(
-        const int lev,
-        const amrex::Real time,
+        int lev,
+        amrex::Real time,
         amrex::MultiFab& mfab,
         const amrex::IntVect& nghost,
-        const FieldState fstate = FieldState::New) = 0;
+        FieldState fstate = FieldState::New) = 0;
 
     virtual void set_inflow_sibling_fields(
-        const int lev,
-        const amrex::Real time,
+        int lev,
+        amrex::Real time,
         amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM> mfabs) = 0;
 };
 

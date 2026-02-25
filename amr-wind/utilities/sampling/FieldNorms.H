@@ -36,10 +36,10 @@ public:
 
     static amrex::Real get_norm(
         const amr_wind::Field& field,
-        const int comp,
-        const int ncomp,
-        const int norm_type,
-        const bool use_mask);
+        int comp,
+        int ncomp,
+        int norm_type,
+        bool use_mask);
 
     [[nodiscard]] const amrex::Vector<std::string>& var_names() const
     {

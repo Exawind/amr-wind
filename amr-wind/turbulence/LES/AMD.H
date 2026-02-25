@@ -30,11 +30,11 @@ public:
 
     //! Update the turbulent viscosity field
     void update_turbulent_viscosity(
-        const FieldState fstate, const DiffusionType /*unused*/) override;
+        FieldState fstate, DiffusionType /*unused*/) override;
 
     template <typename IndexSelector>
-    void update_turbulent_viscosity(
-        const FieldState fstate, const IndexSelector& idxOp);
+    void
+    update_turbulent_viscosity(FieldState fstate, const IndexSelector& idxOp);
 
     //! Update the effective thermal diffusivity field
     void update_alphaeff(Field& alphaeff) override;

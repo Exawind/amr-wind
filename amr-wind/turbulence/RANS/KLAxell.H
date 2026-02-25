@@ -27,7 +27,7 @@ public:
 
     //! Update the turbulent viscosity field
     void update_turbulent_viscosity(
-        const FieldState fstate, const DiffusionType /*unused*/) override;
+        FieldState fstate, DiffusionType /*unused*/) override;
 
     //! Do any post advance work
     void post_advance_work() override;

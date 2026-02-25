@@ -23,7 +23,7 @@ public:
 
     [[nodiscard]] virtual int num_comp() const = 0;
 
-    virtual void operator()(ScratchField& fld, const int scomp = 0) const = 0;
+    virtual void operator()(ScratchField& fld, int scomp = 0) const = 0;
 
     virtual void var_names(amrex::Vector<std::string>& /*plt_var_names*/);
 };
@@ -37,7 +37,7 @@ public:
     explicit DerivedQtyMgr(const FieldRepo& repo);
     ~DerivedQtyMgr() = default;
 
-    void operator()(ScratchField& fld, const int scomp = 0) const;
+    void operator()(ScratchField& fld, int scomp = 0) const;
 
     void create(const amrex::Vector<std::string>& keys);
 

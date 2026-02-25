@@ -68,7 +68,7 @@ void fllc_parse(const utils::ActParser& pp, FLLCData& data);
  * \param eps_chord epsilon chord
  */
 void fllc_init(
-    FLLCData& data, const ComponentView& view, const amrex::Real eps_chord);
+    FLLCData& data, const ComponentView& view, amrex::Real eps_chord);
 
 } // namespace amr_wind::actuator
 

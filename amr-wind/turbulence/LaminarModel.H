@@ -28,8 +28,7 @@ public:
 
     //! Update the effective/turbulent viscosity field
     void update_turbulent_viscosity(
-        const FieldState fstate,
-        const DiffusionType diff_type /*unused*/) override;
+        FieldState fstate, DiffusionType diff_type /*unused*/) override;
 
     //! No post advance work for this model
     void post_advance_work() override {}

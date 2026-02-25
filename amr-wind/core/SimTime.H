@@ -72,9 +72,7 @@ public:
      *
      */
     void set_current_cfl(
-        const amrex::Real conv_cfl,
-        const amrex::Real diff_cfl,
-        const amrex::Real src_cfl);
+        amrex::Real conv_cfl, amrex::Real diff_cfl, amrex::Real src_cfl);
 
     /** Use results of CFL and timestepping parameters to advance time to new,
      * output time information

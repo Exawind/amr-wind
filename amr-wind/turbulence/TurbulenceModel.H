@@ -49,8 +49,8 @@ public:
      *  and corrector steps.
      *  \param diff_type diffusion solve type
      */
-    virtual void update_turbulent_viscosity(
-        const FieldState fstate, const DiffusionType diff_type) = 0;
+    virtual void
+    update_turbulent_viscosity(FieldState fstate, DiffusionType diff_type) = 0;
 
     //! Do any post advance actions for the turbulence model
     virtual void post_advance_work() = 0;

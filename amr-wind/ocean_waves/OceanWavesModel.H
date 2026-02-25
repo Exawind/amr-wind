@@ -34,7 +34,7 @@ public:
 
     virtual void init_waves(int, const amrex::Geometry&, bool) = 0;
 
-    virtual void update_target_fields(const amrex::Real) = 0;
+    virtual void update_target_fields(amrex::Real) = 0;
 
     virtual void apply_relax_zones() = 0;
 

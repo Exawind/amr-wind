@@ -34,7 +34,7 @@ public:
 
     void set_inflow_velocity(amrex::Real time);
 
-    void operator()(const FieldState fstate, const amrex::Real dt);
+    void operator()(FieldState fstate, amrex::Real dt);
 
     static void mac_proj_to_uniform_space(
         const amr_wind::FieldRepo& /*repo*/,
@@ -49,7 +49,7 @@ public:
 
 private:
     void init_projector(const FaceFabPtrVec& /*beta*/) noexcept;
-    void init_projector(const amrex::Real /*beta*/) noexcept;
+    void init_projector(amrex::Real /*beta*/) noexcept;
 
     void enforce_inout_solvability(
         const amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>>&
