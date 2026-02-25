@@ -68,7 +68,7 @@ protected:
     virtual void set_bcfuncs();
 
     //! Set default BC values for the field
-    inline void set_default_value(amrex::Real value);
+     void set_default_value(amrex::Real value);
 
     //! Set AMReX mathematical boundary types for the lower boundaries
     void set_bcrec_lo(int dir, amrex::BCType::mathematicalBndryTypes bcrec)

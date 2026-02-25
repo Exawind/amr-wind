@@ -73,7 +73,7 @@ struct Laplacian
  *  \param phi [in] Field whose gradient is computed
  */
 template <typename FTypeIn, typename FTypeOut>
-inline void laplacian(FTypeOut& lapphi, const FTypeIn& phi)
+ void laplacian(FTypeOut& lapphi, const FTypeIn& phi)
 {
     BL_PROFILE("amr-wind::fvm::laplacian");
     Laplacian<FTypeIn, FTypeOut> lap(lapphi, phi);
@@ -86,7 +86,7 @@ inline void laplacian(FTypeOut& lapphi, const FTypeIn& phi)
  *  \param phi [in] Field whose gradient is computed
  */
 template <typename FType>
-inline std::unique_ptr<ScratchField> laplacian(const FType& phi)
+ std::unique_ptr<ScratchField> laplacian(const FType& phi)
 {
     const std::string gname = phi.name() + "_laplacian";
     auto lapphi = phi.repo().create_scratch_field(gname, 1);

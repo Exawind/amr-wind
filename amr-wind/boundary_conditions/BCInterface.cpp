@@ -23,7 +23,7 @@ void BCIface::operator()(const amrex::Real value)
     m_field.copy_bc_to_device();
 }
 
-inline void BCIface::set_default_value(const amrex::Real value)
+ void BCIface::set_default_value(const amrex::Real value)
 {
     auto& bcval = m_field.bc_values();
     for (amrex::OrientationIter oit; oit != nullptr; ++oit) {

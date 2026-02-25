@@ -68,7 +68,7 @@ struct Slice
 };
 
 template <typename T>
-inline Slice<T>
+ Slice<T>
 slice(std::vector<T>& vec, const size_t start, const size_t count)
 {
     AMREX_ASSERT((start + count) <= vec.size());
@@ -76,14 +76,14 @@ slice(std::vector<T>& vec, const size_t start, const size_t count)
 }
 
 template <typename T>
-inline Slice<T> slice(std::vector<T>& vec, const size_t start)
+ Slice<T> slice(std::vector<T>& vec, const size_t start)
 {
     AMREX_ASSERT(start < vec.size());
     return slice(vec, start, vec.size() - start);
 }
 
 template <typename T>
-inline Slice<T>
+ Slice<T>
 slice(amrex::Vector<T>& vec, const size_t start, const size_t count)
 {
     AMREX_ASSERT((start + count) <= static_cast<size_t>(vec.size()));
@@ -91,14 +91,14 @@ slice(amrex::Vector<T>& vec, const size_t start, const size_t count)
 }
 
 template <typename T>
-inline Slice<T> slice(amrex::Vector<T>& vec, const size_t start)
+ Slice<T> slice(amrex::Vector<T>& vec, const size_t start)
 {
     AMREX_ASSERT(start < static_cast<size_t>(vec.size()));
     return slice(vec, start, vec.size() - start);
 }
 
 template <typename T>
-inline Slice<T>
+ Slice<T>
 slice(amrex::Gpu::DeviceVector<T>& vec, const size_t start, const size_t count)
 {
     AMREX_ASSERT((start + count) <= static_cast<size_t>(vec.size()));
@@ -106,7 +106,7 @@ slice(amrex::Gpu::DeviceVector<T>& vec, const size_t start, const size_t count)
 }
 
 template <typename T>
-inline Slice<T> slice(amrex::Gpu::DeviceVector<T>& vec, const size_t start)
+ Slice<T> slice(amrex::Gpu::DeviceVector<T>& vec, const size_t start)
 {
     AMREX_ASSERT(start < static_cast<size_t>(vec.size()));
     return slice(vec, start, vec.size() - start);
