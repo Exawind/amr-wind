@@ -63,7 +63,8 @@ public:
         const int lev,
         const Field* /*fld*/,
         const amrex::Real time,
-        const amrex::Vector<amrex::Real>& /*times*/);
+        const amrex::Vector<amrex::Real>& /*times*/,
+        const bool frozen_data);
 
     void interpolate(const amrex::Real /*time*/);
     [[nodiscard]] bool is_populated(amrex::Orientation /*ori*/) const;
@@ -145,6 +146,7 @@ public:
         const std::string& chkname, const Field& field) const;
 
     void read_file(const bool /* nph_target_time*/);
+    void read_frozen_file();
 
     void populate_data(
         const int /*lev*/,
@@ -264,6 +266,9 @@ private:
 
     //! output format for bndry output
     std::string m_out_fmt{"native"};
+
+    //! Read frozen data
+    bool m_read_frozen_data{false};
 };
 
 } // namespace amr_wind

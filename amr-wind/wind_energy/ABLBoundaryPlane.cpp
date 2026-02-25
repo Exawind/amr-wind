@@ -166,7 +166,8 @@ void InletData::read_data_native(
     const int lev,
     const Field* fld,
     const amrex::Real time,
-    const amrex::Vector<amrex::Real>& times)
+    const amrex::Vector<amrex::Real>& times,
+    const bool frozen_data)
 {
     const size_t nc = fld->num_comp();
     const int nstart =
@@ -174,29 +175,34 @@ void InletData::read_data_native(
 
     const int idx = utils::closest_index(times, time, constants::LOOSE_TOL);
     const int idxp1 = idx + 1;
-
-    m_tn = times[idx];
-    m_tnp1 = times[idxp1];
-
     auto ori = oit();
+    if (frozen_data) {
+        // For frozen data, both tn and tnp1 are set to the same time
+        m_tn = times[0];
+        m_tnp1 = times[idx];
+    } else {
+        m_tn = times[idx];
+        m_tnp1 = times[idxp1];
 
-    if (!(m_tn <= time + constants::LOOSE_TOL) ||
-        !(time <= m_tnp1 + constants::LOOSE_TOL)) {
-        amrex::Abort(
-            "ABLBoundaryPlane.cpp InletData::read_data_native() check "
-            "failed\n"
-            "Left time quantities should be <= right time quantities. Indices "
-            "supplied for debugging.\n"
-            "m_tn = " +
-            std::to_string(m_tn) + ", time + LOOSE_TOL = " +
-            std::to_string(time + constants::LOOSE_TOL) +
-            "\n"
-            "time = " +
-            std::to_string(time) + ", m_tnp1 + LOOSE_TOL = " +
-            std::to_string(m_tnp1 + constants::LOOSE_TOL) +
-            "\n"
-            "idx = " +
-            std::to_string(idx) + ", idxp1 = " + std::to_string(idxp1));
+        if (!(m_tn <= time + constants::LOOSE_TOL) ||
+            !(time <= m_tnp1 + constants::LOOSE_TOL)) {
+            amrex::Abort(
+                "ABLBoundaryPlane.cpp InletData::read_data_native() check "
+                "failed\n"
+                "Left time quantities should be <= right time quantities. "
+                "Indices "
+                "supplied for debugging.\n"
+                "m_tn = " +
+                std::to_string(m_tn) + ", time + LOOSE_TOL = " +
+                std::to_string(time + constants::LOOSE_TOL) +
+                "\n"
+                "time = " +
+                std::to_string(time) + ", m_tnp1 + LOOSE_TOL = " +
+                std::to_string(m_tnp1 + constants::LOOSE_TOL) +
+                "\n"
+                "idx = " +
+                std::to_string(idx) + ", idxp1 = " + std::to_string(idxp1));
+        }
     }
     AMREX_ALWAYS_ASSERT(fld->num_comp() == bndry_n[ori].nComp());
     AMREX_ASSERT(bndry_n[ori].boxArray() == bndry_np1[ori].boxArray());
@@ -319,6 +325,7 @@ ABLBoundaryPlane::ABLBoundaryPlane(CFDSim& sim)
     pp.queryarr("bndry_var_names", m_var_names);
     pp.get("bndry_file", m_filename);
     pp.query("bndry_output_format", m_out_fmt);
+    pp.query("bndry_read_frozen_data", m_read_frozen_data);
 
 #ifndef AMR_WIND_USE_NETCDF
     if (m_out_fmt == "netcdf") {
@@ -347,11 +354,18 @@ void ABLBoundaryPlane::post_init_actions()
     if (!m_is_initialized) {
         return;
     }
+    amrex::Print() << "Initializing ABL Boundary Plane IO\n"
+                   << m_read_frozen_data << std::endl;
     initialize_data();
     write_header();
     write_file();
     read_header();
-    read_file(false);
+    if (m_read_frozen_data) {
+        amrex::Print() << "Reading frozen ABL Boundary Plane Inflow Data\n";
+        read_frozen_file();
+    } else {
+        read_file(false);
+    }
 }
 
 void ABLBoundaryPlane::pre_advance_work()
@@ -359,7 +373,9 @@ void ABLBoundaryPlane::pre_advance_work()
     if (!m_is_initialized) {
         return;
     }
-    read_file(true);
+    if (!m_read_frozen_data) {
+        read_file(true);
+    }
 }
 
 void ABLBoundaryPlane::pre_predictor_work()
@@ -367,7 +383,9 @@ void ABLBoundaryPlane::pre_predictor_work()
     if (!m_is_initialized) {
         return;
     }
-    read_file(false);
+    if (!m_read_frozen_data) {
+        read_file(false);
+    }
 }
 
 void ABLBoundaryPlane::post_advance_work()
@@ -1295,10 +1313,87 @@ void ABLBoundaryPlane::read_file(const bool nph_target_time)
                     bndry2[ori].read(facename2);
 
                     m_in_data.read_data_native(
-                        oit, bndry1, bndry2, lev, fld, time, m_in_times);
+                        oit, bndry1, bndry2, lev, fld, time, m_in_times,
+                        m_read_frozen_data);
                 }
             }
         }
+    }
+
+    m_in_data.interpolate(time);
+}
+
+void ABLBoundaryPlane::read_frozen_file()
+{
+    BL_PROFILE("amr-wind::ABLBoundaryPlane::read_frozen_file");
+    if (m_io_mode != io_mode::input) {
+        return;
+    }
+    const amrex::Real time = m_time.current_time();
+    if (m_out_fmt == "native") {
+
+        const int t_step1 = m_in_timesteps[0];
+        const int t_step2 = m_in_timesteps[0];
+
+        const std::string chkname1 =
+            m_filename + amrex::Concatenate("/bndry_output", t_step1);
+        const std::string chkname2 =
+            m_filename + amrex::Concatenate("/bndry_output", t_step2);
+
+        const std::string level_prefix = "Level_";
+
+        const int nlevels = boundary_native_file_levels();
+        const auto bndry_bas =
+            read_bndry_native_boxarrays(chkname1, *(m_fields[0]));
+        for (int lev = 0; lev < nlevels; ++lev) {
+            for (auto* fld : m_fields) {
+                auto& field = *fld;
+
+                const auto& ba = bndry_bas[lev];
+                amrex::DistributionMapping dm{ba};
+
+                amrex::BndryRegister bndry1(
+                    ba, dm, m_in_rad, m_out_rad, m_extent_rad,
+                    field.num_comp());
+                amrex::BndryRegister bndry2(
+                    ba, dm, m_in_rad, m_out_rad, m_extent_rad,
+                    field.num_comp());
+
+                bndry1.setVal(1.0e13);
+                bndry2.setVal(1.0e13);
+
+                std::string filename1 = amrex::MultiFabFileFullPrefix(
+                    lev, chkname1, level_prefix, field.name());
+                std::string filename2 = amrex::MultiFabFileFullPrefix(
+                    lev, chkname2, level_prefix, field.name());
+
+                for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
+                    auto ori = oit();
+
+                    if ((!m_in_data.is_populated(ori)) ||
+                        ((field.bc_type()[ori] != BC::mass_inflow) &&
+                         (field.bc_type()[ori] != BC::mass_inflow_outflow))) {
+                        continue;
+                    }
+
+                    std::string facename1 =
+                        amrex::Concatenate(filename1 + '_', ori, 1);
+                    std::string facename2 =
+                        amrex::Concatenate(filename2 + '_', ori, 1);
+
+                    bndry1[ori].read(facename1);
+                    bndry2[ori].read(facename2);
+
+                    m_in_data.read_data_native(
+                        oit, bndry1, bndry2, lev, fld, time, m_in_times,
+                        m_read_frozen_data);
+                }
+            }
+        }
+    } else {
+        amrex::Abort(
+            "ABLBoundaryPlane::read_frozen_file() is only implemented for "
+            "native format.");
     }
 
     m_in_data.interpolate(time);
@@ -1320,35 +1415,36 @@ void ABLBoundaryPlane::populate_data(
         return;
     }
 
-    if (!(m_in_data.tn() <= time + constants::LOOSE_TOL) &&
-        !(time <= m_in_data.tnp1() + constants::LOOSE_TOL)) {
-        amrex::Abort(
-            "ABLBoundaryPlane.cpp ABLBoundaryPlane::populate_data() check 1"
-            "failed\n"
-            "Left time quantities should be <= right time quantities\n"
-            "m_in_data.tn() = " +
-            std::to_string(m_in_data.tn()) + ", time + LOOSE_TOL = " +
-            std::to_string(time + constants::LOOSE_TOL) +
-            "\n"
-            "time = " +
-            std::to_string(time) + ", m_in_data.tnp1() + LOOSE_TOL = " +
-            std::to_string(m_in_data.tnp1() + constants::LOOSE_TOL));
+    if (!m_read_frozen_data) {
+        if (!(m_in_data.tn() <= time + constants::LOOSE_TOL) &&
+            !(time <= m_in_data.tnp1() + constants::LOOSE_TOL)) {
+            amrex::Abort(
+                "ABLBoundaryPlane.cpp ABLBoundaryPlane::populate_data() check 1"
+                "failed\n"
+                "Left time quantities should be <= right time quantities\n"
+                "m_in_data.tn() = " +
+                std::to_string(m_in_data.tn()) + ", time + LOOSE_TOL = " +
+                std::to_string(time + constants::LOOSE_TOL) +
+                "\n"
+                "time = " +
+                std::to_string(time) + ", m_in_data.tnp1() + LOOSE_TOL = " +
+                std::to_string(m_in_data.tnp1() + constants::LOOSE_TOL));
+        }
+        if (!(std::abs(time - m_in_data.tinterp()) < constants::LOOSE_TOL)) {
+            amrex::Abort(
+                "ABLBoundaryPlane.cpp ABLBoundaryPlane::populate_data() check 2"
+                "failed\n"
+                "Left time quantities should be < right time quantities. "
+                "Additional quantities supplied on second line for debugging.\n"
+                "std::abs(time - m_in_data.tinterp()) = " +
+                std::to_string(std::abs(time - m_in_data.tinterp())) +
+                ", LOOSE_TOL = " + std::to_string(constants::LOOSE_TOL) +
+                "\n"
+                "time = " +
+                std::to_string(time) + ", m_in_data.tinterp() = " +
+                std::to_string(m_in_data.tinterp()));
+        }
     }
-    if (!(std::abs(time - m_in_data.tinterp()) < constants::LOOSE_TOL)) {
-        amrex::Abort(
-            "ABLBoundaryPlane.cpp ABLBoundaryPlane::populate_data() check 2"
-            "failed\n"
-            "Left time quantities should be < right time quantities. "
-            "Additional quantities supplied on second line for debugging.\n"
-            "std::abs(time - m_in_data.tinterp()) = " +
-            std::to_string(std::abs(time - m_in_data.tinterp())) +
-            ", LOOSE_TOL = " + std::to_string(constants::LOOSE_TOL) +
-            "\n"
-            "time = " +
-            std::to_string(time) +
-            ", m_in_data.tinterp() = " + std::to_string(m_in_data.tinterp()));
-    }
-
     for (amrex::OrientationIter oit; oit != nullptr; ++oit) {
         auto ori = oit();
         if ((!m_in_data.is_populated(ori)) ||
