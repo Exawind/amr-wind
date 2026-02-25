@@ -91,15 +91,15 @@ public:
 
     ~ConstTransport() override = default;
 
-    inline amrex::Real viscosity() const { return m_mu; }
+    amrex::Real viscosity() const { return m_mu; }
 
-    inline amrex::Real thermal_diffusivity() const { return m_mu / m_Pr; }
+    amrex::Real thermal_diffusivity() const { return m_mu / m_Pr; }
 
-    inline amrex::Real laminar_prandtl() const { return m_Pr; }
+    amrex::Real laminar_prandtl() const { return m_Pr; }
 
-    inline amrex::Real turbulent_prandtl() const { return m_Prt; }
+    amrex::Real turbulent_prandtl() const { return m_Prt; }
 
-    static inline amrex::Real laminar_schmidt(const std::string& scalar_name)
+    static amrex::Real laminar_schmidt(const std::string& scalar_name)
     {
         amrex::ParmParse pp("transport");
         const std::string key = scalar_name + "_laminar_schmidt";
@@ -108,7 +108,7 @@ public:
         return lam_schmidt;
     }
 
-    static inline amrex::Real turbulent_schmidt(const std::string& scalar_name)
+    static amrex::Real turbulent_schmidt(const std::string& scalar_name)
     {
         amrex::ParmParse pp("transport");
         const std::string key = scalar_name + "_turbulent_schmidt";
@@ -118,7 +118,7 @@ public:
     }
 
     //! Return the dynamic visocity field
-    inline std::unique_ptr<ScratchField> mu() override
+    std::unique_ptr<ScratchField> mu() override
     {
         auto mu = m_repo.create_scratch_field(1, m_ngrow);
         for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
@@ -128,7 +128,7 @@ public:
     }
 
     //! Return the thermal diffusivity field
-    inline std::unique_ptr<ScratchField> alpha() override
+    std::unique_ptr<ScratchField> alpha() override
     {
         auto alpha = mu();
         amrex::Real inv_Pr = 1.0_rt / m_Pr;
@@ -138,7 +138,7 @@ public:
         return alpha;
     }
 
-    inline std::unique_ptr<ScratchField>
+    std::unique_ptr<ScratchField>
     scalar_diffusivity(const std::string& scalar_name) override
     {
         amrex::Real lam_schmidt = laminar_schmidt(scalar_name);
@@ -153,7 +153,7 @@ public:
     }
 
     //! Return the thermal expansion coefficient
-    inline std::unique_ptr<ScratchField> beta() const override
+    std::unique_ptr<ScratchField> beta() const override
     {
         auto beta = m_repo.create_scratch_field(1, m_ngrow);
         for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
@@ -170,7 +170,7 @@ public:
     }
 
     //! Compute the thermal expansion coefficient
-    inline void beta_impl(
+    void beta_impl(
         const int lev,
         const amrex::MFIter& mfi,
         const amrex::Box& bx,
@@ -210,13 +210,13 @@ public:
         }
     }
 
-    inline amrex::Real reference_temperature() const override
+    amrex::Real reference_temperature() const override
     {
         return m_reference_temperature;
     }
 
     //! Return the reference temperature
-    inline std::unique_ptr<ScratchField> ref_theta() const override
+    std::unique_ptr<ScratchField> ref_theta() const override
     {
         if (m_reference_temperature < 0.0_rt) {
             amrex::Abort("Reference temperature was not set");
@@ -237,7 +237,7 @@ public:
     }
 
     //! Compute the reference temperature
-    inline void ref_theta_impl(
+    void ref_theta_impl(
         const int lev,
         const amrex::MFIter& mfi,
         const amrex::Box& bx,
