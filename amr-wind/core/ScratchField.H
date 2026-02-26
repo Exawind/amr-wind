@@ -50,13 +50,12 @@ public:
     amrex::MultiFab& operator()(int lev) { return m_data[lev]; }
     const amrex::MultiFab& operator()(int lev) const { return m_data[lev]; }
 
-    amrex::Vector<amrex::MultiFab*> vec_ptrs() noexcept
+    amrex::Vector<amrex::MultiFab*> vec_ptrs()
     {
         return amrex::GetVecOfPtrs(m_data);
     }
 
-    [[nodiscard]] amrex::Vector<const amrex::MultiFab*>
-    vec_const_ptrs() const noexcept
+    [[nodiscard]] amrex::Vector<const amrex::MultiFab*> vec_const_ptrs() const
     {
         return amrex::GetVecOfConstPtrs(m_data);
     }
@@ -71,21 +70,21 @@ public:
         return {*this, scomp, ncomp};
     }
 
-    void fillpatch(amrex::Real time) noexcept;
-    void fillpatch(amrex::Real time, const amrex::IntVect& ng) noexcept;
+    void fillpatch(amrex::Real time);
+    void fillpatch(amrex::Real time, const amrex::IntVect& ng);
 
     void fillpatch(
         int lev,
         amrex::Real time,
         amrex::MultiFab& mfab,
-        const amrex::IntVect& nghost) noexcept;
+        const amrex::IntVect& nghost);
 
     void fillpatch(
         int lev,
         amrex::Real time,
         amrex::MultiFab& mfab,
         const amrex::IntVect& nghost,
-        amrex::Vector<amrex::BCRec>& bcrec) noexcept;
+        amrex::Vector<amrex::BCRec>& bcrec);
 
 protected:
     ScratchField(

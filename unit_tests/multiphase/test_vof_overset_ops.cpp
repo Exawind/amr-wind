@@ -465,7 +465,7 @@ amrex::Real check_alpha_flux_impl(amr_wind::Field& flux, const int& dir)
                 amrex::Array4<amrex::Real const> const& f_arr) -> amrex::Real {
                 amrex::Real error = 0;
 
-                amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
+                amrex::Loop(bx, [=, &error](int i, int j, int k) {
                     const int idx = (dir == 0 ? i : (dir == 1 ? j : k));
                     // Difference between actual and expected
                     if (idx == 0) {
@@ -538,7 +538,7 @@ amrex::Real check_velocity_face_impl(amr_wind::Field& flux, const int& dir)
                 amrex::Array4<amrex::Real const> const& f_arr) -> amrex::Real {
                 amrex::Real error = 0;
 
-                amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
+                amrex::Loop(bx, [=, &error](int i, int j, int k) {
                     const int idx = (dir == 0 ? i : (dir == 1 ? j : k));
                     if (idx == 0) {
                         // gphi > 0, uwpind from the "left"
@@ -590,7 +590,7 @@ amrex::Real check_gp_rho_face_impl(
                 amrex::Array4<amrex::Real const> const& f_arr) -> amrex::Real {
                 amrex::Real error = 0;
 
-                amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
+                amrex::Loop(bx, [=, &error](int i, int j, int k) {
                     const int idx = (dir == 0 ? i : (dir == 1 ? j : k));
                     if (idx == 0) {
                         // gphi > 0, uwpind from the "left"
@@ -651,7 +651,7 @@ check_psrc_manual_impl(amr_wind::Field& psrc, amr_wind::Field& psrc_manual)
                 amrex::Array4<amrex::Real const> const& fm_arr) -> amrex::Real {
                 amrex::Real error = 0;
 
-                amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
+                amrex::Loop(bx, [=, &error](int i, int j, int k) {
                     error += std::abs(f_arr(i, j, k) - fm_arr(i, j, k));
                 });
 
@@ -674,7 +674,7 @@ amrex::Real check_iblank_node_impl(amr_wind::IntField& mask_node)
                 amrex::Array4<int const> const& i_arr) -> amrex::Real {
                 amrex::Real error = 0;
 
-                amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
+                amrex::Loop(bx, [=, &error](int i, int j, int k) {
                     bool in_overset_x = (i >= 1 && i <= 6);
                     bool in_overset_y = (j >= 1 && j <= 6);
                     bool in_overset_z = (k >= 1 && k <= 7);
@@ -713,7 +713,7 @@ amrex::Real check_iblank_cell_impl(amr_wind::IntField& mask_cell)
                 amrex::Array4<int const> const& i_arr) -> amrex::Real {
                 amrex::Real error = 0;
 
-                amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
+                amrex::Loop(bx, [=, &error](int i, int j, int k) {
                     bool in_overset_x = (i >= 1 && i <= 6);
                     bool in_overset_y = (j >= 1 && j <= 6);
                     bool in_overset_z = (k >= 1 && k <= 6);
@@ -752,7 +752,7 @@ amrex::Real check_iblank_cell_default_impl(amr_wind::IntField& mask_cell)
                 amrex::Array4<int const> const& i_arr) -> amrex::Real {
                 amrex::Real error = 0;
 
-                amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
+                amrex::Loop(bx, [=, &error](int i, int j, int k) {
                     bool in_overset_x = (i >= 1 && i <= 6);
                     bool in_overset_y = (j >= 1 && j <= 6);
                     bool in_overset_z = (k >= 1 && k <= 6);

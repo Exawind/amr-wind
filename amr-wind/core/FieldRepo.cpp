@@ -401,7 +401,7 @@ std::unique_ptr<IntScratchField> FieldRepo::create_int_scratch_field_on_host(
     return create_int_scratch_field_on_host(
         "int_scratch_field_host", ncomp, nghost, floc);
 }
-void FieldRepo::advance_states() noexcept
+void FieldRepo::advance_states()
 {
     for (auto& it : m_field_vec) {
         if (it->field_state() != FieldState::New) {

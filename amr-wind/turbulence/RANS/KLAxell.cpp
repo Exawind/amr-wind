@@ -127,7 +127,7 @@ void KLAxell<Transport>::update_turbulent_viscosity(
             const auto& blank_arrs = (*m_terrain_blank)(lev).const_arrays();
             amrex::ParallelFor(
                 mu_turb(lev),
-                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                     amrex::Real stratification =
                         -((gradT_arrs[nbx](i, j, k, 0) * gravity[0]) +
                           (gradT_arrs[nbx](i, j, k, 1) * gravity[1]) +
@@ -205,7 +205,7 @@ void KLAxell<Transport>::update_turbulent_viscosity(
         } else {
             amrex::ParallelFor(
                 mu_turb(lev),
-                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                     amrex::Real stratification =
                         -((gradT_arrs[nbx](i, j, k, 0) * gravity[0]) +
                           (gradT_arrs[nbx](i, j, k, 1) * gravity[1]) +
@@ -309,8 +309,7 @@ void KLAxell<Transport>::update_alphaeff(Field& alphaeff)
         const amrex::Real Rtc = -1.0_rt;
         const amrex::Real Rtmin = -3.0_rt;
         amrex::ParallelFor(
-            mu_turb(lev),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            mu_turb(lev), [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 amrex::Real stratification =
                     -((gradT_arrs[nbx](i, j, k, 0) * gravity[0]) +
                       (gradT_arrs[nbx](i, j, k, 1) * gravity[1]) +

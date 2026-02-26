@@ -162,7 +162,7 @@ AMREX_INLINE T field_probe_impl(
             T val = 0.0;
 
             if (bx.contains(iv_val)) {
-                amrex::Loop(bx, [=, &val](int i0, int j0, int k0) noexcept {
+                amrex::Loop(bx, [=, &val](int i0, int j0, int k0) {
                     const amrex::IntVect iv = {i0, j0, k0};
                     if (iv == iv_val) {
                         val = field_arr(iv, icomp);

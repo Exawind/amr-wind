@@ -291,7 +291,7 @@ void ABLMesoForcingMom::operator()(
     const amrex::Real* v_error_val = m_error_meso_avg_V.data();
     const int idir = (int)m_axis;
 
-    amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+    amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
         amrex::IntVect iv(i, j, k);
         const amrex::Real ht = problo[idir] + ((iv[idir] + 0.5_rt) * dx[idir]);
         const amrex::Real u_err = amr_wind::interp::linear(

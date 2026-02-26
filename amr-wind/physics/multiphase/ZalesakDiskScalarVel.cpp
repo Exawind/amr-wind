@@ -96,7 +96,7 @@ void ZalesakDiskScalarVel::initialize_fields(
     const auto& rho_arrs = density.arrays();
     amrex::ParallelFor(
         levelset, amrex::IntVect(1),
-        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
             const amrex::Real x = problo[0] + ((i + 0.5_rt) * dx[0]);
             const amrex::Real y = problo[1] + ((j + 0.5_rt) * dx[1]);
             const amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);
@@ -205,7 +205,7 @@ void ZalesakDiskScalarVel::pre_advance_work()
         const auto& wf_arrs = w_mac.arrays();
         amrex::ParallelFor(
             m_velocity(lev), amrex::IntVect(1),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 const amrex::Real x = problo[0] + ((i + 0.5_rt) * dx[0]);
                 const amrex::Real y = problo[1] + ((j + 0.5_rt) * dx[1]);
 
@@ -269,8 +269,7 @@ amrex::Real ZalesakDiskScalarVel::compute_error(const Field& field)
                 m_sim.repo().get_int_field("iblank_cell")(lev).arrays();
             const auto& imask_arrs = level_mask.arrays();
             amrex::ParallelFor(
-                field(lev),
-                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                field(lev), [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                     if (std::abs(iblank_arrs[nbx](i, j, k)) < 1) {
                         imask_arrs[nbx](i, j, k) = 0;
                     }

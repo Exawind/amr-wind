@@ -20,7 +20,7 @@ static void replace_masked_vof(
         const auto& vfmasked_arrs = f_vof_new(lev).const_arrays();
         amrex::ParallelFor(
             f_iblank(lev), f_iblank.num_grow(),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 // In iblanked regions, sharpen VOF and limit it
                 volfrac_arrs[nbx](i, j, k) =
                     (native_flag_arrs[nbx](i, j, k) > 0)

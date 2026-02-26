@@ -54,7 +54,7 @@ void SloshingTank::initialize_fields(int level, const amrex::Geometry& geom)
     const auto& p = pressure.arrays();
 
     amrex::ParallelFor(
-        levelset, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+        levelset, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
             const amrex::Real x = problo[0] + ((i + 0.5_rt) * dx[0]);
             const amrex::Real y = problo[1] + ((j + 0.5_rt) * dx[1]);
             const amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);
@@ -70,7 +70,7 @@ void SloshingTank::initialize_fields(int level, const amrex::Geometry& geom)
     if (m_init_p) {
         amrex::ParallelFor(
             pressure, amrex::IntVect(0),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 // For pressure nodes, no offset
                 const amrex::Real x = problo[0] + (i * dx[0]);
                 const amrex::Real y = problo[1] + (j * dx[1]);

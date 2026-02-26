@@ -249,7 +249,7 @@ void print_nonlinear_residual(
 
         amrex::ParallelFor(
             velocity_new(lev), amrex::IntVect(0), AMREX_SPACEDIM,
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) {
                 if (osetmask_arr[nbx](i, j, k) == 0) {
                     veldiff_arr[nbx](i, j, k, n) = 0.;
                 } else {

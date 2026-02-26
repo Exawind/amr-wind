@@ -200,7 +200,7 @@ private:
     // end of member variables
     //
 
-    amrex::FabFactory<amrex::FArrayBox> const& Factory(int lev) const noexcept
+    amrex::FabFactory<amrex::FArrayBox> const& Factory(int lev) const
     {
         return m_repo.factory(lev);
     }

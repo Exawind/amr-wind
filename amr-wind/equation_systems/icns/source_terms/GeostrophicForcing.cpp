@@ -137,7 +137,7 @@ void GeostrophicForcing::operator()(
     }
 
     const auto& vof = (*m_vof)(lev).const_array(mfi);
-    amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+    amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
         amrex::Real wfac = 1.0_rt;
         if (ph_ramp) {
             const amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);

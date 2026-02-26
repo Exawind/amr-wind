@@ -40,13 +40,12 @@ public:
     amrex::iMultiFab& operator()(int lev) { return m_data[lev]; }
     const amrex::iMultiFab& operator()(int lev) const { return m_data[lev]; }
 
-    amrex::Vector<amrex::iMultiFab*> vec_ptrs() noexcept
+    amrex::Vector<amrex::iMultiFab*> vec_ptrs()
     {
         return amrex::GetVecOfPtrs(m_data);
     }
 
-    [[nodiscard]] amrex::Vector<const amrex::iMultiFab*>
-    vec_const_ptrs() const noexcept
+    [[nodiscard]] amrex::Vector<const amrex::iMultiFab*> vec_const_ptrs() const
     {
         return amrex::GetVecOfConstPtrs(m_data);
     }
@@ -54,7 +53,7 @@ public:
     //! Return a reference to the field repository that created this field
     [[nodiscard]] const FieldRepo& repo() const { return m_repo; }
 
-    void setVal(int value) noexcept;
+    void setVal(int value);
 
 protected:
     IntScratchField(

@@ -285,8 +285,7 @@ void FPlaneAveraging<FType>::compute_averages(
         amrex::ParallelFor(
             amrex::Gpu::KernelInfo().setReduction(true), pbx,
             [=] AMREX_GPU_DEVICE(
-                int p_i, int p_j, int p_k,
-                amrex::Gpu::Handler const& handler) noexcept {
+                int p_i, int p_j, int p_k, amrex::Gpu::Handler const& handler) {
                 // Loop over the direction perpendicular to the plane.
                 // This reduces the atomic pressure on the destination arrays.
 
@@ -393,8 +392,7 @@ void VelPlaneAveraging::compute_hvelmag_averages(
         amrex::ParallelFor(
             amrex::Gpu::KernelInfo().setReduction(true), pbx,
             [=] AMREX_GPU_DEVICE(
-                int p_i, int p_j, int p_k,
-                amrex::Gpu::Handler const& handler) noexcept {
+                int p_i, int p_j, int p_k, amrex::Gpu::Handler const& handler) {
                 // Loop over the direction perpendicular to the plane.
                 // This reduces the atomic pressure on the destination arrays.
 

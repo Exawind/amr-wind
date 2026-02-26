@@ -15,7 +15,7 @@ void amr_wind::diagnostics::make_mask_addend(
     const auto& arr_mask = mfab_mask.const_arrays();
     amrex::ParallelFor(
         mfab, mfab.n_grow, mfab.n_comp,
-        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
+        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) {
             arr[nbx](i, j, k, n) = std::abs(arr_mask[nbx](i, j, k) - mask_val) <
                                            constants::TIGHT_TOL
                                        ? 0.0_rt
@@ -115,7 +115,7 @@ amrex::Real amr_wind::diagnostics::get_vel_max(
             amrex::Array4<amrex::Real const> const& vel_arr,
             amrex::Array4<int const> const& mask_arr) -> amrex::Real {
             amrex::Real max_fab = -1.0e8_rt;
-            amrex::Loop(bx, [=, &max_fab](int i, int j, int k) noexcept {
+            amrex::Loop(bx, [=, &max_fab](int i, int j, int k) {
                 max_fab = amrex::max<amrex::Real>(
                     max_fab, mask_arr(i, j, k) > 0
                                  ? factor * vel_arr(i, j, k, vdir)
@@ -157,7 +157,7 @@ amrex::Real amr_wind::diagnostics::get_vel_loc(
             amrex::Array4<amrex::Real const> const& vel_arr,
             amrex::Array4<int const> const& mask_arr) -> amrex::Real {
             amrex::Real loc_fab = problo[ldir];
-            amrex::Loop(bx, [=, &loc_fab](int i, int j, int k) noexcept {
+            amrex::Loop(bx, [=, &loc_fab](int i, int j, int k) {
                 int idx = (ldir == 0 ? i : (ldir == 1 ? j : k));
                 amrex::Real offset = 0.5_rt;
                 amrex::Real loc = problo[ldir] + ((idx + offset) * dx[ldir]);
@@ -185,7 +185,7 @@ amrex::Real amr_wind::diagnostics::get_macvel_max(
             amrex::Array4<amrex::Real const> const& mvel_arr,
             amrex::Array4<int const> const& mask_arr) -> amrex::Real {
             amrex::Real max_fab = -1.0e8_rt;
-            amrex::Loop(bx, [=, &max_fab](int i, int j, int k) noexcept {
+            amrex::Loop(bx, [=, &max_fab](int i, int j, int k) {
                 int ii = i - (vdir == 0 ? 1 : 0);
                 int jj = j - (vdir == 1 ? 1 : 0);
                 int kk = k - (vdir == 2 ? 1 : 0);
@@ -231,7 +231,7 @@ amrex::Real amr_wind::diagnostics::get_macvel_loc(
             amrex::Array4<amrex::Real const> const& mvel_arr,
             amrex::Array4<int const> const& mask_arr) -> amrex::Real {
             amrex::Real loc_fab = problo[ldir];
-            amrex::Loop(bx, [=, &loc_fab](int i, int j, int k) noexcept {
+            amrex::Loop(bx, [=, &loc_fab](int i, int j, int k) {
                 int ii = i - (vdir == 0 ? 1 : 0);
                 int jj = j - (vdir == 1 ? 1 : 0);
                 int kk = k - (vdir == 2 ? 1 : 0);

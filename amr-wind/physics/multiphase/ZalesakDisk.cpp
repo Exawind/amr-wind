@@ -62,7 +62,7 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
 
     amrex::ParallelFor(
         levelset, amrex::IntVect(1),
-        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
             const amrex::Real x = problo[0] + ((i + 0.5_rt) * dx[0]);
             const amrex::Real y = problo[1] + ((j + 0.5_rt) * dx[1]);
             const amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);
@@ -164,7 +164,7 @@ void ZalesakDisk::pre_advance_work()
         const auto& wf_arrs = w_mac.arrays();
         amrex::ParallelFor(
             m_velocity(lev), amrex::IntVect(1),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 const amrex::Real x = problo[0] + ((i + 0.5_rt) * dx[0]);
                 const amrex::Real y = problo[1] + ((j + 0.5_rt) * dx[1]);
 
@@ -197,7 +197,7 @@ void ZalesakDisk::post_advance_work()
         const auto& vel_arrs = m_velocity(lev).arrays();
         amrex::ParallelFor(
             m_velocity(lev),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 const amrex::Real x = problo[0] + ((i + 0.5_rt) * dx[0]);
                 const amrex::Real y = problo[1] + ((j + 0.5_rt) * dx[1]);
 

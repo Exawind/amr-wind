@@ -72,7 +72,7 @@ void BurggrafFlow::initialize_fields(int level, const amrex::Geometry& geom)
     const auto& src_arrs = source.arrays();
 
     amrex::ParallelFor(
-        velocity, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+        velocity, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
             // compute the source term
             const amrex::Real x = prob_lo[0] + ((i + 0.5_rt) * dx[0]);
             const amrex::Real y = prob_lo[1] + ((j + 0.5_rt) * dx[1]);

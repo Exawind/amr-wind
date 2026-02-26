@@ -26,7 +26,7 @@ void iblank_to_mask(const IntField& iblank, IntField& maskf)
         const auto& marrs = mask.arrays();
         amrex::ParallelFor(
             ibl, ibl.n_grow,
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 marrs[nbx](i, j, k) = amrex::max(ibarrs[nbx](i, j, k), 0);
             });
     }
@@ -54,7 +54,7 @@ void iblank_node_to_mask_vof(
         const auto& marrs = mask.arrays();
         amrex::ParallelFor(
             ibl, amrex::IntVect(0),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 // Default is masking all 0 and -1 iblanks
                 marrs[nbx](i, j, k) = amrex::max(ibarrs[nbx](i, j, k), 0);
                 // Check cells neighboring node for being near interface
@@ -120,7 +120,7 @@ void prepare_mask_cell_for_mac(FieldRepo& repo)
             const auto& marrs = mask.arrays();
             amrex::ParallelFor(
                 ibl, amrex::IntVect(0),
-                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                     // Default is masking all 0 and -1 iblanks
                     marrs[nbx](i, j, k) = amrex::max(ibarrs[nbx](i, j, k), 0);
                     // Check cells neighboring node for being near interface
@@ -184,7 +184,7 @@ void populate_psi(
     const auto& vof = mf_vof.const_arrays();
     amrex::ParallelFor(
         mf_psi, mf_psi.n_grow,
-        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
             psi[nbx](i, j, k) = asdf(vof[nbx](i, j, k), i_th, asdf_tiny);
         });
 }
@@ -195,7 +195,7 @@ void process_vof(amrex::MultiFab& mf_vof, const amrex::Real vof_tol)
     const auto& vof = mf_vof.arrays();
     amrex::ParallelFor(
         mf_vof, mf_vof.n_grow,
-        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
             vof[nbx](i, j, k) = vof[nbx](i, j, k) < vof_tol
                                     ? 0.0_rt
                                     : (vof[nbx](i, j, k) > 1.0_rt - vof_tol
@@ -214,8 +214,7 @@ void harmonize_vof(
     const auto& og_vof = mf_vof_original.const_arrays();
     const auto& iblank = mf_iblank.const_arrays();
     amrex::ParallelFor(
-        mf_vof_target,
-        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+        mf_vof_target, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
             // Replace amr-wind vof values with originals
             if (iblank[nbx](i, j, k) != -1) {
                 tg_vof[nbx](i, j, k) = og_vof[nbx](i, j, k);
@@ -235,7 +234,7 @@ void populate_normal_vector(
     // Calculate gradients in each direction with centered diff
     amrex::ParallelFor(
         mf_normvec, mf_normvec.n_grow - amrex::IntVect(1),
-        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
             // Neumann condition across nalu bdy
             int ibdy =
                 (iblank[nbx](i, j, k) != iblank[nbx](i - 1, j, k)) ? -1 : 0;
@@ -293,7 +292,7 @@ void populate_sharpen_fluxes(
     const auto& rho = mf_density.const_arrays();
     amrex::ParallelFor(
         mf_fx, mf_fx.n_grow,
-        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
             // vof flux
             amrex::Real flux = Gamma * alpha_flux(
                                            i, j, k, 0, margin, vof[nbx],
@@ -319,7 +318,7 @@ void populate_sharpen_fluxes(
         });
     amrex::ParallelFor(
         mf_fy, mf_fy.n_grow,
-        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
             amrex::Real flux = Gamma * alpha_flux(
                                            i, j, k, 1, margin, vof[nbx],
                                            tg_vof[nbx], norm[nbx]);
@@ -339,7 +338,7 @@ void populate_sharpen_fluxes(
         });
     amrex::ParallelFor(
         mf_fz, mf_fz.n_grow,
-        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
             amrex::Real flux = Gamma * alpha_flux(
                                            i, j, k, 2, margin, vof[nbx],
                                            tg_vof[nbx], norm[nbx]);
@@ -379,29 +378,28 @@ void process_fluxes_calc_src(
     // Zero fluxes based on iblank array
     amrex::ParallelFor(
         mf_fx, mf_fx.n_grow, mf_fx.n_comp,
-        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
+        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) {
             const bool zero_all =
                 (iblank[nbx](i - 1, j, k) + iblank[nbx](i, j, k) > -2);
             fx[nbx](i, j, k, n) *= zero_all ? 0.0_rt : 1.0_rt;
         });
     amrex::ParallelFor(
         mf_fy, mf_fy.n_grow, mf_fy.n_comp,
-        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
+        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) {
             const bool zero_all =
                 (iblank[nbx](i, j - 1, k) + iblank[nbx](i, j, k) > -2);
             fy[nbx](i, j, k, n) *= zero_all ? 0.0_rt : 1.0_rt;
         });
     amrex::ParallelFor(
         mf_fz, mf_fz.n_grow, mf_fz.n_comp,
-        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
+        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) {
             const bool zero_all =
                 (iblank[nbx](i, j, k - 1) + iblank[nbx](i, j, k) > -2);
             fz[nbx](i, j, k, n) *= zero_all ? 0.0_rt : 1.0_rt;
         });
     // With knowledge of fluxes, compute pressure source term
     amrex::ParallelFor(
-        mf_psource,
-        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+        mf_psource, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
             sp[nbx](i, j, k) =
                 gp_flux_tensor(i, j, k, fx[nbx], fy[nbx], fz[nbx], tiny) &&
                 normal_reinit_tensor(
@@ -438,7 +436,7 @@ amrex::Real calculate_pseudo_dt_flux(
             amrex::Box const& bx, amrex::Array4<amrex::Real const> const& fx,
             amrex::Array4<amrex::Real const> const& vof) -> amrex::Real {
             amrex::Real pdt_fab = 1.0_rt;
-            amrex::Loop(bx, [=, &pdt_fab](int i, int j, int k) noexcept {
+            amrex::Loop(bx, [=, &pdt_fab](int i, int j, int k) {
                 amrex::Real pdt_lim = 1.0_rt;
                 if (fx(i, j, k, 0) > tol && vof(i, j, k) > tol) {
                     // VOF is removed from cell i
@@ -457,7 +455,7 @@ amrex::Real calculate_pseudo_dt_flux(
             amrex::Box const& bx, amrex::Array4<amrex::Real const> const& fy,
             amrex::Array4<amrex::Real const> const& vof) -> amrex::Real {
             amrex::Real pdt_fab = 1.0_rt;
-            amrex::Loop(bx, [=, &pdt_fab](int i, int j, int k) noexcept {
+            amrex::Loop(bx, [=, &pdt_fab](int i, int j, int k) {
                 amrex::Real pdt_lim = 1.0_rt;
                 if (fy(i, j, k, 0) > tol && vof(i, j, k) > tol) {
                     // VOF is removed from cell j
@@ -476,7 +474,7 @@ amrex::Real calculate_pseudo_dt_flux(
             amrex::Box const& bx, amrex::Array4<amrex::Real const> const& fz,
             amrex::Array4<amrex::Real const> const& vof) -> amrex::Real {
             amrex::Real pdt_fab = 1.0_rt;
-            amrex::Loop(bx, [=, &pdt_fab](int i, int j, int k) noexcept {
+            amrex::Loop(bx, [=, &pdt_fab](int i, int j, int k) {
                 amrex::Real pdt_lim = 1.0_rt;
                 if (fz(i, j, k, 0) > tol && vof(i, j, k) > tol) {
                     // VOF is removed from cell k
@@ -519,7 +517,7 @@ void apply_fluxes(
     const auto& p = mf_pressure.arrays();
 
     amrex::ParallelFor(
-        mf_vof, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+        mf_vof, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
             const amrex::Real olddens = dens[nbx](i, j, k);
             vof[nbx](i, j, k) +=
                 ptfac *
@@ -577,8 +575,7 @@ void apply_fluxes(
             // Density bounds are enforced elsewhere
         });
     amrex::ParallelFor(
-        mf_pressure,
-        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+        mf_pressure, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
             p[nbx](i, j, k) += ptfac * sp[nbx](i, j, k);
         });
 }
@@ -594,7 +591,7 @@ amrex::Real measure_convergence(
             amrex::Box const& bx,
             amrex::Array4<amrex::Real const> const& fx) -> amrex::Real {
             amrex::Real err_fab = -1.0_rt;
-            amrex::Loop(bx, [=, &err_fab](int i, int j, int k) noexcept {
+            amrex::Loop(bx, [=, &err_fab](int i, int j, int k) {
                 err_fab = amrex::max(err_fab, std::abs(fx(i, j, k, 0)));
             });
             return err_fab;
@@ -605,7 +602,7 @@ amrex::Real measure_convergence(
             amrex::Box const& bx,
             amrex::Array4<amrex::Real const> const& fy) -> amrex::Real {
             amrex::Real err_fab = -1.0_rt;
-            amrex::Loop(bx, [=, &err_fab](int i, int j, int k) noexcept {
+            amrex::Loop(bx, [=, &err_fab](int i, int j, int k) {
                 err_fab = amrex::max(err_fab, std::abs(fy(i, j, k, 0)));
             });
             return err_fab;
@@ -616,7 +613,7 @@ amrex::Real measure_convergence(
             amrex::Box const& bx,
             amrex::Array4<amrex::Real const> const& fz) -> amrex::Real {
             amrex::Real err_fab = -1.0_rt;
-            amrex::Loop(bx, [=, &err_fab](int i, int j, int k) noexcept {
+            amrex::Loop(bx, [=, &err_fab](int i, int j, int k) {
                 err_fab = amrex::max(err_fab, std::abs(fz(i, j, k, 0)));
             });
             return err_fab;
@@ -631,7 +628,7 @@ void equate_field(amrex::MultiFab& mf_dest, const amrex::MultiFab& mf_src)
     const auto& dest = mf_dest.arrays();
     const auto& src = mf_src.const_arrays();
     amrex::ParallelFor(
-        mf_dest, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+        mf_dest, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
             dest[nbx](i, j, k) = std::sqrt(
                 (src[nbx](i, j, k, 0) * src[nbx](i, j, k, 0)) +
                 (src[nbx](i, j, k, 1) * src[nbx](i, j, k, 1)) +
@@ -650,7 +647,7 @@ void replace_gradp(
     const auto iblank = mf_iblank.const_arrays();
     amrex::ParallelFor(
         mf_gp, mf_gp.n_grow,
-        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
             if (iblank[nbx](i, j, k) <= 0) {
                 gp[nbx](i, j, k, 0) = gp0[nbx](i, j, k, 0);
                 gp[nbx](i, j, k, 1) = gp0[nbx](i, j, k, 1);
@@ -670,7 +667,7 @@ void apply_pressure_gradient(
     const auto& rho = mf_density.const_arrays();
     const auto& gp = mf_gp.const_arrays();
     amrex::ParallelFor(
-        mf_vel, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+        mf_vel, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
             const amrex::Real soverrho = scaling_factor / rho[nbx](i, j, k);
             vel[nbx](i, j, k, 0) -= gp[nbx](i, j, k, 0) * soverrho;
             vel[nbx](i, j, k, 1) -= gp[nbx](i, j, k, 1) * soverrho;

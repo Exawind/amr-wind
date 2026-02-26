@@ -77,7 +77,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real amd_muvel(
     const amrex::Real* gradTbar_coord_end,
     const amrex::Real* gradTbar,
     const int normal_dir,
-    const amrex::Real nlo) noexcept
+    const amrex::Real nlo)
 {
     amrex::Real num_shear = 0.0_rt;
     amrex::Real num_buoy = 0.0_rt;
@@ -125,7 +125,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real amd_thermal_diff(
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dx, // Grid spacing
     const amrex::Real C,                                    // Poincare const
     const amrex::Array4<amrex::Real const>& gradVel,
-    const amrex::Array4<amrex::Real const>& gradT) noexcept
+    const amrex::Array4<amrex::Real const>& gradT)
 {
     amrex::Real num = 0;
     amrex::Real denom = 0;

@@ -98,7 +98,7 @@ void DerivedQtyMgr::operator()(ScratchField& fld, const int scomp) const
     fld.fillpatch(0.0_rt);
 }
 
-int DerivedQtyMgr::num_comp() const noexcept
+int DerivedQtyMgr::num_comp() const
 {
     return std::accumulate(
         m_derived_vec.begin(), m_derived_vec.end(), 0,
@@ -107,14 +107,13 @@ int DerivedQtyMgr::num_comp() const noexcept
         });
 }
 
-bool DerivedQtyMgr::contains(const std::string& key) const noexcept
+bool DerivedQtyMgr::contains(const std::string& key) const
 {
     auto it = m_obj_map.find(key);
     return (it != m_obj_map.end());
 }
 
-void DerivedQtyMgr::var_names(
-    amrex::Vector<std::string>& plt_var_names) const noexcept
+void DerivedQtyMgr::var_names(amrex::Vector<std::string>& plt_var_names) const
 {
     for (const auto& qty : m_derived_vec) {
         qty->var_names(plt_var_names);

@@ -176,21 +176,20 @@ void VortexRing::initialize_velocity(const VortexRingType& vorticity_theta)
             const auto& nbx = mfi.nodaltilebox();
             auto minusvort = (*minusvorticity)(level).array(mfi);
 
-            amrex::ParallelFor(
-                nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real x = problo[0] + (i * dx[0]);
-                    const amrex::Real y = problo[1] + (j * dx[1]);
-                    const amrex::Real z = problo[2] + (k * dx[2]);
-                    const amrex::Real r =
-                        std::sqrt(std::pow(x, 2.0_rt) + std::pow(y, 2.0_rt));
-                    const amrex::Real theta = std::atan2(y, x);
-                    const amrex::Real vortheta = vorticity_theta(
-                        r, theta, z, R, Gamma, delta, dz,
-                        perturbation_amplitude, num_modes, pm, pp1, pp2);
-                    minusvort(i, j, k, 0) = std::sin(theta) * vortheta;
-                    minusvort(i, j, k, 1) = -std::cos(theta) * vortheta;
-                    minusvort(i, j, k, 2) = 0.0_rt;
-                });
+            amrex::ParallelFor(nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+                const amrex::Real x = problo[0] + (i * dx[0]);
+                const amrex::Real y = problo[1] + (j * dx[1]);
+                const amrex::Real z = problo[2] + (k * dx[2]);
+                const amrex::Real r =
+                    std::sqrt(std::pow(x, 2.0_rt) + std::pow(y, 2.0_rt));
+                const amrex::Real theta = std::atan2(y, x);
+                const amrex::Real vortheta = vorticity_theta(
+                    r, theta, z, R, Gamma, delta, dz, perturbation_amplitude,
+                    num_modes, pm, pp1, pp2);
+                minusvort(i, j, k, 0) = std::sin(theta) * vortheta;
+                minusvort(i, j, k, 1) = -std::cos(theta) * vortheta;
+                minusvort(i, j, k, 2) = 0.0_rt;
+            });
         }
     }
 
@@ -264,8 +263,7 @@ void VortexRing::initialize_velocity(const VortexRingType& vorticity_theta)
         const amrex::Real facz = 0.25_rt * dxinv[2];
 
         amrex::ParallelFor(
-            velocity,
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            velocity, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 const amrex::Real dpsix_dy =
                     facy * (-psi_arrs[nbx](i, j, k, 0) -
                             psi_arrs[nbx](i + 1, j, k, 0) +

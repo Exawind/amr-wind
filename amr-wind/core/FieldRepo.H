@@ -342,19 +342,16 @@ public:
         int ncomp = 1, int nghost = 0, FieldLoc floc = FieldLoc::CELL) const;
 
     //! Advance all fields with more than one timestate to the new timestep
-    void advance_states() noexcept;
+    void advance_states();
 
     //! Return a reference to the underlying AMR mesh instance
     const amrex::AmrCore& mesh() const { return m_mesh; }
 
     //! Total number of levels currently active in the AMR mesh
-    int num_active_levels() const noexcept { return m_mesh.finestLevel() + 1; }
+    int num_active_levels() const { return m_mesh.finestLevel() + 1; }
 
     //! Number of fields registered in the database
-    int num_fields() const noexcept
-    {
-        return static_cast<int>(m_field_vec.size());
-    }
+    int num_fields() const { return static_cast<int>(m_field_vec.size()); }
 
     //! Return list of fields registered (for unit-test purposes only)
     const amrex::Vector<std::unique_ptr<Field>>& fields() const
@@ -363,7 +360,7 @@ public:
     }
 
     //! Return factory instance at a given level
-    const amrex::FabFactory<amrex::FArrayBox>& factory(int lev) const noexcept
+    const amrex::FabFactory<amrex::FArrayBox>& factory(int lev) const
     {
         return *m_leveldata[lev]->m_factory;
     }
@@ -374,7 +371,7 @@ protected:
      *  \param fid Unique integer field identifier for this field
      *  \param lev AMR level
      */
-    amrex::MultiFab& get_multifab(const unsigned fid, const int lev) noexcept
+    amrex::MultiFab& get_multifab(const unsigned fid, const int lev)
     {
         BL_ASSERT(lev <= m_mesh.finestLevel());
         return m_leveldata[lev]->m_mfabs[fid];
@@ -385,7 +382,7 @@ protected:
      *  \param fid Unique integer field identifier for this field
      *  \param lev AMR level
      */
-    amrex::iMultiFab& get_int_fab(const unsigned fid, const int lev) noexcept
+    amrex::iMultiFab& get_int_fab(const unsigned fid, const int lev)
     {
         BL_ASSERT(lev <= m_mesh.finestLevel());
         return m_leveldata[lev]->m_int_fabs[fid];

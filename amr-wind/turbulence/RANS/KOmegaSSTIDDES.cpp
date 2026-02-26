@@ -150,8 +150,7 @@ void KOmegaSSTIDDES<Transport>::update_turbulent_viscosity(
         const auto& sdr_lhs_arrs = sdr_lhs(lev).arrays();
 
         amrex::ParallelFor(
-            mu_turb(lev),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            mu_turb(lev), [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 amrex::Real gko =
                     ((gradK_arrs[nbx](i, j, k, 0) *
                       gradOmega_arrs[nbx](i, j, k, 0)) +

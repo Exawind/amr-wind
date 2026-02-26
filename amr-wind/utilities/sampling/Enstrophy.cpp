@@ -69,12 +69,11 @@ amrex::Real Enstrophy::calculate_enstrophy()
                 amrex::Array4<int const> const& mask_arr) -> amrex::Real {
                 amrex::Real enstrophy_fab = 0.0_rt;
 
-                amrex::Loop(
-                    bx, [=, &enstrophy_fab](int i, int j, int k) noexcept {
-                        enstrophy_fab +=
-                            cell_vol * mask_arr(i, j, k) * den_arr(i, j, k) *
-                            (vort_arr(i, j, k) * vort_arr(i, j, k));
-                    });
+                amrex::Loop(bx, [=, &enstrophy_fab](int i, int j, int k) {
+                    enstrophy_fab += cell_vol * mask_arr(i, j, k) *
+                                     den_arr(i, j, k) *
+                                     (vort_arr(i, j, k) * vort_arr(i, j, k));
+                });
                 return enstrophy_fab;
             });
     }

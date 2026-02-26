@@ -35,11 +35,11 @@ int main(int argc, char* argv[])
             MPI_COMM_WORLD, "No input file provided. Exiting!!");
         return 1;
     }
-
     // Look for "-h" or "--help" flag and print usage
     for (auto i = 1; i < argc; i++) {
-        const std::string param(argv[i]);
-        if ((param == "--help") || (param == "-h")) {
+        char* user_arg = argv[i];
+        if ((std::strcmp(user_arg, "--help") == 0) ||
+            (std::strcmp(user_arg, "-h") == 0)) {
             amr_wind::io::print_banner(MPI_COMM_WORLD, std::cout);
             amr_wind::io::print_usage(MPI_COMM_WORLD, std::cout);
             return 0;

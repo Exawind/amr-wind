@@ -274,7 +274,7 @@ void ABLVelWallFunc::wall_model(
                     const amrex::Real kappa = mo.kappa;
                     amrex::ParallelFor(
                         amrex::bdryLo(bx, idim),
-                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        [=] AMREX_GPU_DEVICE(int i, int j, int k) {
                             const amrex::Real mu = eta(i, j, k);
                             const amrex::Real uu = vold_arr(i, j, k, 0);
                             const amrex::Real vv = vold_arr(i, j, k, 1);
@@ -301,7 +301,7 @@ void ABLVelWallFunc::wall_model(
                 } else {
                     amrex::ParallelFor(
                         amrex::bdryLo(bx, idim),
-                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        [=] AMREX_GPU_DEVICE(int i, int j, int k) {
                             const amrex::Real mu = eta(i, j, k);
                             const amrex::Real uu = vold_arr(i, j, k, 0);
                             const amrex::Real vv = vold_arr(i, j, k, 1);
@@ -440,7 +440,7 @@ void ABLTempWallFunc::wall_model(
                         m_monin_obukhov_length;
                     amrex::ParallelFor(
                         amrex::bdryLo(bx, idim),
-                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        [=] AMREX_GPU_DEVICE(int i, int j, int k) {
                             const amrex::Real alphaT = eta(i, j, k);
                             const amrex::Real uu = vold_arr(i, j, k, 0);
                             const amrex::Real vv = vold_arr(i, j, k, 1);
@@ -463,7 +463,7 @@ void ABLTempWallFunc::wall_model(
                 } else {
                     amrex::ParallelFor(
                         amrex::bdryLo(bx, idim),
-                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        [=] AMREX_GPU_DEVICE(int i, int j, int k) {
                             const amrex::Real alphaT = eta(i, j, k);
                             const amrex::Real uu = vold_arr(i, j, k, 0);
                             const amrex::Real vv = vold_arr(i, j, k, 1);

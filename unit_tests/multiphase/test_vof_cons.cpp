@@ -61,12 +61,11 @@ void initialize_adv_velocities(
         auto vm = vmac(lev).array(mfi);
         auto wm = wmac(lev).array(mfi);
         const auto& gbx = mfi.growntilebox(1);
-        amrex::ParallelFor(
-            gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                um(i, j, k) = varr[0];
-                vm(i, j, k) = varr[1];
-                wm(i, j, k) = varr[2];
-            });
+        amrex::ParallelFor(gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+            um(i, j, k) = varr[0];
+            vm(i, j, k) = varr[1];
+            wm(i, j, k) = varr[2];
+        });
     });
 }
 

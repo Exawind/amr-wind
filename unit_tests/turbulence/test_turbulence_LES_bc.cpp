@@ -26,7 +26,7 @@ amrex::Real get_val_at_kindex(
             amrex::Array4<amrex::Real const> const& div_arr) -> amrex::Real {
             amrex::Real error = 0;
 
-            amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
+            amrex::Loop(bx, [=, &error](int i, int j, int k) {
                 // Check if current cell is just above lower wall
                 if (k == kref) {
                     // Add field value to output
@@ -57,7 +57,7 @@ void init_field3(amr_wind::Field& fld, amrex::Real srate)
 
         amrex::ParallelFor(
             fld(lev), fld.num_grow(), fld.num_comp(),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) {
                 const amrex::Real z = problo[2] + ((k + offset) * dx[2]);
                 farrs[nbx](i, j, k, n) = (z / 2.0_rt * srate) + 2.0_rt;
             });
@@ -82,7 +82,7 @@ void init_field1(amr_wind::Field& fld, amrex::Real tgrad)
 
         amrex::ParallelFor(
             fld(lev), fld.num_grow(),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 const amrex::Real z = problo[2] + ((k + offset) * dx[2]);
 
                 farrs[nbx](i, j, k, 0) = z * tgrad;

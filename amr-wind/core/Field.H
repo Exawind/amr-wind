@@ -39,7 +39,7 @@ struct FieldInfo
     bool bc_initialized();
 
     //! Copy the BC information to device data structures
-    void copy_bc_to_device() noexcept;
+    void copy_bc_to_device();
 
     //! Field name without state information
     std::string m_basename;
@@ -234,8 +234,7 @@ public:
      */
     void set_default_fillpatch_bc(
         const SimTime& time,
-        amrex::BCType::mathematicalBndryTypes bctype =
-            amrex::BCType::hoextrap) noexcept;
+        amrex::BCType::mathematicalBndryTypes bctype = amrex::BCType::hoextrap);
 
     /** Map field to the uniform mesh
      *
@@ -244,7 +243,7 @@ public:
      *  depending on whether the field is cell-centered or node-centered,
      *  respectively.
      */
-    void to_uniform_space() noexcept;
+    void to_uniform_space();
 
     /** Map field to the stretched mesh
      *
@@ -253,37 +252,36 @@ public:
      *  depending on whether the field is cell-centered or node-centered,
      *  respectively.
      */
-    void to_stretched_space() noexcept;
+    void to_stretched_space();
 
     //! Return field at a different time state
     Field& state(FieldState fstate);
     [[nodiscard]] const Field& state(FieldState fstate) const;
 
     //! Return MultiFab instance for a given level
-    amrex::MultiFab& operator()(int lev) noexcept;
-    const amrex::MultiFab& operator()(int lev) const noexcept;
+    amrex::MultiFab& operator()(int lev);
+    const amrex::MultiFab& operator()(int lev) const;
 
     //! Return a vector of MultiFab pointers for all levels
-    amrex::Vector<amrex::MultiFab*> vec_ptrs() noexcept;
+    amrex::Vector<amrex::MultiFab*> vec_ptrs();
 
     //! Return vector of `const MultiFab*` for all levels
-    [[nodiscard]] amrex::Vector<const amrex::MultiFab*>
-    vec_const_ptrs() const noexcept;
+    [[nodiscard]] amrex::Vector<const amrex::MultiFab*> vec_const_ptrs() const;
 
     //! Advance timestep for fields with multiple states
-    void advance_states() noexcept;
+    void advance_states();
 
     //! Copy a user-specified "from_state" to "to_state"
-    void copy_state(FieldState to_state, FieldState from_state) noexcept;
+    void copy_state(FieldState to_state, FieldState from_state);
 
     //! Create a new time state after the field has been created
-    Field& create_state(FieldState fstate) noexcept;
+    Field& create_state(FieldState fstate);
 
     // NOTE: We break naming rules for methods here to provide 1-1 mapping with
     // the underlying MultiFab method names.
 
     //! Set the field to a constant value at all levels
-    void setVal(amrex::Real value) noexcept;
+    void setVal(amrex::Real value);
 
     /** Set specific components of a multi-component field to a given value
      *
@@ -293,16 +291,12 @@ public:
      * initialize
      *  \param nghost Number of ghost cells to include
      */
-    void setVal(
-        amrex::Real value,
-        int start_comp,
-        int num_comp = 1,
-        int nghost = 0) noexcept;
+    void
+    setVal(amrex::Real value, int start_comp, int num_comp = 1, int nghost = 0);
 
     /** Set components to those in the vector for a multi-component field
      */
-    void
-    setVal(const amrex::Vector<amrex::Real>& values, int nghost = 0) noexcept;
+    void setVal(const amrex::Vector<amrex::Real>& values, int nghost = 0);
 
     /** Return a sub-view of the Field instance
      */
@@ -330,52 +324,52 @@ public:
             new T(*this, std::forward<Args>(args)...));
     }
 
-    void fillpatch(amrex::Real time) noexcept;
-    void fillpatch(amrex::Real time, amrex::IntVect ng) noexcept;
+    void fillpatch(amrex::Real time);
+    void fillpatch(amrex::Real time, amrex::IntVect ng);
     void fillpatch_sibling_fields(
         amrex::Real time,
         amrex::IntVect ng,
-        amrex::Array<Field*, AMREX_SPACEDIM>& fields) const noexcept;
+        amrex::Array<Field*, AMREX_SPACEDIM>& fields) const;
 
-    void fillphysbc(amrex::Real time) noexcept;
-    void fillphysbc(amrex::Real time, amrex::IntVect ng) noexcept;
+    void fillphysbc(amrex::Real time);
+    void fillphysbc(amrex::Real time, amrex::IntVect ng);
 
-    void apply_bc_funcs(FieldState rho_state) noexcept;
+    void apply_bc_funcs(FieldState rho_state);
 
     void fillpatch(
         int lev,
         amrex::Real time,
         amrex::MultiFab& mfab,
-        const amrex::IntVect& nghost) noexcept;
+        const amrex::IntVect& nghost);
 
     void fillpatch_from_coarse(
         int lev,
         amrex::Real time,
         amrex::MultiFab& mfab,
-        const amrex::IntVect& nghost) noexcept;
+        const amrex::IntVect& nghost);
 
     void fillphysbc(
         int lev,
         amrex::Real time,
         amrex::MultiFab& mfab,
-        const amrex::IntVect& nghost) noexcept;
+        const amrex::IntVect& nghost);
 
     void set_inflow(
         int lev,
         amrex::Real time,
         amrex::MultiFab& mfab,
-        const amrex::IntVect& nghost) noexcept;
+        const amrex::IntVect& nghost);
 
     void set_inflow_sibling_fields(
         int lev,
         amrex::Real time,
-        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM> mfabs) noexcept;
+        amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM> mfabs);
 
     void fillpatch(
         const int lev,
         const amrex::Real time,
         amrex::MultiFab& mfab,
-        const int nghost) noexcept
+        const int nghost)
     {
         fillpatch(lev, time, mfab, amrex::IntVect(nghost));
     }
@@ -384,7 +378,7 @@ public:
         const int lev,
         const amrex::Real time,
         amrex::MultiFab& mfab,
-        const int nghost) noexcept
+        const int nghost)
     {
         fillpatch_from_coarse(lev, time, mfab, amrex::IntVect(nghost));
     }
@@ -393,7 +387,7 @@ public:
         const int lev,
         const amrex::Real time,
         amrex::MultiFab& mfab,
-        const int nghost) noexcept
+        const int nghost)
     {
         fillphysbc(lev, time, mfab, amrex::IntVect(nghost));
     }
@@ -402,7 +396,7 @@ public:
         const int lev,
         const amrex::Real time,
         amrex::MultiFab& mfab,
-        const int nghost) noexcept
+        const int nghost)
     {
         set_inflow(lev, time, mfab, amrex::IntVect(nghost));
     }

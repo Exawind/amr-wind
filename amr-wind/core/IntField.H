@@ -43,20 +43,18 @@ public:
     [[nodiscard]] const FieldRepo& repo() const { return m_repo; }
 
     //! Access the FAB at a given level
-    amrex::iMultiFab& operator()(int lev) noexcept;
-    const amrex::iMultiFab& operator()(int lev) const noexcept;
+    amrex::iMultiFab& operator()(int lev);
+    const amrex::iMultiFab& operator()(int lev) const;
 
-    amrex::Vector<amrex::iMultiFab*> vec_ptrs() noexcept;
+    amrex::Vector<amrex::iMultiFab*> vec_ptrs();
 
-    [[nodiscard]] amrex::Vector<const amrex::iMultiFab*>
-    vec_const_ptrs() const noexcept;
+    [[nodiscard]] amrex::Vector<const amrex::iMultiFab*> vec_const_ptrs() const;
 
-    void setVal(int value) noexcept;
+    void setVal(int value);
 
-    void setVal(
-        int value, int start_comp, int num_comp = 1, int nghost = 0) noexcept;
+    void setVal(int value, int start_comp, int num_comp = 1, int nghost = 0);
 
-    void setVal(const amrex::Vector<int>& values, int nghost = 0) noexcept;
+    void setVal(const amrex::Vector<int>& values, int nghost = 0);
 
 protected:
     IntField(

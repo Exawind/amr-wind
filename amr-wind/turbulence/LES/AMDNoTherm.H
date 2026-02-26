@@ -60,7 +60,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real amd_base_muvel(
     int k,
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx, // Grid spacing
     amrex::Real C,                                         // Poincare const
-    amrex::Array4<amrex::Real const> const& gradVel) noexcept
+    amrex::Array4<amrex::Real const> const& gradVel)
 {
 
     amrex::Real num_shear = 0;

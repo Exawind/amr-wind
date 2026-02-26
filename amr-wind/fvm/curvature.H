@@ -37,7 +37,7 @@ struct Curvature
 
         amrex::ParallelFor(
             bx, m_phi.num_comp(),
-            [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+            [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) {
                 amrex::Real cp1, c, cm1;
                 amrex::Real sp1, s, sm1;
 

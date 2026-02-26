@@ -124,8 +124,7 @@ void Kosovic<Transport>::update_turbulent_viscosity(
                       1.5_rt * dz / monin_obukhov_length, m_beta_m, m_gamma_m)
                 : 0.0_rt;
         amrex::ParallelFor(
-            mu_turb(lev),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            mu_turb(lev), [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 const amrex::Real rho = rho_arrs[nbx](i, j, k);
                 amrex::Real x3 = problo[2] + ((k + 0.5_rt) * dz);
                 x3 = (has_terrain)
@@ -218,8 +217,7 @@ void Kosovic<Transport>::update_alphaeff(Field& alphaeff)
         const auto& alphaeff_arrs = alphaeff(lev).arrays();
         const auto& lam_diff_arrs = (*lam_alpha)(lev).const_arrays();
         amrex::ParallelFor(
-            mu_turb(lev),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            mu_turb(lev), [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 alphaeff_arrs[nbx](i, j, k) =
                     lam_diff_arrs[nbx](i, j, k) +
                     (muCoeff * muturb_arrs[nbx](i, j, k));

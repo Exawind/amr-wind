@@ -182,34 +182,30 @@ public:
 
         if (m_constant_beta > 0.0_rt) {
             const amrex::Real beta_val = m_constant_beta;
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    beta(i, j, k) = beta_val;
-                });
+            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+                beta(i, j, k) = beta_val;
+            });
         } else if (m_repo.field_exists("reference_temperature")) {
             const auto& temp0 = m_repo.get_field("reference_temperature");
             const auto& temp0_arr = temp0(lev).const_array(mfi);
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    beta(i, j, k) = 1.0_rt / temp0_arr(i, j, k);
-                });
+            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+                beta(i, j, k) = 1.0_rt / temp0_arr(i, j, k);
+            });
         } else {
             const amrex::Real beta_val = 1.0_rt / m_reference_temperature;
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    beta(i, j, k) = beta_val;
-                });
+            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+                beta(i, j, k) = beta_val;
+            });
         }
 
         if (m_repo.field_exists("vof")) {
             const auto& vof = m_repo.get_field("vof");
             const auto& vof_arr = vof(lev).const_array(mfi);
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    if (vof_arr(i, j, k) > constants::TIGHT_TOL) {
-                        beta(i, j, k) = 0.0_rt;
-                    }
-                });
+            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+                if (vof_arr(i, j, k) > constants::TIGHT_TOL) {
+                    beta(i, j, k) = 0.0_rt;
+                }
+            });
         }
     }
 
@@ -253,16 +249,14 @@ public:
         if (m_repo.field_exists("reference_temperature")) {
             auto& temp0 = m_repo.get_field("reference_temperature");
             const auto& temp0_arr = temp0(lev).const_array(mfi);
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    ref_theta(i, j, k) = temp0_arr(i, j, k);
-                });
+            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+                ref_theta(i, j, k) = temp0_arr(i, j, k);
+            });
         } else {
             const amrex::Real ref_theta_val = m_reference_temperature;
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    ref_theta(i, j, k) = ref_theta_val;
-                });
+            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+                ref_theta(i, j, k) = ref_theta_val;
+            });
         }
     }
 
