@@ -17,7 +17,7 @@ void init_velocity(amr_wind::Field& fld)
         const auto& farrs = fld(lev).arrays();
         amrex::ParallelFor(
             fld(lev), amrex::IntVect(0),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 farrs[nbx](i, j, k, 0) = j;
                 farrs[nbx](i, j, k, 1) = k;
                 farrs[nbx](i, j, k, 2) = i;
@@ -36,7 +36,7 @@ void init_vof(amr_wind::Field& fld)
         // fully liquid and half liquid
         amrex::ParallelFor(
             fld(lev), amrex::IntVect(0),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 if (k < 2) {
                     vof_arrs[nbx](i, j, k) = 1.0_rt;
                 } else {

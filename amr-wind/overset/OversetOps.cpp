@@ -139,7 +139,7 @@ void OversetOps::update_gradp()
         const auto& gp_proj_arrs = gradphi[lev]->const_arrays();
         amrex::ParallelFor(
             grad_p(lev), amrex::IntVect(0), AMREX_SPACEDIM,
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) {
                 gp_lev_arrs[nbx](i, j, k, n) = gp_proj_arrs[nbx](i, j, k, n);
             });
     }

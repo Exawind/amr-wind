@@ -116,7 +116,7 @@ operator()(const int lev, const amrex::MFIter& mfi, const amrex::Geometry& geom)
     const vs::Vector m_normal(tdata.rotor_frame.x());
     const vs::Vector m_origin(tdata.rot_center);
 
-    amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+    amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
         const vs::Vector cc{
             problo[0] + ((i + 0.5_rt) * dx[0]),
             problo[1] + ((j + 0.5_rt) * dx[1]),

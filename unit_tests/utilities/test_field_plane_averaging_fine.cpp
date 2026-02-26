@@ -87,7 +87,7 @@ void init_field_linear(
 
         amrex::ParallelFor(
             fld(lev), fld.num_grow(),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 amrex::Real off = 0.5_rt;
                 // Set values at boundaries if outside domain
                 if (k < 0) {

@@ -214,7 +214,7 @@ void DragForcing::operator()(
             ? MOData::calc_psi_m(
                   0.5_rt * dx[2] / m_monin_obukhov_length, m_beta_m, m_gamma_m)
             : 0.0_rt;
-    amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+    amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
         const amrex::Real x = prob_lo[0] + ((i + 0.5_rt) * dx[0]);
         const amrex::Real y = prob_lo[1] + ((j + 0.5_rt) * dx[1]);
         const amrex::Real z = prob_lo[2] + ((k + 0.5_rt) * dx[2]);

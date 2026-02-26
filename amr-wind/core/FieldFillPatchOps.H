@@ -400,7 +400,7 @@ public:
                 const auto& marr = mfab[mfi].array();
                 amrex::ParallelFor(
                     bx, [=] AMREX_GPU_DEVICE(
-                            const int i, const int j, const int k) noexcept {
+                            const int i, const int j, const int k) {
                         for (int n = 0; n < ncomp; ++n) {
                             bcfunc.set_inflow(
                                 {i, j, k}, marr, gdata, time, ori, n, 0, 0);
@@ -457,9 +457,8 @@ public:
                         tmp_fab.array();
 
                     amrex::ParallelFor(
-                        bx,
-                        [=] AMREX_GPU_DEVICE(
-                            const int i, const int j, const int k) noexcept {
+                        bx, [=] AMREX_GPU_DEVICE(
+                                const int i, const int j, const int k) {
                             bcfunc.set_inflow(
                                 {i, j, k}, tmp_marr, gdata, time, ori, 0, 0,
                                 fdir);

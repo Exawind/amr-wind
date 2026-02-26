@@ -43,17 +43,17 @@ public:
         amr_wind::Field& /*w_mac*/,
         amrex::Array<amrex::MultiFab*, ICNS::ndim>& /*rho_face*/,
         amrex::Real /*ovst_fac*/,
-        int /*lev*/) noexcept;
+        int /*lev*/);
 
     [[nodiscard]] amrex::Real rho0() const { return m_rho_0; }
 
 private:
-    void init_projector(const FaceFabPtrVec& /*beta*/) noexcept;
-    void init_projector(amrex::Real /*beta*/) noexcept;
+    void init_projector(const FaceFabPtrVec& /*beta*/);
+    void init_projector(amrex::Real /*beta*/);
 
     void enforce_inout_solvability(
         const amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>>&
-            a_umac) noexcept;
+            a_umac);
 
     FieldRepo& m_repo;
     PhysicsMgr& m_phy_mgr;
@@ -552,7 +552,7 @@ struct AdvectionOp<ICNS, fvm::MOL>
                 auto vel_arr = dof_field(lev).const_array(mfi);
                 amrex::ParallelFor(
                     gbx, ICNS::ndim,
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) {
                         q(i, j, k, n) = rho_arr(i, j, k) * vel_arr(i, j, k, n);
                     });
                 // Doing this explicitly, instead of through a Multiply command,

@@ -150,7 +150,7 @@ public:
         auto* pstruct = pvec.data();
         auto* parr = pavec.data();
 
-        amrex::ParallelFor(np, [=] AMREX_GPU_DEVICE(int ip) noexcept {
+        amrex::ParallelFor(np, [=] AMREX_GPU_DEVICE(int ip) {
             auto& p = pstruct[ip];
             // Determine offsets within the containing cell
             const amrex::Real x =

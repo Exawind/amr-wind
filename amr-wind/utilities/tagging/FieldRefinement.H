@@ -57,8 +57,7 @@ public:
         if (tag_field) {
             const auto fld_err = m_field_error[level];
             amrex::ParallelFor(
-                mfab,
-                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                mfab, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                     const amrex::RealVect coord = {AMREX_D_DECL(
                         prob_lo[0] + ((i + 0.5_rt) * dx[0]),
                         prob_lo[1] + ((j + 0.5_rt) * dx[1]),
@@ -74,8 +73,7 @@ public:
         if (tag_grad) {
             const auto gerr = m_grad_error[level];
             amrex::ParallelFor(
-                mfab,
-                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                mfab, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                     const amrex::RealVect coord = {AMREX_D_DECL(
                         prob_lo[0] + ((i + 0.5_rt) * dx[0]),
                         prob_lo[1] + ((j + 0.5_rt) * dx[1]),

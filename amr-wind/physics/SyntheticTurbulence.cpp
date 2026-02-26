@@ -591,7 +591,7 @@ void SyntheticTurbulence::update_impl(
 
         amrex::ParallelFor(
             m_turb_force(lev),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 // Position vector in local turbulence grid frame
                 vs::Vector xyz_l;
                 // velocity in local frame

@@ -121,7 +121,7 @@ void EkmanSpiral::initialize_fields(int level, const amrex::Geometry& geom)
     const auto& vel_arrs = velocity.arrays();
 
     amrex::ParallelFor(
-        velocity, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+        velocity, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
             const amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);
             vel_arrs[nbx](i, j, k, 0) = u_exact(v0, a, z);
             vel_arrs[nbx](i, j, k, 1) = v_exact(v0, a, z);
@@ -169,7 +169,7 @@ amrex::Real EkmanSpiral::compute_error(const Field& field)
                 amrex::Array4<int const> const& mask_arr) -> amrex::Real {
                 amrex::Real err_fab = 0.0_rt;
 
-                amrex::Loop(bx, [=, &err_fab](int i, int j, int k) noexcept {
+                amrex::Loop(bx, [=, &err_fab](int i, int j, int k) {
                     const amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);
                     const amrex::Real u = fld_arr(i, j, k, comp);
                     const amrex::Real u_exact = f_exact(v0, a, z);

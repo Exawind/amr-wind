@@ -36,73 +36,71 @@ struct Qcriterion
         if (bx.isEmpty()) {
             return;
         }
-        amrex::ParallelFor(
-            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                amrex::Real cp1, c, cm1, ux, uy, uz, vx, vy, vz, wx, wy, wz;
-                cp1 = Stencil::c00;
-                c = Stencil::c01;
-                cm1 = Stencil::c02;
+        amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+            amrex::Real cp1, c, cm1, ux, uy, uz, vx, vy, vz, wx, wy, wz;
+            cp1 = Stencil::c00;
+            c = Stencil::c01;
+            cm1 = Stencil::c02;
 
-                ux = (cp1 * phi(i + 1, j, k, 0) + c * phi(i, j, k, 0) +
-                      cm1 * phi(i - 1, j, k, 0)) *
-                     idx[0];
-                vx = (cp1 * phi(i + 1, j, k, 1) + c * phi(i, j, k, 1) +
-                      cm1 * phi(i - 1, j, k, 1)) *
-                     idx[0];
-                wx = (cp1 * phi(i + 1, j, k, 2) + c * phi(i, j, k, 2) +
-                      cm1 * phi(i - 1, j, k, 2)) *
-                     idx[0];
+            ux = (cp1 * phi(i + 1, j, k, 0) + c * phi(i, j, k, 0) +
+                  cm1 * phi(i - 1, j, k, 0)) *
+                 idx[0];
+            vx = (cp1 * phi(i + 1, j, k, 1) + c * phi(i, j, k, 1) +
+                  cm1 * phi(i - 1, j, k, 1)) *
+                 idx[0];
+            wx = (cp1 * phi(i + 1, j, k, 2) + c * phi(i, j, k, 2) +
+                  cm1 * phi(i - 1, j, k, 2)) *
+                 idx[0];
 
-                cp1 = Stencil::c10;
-                c = Stencil::c11;
-                cm1 = Stencil::c12;
+            cp1 = Stencil::c10;
+            c = Stencil::c11;
+            cm1 = Stencil::c12;
 
-                uy = (cp1 * phi(i, j + 1, k, 0) + c * phi(i, j, k, 0) +
-                      cm1 * phi(i, j - 1, k, 0)) *
-                     idx[1];
-                vy = (cp1 * phi(i, j + 1, k, 1) + c * phi(i, j, k, 1) +
-                      cm1 * phi(i, j - 1, k, 1)) *
-                     idx[1];
-                wy = (cp1 * phi(i, j + 1, k, 2) + c * phi(i, j, k, 2) +
-                      cm1 * phi(i, j - 1, k, 2)) *
-                     idx[1];
+            uy = (cp1 * phi(i, j + 1, k, 0) + c * phi(i, j, k, 0) +
+                  cm1 * phi(i, j - 1, k, 0)) *
+                 idx[1];
+            vy = (cp1 * phi(i, j + 1, k, 1) + c * phi(i, j, k, 1) +
+                  cm1 * phi(i, j - 1, k, 1)) *
+                 idx[1];
+            wy = (cp1 * phi(i, j + 1, k, 2) + c * phi(i, j, k, 2) +
+                  cm1 * phi(i, j - 1, k, 2)) *
+                 idx[1];
 
-                cp1 = Stencil::c20;
-                c = Stencil::c21;
-                cm1 = Stencil::c22;
+            cp1 = Stencil::c20;
+            c = Stencil::c21;
+            cm1 = Stencil::c22;
 
-                uz = (cp1 * phi(i, j, k + 1, 0) + c * phi(i, j, k, 0) +
-                      cm1 * phi(i, j, k - 1, 0)) *
-                     idx[2];
-                vz = (cp1 * phi(i, j, k + 1, 1) + c * phi(i, j, k, 1) +
-                      cm1 * phi(i, j, k - 1, 1)) *
-                     idx[2];
-                wz = (cp1 * phi(i, j, k + 1, 2) + c * phi(i, j, k, 2) +
-                      cm1 * phi(i, j, k - 1, 2)) *
-                     idx[2];
+            uz = (cp1 * phi(i, j, k + 1, 0) + c * phi(i, j, k, 0) +
+                  cm1 * phi(i, j, k - 1, 0)) *
+                 idx[2];
+            vz = (cp1 * phi(i, j, k + 1, 1) + c * phi(i, j, k, 1) +
+                  cm1 * phi(i, j, k - 1, 1)) *
+                 idx[2];
+            wz = (cp1 * phi(i, j, k + 1, 2) + c * phi(i, j, k, 2) +
+                  cm1 * phi(i, j, k - 1, 2)) *
+                 idx[2];
 
-                const amrex::Real S2 = std::pow(ux, 2.0_rt) +
-                                       std::pow(vy, 2.0_rt) +
-                                       std::pow(wz, 2.0_rt) +
-                                       (0.5_rt * std::pow(uy + vx, 2.0_rt)) +
-                                       (0.5_rt * std::pow(vz + wy, 2.0_rt)) +
-                                       (0.5_rt * std::pow(wx + uz, 2.0_rt));
+            const amrex::Real S2 = std::pow(ux, 2.0_rt) + std::pow(vy, 2.0_rt) +
+                                   std::pow(wz, 2.0_rt) +
+                                   (0.5_rt * std::pow(uy + vx, 2.0_rt)) +
+                                   (0.5_rt * std::pow(vz + wy, 2.0_rt)) +
+                                   (0.5_rt * std::pow(wx + uz, 2.0_rt));
 
-                const amrex::Real W2 = (0.5_rt * std::pow(uy - vx, 2.0_rt)) +
-                                       (0.5_rt * std::pow(vz - wy, 2.0_rt)) +
-                                       (0.5_rt * std::pow(wx - uz, 2.0_rt));
-                if (nondim) {
-                    qcritphi(i, j, k) =
-                        0.5_rt *
-                        (W2 / amrex::max<amrex::Real>(
-                                  std::numeric_limits<amrex::Real>::epsilon() *
-                                      1.0e2_rt,
-                                  S2) -
-                         1.0_rt);
-                } else {
-                    qcritphi(i, j, k) = 0.5_rt * (W2 - S2);
-                }
-            });
+            const amrex::Real W2 = (0.5_rt * std::pow(uy - vx, 2.0_rt)) +
+                                   (0.5_rt * std::pow(vz - wy, 2.0_rt)) +
+                                   (0.5_rt * std::pow(wx - uz, 2.0_rt));
+            if (nondim) {
+                qcritphi(i, j, k) =
+                    0.5_rt *
+                    (W2 / amrex::max<amrex::Real>(
+                              std::numeric_limits<amrex::Real>::epsilon() *
+                                  1.0e2_rt,
+                              S2) -
+                     1.0_rt);
+            } else {
+                qcritphi(i, j, k) = 0.5_rt * (W2 - S2);
+            }
+        });
     }
 
     FTypeOut& m_qcritphi;

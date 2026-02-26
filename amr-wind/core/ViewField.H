@@ -50,13 +50,12 @@ public:
     amrex::MultiFab& operator()(int lev) { return m_data[lev]; }
     const amrex::MultiFab& operator()(int lev) const { return m_data[lev]; }
 
-    amrex::Vector<amrex::MultiFab*> vec_ptrs() noexcept
+    amrex::Vector<amrex::MultiFab*> vec_ptrs()
     {
         return amrex::GetVecOfPtrs(m_data);
     }
 
-    [[nodiscard]] amrex::Vector<const amrex::MultiFab*>
-    vec_const_ptrs() const noexcept
+    [[nodiscard]] amrex::Vector<const amrex::MultiFab*> vec_const_ptrs() const
     {
         return amrex::GetVecOfConstPtrs(m_data);
     }

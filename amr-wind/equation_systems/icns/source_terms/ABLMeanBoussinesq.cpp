@@ -111,7 +111,7 @@ void ABLMeanBoussinesq::operator()(
     const amrex::Real* tvals = m_theta_vals.data();
     const amrex::Real* theights_end = m_theta_ht.end();
 
-    amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+    amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
         amrex::IntVect iv(i, j, k);
         const amrex::Real ht = problo[idir] + ((iv[idir] + 0.5_rt) * dx[idir]);
         const amrex::Real T0 = ref_theta_arr(i, j, k);

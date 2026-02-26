@@ -116,7 +116,7 @@ void ActSrcOp<ActTrait, ActSrcLine>::operator()(
 
     const auto dcoord_flags = m_data.grid().dcoord_flags;
 
-    amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+    amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
         const vs::Vector cc{
             problo[0] + ((i + 0.5_rt) * dx[0]),
             problo[1] + ((j + 0.5_rt) * dx[1]),

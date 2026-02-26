@@ -37,7 +37,7 @@ get_val_at_kindex(amr_wind::Field& field, const int comp, const int kref)
             amrex::Array4<amrex::Real const> const& f_arr) -> amrex::Real {
             amrex::Real error = 0;
 
-            amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
+            amrex::Loop(bx, [=, &error](int i, int j, int k) {
                 // Check if current cell is just above lower wall
                 if (k == kref) {
                     // Add field value to output

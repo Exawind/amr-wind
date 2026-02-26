@@ -211,7 +211,7 @@ amrex::Real normal_vector_test_impl(amr_wind::Field& vof, const int dir)
                 -> amrex::Real {
                 amrex::Real error = 0.0_rt;
 
-                amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
+                amrex::Loop(bx, [=, &error](int i, int j, int k) {
                     amrex::Real mx, my, mz;
                     amr_wind::multiphase::mixed_youngs_central_normal(
                         i, j, k, vof_arr, mx, my, mz);
@@ -249,7 +249,7 @@ amrex::Real normal_vector_neumann_test_impl(
                 amrex::Array4<int const> const& iblank) -> amrex::Real {
                 amrex::Real error = 0.0_rt;
 
-                amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
+                amrex::Loop(bx, [=, &error](int i, int j, int k) {
                     int ibdy =
                         (iblank(i, j, k) != iblank(i - 1, j, k)) ? -1 : 0;
                     int jbdy =
@@ -313,7 +313,7 @@ amrex::Real normal_vector_neumann_test_impl(
                 amrex::Array4<int const> const& iblank) -> amrex::Real {
                 amrex::Real error = 0.0_rt;
 
-                amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
+                amrex::Loop(bx, [=, &error](int i, int j, int k) {
                     int ibdy =
                         (iblank(i, j, k) != iblank(i - 1, j, k)) ? -1 : 0;
                     int jbdy =
@@ -375,7 +375,7 @@ amrex::Real fit_plane_test_impl(amr_wind::Field& vof, const int dir)
                 -> amrex::Real {
                 amrex::Real error = 0.0_rt;
 
-                amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
+                amrex::Loop(bx, [=, &error](int i, int j, int k) {
                     int ii = (dir != 0 ? i : 0);
                     int jj = (dir != 1 ? j : 0);
                     int kk = (dir != 2 ? k : 0);
@@ -416,7 +416,7 @@ amrex::Real fit_plane_test_impl_h(
                 -> amrex::Real {
                 amrex::Real error = 0.0_rt;
 
-                amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
+                amrex::Loop(bx, [=, &error](int i, int j, int k) {
                     int ii = (dir == 0 ? i : (dir == 1 ? j : k));
                     // Check multiphase cells
                     if (ii == 1) {

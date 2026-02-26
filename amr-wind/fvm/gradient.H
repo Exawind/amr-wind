@@ -41,37 +41,36 @@ struct Gradient
             return;
         }
 
-        amrex::ParallelFor(
-            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                for (int icomp = 0; icomp < ncomp; icomp++) {
-                    amrex::Real cp1 = Stencil::c00;
-                    amrex::Real c = Stencil::c01;
-                    amrex::Real cm1 = Stencil::c02;
-                    gradphi_arr(i, j, k, (icomp * AMREX_SPACEDIM) + 0) =
-                        (cp1 * phi_arr(i + 1, j, k, icomp) +
-                         c * phi_arr(i, j, k, icomp) +
-                         cm1 * phi_arr(i - 1, j, k, icomp)) *
-                        idx[0];
+        amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+            for (int icomp = 0; icomp < ncomp; icomp++) {
+                amrex::Real cp1 = Stencil::c00;
+                amrex::Real c = Stencil::c01;
+                amrex::Real cm1 = Stencil::c02;
+                gradphi_arr(i, j, k, (icomp * AMREX_SPACEDIM) + 0) =
+                    (cp1 * phi_arr(i + 1, j, k, icomp) +
+                     c * phi_arr(i, j, k, icomp) +
+                     cm1 * phi_arr(i - 1, j, k, icomp)) *
+                    idx[0];
 
-                    cp1 = Stencil::c10;
-                    c = Stencil::c11;
-                    cm1 = Stencil::c12;
-                    gradphi_arr(i, j, k, (icomp * AMREX_SPACEDIM) + 1) =
-                        (cp1 * phi_arr(i, j + 1, k, icomp) +
-                         c * phi_arr(i, j, k, icomp) +
-                         cm1 * phi_arr(i, j - 1, k, icomp)) *
-                        idx[1];
+                cp1 = Stencil::c10;
+                c = Stencil::c11;
+                cm1 = Stencil::c12;
+                gradphi_arr(i, j, k, (icomp * AMREX_SPACEDIM) + 1) =
+                    (cp1 * phi_arr(i, j + 1, k, icomp) +
+                     c * phi_arr(i, j, k, icomp) +
+                     cm1 * phi_arr(i, j - 1, k, icomp)) *
+                    idx[1];
 
-                    cp1 = Stencil::c20;
-                    c = Stencil::c21;
-                    cm1 = Stencil::c22;
-                    gradphi_arr(i, j, k, (icomp * AMREX_SPACEDIM) + 2) =
-                        (cp1 * phi_arr(i, j, k + 1, icomp) +
-                         c * phi_arr(i, j, k, icomp) +
-                         cm1 * phi_arr(i, j, k - 1, icomp)) *
-                        idx[2];
-                }
-            });
+                cp1 = Stencil::c20;
+                c = Stencil::c21;
+                cm1 = Stencil::c22;
+                gradphi_arr(i, j, k, (icomp * AMREX_SPACEDIM) + 2) =
+                    (cp1 * phi_arr(i, j, k + 1, icomp) +
+                     c * phi_arr(i, j, k, icomp) +
+                     cm1 * phi_arr(i, j, k - 1, icomp)) *
+                    idx[2];
+            }
+        });
     }
 
     FTypeOut& m_gradphi;

@@ -157,8 +157,7 @@ void ChannelFlow::initialize_fields(
             const auto& vel_arrs = velocity.arrays();
 
             amrex::ParallelFor(
-                velocity,
-                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                velocity, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                     const int n_ind = idxOp(i, j, k);
                     amrex::Real h =
                         problo[n_idx] + ((n_ind + 0.5_rt) * dx[n_idx]);
@@ -190,8 +189,7 @@ void ChannelFlow::initialize_fields(
             const auto& wd_arrs = walldist.arrays();
 
             amrex::ParallelFor(
-                velocity,
-                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                velocity, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                     const int n_ind = idxOp(i, j, k);
                     amrex::Real h =
                         problo[n_idx] + ((n_ind + 0.5_rt) * dx[n_idx]);

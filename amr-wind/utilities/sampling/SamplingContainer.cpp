@@ -109,31 +109,29 @@ void SamplingContainer::initialize_particles(
             ParticleType::NextID(nextid + npts);
 
             auto* pstruct = ptile.GetArrayOfStructs()().data();
-            amrex::ParallelFor(
-                npts, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
-                    const amrex::RealVect loc(AMREX_D_DECL(
-                        p_dlocs[ip][0], p_dlocs[ip][1], p_dlocs[ip][2]));
+            amrex::ParallelFor(npts, [=] AMREX_GPU_DEVICE(const int ip) {
+                const amrex::RealVect loc(AMREX_D_DECL(
+                    p_dlocs[ip][0], p_dlocs[ip][1], p_dlocs[ip][2]));
 #ifdef AMREX_DEBUG
-                    const amrex::IntVect div(AMREX_D_DECL(
-                        static_cast<int>(
-                            amrex::Math::floor((loc[0] - plo[0]) * dxinv[0])),
-                        static_cast<int>(
-                            amrex::Math::floor((loc[1] - plo[1]) * dxinv[1])),
-                        static_cast<int>(
-                            amrex::Math::floor((loc[2] - plo[2]) * dxinv[2]))));
-                    AMREX_ASSERT(box.contains(div));
+                const amrex::IntVect div(AMREX_D_DECL(
+                    static_cast<int>(
+                        amrex::Math::floor((loc[0] - plo[0]) * dxinv[0])),
+                    static_cast<int>(
+                        amrex::Math::floor((loc[1] - plo[1]) * dxinv[1])),
+                    static_cast<int>(
+                        amrex::Math::floor((loc[2] - plo[2]) * dxinv[2]))));
+                AMREX_ASSERT(box.contains(div));
 #endif
-                    auto& pp = pstruct[offset + ip];
-                    pp.id() = nextid + ip;
-                    pp.cpu() = iproc;
-                    for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
-                        pp.pos(idim) = loc[idim];
-                    }
-                    pp.idata(IIx::uid) =
-                        static_cast<int>(p_dids[ip] + uid_offset);
-                    pp.idata(IIx::sid) = probe_id;
-                    pp.idata(IIx::nid) = static_cast<int>(p_dids[ip]);
-                });
+                auto& pp = pstruct[offset + ip];
+                pp.id() = nextid + ip;
+                pp.cpu() = iproc;
+                for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
+                    pp.pos(idim) = loc[idim];
+                }
+                pp.idata(IIx::uid) = static_cast<int>(p_dids[ip] + uid_offset);
+                pp.idata(IIx::sid) = probe_id;
+                pp.idata(IIx::nid) = static_cast<int>(p_dids[ip]);
+            });
             offset += npts;
         }
     }
@@ -181,13 +179,12 @@ void SamplingContainer::populate_buffer(std::vector<amrex::Real>& buf)
                 auto* pstruct = pti.GetArrayOfStructs()().data();
                 auto* parr = pti.GetStructOfArrays().GetRealData(fid).data();
 
-                amrex::ParallelFor(
-                    np, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
-                        auto& pp = pstruct[ip];
-                        const int pidx = pp.idata(IIx::uid);
-                        const long ii = offset + pidx;
-                        dbuf_ptr[ii] = parr[ip];
-                    });
+                amrex::ParallelFor(np, [=] AMREX_GPU_DEVICE(const int ip) {
+                    auto& pp = pstruct[ip];
+                    const int pidx = pp.idata(IIx::uid);
+                    const long ii = offset + pidx;
+                    dbuf_ptr[ii] = parr[ip];
+                });
             }
         }
     }

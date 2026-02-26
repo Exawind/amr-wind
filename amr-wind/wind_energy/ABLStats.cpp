@@ -132,8 +132,7 @@ void ABLStats::calc_sfs_stress_avgs(
         const auto& sfs_arrs = sfs_stress(lev).arrays();
         const auto& t_sfs_arrs = t_sfs_stress(lev).arrays();
         amrex::ParallelFor(
-            m_mueff(lev),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            m_mueff(lev), [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 sfs_arrs[nbx](i, j, k, 0) =
                     -mueff_arrs[nbx](i, j, k) * (gradVel_arrs[nbx](i, j, k, 1) +
                                                  gradVel_arrs[nbx](i, j, k, 3));
@@ -200,8 +199,7 @@ void ABLStats::calc_tke_diffusion(
         const auto& conv_arrs = conv_term(lev).const_arrays();
 
         amrex::ParallelFor(
-            diffusion(lev),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            diffusion(lev), [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 diffusion_arrs[nbx](i, j, k) =
                     ((tke_arrs[nbx](i, j, k) - tke_old_arrs[nbx](i, j, k)) /
                      dt) -

@@ -386,8 +386,7 @@ void lower_bound(FType& field, const amrex::Real min_value, const int icomp = 0)
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& farrs = field(lev).arrays();
         amrex::ParallelFor(
-            field(lev),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            field(lev), [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 farrs[nbx](i, j, k, icomp) =
                     amrex::max(min_value, farrs[nbx](i, j, k, icomp));
             });
@@ -417,7 +416,7 @@ amrex::Real global_max_magnitude(FType& field)
                 amrex::Array4<amrex::Real const> const& field_arr)
                 -> amrex::Real {
                 amrex::Real mx = 0.0_rt;
-                amrex::Loop(b, [=, &mx](int i, int j, int k) noexcept {
+                amrex::Loop(b, [=, &mx](int i, int j, int k) {
                     amrex::Real mag = 0.0_rt;
                     for (int icomp = 0; icomp < ncomp; ++icomp) {
                         mag = mag + (field_arr(i, j, k, icomp) *
@@ -452,8 +451,7 @@ void normalize(FType& field)
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& farrs = field(lev).arrays();
         amrex::ParallelFor(
-            field(lev),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            field(lev), [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 auto farr = farrs[nbx];
                 // Compute magnitude
                 amrex::Real mag = 0.0_rt;

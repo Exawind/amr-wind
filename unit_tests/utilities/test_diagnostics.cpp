@@ -20,7 +20,7 @@ void init_velocity(amr_wind::Field& velocity)
 
         amrex::ParallelFor(
             velocity(lev), velocity.num_grow(),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 const amrex::Real xc = problo[0] + ((i + 0.5_rt) * dx[0]);
                 const amrex::Real yc = problo[1] + ((j + 0.5_rt) * dx[1]);
                 const amrex::Real zc = problo[2] + ((k + 0.5_rt) * dx[2]);
@@ -58,7 +58,7 @@ void init_mac_velocity(
 
         amrex::ParallelFor(
             cc(lev), cc.num_grow(),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 const amrex::Real x = problo[0] + (i * dx[0]);
                 const amrex::Real yc = problo[1] + ((j + 0.5_rt) * dx[1]);
                 const amrex::Real zc = problo[2] + ((k + 0.5_rt) * dx[2]);
@@ -91,7 +91,7 @@ void init_vof(amr_wind::Field& vof, bool bounded)
 
         amrex::ParallelFor(
             vof(lev), vof.num_grow(),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 const amrex::Real xc_rel = (i + 0.5_rt) * dx[0];
                 const amrex::Real yc_rel = (j + 0.5_rt) * dx[1];
                 const amrex::Real zc_rel = (k + 0.5_rt) * dx[2];
@@ -125,7 +125,7 @@ void modify_vof(amr_wind::Field& vof, amrex::Vector<int> ncell)
 
         amrex::ParallelFor(
             vof(lev), vof.num_grow(),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 if (i == 0 || j == 0 || k == 0) {
                     farrs[nbx](i, j, k) = 0;
                 } else if (i == nx - 1 || j == ny - 1 || k == nz - 1) {

@@ -56,7 +56,7 @@ amrex::Real get_field_err(
             amrex::Array4<amrex::Real const> const& f_arr) -> amrex::Real {
             amrex::Real error = 0;
 
-            amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
+            amrex::Loop(bx, [=, &error](int i, int j, int k) {
                 // Do indices manually to check against box operations in code
                 if (ncomp == 1) {
                     // Checking a MAC velocity

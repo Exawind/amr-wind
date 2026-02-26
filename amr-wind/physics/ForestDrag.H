@@ -34,7 +34,7 @@ struct Forest
             const int n = 100;
             const amrex::Real int_0_fh = amr_wind::utils::trapz(
                 0, captured_height_forest - constants::TIGHT_TOL, n,
-                [=](const amrex::Real x) noexcept {
+                [=](const amrex::Real x) {
                     const amrex::Real ratio =
                         (captured_height_forest - treeZm) /
                         (captured_height_forest - x);
