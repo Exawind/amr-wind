@@ -1,0 +1,5 @@
+<map id="amr_wind::actuator::ops::UpdateVelOp&lt; ActTrait, ActSrcLine, typename std::enable_if_t&lt; std::is_base_of_v&lt; WingType, ActTrait &gt; &amp;&amp;UseDefaultOp&lt; ActTrait, ActSrcLine &gt;::update_vel &gt; &gt;" name="amr_wind::actuator::ops::UpdateVelOp&lt; ActTrait, ActSrcLine, typename std::enable_if_t&lt; std::is_base_of_v&lt; WingType, ActTrait &gt; &amp;&amp;UseDefaultOp&lt; ActTrait, ActSrcLine &gt;::update_vel &gt; &gt;">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,245,224,373"/>
+<area shape="rect" id="Node000002" href="$structamr__wind_1_1actuator_1_1ops_1_1_update_vel_op.html" title=" " alt="" coords="36,5,193,75"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="117,88,117,245,112,245,112,88"/>
+</map>

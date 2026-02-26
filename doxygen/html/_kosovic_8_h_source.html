@@ -1,0 +1,324 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/turbulence/LES/Kosovic.H Source File &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/turbulence/LES/Kosovic.H Source File</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/_kosovic_8_h_source.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="home-runner-work-amr-wind-amr-wind-amr-wind-turbulence-les-kosovic-h-source-file">
+<h1>/home/runner/work/amr-wind/amr-wind/amr-wind/turbulence/LES/Kosovic.H Source File<a class="headerlink" href="#home-runner-work-amr-wind-amr-wind-amr-wind-turbulence-les-kosovic-h-source-file" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/turbulence/LES/Kosovic.H Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="dir_d85575251dd712327fe3cf057fa568b4.html">amr-wind</a></li><li class="navelem"><a href="dir_212148f97b8bb53ebaebb3bf8a8b5de4.html">amr-wind</a></li><li class="navelem"><a href="dir_5460936bc36635a4924df5fb6ccd4a9f.html">turbulence</a></li><li class="navelem"><a href="dir_1538b4cee7174914fb662cb9f2155043.html">LES</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="headertitle"><div class="title">Kosovic.H</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="_kosovic_8_h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef KOSOVIC_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define KOSOVIC_H</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="_turb_model_base_8_h.html">amr-wind/turbulence/TurbModelBase.H</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="_field_repo_8_h.html">amr-wind/core/FieldRepo.H</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="constants_8_h.html">amr-wind/utilities/constants.H</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;AMReX_REAL.H&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">using namespace </span>amrex::literals;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceamr__wind_1_1turbulence.html">amr_wind::turbulence</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Transport&gt;</div>
+<div class="foldopen" id="foldopen00018" data-start="{" data-end="};">
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_kosovic.html">   18</a></span><span class="keyword">class </span><a class="code hl_function" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a729dc5a6fd2e8b640487265bfc4cb2c5">Kosovic</a> : <span class="keyword">public</span> <a class="code hl_function" href="classamr__wind_1_1turbulence_1_1_turb_model_base.html#a8ec7868e5412b209ac0b1a89747e23e7">TurbModelBase</a>&lt;Transport&gt;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>{</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">public</span>:</div>
+<div class="foldopen" id="foldopen00021" data-start="{" data-end="}">
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a9e95283f6a6247490dc849a5a1206876">   21</a></span>    <span class="keyword">static</span> std::string <a class="code hl_function" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a9e95283f6a6247490dc849a5a1206876">identifier</a>()</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        <span class="keywordflow">return</span> <span class="stringliteral">&quot;Kosovic-&quot;</span> + Transport::identifier();</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    }</div>
+</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a729dc5a6fd2e8b640487265bfc4cb2c5">Kosovic</a>(<a class="code hl_class" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; sim);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a7e498365f370a4cb729cc1fdfdd9db10">   29</a></span>    [[nodiscard]] std::string <a class="code hl_function" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a7e498365f370a4cb729cc1fdfdd9db10">model_name</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> <span class="stringliteral">&quot;Kosovic&quot;</span>; }</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1turbulence_1_1_kosovic.html#ae7fccb42654e2dac502cf73611aed975">update_turbulent_viscosity</a>(</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <a class="code hl_enumeration" href="group__fields.html#ga5251ec6b376231128a9647f3028dbac0">FieldState</a> fstate, <a class="code hl_enumeration" href="incflo__enums_8_h.html#a85b1059d3f82fd0319fd63b07f3c1500">DiffusionType</a> <span class="comment">/*unused*/</span>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a55310ea1ba54d75c12240db47d1fb74b">   36</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a55310ea1ba54d75c12240db47d1fb74b">post_advance_work</a>()<span class="keyword"> override </span>{}</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1turbulence_1_1_kosovic.html#ac72c5a0298ba85292a199301349efa5f">update_alphaeff</a>(<a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="code hl_function" href="classamr__wind_1_1turbulence_1_1_turb_model.html#ad0a36405a1ceb6b8a9754067822873f3">alphaeff</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a53d456975e9dfc4d75e391d6b64f5061">parse_model_coeffs</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    [[nodiscard]] <a class="code hl_typedef" href="classamr__wind_1_1turbulence_1_1_turbulence_model.html#aff9bb3a7eb48f42686b1175cc9fbd390">TurbulenceModel::CoeffsDictType</a> <a class="code hl_function" href="classamr__wind_1_1turbulence_1_1_kosovic.html#adb299b11753e520bbb0bce735035e3f9">model_coeffs</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="comment">// Ref: Mirocha et. al &quot;Implementation of a Nonlinear Subfilter Turbulence</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="comment">//  Stress Model for Large-Eddy Simulation in the Advanced Research WRF</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="comment">//  Model&quot;</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="comment">// , MWR 2012.</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a9c32f3404e1ffaa147c9b4aaede3e96c">   53</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a9c32f3404e1ffaa147c9b4aaede3e96c">m_Cb</a>{0.36_rt};</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a9af269206b82de4944aa164ab1e77ab6">   54</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a9af269206b82de4944aa164ab1e77ab6">m_Cs</a>{0.135_rt};</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a57670f918dd820dbff96adf695434661">   55</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a57670f918dd820dbff96adf695434661">m_C1</a>{2.1_rt};</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a52e106f841b49bd9ce20845c9642eb75">   56</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a52e106f841b49bd9ce20845c9642eb75">m_C2</a>{2.1_rt};</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a688158c9381b9ed9e09f4b17f85c59b6">   57</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a688158c9381b9ed9e09f4b17f85c59b6">m_Sk</a>{0.5_rt};</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a4c6615075b10ff1a071cb1cfdc99812a">   58</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a4c6615075b10ff1a071cb1cfdc99812a">m_surfaceRANS</a>{<span class="keyword">false</span>};</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a8fda72ff9ad5b5a6ee089774c9d1330e">   59</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a8fda72ff9ad5b5a6ee089774c9d1330e">m_surfaceFactor</a>{0.0_rt};</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_kosovic.html#aa5e3596641d4c37ef4afcfcb42942c92">   60</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1turbulence_1_1_kosovic.html#aa5e3596641d4c37ef4afcfcb42942c92">m_switchLoc</a>{24.0_rt};</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_kosovic.html#aa4bfb3cbcd1fcc2794c3b6c973a94512">   61</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1turbulence_1_1_kosovic.html#aa4bfb3cbcd1fcc2794c3b6c973a94512">m_surfaceRANSExp</a>{2.0_rt};</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a1691734a15c0afaf83cce8c655fe2258">   62</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a1691734a15c0afaf83cce8c655fe2258">m_LESTurnOff</a>{1.0e15_rt};</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a7a5d25d3731f805dbf53a07456f12c07">   63</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a7a5d25d3731f805dbf53a07456f12c07">m_writeTerms</a>{<span class="keyword">false</span>};</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a584ed89ea8b2648a570baad26fb399b8">   64</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a584ed89ea8b2648a570baad26fb399b8">m_vel</a>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a9b6f12238ef542d0e757ff8388a65784">   65</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a9b6f12238ef542d0e757ff8388a65784">m_rho</a>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a41e79919f20351a647ebf4a7293468ea">   66</a></span>    <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a41e79919f20351a647ebf4a7293468ea">m_Nij</a>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a6ab048295dd9a673110d3cdeb26192ba">   67</a></span>    <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a6ab048295dd9a673110d3cdeb26192ba">m_divNij</a>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a5541351384708e986710b9f5d4d62f40">   68</a></span>    std::string <a class="code hl_variable" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a5541351384708e986710b9f5d4d62f40">m_wall_het_model</a>{<span class="stringliteral">&quot;none&quot;</span>};</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a1997810285c63dd2f486cb27018f7ed6">   69</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a1997810285c63dd2f486cb27018f7ed6">m_monin_obukhov_length</a>{<a class="code hl_variable" href="namespaceamr__wind_1_1constants.html#abec95c34da71524c85927f9874a6368a">constants::LARGE_NUM</a>};</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_kosovic.html#aab84a4530353937a57e42dfffb32c30b">   70</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1turbulence_1_1_kosovic.html#aab84a4530353937a57e42dfffb32c30b">m_kappa</a>{0.41_rt};</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a914a373a91dc120d18ff448e85e7e909">   71</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a914a373a91dc120d18ff448e85e7e909">m_gamma_m</a>{5.0_rt};</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a7783c55edf69c231962119cea5a52143">   72</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1turbulence_1_1_kosovic.html#a7783c55edf69c231962119cea5a52143">m_beta_m</a>{16.0_rt};</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_kosovic.html#ae147dc61bc6b68ccadcb6ac23985c5fa">   73</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1turbulence_1_1_kosovic.html#ae147dc61bc6b68ccadcb6ac23985c5fa">m_surface_roughness_z0</a>{0.1_rt};</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>};</div>
+</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>} <span class="comment">// namespace amr_wind::turbulence</span></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="preprocessor">#endif </span><span class="comment">/* SMAGORINSKY_H */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="a_field_repo_8_h_html"><div class="ttname"><a href="_field_repo_8_h.html">FieldRepo.H</a></div></div>
+<div class="ttc" id="a_turb_model_base_8_h_html"><div class="ttname"><a href="_turb_model_base_8_h.html">TurbModelBase.H</a></div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html">amr_wind::CFDSim</a></div><div class="ttdef"><b>Definition</b> CFDSim.H:54</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_html"><div class="ttname"><a href="classamr__wind_1_1_field.html">amr_wind::Field</a></div><div class="ttdef"><b>Definition</b> Field.H:112</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_kosovic_html_a1691734a15c0afaf83cce8c655fe2258"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_kosovic.html#a1691734a15c0afaf83cce8c655fe2258">amr_wind::turbulence::Kosovic::m_LESTurnOff</a></div><div class="ttdeci">amrex::Real m_LESTurnOff</div><div class="ttdef"><b>Definition</b> Kosovic.H:62</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_kosovic_html_a1997810285c63dd2f486cb27018f7ed6"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_kosovic.html#a1997810285c63dd2f486cb27018f7ed6">amr_wind::turbulence::Kosovic::m_monin_obukhov_length</a></div><div class="ttdeci">amrex::Real m_monin_obukhov_length</div><div class="ttdef"><b>Definition</b> Kosovic.H:69</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_kosovic_html_a41e79919f20351a647ebf4a7293468ea"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_kosovic.html#a41e79919f20351a647ebf4a7293468ea">amr_wind::turbulence::Kosovic::m_Nij</a></div><div class="ttdeci">Field &amp; m_Nij</div><div class="ttdef"><b>Definition</b> Kosovic.H:66</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_kosovic_html_a4c6615075b10ff1a071cb1cfdc99812a"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_kosovic.html#a4c6615075b10ff1a071cb1cfdc99812a">amr_wind::turbulence::Kosovic::m_surfaceRANS</a></div><div class="ttdeci">bool m_surfaceRANS</div><div class="ttdef"><b>Definition</b> Kosovic.H:58</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_kosovic_html_a52e106f841b49bd9ce20845c9642eb75"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_kosovic.html#a52e106f841b49bd9ce20845c9642eb75">amr_wind::turbulence::Kosovic::m_C2</a></div><div class="ttdeci">amrex::Real m_C2</div><div class="ttdef"><b>Definition</b> Kosovic.H:56</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_kosovic_html_a53d456975e9dfc4d75e391d6b64f5061"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_kosovic.html#a53d456975e9dfc4d75e391d6b64f5061">amr_wind::turbulence::Kosovic::parse_model_coeffs</a></div><div class="ttdeci">void parse_model_coeffs() override</div><div class="ttdoc">Parse turbulence model coefficients.</div><div class="ttdef"><b>Definition</b> Kosovic.cpp:231</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_kosovic_html_a55310ea1ba54d75c12240db47d1fb74b"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_kosovic.html#a55310ea1ba54d75c12240db47d1fb74b">amr_wind::turbulence::Kosovic::post_advance_work</a></div><div class="ttdeci">void post_advance_work() override</div><div class="ttdoc">No post advance work for this model.</div><div class="ttdef"><b>Definition</b> Kosovic.H:36</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_kosovic_html_a5541351384708e986710b9f5d4d62f40"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_kosovic.html#a5541351384708e986710b9f5d4d62f40">amr_wind::turbulence::Kosovic::m_wall_het_model</a></div><div class="ttdeci">std::string m_wall_het_model</div><div class="ttdef"><b>Definition</b> Kosovic.H:68</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_kosovic_html_a57670f918dd820dbff96adf695434661"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_kosovic.html#a57670f918dd820dbff96adf695434661">amr_wind::turbulence::Kosovic::m_C1</a></div><div class="ttdeci">amrex::Real m_C1</div><div class="ttdef"><b>Definition</b> Kosovic.H:55</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_kosovic_html_a584ed89ea8b2648a570baad26fb399b8"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_kosovic.html#a584ed89ea8b2648a570baad26fb399b8">amr_wind::turbulence::Kosovic::m_vel</a></div><div class="ttdeci">const Field &amp; m_vel</div><div class="ttdef"><b>Definition</b> Kosovic.H:64</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_kosovic_html_a688158c9381b9ed9e09f4b17f85c59b6"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_kosovic.html#a688158c9381b9ed9e09f4b17f85c59b6">amr_wind::turbulence::Kosovic::m_Sk</a></div><div class="ttdeci">amrex::Real m_Sk</div><div class="ttdef"><b>Definition</b> Kosovic.H:57</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_kosovic_html_a6ab048295dd9a673110d3cdeb26192ba"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_kosovic.html#a6ab048295dd9a673110d3cdeb26192ba">amr_wind::turbulence::Kosovic::m_divNij</a></div><div class="ttdeci">Field &amp; m_divNij</div><div class="ttdef"><b>Definition</b> Kosovic.H:67</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_kosovic_html_a729dc5a6fd2e8b640487265bfc4cb2c5"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_kosovic.html#a729dc5a6fd2e8b640487265bfc4cb2c5">amr_wind::turbulence::Kosovic::Kosovic</a></div><div class="ttdeci">Kosovic(CFDSim &amp;sim)</div><div class="ttdef"><b>Definition</b> Kosovic.cpp:19</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_kosovic_html_a7783c55edf69c231962119cea5a52143"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_kosovic.html#a7783c55edf69c231962119cea5a52143">amr_wind::turbulence::Kosovic::m_beta_m</a></div><div class="ttdeci">amrex::Real m_beta_m</div><div class="ttdef"><b>Definition</b> Kosovic.H:72</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_kosovic_html_a7a5d25d3731f805dbf53a07456f12c07"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_kosovic.html#a7a5d25d3731f805dbf53a07456f12c07">amr_wind::turbulence::Kosovic::m_writeTerms</a></div><div class="ttdeci">bool m_writeTerms</div><div class="ttdef"><b>Definition</b> Kosovic.H:63</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_kosovic_html_a7e498365f370a4cb729cc1fdfdd9db10"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_kosovic.html#a7e498365f370a4cb729cc1fdfdd9db10">amr_wind::turbulence::Kosovic::model_name</a></div><div class="ttdeci">std::string model_name() const override</div><div class="ttdoc">Model name for debugging purposes.</div><div class="ttdef"><b>Definition</b> Kosovic.H:29</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_kosovic_html_a8fda72ff9ad5b5a6ee089774c9d1330e"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_kosovic.html#a8fda72ff9ad5b5a6ee089774c9d1330e">amr_wind::turbulence::Kosovic::m_surfaceFactor</a></div><div class="ttdeci">amrex::Real m_surfaceFactor</div><div class="ttdef"><b>Definition</b> Kosovic.H:59</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_kosovic_html_a914a373a91dc120d18ff448e85e7e909"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_kosovic.html#a914a373a91dc120d18ff448e85e7e909">amr_wind::turbulence::Kosovic::m_gamma_m</a></div><div class="ttdeci">amrex::Real m_gamma_m</div><div class="ttdef"><b>Definition</b> Kosovic.H:71</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_kosovic_html_a9af269206b82de4944aa164ab1e77ab6"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_kosovic.html#a9af269206b82de4944aa164ab1e77ab6">amr_wind::turbulence::Kosovic::m_Cs</a></div><div class="ttdeci">amrex::Real m_Cs</div><div class="ttdef"><b>Definition</b> Kosovic.H:54</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_kosovic_html_a9b6f12238ef542d0e757ff8388a65784"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_kosovic.html#a9b6f12238ef542d0e757ff8388a65784">amr_wind::turbulence::Kosovic::m_rho</a></div><div class="ttdeci">const Field &amp; m_rho</div><div class="ttdef"><b>Definition</b> Kosovic.H:65</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_kosovic_html_a9c32f3404e1ffaa147c9b4aaede3e96c"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_kosovic.html#a9c32f3404e1ffaa147c9b4aaede3e96c">amr_wind::turbulence::Kosovic::m_Cb</a></div><div class="ttdeci">amrex::Real m_Cb</div><div class="ttdoc">Kosovic coefficient (default value set for ABL simulations)</div><div class="ttdef"><b>Definition</b> Kosovic.H:53</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_kosovic_html_a9e95283f6a6247490dc849a5a1206876"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_kosovic.html#a9e95283f6a6247490dc849a5a1206876">amr_wind::turbulence::Kosovic::identifier</a></div><div class="ttdeci">static std::string identifier()</div><div class="ttdef"><b>Definition</b> Kosovic.H:21</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_kosovic_html_aa4bfb3cbcd1fcc2794c3b6c973a94512"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_kosovic.html#aa4bfb3cbcd1fcc2794c3b6c973a94512">amr_wind::turbulence::Kosovic::m_surfaceRANSExp</a></div><div class="ttdeci">amrex::Real m_surfaceRANSExp</div><div class="ttdef"><b>Definition</b> Kosovic.H:61</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_kosovic_html_aa5e3596641d4c37ef4afcfcb42942c92"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_kosovic.html#aa5e3596641d4c37ef4afcfcb42942c92">amr_wind::turbulence::Kosovic::m_switchLoc</a></div><div class="ttdeci">amrex::Real m_switchLoc</div><div class="ttdef"><b>Definition</b> Kosovic.H:60</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_kosovic_html_aab84a4530353937a57e42dfffb32c30b"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_kosovic.html#aab84a4530353937a57e42dfffb32c30b">amr_wind::turbulence::Kosovic::m_kappa</a></div><div class="ttdeci">amrex::Real m_kappa</div><div class="ttdef"><b>Definition</b> Kosovic.H:70</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_kosovic_html_ac72c5a0298ba85292a199301349efa5f"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_kosovic.html#ac72c5a0298ba85292a199301349efa5f">amr_wind::turbulence::Kosovic::update_alphaeff</a></div><div class="ttdeci">void update_alphaeff(Field &amp;alphaeff) override</div><div class="ttdoc">Update the effective thermal diffusivity field.</div><div class="ttdef"><b>Definition</b> Kosovic.cpp:206</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_kosovic_html_adb299b11753e520bbb0bce735035e3f9"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_kosovic.html#adb299b11753e520bbb0bce735035e3f9">amr_wind::turbulence::Kosovic::model_coeffs</a></div><div class="ttdeci">TurbulenceModel::CoeffsDictType model_coeffs() const override</div><div class="ttdoc">Return model coefficients dictionary.</div><div class="ttdef"><b>Definition</b> Kosovic.cpp:239</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_kosovic_html_ae147dc61bc6b68ccadcb6ac23985c5fa"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_kosovic.html#ae147dc61bc6b68ccadcb6ac23985c5fa">amr_wind::turbulence::Kosovic::m_surface_roughness_z0</a></div><div class="ttdeci">amrex::Real m_surface_roughness_z0</div><div class="ttdef"><b>Definition</b> Kosovic.H:73</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_kosovic_html_ae7fccb42654e2dac502cf73611aed975"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_kosovic.html#ae7fccb42654e2dac502cf73611aed975">amr_wind::turbulence::Kosovic::update_turbulent_viscosity</a></div><div class="ttdeci">void update_turbulent_viscosity(FieldState fstate, DiffusionType) override</div><div class="ttdoc">Update the turbulent viscosity field.</div><div class="ttdef"><b>Definition</b> Kosovic.cpp:57</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_turb_model_base_html_a8ec7868e5412b209ac0b1a89747e23e7"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_turb_model_base.html#a8ec7868e5412b209ac0b1a89747e23e7">amr_wind::turbulence::TurbModelBase::TurbModelBase</a></div><div class="ttdeci">TurbModelBase(CFDSim &amp;sim)</div><div class="ttdef"><b>Definition</b> TurbModelBase.H:95</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_turb_model_html_ad0a36405a1ceb6b8a9754067822873f3"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_turb_model.html#ad0a36405a1ceb6b8a9754067822873f3">amr_wind::turbulence::TurbModel::alphaeff</a></div><div class="ttdeci">Field &amp; alphaeff() override</div><div class="ttdoc">Return the effective thermal diffusivity field.</div><div class="ttdef"><b>Definition</b> TurbModel.H:53</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_turbulence_model_html_aff9bb3a7eb48f42686b1175cc9fbd390"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_turbulence_model.html#aff9bb3a7eb48f42686b1175cc9fbd390">amr_wind::turbulence::TurbulenceModel::CoeffsDictType</a></div><div class="ttdeci">std::unordered_map&lt; std::string, amrex::Real &gt; CoeffsDictType</div><div class="ttdoc">Default identifier used by factor methods.</div><div class="ttdef"><b>Definition</b> TurbulenceModel.H:35</div></div>
+<div class="ttc" id="aconstants_8_h_html"><div class="ttname"><a href="constants_8_h.html">constants.H</a></div></div>
+<div class="ttc" id="agroup__fields_html_ga5251ec6b376231128a9647f3028dbac0"><div class="ttname"><a href="group__fields.html#ga5251ec6b376231128a9647f3028dbac0">amr_wind::FieldState</a></div><div class="ttdeci">FieldState</div><div class="ttdef"><b>Definition</b> FieldDescTypes.H:16</div></div>
+<div class="ttc" id="aincflo__enums_8_h_html_a85b1059d3f82fd0319fd63b07f3c1500"><div class="ttname"><a href="incflo__enums_8_h.html#a85b1059d3f82fd0319fd63b07f3c1500">DiffusionType</a></div><div class="ttdeci">DiffusionType</div><div class="ttdef"><b>Definition</b> incflo_enums.H:6</div></div>
+<div class="ttc" id="anamespaceamr__wind_1_1constants_html_abec95c34da71524c85927f9874a6368a"><div class="ttname"><a href="namespaceamr__wind_1_1constants.html#abec95c34da71524c85927f9874a6368a">amr_wind::constants::LARGE_NUM</a></div><div class="ttdeci">static constexpr amrex::Real LARGE_NUM</div><div class="ttdoc">A large positive number.</div><div class="ttdef"><b>Definition</b> constants.H:29</div></div>
+<div class="ttc" id="anamespaceamr__wind_1_1turbulence_html"><div class="ttname"><a href="namespaceamr__wind_1_1turbulence.html">amr_wind::turbulence</a></div><div class="ttdef"><b>Definition</b> CFDSim.H:30</div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,666 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::ActuatorSourceTagging Class Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::ActuatorSourceTagging Class Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/classamr__wind_1_1_actuator_source_tagging.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="actuatorsourcetagging-class-reference">
+<h1>ActuatorSourceTagging Class Reference<a class="headerlink" href="#actuatorsourcetagging-class-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::ActuatorSourceTagging Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="classamr__wind_1_1_actuator_source_tagging.html">ActuatorSourceTagging</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
+<a href="classamr__wind_1_1_actuator_source_tagging-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::ActuatorSourceTagging Class Reference<div class="ingroups"><a class="el" href="group__physics.html">Physics models</a></div></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_actuator_source_tagging_8_h_source.html">ActuatorSourceTagging.H</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for amr_wind::ActuatorSourceTagging:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1_actuator_source_tagging__inherit__graph.svg" width="204" height="139"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for amr_wind::ActuatorSourceTagging:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1_actuator_source_tagging__coll__graph.svg" width="100%" height="576"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:adffe9a3ff7510d1858727282b3a21679" id="r_adffe9a3ff7510d1858727282b3a21679"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adffe9a3ff7510d1858727282b3a21679">ActuatorSourceTagging</a> (<a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;sim)</td></tr>
+<tr class="memitem:a7187f0c1a49442928d4f55bb5219e181" id="r_a7187f0c1a49442928d4f55bb5219e181"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7187f0c1a49442928d4f55bb5219e181">~ActuatorSourceTagging</a> () override=default</td></tr>
+<tr class="memitem:a9e144a5fce8295bf1fd217ee43beface" id="r_a9e144a5fce8295bf1fd217ee43beface"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9e144a5fce8295bf1fd217ee43beface">initialize_fields</a> (int level, const amrex::Geometry &amp;geom) override</td></tr>
+<tr class="memitem:a621863abb2e4fd6f50cd51496ee37c4f" id="r_a621863abb2e4fd6f50cd51496ee37c4f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a621863abb2e4fd6f50cd51496ee37c4f">post_init_actions</a> () override</td></tr>
+<tr class="memitem:a5b4017739c012ee2aecc589f0c63aa67" id="r_a5b4017739c012ee2aecc589f0c63aa67"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5b4017739c012ee2aecc589f0c63aa67">post_regrid_actions</a> () override</td></tr>
+<tr class="memitem:afc1bb30e5dd88d2cea320dcfd04b2c08" id="r_afc1bb30e5dd88d2cea320dcfd04b2c08"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afc1bb30e5dd88d2cea320dcfd04b2c08">pre_advance_work</a> () override</td></tr>
+<tr class="memitem:a7b4a53ca0daf56426be5448ec2e2fdf4" id="r_a7b4a53ca0daf56426be5448ec2e2fdf4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7b4a53ca0daf56426be5448ec2e2fdf4">post_advance_work</a> () override</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:ac451576259372c4792fec5413c865aa2" id="r_ac451576259372c4792fec5413c865aa2"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac451576259372c4792fec5413c865aa2">identifier</a> ()</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:acef0dc16f0a82a42ce3b7733f4085ac1" id="r_acef0dc16f0a82a42ce3b7733f4085ac1"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_field_repo.html">FieldRepo</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acef0dc16f0a82a42ce3b7733f4085ac1">m_repo</a></td></tr>
+<tr class="memitem:a36d5d83f41f36e6678c7de840675dafc" id="r_a36d5d83f41f36e6678c7de840675dafc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a36d5d83f41f36e6678c7de840675dafc">m_act_src</a> {nullptr}</td></tr>
+<tr class="memitem:a8d64664cef8f67df3d3b84aa9b3c4092" id="r_a8d64664cef8f67df3d3b84aa9b3c4092"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_int_field.html">IntField</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8d64664cef8f67df3d3b84aa9b3c4092">m_iblank</a> {nullptr}</td></tr>
+<tr class="memitem:a6199735d9c26caa8a5eef975a515f0a5" id="r_a6199735d9c26caa8a5eef975a515f0a5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6199735d9c26caa8a5eef975a515f0a5">m_tracer</a> {nullptr}</td></tr>
+<tr class="memitem:a74b2c5a2ee810d4258283e8b5be5513d" id="r_a74b2c5a2ee810d4258283e8b5be5513d"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a74b2c5a2ee810d4258283e8b5be5513d">m_src_threshold</a> {0.1_rt}</td></tr>
+<tr class="memitem:afbc8ac3eed947fdf32c24a9fe3e6b62e" id="r_afbc8ac3eed947fdf32c24a9fe3e6b62e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afbc8ac3eed947fdf32c24a9fe3e6b62e">m_tag_hole</a> {false}</td></tr>
+<tr class="memitem:a1087d7519810ccf907506151b51f424b" id="r_a1087d7519810ccf907506151b51f424b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1087d7519810ccf907506151b51f424b">m_tag_fringe</a> {true}</td></tr>
+<tr class="memitem:ae3ee4a88824b400f13d519f6b0a6a945" id="r_ae3ee4a88824b400f13d519f6b0a6a945"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae3ee4a88824b400f13d519f6b0a6a945">m_has_act_src</a> {false}</td></tr>
+<tr class="memitem:a807bfd12c6dc44b3315a984bc0acdac0" id="r_a807bfd12c6dc44b3315a984bc0acdac0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a807bfd12c6dc44b3315a984bc0acdac0">m_has_iblank</a> {false}</td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Tracer Tagging physics </p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="adffe9a3ff7510d1858727282b3a21679" name="adffe9a3ff7510d1858727282b3a21679"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adffe9a3ff7510d1858727282b3a21679">&#9670;&#160;</a></span>ActuatorSourceTagging()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::ActuatorSourceTagging::ActuatorSourceTagging </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>sim</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel explicit">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7187f0c1a49442928d4f55bb5219e181" name="a7187f0c1a49442928d4f55bb5219e181"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7187f0c1a49442928d4f55bb5219e181">&#9670;&#160;</a></span>~ActuatorSourceTagging()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::ActuatorSourceTagging::~ActuatorSourceTagging </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="ac451576259372c4792fec5413c865aa2" name="ac451576259372c4792fec5413c865aa2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac451576259372c4792fec5413c865aa2">&#9670;&#160;</a></span>identifier()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::ActuatorSourceTagging::identifier </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9e144a5fce8295bf1fd217ee43beface" name="a9e144a5fce8295bf1fd217ee43beface"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e144a5fce8295bf1fd217ee43beface">&#9670;&#160;</a></span>initialize_fields()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ActuatorSourceTagging::initialize_fields </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>level</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Geometry &amp;</td>          <td class="paramname"><span class="paramname"><em>geom</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7b4a53ca0daf56426be5448ec2e2fdf4" name="a7b4a53ca0daf56426be5448ec2e2fdf4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b4a53ca0daf56426be5448ec2e2fdf4">&#9670;&#160;</a></span>post_advance_work()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ActuatorSourceTagging::post_advance_work </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a621863abb2e4fd6f50cd51496ee37c4f" name="a621863abb2e4fd6f50cd51496ee37c4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a621863abb2e4fd6f50cd51496ee37c4f">&#9670;&#160;</a></span>post_init_actions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ActuatorSourceTagging::post_init_actions </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5b4017739c012ee2aecc589f0c63aa67" name="a5b4017739c012ee2aecc589f0c63aa67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b4017739c012ee2aecc589f0c63aa67">&#9670;&#160;</a></span>post_regrid_actions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ActuatorSourceTagging::post_regrid_actions </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afc1bb30e5dd88d2cea320dcfd04b2c08" name="afc1bb30e5dd88d2cea320dcfd04b2c08"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc1bb30e5dd88d2cea320dcfd04b2c08">&#9670;&#160;</a></span>pre_advance_work()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ActuatorSourceTagging::pre_advance_work </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a36d5d83f41f36e6678c7de840675dafc" name="a36d5d83f41f36e6678c7de840675dafc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36d5d83f41f36e6678c7de840675dafc">&#9670;&#160;</a></span>m_act_src</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a>* amr_wind::ActuatorSourceTagging::m_act_src {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae3ee4a88824b400f13d519f6b0a6a945" name="ae3ee4a88824b400f13d519f6b0a6a945"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3ee4a88824b400f13d519f6b0a6a945">&#9670;&#160;</a></span>m_has_act_src</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::ActuatorSourceTagging::m_has_act_src {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a807bfd12c6dc44b3315a984bc0acdac0" name="a807bfd12c6dc44b3315a984bc0acdac0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a807bfd12c6dc44b3315a984bc0acdac0">&#9670;&#160;</a></span>m_has_iblank</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::ActuatorSourceTagging::m_has_iblank {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8d64664cef8f67df3d3b84aa9b3c4092" name="a8d64664cef8f67df3d3b84aa9b3c4092"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d64664cef8f67df3d3b84aa9b3c4092">&#9670;&#160;</a></span>m_iblank</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_int_field.html">IntField</a>* amr_wind::ActuatorSourceTagging::m_iblank {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acef0dc16f0a82a42ce3b7733f4085ac1" name="acef0dc16f0a82a42ce3b7733f4085ac1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acef0dc16f0a82a42ce3b7733f4085ac1">&#9670;&#160;</a></span>m_repo</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_field_repo.html">FieldRepo</a>&amp; amr_wind::ActuatorSourceTagging::m_repo</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a74b2c5a2ee810d4258283e8b5be5513d" name="a74b2c5a2ee810d4258283e8b5be5513d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74b2c5a2ee810d4258283e8b5be5513d">&#9670;&#160;</a></span>m_src_threshold</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::ActuatorSourceTagging::m_src_threshold {0.1_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1087d7519810ccf907506151b51f424b" name="a1087d7519810ccf907506151b51f424b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1087d7519810ccf907506151b51f424b">&#9670;&#160;</a></span>m_tag_fringe</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::ActuatorSourceTagging::m_tag_fringe {true}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afbc8ac3eed947fdf32c24a9fe3e6b62e" name="afbc8ac3eed947fdf32c24a9fe3e6b62e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afbc8ac3eed947fdf32c24a9fe3e6b62e">&#9670;&#160;</a></span>m_tag_hole</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::ActuatorSourceTagging::m_tag_hole {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6199735d9c26caa8a5eef975a515f0a5" name="a6199735d9c26caa8a5eef975a515f0a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6199735d9c26caa8a5eef975a515f0a5">&#9670;&#160;</a></span>m_tracer</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a>* amr_wind::ActuatorSourceTagging::m_tracer {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/physics/<a class="el" href="_actuator_source_tagging_8_h_source.html">ActuatorSourceTagging.H</a></li>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/physics/<a class="el" href="_actuator_source_tagging_8cpp.html">ActuatorSourceTagging.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

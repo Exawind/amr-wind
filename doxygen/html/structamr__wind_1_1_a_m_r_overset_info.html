@@ -1,0 +1,514 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::AMROversetInfo Struct Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::AMROversetInfo Struct Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/structamr__wind_1_1_a_m_r_overset_info.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="amroversetinfo-struct-reference">
+<h1>AMROversetInfo Struct Reference<a class="headerlink" href="#amroversetinfo-struct-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::AMROversetInfo Struct Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="structamr__wind_1_1_a_m_r_overset_info.html">AMROversetInfo</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="structamr__wind_1_1_a_m_r_overset_info-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::AMROversetInfo Struct Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_tioga_interface_8_h_source.html">TiogaInterface.H</a>&gt;</code></p>
+<div class="dynheader">
+Collaboration diagram for amr_wind::AMROversetInfo:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" loading="lazy" frameborder="0" src="structamr__wind_1_1_a_m_r_overset_info__coll__graph.svg" width="100%" height="588"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-types" class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a96dd0c21d8d676ed803cebb6fbee58c5" id="r_a96dd0c21d8d676ed803cebb6fbee58c5"><td class="memTemplParams" colspan="2">template&lt;typename T&gt; </td></tr>
+<tr class="memitem:a96dd0c21d8d676ed803cebb6fbee58c5 template"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a96dd0c21d8d676ed803cebb6fbee58c5">AType</a> = <a class="el" href="structamr__wind_1_1tioga__iface_1_1_amr_dual_array.html">tioga_iface::AmrDualArray</a>&lt;T&gt;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a888ef36b8814b07f317756a55b791ead" id="r_a888ef36b8814b07f317756a55b791ead"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a888ef36b8814b07f317756a55b791ead">AMROversetInfo</a> (int nglobal, int nlocal)</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a2839ef08ffe4024e5e9b8a219464ab33" id="r_a2839ef08ffe4024e5e9b8a219464ab33"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#a96dd0c21d8d676ed803cebb6fbee58c5">AType</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2839ef08ffe4024e5e9b8a219464ab33">level</a></td></tr>
+<tr class="memitem:aadb827e870167febcbcec0182f8f4cde" id="r_aadb827e870167febcbcec0182f8f4cde"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#a96dd0c21d8d676ed803cebb6fbee58c5">AType</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aadb827e870167febcbcec0182f8f4cde">mpi_rank</a></td></tr>
+<tr class="memitem:ac8e021852f3b960c0127db2e19f00ac6" id="r_ac8e021852f3b960c0127db2e19f00ac6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#a96dd0c21d8d676ed803cebb6fbee58c5">AType</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac8e021852f3b960c0127db2e19f00ac6">local_id</a></td></tr>
+<tr class="memitem:ac081f79903b8e51142a2fa59a2bf12fa" id="r_ac081f79903b8e51142a2fa59a2bf12fa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#a96dd0c21d8d676ed803cebb6fbee58c5">AType</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac081f79903b8e51142a2fa59a2bf12fa">ilow</a></td></tr>
+<tr class="memitem:affac4b8b29468029dac42052a126e4ae" id="r_affac4b8b29468029dac42052a126e4ae"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#a96dd0c21d8d676ed803cebb6fbee58c5">AType</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#affac4b8b29468029dac42052a126e4ae">ihigh</a></td></tr>
+<tr class="memitem:a806d7470c23702e4170f649e94af3991" id="r_a806d7470c23702e4170f649e94af3991"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#a96dd0c21d8d676ed803cebb6fbee58c5">AType</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a806d7470c23702e4170f649e94af3991">dims</a></td></tr>
+<tr class="memitem:a6fa89d3020dfdf42d9cd77437fba2c47" id="r_a6fa89d3020dfdf42d9cd77437fba2c47"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#a96dd0c21d8d676ed803cebb6fbee58c5">AType</a>&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6fa89d3020dfdf42d9cd77437fba2c47">xlo</a></td></tr>
+<tr class="memitem:a7368155b3ab52981d3a5903a17f1997e" id="r_a7368155b3ab52981d3a5903a17f1997e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#a96dd0c21d8d676ed803cebb6fbee58c5">AType</a>&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7368155b3ab52981d3a5903a17f1997e">dx</a></td></tr>
+<tr class="memitem:a61bca50fd22c27d9df7ad4b470b7f797" id="r_a61bca50fd22c27d9df7ad4b470b7f797"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#a96dd0c21d8d676ed803cebb6fbee58c5">AType</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a61bca50fd22c27d9df7ad4b470b7f797">global_idmap</a></td></tr>
+<tr class="memitem:afeaf2ee8290a525018bf2ab47e88a5ea" id="r_afeaf2ee8290a525018bf2ab47e88a5ea"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#a96dd0c21d8d676ed803cebb6fbee58c5">AType</a>&lt; int * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afeaf2ee8290a525018bf2ab47e88a5ea">iblank_node</a></td></tr>
+<tr class="memitem:a908ef51f276b44fcba1357d342b305d1" id="r_a908ef51f276b44fcba1357d342b305d1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#a96dd0c21d8d676ed803cebb6fbee58c5">AType</a>&lt; int * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a908ef51f276b44fcba1357d342b305d1">iblank_cell</a></td></tr>
+<tr class="memitem:a5624dcfad9aef6ad7ba0683b32bbb8d4" id="r_a5624dcfad9aef6ad7ba0683b32bbb8d4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#a96dd0c21d8d676ed803cebb6fbee58c5">AType</a>&lt; amrex::Real * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5624dcfad9aef6ad7ba0683b32bbb8d4">qcell</a></td></tr>
+<tr class="memitem:a2073e96a1bdcf1e024b4935106f0ba53" id="r_a2073e96a1bdcf1e024b4935106f0ba53"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#a96dd0c21d8d676ed803cebb6fbee58c5">AType</a>&lt; amrex::Real * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2073e96a1bdcf1e024b4935106f0ba53">qnode</a></td></tr>
+<tr class="memitem:a3cdfd05e2ba495db5860adc03627de4a" id="r_a3cdfd05e2ba495db5860adc03627de4a"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3cdfd05e2ba495db5860adc03627de4a">ngrids_global</a></td></tr>
+<tr class="memitem:aac4981eba9e7c2b7aef6ead0275423af" id="r_aac4981eba9e7c2b7aef6ead0275423af"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aac4981eba9e7c2b7aef6ead0275423af">ngrids_local</a></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>AMR mesh data in TIOGA format </p>
+</div><a name="doc-typedef-members" id="doc-typedef-members"></a><h2 id="header-doc-typedef-members" class="groupheader">Member Typedef Documentation</h2>
+<a id="a96dd0c21d8d676ed803cebb6fbee58c5" name="a96dd0c21d8d676ed803cebb6fbee58c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96dd0c21d8d676ed803cebb6fbee58c5">&#9670;&#160;</a></span>AType</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#a96dd0c21d8d676ed803cebb6fbee58c5">amr_wind::AMROversetInfo::AType</a> = <a class="el" href="structamr__wind_1_1tioga__iface_1_1_amr_dual_array.html">tioga_iface::AmrDualArray</a>&lt;T&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a888ef36b8814b07f317756a55b791ead" name="a888ef36b8814b07f317756a55b791ead"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a888ef36b8814b07f317756a55b791ead">&#9670;&#160;</a></span>AMROversetInfo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::AMROversetInfo::AMROversetInfo </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>nglobal</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>nlocal</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">nglobal</td><td>Total number of patches </td></tr>
+    <tr><td class="paramname">nlocal</td><td>Number of patches on the current MPI rank </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a806d7470c23702e4170f649e94af3991" name="a806d7470c23702e4170f649e94af3991"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a806d7470c23702e4170f649e94af3991">&#9670;&#160;</a></span>dims</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a96dd0c21d8d676ed803cebb6fbee58c5">AType</a>&lt;int&gt; amr_wind::AMROversetInfo::dims</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7368155b3ab52981d3a5903a17f1997e" name="a7368155b3ab52981d3a5903a17f1997e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7368155b3ab52981d3a5903a17f1997e">&#9670;&#160;</a></span>dx</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a96dd0c21d8d676ed803cebb6fbee58c5">AType</a>&lt;amrex::Real&gt; amr_wind::AMROversetInfo::dx</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a61bca50fd22c27d9df7ad4b470b7f797" name="a61bca50fd22c27d9df7ad4b470b7f797"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61bca50fd22c27d9df7ad4b470b7f797">&#9670;&#160;</a></span>global_idmap</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a96dd0c21d8d676ed803cebb6fbee58c5">AType</a>&lt;int&gt; amr_wind::AMROversetInfo::global_idmap</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a908ef51f276b44fcba1357d342b305d1" name="a908ef51f276b44fcba1357d342b305d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a908ef51f276b44fcba1357d342b305d1">&#9670;&#160;</a></span>iblank_cell</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a96dd0c21d8d676ed803cebb6fbee58c5">AType</a>&lt;int*&gt; amr_wind::AMROversetInfo::iblank_cell</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afeaf2ee8290a525018bf2ab47e88a5ea" name="afeaf2ee8290a525018bf2ab47e88a5ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afeaf2ee8290a525018bf2ab47e88a5ea">&#9670;&#160;</a></span>iblank_node</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a96dd0c21d8d676ed803cebb6fbee58c5">AType</a>&lt;int*&gt; amr_wind::AMROversetInfo::iblank_node</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="affac4b8b29468029dac42052a126e4ae" name="affac4b8b29468029dac42052a126e4ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#affac4b8b29468029dac42052a126e4ae">&#9670;&#160;</a></span>ihigh</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a96dd0c21d8d676ed803cebb6fbee58c5">AType</a>&lt;int&gt; amr_wind::AMROversetInfo::ihigh</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac081f79903b8e51142a2fa59a2bf12fa" name="ac081f79903b8e51142a2fa59a2bf12fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac081f79903b8e51142a2fa59a2bf12fa">&#9670;&#160;</a></span>ilow</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a96dd0c21d8d676ed803cebb6fbee58c5">AType</a>&lt;int&gt; amr_wind::AMROversetInfo::ilow</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2839ef08ffe4024e5e9b8a219464ab33" name="a2839ef08ffe4024e5e9b8a219464ab33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2839ef08ffe4024e5e9b8a219464ab33">&#9670;&#160;</a></span>level</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a96dd0c21d8d676ed803cebb6fbee58c5">AType</a>&lt;int&gt; amr_wind::AMROversetInfo::level</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac8e021852f3b960c0127db2e19f00ac6" name="ac8e021852f3b960c0127db2e19f00ac6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8e021852f3b960c0127db2e19f00ac6">&#9670;&#160;</a></span>local_id</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a96dd0c21d8d676ed803cebb6fbee58c5">AType</a>&lt;int&gt; amr_wind::AMROversetInfo::local_id</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aadb827e870167febcbcec0182f8f4cde" name="aadb827e870167febcbcec0182f8f4cde"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aadb827e870167febcbcec0182f8f4cde">&#9670;&#160;</a></span>mpi_rank</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a96dd0c21d8d676ed803cebb6fbee58c5">AType</a>&lt;int&gt; amr_wind::AMROversetInfo::mpi_rank</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3cdfd05e2ba495db5860adc03627de4a" name="a3cdfd05e2ba495db5860adc03627de4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3cdfd05e2ba495db5860adc03627de4a">&#9670;&#160;</a></span>ngrids_global</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const int amr_wind::AMROversetInfo::ngrids_global</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aac4981eba9e7c2b7aef6ead0275423af" name="aac4981eba9e7c2b7aef6ead0275423af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac4981eba9e7c2b7aef6ead0275423af">&#9670;&#160;</a></span>ngrids_local</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const int amr_wind::AMROversetInfo::ngrids_local</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5624dcfad9aef6ad7ba0683b32bbb8d4" name="a5624dcfad9aef6ad7ba0683b32bbb8d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5624dcfad9aef6ad7ba0683b32bbb8d4">&#9670;&#160;</a></span>qcell</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a96dd0c21d8d676ed803cebb6fbee58c5">AType</a>&lt;amrex::Real*&gt; amr_wind::AMROversetInfo::qcell</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2073e96a1bdcf1e024b4935106f0ba53" name="a2073e96a1bdcf1e024b4935106f0ba53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2073e96a1bdcf1e024b4935106f0ba53">&#9670;&#160;</a></span>qnode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a96dd0c21d8d676ed803cebb6fbee58c5">AType</a>&lt;amrex::Real*&gt; amr_wind::AMROversetInfo::qnode</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6fa89d3020dfdf42d9cd77437fba2c47" name="a6fa89d3020dfdf42d9cd77437fba2c47"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6fa89d3020dfdf42d9cd77437fba2c47">&#9670;&#160;</a></span>xlo</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a96dd0c21d8d676ed803cebb6fbee58c5">AType</a>&lt;amrex::Real&gt; amr_wind::AMROversetInfo::xlo</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following files:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/overset/<a class="el" href="_tioga_interface_8_h_source.html">TiogaInterface.H</a></li>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/overset/<a class="el" href="_tioga_interface_8cpp.html">TiogaInterface.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

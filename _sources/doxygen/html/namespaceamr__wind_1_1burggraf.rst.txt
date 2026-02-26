@@ -1,0 +1,14 @@
+.. meta::f3509bcd2b26a3255bf814e3a679ce9e2c665b7a86d8d80cd9ce72a806baae38999f64b239b4f3654293c3e4d483a9815a90d628a1867690fc66ebee34924e7d
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::burggraf Namespace Reference
+
+burggraf Namespace Reference
+============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: namespaceamr__wind_1_1burggraf.html

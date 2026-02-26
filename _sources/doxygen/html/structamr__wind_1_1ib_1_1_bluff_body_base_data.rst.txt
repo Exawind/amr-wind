@@ -1,0 +1,14 @@
+.. meta::f6bae801e9f88a092edf5837fad96dfe4fe49834c1363c703d93260028f3b5d432add2ced45445aa0de3c1f38c8ce791a2a9de4a6e0e1056b9498c6a5c33b60e
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ib::BluffBodyBaseData Struct Reference
+
+BluffBodyBaseData Struct Reference
+==================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ib_1_1_bluff_body_base_data.html

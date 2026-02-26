@@ -1,0 +1,14 @@
+.. meta::5333f30d25789950940ad2caf8c0978740637cfaa577d5205ff830bb81fdf85d9e8dcb1ecd030af63494bd9dc52347df3dd69a5719268d4eec086556e00554bb
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics -&gt; wind_energy Relation
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/physics -&gt; wind\_energy Relation
+================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: dir_000033_000056.html

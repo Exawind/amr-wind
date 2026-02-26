@@ -1,0 +1,14 @@
+.. meta::a28651e5c5174e9102179795b2710ed3dafd81eef13075a85c0c174246175273c7d095135df44079ab481454087248fc10a762690c87bd764e93e90e5697b300
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::FixedGradientBC Class Reference
+
+FixedGradientBC Class Reference
+===============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_fixed_gradient_b_c.html

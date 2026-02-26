@@ -1,0 +1,14 @@
+.. meta::43e2863b636f11e990d7126e1e61738f217dcd0c4713d365409deadbdd361c819f7f7f724cd13241a21be7ebf4ce13759d74e97746270ae6f9d1970c5f356bbc
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::udf::CustomVelocity::DeviceOp Struct Reference
+
+DeviceOp Struct Reference
+=========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1udf_1_1_custom_velocity_1_1_device_op.html

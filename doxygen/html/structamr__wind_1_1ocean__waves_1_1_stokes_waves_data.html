@@ -1,0 +1,308 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::ocean_waves::StokesWavesData Struct Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::ocean_waves::StokesWavesData Struct Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/structamr__wind_1_1ocean__waves_1_1_stokes_waves_data.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="stokeswavesdata-struct-reference">
+<h1>StokesWavesData Struct Reference<a class="headerlink" href="#stokeswavesdata-struct-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::ocean_waves::StokesWavesData Struct Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="namespaceamr__wind_1_1ocean__waves.html">ocean_waves</a></li><li class="navelem"><a href="structamr__wind_1_1ocean__waves_1_1_stokes_waves_data.html">StokesWavesData</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="structamr__wind_1_1ocean__waves_1_1_stokes_waves_data-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::ocean_waves::StokesWavesData Struct Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_stokes_waves_8_h_source.html">StokesWaves.H</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for amr_wind::ocean_waves::StokesWavesData:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="structamr__wind_1_1ocean__waves_1_1_stokes_waves_data__inherit__graph.svg" width="194" height="139"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for amr_wind::ocean_waves::StokesWavesData:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="structamr__wind_1_1ocean__waves_1_1_stokes_waves_data__coll__graph.svg" width="194" height="139"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a3250d865b099e43db3ceb00ca3d210cc" id="r_a3250d865b099e43db3ceb00ca3d210cc"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3250d865b099e43db3ceb00ca3d210cc">wave_height</a> {0.1_rt}</td></tr>
+<tr class="memitem:acafa822bffbac05da211f93086046d2a" id="r_acafa822bffbac05da211f93086046d2a"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acafa822bffbac05da211f93086046d2a">wave_length</a> {1.0_rt}</td></tr>
+<tr class="memitem:aca4d5ee1914bbeaf9d894004b78c68dc" id="r_aca4d5ee1914bbeaf9d894004b78c68dc"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aca4d5ee1914bbeaf9d894004b78c68dc">wave_phase_offset</a> {0.0_rt}</td></tr>
+<tr class="memitem:ac4f5b70cfb4ffdcb38df96c4409db882" id="r_ac4f5b70cfb4ffdcb38df96c4409db882"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac4f5b70cfb4ffdcb38df96c4409db882">order</a> {2}</td></tr>
+<tr class="inherit_header pub_attribs_structamr__wind_1_1ocean__waves_1_1_relax_zones_base_data"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_attribs_structamr__wind_1_1ocean__waves_1_1_relax_zones_base_data')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Attributes inherited from <a class="el" href="structamr__wind_1_1ocean__waves_1_1_relax_zones_base_data.html">amr_wind::ocean_waves::RelaxZonesBaseData</a></td></tr>
+<tr class="memitem:af9252d7a6a0bcd0c1244e481647fe53a inherit pub_attribs_structamr__wind_1_1ocean__waves_1_1_relax_zones_base_data" id="r_af9252d7a6a0bcd0c1244e481647fe53a"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1ocean__waves_1_1_relax_zones_base_data.html#af9252d7a6a0bcd0c1244e481647fe53a">zsl</a> {0.0_rt}</td></tr>
+<tr class="memitem:a54ff58b4d261c8d0523061b514559574 inherit pub_attribs_structamr__wind_1_1ocean__waves_1_1_relax_zones_base_data" id="r_a54ff58b4d261c8d0523061b514559574"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1ocean__waves_1_1_relax_zones_base_data.html#a54ff58b4d261c8d0523061b514559574">water_depth</a> {0.5_rt}</td></tr>
+<tr class="memitem:a7a06d57e3f42eb6ccdeb216a5bd9ff7c inherit pub_attribs_structamr__wind_1_1ocean__waves_1_1_relax_zones_base_data" id="r_a7a06d57e3f42eb6ccdeb216a5bd9ff7c"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1ocean__waves_1_1_relax_zones_base_data.html#a7a06d57e3f42eb6ccdeb216a5bd9ff7c">g</a></td></tr>
+<tr class="memitem:ad25f43ef8540abacd7be9fc81361605c inherit pub_attribs_structamr__wind_1_1ocean__waves_1_1_relax_zones_base_data" id="r_ad25f43ef8540abacd7be9fc81361605c"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1ocean__waves_1_1_relax_zones_base_data.html#ad25f43ef8540abacd7be9fc81361605c">gen_length</a> {4.0_rt}</td></tr>
+<tr class="memitem:a43811016adfcb5fd0758e347f8b83efa inherit pub_attribs_structamr__wind_1_1ocean__waves_1_1_relax_zones_base_data" id="r_a43811016adfcb5fd0758e347f8b83efa"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1ocean__waves_1_1_relax_zones_base_data.html#a43811016adfcb5fd0758e347f8b83efa">beach_length</a> {8.0_rt}</td></tr>
+<tr class="memitem:a1d67c814dc59577b7247ed3fc8c97a8e inherit pub_attribs_structamr__wind_1_1ocean__waves_1_1_relax_zones_base_data" id="r_a1d67c814dc59577b7247ed3fc8c97a8e"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1ocean__waves_1_1_relax_zones_base_data.html#a1d67c814dc59577b7247ed3fc8c97a8e">beach_length_factor</a> {1.0_rt}</td></tr>
+<tr class="memitem:a3bea7feedaba2e136603079bba963890 inherit pub_attribs_structamr__wind_1_1ocean__waves_1_1_relax_zones_base_data" id="r_a3bea7feedaba2e136603079bba963890"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1ocean__waves_1_1_relax_zones_base_data.html#a3bea7feedaba2e136603079bba963890">zone_length_y</a> {0.0_rt}</td></tr>
+<tr class="memitem:aa9d3b67df1a4c42bd30a983fd3a54d98 inherit pub_attribs_structamr__wind_1_1ocean__waves_1_1_relax_zones_base_data" id="r_aa9d3b67df1a4c42bd30a983fd3a54d98"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1ocean__waves_1_1_relax_zones_base_data.html#aa9d3b67df1a4c42bd30a983fd3a54d98">current</a> {0.0_rt}</td></tr>
+<tr class="memitem:a9b67f13df4f087a25c6da855d0e9aa61 inherit pub_attribs_structamr__wind_1_1ocean__waves_1_1_relax_zones_base_data" id="r_a9b67f13df4f087a25c6da855d0e9aa61"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1ocean__waves_1_1_relax_zones_base_data.html#a9b67f13df4f087a25c6da855d0e9aa61">init_wave_field</a> {false}</td></tr>
+<tr class="memitem:a10541dc032e72bd502287ec67996962e inherit pub_attribs_structamr__wind_1_1ocean__waves_1_1_relax_zones_base_data" id="r_a10541dc032e72bd502287ec67996962e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1ocean__waves_1_1_relax_zones_base_data.html#a10541dc032e72bd502287ec67996962e">has_ramp</a> {false}</td></tr>
+<tr class="memitem:a182371e81b855935f58e322276156c34 inherit pub_attribs_structamr__wind_1_1ocean__waves_1_1_relax_zones_base_data" id="r_a182371e81b855935f58e322276156c34"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1ocean__waves_1_1_relax_zones_base_data.html#a182371e81b855935f58e322276156c34">has_beach</a> {true}</td></tr>
+<tr class="memitem:a27dc00b10fd0ae35d02af928ebad153c inherit pub_attribs_structamr__wind_1_1ocean__waves_1_1_relax_zones_base_data" id="r_a27dc00b10fd0ae35d02af928ebad153c"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1ocean__waves_1_1_relax_zones_base_data.html#a27dc00b10fd0ae35d02af928ebad153c">ramp_period</a></td></tr>
+<tr class="memitem:af174a103d22540050d4c8ade053697af inherit pub_attribs_structamr__wind_1_1ocean__waves_1_1_relax_zones_base_data" id="r_af174a103d22540050d4c8ade053697af"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1ocean__waves_1_1_relax_zones_base_data.html#af174a103d22540050d4c8ade053697af">regrid_occurred</a> {false}</td></tr>
+</table>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="ac4f5b70cfb4ffdcb38df96c4409db882" name="ac4f5b70cfb4ffdcb38df96c4409db882"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4f5b70cfb4ffdcb38df96c4409db882">&#9670;&#160;</a></span>order</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::ocean_waves::StokesWavesData::order {2}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3250d865b099e43db3ceb00ca3d210cc" name="a3250d865b099e43db3ceb00ca3d210cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3250d865b099e43db3ceb00ca3d210cc">&#9670;&#160;</a></span>wave_height</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::ocean_waves::StokesWavesData::wave_height {0.1_rt}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acafa822bffbac05da211f93086046d2a" name="acafa822bffbac05da211f93086046d2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acafa822bffbac05da211f93086046d2a">&#9670;&#160;</a></span>wave_length</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::ocean_waves::StokesWavesData::wave_length {1.0_rt}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aca4d5ee1914bbeaf9d894004b78c68dc" name="aca4d5ee1914bbeaf9d894004b78c68dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca4d5ee1914bbeaf9d894004b78c68dc">&#9670;&#160;</a></span>wave_phase_offset</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::ocean_waves::StokesWavesData::wave_phase_offset {0.0_rt}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/ocean_waves/relaxation_zones/<a class="el" href="_stokes_waves_8_h_source.html">StokesWaves.H</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

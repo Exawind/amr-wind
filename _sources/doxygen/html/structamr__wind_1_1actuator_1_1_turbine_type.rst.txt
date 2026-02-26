@@ -1,0 +1,14 @@
+.. meta::1fb8326bfff426e35ea91e9d8cd74eb7f2ff475e983d0f35045dbaf7432f7d551df8fc9112d2bc95104f0ee94e594138cc4f2aa4a6f7fb40858f68faf1853e5e
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::TurbineType Struct Reference
+
+TurbineType Struct Reference
+============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1_turbine_type.html

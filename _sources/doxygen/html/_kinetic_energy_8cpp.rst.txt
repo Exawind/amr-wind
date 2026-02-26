@@ -1,0 +1,14 @@
+.. meta::1776c762f93d2e5f7c2079b4819086ad038b6f30962ed2d782fed191df32f7b76c94ad657afc5e0f541e4c4cc478e8dfdccd69e25f58a4372ed4ec812e91aa6a
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/KineticEnergy.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/KineticEnergy.cpp File Reference
+================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _kinetic_energy_8cpp.html

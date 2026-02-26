@@ -1,0 +1,14 @@
+.. meta::5e5b544ccbfaa63e7c0c36cb855a7fe052fffb02b17516952c6d5f18292d2bca898090261cfc022dd73be0fa7b85099ca59a4580f4ffa83df83fd9c4ec52ace7
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/tagging/GeometryRefinement.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/tagging/GeometryRefinement.H Source File
+===============================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _geometry_refinement_8_h_source.html

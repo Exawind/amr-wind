@@ -1,0 +1,14 @@
+.. meta::2c64a75826e076f924b2b938823f46083a6d6dd97544726ba657af047d0661a114d45d05e1fb37bbd7086067e53513cdf4f7889a7ea7fd88e56a9caaed91393e
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/icns -&gt; boundary_conditions Relation
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/equation\_systems/icns -&gt; boundary\_conditions Relation
+=======================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: dir_000021_000007.html

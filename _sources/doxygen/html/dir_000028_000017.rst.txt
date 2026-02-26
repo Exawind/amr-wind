@@ -1,0 +1,14 @@
+.. meta::17bd86bd0146c39531fbaf5e9dc8ff4174f3e0061840714634321afd834bc7ce8d5e7c5c2e9a4ffc68a177cb104f909694b71f2ad48cbb42d270c576951108ea
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/multiphase -&gt; equation_systems Relation
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/physics/multiphase -&gt; equation\_systems Relation
+================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: dir_000028_000017.html

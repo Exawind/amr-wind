@@ -1,0 +1,1311 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::channel_flow::ChannelFlow Class Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::channel_flow::ChannelFlow Class Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/classamr__wind_1_1channel__flow_1_1_channel_flow.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="channelflow-class-reference">
+<h1>ChannelFlow Class Reference<a class="headerlink" href="#channelflow-class-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::channel_flow::ChannelFlow Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="namespaceamr__wind_1_1channel__flow.html">channel_flow</a></li><li class="navelem"><a href="classamr__wind_1_1channel__flow_1_1_channel_flow.html">ChannelFlow</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
+<a href="classamr__wind_1_1channel__flow_1_1_channel_flow-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::channel_flow::ChannelFlow Class Reference<div class="ingroups"><a class="el" href="group__physics.html">Physics models</a></div></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_channel_flow_8_h_source.html">ChannelFlow.H</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for amr_wind::channel_flow::ChannelFlow:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1channel__flow_1_1_channel_flow__inherit__graph.svg" width="190" height="154"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for amr_wind::channel_flow::ChannelFlow:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1channel__flow_1_1_channel_flow__coll__graph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a10f9408354845a557331f93f116d7199" id="r_a10f9408354845a557331f93f116d7199"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a10f9408354845a557331f93f116d7199">ChannelFlow</a> (<a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;sim)</td></tr>
+<tr class="memitem:a19ebf456b57858579ae020b87597ceb5" id="r_a19ebf456b57858579ae020b87597ceb5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a19ebf456b57858579ae020b87597ceb5">~ChannelFlow</a> () override=default</td></tr>
+<tr class="memitem:a98f093ec6a549fc987059c23a10ae53f" id="r_a98f093ec6a549fc987059c23a10ae53f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a98f093ec6a549fc987059c23a10ae53f">initialize_fields</a> (int level, const amrex::Geometry &amp;geom) override</td></tr>
+<tr class="memitem:a3dea1add2015033de663f41e4351566d" id="r_a3dea1add2015033de663f41e4351566d"><td class="memTemplParams" colspan="2">template&lt;typename IndexSelector&gt; </td></tr>
+<tr class="memitem:a3dea1add2015033de663f41e4351566d template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3dea1add2015033de663f41e4351566d">initialize_fields</a> (int level, const amrex::Geometry &amp;geom, const IndexSelector &amp;idxOp, int n_idx)</td></tr>
+<tr class="memdesc:a3dea1add2015033de663f41e4351566d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Use Reichardt function to initialize velocity profile.  <br /></td></tr>
+<tr class="memitem:a76f7930ed259de6d6e8852f3160fed09" id="r_a76f7930ed259de6d6e8852f3160fed09"><td class="memTemplParams" colspan="2">template&lt;typename IndexSelector&gt; </td></tr>
+<tr class="memitem:a76f7930ed259de6d6e8852f3160fed09 template"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a76f7930ed259de6d6e8852f3160fed09">compute_error</a> (const IndexSelector &amp;idxOp)</td></tr>
+<tr class="memitem:aa8a20d38278bf1a2d841b022222e25e8" id="r_aa8a20d38278bf1a2d841b022222e25e8"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa8a20d38278bf1a2d841b022222e25e8">compute_analytical_smagorinsky_error</a> ()</td></tr>
+<tr class="memitem:ace5fc85f16906af80bad298a15c65e3e" id="r_ace5fc85f16906af80bad298a15c65e3e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ace5fc85f16906af80bad298a15c65e3e">output_error</a> ()</td></tr>
+<tr class="memitem:abed241797d687c9812e5f9dae0e1726d" id="r_abed241797d687c9812e5f9dae0e1726d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abed241797d687c9812e5f9dae0e1726d">post_init_actions</a> () override</td></tr>
+<tr class="memitem:a521d64c3394c89f6a9174ab0cdbd07e2" id="r_a521d64c3394c89f6a9174ab0cdbd07e2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a521d64c3394c89f6a9174ab0cdbd07e2">post_regrid_actions</a> () override</td></tr>
+<tr class="memitem:a6fdc6705e25b68857cef90c43826d9ea" id="r_a6fdc6705e25b68857cef90c43826d9ea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6fdc6705e25b68857cef90c43826d9ea">pre_advance_work</a> () override</td></tr>
+<tr class="memitem:aad5f720c9833f2d3c57ea13d4af57323" id="r_aad5f720c9833f2d3c57ea13d4af57323"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aad5f720c9833f2d3c57ea13d4af57323">post_advance_work</a> () override</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:ad2077668a2e1dda78e19acc779bd2c2b" id="r_ad2077668a2e1dda78e19acc779bd2c2b"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad2077668a2e1dda78e19acc779bd2c2b">identifier</a> ()</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a31b5284376920520d0dfab74e42663ad" id="r_a31b5284376920520d0dfab74e42663ad"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a31b5284376920520d0dfab74e42663ad">m_sim</a></td></tr>
+<tr class="memdesc:a31b5284376920520d0dfab74e42663ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">CFD simulation controller instance.  <br /></td></tr>
+<tr class="memitem:a2677502ff350ef8217417ac0ce788f06" id="r_a2677502ff350ef8217417ac0ce788f06"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_sim_time.html">amr_wind::SimTime</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2677502ff350ef8217417ac0ce788f06">m_time</a></td></tr>
+<tr class="memitem:ac473f6d0ae637b5649db4e1d65848df6" id="r_ac473f6d0ae637b5649db4e1d65848df6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field_repo.html">FieldRepo</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac473f6d0ae637b5649db4e1d65848df6">m_repo</a></td></tr>
+<tr class="memitem:a15be6460f11666dcce6f23620b01ba62" id="r_a15be6460f11666dcce6f23620b01ba62"><td class="memItemLeft" align="right" valign="top">const amrex::AmrCore &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a15be6460f11666dcce6f23620b01ba62">m_mesh</a></td></tr>
+<tr class="memitem:a31bc295320629c3350ab3d3d74389c11" id="r_a31bc295320629c3350ab3d3d74389c11"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_wall_function.html">WallFunction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a31bc295320629c3350ab3d3d74389c11">m_wall_func</a></td></tr>
+<tr class="memitem:a4ac9e8de695707fef7813aef22d6e995" id="r_a4ac9e8de695707fef7813aef22d6e995"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4ac9e8de695707fef7813aef22d6e995">m_norm_dir</a> {1}</td></tr>
+<tr class="memdesc:a4ac9e8de695707fef7813aef22d6e995"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wall normal direction - Default y direction.  <br /></td></tr>
+<tr class="memitem:a76a9226ab78b53760047ad825b64ab80" id="r_a76a9226ab78b53760047ad825b64ab80"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a76a9226ab78b53760047ad825b64ab80">m_rho</a> {1.0_rt}</td></tr>
+<tr class="memdesc:a76a9226ab78b53760047ad825b64ab80"><td class="mdescLeft">&#160;</td><td class="mdescRight">initial density value  <br /></td></tr>
+<tr class="memitem:a49c1de6ae2be428bf90ff8469ce470d6" id="r_a49c1de6ae2be428bf90ff8469ce470d6"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a49c1de6ae2be428bf90ff8469ce470d6">m_mu</a> {1.0_rt}</td></tr>
+<tr class="memdesc:a49c1de6ae2be428bf90ff8469ce470d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">viscosity  <br /></td></tr>
+<tr class="memitem:affc36745b6eefbc78604b3e3ee2423de" id="r_affc36745b6eefbc78604b3e3ee2423de"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#affc36745b6eefbc78604b3e3ee2423de">m_re_tau</a> {1000.0_rt}</td></tr>
+<tr class="memdesc:affc36745b6eefbc78604b3e3ee2423de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Re_tau.  <br /></td></tr>
+<tr class="memitem:aa41e20eddcb0f3bd8472126ba273b0fa" id="r_aa41e20eddcb0f3bd8472126ba273b0fa"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa41e20eddcb0f3bd8472126ba273b0fa">m_utau</a> {0.01_rt}</td></tr>
+<tr class="memdesc:aa41e20eddcb0f3bd8472126ba273b0fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">u_tau  <br /></td></tr>
+<tr class="memitem:adfa7cb51fa81a8239a06c61a36237013" id="r_adfa7cb51fa81a8239a06c61a36237013"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adfa7cb51fa81a8239a06c61a36237013">m_ytau</a> {0.001_rt}</td></tr>
+<tr class="memdesc:adfa7cb51fa81a8239a06c61a36237013"><td class="mdescLeft">&#160;</td><td class="mdescRight">y_tau  <br /></td></tr>
+<tr class="memitem:aed83787479050c321814cd6db97960b2" id="r_aed83787479050c321814cd6db97960b2"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aed83787479050c321814cd6db97960b2">m_tke0</a> {0.0_rt}</td></tr>
+<tr class="memdesc:aed83787479050c321814cd6db97960b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">initial tke value  <br /></td></tr>
+<tr class="memitem:a13867a6e4db014332707e655cf491751" id="r_a13867a6e4db014332707e655cf491751"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a13867a6e4db014332707e655cf491751">m_sdr0</a> {1000.0_rt}</td></tr>
+<tr class="memdesc:a13867a6e4db014332707e655cf491751"><td class="mdescLeft">&#160;</td><td class="mdescRight">initial sdr value  <br /></td></tr>
+<tr class="memitem:a117f8565587665531e656ed8f38fe3ca" id="r_a117f8565587665531e656ed8f38fe3ca"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a117f8565587665531e656ed8f38fe3ca">m_perturb_vel</a> {false}</td></tr>
+<tr class="memdesc:a117f8565587665531e656ed8f38fe3ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">flag for perturbations of the initial condition  <br /></td></tr>
+<tr class="memitem:a2260a3b52868292fca975009feaa33f9" id="r_a2260a3b52868292fca975009feaa33f9"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2260a3b52868292fca975009feaa33f9">m_perturb_y_period</a> {1.0_rt}</td></tr>
+<tr class="memdesc:a2260a3b52868292fca975009feaa33f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">perturbation period (y-direction)  <br /></td></tr>
+<tr class="memitem:aa54ced7323de9735d468fa979bed3f08" id="r_aa54ced7323de9735d468fa979bed3f08"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa54ced7323de9735d468fa979bed3f08">m_perturb_z_period</a> {1.0_rt}</td></tr>
+<tr class="memdesc:aa54ced7323de9735d468fa979bed3f08"><td class="mdescLeft">&#160;</td><td class="mdescRight">perturbation period (z-direction)  <br /></td></tr>
+<tr class="memitem:a25b03c95c63d70159719e12b1fa9d6ce" id="r_a25b03c95c63d70159719e12b1fa9d6ce"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a25b03c95c63d70159719e12b1fa9d6ce">m_perturb_fac</a> {0.1_rt}</td></tr>
+<tr class="memdesc:a25b03c95c63d70159719e12b1fa9d6ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">perturbation factor (fraction of utau)  <br /></td></tr>
+<tr class="memitem:a7f7e10ff8cdc7490aa74c1306dc90f9b" id="r_a7f7e10ff8cdc7490aa74c1306dc90f9b"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7f7e10ff8cdc7490aa74c1306dc90f9b">m_kappa</a> {0.41_rt}</td></tr>
+<tr class="memdesc:a7f7e10ff8cdc7490aa74c1306dc90f9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Von-Karman constant.  <br /></td></tr>
+<tr class="memitem:a6d0a2012e0a7321efece6d696653bc7e" id="r_a6d0a2012e0a7321efece6d696653bc7e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6d0a2012e0a7321efece6d696653bc7e">m_turbulence_model</a></td></tr>
+<tr class="memdesc:a6d0a2012e0a7321efece6d696653bc7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Turbulence model.  <br /></td></tr>
+<tr class="memitem:aeb66ae2d152f1069ac80b0b42f6aff6c" id="r_aeb66ae2d152f1069ac80b0b42f6aff6c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeb66ae2d152f1069ac80b0b42f6aff6c">m_laminar</a> {false}</td></tr>
+<tr class="memitem:a13ddcac7f5731a208011721dbc3bdecb" id="r_a13ddcac7f5731a208011721dbc3bdecb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a13ddcac7f5731a208011721dbc3bdecb">m_mesh_mapping</a> {false}</td></tr>
+<tr class="memitem:ad2d8524595cf5bcf852d97281dea6861" id="r_ad2d8524595cf5bcf852d97281dea6861"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad2d8524595cf5bcf852d97281dea6861">m_mean_vel</a></td></tr>
+<tr class="memitem:a10e70295ed05421da9399b6f15c63346" id="r_a10e70295ed05421da9399b6f15c63346"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a10e70295ed05421da9399b6f15c63346">m_half</a> {false}</td></tr>
+<tr class="memitem:ab444392c988731e8204a37b4dedc273f" id="r_ab444392c988731e8204a37b4dedc273f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab444392c988731e8204a37b4dedc273f">m_analytical_smagorinsky_test</a> {false}</td></tr>
+<tr class="memdesc:ab444392c988731e8204a37b4dedc273f"><td class="mdescLeft">&#160;</td><td class="mdescRight">flag for analytical smagorinsky test  <br /></td></tr>
+<tr class="memitem:a2d00d95af3a521945bd9b21e143924d6" id="r_a2d00d95af3a521945bd9b21e143924d6"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2d00d95af3a521945bd9b21e143924d6">m_C0</a> {0.0_rt}</td></tr>
+<tr class="memdesc:a2d00d95af3a521945bd9b21e143924d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Analytical Smagorinsky first coefficient.  <br /></td></tr>
+<tr class="memitem:a4197ebe56b659faf7925d291df148500" id="r_a4197ebe56b659faf7925d291df148500"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4197ebe56b659faf7925d291df148500">m_C1</a> {0.0_rt}</td></tr>
+<tr class="memdesc:a4197ebe56b659faf7925d291df148500"><td class="mdescLeft">&#160;</td><td class="mdescRight">Analytical Smagorinsky second coefficient.  <br /></td></tr>
+<tr class="memitem:aafc153ca91f8e61cc966674673f00f28" id="r_aafc153ca91f8e61cc966674673f00f28"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aafc153ca91f8e61cc966674673f00f28">m_dpdx</a> {0.0_rt}</td></tr>
+<tr class="memdesc:aafc153ca91f8e61cc966674673f00f28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Body forcing (x direction)  <br /></td></tr>
+<tr class="memitem:a5de9c5f85eae7e0ce5e4662ec90c5caf" id="r_a5de9c5f85eae7e0ce5e4662ec90c5caf"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5de9c5f85eae7e0ce5e4662ec90c5caf">m_mean_vel_dir</a> {0}</td></tr>
+<tr class="memdesc:a5de9c5f85eae7e0ce5e4662ec90c5caf"><td class="mdescLeft">&#160;</td><td class="mdescRight">direction of mean velocity  <br /></td></tr>
+<tr class="memitem:a2684f448b6893c7fc42b3fad4f3af718" id="r_a2684f448b6893c7fc42b3fad4f3af718"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2684f448b6893c7fc42b3fad4f3af718">m_w</a> {18}</td></tr>
+<tr class="memdesc:a2684f448b6893c7fc42b3fad4f3af718"><td class="mdescLeft">&#160;</td><td class="mdescRight">output precision  <br /></td></tr>
+<tr class="memitem:aa8928b212357d6195dadf975a6cdbdfd" id="r_aa8928b212357d6195dadf975a6cdbdfd"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa8928b212357d6195dadf975a6cdbdfd">m_output_fname</a> {&quot;channel_flow.log&quot;}</td></tr>
+<tr class="memdesc:aa8928b212357d6195dadf975a6cdbdfd"><td class="mdescLeft">&#160;</td><td class="mdescRight">error log file  <br /></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Channel Flow physics </p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a10f9408354845a557331f93f116d7199" name="a10f9408354845a557331f93f116d7199"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a10f9408354845a557331f93f116d7199">&#9670;&#160;</a></span>ChannelFlow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::channel_flow::ChannelFlow::ChannelFlow </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>sim</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel explicit">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a19ebf456b57858579ae020b87597ceb5" name="a19ebf456b57858579ae020b87597ceb5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19ebf456b57858579ae020b87597ceb5">&#9670;&#160;</a></span>~ChannelFlow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::channel_flow::ChannelFlow::~ChannelFlow </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="aa8a20d38278bf1a2d841b022222e25e8" name="aa8a20d38278bf1a2d841b022222e25e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8a20d38278bf1a2d841b022222e25e8">&#9670;&#160;</a></span>compute_analytical_smagorinsky_error()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::channel_flow::ChannelFlow::compute_analytical_smagorinsky_error </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a76f7930ed259de6d6e8852f3160fed09" name="a76f7930ed259de6d6e8852f3160fed09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76f7930ed259de6d6e8852f3160fed09">&#9670;&#160;</a></span>compute_error()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename IndexSelector&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::channel_flow::ChannelFlow::compute_error </td>
+          <td>(</td>
+          <td class="paramtype">const IndexSelector &amp;</td>          <td class="paramname"><span class="paramname"><em>idxOp</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad2077668a2e1dda78e19acc779bd2c2b" name="ad2077668a2e1dda78e19acc779bd2c2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2077668a2e1dda78e19acc779bd2c2b">&#9670;&#160;</a></span>identifier()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::channel_flow::ChannelFlow::identifier </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a98f093ec6a549fc987059c23a10ae53f" name="a98f093ec6a549fc987059c23a10ae53f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98f093ec6a549fc987059c23a10ae53f">&#9670;&#160;</a></span>initialize_fields() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::channel_flow::ChannelFlow::initialize_fields </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>level</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Geometry &amp;</td>          <td class="paramname"><span class="paramname"><em>geom</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Initialize the velocity, density, tke and sdr fields at the beginning of the simulation. </p>
+
+</div>
+</div>
+<a id="a3dea1add2015033de663f41e4351566d" name="a3dea1add2015033de663f41e4351566d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3dea1add2015033de663f41e4351566d">&#9670;&#160;</a></span>initialize_fields() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename IndexSelector&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::channel_flow::ChannelFlow::initialize_fields </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>level</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Geometry &amp;</td>          <td class="paramname"><span class="paramname"><em>geom</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const IndexSelector &amp;</td>          <td class="paramname"><span class="paramname"><em>idxOp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>n_idx</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Use Reichardt function to initialize velocity profile. </p>
+
+</div>
+</div>
+<a id="ace5fc85f16906af80bad298a15c65e3e" name="ace5fc85f16906af80bad298a15c65e3e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace5fc85f16906af80bad298a15c65e3e">&#9670;&#160;</a></span>output_error()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::channel_flow::ChannelFlow::output_error </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aad5f720c9833f2d3c57ea13d4af57323" name="aad5f720c9833f2d3c57ea13d4af57323"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad5f720c9833f2d3c57ea13d4af57323">&#9670;&#160;</a></span>post_advance_work()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::channel_flow::ChannelFlow::post_advance_work </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abed241797d687c9812e5f9dae0e1726d" name="abed241797d687c9812e5f9dae0e1726d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abed241797d687c9812e5f9dae0e1726d">&#9670;&#160;</a></span>post_init_actions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::channel_flow::ChannelFlow::post_init_actions </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a521d64c3394c89f6a9174ab0cdbd07e2" name="a521d64c3394c89f6a9174ab0cdbd07e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a521d64c3394c89f6a9174ab0cdbd07e2">&#9670;&#160;</a></span>post_regrid_actions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::channel_flow::ChannelFlow::post_regrid_actions </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6fdc6705e25b68857cef90c43826d9ea" name="a6fdc6705e25b68857cef90c43826d9ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6fdc6705e25b68857cef90c43826d9ea">&#9670;&#160;</a></span>pre_advance_work()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::channel_flow::ChannelFlow::pre_advance_work </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="ab444392c988731e8204a37b4dedc273f" name="ab444392c988731e8204a37b4dedc273f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab444392c988731e8204a37b4dedc273f">&#9670;&#160;</a></span>m_analytical_smagorinsky_test</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::channel_flow::ChannelFlow::m_analytical_smagorinsky_test {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>flag for analytical smagorinsky test </p>
+
+</div>
+</div>
+<a id="a2d00d95af3a521945bd9b21e143924d6" name="a2d00d95af3a521945bd9b21e143924d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d00d95af3a521945bd9b21e143924d6">&#9670;&#160;</a></span>m_C0</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::channel_flow::ChannelFlow::m_C0 {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Analytical Smagorinsky first coefficient. </p>
+
+</div>
+</div>
+<a id="a4197ebe56b659faf7925d291df148500" name="a4197ebe56b659faf7925d291df148500"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4197ebe56b659faf7925d291df148500">&#9670;&#160;</a></span>m_C1</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::channel_flow::ChannelFlow::m_C1 {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Analytical Smagorinsky second coefficient. </p>
+
+</div>
+</div>
+<a id="aafc153ca91f8e61cc966674673f00f28" name="aafc153ca91f8e61cc966674673f00f28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafc153ca91f8e61cc966674673f00f28">&#9670;&#160;</a></span>m_dpdx</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::channel_flow::ChannelFlow::m_dpdx {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Body forcing (x direction) </p>
+
+</div>
+</div>
+<a id="a10e70295ed05421da9399b6f15c63346" name="a10e70295ed05421da9399b6f15c63346"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a10e70295ed05421da9399b6f15c63346">&#9670;&#160;</a></span>m_half</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::channel_flow::ChannelFlow::m_half {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7f7e10ff8cdc7490aa74c1306dc90f9b" name="a7f7e10ff8cdc7490aa74c1306dc90f9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f7e10ff8cdc7490aa74c1306dc90f9b">&#9670;&#160;</a></span>m_kappa</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::channel_flow::ChannelFlow::m_kappa {0.41_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Von-Karman constant. </p>
+
+</div>
+</div>
+<a id="aeb66ae2d152f1069ac80b0b42f6aff6c" name="aeb66ae2d152f1069ac80b0b42f6aff6c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb66ae2d152f1069ac80b0b42f6aff6c">&#9670;&#160;</a></span>m_laminar</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::channel_flow::ChannelFlow::m_laminar {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad2d8524595cf5bcf852d97281dea6861" name="ad2d8524595cf5bcf852d97281dea6861"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2d8524595cf5bcf852d97281dea6861">&#9670;&#160;</a></span>m_mean_vel</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::channel_flow::ChannelFlow::m_mean_vel</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5de9c5f85eae7e0ce5e4662ec90c5caf" name="a5de9c5f85eae7e0ce5e4662ec90c5caf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5de9c5f85eae7e0ce5e4662ec90c5caf">&#9670;&#160;</a></span>m_mean_vel_dir</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::channel_flow::ChannelFlow::m_mean_vel_dir {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>direction of mean velocity </p>
+
+</div>
+</div>
+<a id="a15be6460f11666dcce6f23620b01ba62" name="a15be6460f11666dcce6f23620b01ba62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15be6460f11666dcce6f23620b01ba62">&#9670;&#160;</a></span>m_mesh</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const amrex::AmrCore&amp; amr_wind::channel_flow::ChannelFlow::m_mesh</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a13ddcac7f5731a208011721dbc3bdecb" name="a13ddcac7f5731a208011721dbc3bdecb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13ddcac7f5731a208011721dbc3bdecb">&#9670;&#160;</a></span>m_mesh_mapping</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::channel_flow::ChannelFlow::m_mesh_mapping {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a49c1de6ae2be428bf90ff8469ce470d6" name="a49c1de6ae2be428bf90ff8469ce470d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49c1de6ae2be428bf90ff8469ce470d6">&#9670;&#160;</a></span>m_mu</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::channel_flow::ChannelFlow::m_mu {1.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>viscosity </p>
+
+</div>
+</div>
+<a id="a4ac9e8de695707fef7813aef22d6e995" name="a4ac9e8de695707fef7813aef22d6e995"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ac9e8de695707fef7813aef22d6e995">&#9670;&#160;</a></span>m_norm_dir</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::channel_flow::ChannelFlow::m_norm_dir {1}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Wall normal direction - Default y direction. </p>
+
+</div>
+</div>
+<a id="aa8928b212357d6195dadf975a6cdbdfd" name="aa8928b212357d6195dadf975a6cdbdfd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8928b212357d6195dadf975a6cdbdfd">&#9670;&#160;</a></span>m_output_fname</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::channel_flow::ChannelFlow::m_output_fname {&quot;channel_flow.log&quot;}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>error log file </p>
+
+</div>
+</div>
+<a id="a25b03c95c63d70159719e12b1fa9d6ce" name="a25b03c95c63d70159719e12b1fa9d6ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25b03c95c63d70159719e12b1fa9d6ce">&#9670;&#160;</a></span>m_perturb_fac</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::channel_flow::ChannelFlow::m_perturb_fac {0.1_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>perturbation factor (fraction of utau) </p>
+
+</div>
+</div>
+<a id="a117f8565587665531e656ed8f38fe3ca" name="a117f8565587665531e656ed8f38fe3ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a117f8565587665531e656ed8f38fe3ca">&#9670;&#160;</a></span>m_perturb_vel</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::channel_flow::ChannelFlow::m_perturb_vel {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>flag for perturbations of the initial condition </p>
+
+</div>
+</div>
+<a id="a2260a3b52868292fca975009feaa33f9" name="a2260a3b52868292fca975009feaa33f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2260a3b52868292fca975009feaa33f9">&#9670;&#160;</a></span>m_perturb_y_period</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::channel_flow::ChannelFlow::m_perturb_y_period {1.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>perturbation period (y-direction) </p>
+
+</div>
+</div>
+<a id="aa54ced7323de9735d468fa979bed3f08" name="aa54ced7323de9735d468fa979bed3f08"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa54ced7323de9735d468fa979bed3f08">&#9670;&#160;</a></span>m_perturb_z_period</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::channel_flow::ChannelFlow::m_perturb_z_period {1.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>perturbation period (z-direction) </p>
+
+</div>
+</div>
+<a id="affc36745b6eefbc78604b3e3ee2423de" name="affc36745b6eefbc78604b3e3ee2423de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#affc36745b6eefbc78604b3e3ee2423de">&#9670;&#160;</a></span>m_re_tau</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::channel_flow::ChannelFlow::m_re_tau {1000.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Re_tau. </p>
+
+</div>
+</div>
+<a id="ac473f6d0ae637b5649db4e1d65848df6" name="ac473f6d0ae637b5649db4e1d65848df6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac473f6d0ae637b5649db4e1d65848df6">&#9670;&#160;</a></span>m_repo</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field_repo.html">FieldRepo</a>&amp; amr_wind::channel_flow::ChannelFlow::m_repo</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a76a9226ab78b53760047ad825b64ab80" name="a76a9226ab78b53760047ad825b64ab80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76a9226ab78b53760047ad825b64ab80">&#9670;&#160;</a></span>m_rho</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::channel_flow::ChannelFlow::m_rho {1.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>initial density value </p>
+
+</div>
+</div>
+<a id="a13867a6e4db014332707e655cf491751" name="a13867a6e4db014332707e655cf491751"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13867a6e4db014332707e655cf491751">&#9670;&#160;</a></span>m_sdr0</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::channel_flow::ChannelFlow::m_sdr0 {1000.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>initial sdr value </p>
+
+</div>
+</div>
+<a id="a31b5284376920520d0dfab74e42663ad" name="a31b5284376920520d0dfab74e42663ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31b5284376920520d0dfab74e42663ad">&#9670;&#160;</a></span>m_sim</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; amr_wind::channel_flow::ChannelFlow::m_sim</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>CFD simulation controller instance. </p>
+
+</div>
+</div>
+<a id="a2677502ff350ef8217417ac0ce788f06" name="a2677502ff350ef8217417ac0ce788f06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2677502ff350ef8217417ac0ce788f06">&#9670;&#160;</a></span>m_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_sim_time.html">amr_wind::SimTime</a>&amp; amr_wind::channel_flow::ChannelFlow::m_time</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aed83787479050c321814cd6db97960b2" name="aed83787479050c321814cd6db97960b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed83787479050c321814cd6db97960b2">&#9670;&#160;</a></span>m_tke0</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::channel_flow::ChannelFlow::m_tke0 {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>initial tke value </p>
+
+</div>
+</div>
+<a id="a6d0a2012e0a7321efece6d696653bc7e" name="a6d0a2012e0a7321efece6d696653bc7e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d0a2012e0a7321efece6d696653bc7e">&#9670;&#160;</a></span>m_turbulence_model</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::channel_flow::ChannelFlow::m_turbulence_model</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Turbulence model. </p>
+
+</div>
+</div>
+<a id="aa41e20eddcb0f3bd8472126ba273b0fa" name="aa41e20eddcb0f3bd8472126ba273b0fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa41e20eddcb0f3bd8472126ba273b0fa">&#9670;&#160;</a></span>m_utau</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::channel_flow::ChannelFlow::m_utau {0.01_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>u_tau </p>
+
+</div>
+</div>
+<a id="a2684f448b6893c7fc42b3fad4f3af718" name="a2684f448b6893c7fc42b3fad4f3af718"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2684f448b6893c7fc42b3fad4f3af718">&#9670;&#160;</a></span>m_w</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const int amr_wind::channel_flow::ChannelFlow::m_w {18}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>output precision </p>
+
+</div>
+</div>
+<a id="a31bc295320629c3350ab3d3d74389c11" name="a31bc295320629c3350ab3d3d74389c11"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31bc295320629c3350ab3d3d74389c11">&#9670;&#160;</a></span>m_wall_func</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_wall_function.html">WallFunction</a> amr_wind::channel_flow::ChannelFlow::m_wall_func</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adfa7cb51fa81a8239a06c61a36237013" name="adfa7cb51fa81a8239a06c61a36237013"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adfa7cb51fa81a8239a06c61a36237013">&#9670;&#160;</a></span>m_ytau</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::channel_flow::ChannelFlow::m_ytau {0.001_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>y_tau </p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/physics/<a class="el" href="_channel_flow_8_h_source.html">ChannelFlow.H</a></li>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/physics/<a class="el" href="_channel_flow_8cpp.html">ChannelFlow.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

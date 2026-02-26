@@ -1,0 +1,627 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::FieldInfo Struct Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::FieldInfo Struct Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/structamr__wind_1_1_field_info.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="fieldinfo-struct-reference">
+<h1>FieldInfo Struct Reference<a class="headerlink" href="#fieldinfo-struct-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::FieldInfo Struct Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="structamr__wind_1_1_field_info.html">FieldInfo</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="#pub-static-attribs">Static Public Attributes</a> &#124;
+<a href="structamr__wind_1_1_field_info-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::FieldInfo Struct Reference<div class="ingroups"><a class="el" href="group__core.html">AMR-Wind core</a> &raquo; <a class="el" href="group__fields.html">Field management</a></div></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_field_8_h_source.html">Field.H</a>&gt;</code></p>
+<div class="dynheader">
+Collaboration diagram for amr_wind::FieldInfo:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="structamr__wind_1_1_field_info__coll__graph.svg" width="568" height="374"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a20049f87fd6c51ea01b356af9f7aad89" id="r_a20049f87fd6c51ea01b356af9f7aad89"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a20049f87fd6c51ea01b356af9f7aad89">FieldInfo</a> (std::string basename, int ncomp, int ngrow, int nstates, <a class="el" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a> floc)</td></tr>
+<tr class="memitem:ae10d63fb011319d18ba6561686cd0f33" id="r_ae10d63fb011319d18ba6561686cd0f33"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae10d63fb011319d18ba6561686cd0f33">~FieldInfo</a> ()</td></tr>
+<tr class="memitem:a97dbad8e0bdd612fda55b01f6539a52e" id="r_a97dbad8e0bdd612fda55b01f6539a52e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a97dbad8e0bdd612fda55b01f6539a52e">bc_initialized</a> ()</td></tr>
+<tr class="memdesc:a97dbad8e0bdd612fda55b01f6539a52e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check indicating whether BCs are being set to sane values.  <br /></td></tr>
+<tr class="memitem:a32258abe0d7277081442fa8ba58f804a" id="r_a32258abe0d7277081442fa8ba58f804a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a32258abe0d7277081442fa8ba58f804a">copy_bc_to_device</a> ()</td></tr>
+<tr class="memdesc:a32258abe0d7277081442fa8ba58f804a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy the <a class="el" href="incflo__enums_8_h.html#a682a1815cce6afdf9ccb32fedc064292">BC</a> information to device data structures.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a3960b752d54318ae6250b2e465c77acf" id="r_a3960b752d54318ae6250b2e465c77acf"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3960b752d54318ae6250b2e465c77acf">m_basename</a></td></tr>
+<tr class="memdesc:a3960b752d54318ae6250b2e465c77acf"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classamr__wind_1_1_field.html">Field</a> name without state information.  <br /></td></tr>
+<tr class="memitem:aecbc70bed6c7ef280e06e32e714e746f" id="r_aecbc70bed6c7ef280e06e32e714e746f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aecbc70bed6c7ef280e06e32e714e746f">m_ncomp</a></td></tr>
+<tr class="memdesc:aecbc70bed6c7ef280e06e32e714e746f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of components (Scalar = 1, Vector = 2, etc.)  <br /></td></tr>
+<tr class="memitem:a273fb61b31564b7e8164e000081b419c" id="r_a273fb61b31564b7e8164e000081b419c"><td class="memItemLeft" align="right" valign="top">amrex::IntVect&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a273fb61b31564b7e8164e000081b419c">m_ngrow</a></td></tr>
+<tr class="memdesc:a273fb61b31564b7e8164e000081b419c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ghost cells.  <br /></td></tr>
+<tr class="memitem:a3dad08e2b3e2e55a32b7934ed995217f" id="r_a3dad08e2b3e2e55a32b7934ed995217f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3dad08e2b3e2e55a32b7934ed995217f">m_nstates</a></td></tr>
+<tr class="memdesc:a3dad08e2b3e2e55a32b7934ed995217f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of states available for this field.  <br /></td></tr>
+<tr class="memitem:a1b4dc20f6ce87287a9dae02ff6408656" id="r_a1b4dc20f6ce87287a9dae02ff6408656"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1b4dc20f6ce87287a9dae02ff6408656">m_floc</a></td></tr>
+<tr class="memdesc:a1b4dc20f6ce87287a9dae02ff6408656"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cell, node, face centered field type.  <br /></td></tr>
+<tr class="memitem:a98ab8131fdefc854a90e8e62479d8484" id="r_a98ab8131fdefc854a90e8e62479d8484"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; <a class="el" href="classamr__wind_1_1_field.html">Field</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a98ab8131fdefc854a90e8e62479d8484">m_states</a></td></tr>
+<tr class="memdesc:a98ab8131fdefc854a90e8e62479d8484"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector holding references to available states for this field.  <br /></td></tr>
+<tr class="memitem:a4a25f928701dc3094dbc372397e079fb" id="r_a4a25f928701dc3094dbc372397e079fb"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1_field_fill_patch_ops_base.html">FieldFillPatchOpsBase</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4a25f928701dc3094dbc372397e079fb">m_fillpatch_op</a></td></tr>
+<tr class="memdesc:a4a25f928701dc3094dbc372397e079fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function that handles filling patch and physics <a class="el" href="incflo__enums_8_h.html#a682a1815cce6afdf9ccb32fedc064292">BC</a> data for this field.  <br /></td></tr>
+<tr class="memitem:ac598a1fd254038aa270460c90c0e096a" id="r_ac598a1fd254038aa270460c90c0e096a"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1_field_b_c_iface.html">FieldBCIface</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac598a1fd254038aa270460c90c0e096a">m_bc_func</a></td></tr>
+<tr class="memdesc:ac598a1fd254038aa270460c90c0e096a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom boundary condition actions for this field.  <br /></td></tr>
+<tr class="memitem:a4c767c00152386b70f3f04dd10d95d7e" id="r_a4c767c00152386b70f3f04dd10d95d7e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4c767c00152386b70f3f04dd10d95d7e">m_bc_copied_to_device</a> {false}</td></tr>
+<tr class="memdesc:a4c767c00152386b70f3f04dd10d95d7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flag indicating whether BCs have been initialized and copied to device.  <br /></td></tr>
+<tr id="pub-attribs-0" class="groupHeader"><td colspan="2"><div class="groupHeader"></div></td></tr>
+<tr class="memitem:a58e477f49f149e1d4b0f8624bc5cc364" id="r_a58e477f49f149e1d4b0f8624bc5cc364"><td class="memItemLeft" align="right" valign="top">amrex::GpuArray&lt; <a class="el" href="incflo__enums_8_h.html#a682a1815cce6afdf9ccb32fedc064292">BC</a>, AMREX_SPACEDIM *2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a58e477f49f149e1d4b0f8624bc5cc364">m_bc_type</a></td></tr>
+<tr class="memitem:a36cdee3c384983bfe2683a24d0812310" id="r_a36cdee3c384983bfe2683a24d0812310"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Vector&lt; amrex::Real &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a36cdee3c384983bfe2683a24d0812310">m_bc_values</a></td></tr>
+<tr class="memitem:a783e6c39d0c74b639011f13237758e40" id="r_a783e6c39d0c74b639011f13237758e40"><td class="memItemLeft" align="right" valign="top">amrex::GpuArray&lt; const amrex::Real *, AMREX_SPACEDIM *2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a783e6c39d0c74b639011f13237758e40">m_bc_values_d</a></td></tr>
+<tr class="memitem:acc19782ece994efbd8e7363080160d5d" id="r_acc19782ece994efbd8e7363080160d5d"><td class="memItemLeft" align="right" valign="top">amrex::Gpu::DeviceVector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acc19782ece994efbd8e7363080160d5d">m_bc_values_dview</a></td></tr>
+<tr class="memitem:aa7c1f663a17295e22480a81485437201" id="r_aa7c1f663a17295e22480a81485437201"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::BCRec &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa7c1f663a17295e22480a81485437201">m_bcrec</a></td></tr>
+<tr class="memitem:af308be8c1dc68fff26a0ebdfa2257d66" id="r_af308be8c1dc68fff26a0ebdfa2257d66"><td class="memItemLeft" align="right" valign="top">amrex::Gpu::DeviceVector&lt; amrex::BCRec &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af308be8c1dc68fff26a0ebdfa2257d66">m_bcrec_d</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-attribs" class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+Static Public Attributes</h2></td></tr>
+<tr class="memitem:a9b894c7726f402f73b5ee69ba5e19c0d" id="r_a9b894c7726f402f73b5ee69ba5e19c0d"><td class="memItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9b894c7726f402f73b5ee69ba5e19c0d">max_field_states</a> = 5</td></tr>
+<tr class="memdesc:a9b894c7726f402f73b5ee69ba5e19c0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum number of states allowed for a field.  <br /></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Information common to a field that has multiple states </p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a20049f87fd6c51ea01b356af9f7aad89" name="a20049f87fd6c51ea01b356af9f7aad89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20049f87fd6c51ea01b356af9f7aad89">&#9670;&#160;</a></span>FieldInfo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::FieldInfo::FieldInfo </td>
+          <td>(</td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>basename</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>ncomp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>ngrow</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>nstates</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a></td>          <td class="paramname"><span class="paramname"><em>floc</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae10d63fb011319d18ba6561686cd0f33" name="ae10d63fb011319d18ba6561686cd0f33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae10d63fb011319d18ba6561686cd0f33">&#9670;&#160;</a></span>~FieldInfo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::FieldInfo::~FieldInfo </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a97dbad8e0bdd612fda55b01f6539a52e" name="a97dbad8e0bdd612fda55b01f6539a52e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97dbad8e0bdd612fda55b01f6539a52e">&#9670;&#160;</a></span>bc_initialized()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::FieldInfo::bc_initialized </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Check indicating whether BCs are being set to sane values. </p>
+
+</div>
+</div>
+<a id="a32258abe0d7277081442fa8ba58f804a" name="a32258abe0d7277081442fa8ba58f804a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32258abe0d7277081442fa8ba58f804a">&#9670;&#160;</a></span>copy_bc_to_device()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::FieldInfo::copy_bc_to_device </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy the <a class="el" href="incflo__enums_8_h.html#a682a1815cce6afdf9ccb32fedc064292">BC</a> information to device data structures. </p>
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a3960b752d54318ae6250b2e465c77acf" name="a3960b752d54318ae6250b2e465c77acf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3960b752d54318ae6250b2e465c77acf">&#9670;&#160;</a></span>m_basename</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::FieldInfo::m_basename</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classamr__wind_1_1_field.html">Field</a> name without state information. </p>
+
+</div>
+</div>
+<a id="a4c767c00152386b70f3f04dd10d95d7e" name="a4c767c00152386b70f3f04dd10d95d7e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c767c00152386b70f3f04dd10d95d7e">&#9670;&#160;</a></span>m_bc_copied_to_device</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::FieldInfo::m_bc_copied_to_device {false}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Flag indicating whether BCs have been initialized and copied to device. </p>
+
+</div>
+</div>
+<a id="ac598a1fd254038aa270460c90c0e096a" name="ac598a1fd254038aa270460c90c0e096a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac598a1fd254038aa270460c90c0e096a">&#9670;&#160;</a></span>m_bc_func</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;std::unique_ptr&lt;<a class="el" href="classamr__wind_1_1_field_b_c_iface.html">FieldBCIface</a>&gt; &gt; amr_wind::FieldInfo::m_bc_func</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Custom boundary condition actions for this field. </p>
+
+</div>
+</div>
+<a id="a58e477f49f149e1d4b0f8624bc5cc364" name="a58e477f49f149e1d4b0f8624bc5cc364"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58e477f49f149e1d4b0f8624bc5cc364">&#9670;&#160;</a></span>m_bc_type</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::GpuArray&lt;<a class="el" href="incflo__enums_8_h.html#a682a1815cce6afdf9ccb32fedc064292">BC</a>, AMREX_SPACEDIM * 2&gt; amr_wind::FieldInfo::m_bc_type</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Boundary condition data </p>
+
+</div>
+</div>
+<a id="a36cdee3c384983bfe2683a24d0812310" name="a36cdee3c384983bfe2683a24d0812310"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36cdee3c384983bfe2683a24d0812310">&#9670;&#160;</a></span>m_bc_values</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Vector&lt;amrex::Real&gt; &gt; amr_wind::FieldInfo::m_bc_values</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a783e6c39d0c74b639011f13237758e40" name="a783e6c39d0c74b639011f13237758e40"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a783e6c39d0c74b639011f13237758e40">&#9670;&#160;</a></span>m_bc_values_d</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::GpuArray&lt;const amrex::Real*, AMREX_SPACEDIM * 2&gt; amr_wind::FieldInfo::m_bc_values_d</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acc19782ece994efbd8e7363080160d5d" name="acc19782ece994efbd8e7363080160d5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc19782ece994efbd8e7363080160d5d">&#9670;&#160;</a></span>m_bc_values_dview</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Gpu::DeviceVector&lt;amrex::Real&gt; amr_wind::FieldInfo::m_bc_values_dview</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa7c1f663a17295e22480a81485437201" name="aa7c1f663a17295e22480a81485437201"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7c1f663a17295e22480a81485437201">&#9670;&#160;</a></span>m_bcrec</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::BCRec&gt; amr_wind::FieldInfo::m_bcrec</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af308be8c1dc68fff26a0ebdfa2257d66" name="af308be8c1dc68fff26a0ebdfa2257d66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af308be8c1dc68fff26a0ebdfa2257d66">&#9670;&#160;</a></span>m_bcrec_d</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Gpu::DeviceVector&lt;amrex::BCRec&gt; amr_wind::FieldInfo::m_bcrec_d</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4a25f928701dc3094dbc372397e079fb" name="a4a25f928701dc3094dbc372397e079fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a25f928701dc3094dbc372397e079fb">&#9670;&#160;</a></span>m_fillpatch_op</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classamr__wind_1_1_field_fill_patch_ops_base.html">FieldFillPatchOpsBase</a>&gt; amr_wind::FieldInfo::m_fillpatch_op</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Function that handles filling patch and physics <a class="el" href="incflo__enums_8_h.html#a682a1815cce6afdf9ccb32fedc064292">BC</a> data for this field. </p>
+
+</div>
+</div>
+<a id="a1b4dc20f6ce87287a9dae02ff6408656" name="a1b4dc20f6ce87287a9dae02ff6408656"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b4dc20f6ce87287a9dae02ff6408656">&#9670;&#160;</a></span>m_floc</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a> amr_wind::FieldInfo::m_floc</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cell, node, face centered field type. </p>
+
+</div>
+</div>
+<a id="aecbc70bed6c7ef280e06e32e714e746f" name="aecbc70bed6c7ef280e06e32e714e746f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aecbc70bed6c7ef280e06e32e714e746f">&#9670;&#160;</a></span>m_ncomp</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::FieldInfo::m_ncomp</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Number of components (Scalar = 1, Vector = 2, etc.) </p>
+
+</div>
+</div>
+<a id="a273fb61b31564b7e8164e000081b419c" name="a273fb61b31564b7e8164e000081b419c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a273fb61b31564b7e8164e000081b419c">&#9670;&#160;</a></span>m_ngrow</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::IntVect amr_wind::FieldInfo::m_ngrow</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Ghost cells. </p>
+
+</div>
+</div>
+<a id="a3dad08e2b3e2e55a32b7934ed995217f" name="a3dad08e2b3e2e55a32b7934ed995217f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3dad08e2b3e2e55a32b7934ed995217f">&#9670;&#160;</a></span>m_nstates</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::FieldInfo::m_nstates</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Number of states available for this field. </p>
+
+</div>
+</div>
+<a id="a98ab8131fdefc854a90e8e62479d8484" name="a98ab8131fdefc854a90e8e62479d8484"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98ab8131fdefc854a90e8e62479d8484">&#9670;&#160;</a></span>m_states</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;<a class="el" href="classamr__wind_1_1_field.html">Field</a>*&gt; amr_wind::FieldInfo::m_states</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Vector holding references to available states for this field. </p>
+
+</div>
+</div>
+<a id="a9b894c7726f402f73b5ee69ba5e19c0d" name="a9b894c7726f402f73b5ee69ba5e19c0d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b894c7726f402f73b5ee69ba5e19c0d">&#9670;&#160;</a></span>max_field_states</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::FieldInfo::max_field_states = 5</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Maximum number of states allowed for a field. </p>
+
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following files:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/core/<a class="el" href="_field_8_h_source.html">Field.H</a></li>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/core/<a class="el" href="_field_8cpp.html">Field.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

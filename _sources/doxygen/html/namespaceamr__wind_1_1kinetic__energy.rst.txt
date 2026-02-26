@@ -1,0 +1,14 @@
+.. meta::9a2766e0c66bf86948dac66a2d303e7b07bfbf23d87cade106a60269db3dab2450f26ac8a355383f73b97c7ce1516e12a459d2b4949645033cf82bf47bd5cd12
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::kinetic_energy Namespace Reference
+
+kinetic\_energy Namespace Reference
+===================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: namespaceamr__wind_1_1kinetic__energy.html

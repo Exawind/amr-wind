@@ -1,0 +1,14 @@
+.. meta::cd90ba429ff411425b6c9b5dbd689ef220216a2716309dd27951fddeaa7edfe506bed6c45ee2f493d153964f9d3a8d3de36f92b7db8250272d4893745a8b9935
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::external Namespace Reference
+
+external Namespace Reference
+============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: namespaceamr__wind_1_1actuator_1_1external.html

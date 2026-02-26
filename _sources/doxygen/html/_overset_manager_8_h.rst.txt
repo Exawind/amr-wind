@@ -1,0 +1,14 @@
+.. meta::b88f3e3f4aa3a9d37ddd0d221871aa2fa8b24cc3357c7aeeddfa763d3fad2b37b8c15294f2ae6ed602d286a881c32ab30fd51abae0c9cc3387ecafc1594d777f
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/overset/OversetManager.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/overset/OversetManager.H File Reference
+====================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _overset_manager_8_h.html

@@ -1,0 +1,321 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/TerrainDrag.H Source File &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/TerrainDrag.H Source File</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/_terrain_drag_8_h_source.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="home-runner-work-amr-wind-amr-wind-amr-wind-physics-terraindrag-h-source-file">
+<h1>/home/runner/work/amr-wind/amr-wind/amr-wind/physics/TerrainDrag.H Source File<a class="headerlink" href="#home-runner-work-amr-wind-amr-wind-amr-wind-physics-terraindrag-h-source-file" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/TerrainDrag.H Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="dir_d85575251dd712327fe3cf057fa568b4.html">amr-wind</a></li><li class="navelem"><a href="dir_212148f97b8bb53ebaebb3bf8a8b5de4.html">amr-wind</a></li><li class="navelem"><a href="dir_f00f788038d28a6de62e2305131ce6f9.html">physics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="headertitle"><div class="title">TerrainDrag.H</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="_terrain_drag_8_h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef TERRAINDRAG_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define TERRAINDRAG_H</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="_physics_8_h.html">amr-wind/core/Physics.H</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="_field_8_h.html">amr-wind/core/Field.H</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="_c_f_d_sim_8_h.html">amr-wind/CFDSim.H</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceamr__wind_1_1terraindrag.html">amr_wind::terraindrag</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="foldopen" id="foldopen00014" data-start="{" data-end="};">
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html">   14</a></span><span class="keyword">class </span><a class="code hl_function" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#ad67ec78d1b97668e59f2866c048c719e">TerrainDrag</a> : <span class="keyword">public</span> Physics::Register&lt;TerrainDrag&gt;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>{</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a387290f0dc802a27d94e61f1e607f1ff">   17</a></span>    <span class="keyword">static</span> std::string <a class="code hl_function" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a387290f0dc802a27d94e61f1e607f1ff">identifier</a>() { <span class="keywordflow">return</span> <span class="stringliteral">&quot;TerrainDrag&quot;</span>; }</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#ad67ec78d1b97668e59f2866c048c719e">TerrainDrag</a>(<a class="code hl_class" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; sim);</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a5e47d240d311e76c7814cdc2b86e7004">   21</a></span>    <a class="code hl_function" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a5e47d240d311e76c7814cdc2b86e7004">~TerrainDrag</a>() <span class="keyword">override</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#ae1e494cb93b74148ef9826fe936965aa">initialize_fields</a>(<span class="keywordtype">int</span> level, <span class="keyword">const</span> amrex::Geometry&amp; geom) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a9c5ae4b905cf3e56c36044c98e64c682">   25</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a9c5ae4b905cf3e56c36044c98e64c682">pre_init_actions</a>()<span class="keyword"> override </span>{}</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#ae3a953909a7467de656e0314e36da071">post_init_actions</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a2fa6ea720609b242aaf48485bb3959cc">post_regrid_actions</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#ab11375d4c657c7be41c327981ad485a2">pre_advance_work</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#ac0747cd70df6d41aa14315f6208275ba">   33</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#ac0747cd70df6d41aa14315f6208275ba">post_advance_work</a>()<span class="keyword"> override </span>{}</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a517e6bab7e4064183ee3d3f7432a5810">convert_waves_to_terrain_fields</a>();</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="foldopen" id="foldopen00039" data-start="{" data-end="}">
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a1b0b7f2e3b393e11cc9b76d0f47c5c7f">   39</a></span>    [[nodiscard]] std::string <a class="code hl_function" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a1b0b7f2e3b393e11cc9b76d0f47c5c7f">wave_velocity_field_name</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a8adf13903fb3eb4f01a4c118e9ce1f5e">m_wave_velocity_name</a>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    }</div>
+</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="foldopen" id="foldopen00044" data-start="{" data-end="}">
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#ab24317c37cfd15866fb8b001491ca0ba">   44</a></span>    [[nodiscard]] std::string <a class="code hl_function" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#ab24317c37cfd15866fb8b001491ca0ba">wave_negative_elevation_name</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#aae20a19ac96dfba3f60bba579c65ccca">m_wave_negative_elevation_name</a>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    }</div>
+</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#aefc4d40dc1ff20d50fb1160ed4b79940">   50</a></span>    <a class="code hl_class" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#aefc4d40dc1ff20d50fb1160ed4b79940">m_sim</a>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#ac4656dfc2ab4584b587b906f72aadd3b">   51</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_field_repo.html">FieldRepo</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#ac4656dfc2ab4584b587b906f72aadd3b">m_repo</a>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a9abb8cd431d154678267fe6ab6afcbb5">   52</a></span>    <span class="keyword">const</span> amrex::AmrCore&amp; <a class="code hl_variable" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a9abb8cd431d154678267fe6ab6afcbb5">m_mesh</a>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a687c747e8539384da03730920728ef4d">   55</a></span>    <a class="code hl_class" href="classamr__wind_1_1_int_field.html">IntField</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a687c747e8539384da03730920728ef4d">m_terrain_blank</a>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a58d169dda7a327f8231a2c142a42d5ce">   57</a></span>    <a class="code hl_class" href="classamr__wind_1_1_int_field.html">IntField</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a58d169dda7a327f8231a2c142a42d5ce">m_terrain_drag</a>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span></div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a236ea68f88254c2e1da02960f0702ad7">   60</a></span>    std::string <a class="code hl_variable" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a236ea68f88254c2e1da02960f0702ad7">m_terrain_file</a>{<span class="stringliteral">&quot;terrain.amrwind&quot;</span>};</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span></div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#af60e7293ffc52ce32265706a6196ed3c">   63</a></span>    std::string <a class="code hl_variable" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#af60e7293ffc52ce32265706a6196ed3c">m_roughness_file</a>{<span class="stringliteral">&quot;terrain.roughness&quot;</span>};</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span></div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a09ee22aa2771099def6e4063bdb57b90">   66</a></span>    <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a09ee22aa2771099def6e4063bdb57b90">m_terrainz0</a>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a3595012370f85bd100c2fa34e39ce7c9">   67</a></span>    <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a3595012370f85bd100c2fa34e39ce7c9">m_terrain_height</a>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span></div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a15422f8afe5487e128fefcb6b3dbed21">   70</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a15422f8afe5487e128fefcb6b3dbed21">m_terrain_is_waves</a>{<span class="keyword">false</span>};</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a70a498b720f6a36b059a6208ce1fd327">   71</a></span>    <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>* <a class="code hl_variable" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a70a498b720f6a36b059a6208ce1fd327">m_wave_volume_fraction</a>{<span class="keyword">nullptr</span>};</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#ab86368e40a8c55c1603316d048ea8109">   72</a></span>    <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>* <a class="code hl_variable" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#ab86368e40a8c55c1603316d048ea8109">m_wave_negative_elevation</a>{<span class="keyword">nullptr</span>};</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#aad6905d1bd98202d298cea8f2bdea7c2">   73</a></span>    <span class="keyword">const</span> std::string <a class="code hl_variable" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#aad6905d1bd98202d298cea8f2bdea7c2">m_wave_volume_fraction_name</a>{<span class="stringliteral">&quot;ow_vof&quot;</span>};</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#aae20a19ac96dfba3f60bba579c65ccca">   74</a></span>    <span class="keyword">const</span> std::string <a class="code hl_variable" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#aae20a19ac96dfba3f60bba579c65ccca">m_wave_negative_elevation_name</a>{<span class="stringliteral">&quot;ow_levelset&quot;</span>};</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a8adf13903fb3eb4f01a4c118e9ce1f5e">   75</a></span>    <span class="keyword">const</span> std::string <a class="code hl_variable" href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a8adf13903fb3eb4f01a4c118e9ce1f5e">m_wave_velocity_name</a>{<span class="stringliteral">&quot;ow_velocity&quot;</span>};</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>};</div>
+</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>} <span class="comment">// namespace amr_wind::terraindrag</span></div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="a_c_f_d_sim_8_h_html"><div class="ttname"><a href="_c_f_d_sim_8_h.html">CFDSim.H</a></div></div>
+<div class="ttc" id="a_field_8_h_html"><div class="ttname"><a href="_field_8_h.html">Field.H</a></div></div>
+<div class="ttc" id="a_physics_8_h_html"><div class="ttname"><a href="_physics_8_h.html">Physics.H</a></div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html">amr_wind::CFDSim</a></div><div class="ttdef"><b>Definition</b> CFDSim.H:54</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_html"><div class="ttname"><a href="classamr__wind_1_1_field.html">amr_wind::Field</a></div><div class="ttdef"><b>Definition</b> Field.H:112</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html">amr_wind::FieldRepo</a></div><div class="ttdef"><b>Definition</b> FieldRepo.H:86</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_int_field_html"><div class="ttname"><a href="classamr__wind_1_1_int_field.html">amr_wind::IntField</a></div><div class="ttdef"><b>Definition</b> IntField.H:20</div></div>
+<div class="ttc" id="aclassamr__wind_1_1terraindrag_1_1_terrain_drag_html_a09ee22aa2771099def6e4063bdb57b90"><div class="ttname"><a href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a09ee22aa2771099def6e4063bdb57b90">amr_wind::terraindrag::TerrainDrag::m_terrainz0</a></div><div class="ttdeci">Field &amp; m_terrainz0</div><div class="ttdoc">Roughness fields.</div><div class="ttdef"><b>Definition</b> TerrainDrag.H:66</div></div>
+<div class="ttc" id="aclassamr__wind_1_1terraindrag_1_1_terrain_drag_html_a15422f8afe5487e128fefcb6b3dbed21"><div class="ttname"><a href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a15422f8afe5487e128fefcb6b3dbed21">amr_wind::terraindrag::TerrainDrag::m_terrain_is_waves</a></div><div class="ttdeci">bool m_terrain_is_waves</div><div class="ttdoc">Terrain Drag for waves.</div><div class="ttdef"><b>Definition</b> TerrainDrag.H:70</div></div>
+<div class="ttc" id="aclassamr__wind_1_1terraindrag_1_1_terrain_drag_html_a1b0b7f2e3b393e11cc9b76d0f47c5c7f"><div class="ttname"><a href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a1b0b7f2e3b393e11cc9b76d0f47c5c7f">amr_wind::terraindrag::TerrainDrag::wave_velocity_field_name</a></div><div class="ttdeci">std::string wave_velocity_field_name() const</div><div class="ttdef"><b>Definition</b> TerrainDrag.H:39</div></div>
+<div class="ttc" id="aclassamr__wind_1_1terraindrag_1_1_terrain_drag_html_a236ea68f88254c2e1da02960f0702ad7"><div class="ttname"><a href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a236ea68f88254c2e1da02960f0702ad7">amr_wind::terraindrag::TerrainDrag::m_terrain_file</a></div><div class="ttdeci">std::string m_terrain_file</div><div class="ttdoc">Terrain file.</div><div class="ttdef"><b>Definition</b> TerrainDrag.H:60</div></div>
+<div class="ttc" id="aclassamr__wind_1_1terraindrag_1_1_terrain_drag_html_a2fa6ea720609b242aaf48485bb3959cc"><div class="ttname"><a href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a2fa6ea720609b242aaf48485bb3959cc">amr_wind::terraindrag::TerrainDrag::post_regrid_actions</a></div><div class="ttdeci">void post_regrid_actions() override</div><div class="ttdef"><b>Definition</b> TerrainDrag.cpp:176</div></div>
+<div class="ttc" id="aclassamr__wind_1_1terraindrag_1_1_terrain_drag_html_a3595012370f85bd100c2fa34e39ce7c9"><div class="ttname"><a href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a3595012370f85bd100c2fa34e39ce7c9">amr_wind::terraindrag::TerrainDrag::m_terrain_height</a></div><div class="ttdeci">Field &amp; m_terrain_height</div><div class="ttdef"><b>Definition</b> TerrainDrag.H:67</div></div>
+<div class="ttc" id="aclassamr__wind_1_1terraindrag_1_1_terrain_drag_html_a387290f0dc802a27d94e61f1e607f1ff"><div class="ttname"><a href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a387290f0dc802a27d94e61f1e607f1ff">amr_wind::terraindrag::TerrainDrag::identifier</a></div><div class="ttdeci">static std::string identifier()</div><div class="ttdef"><b>Definition</b> TerrainDrag.H:17</div></div>
+<div class="ttc" id="aclassamr__wind_1_1terraindrag_1_1_terrain_drag_html_a517e6bab7e4064183ee3d3f7432a5810"><div class="ttname"><a href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a517e6bab7e4064183ee3d3f7432a5810">amr_wind::terraindrag::TerrainDrag::convert_waves_to_terrain_fields</a></div><div class="ttdeci">void convert_waves_to_terrain_fields()</div><div class="ttdoc">Terrain Drag for waves.</div><div class="ttdef"><b>Definition</b> TerrainDrag.cpp:188</div></div>
+<div class="ttc" id="aclassamr__wind_1_1terraindrag_1_1_terrain_drag_html_a58d169dda7a327f8231a2c142a42d5ce"><div class="ttname"><a href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a58d169dda7a327f8231a2c142a42d5ce">amr_wind::terraindrag::TerrainDrag::m_terrain_drag</a></div><div class="ttdeci">IntField &amp; m_terrain_drag</div><div class="ttdoc">Terrain drag force term.</div><div class="ttdef"><b>Definition</b> TerrainDrag.H:57</div></div>
+<div class="ttc" id="aclassamr__wind_1_1terraindrag_1_1_terrain_drag_html_a5e47d240d311e76c7814cdc2b86e7004"><div class="ttname"><a href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a5e47d240d311e76c7814cdc2b86e7004">amr_wind::terraindrag::TerrainDrag::~TerrainDrag</a></div><div class="ttdeci">~TerrainDrag() override=default</div></div>
+<div class="ttc" id="aclassamr__wind_1_1terraindrag_1_1_terrain_drag_html_a687c747e8539384da03730920728ef4d"><div class="ttname"><a href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a687c747e8539384da03730920728ef4d">amr_wind::terraindrag::TerrainDrag::m_terrain_blank</a></div><div class="ttdeci">IntField &amp; m_terrain_blank</div><div class="ttdoc">Blanking field for terrain or buildings.</div><div class="ttdef"><b>Definition</b> TerrainDrag.H:55</div></div>
+<div class="ttc" id="aclassamr__wind_1_1terraindrag_1_1_terrain_drag_html_a70a498b720f6a36b059a6208ce1fd327"><div class="ttname"><a href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a70a498b720f6a36b059a6208ce1fd327">amr_wind::terraindrag::TerrainDrag::m_wave_volume_fraction</a></div><div class="ttdeci">Field * m_wave_volume_fraction</div><div class="ttdef"><b>Definition</b> TerrainDrag.H:71</div></div>
+<div class="ttc" id="aclassamr__wind_1_1terraindrag_1_1_terrain_drag_html_a8adf13903fb3eb4f01a4c118e9ce1f5e"><div class="ttname"><a href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a8adf13903fb3eb4f01a4c118e9ce1f5e">amr_wind::terraindrag::TerrainDrag::m_wave_velocity_name</a></div><div class="ttdeci">const std::string m_wave_velocity_name</div><div class="ttdef"><b>Definition</b> TerrainDrag.H:75</div></div>
+<div class="ttc" id="aclassamr__wind_1_1terraindrag_1_1_terrain_drag_html_a9abb8cd431d154678267fe6ab6afcbb5"><div class="ttname"><a href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a9abb8cd431d154678267fe6ab6afcbb5">amr_wind::terraindrag::TerrainDrag::m_mesh</a></div><div class="ttdeci">const amrex::AmrCore &amp; m_mesh</div><div class="ttdef"><b>Definition</b> TerrainDrag.H:52</div></div>
+<div class="ttc" id="aclassamr__wind_1_1terraindrag_1_1_terrain_drag_html_a9c5ae4b905cf3e56c36044c98e64c682"><div class="ttname"><a href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#a9c5ae4b905cf3e56c36044c98e64c682">amr_wind::terraindrag::TerrainDrag::pre_init_actions</a></div><div class="ttdeci">void pre_init_actions() override</div><div class="ttdef"><b>Definition</b> TerrainDrag.H:25</div></div>
+<div class="ttc" id="aclassamr__wind_1_1terraindrag_1_1_terrain_drag_html_aad6905d1bd98202d298cea8f2bdea7c2"><div class="ttname"><a href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#aad6905d1bd98202d298cea8f2bdea7c2">amr_wind::terraindrag::TerrainDrag::m_wave_volume_fraction_name</a></div><div class="ttdeci">const std::string m_wave_volume_fraction_name</div><div class="ttdef"><b>Definition</b> TerrainDrag.H:73</div></div>
+<div class="ttc" id="aclassamr__wind_1_1terraindrag_1_1_terrain_drag_html_aae20a19ac96dfba3f60bba579c65ccca"><div class="ttname"><a href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#aae20a19ac96dfba3f60bba579c65ccca">amr_wind::terraindrag::TerrainDrag::m_wave_negative_elevation_name</a></div><div class="ttdeci">const std::string m_wave_negative_elevation_name</div><div class="ttdef"><b>Definition</b> TerrainDrag.H:74</div></div>
+<div class="ttc" id="aclassamr__wind_1_1terraindrag_1_1_terrain_drag_html_ab11375d4c657c7be41c327981ad485a2"><div class="ttname"><a href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#ab11375d4c657c7be41c327981ad485a2">amr_wind::terraindrag::TerrainDrag::pre_advance_work</a></div><div class="ttdeci">void pre_advance_work() override</div><div class="ttdef"><b>Definition</b> TerrainDrag.cpp:167</div></div>
+<div class="ttc" id="aclassamr__wind_1_1terraindrag_1_1_terrain_drag_html_ab24317c37cfd15866fb8b001491ca0ba"><div class="ttname"><a href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#ab24317c37cfd15866fb8b001491ca0ba">amr_wind::terraindrag::TerrainDrag::wave_negative_elevation_name</a></div><div class="ttdeci">std::string wave_negative_elevation_name() const</div><div class="ttdef"><b>Definition</b> TerrainDrag.H:44</div></div>
+<div class="ttc" id="aclassamr__wind_1_1terraindrag_1_1_terrain_drag_html_ab86368e40a8c55c1603316d048ea8109"><div class="ttname"><a href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#ab86368e40a8c55c1603316d048ea8109">amr_wind::terraindrag::TerrainDrag::m_wave_negative_elevation</a></div><div class="ttdeci">Field * m_wave_negative_elevation</div><div class="ttdef"><b>Definition</b> TerrainDrag.H:72</div></div>
+<div class="ttc" id="aclassamr__wind_1_1terraindrag_1_1_terrain_drag_html_ac0747cd70df6d41aa14315f6208275ba"><div class="ttname"><a href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#ac0747cd70df6d41aa14315f6208275ba">amr_wind::terraindrag::TerrainDrag::post_advance_work</a></div><div class="ttdeci">void post_advance_work() override</div><div class="ttdef"><b>Definition</b> TerrainDrag.H:33</div></div>
+<div class="ttc" id="aclassamr__wind_1_1terraindrag_1_1_terrain_drag_html_ac4656dfc2ab4584b587b906f72aadd3b"><div class="ttname"><a href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#ac4656dfc2ab4584b587b906f72aadd3b">amr_wind::terraindrag::TerrainDrag::m_repo</a></div><div class="ttdeci">const FieldRepo &amp; m_repo</div><div class="ttdef"><b>Definition</b> TerrainDrag.H:51</div></div>
+<div class="ttc" id="aclassamr__wind_1_1terraindrag_1_1_terrain_drag_html_ad67ec78d1b97668e59f2866c048c719e"><div class="ttname"><a href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#ad67ec78d1b97668e59f2866c048c719e">amr_wind::terraindrag::TerrainDrag::TerrainDrag</a></div><div class="ttdeci">TerrainDrag(CFDSim &amp;sim)</div><div class="ttdef"><b>Definition</b> TerrainDrag.cpp:19</div></div>
+<div class="ttc" id="aclassamr__wind_1_1terraindrag_1_1_terrain_drag_html_ae1e494cb93b74148ef9826fe936965aa"><div class="ttname"><a href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#ae1e494cb93b74148ef9826fe936965aa">amr_wind::terraindrag::TerrainDrag::initialize_fields</a></div><div class="ttdeci">void initialize_fields(int level, const amrex::Geometry &amp;geom) override</div><div class="ttdef"><b>Definition</b> TerrainDrag.cpp:53</div></div>
+<div class="ttc" id="aclassamr__wind_1_1terraindrag_1_1_terrain_drag_html_ae3a953909a7467de656e0314e36da071"><div class="ttname"><a href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#ae3a953909a7467de656e0314e36da071">amr_wind::terraindrag::TerrainDrag::post_init_actions</a></div><div class="ttdeci">void post_init_actions() override</div><div class="ttdef"><b>Definition</b> TerrainDrag.cpp:158</div></div>
+<div class="ttc" id="aclassamr__wind_1_1terraindrag_1_1_terrain_drag_html_aefc4d40dc1ff20d50fb1160ed4b79940"><div class="ttname"><a href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#aefc4d40dc1ff20d50fb1160ed4b79940">amr_wind::terraindrag::TerrainDrag::m_sim</a></div><div class="ttdeci">CFDSim &amp; m_sim</div><div class="ttdef"><b>Definition</b> TerrainDrag.H:50</div></div>
+<div class="ttc" id="aclassamr__wind_1_1terraindrag_1_1_terrain_drag_html_af60e7293ffc52ce32265706a6196ed3c"><div class="ttname"><a href="classamr__wind_1_1terraindrag_1_1_terrain_drag.html#af60e7293ffc52ce32265706a6196ed3c">amr_wind::terraindrag::TerrainDrag::m_roughness_file</a></div><div class="ttdeci">std::string m_roughness_file</div><div class="ttdoc">Roughness file.</div><div class="ttdef"><b>Definition</b> TerrainDrag.H:63</div></div>
+<div class="ttc" id="anamespaceamr__wind_1_1terraindrag_html"><div class="ttname"><a href="namespaceamr__wind_1_1terraindrag.html">amr_wind::terraindrag</a></div><div class="ttdef"><b>Definition</b> TerrainDrag.cpp:15</div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

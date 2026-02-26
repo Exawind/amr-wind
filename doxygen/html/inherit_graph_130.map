@@ -1,0 +1,13 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$classamr__wind_1_1_field_b_c_iface.html" title=" " alt="" coords="5,104,180,129"/>
+<area shape="rect" id="Node000001" href="$classamr__wind_1_1_a_b_l_temp_wall_func.html" title=" " alt="" coords="240,5,451,31"/>
+<area shape="poly" id="edge150_Node000000_Node000001" title=" " alt="" coords="123,94,171,66,227,40,265,28,266,33,229,44,173,70,125,99"/>
+<area shape="rect" id="Node000002" href="$classamr__wind_1_1_a_b_l_vel_wall_func.html" title=" " alt="" coords="247,55,443,80"/>
+<area shape="poly" id="edge151_Node000000_Node000002" title=" " alt="" coords="171,99,279,77,280,83,172,104"/>
+<area shape="rect" id="Node000003" href="$classamr__wind_1_1_fixed_gradient_b_c.html" title=" " alt="" coords="244,104,447,129"/>
+<area shape="poly" id="edge152_Node000000_Node000003" title=" " alt="" coords="194,114,244,114,244,119,194,119"/>
+<area shape="rect" id="Node000004" href="$classamr__wind_1_1_mass_inflow_outflow_b_c.html" title=" " alt="" coords="228,153,463,179"/>
+<area shape="poly" id="edge153_Node000000_Node000004" title=" " alt="" coords="172,129,280,151,279,156,171,135"/>
+<area shape="rect" id="Node000005" href="$classamr__wind_1_1_vel_wall_func.html" title=" " alt="" coords="259,203,431,228"/>
+<area shape="poly" id="edge154_Node000000_Node000005" title=" " alt="" coords="126,134,173,162,229,188,271,200,270,205,227,192,171,167,123,139"/>
+</map>

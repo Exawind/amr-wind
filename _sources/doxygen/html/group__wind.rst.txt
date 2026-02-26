@@ -1,0 +1,14 @@
+.. meta::4046e8b65086ce30b724ca80a6fe6cceff632f01ff77a098e7cf1944acaa6643a54900dbd3a6a60414bdace9875aa93129f7b3d71a1dc012cc64b25e4913ea28
+
+:orphan:
+
+.. title:: AMR-Wind API: Wind energy modeling
+
+Wind energy modeling
+====================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: group__wind.html

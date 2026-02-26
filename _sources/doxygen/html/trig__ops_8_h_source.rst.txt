@@ -1,0 +1,14 @@
+.. meta::9c47df5fe4e67141829f47c42f115017492197abc49fa991bb37a6b0977d30134b0ac2483862cf71d96bedf8011514c8c67b550201c82027a65ac1fc5a7c94dd
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/trig_ops.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/trig\_ops.H Source File
+==============================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: trig__ops_8_h_source.html

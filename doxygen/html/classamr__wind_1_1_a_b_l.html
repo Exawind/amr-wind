@@ -1,0 +1,1423 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::ABL Class Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::ABL Class Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/classamr__wind_1_1_a_b_l.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="abl-class-reference">
+<h1>ABL Class Reference<a class="headerlink" href="#abl-class-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::ABL Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="classamr__wind_1_1_a_b_l.html">ABL</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
+<a href="classamr__wind_1_1_a_b_l-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::ABL Class Reference<div class="ingroups"><a class="el" href="group__physics.html">Physics models</a> &raquo; <a class="el" href="group__wind.html">Wind energy modeling</a> &raquo; <a class="el" href="group__we__abl.html">ABL</a></div></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_a_b_l_8_h_source.html">ABL.H</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for amr_wind::ABL:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1_a_b_l__inherit__graph.svg" width="155" height="124"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for amr_wind::ABL:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1_a_b_l__coll__graph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:aff6a71dcefec99f52191f36e6cab2074" id="r_aff6a71dcefec99f52191f36e6cab2074"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aff6a71dcefec99f52191f36e6cab2074">ABL</a> (<a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;sim)</td></tr>
+<tr class="memitem:af945a5717f5507e35c376627b895b5d6" id="r_af945a5717f5507e35c376627b895b5d6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af945a5717f5507e35c376627b895b5d6">~ABL</a> () override</td></tr>
+<tr class="memitem:af255fe62d585111eb271432da5b1ab22" id="r_af255fe62d585111eb271432da5b1ab22"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_a_b_l_wall_function.html">ABLWallFunction</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af255fe62d585111eb271432da5b1ab22">abl_wall_function</a> () const</td></tr>
+<tr class="memitem:aec4985018c0a5715782cf940123e5644" id="r_aec4985018c0a5715782cf940123e5644"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aec4985018c0a5715782cf940123e5644">post_init_actions</a> () override</td></tr>
+<tr class="memitem:afa634b13d67d12b156cf743f68802f96" id="r_afa634b13d67d12b156cf743f68802f96"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afa634b13d67d12b156cf743f68802f96">post_regrid_actions</a> () override</td></tr>
+<tr class="memitem:ab7f6ff01ce9110dd952e9db1f086b0ff" id="r_ab7f6ff01ce9110dd952e9db1f086b0ff"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab7f6ff01ce9110dd952e9db1f086b0ff">initialize_fields</a> (int level, const amrex::Geometry &amp;geom) override</td></tr>
+<tr class="memitem:a0c087a97f7111ebe24e3c8139ba92273" id="r_a0c087a97f7111ebe24e3c8139ba92273"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0c087a97f7111ebe24e3c8139ba92273">pre_advance_work</a> () override</td></tr>
+<tr class="memitem:aa3083a6c3a23506b7609ea9d7c4b197b" id="r_aa3083a6c3a23506b7609ea9d7c4b197b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa3083a6c3a23506b7609ea9d7c4b197b">pre_predictor_work</a> () override</td></tr>
+<tr class="memitem:abc0f097458abc7c17aa6cf060de300f7" id="r_abc0f097458abc7c17aa6cf060de300f7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abc0f097458abc7c17aa6cf060de300f7">post_advance_work</a> () override</td></tr>
+<tr class="memitem:ab431de40b53fa4ff6c3ce189752e232b" id="r_ab431de40b53fa4ff6c3ce189752e232b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab431de40b53fa4ff6c3ce189752e232b">register_forcing_term</a> (<a class="el" href="classamr__wind_1_1pde_1_1icns_1_1_a_b_l_forcing.html">pde::icns::ABLForcing</a> *forcing) const</td></tr>
+<tr class="memitem:ae390c9ebe4cc198515f77f7eb1906ac1" id="r_ae390c9ebe4cc198515f77f7eb1906ac1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae390c9ebe4cc198515f77f7eb1906ac1">register_mean_boussinesq_term</a> (<a class="el" href="classamr__wind_1_1pde_1_1icns_1_1_a_b_l_mean_boussinesq.html">pde::icns::ABLMeanBoussinesq</a> *term) const</td></tr>
+<tr class="memitem:a6b47705414fe5b41ad868a8ca0803c4b" id="r_a6b47705414fe5b41ad868a8ca0803c4b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6b47705414fe5b41ad868a8ca0803c4b">register_meso_mom_forcing</a> (<a class="el" href="classamr__wind_1_1pde_1_1icns_1_1_a_b_l_meso_forcing_mom.html">pde::icns::ABLMesoForcingMom</a> *forcing) const</td></tr>
+<tr class="memitem:a1346cc831f0d9dfd49e0c9f6d5f5c5ce" id="r_a1346cc831f0d9dfd49e0c9f6d5f5c5ce"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1346cc831f0d9dfd49e0c9f6d5f5c5ce">register_meso_temp_forcing</a> (<a class="el" href="classamr__wind_1_1pde_1_1temperature_1_1_a_b_l_meso_forcing_temp.html">pde::temperature::ABLMesoForcingTemp</a> *forcing) const</td></tr>
+<tr class="memitem:aaeb8c0781c104f816c9a7a10883b9566" id="r_aaeb8c0781c104f816c9a7a10883b9566"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaeb8c0781c104f816c9a7a10883b9566">register_hurricane_forcing</a> (<a class="el" href="classamr__wind_1_1pde_1_1icns_1_1_hurricane_forcing.html">pde::icns::HurricaneForcing</a> *forcing) const</td></tr>
+<tr class="memitem:add5312e66333a552ef6c07241dff7e58" id="r_add5312e66333a552ef6c07241dff7e58"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#add5312e66333a552ef6c07241dff7e58">register_hurricane_temp_forcing</a> (<a class="el" href="classamr__wind_1_1pde_1_1temperature_1_1_hurricane_temp_forcing.html">pde::temperature::HurricaneTempForcing</a> *forcing) const</td></tr>
+<tr class="memitem:aa9b15c1cb680c0e1ada857e0711f517a" id="r_aa9b15c1cb680c0e1ada857e0711f517a"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_a_b_l_boundary_plane.html">ABLBoundaryPlane</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa9b15c1cb680c0e1ada857e0711f517a">bndry_plane</a> () const</td></tr>
+<tr class="memitem:a79647679512d4c75bd4c18ea809417bd" id="r_a79647679512d4c75bd4c18ea809417bd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_a_b_l_boundary_plane.html">ABLBoundaryPlane</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a79647679512d4c75bd4c18ea809417bd">bndry_plane</a> ()</td></tr>
+<tr class="memitem:a624368376e799a1bdfaaf5dde6ad5634" id="r_a624368376e799a1bdfaaf5dde6ad5634"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_a_b_l_modulated_power_law.html">ABLModulatedPowerLaw</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a624368376e799a1bdfaaf5dde6ad5634">abl_mpl</a> () const</td></tr>
+<tr class="memitem:a6e8a95e6f7e53fb6e52b1b27264c615c" id="r_a6e8a95e6f7e53fb6e52b1b27264c615c"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_a_b_l_stats_base.html">ABLStatsBase</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6e8a95e6f7e53fb6e52b1b27264c615c">abl_statistics</a> () const</td></tr>
+<tr class="memdesc:a6e8a95e6f7e53fb6e52b1b27264c615c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the <a class="el" href="classamr__wind_1_1_a_b_l.html">ABL</a> statistics calculator.  <br /></td></tr>
+<tr class="memitem:af68c89f54b6e2621456e2778b72a3034" id="r_af68c89f54b6e2621456e2778b72a3034"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_a_b_l_mesoscale_input.html">ABLMesoscaleInput</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af68c89f54b6e2621456e2778b72a3034">abl_meso_file</a> () const</td></tr>
+<tr class="memitem:a7c913df77c01878bafefe25bfd77aac9" id="r_a7c913df77c01878bafefe25bfd77aac9"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_a_b_l_anelastic.html">ABLAnelastic</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7c913df77c01878bafefe25bfd77aac9">anelastic</a> () const</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a57276c9ed028393fad4e71e105ae1dd6" id="r_a57276c9ed028393fad4e71e105ae1dd6"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a57276c9ed028393fad4e71e105ae1dd6">identifier</a> ()</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a2a3a3b4f2b345aafe5d85cc51566435f" id="r_a2a3a3b4f2b345aafe5d85cc51566435f"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2a3a3b4f2b345aafe5d85cc51566435f">m_sim</a></td></tr>
+<tr class="memitem:aa36522844bc8b194eda44d8729933696" id="r_aa36522844bc8b194eda44d8729933696"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa36522844bc8b194eda44d8729933696">m_velocity</a></td></tr>
+<tr class="memitem:a27456a96b58e67df12c9649fca4374a6" id="r_a27456a96b58e67df12c9649fca4374a6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a27456a96b58e67df12c9649fca4374a6">m_mueff</a></td></tr>
+<tr class="memitem:ae42a0aecdf7050b63cf1eab942bcccab" id="r_ae42a0aecdf7050b63cf1eab942bcccab"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae42a0aecdf7050b63cf1eab942bcccab">m_density</a></td></tr>
+<tr class="memitem:af63451c4db6e0a92219aef8d029ca5c1" id="r_af63451c4db6e0a92219aef8d029ca5c1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af63451c4db6e0a92219aef8d029ca5c1">m_temperature</a> {nullptr}</td></tr>
+<tr class="memitem:a1c3f253a441c9281164ecacbd0176b55" id="r_a1c3f253a441c9281164ecacbd0176b55"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1c3f253a441c9281164ecacbd0176b55">m_tke</a> {nullptr}</td></tr>
+<tr class="memitem:ae1ebe3794eab58c797d0f0a96df06694" id="r_ae1ebe3794eab58c797d0f0a96df06694"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae1ebe3794eab58c797d0f0a96df06694">m_sdr</a> {nullptr}</td></tr>
+<tr class="memitem:a42b9b1d5bdf03c09ed917cf89166feb9" id="r_a42b9b1d5bdf03c09ed917cf89166feb9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_a_b_l_wall_function.html">ABLWallFunction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a42b9b1d5bdf03c09ed917cf89166feb9">m_abl_wall_func</a></td></tr>
+<tr class="memitem:a213616ba7ee9c20af0e4b760e1a06e1e" id="r_a213616ba7ee9c20af0e4b760e1a06e1e"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1_a_b_l_field_init.html">ABLFieldInit</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a213616ba7ee9c20af0e4b760e1a06e1e">m_field_init</a></td></tr>
+<tr class="memdesc:a213616ba7ee9c20af0e4b760e1a06e1e"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classamr__wind_1_1_a_b_l.html">ABL</a> field initializer instance.  <br /></td></tr>
+<tr class="memitem:ae624d8b51c7855147d423b9762501e1a" id="r_ae624d8b51c7855147d423b9762501e1a"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1_a_b_l_boundary_plane.html">ABLBoundaryPlane</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae624d8b51c7855147d423b9762501e1a">m_bndry_plane</a></td></tr>
+<tr class="memdesc:ae624d8b51c7855147d423b9762501e1a"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classamr__wind_1_1_a_b_l.html">ABL</a> boundary plane instance.  <br /></td></tr>
+<tr class="memitem:a0b40d04ae937a9d3072094aa6eb531ea" id="r_a0b40d04ae937a9d3072094aa6eb531ea"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1_a_b_l_modulated_power_law.html">ABLModulatedPowerLaw</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0b40d04ae937a9d3072094aa6eb531ea">m_abl_mpl</a></td></tr>
+<tr class="memdesc:a0b40d04ae937a9d3072094aa6eb531ea"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classamr__wind_1_1_a_b_l.html">ABL</a> modulated power law instance.  <br /></td></tr>
+<tr class="memitem:a8572cf6d5bc0af736689372624703943" id="r_a8572cf6d5bc0af736689372624703943"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1pde_1_1icns_1_1_a_b_l_forcing.html">pde::icns::ABLForcing</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8572cf6d5bc0af736689372624703943">m_abl_forcing</a> {nullptr}</td></tr>
+<tr class="memdesc:a8572cf6d5bc0af736689372624703943"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reference to <a class="el" href="classamr__wind_1_1_a_b_l.html">ABL</a> forcing term if present.  <br /></td></tr>
+<tr class="memitem:a6dfd593e1ffe6d86a14f18ebf7a7c8be" id="r_a6dfd593e1ffe6d86a14f18ebf7a7c8be"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1_a_b_l_stats_base.html">ABLStatsBase</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6dfd593e1ffe6d86a14f18ebf7a7c8be">m_stats</a></td></tr>
+<tr class="memdesc:a6dfd593e1ffe6d86a14f18ebf7a7c8be"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classamr__wind_1_1_a_b_l.html">ABL</a> integrated statistics object.  <br /></td></tr>
+<tr class="memitem:a9a3d87e6a158ca78b131c6435867a84a" id="r_a9a3d87e6a158ca78b131c6435867a84a"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1_a_b_l_anelastic.html">ABLAnelastic</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9a3d87e6a158ca78b131c6435867a84a">m_abl_anelastic</a></td></tr>
+<tr class="memdesc:a9a3d87e6a158ca78b131c6435867a84a"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classamr__wind_1_1_a_b_l.html">ABL</a> anelastic instance.  <br /></td></tr>
+<tr class="memitem:a525668ec480c207643df7cfcb65aec78" id="r_a525668ec480c207643df7cfcb65aec78"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1pde_1_1icns_1_1_a_b_l_mean_boussinesq.html">pde::icns::ABLMeanBoussinesq</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a525668ec480c207643df7cfcb65aec78">m_abl_mean_bous</a> {nullptr}</td></tr>
+<tr class="memitem:adf0f60b8d97024ead4aadec25b81e1db" id="r_adf0f60b8d97024ead4aadec25b81e1db"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1pde_1_1icns_1_1_a_b_l_meso_forcing_mom.html">pde::icns::ABLMesoForcingMom</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adf0f60b8d97024ead4aadec25b81e1db">m_abl_meso_mom_forcing</a> {nullptr}</td></tr>
+<tr class="memitem:adce0c02efcef17921e9854d31a20082a" id="r_adce0c02efcef17921e9854d31a20082a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1pde_1_1temperature_1_1_a_b_l_meso_forcing_temp.html">pde::temperature::ABLMesoForcingTemp</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adce0c02efcef17921e9854d31a20082a">m_abl_meso_temp_forcing</a></td></tr>
+<tr class="memitem:a216f2c6b4c83662fa3d0f9d15da1912a" id="r_a216f2c6b4c83662fa3d0f9d15da1912a"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1_a_b_l_mesoscale_input.html">ABLMesoscaleInput</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a216f2c6b4c83662fa3d0f9d15da1912a">m_meso_file</a></td></tr>
+<tr class="memitem:aa241cd1b99b5b01781c8ceca0fac4d9c" id="r_aa241cd1b99b5b01781c8ceca0fac4d9c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1pde_1_1icns_1_1_hurricane_forcing.html">pde::icns::HurricaneForcing</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa241cd1b99b5b01781c8ceca0fac4d9c">m_hurricane_forcing</a> {nullptr}</td></tr>
+<tr class="memitem:a779eadb831275700a55b33bfa2c8441c" id="r_a779eadb831275700a55b33bfa2c8441c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1pde_1_1temperature_1_1_hurricane_temp_forcing.html">pde::temperature::HurricaneTempForcing</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a779eadb831275700a55b33bfa2c8441c">m_hurricane_temp_forcing</a></td></tr>
+<tr class="memitem:a765303c23009b7ab341565b2a3c62047" id="r_a765303c23009b7ab341565b2a3c62047"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a765303c23009b7ab341565b2a3c62047">m_init_sdr</a> {25.0_rt}</td></tr>
+<tr class="memdesc:a765303c23009b7ab341565b2a3c62047"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default value set based on <a href="https://turbmodels.larc.nasa.gov/sst.html">https://turbmodels.larc.nasa.gov/sst.html</a>.  <br /></td></tr>
+<tr class="memitem:a5725ab1ec13a835f25fac243eec6bc17" id="r_a5725ab1ec13a835f25fac243eec6bc17"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5725ab1ec13a835f25fac243eec6bc17">m_hybrid_rl</a> {false}</td></tr>
+<tr class="memdesc:a5725ab1ec13a835f25fac243eec6bc17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hybrid RANS-LES with Nalu-wind.  <br /></td></tr>
+<tr class="memitem:ac3ff538243775f20eadcda427e0c9341" id="r_ac3ff538243775f20eadcda427e0c9341"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac3ff538243775f20eadcda427e0c9341">m_file_input</a> {false}</td></tr>
+<tr class="memdesc:ac3ff538243775f20eadcda427e0c9341"><td class="mdescLeft">&#160;</td><td class="mdescRight">File input flag.  <br /></td></tr>
+<tr class="memitem:a93ffa82399970a8c758f948450e86b07" id="r_a93ffa82399970a8c758f948450e86b07"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1_a_b_l_field_init_file.html">ABLFieldInitFile</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a93ffa82399970a8c758f948450e86b07">m_field_init_file</a></td></tr>
+<tr class="memdesc:a93ffa82399970a8c758f948450e86b07"><td class="mdescLeft">&#160;</td><td class="mdescRight">File input initializer.  <br /></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Atmospheric Boundary Layer physics</p>
+<p>This class implements the necessary code to simulation atmospheric boundary layers with AMR-Wind. It reads the namespace <span class="tt"><a class="el" href="classamr__wind_1_1_a_b_l.html">ABL</a></span> from the input file to determine how the initial conditions are generated. At each timestep it performs plane averages to collect statistics as well as set the necessary data to be used by wall models as well as any ABLForcing terms that might be active.</p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classamr__wind_1_1_a_b_l_field_init.html">ABLFieldInit</a>, <a class="el" href="classamr__wind_1_1_a_b_l_wall_function.html">ABLWallFunction</a>, <a class="el" href="namespaceamr__wind.html#a786ec0c89796180da3204a4f86c4624e">FieldPlaneAveraging</a>, <a class="el" href="classamr__wind_1_1_a_b_l_boundary_plane.html">ABLBoundaryPlane</a> </dd></dl>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="aff6a71dcefec99f52191f36e6cab2074" name="aff6a71dcefec99f52191f36e6cab2074"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff6a71dcefec99f52191f36e6cab2074">&#9670;&#160;</a></span>ABL()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::ABL::ABL </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>sim</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel explicit">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af945a5717f5507e35c376627b895b5d6" name="af945a5717f5507e35c376627b895b5d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af945a5717f5507e35c376627b895b5d6">&#9670;&#160;</a></span>~ABL()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::ABL::~ABL </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="af68c89f54b6e2621456e2778b72a3034" name="af68c89f54b6e2621456e2778b72a3034"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af68c89f54b6e2621456e2778b72a3034">&#9670;&#160;</a></span>abl_meso_file()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_a_b_l_mesoscale_input.html">ABLMesoscaleInput</a> &amp; amr_wind::ABL::abl_meso_file </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a624368376e799a1bdfaaf5dde6ad5634" name="a624368376e799a1bdfaaf5dde6ad5634"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a624368376e799a1bdfaaf5dde6ad5634">&#9670;&#160;</a></span>abl_mpl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_a_b_l_modulated_power_law.html">ABLModulatedPowerLaw</a> &amp; amr_wind::ABL::abl_mpl </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6e8a95e6f7e53fb6e52b1b27264c615c" name="a6e8a95e6f7e53fb6e52b1b27264c615c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e8a95e6f7e53fb6e52b1b27264c615c">&#9670;&#160;</a></span>abl_statistics()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_a_b_l_stats_base.html">ABLStatsBase</a> &amp; amr_wind::ABL::abl_statistics </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the <a class="el" href="classamr__wind_1_1_a_b_l.html">ABL</a> statistics calculator. </p>
+
+</div>
+</div>
+<a id="af255fe62d585111eb271432da5b1ab22" name="af255fe62d585111eb271432da5b1ab22"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af255fe62d585111eb271432da5b1ab22">&#9670;&#160;</a></span>abl_wall_function()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_a_b_l_wall_function.html">ABLWallFunction</a> &amp; amr_wind::ABL::abl_wall_function </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7c913df77c01878bafefe25bfd77aac9" name="a7c913df77c01878bafefe25bfd77aac9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c913df77c01878bafefe25bfd77aac9">&#9670;&#160;</a></span>anelastic()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_a_b_l_anelastic.html">ABLAnelastic</a> &amp; amr_wind::ABL::anelastic </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a79647679512d4c75bd4c18ea809417bd" name="a79647679512d4c75bd4c18ea809417bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79647679512d4c75bd4c18ea809417bd">&#9670;&#160;</a></span>bndry_plane() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_a_b_l_boundary_plane.html">ABLBoundaryPlane</a> &amp; amr_wind::ABL::bndry_plane </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa9b15c1cb680c0e1ada857e0711f517a" name="aa9b15c1cb680c0e1ada857e0711f517a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9b15c1cb680c0e1ada857e0711f517a">&#9670;&#160;</a></span>bndry_plane() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_a_b_l_boundary_plane.html">ABLBoundaryPlane</a> &amp; amr_wind::ABL::bndry_plane </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a57276c9ed028393fad4e71e105ae1dd6" name="a57276c9ed028393fad4e71e105ae1dd6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57276c9ed028393fad4e71e105ae1dd6">&#9670;&#160;</a></span>identifier()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::ABL::identifier </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab7f6ff01ce9110dd952e9db1f086b0ff" name="ab7f6ff01ce9110dd952e9db1f086b0ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7f6ff01ce9110dd952e9db1f086b0ff">&#9670;&#160;</a></span>initialize_fields()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ABL::initialize_fields </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>level</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Geometry &amp;</td>          <td class="paramname"><span class="paramname"><em>geom</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Initialize the velocity and temperature fields at the beginning of the simulation.</p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classamr__wind_1_1_a_b_l_field_init.html">amr_wind::ABLFieldInit</a> </dd></dl>
+
+</div>
+</div>
+<a id="abc0f097458abc7c17aa6cf060de300f7" name="abc0f097458abc7c17aa6cf060de300f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc0f097458abc7c17aa6cf060de300f7">&#9670;&#160;</a></span>post_advance_work()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ABL::post_advance_work </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Perform tasks at the end of a new timestep</p>
+<p>For <a class="el" href="classamr__wind_1_1_a_b_l.html">ABL</a> simulations, this method writes all plane-averaged profiles and integrated statistics to output </p>
+
+</div>
+</div>
+<a id="aec4985018c0a5715782cf940123e5644" name="aec4985018c0a5715782cf940123e5644"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec4985018c0a5715782cf940123e5644">&#9670;&#160;</a></span>post_init_actions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ABL::post_init_actions </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afa634b13d67d12b156cf743f68802f96" name="afa634b13d67d12b156cf743f68802f96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa634b13d67d12b156cf743f68802f96">&#9670;&#160;</a></span>post_regrid_actions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ABL::post_regrid_actions </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0c087a97f7111ebe24e3c8139ba92273" name="a0c087a97f7111ebe24e3c8139ba92273"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c087a97f7111ebe24e3c8139ba92273">&#9670;&#160;</a></span>pre_advance_work()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ABL::pre_advance_work </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Perform tasks at the beginning of a new timestep</p>
+<p>For <a class="el" href="classamr__wind_1_1_a_b_l.html">ABL</a> simulations this method invokes the <a class="el" href="namespaceamr__wind.html#a786ec0c89796180da3204a4f86c4624e">FieldPlaneAveraging</a> class to compute spatial averages at all z-levels on the coarsest mesh (level 0).</p>
+<p>The spatially averaged velocity is used to determine the current mean velocity at the forcing height (if driving pressure gradient term is active) and also determines the average friction velocity for use in the <a class="el" href="classamr__wind_1_1_a_b_l.html">ABL</a> wall function computation. </p>
+
+</div>
+</div>
+<a id="aa3083a6c3a23506b7609ea9d7c4b197b" name="aa3083a6c3a23506b7609ea9d7c4b197b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3083a6c3a23506b7609ea9d7c4b197b">&#9670;&#160;</a></span>pre_predictor_work()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ABL::pre_predictor_work </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Perform tasks at the beginning of a timestep, but after pre_advance</p>
+<p>For <a class="el" href="classamr__wind_1_1_a_b_l.html">ABL</a> simulations, this method updates plane data to new_time (n+1) </p>
+
+</div>
+</div>
+<a id="ab431de40b53fa4ff6c3ce189752e232b" name="ab431de40b53fa4ff6c3ce189752e232b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab431de40b53fa4ff6c3ce189752e232b">&#9670;&#160;</a></span>register_forcing_term()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ABL::register_forcing_term </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classamr__wind_1_1pde_1_1icns_1_1_a_b_l_forcing.html">pde::icns::ABLForcing</a> *</td>          <td class="paramname"><span class="paramname"><em>forcing</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aaeb8c0781c104f816c9a7a10883b9566" name="aaeb8c0781c104f816c9a7a10883b9566"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaeb8c0781c104f816c9a7a10883b9566">&#9670;&#160;</a></span>register_hurricane_forcing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ABL::register_hurricane_forcing </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classamr__wind_1_1pde_1_1icns_1_1_hurricane_forcing.html">pde::icns::HurricaneForcing</a> *</td>          <td class="paramname"><span class="paramname"><em>forcing</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="add5312e66333a552ef6c07241dff7e58" name="add5312e66333a552ef6c07241dff7e58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add5312e66333a552ef6c07241dff7e58">&#9670;&#160;</a></span>register_hurricane_temp_forcing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ABL::register_hurricane_temp_forcing </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classamr__wind_1_1pde_1_1temperature_1_1_hurricane_temp_forcing.html">pde::temperature::HurricaneTempForcing</a> *</td>          <td class="paramname"><span class="paramname"><em>forcing</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae390c9ebe4cc198515f77f7eb1906ac1" name="ae390c9ebe4cc198515f77f7eb1906ac1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae390c9ebe4cc198515f77f7eb1906ac1">&#9670;&#160;</a></span>register_mean_boussinesq_term()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ABL::register_mean_boussinesq_term </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classamr__wind_1_1pde_1_1icns_1_1_a_b_l_mean_boussinesq.html">pde::icns::ABLMeanBoussinesq</a> *</td>          <td class="paramname"><span class="paramname"><em>term</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6b47705414fe5b41ad868a8ca0803c4b" name="a6b47705414fe5b41ad868a8ca0803c4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b47705414fe5b41ad868a8ca0803c4b">&#9670;&#160;</a></span>register_meso_mom_forcing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ABL::register_meso_mom_forcing </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classamr__wind_1_1pde_1_1icns_1_1_a_b_l_meso_forcing_mom.html">pde::icns::ABLMesoForcingMom</a> *</td>          <td class="paramname"><span class="paramname"><em>forcing</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1346cc831f0d9dfd49e0c9f6d5f5c5ce" name="a1346cc831f0d9dfd49e0c9f6d5f5c5ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1346cc831f0d9dfd49e0c9f6d5f5c5ce">&#9670;&#160;</a></span>register_meso_temp_forcing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ABL::register_meso_temp_forcing </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classamr__wind_1_1pde_1_1temperature_1_1_a_b_l_meso_forcing_temp.html">pde::temperature::ABLMesoForcingTemp</a> *</td>          <td class="paramname"><span class="paramname"><em>forcing</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a9a3d87e6a158ca78b131c6435867a84a" name="a9a3d87e6a158ca78b131c6435867a84a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a3d87e6a158ca78b131c6435867a84a">&#9670;&#160;</a></span>m_abl_anelastic</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classamr__wind_1_1_a_b_l_anelastic.html">ABLAnelastic</a>&gt; amr_wind::ABL::m_abl_anelastic</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classamr__wind_1_1_a_b_l.html">ABL</a> anelastic instance. </p>
+
+</div>
+</div>
+<a id="a8572cf6d5bc0af736689372624703943" name="a8572cf6d5bc0af736689372624703943"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8572cf6d5bc0af736689372624703943">&#9670;&#160;</a></span>m_abl_forcing</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1pde_1_1icns_1_1_a_b_l_forcing.html">pde::icns::ABLForcing</a>* amr_wind::ABL::m_abl_forcing {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel mutable">mutable</span><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reference to <a class="el" href="classamr__wind_1_1_a_b_l.html">ABL</a> forcing term if present. </p>
+
+</div>
+</div>
+<a id="a525668ec480c207643df7cfcb65aec78" name="a525668ec480c207643df7cfcb65aec78"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a525668ec480c207643df7cfcb65aec78">&#9670;&#160;</a></span>m_abl_mean_bous</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1pde_1_1icns_1_1_a_b_l_mean_boussinesq.html">pde::icns::ABLMeanBoussinesq</a>* amr_wind::ABL::m_abl_mean_bous {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel mutable">mutable</span><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adf0f60b8d97024ead4aadec25b81e1db" name="adf0f60b8d97024ead4aadec25b81e1db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf0f60b8d97024ead4aadec25b81e1db">&#9670;&#160;</a></span>m_abl_meso_mom_forcing</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1pde_1_1icns_1_1_a_b_l_meso_forcing_mom.html">pde::icns::ABLMesoForcingMom</a>* amr_wind::ABL::m_abl_meso_mom_forcing {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel mutable">mutable</span><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adce0c02efcef17921e9854d31a20082a" name="adce0c02efcef17921e9854d31a20082a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adce0c02efcef17921e9854d31a20082a">&#9670;&#160;</a></span>m_abl_meso_temp_forcing</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1pde_1_1temperature_1_1_a_b_l_meso_forcing_temp.html">pde::temperature::ABLMesoForcingTemp</a>* amr_wind::ABL::m_abl_meso_temp_forcing</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel mutable">mutable</span><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">{</div>
+<div class="line">        <span class="keyword">nullptr</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a0b40d04ae937a9d3072094aa6eb531ea" name="a0b40d04ae937a9d3072094aa6eb531ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b40d04ae937a9d3072094aa6eb531ea">&#9670;&#160;</a></span>m_abl_mpl</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classamr__wind_1_1_a_b_l_modulated_power_law.html">ABLModulatedPowerLaw</a>&gt; amr_wind::ABL::m_abl_mpl</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classamr__wind_1_1_a_b_l.html">ABL</a> modulated power law instance. </p>
+
+</div>
+</div>
+<a id="a42b9b1d5bdf03c09ed917cf89166feb9" name="a42b9b1d5bdf03c09ed917cf89166feb9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42b9b1d5bdf03c09ed917cf89166feb9">&#9670;&#160;</a></span>m_abl_wall_func</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_a_b_l_wall_function.html">ABLWallFunction</a> amr_wind::ABL::m_abl_wall_func</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae624d8b51c7855147d423b9762501e1a" name="ae624d8b51c7855147d423b9762501e1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae624d8b51c7855147d423b9762501e1a">&#9670;&#160;</a></span>m_bndry_plane</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classamr__wind_1_1_a_b_l_boundary_plane.html">ABLBoundaryPlane</a>&gt; amr_wind::ABL::m_bndry_plane</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classamr__wind_1_1_a_b_l.html">ABL</a> boundary plane instance. </p>
+
+</div>
+</div>
+<a id="ae42a0aecdf7050b63cf1eab942bcccab" name="ae42a0aecdf7050b63cf1eab942bcccab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae42a0aecdf7050b63cf1eab942bcccab">&#9670;&#160;</a></span>m_density</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a>&amp; amr_wind::ABL::m_density</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a213616ba7ee9c20af0e4b760e1a06e1e" name="a213616ba7ee9c20af0e4b760e1a06e1e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a213616ba7ee9c20af0e4b760e1a06e1e">&#9670;&#160;</a></span>m_field_init</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classamr__wind_1_1_a_b_l_field_init.html">ABLFieldInit</a>&gt; amr_wind::ABL::m_field_init</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classamr__wind_1_1_a_b_l.html">ABL</a> field initializer instance. </p>
+
+</div>
+</div>
+<a id="a93ffa82399970a8c758f948450e86b07" name="a93ffa82399970a8c758f948450e86b07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93ffa82399970a8c758f948450e86b07">&#9670;&#160;</a></span>m_field_init_file</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classamr__wind_1_1_a_b_l_field_init_file.html">ABLFieldInitFile</a>&gt; amr_wind::ABL::m_field_init_file</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>File input initializer. </p>
+
+</div>
+</div>
+<a id="ac3ff538243775f20eadcda427e0c9341" name="ac3ff538243775f20eadcda427e0c9341"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3ff538243775f20eadcda427e0c9341">&#9670;&#160;</a></span>m_file_input</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::ABL::m_file_input {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>File input flag. </p>
+
+</div>
+</div>
+<a id="aa241cd1b99b5b01781c8ceca0fac4d9c" name="aa241cd1b99b5b01781c8ceca0fac4d9c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa241cd1b99b5b01781c8ceca0fac4d9c">&#9670;&#160;</a></span>m_hurricane_forcing</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1pde_1_1icns_1_1_hurricane_forcing.html">pde::icns::HurricaneForcing</a>* amr_wind::ABL::m_hurricane_forcing {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel mutable">mutable</span><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a779eadb831275700a55b33bfa2c8441c" name="a779eadb831275700a55b33bfa2c8441c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a779eadb831275700a55b33bfa2c8441c">&#9670;&#160;</a></span>m_hurricane_temp_forcing</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1pde_1_1temperature_1_1_hurricane_temp_forcing.html">pde::temperature::HurricaneTempForcing</a>* amr_wind::ABL::m_hurricane_temp_forcing</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel mutable">mutable</span><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">{</div>
+<div class="line">        <span class="keyword">nullptr</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a5725ab1ec13a835f25fac243eec6bc17" name="a5725ab1ec13a835f25fac243eec6bc17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5725ab1ec13a835f25fac243eec6bc17">&#9670;&#160;</a></span>m_hybrid_rl</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::ABL::m_hybrid_rl {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Hybrid RANS-LES with Nalu-wind. </p>
+
+</div>
+</div>
+<a id="a765303c23009b7ab341565b2a3c62047" name="a765303c23009b7ab341565b2a3c62047"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a765303c23009b7ab341565b2a3c62047">&#9670;&#160;</a></span>m_init_sdr</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::ABL::m_init_sdr {25.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Default value set based on <a href="https://turbmodels.larc.nasa.gov/sst.html">https://turbmodels.larc.nasa.gov/sst.html</a>. </p>
+
+</div>
+</div>
+<a id="a216f2c6b4c83662fa3d0f9d15da1912a" name="a216f2c6b4c83662fa3d0f9d15da1912a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a216f2c6b4c83662fa3d0f9d15da1912a">&#9670;&#160;</a></span>m_meso_file</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classamr__wind_1_1_a_b_l_mesoscale_input.html">ABLMesoscaleInput</a>&gt; amr_wind::ABL::m_meso_file</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a27456a96b58e67df12c9649fca4374a6" name="a27456a96b58e67df12c9649fca4374a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27456a96b58e67df12c9649fca4374a6">&#9670;&#160;</a></span>m_mueff</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a>&amp; amr_wind::ABL::m_mueff</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae1ebe3794eab58c797d0f0a96df06694" name="ae1ebe3794eab58c797d0f0a96df06694"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1ebe3794eab58c797d0f0a96df06694">&#9670;&#160;</a></span>m_sdr</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a>* amr_wind::ABL::m_sdr {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2a3a3b4f2b345aafe5d85cc51566435f" name="a2a3a3b4f2b345aafe5d85cc51566435f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a3a3b4f2b345aafe5d85cc51566435f">&#9670;&#160;</a></span>m_sim</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; amr_wind::ABL::m_sim</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6dfd593e1ffe6d86a14f18ebf7a7c8be" name="a6dfd593e1ffe6d86a14f18ebf7a7c8be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6dfd593e1ffe6d86a14f18ebf7a7c8be">&#9670;&#160;</a></span>m_stats</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classamr__wind_1_1_a_b_l_stats_base.html">ABLStatsBase</a>&gt; amr_wind::ABL::m_stats</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classamr__wind_1_1_a_b_l.html">ABL</a> integrated statistics object. </p>
+
+</div>
+</div>
+<a id="af63451c4db6e0a92219aef8d029ca5c1" name="af63451c4db6e0a92219aef8d029ca5c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af63451c4db6e0a92219aef8d029ca5c1">&#9670;&#160;</a></span>m_temperature</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a>* amr_wind::ABL::m_temperature {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1c3f253a441c9281164ecacbd0176b55" name="a1c3f253a441c9281164ecacbd0176b55"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c3f253a441c9281164ecacbd0176b55">&#9670;&#160;</a></span>m_tke</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a>* amr_wind::ABL::m_tke {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa36522844bc8b194eda44d8729933696" name="aa36522844bc8b194eda44d8729933696"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa36522844bc8b194eda44d8729933696">&#9670;&#160;</a></span>m_velocity</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a>&amp; amr_wind::ABL::m_velocity</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/<a class="el" href="_a_b_l_8_h_source.html">ABL.H</a></li>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/<a class="el" href="_a_b_l_8cpp.html">ABL.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,14 @@
+.. meta::9988e4f4e144e6086359a93355955d48fa299cbb9bf486726c8689490241d2369c49e887ee79bb9c7fe820f387f6c487e8b3777c05462fc9e358e9f499a24a6a
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ib::ops::UpdateVelOp&lt; GeomTrait, typename &gt; Struct Template Reference
+
+UpdateVelOp&lt; GeomTrait, typename &gt; Struct Template Reference
+==================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ib_1_1ops_1_1_update_vel_op.html

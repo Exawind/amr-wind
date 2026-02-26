@@ -1,0 +1,14 @@
+.. meta::d3d588bfd362407dfd36cf2d05fc546c1a230390db83cb14a9c0a2573eeba41fb5229811545c35ac8ebed109ba760a908f3eb1bd53577de49006c8b343eb10c4
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::SimpleShearLogLaw Struct Reference
+
+SimpleShearLogLaw Struct Reference
+==================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1_simple_shear_log_law.html

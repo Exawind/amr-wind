@@ -1,0 +1,804 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::PostProcessBase Class Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::PostProcessBase Class Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/classamr__wind_1_1_post_process_base.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="postprocessbase-class-reference">
+<h1>PostProcessBase Class Reference<a class="headerlink" href="#postprocessbase-class-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::PostProcessBase Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="classamr__wind_1_1_post_process_base.html">PostProcessBase</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a> &#124;
+<a href="classamr__wind_1_1_post_process_base-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::PostProcessBase Class Reference<span class="mlabels"><span class="mlabel abstract">abstract</span></span><div class="ingroups"><a class="el" href="group__utilities.html">Utilities</a></div></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_post_processing_8_h_source.html">PostProcessing.H</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for amr_wind::PostProcessBase:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1_post_process_base__inherit__graph.svg" width="267" height="291"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for amr_wind::PostProcessBase:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1_post_process_base__coll__graph.svg" width="267" height="291"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:ac7b56a46e8f3e51ddb1b9add1a23b0b1" id="r_ac7b56a46e8f3e51ddb1b9add1a23b0b1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac7b56a46e8f3e51ddb1b9add1a23b0b1">~PostProcessBase</a> () override=default</td></tr>
+<tr class="memitem:a130982947f10f26448687769ddb511f4" id="r_a130982947f10f26448687769ddb511f4"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a130982947f10f26448687769ddb511f4">pre_init_actions</a> ()=0</td></tr>
+<tr class="memitem:a6532c848427b5814e09ce6c1ea0a5e2c" id="r_a6532c848427b5814e09ce6c1ea0a5e2c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6532c848427b5814e09ce6c1ea0a5e2c">initialize</a> ()=0</td></tr>
+<tr class="memitem:add9a9d4e150782f1948c99a308d7b607" id="r_add9a9d4e150782f1948c99a308d7b607"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#add9a9d4e150782f1948c99a308d7b607">post_advance_work</a> ()=0</td></tr>
+<tr class="memitem:a9a0d9ff0c32f6161f7d161dbd393f9af" id="r_a9a0d9ff0c32f6161f7d161dbd393f9af"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9a0d9ff0c32f6161f7d161dbd393f9af">output_actions</a> ()=0</td></tr>
+<tr class="memitem:ac9b6396dee8bec82005d7df63a33320e" id="r_ac9b6396dee8bec82005d7df63a33320e"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac9b6396dee8bec82005d7df63a33320e">post_regrid_actions</a> ()=0</td></tr>
+<tr class="memdesc:ac9b6396dee8bec82005d7df63a33320e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Actions to perform post regrid.  <br /></td></tr>
+<tr class="memitem:ac709f76f3c6b7ec48a99e5b2ee05cbb3" id="r_ac709f76f3c6b7ec48a99e5b2ee05cbb3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac709f76f3c6b7ec48a99e5b2ee05cbb3">populate_output_parameters</a> (amrex::ParmParse &amp;pp)</td></tr>
+<tr class="memitem:adcff80700954a45a886329176165cd9f" id="r_adcff80700954a45a886329176165cd9f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adcff80700954a45a886329176165cd9f">do_output_now</a> (const int ntime, const amrex::Real time, const amrex::Real dt, amrex::Real tol) const</td></tr>
+<tr class="memdesc:adcff80700954a45a886329176165cd9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine if output will happen this time step.  <br /></td></tr>
+<tr class="memitem:a625fef7119feeab300279fe1cc081933" id="r_a625fef7119feeab300279fe1cc081933"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a625fef7119feeab300279fe1cc081933">output_time_interval</a> () const</td></tr>
+<tr class="memitem:aa7084949472f00dfaddfb4a960e02733" id="r_aa7084949472f00dfaddfb4a960e02733"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa7084949472f00dfaddfb4a960e02733">output_time_delay</a> () const</td></tr>
+<tr class="memitem:a8afcc88addfb4c1472915b5a105aabba" id="r_a8afcc88addfb4c1472915b5a105aabba"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8afcc88addfb4c1472915b5a105aabba">enforce_dt_tolerance</a> () const</td></tr>
+<tr class="memitem:adfb619c6e455d567d3832a1435222967" id="r_adfb619c6e455d567d3832a1435222967"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adfb619c6e455d567d3832a1435222967">enforce_dt</a> () const</td></tr>
+<tr class="inherit_header pub_methods_structamr__wind_1_1_factory"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_structamr__wind_1_1_factory')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="structamr__wind_1_1_factory.html">amr_wind::Factory&lt; PostProcessBase, CFDSim &amp;, const std::string &amp; &gt;</a></td></tr>
+<tr class="memitem:aa6fca890ed3550c62d0f65b8d3bc07ad inherit pub_methods_structamr__wind_1_1_factory" id="r_aa6fca890ed3550c62d0f65b8d3bc07ad"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1_factory.html#aa6fca890ed3550c62d0f65b8d3bc07ad">~Factory</a> ()=default</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:aadd3620958031d76cadcccd04411d360" id="r_aadd3620958031d76cadcccd04411d360"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aadd3620958031d76cadcccd04411d360">base_identifier</a> ()</td></tr>
+<tr class="inherit_header pub_static_methods_structamr__wind_1_1_factory"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_static_methods_structamr__wind_1_1_factory')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Static Public Member Functions inherited from <a class="el" href="structamr__wind_1_1_factory.html">amr_wind::Factory&lt; PostProcessBase, CFDSim &amp;, const std::string &amp; &gt;</a></td></tr>
+<tr class="memitem:a12435a8cce5e3b4e95324d3b638ca6a2 inherit pub_static_methods_structamr__wind_1_1_factory" id="r_a12435a8cce5e3b4e95324d3b638ca6a2"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1_post_process_base.html">PostProcessBase</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1_factory.html#a12435a8cce5e3b4e95324d3b638ca6a2">create</a> (const std::string &amp;key, Args... args)</td></tr>
+<tr class="memitem:a8d98edcc6f1e14d11dc8626d75498548 inherit pub_static_methods_structamr__wind_1_1_factory" id="r_a8d98edcc6f1e14d11dc8626d75498548"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1_factory.html#a8d98edcc6f1e14d11dc8626d75498548">print</a> (std::ostream &amp;os)</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:a56b5bdf55698abe660d15f51f3f4fbca" id="r_a56b5bdf55698abe660d15f51f3f4fbca"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a56b5bdf55698abe660d15f51f3f4fbca">m_out_interval</a> {10}</td></tr>
+<tr class="memdesc:a56b5bdf55698abe660d15f51f3f4fbca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time step interval for output.  <br /></td></tr>
+<tr class="memitem:a054738653f74eef98205148fd44d3cd4" id="r_a054738653f74eef98205148fd44d3cd4"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a054738653f74eef98205148fd44d3cd4">m_out_time_interval</a> {-1.0_rt}</td></tr>
+<tr class="memdesc:a054738653f74eef98205148fd44d3cd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time interval for output.  <br /></td></tr>
+<tr class="memitem:a3035972c07183f9f9860e1394389c304" id="r_a3035972c07183f9f9860e1394389c304"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3035972c07183f9f9860e1394389c304">m_out_delay</a> {0}</td></tr>
+<tr class="memdesc:a3035972c07183f9f9860e1394389c304"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time step delay for output.  <br /></td></tr>
+<tr class="memitem:aad94b64986786458a3e976500d60ec9b" id="r_aad94b64986786458a3e976500d60ec9b"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aad94b64986786458a3e976500d60ec9b">m_out_time_delay</a> {0.0_rt}</td></tr>
+<tr class="memdesc:aad94b64986786458a3e976500d60ec9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time delay for output.  <br /></td></tr>
+<tr class="memitem:a23f7222a102c120f69dbf35557ba9957" id="r_a23f7222a102c120f69dbf35557ba9957"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a23f7222a102c120f69dbf35557ba9957">m_out_time_tol</a></td></tr>
+<tr class="memdesc:a23f7222a102c120f69dbf35557ba9957"><td class="mdescLeft">&#160;</td><td class="mdescRight">Relative (to dt) tolerance for time interval output.  <br /></td></tr>
+<tr class="memitem:a19c813537550b7cb19063f85b313dbb6" id="r_a19c813537550b7cb19063f85b313dbb6"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a19c813537550b7cb19063f85b313dbb6">m_enforce_dt_tol</a> {1.0e-3_rt}</td></tr>
+<tr class="memdesc:a19c813537550b7cb19063f85b313dbb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Relative (to m_out_time_interval) tolerance for enforcing dt.  <br /></td></tr>
+<tr class="memitem:a9fdbfb5f4d877ed20207bda9645c2a2a" id="r_a9fdbfb5f4d877ed20207bda9645c2a2a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9fdbfb5f4d877ed20207bda9645c2a2a">m_enforce_dt</a> {false}</td></tr>
+<tr class="memdesc:a9fdbfb5f4d877ed20207bda9645c2a2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flag for enforcing time step based on output time.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pub_attribs_structamr__wind_1_1_factory"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_attribs_structamr__wind_1_1_factory')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Attributes inherited from <a class="el" href="structamr__wind_1_1_factory.html">amr_wind::Factory&lt; PostProcessBase, CFDSim &amp;, const std::string &amp; &gt;</a></td></tr>
+<tr class="memitem:a691df3b8a05db92b3de7712f18cfe8b8 inherit pub_attribs_structamr__wind_1_1_factory" id="r_a691df3b8a05db92b3de7712f18cfe8b8"><td class="memItemLeft" align="right" valign="top">friend&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1_factory.html#a691df3b8a05db92b3de7712f18cfe8b8">Base</a></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Abstract representation of a post-processing utility</p>
+<p>Provides an interface for a runtime-selectable post-processing action (e.g., data sampling, volume/surface integration, etc.) with the main solver.</p>
+<p>All post-processing utilities must derive from this class. </p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="ac7b56a46e8f3e51ddb1b9add1a23b0b1" name="ac7b56a46e8f3e51ddb1b9add1a23b0b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7b56a46e8f3e51ddb1b9add1a23b0b1">&#9670;&#160;</a></span>~PostProcessBase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::PostProcessBase::~PostProcessBase </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="aadd3620958031d76cadcccd04411d360" name="aadd3620958031d76cadcccd04411d360"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aadd3620958031d76cadcccd04411d360">&#9670;&#160;</a></span>base_identifier()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::PostProcessBase::base_identifier </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adcff80700954a45a886329176165cd9f" name="adcff80700954a45a886329176165cd9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adcff80700954a45a886329176165cd9f">&#9670;&#160;</a></span>do_output_now()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::PostProcessBase::do_output_now </td>
+          <td>(</td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>ntime</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>time</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>dt</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>tol</em></span>&#160;) const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Determine if output will happen this time step. </p>
+
+</div>
+</div>
+<a id="adfb619c6e455d567d3832a1435222967" name="adfb619c6e455d567d3832a1435222967"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adfb619c6e455d567d3832a1435222967">&#9670;&#160;</a></span>enforce_dt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::PostProcessBase::enforce_dt </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8afcc88addfb4c1472915b5a105aabba" name="a8afcc88addfb4c1472915b5a105aabba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8afcc88addfb4c1472915b5a105aabba">&#9670;&#160;</a></span>enforce_dt_tolerance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::PostProcessBase::enforce_dt_tolerance </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6532c848427b5814e09ce6c1ea0a5e2c" name="a6532c848427b5814e09ce6c1ea0a5e2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6532c848427b5814e09ce6c1ea0a5e2c">&#9670;&#160;</a></span>initialize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void amr_wind::PostProcessBase::initialize </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel pure-virtual">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Initialize the post-processing utility</p>
+<p>When this method is called, the mesh and the solution fields are fully initialized </p>
+
+</div>
+</div>
+<a id="a9a0d9ff0c32f6161f7d161dbd393f9af" name="a9a0d9ff0c32f6161f7d161dbd393f9af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a0d9ff0c32f6161f7d161dbd393f9af">&#9670;&#160;</a></span>output_actions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void amr_wind::PostProcessBase::output_actions </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel pure-virtual">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Perform output routine </p>
+
+</div>
+</div>
+<a id="aa7084949472f00dfaddfb4a960e02733" name="aa7084949472f00dfaddfb4a960e02733"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7084949472f00dfaddfb4a960e02733">&#9670;&#160;</a></span>output_time_delay()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::PostProcessBase::output_time_delay </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a625fef7119feeab300279fe1cc081933" name="a625fef7119feeab300279fe1cc081933"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a625fef7119feeab300279fe1cc081933">&#9670;&#160;</a></span>output_time_interval()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::PostProcessBase::output_time_interval </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac709f76f3c6b7ec48a99e5b2ee05cbb3" name="ac709f76f3c6b7ec48a99e5b2ee05cbb3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac709f76f3c6b7ec48a99e5b2ee05cbb3">&#9670;&#160;</a></span>populate_output_parameters()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::PostProcessBase::populate_output_parameters </td>
+          <td>(</td>
+          <td class="paramtype">amrex::ParmParse &amp;</td>          <td class="paramname"><span class="paramname"><em>pp</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="add9a9d4e150782f1948c99a308d7b607" name="add9a9d4e150782f1948c99a308d7b607"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add9a9d4e150782f1948c99a308d7b607">&#9670;&#160;</a></span>post_advance_work()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void amr_wind::PostProcessBase::post_advance_work </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel pure-virtual">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Perform actions at the end of each timestep </p>
+
+</div>
+</div>
+<a id="ac9b6396dee8bec82005d7df63a33320e" name="ac9b6396dee8bec82005d7df63a33320e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9b6396dee8bec82005d7df63a33320e">&#9670;&#160;</a></span>post_regrid_actions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void amr_wind::PostProcessBase::post_regrid_actions </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel pure-virtual">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Actions to perform post regrid. </p>
+
+</div>
+</div>
+<a id="a130982947f10f26448687769ddb511f4" name="a130982947f10f26448687769ddb511f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a130982947f10f26448687769ddb511f4">&#9670;&#160;</a></span>pre_init_actions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void amr_wind::PostProcessBase::pre_init_actions </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel pure-virtual">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a9fdbfb5f4d877ed20207bda9645c2a2a" name="a9fdbfb5f4d877ed20207bda9645c2a2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9fdbfb5f4d877ed20207bda9645c2a2a">&#9670;&#160;</a></span>m_enforce_dt</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::PostProcessBase::m_enforce_dt {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Flag for enforcing time step based on output time. </p>
+
+</div>
+</div>
+<a id="a19c813537550b7cb19063f85b313dbb6" name="a19c813537550b7cb19063f85b313dbb6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19c813537550b7cb19063f85b313dbb6">&#9670;&#160;</a></span>m_enforce_dt_tol</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::PostProcessBase::m_enforce_dt_tol {1.0e-3_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Relative (to m_out_time_interval) tolerance for enforcing dt. </p>
+
+</div>
+</div>
+<a id="a3035972c07183f9f9860e1394389c304" name="a3035972c07183f9f9860e1394389c304"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3035972c07183f9f9860e1394389c304">&#9670;&#160;</a></span>m_out_delay</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::PostProcessBase::m_out_delay {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Time step delay for output. </p>
+
+</div>
+</div>
+<a id="a56b5bdf55698abe660d15f51f3f4fbca" name="a56b5bdf55698abe660d15f51f3f4fbca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56b5bdf55698abe660d15f51f3f4fbca">&#9670;&#160;</a></span>m_out_interval</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::PostProcessBase::m_out_interval {10}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Time step interval for output. </p>
+
+</div>
+</div>
+<a id="aad94b64986786458a3e976500d60ec9b" name="aad94b64986786458a3e976500d60ec9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad94b64986786458a3e976500d60ec9b">&#9670;&#160;</a></span>m_out_time_delay</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::PostProcessBase::m_out_time_delay {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Time delay for output. </p>
+
+</div>
+</div>
+<a id="a054738653f74eef98205148fd44d3cd4" name="a054738653f74eef98205148fd44d3cd4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a054738653f74eef98205148fd44d3cd4">&#9670;&#160;</a></span>m_out_time_interval</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::PostProcessBase::m_out_time_interval {-1.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Time interval for output. </p>
+
+</div>
+</div>
+<a id="a23f7222a102c120f69dbf35557ba9957" name="a23f7222a102c120f69dbf35557ba9957"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23f7222a102c120f69dbf35557ba9957">&#9670;&#160;</a></span>m_out_time_tol</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::PostProcessBase::m_out_time_tol</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">{</div>
+<div class="line">        std::numeric_limits&lt;amrex::Real&gt;::epsilon() * 1.0e4_rt}</div>
+</div><!-- fragment -->
+<p>Relative (to dt) tolerance for time interval output. </p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/<a class="el" href="_post_processing_8_h_source.html">PostProcessing.H</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

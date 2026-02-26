@@ -1,0 +1,14 @@
+.. meta::34e2a3e4159c5275b9c36904a3b9dec156e5f5e73858fb1c1c4f7e176bcdaeb896318b4ab670228d3c40a1c2aee33c422c1d19ed01bdebde5a7110926082ad6b
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::fvm::stencil::StencilInterior Struct Reference
+
+StencilInterior Struct Reference
+================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1fvm_1_1stencil_1_1_stencil_interior.html

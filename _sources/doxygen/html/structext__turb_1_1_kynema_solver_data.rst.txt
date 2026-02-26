@@ -1,0 +1,14 @@
+.. meta::5d7199914e8a18633a09b4fd5e35a3652c5040ac77385dbc8637443a123d106913a0df31acd5ad1f415900ded3192ef58b773f58e70628b81c0dc8a65e04e8d0
+
+:orphan:
+
+.. title:: AMR-Wind API: ext_turb::KynemaSolverData Struct Reference
+
+KynemaSolverData Struct Reference
+=================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structext__turb_1_1_kynema_solver_data.html

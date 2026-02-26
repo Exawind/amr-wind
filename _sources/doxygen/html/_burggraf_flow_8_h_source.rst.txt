@@ -1,0 +1,14 @@
+.. meta::2203b385f5e9b33590c93b2debcc456fb853cbb44a65e02be3c412bf40239d2c26cd2577adfeee1cfc5c9ef4e45988d7ae9bf1a5cc56d2027436220be704b5a1
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/BurggrafFlow.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/physics/BurggrafFlow.H Source File
+===============================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _burggraf_flow_8_h_source.html

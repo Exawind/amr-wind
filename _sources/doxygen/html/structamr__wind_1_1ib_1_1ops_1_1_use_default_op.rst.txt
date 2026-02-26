@@ -1,0 +1,14 @@
+.. meta::8e5deddc834a1cb42f7af5ddd69374ed02eb1995904238f2cd23f53cead1a891107265ab847d4a8d0f1df00694e3969409e7d1468614691be71d35734d515b53
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ib::ops::UseDefaultOp&lt; GeomTrait &gt; Struct Template Reference
+
+UseDefaultOp&lt; GeomTrait &gt; Struct Template Reference
+=========================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ib_1_1ops_1_1_use_default_op.html

@@ -1,0 +1,2577 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::SimTime Class Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::SimTime Class Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/classamr__wind_1_1_sim_time.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="simtime-class-reference">
+<h1>SimTime Class Reference<a class="headerlink" href="#simtime-class-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::SimTime Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="classamr__wind_1_1_sim_time.html">SimTime</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-attribs">Static Public Attributes</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
+<a href="classamr__wind_1_1_sim_time-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::SimTime Class Reference<div class="ingroups"><a class="el" href="group__core.html">AMR-Wind core</a></div></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_sim_time_8_h_source.html">SimTime.H</a>&gt;</code></p>
+<div class="dynheader">
+Collaboration diagram for amr_wind::SimTime:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1_sim_time__coll__graph.svg" width="270" height="324"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:ab4e56481a0ac8c6d2ec6f3a0f60cad79" id="r_ab4e56481a0ac8c6d2ec6f3a0f60cad79"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab4e56481a0ac8c6d2ec6f3a0f60cad79">SimTime</a> ()=default</td></tr>
+<tr class="memitem:a4b8b7e07cdc77b666492e7526ae33160" id="r_a4b8b7e07cdc77b666492e7526ae33160"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4b8b7e07cdc77b666492e7526ae33160">~SimTime</a> ()=default</td></tr>
+<tr class="memitem:a6876c4852c53ab6f86bba1cb09386339" id="r_a6876c4852c53ab6f86bba1cb09386339"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6876c4852c53ab6f86bba1cb09386339">new_timestep</a> ()</td></tr>
+<tr class="memitem:a295405ece837a18d26211583a9fb8116" id="r_a295405ece837a18d26211583a9fb8116"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a295405ece837a18d26211583a9fb8116">continue_simulation</a> () const</td></tr>
+<tr class="memitem:aea4d80055086b6dbf477bc9032c313b6" id="r_aea4d80055086b6dbf477bc9032c313b6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aea4d80055086b6dbf477bc9032c313b6">do_regrid</a> () const</td></tr>
+<tr class="memitem:a13eea14d1f2f1aafa84288bb1cc50d00" id="r_a13eea14d1f2f1aafa84288bb1cc50d00"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a13eea14d1f2f1aafa84288bb1cc50d00">write_plot_file</a> () const</td></tr>
+<tr class="memitem:ab27766d7a2d3559537e8b8227ca53624" id="r_ab27766d7a2d3559537e8b8227ca53624"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab27766d7a2d3559537e8b8227ca53624">write_checkpoint</a> () const</td></tr>
+<tr class="memitem:a581cd4d49991970dbb6b28410fb61426" id="r_a581cd4d49991970dbb6b28410fb61426"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a581cd4d49991970dbb6b28410fb61426">write_last_plot_file</a> () const</td></tr>
+<tr class="memitem:a9c9ae99a73e7c12ba0e6ff5641a128a9" id="r_a9c9ae99a73e7c12ba0e6ff5641a128a9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9c9ae99a73e7c12ba0e6ff5641a128a9">write_last_checkpoint</a> () const</td></tr>
+<tr class="memitem:a2f9c28ae31553ebec497ed777e5ce3f3" id="r_a2f9c28ae31553ebec497ed777e5ce3f3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2f9c28ae31553ebec497ed777e5ce3f3">set_current_cfl</a> (amrex::Real conv_cfl, amrex::Real diff_cfl, amrex::Real src_cfl)</td></tr>
+<tr class="memitem:a5ab2edf235c5270433409cbac5c1378e" id="r_a5ab2edf235c5270433409cbac5c1378e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5ab2edf235c5270433409cbac5c1378e">advance_time</a> ()</td></tr>
+<tr class="memitem:ac34212aed4ea0f3c42e7a5939fb5e7e2" id="r_ac34212aed4ea0f3c42e7a5939fb5e7e2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac34212aed4ea0f3c42e7a5939fb5e7e2">set_restart_time</a> (int tidx, amrex::Real time)</td></tr>
+<tr class="memitem:a7334d3c6a2e088e120b9775ee86ddbb0" id="r_a7334d3c6a2e088e120b9775ee86ddbb0"><td class="memItemLeft" align="right" valign="top">AMREX_FORCE_INLINE amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7334d3c6a2e088e120b9775ee86ddbb0">delta_t</a> () const</td></tr>
+<tr class="memitem:acbc8e28d38eab7ac8bb388d531b79f59" id="r_acbc8e28d38eab7ac8bb388d531b79f59"><td class="memItemLeft" align="right" valign="top">AMREX_FORCE_INLINE amrex::Real &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acbc8e28d38eab7ac8bb388d531b79f59">delta_t</a> ()</td></tr>
+<tr class="memitem:a2ffd6552382c5ddbf7e5771e557ed500" id="r_a2ffd6552382c5ddbf7e5771e557ed500"><td class="memItemLeft" align="right" valign="top">AMREX_FORCE_INLINE amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2ffd6552382c5ddbf7e5771e557ed500">delta_t_nm1</a> () const</td></tr>
+<tr class="memitem:a5a3dabeef70b1f0e264342693bfe69a2" id="r_a5a3dabeef70b1f0e264342693bfe69a2"><td class="memItemLeft" align="right" valign="top">AMREX_FORCE_INLINE amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5a3dabeef70b1f0e264342693bfe69a2">delta_t_nm2</a> () const</td></tr>
+<tr class="memitem:a815e6a70d83b16ed8c239da12c2de155" id="r_a815e6a70d83b16ed8c239da12c2de155"><td class="memItemLeft" align="right" valign="top">AMREX_FORCE_INLINE amrex::Real &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a815e6a70d83b16ed8c239da12c2de155">delta_t_nm1</a> ()</td></tr>
+<tr class="memitem:a1bb1056077a0fb05d05ed066f5f31285" id="r_a1bb1056077a0fb05d05ed066f5f31285"><td class="memItemLeft" align="right" valign="top">AMREX_FORCE_INLINE amrex::Real &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1bb1056077a0fb05d05ed066f5f31285">delta_t_nm2</a> ()</td></tr>
+<tr class="memitem:acfe7e36c17f949615ff7ce65a3161e0d" id="r_acfe7e36c17f949615ff7ce65a3161e0d"><td class="memItemLeft" align="right" valign="top">AMREX_FORCE_INLINE amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acfe7e36c17f949615ff7ce65a3161e0d">current_time</a> () const</td></tr>
+<tr class="memitem:a769a9e163440215a42df16b685ee67e9" id="r_a769a9e163440215a42df16b685ee67e9"><td class="memItemLeft" align="right" valign="top">AMREX_FORCE_INLINE amrex::Real &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a769a9e163440215a42df16b685ee67e9">current_time</a> ()</td></tr>
+<tr class="memitem:a41dbe1da02ae4d42df486c64f9014eaf" id="r_a41dbe1da02ae4d42df486c64f9014eaf"><td class="memItemLeft" align="right" valign="top">AMREX_FORCE_INLINE amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a41dbe1da02ae4d42df486c64f9014eaf">new_time</a> () const</td></tr>
+<tr class="memitem:a62503b1b70b3957449de6d7ee7b2dd4f" id="r_a62503b1b70b3957449de6d7ee7b2dd4f"><td class="memItemLeft" align="right" valign="top">AMREX_FORCE_INLINE amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a62503b1b70b3957449de6d7ee7b2dd4f">max_cfl</a> () const</td></tr>
+<tr class="memitem:a73e13807176999ff3813e952318514ba" id="r_a73e13807176999ff3813e952318514ba"><td class="memItemLeft" align="right" valign="top">AMREX_FORCE_INLINE amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a73e13807176999ff3813e952318514ba">get_minimum_enforce_dt_abs_tol</a> () const</td></tr>
+<tr class="memitem:a2e5adf26426dc2125954797919edd02b" id="r_a2e5adf26426dc2125954797919edd02b"><td class="memItemLeft" align="right" valign="top">AMREX_FORCE_INLINE int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2e5adf26426dc2125954797919edd02b">time_index</a> () const</td></tr>
+<tr class="memitem:a9a610fb292c9707cd78f3ae14eee5e2d" id="r_a9a610fb292c9707cd78f3ae14eee5e2d"><td class="memItemLeft" align="right" valign="top">AMREX_FORCE_INLINE int &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9a610fb292c9707cd78f3ae14eee5e2d">time_index</a> ()</td></tr>
+<tr class="memitem:abf2eb5b573c74ce7c91fceb4a34811c9" id="r_abf2eb5b573c74ce7c91fceb4a34811c9"><td class="memItemLeft" align="right" valign="top">AMREX_FORCE_INLINE bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abf2eb5b573c74ce7c91fceb4a34811c9">adaptive_timestep</a> () const</td></tr>
+<tr class="memitem:acb317ef0592cead9bc3e6e02133fc1ee" id="r_acb317ef0592cead9bc3e6e02133fc1ee"><td class="memItemLeft" align="right" valign="top">AMREX_FORCE_INLINE bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acb317ef0592cead9bc3e6e02133fc1ee">use_force_cfl</a> () const</td></tr>
+<tr class="memitem:abd408192995e9c6a9417de09b068e000" id="r_abd408192995e9c6a9417de09b068e000"><td class="memItemLeft" align="right" valign="top">AMREX_FORCE_INLINE int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abd408192995e9c6a9417de09b068e000">regrid_interval</a> () const</td></tr>
+<tr class="memitem:adaaa6d44e0a1261d8d9dd4243022142f" id="r_adaaa6d44e0a1261d8d9dd4243022142f"><td class="memItemLeft" align="right" valign="top">AMREX_FORCE_INLINE amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adaaa6d44e0a1261d8d9dd4243022142f">start_time</a> () const</td></tr>
+<tr class="memitem:a723c0a964b3fa2290438cb76e672a853" id="r_a723c0a964b3fa2290438cb76e672a853"><td class="memItemLeft" align="right" valign="top">AMREX_FORCE_INLINE amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a723c0a964b3fa2290438cb76e672a853">stop_time</a> () const</td></tr>
+<tr class="memitem:a7214510a40d7b769537ca174bcae7c3f" id="r_a7214510a40d7b769537ca174bcae7c3f"><td class="memItemLeft" align="right" valign="top">AMREX_FORCE_INLINE int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7214510a40d7b769537ca174bcae7c3f">start_time_index</a> () const</td></tr>
+<tr class="memitem:a92defb3a5bc7344b412c66c1239bc66d" id="r_a92defb3a5bc7344b412c66c1239bc66d"><td class="memItemLeft" align="right" valign="top">AMREX_FORCE_INLINE int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a92defb3a5bc7344b412c66c1239bc66d">stop_time_index</a> () const</td></tr>
+<tr class="memitem:ab1c13f5360f487a8bbe41c5716c39574" id="r_ab1c13f5360f487a8bbe41c5716c39574"><td class="memItemLeft" align="right" valign="top">AMREX_FORCE_INLINE int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab1c13f5360f487a8bbe41c5716c39574">chkpt_interval</a> () const</td></tr>
+<tr class="memitem:aa84cbbcdecc5aa2c0816f5733a361048" id="r_aa84cbbcdecc5aa2c0816f5733a361048"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa84cbbcdecc5aa2c0816f5733a361048">parse_parameters</a> ()</td></tr>
+<tr class="memdesc:aa84cbbcdecc5aa2c0816f5733a361048"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read user defined options from input file.  <br /></td></tr>
+<tr class="memitem:aa9e75132d5679f09d59bfd2ddf4d63be" id="r_aa9e75132d5679f09d59bfd2ddf4d63be"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa9e75132d5679f09d59bfd2ddf4d63be">add_postproc_dt_parameters</a> (const bool enforce_dt_flag, const amrex::Real enforce_dt_tol, const amrex::Real time_interval, const amrex::Real time_delay)</td></tr>
+<tr class="memdesc:aa9e75132d5679f09d59bfd2ddf4d63be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get timestep considerations from postprocessing instances.  <br /></td></tr>
+<tr class="memitem:a62101b030536f8b6577c1fd87352f096" id="r_a62101b030536f8b6577c1fd87352f096"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a62101b030536f8b6577c1fd87352f096">calculate_minimum_enforce_dt_abs_tol</a> ()</td></tr>
+<tr class="memdesc:a62101b030536f8b6577c1fd87352f096"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate minimum enforce dt tolerance based on all considerations.  <br /></td></tr>
+<tr class="memitem:a3c55c9db28271a9d8b3213db24e80a0d" id="r_a3c55c9db28271a9d8b3213db24e80a0d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3c55c9db28271a9d8b3213db24e80a0d">override_simulation_end_parameters</a> ()</td></tr>
+<tr class="memdesc:a3c55c9db28271a9d8b3213db24e80a0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deactivate ending parameters (overset should be externally controlled)  <br /></td></tr>
+<tr class="memitem:a4b541d71c2d1dbc7ce669654f8eaa53b" id="r_a4b541d71c2d1dbc7ce669654f8eaa53b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4b541d71c2d1dbc7ce669654f8eaa53b">output_profiling_info</a> () const</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-attribs" class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+Static Public Attributes</h2></td></tr>
+<tr class="memitem:a9e401874e0f0490814f7ff358d9937a3" id="r_a9e401874e0f0490814f7ff358d9937a3"><td class="memItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9e401874e0f0490814f7ff358d9937a3">max_time_states</a> = 3</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:ab539a6a3fb243931e312a2a54e9de524" id="r_ab539a6a3fb243931e312a2a54e9de524"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab539a6a3fb243931e312a2a54e9de524">m_dt</a></td></tr>
+<tr class="memdesc:ab539a6a3fb243931e312a2a54e9de524"><td class="mdescLeft">&#160;</td><td class="mdescRight">Timestep sizes.  <br /></td></tr>
+<tr class="memitem:af84d53781c8aedf416213c58ab436051" id="r_af84d53781c8aedf416213c58ab436051"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af84d53781c8aedf416213c58ab436051">m_cur_time</a> {0.0_rt}</td></tr>
+<tr class="memdesc:af84d53781c8aedf416213c58ab436051"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current simulation time.  <br /></td></tr>
+<tr class="memitem:a5f95fe4cf5931ce58bee3d383f63ab1c" id="r_a5f95fe4cf5931ce58bee3d383f63ab1c"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5f95fe4cf5931ce58bee3d383f63ab1c">m_new_time</a> {0.0_rt}</td></tr>
+<tr class="memdesc:a5f95fe4cf5931ce58bee3d383f63ab1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time where a new timestep will advance to.  <br /></td></tr>
+<tr class="memitem:a6011d3cfee0b2028895b4db9214a0b53" id="r_a6011d3cfee0b2028895b4db9214a0b53"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6011d3cfee0b2028895b4db9214a0b53">m_start_time</a> {0.0_rt}</td></tr>
+<tr class="memdesc:a6011d3cfee0b2028895b4db9214a0b53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starting simulation time (to track restart)  <br /></td></tr>
+<tr class="memitem:af16aae1b47b8528e01b54867706ae020" id="r_af16aae1b47b8528e01b54867706ae020"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af16aae1b47b8528e01b54867706ae020">m_stop_time</a> {-1.0_rt}</td></tr>
+<tr class="memdesc:af16aae1b47b8528e01b54867706ae020"><td class="mdescLeft">&#160;</td><td class="mdescRight">Max time for simulation.  <br /></td></tr>
+<tr class="memitem:a2cae5d8dd27a4bad7692be53c23ff69f" id="r_a2cae5d8dd27a4bad7692be53c23ff69f"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2cae5d8dd27a4bad7692be53c23ff69f">m_delay_time</a> {-1.0_rt}</td></tr>
+<tr class="memdesc:a2cae5d8dd27a4bad7692be53c23ff69f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delayed adaptive stepping.  <br /></td></tr>
+<tr class="memitem:a8b6fa6fb0f801ffaedb7b767723c865a" id="r_a8b6fa6fb0f801ffaedb7b767723c865a"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8b6fa6fb0f801ffaedb7b767723c865a">m_max_cfl</a> {1.0_rt}</td></tr>
+<tr class="memdesc:a8b6fa6fb0f801ffaedb7b767723c865a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum CFL constraint.  <br /></td></tr>
+<tr class="memitem:a72f32eeafb9e9933d0b49a9da206d84f" id="r_a72f32eeafb9e9933d0b49a9da206d84f"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a72f32eeafb9e9933d0b49a9da206d84f">m_fixed_dt</a> {-1.0_rt}</td></tr>
+<tr class="memdesc:a72f32eeafb9e9933d0b49a9da206d84f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fixed delta_t indicated by user.  <br /></td></tr>
+<tr class="memitem:affc95aee2365bbdf04a5891527cc64da" id="r_affc95aee2365bbdf04a5891527cc64da"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#affc95aee2365bbdf04a5891527cc64da">m_initial_dt</a> {-1.0_rt}</td></tr>
+<tr class="memdesc:affc95aee2365bbdf04a5891527cc64da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initial delta_t indicated by user.  <br /></td></tr>
+<tr class="memitem:a70ce5b873185ab2ed79c0dfc696667ff" id="r_a70ce5b873185ab2ed79c0dfc696667ff"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a70ce5b873185ab2ed79c0dfc696667ff">m_max_dt</a> {-1.0_rt}</td></tr>
+<tr class="memdesc:a70ce5b873185ab2ed79c0dfc696667ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum delta_t indicated by user.  <br /></td></tr>
+<tr class="memitem:acf8d70265ada849aaee61449a577d059" id="r_acf8d70265ada849aaee61449a577d059"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acf8d70265ada849aaee61449a577d059">m_min_dt</a> {-1.0_rt}</td></tr>
+<tr class="memdesc:acf8d70265ada849aaee61449a577d059"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimum delta_t indicated by user.  <br /></td></tr>
+<tr class="memitem:a397bb5645ba2f33f8a9445b01f6cefc1" id="r_a397bb5645ba2f33f8a9445b01f6cefc1"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a397bb5645ba2f33f8a9445b01f6cefc1">m_current_cfl</a> {0.0_rt}</td></tr>
+<tr class="memdesc:a397bb5645ba2f33f8a9445b01f6cefc1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current CFL.  <br /></td></tr>
+<tr class="memitem:ab287f7cd1b834c3534902b4b33cf36cf" id="r_ab287f7cd1b834c3534902b4b33cf36cf"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab287f7cd1b834c3534902b4b33cf36cf">m_conv_cfl</a> {0.0_rt}</td></tr>
+<tr class="memdesc:ab287f7cd1b834c3534902b4b33cf36cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current CFL categories.  <br /></td></tr>
+<tr class="memitem:a7924f2258fbc04370d78b3c7628d5253" id="r_a7924f2258fbc04370d78b3c7628d5253"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7924f2258fbc04370d78b3c7628d5253">m_diff_cfl</a> {0.0_rt}</td></tr>
+<tr class="memitem:a945f026f7bcc0659bf3a8da2d48c1270" id="r_a945f026f7bcc0659bf3a8da2d48c1270"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a945f026f7bcc0659bf3a8da2d48c1270">m_src_cfl</a> {0.0_rt}</td></tr>
+<tr class="memitem:a79495e72aecd8c8cd123eb66d4da519d" id="r_a79495e72aecd8c8cd123eb66d4da519d"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a79495e72aecd8c8cd123eb66d4da519d">m_dt_calc</a> {0.0_rt}</td></tr>
+<tr class="memdesc:a79495e72aecd8c8cd123eb66d4da519d"><td class="mdescLeft">&#160;</td><td class="mdescRight">delta_t calculated using CFL constraint  <br /></td></tr>
+<tr class="memitem:a9eea745371b7e5287bf093ecce06fd20" id="r_a9eea745371b7e5287bf093ecce06fd20"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9eea745371b7e5287bf093ecce06fd20">m_init_shrink</a> {0.1_rt}</td></tr>
+<tr class="memdesc:a9eea745371b7e5287bf093ecce06fd20"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initial reduction in timestep size for startup.  <br /></td></tr>
+<tr class="memitem:a975780d86d0a2c1db34371294a1e4401" id="r_a975780d86d0a2c1db34371294a1e4401"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a975780d86d0a2c1db34371294a1e4401">m_dt_growth</a> {0.1_rt}</td></tr>
+<tr class="memdesc:a975780d86d0a2c1db34371294a1e4401"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum growth of dt between timesteps.  <br /></td></tr>
+<tr class="memitem:ad50cf2e122f8467500052b1994affbe6" id="r_ad50cf2e122f8467500052b1994affbe6"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad50cf2e122f8467500052b1994affbe6">m_chkpt_t_interval</a> {-1.0_rt}</td></tr>
+<tr class="memdesc:ad50cf2e122f8467500052b1994affbe6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time interval for writing checkpoint/restart files.  <br /></td></tr>
+<tr class="memitem:a4441dc23e85d5019780cd4f02a7b27e4" id="r_a4441dc23e85d5019780cd4f02a7b27e4"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4441dc23e85d5019780cd4f02a7b27e4">m_chkpt_t_delay</a> {0.0_rt}</td></tr>
+<tr class="memdesc:a4441dc23e85d5019780cd4f02a7b27e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time delay for checkpoint/restart output.  <br /></td></tr>
+<tr class="memitem:a25ebeecbd4e13a39fc8722c7731b9905" id="r_a25ebeecbd4e13a39fc8722c7731b9905"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a25ebeecbd4e13a39fc8722c7731b9905">m_chkpt_t_tol</a> {std::numeric_limits&lt;float&gt;::epsilon() * 1.0e1_rt}</td></tr>
+<tr class="memdesc:a25ebeecbd4e13a39fc8722c7731b9905"><td class="mdescLeft">&#160;</td><td class="mdescRight">Relative (to dt) tolerance for checkpoint time interval output.  <br /></td></tr>
+<tr class="memitem:a55c6c30c4449f94e16ad941c740249bc" id="r_a55c6c30c4449f94e16ad941c740249bc"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a55c6c30c4449f94e16ad941c740249bc">m_force_chkpt_tol</a> {1.0e-3_rt}</td></tr>
+<tr class="memdesc:a55c6c30c4449f94e16ad941c740249bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Relative (to chkpt_t_interval) tolerance for enforcing dt.  <br /></td></tr>
+<tr class="memitem:a02ee3add960d76cd2d1b50418218e667" id="r_a02ee3add960d76cd2d1b50418218e667"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a02ee3add960d76cd2d1b50418218e667">m_plt_t_interval</a> {-1.0_rt}</td></tr>
+<tr class="memdesc:a02ee3add960d76cd2d1b50418218e667"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time interval for plot file output.  <br /></td></tr>
+<tr class="memitem:aef9c1610d5c15753b80ad0459e9829cd" id="r_aef9c1610d5c15753b80ad0459e9829cd"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aef9c1610d5c15753b80ad0459e9829cd">m_plt_t_delay</a> {0.0_rt}</td></tr>
+<tr class="memdesc:aef9c1610d5c15753b80ad0459e9829cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time delay for plot file output.  <br /></td></tr>
+<tr class="memitem:a9a0d061df717516fdbdc537d0a3dfdac" id="r_a9a0d061df717516fdbdc537d0a3dfdac"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9a0d061df717516fdbdc537d0a3dfdac">m_plt_t_tol</a> {std::numeric_limits&lt;float&gt;::epsilon() * 1.0e1_rt}</td></tr>
+<tr class="memdesc:a9a0d061df717516fdbdc537d0a3dfdac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Relative (to dt) tolerance for plot time interval output.  <br /></td></tr>
+<tr class="memitem:ace35d3275ed394d6de67ec93354e0628" id="r_ace35d3275ed394d6de67ec93354e0628"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ace35d3275ed394d6de67ec93354e0628">m_force_plt_tol</a> {1.0e-3_rt}</td></tr>
+<tr class="memdesc:ace35d3275ed394d6de67ec93354e0628"><td class="mdescLeft">&#160;</td><td class="mdescRight">Relative (to plt_t_interval) tolerance for enforcing dt.  <br /></td></tr>
+<tr class="memitem:a19512f944bea32d228015c8ba47fdcb9" id="r_a19512f944bea32d228015c8ba47fdcb9"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a19512f944bea32d228015c8ba47fdcb9">m_force_dt_abs_tol</a> {1.0e8_rt}</td></tr>
+<tr class="memdesc:a19512f944bea32d228015c8ba47fdcb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Smallest absolute tolerance for enforcing dt, considering all.  <br /></td></tr>
+<tr class="memitem:ae601dfb31039222a83218811f1393a54" id="r_ae601dfb31039222a83218811f1393a54"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae601dfb31039222a83218811f1393a54">m_chkpt_start_time</a> {0.0_rt}</td></tr>
+<tr class="memdesc:ae601dfb31039222a83218811f1393a54"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initial starting time for generating checkpoint files (time-based)  <br /></td></tr>
+<tr class="memitem:a6dc095fdda1f1c2300d9311b6d6cf919" id="r_a6dc095fdda1f1c2300d9311b6d6cf919"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6dc095fdda1f1c2300d9311b6d6cf919">m_plt_start_time</a> {0.0_rt}</td></tr>
+<tr class="memdesc:a6dc095fdda1f1c2300d9311b6d6cf919"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initial starting time for generating output files (time-based)  <br /></td></tr>
+<tr class="memitem:a112f5ff9e516cdf78e269b54228436e0" id="r_a112f5ff9e516cdf78e269b54228436e0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a112f5ff9e516cdf78e269b54228436e0">m_time_index</a> {0}</td></tr>
+<tr class="memdesc:a112f5ff9e516cdf78e269b54228436e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Counter for the number of timesteps since start of simulation.  <br /></td></tr>
+<tr class="memitem:afb8ce7d7e2c56c3f7d587d05e8189561" id="r_afb8ce7d7e2c56c3f7d587d05e8189561"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afb8ce7d7e2c56c3f7d587d05e8189561">m_start_time_index</a> {0}</td></tr>
+<tr class="memdesc:afb8ce7d7e2c56c3f7d587d05e8189561"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initial starting time index.  <br /></td></tr>
+<tr class="memitem:a1bdda947120fa41e487362e0821853db" id="r_a1bdda947120fa41e487362e0821853db"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1bdda947120fa41e487362e0821853db">m_chkpt_start_index</a> {0}</td></tr>
+<tr class="memdesc:a1bdda947120fa41e487362e0821853db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initial starting time index for generating checkpoint files.  <br /></td></tr>
+<tr class="memitem:a4ee3e2b27e6e034516e8f8f7dc97bfb8" id="r_a4ee3e2b27e6e034516e8f8f7dc97bfb8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4ee3e2b27e6e034516e8f8f7dc97bfb8">m_plt_start_index</a> {0}</td></tr>
+<tr class="memdesc:a4ee3e2b27e6e034516e8f8f7dc97bfb8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initial starting time index for generating output files.  <br /></td></tr>
+<tr class="memitem:a568f3f4365613f1de3c07358254c9596" id="r_a568f3f4365613f1de3c07358254c9596"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a568f3f4365613f1de3c07358254c9596">m_regrid_start_index</a> {0}</td></tr>
+<tr class="memdesc:a568f3f4365613f1de3c07358254c9596"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initial starting time index for regriding.  <br /></td></tr>
+<tr class="memitem:a3ad942580cb423547b22449c9be0760b" id="r_a3ad942580cb423547b22449c9be0760b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3ad942580cb423547b22449c9be0760b">m_stop_time_index</a> {-1}</td></tr>
+<tr class="memdesc:a3ad942580cb423547b22449c9be0760b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum timesteps for simulation.  <br /></td></tr>
+<tr class="memitem:a2b3fd07cb431f8530ddea394f3c9ce6b" id="r_a2b3fd07cb431f8530ddea394f3c9ce6b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2b3fd07cb431f8530ddea394f3c9ce6b">m_chkpt_interval</a> {-1}</td></tr>
+<tr class="memdesc:a2b3fd07cb431f8530ddea394f3c9ce6b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time step interval for writing checkpoint/restart files.  <br /></td></tr>
+<tr class="memitem:a908cda497a16f24167c32c69307a88a6" id="r_a908cda497a16f24167c32c69307a88a6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a908cda497a16f24167c32c69307a88a6">m_chkpt_delay</a> {0}</td></tr>
+<tr class="memdesc:a908cda497a16f24167c32c69307a88a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time step delay for checkpoint/restart output (this means that output only happens after the delay)  <br /></td></tr>
+<tr class="memitem:a1766b9001d51a0b049ac0ba96af607c3" id="r_a1766b9001d51a0b049ac0ba96af607c3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1766b9001d51a0b049ac0ba96af607c3">m_plt_interval</a> {-1}</td></tr>
+<tr class="memdesc:a1766b9001d51a0b049ac0ba96af607c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time step interval for plot file output.  <br /></td></tr>
+<tr class="memitem:af7ec2404b081292cd11f4b0d4a61efda" id="r_af7ec2404b081292cd11f4b0d4a61efda"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af7ec2404b081292cd11f4b0d4a61efda">m_plt_delay</a> {0}</td></tr>
+<tr class="memdesc:af7ec2404b081292cd11f4b0d4a61efda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time step delay for plot file output.  <br /></td></tr>
+<tr class="memitem:a6be0aac645481139a518a80f022b2819" id="r_a6be0aac645481139a518a80f022b2819"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6be0aac645481139a518a80f022b2819">m_regrid_interval</a> {-1}</td></tr>
+<tr class="memdesc:a6be0aac645481139a518a80f022b2819"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time interval for regridding.  <br /></td></tr>
+<tr class="memitem:a269349568cbdd13facecc64817a3bef3" id="r_a269349568cbdd13facecc64817a3bef3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a269349568cbdd13facecc64817a3bef3">m_profiling_interval</a> {-1}</td></tr>
+<tr class="memdesc:a269349568cbdd13facecc64817a3bef3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time step interval for profiling output.  <br /></td></tr>
+<tr class="memitem:a3c8b0703be201660e4b689bff270f37a" id="r_a3c8b0703be201660e4b689bff270f37a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3c8b0703be201660e4b689bff270f37a">m_verbose</a> {0}</td></tr>
+<tr class="memdesc:a3c8b0703be201660e4b689bff270f37a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Verbosity.  <br /></td></tr>
+<tr class="memitem:a83e897d948280eb4ffb91a6a4ec1e519" id="r_a83e897d948280eb4ffb91a6a4ec1e519"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a83e897d948280eb4ffb91a6a4ec1e519">m_adaptive</a> {false}</td></tr>
+<tr class="memdesc:a83e897d948280eb4ffb91a6a4ec1e519"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flag indicating whether timestep is adaptive.  <br /></td></tr>
+<tr class="memitem:a44153cb6d1c9e8205ea01f8d94623c1d" id="r_a44153cb6d1c9e8205ea01f8d94623c1d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a44153cb6d1c9e8205ea01f8d94623c1d">m_is_init</a> {true}</td></tr>
+<tr class="memdesc:a44153cb6d1c9e8205ea01f8d94623c1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flag indicating if this is initialization.  <br /></td></tr>
+<tr class="memitem:abe5eddfb61bb074c35a3becafca982f1" id="r_abe5eddfb61bb074c35a3becafca982f1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abe5eddfb61bb074c35a3becafca982f1">m_use_force_cfl</a> {true}</td></tr>
+<tr class="memdesc:abe5eddfb61bb074c35a3becafca982f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flag indicating if forcing should be included in CFL calculation.  <br /></td></tr>
+<tr class="memitem:a4716b1f308a00d7915433b57edb218d2" id="r_a4716b1f308a00d7915433b57edb218d2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4716b1f308a00d7915433b57edb218d2">m_force_chkpt_dt</a> {false}</td></tr>
+<tr class="memdesc:a4716b1f308a00d7915433b57edb218d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bool for if checkpoint time interval should be forced.  <br /></td></tr>
+<tr class="memitem:a5990910a16521a7a9eb511ab8ad40ce6" id="r_a5990910a16521a7a9eb511ab8ad40ce6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5990910a16521a7a9eb511ab8ad40ce6">m_force_plt_dt</a> {false}</td></tr>
+<tr class="memdesc:a5990910a16521a7a9eb511ab8ad40ce6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bool for if plt time interval should be forced.  <br /></td></tr>
+<tr class="memitem:aca4e0966414624e9d66675415712596e" id="r_aca4e0966414624e9d66675415712596e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aca4e0966414624e9d66675415712596e">m_postprocess_enforce_dt</a></td></tr>
+<tr class="memdesc:aca4e0966414624e9d66675415712596e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Timestep considerations from postprocessing instances.  <br /></td></tr>
+<tr class="memitem:a0a9d2dd393142e15481eab4733296ef0" id="r_a0a9d2dd393142e15481eab4733296ef0"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0a9d2dd393142e15481eab4733296ef0">m_postprocess_enforce_dt_tol</a></td></tr>
+<tr class="memitem:aeb04944dd986db6f221620610f3f68fc" id="r_aeb04944dd986db6f221620610f3f68fc"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeb04944dd986db6f221620610f3f68fc">m_postprocess_time_interval</a></td></tr>
+<tr class="memitem:a926134ce7c65c31180411beb031455d1" id="r_a926134ce7c65c31180411beb031455d1"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a926134ce7c65c31180411beb031455d1">m_postprocess_time_delay</a></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Time manager for simulations </p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="ab4e56481a0ac8c6d2ec6f3a0f60cad79" name="ab4e56481a0ac8c6d2ec6f3a0f60cad79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4e56481a0ac8c6d2ec6f3a0f60cad79">&#9670;&#160;</a></span>SimTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::SimTime::SimTime </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4b8b7e07cdc77b666492e7526ae33160" name="a4b8b7e07cdc77b666492e7526ae33160"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b8b7e07cdc77b666492e7526ae33160">&#9670;&#160;</a></span>~SimTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::SimTime::~SimTime </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="abf2eb5b573c74ce7c91fceb4a34811c9" name="abf2eb5b573c74ce7c91fceb4a34811c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf2eb5b573c74ce7c91fceb4a34811c9">&#9670;&#160;</a></span>adaptive_timestep()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_FORCE_INLINE bool amr_wind::SimTime::adaptive_timestep </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa9e75132d5679f09d59bfd2ddf4d63be" name="aa9e75132d5679f09d59bfd2ddf4d63be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9e75132d5679f09d59bfd2ddf4d63be">&#9670;&#160;</a></span>add_postproc_dt_parameters()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::SimTime::add_postproc_dt_parameters </td>
+          <td>(</td>
+          <td class="paramtype">const bool</td>          <td class="paramname"><span class="paramname"><em>enforce_dt_flag</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>enforce_dt_tol</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>time_interval</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>time_delay</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get timestep considerations from postprocessing instances. </p>
+
+</div>
+</div>
+<a id="a5ab2edf235c5270433409cbac5c1378e" name="a5ab2edf235c5270433409cbac5c1378e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ab2edf235c5270433409cbac5c1378e">&#9670;&#160;</a></span>advance_time()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::SimTime::advance_time </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Use results of CFL and timestepping parameters to advance time to new, output time information </p>
+
+</div>
+</div>
+<a id="a62101b030536f8b6577c1fd87352f096" name="a62101b030536f8b6577c1fd87352f096"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62101b030536f8b6577c1fd87352f096">&#9670;&#160;</a></span>calculate_minimum_enforce_dt_abs_tol()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::SimTime::calculate_minimum_enforce_dt_abs_tol </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Calculate minimum enforce dt tolerance based on all considerations. </p>
+
+</div>
+</div>
+<a id="ab1c13f5360f487a8bbe41c5716c39574" name="ab1c13f5360f487a8bbe41c5716c39574"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1c13f5360f487a8bbe41c5716c39574">&#9670;&#160;</a></span>chkpt_interval()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_FORCE_INLINE int amr_wind::SimTime::chkpt_interval </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a295405ece837a18d26211583a9fb8116" name="a295405ece837a18d26211583a9fb8116"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a295405ece837a18d26211583a9fb8116">&#9670;&#160;</a></span>continue_simulation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::SimTime::continue_simulation </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return true if simulation should continue </p>
+
+</div>
+</div>
+<a id="a769a9e163440215a42df16b685ee67e9" name="a769a9e163440215a42df16b685ee67e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a769a9e163440215a42df16b685ee67e9">&#9670;&#160;</a></span>current_time() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_FORCE_INLINE amrex::Real &amp; amr_wind::SimTime::current_time </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acfe7e36c17f949615ff7ce65a3161e0d" name="acfe7e36c17f949615ff7ce65a3161e0d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfe7e36c17f949615ff7ce65a3161e0d">&#9670;&#160;</a></span>current_time() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_FORCE_INLINE amrex::Real amr_wind::SimTime::current_time </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acbc8e28d38eab7ac8bb388d531b79f59" name="acbc8e28d38eab7ac8bb388d531b79f59"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acbc8e28d38eab7ac8bb388d531b79f59">&#9670;&#160;</a></span>delta_t() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_FORCE_INLINE amrex::Real &amp; amr_wind::SimTime::delta_t </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7334d3c6a2e088e120b9775ee86ddbb0" name="a7334d3c6a2e088e120b9775ee86ddbb0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7334d3c6a2e088e120b9775ee86ddbb0">&#9670;&#160;</a></span>delta_t() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_FORCE_INLINE amrex::Real amr_wind::SimTime::delta_t </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a815e6a70d83b16ed8c239da12c2de155" name="a815e6a70d83b16ed8c239da12c2de155"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a815e6a70d83b16ed8c239da12c2de155">&#9670;&#160;</a></span>delta_t_nm1() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_FORCE_INLINE amrex::Real &amp; amr_wind::SimTime::delta_t_nm1 </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2ffd6552382c5ddbf7e5771e557ed500" name="a2ffd6552382c5ddbf7e5771e557ed500"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ffd6552382c5ddbf7e5771e557ed500">&#9670;&#160;</a></span>delta_t_nm1() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_FORCE_INLINE amrex::Real amr_wind::SimTime::delta_t_nm1 </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1bb1056077a0fb05d05ed066f5f31285" name="a1bb1056077a0fb05d05ed066f5f31285"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1bb1056077a0fb05d05ed066f5f31285">&#9670;&#160;</a></span>delta_t_nm2() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_FORCE_INLINE amrex::Real &amp; amr_wind::SimTime::delta_t_nm2 </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5a3dabeef70b1f0e264342693bfe69a2" name="a5a3dabeef70b1f0e264342693bfe69a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a3dabeef70b1f0e264342693bfe69a2">&#9670;&#160;</a></span>delta_t_nm2() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_FORCE_INLINE amrex::Real amr_wind::SimTime::delta_t_nm2 </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aea4d80055086b6dbf477bc9032c313b6" name="aea4d80055086b6dbf477bc9032c313b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea4d80055086b6dbf477bc9032c313b6">&#9670;&#160;</a></span>do_regrid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::SimTime::do_regrid </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return true if mesh refinement should be performed at this timestep </p>
+
+</div>
+</div>
+<a id="a73e13807176999ff3813e952318514ba" name="a73e13807176999ff3813e952318514ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a73e13807176999ff3813e952318514ba">&#9670;&#160;</a></span>get_minimum_enforce_dt_abs_tol()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_FORCE_INLINE amrex::Real amr_wind::SimTime::get_minimum_enforce_dt_abs_tol </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a62503b1b70b3957449de6d7ee7b2dd4f" name="a62503b1b70b3957449de6d7ee7b2dd4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62503b1b70b3957449de6d7ee7b2dd4f">&#9670;&#160;</a></span>max_cfl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_FORCE_INLINE amrex::Real amr_wind::SimTime::max_cfl </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a41dbe1da02ae4d42df486c64f9014eaf" name="a41dbe1da02ae4d42df486c64f9014eaf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41dbe1da02ae4d42df486c64f9014eaf">&#9670;&#160;</a></span>new_time()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_FORCE_INLINE amrex::Real amr_wind::SimTime::new_time </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6876c4852c53ab6f86bba1cb09386339" name="a6876c4852c53ab6f86bba1cb09386339"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6876c4852c53ab6f86bba1cb09386339">&#9670;&#160;</a></span>new_timestep()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::SimTime::new_timestep </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Advance to a new time state and update internal time states</p>
+<p>Return a boolean flag indicating if the simulation should continue. </p>
+
+</div>
+</div>
+<a id="a4b541d71c2d1dbc7ce669654f8eaa53b" name="a4b541d71c2d1dbc7ce669654f8eaa53b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b541d71c2d1dbc7ce669654f8eaa53b">&#9670;&#160;</a></span>output_profiling_info()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::SimTime::output_profiling_info </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return true if TinyProfiler output should be sent to the log file at this timestep </p>
+
+</div>
+</div>
+<a id="a3c55c9db28271a9d8b3213db24e80a0d" name="a3c55c9db28271a9d8b3213db24e80a0d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c55c9db28271a9d8b3213db24e80a0d">&#9670;&#160;</a></span>override_simulation_end_parameters()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::SimTime::override_simulation_end_parameters </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Deactivate ending parameters (overset should be externally controlled) </p>
+
+</div>
+</div>
+<a id="aa84cbbcdecc5aa2c0816f5733a361048" name="aa84cbbcdecc5aa2c0816f5733a361048"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa84cbbcdecc5aa2c0816f5733a361048">&#9670;&#160;</a></span>parse_parameters()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::SimTime::parse_parameters </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read user defined options from input file. </p>
+
+</div>
+</div>
+<a id="abd408192995e9c6a9417de09b068e000" name="abd408192995e9c6a9417de09b068e000"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd408192995e9c6a9417de09b068e000">&#9670;&#160;</a></span>regrid_interval()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_FORCE_INLINE int amr_wind::SimTime::regrid_interval </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2f9c28ae31553ebec497ed777e5ce3f3" name="a2f9c28ae31553ebec497ed777e5ce3f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f9c28ae31553ebec497ed777e5ce3f3">&#9670;&#160;</a></span>set_current_cfl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::SimTime::set_current_cfl </td>
+          <td>(</td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>conv_cfl</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>diff_cfl</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>src_cfl</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Set current CFL and update timestep based on CFL components </p>
+
+</div>
+</div>
+<a id="ac34212aed4ea0f3c42e7a5939fb5e7e2" name="ac34212aed4ea0f3c42e7a5939fb5e7e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac34212aed4ea0f3c42e7a5939fb5e7e2">&#9670;&#160;</a></span>set_restart_time()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::SimTime::set_restart_time </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>tidx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>time</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Set start time and index based on checkpoint/restart file</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">tidx</td><td>Time index from checkpoint file </td></tr>
+    <tr><td class="paramname">time</td><td>Time read from checkpoint file </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="adaaa6d44e0a1261d8d9dd4243022142f" name="adaaa6d44e0a1261d8d9dd4243022142f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adaaa6d44e0a1261d8d9dd4243022142f">&#9670;&#160;</a></span>start_time()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_FORCE_INLINE amrex::Real amr_wind::SimTime::start_time </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7214510a40d7b769537ca174bcae7c3f" name="a7214510a40d7b769537ca174bcae7c3f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7214510a40d7b769537ca174bcae7c3f">&#9670;&#160;</a></span>start_time_index()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_FORCE_INLINE int amr_wind::SimTime::start_time_index </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a723c0a964b3fa2290438cb76e672a853" name="a723c0a964b3fa2290438cb76e672a853"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a723c0a964b3fa2290438cb76e672a853">&#9670;&#160;</a></span>stop_time()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_FORCE_INLINE amrex::Real amr_wind::SimTime::stop_time </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a92defb3a5bc7344b412c66c1239bc66d" name="a92defb3a5bc7344b412c66c1239bc66d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92defb3a5bc7344b412c66c1239bc66d">&#9670;&#160;</a></span>stop_time_index()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_FORCE_INLINE int amr_wind::SimTime::stop_time_index </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9a610fb292c9707cd78f3ae14eee5e2d" name="a9a610fb292c9707cd78f3ae14eee5e2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a610fb292c9707cd78f3ae14eee5e2d">&#9670;&#160;</a></span>time_index() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_FORCE_INLINE int &amp; amr_wind::SimTime::time_index </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2e5adf26426dc2125954797919edd02b" name="a2e5adf26426dc2125954797919edd02b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e5adf26426dc2125954797919edd02b">&#9670;&#160;</a></span>time_index() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_FORCE_INLINE int amr_wind::SimTime::time_index </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acb317ef0592cead9bc3e6e02133fc1ee" name="acb317ef0592cead9bc3e6e02133fc1ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb317ef0592cead9bc3e6e02133fc1ee">&#9670;&#160;</a></span>use_force_cfl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_FORCE_INLINE bool amr_wind::SimTime::use_force_cfl </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab27766d7a2d3559537e8b8227ca53624" name="ab27766d7a2d3559537e8b8227ca53624"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab27766d7a2d3559537e8b8227ca53624">&#9670;&#160;</a></span>write_checkpoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::SimTime::write_checkpoint </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return true if checkpoint files should be written at this timestep </p>
+
+</div>
+</div>
+<a id="a9c9ae99a73e7c12ba0e6ff5641a128a9" name="a9c9ae99a73e7c12ba0e6ff5641a128a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c9ae99a73e7c12ba0e6ff5641a128a9">&#9670;&#160;</a></span>write_last_checkpoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::SimTime::write_last_checkpoint </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return true if checkpoint files should be written at this timestep </p>
+
+</div>
+</div>
+<a id="a581cd4d49991970dbb6b28410fb61426" name="a581cd4d49991970dbb6b28410fb61426"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a581cd4d49991970dbb6b28410fb61426">&#9670;&#160;</a></span>write_last_plot_file()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::SimTime::write_last_plot_file </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return true if plot files should be written at this timestep </p>
+
+</div>
+</div>
+<a id="a13eea14d1f2f1aafa84288bb1cc50d00" name="a13eea14d1f2f1aafa84288bb1cc50d00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13eea14d1f2f1aafa84288bb1cc50d00">&#9670;&#160;</a></span>write_plot_file()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::SimTime::write_plot_file </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return true if plot files should be written at this timestep </p>
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a83e897d948280eb4ffb91a6a4ec1e519" name="a83e897d948280eb4ffb91a6a4ec1e519"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83e897d948280eb4ffb91a6a4ec1e519">&#9670;&#160;</a></span>m_adaptive</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::SimTime::m_adaptive {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Flag indicating whether timestep is adaptive. </p>
+
+</div>
+</div>
+<a id="a908cda497a16f24167c32c69307a88a6" name="a908cda497a16f24167c32c69307a88a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a908cda497a16f24167c32c69307a88a6">&#9670;&#160;</a></span>m_chkpt_delay</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::SimTime::m_chkpt_delay {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Time step delay for checkpoint/restart output (this means that output only happens after the delay) </p>
+
+</div>
+</div>
+<a id="a2b3fd07cb431f8530ddea394f3c9ce6b" name="a2b3fd07cb431f8530ddea394f3c9ce6b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b3fd07cb431f8530ddea394f3c9ce6b">&#9670;&#160;</a></span>m_chkpt_interval</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::SimTime::m_chkpt_interval {-1}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Time step interval for writing checkpoint/restart files. </p>
+
+</div>
+</div>
+<a id="a1bdda947120fa41e487362e0821853db" name="a1bdda947120fa41e487362e0821853db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1bdda947120fa41e487362e0821853db">&#9670;&#160;</a></span>m_chkpt_start_index</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::SimTime::m_chkpt_start_index {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Initial starting time index for generating checkpoint files. </p>
+
+</div>
+</div>
+<a id="ae601dfb31039222a83218811f1393a54" name="ae601dfb31039222a83218811f1393a54"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae601dfb31039222a83218811f1393a54">&#9670;&#160;</a></span>m_chkpt_start_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::SimTime::m_chkpt_start_time {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Initial starting time for generating checkpoint files (time-based) </p>
+
+</div>
+</div>
+<a id="a4441dc23e85d5019780cd4f02a7b27e4" name="a4441dc23e85d5019780cd4f02a7b27e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4441dc23e85d5019780cd4f02a7b27e4">&#9670;&#160;</a></span>m_chkpt_t_delay</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::SimTime::m_chkpt_t_delay {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Time delay for checkpoint/restart output. </p>
+
+</div>
+</div>
+<a id="ad50cf2e122f8467500052b1994affbe6" name="ad50cf2e122f8467500052b1994affbe6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad50cf2e122f8467500052b1994affbe6">&#9670;&#160;</a></span>m_chkpt_t_interval</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::SimTime::m_chkpt_t_interval {-1.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Time interval for writing checkpoint/restart files. </p>
+
+</div>
+</div>
+<a id="a25ebeecbd4e13a39fc8722c7731b9905" name="a25ebeecbd4e13a39fc8722c7731b9905"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25ebeecbd4e13a39fc8722c7731b9905">&#9670;&#160;</a></span>m_chkpt_t_tol</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::SimTime::m_chkpt_t_tol {std::numeric_limits&lt;float&gt;::epsilon() * 1.0e1_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Relative (to dt) tolerance for checkpoint time interval output. </p>
+
+</div>
+</div>
+<a id="ab287f7cd1b834c3534902b4b33cf36cf" name="ab287f7cd1b834c3534902b4b33cf36cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab287f7cd1b834c3534902b4b33cf36cf">&#9670;&#160;</a></span>m_conv_cfl</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::SimTime::m_conv_cfl {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current CFL categories. </p>
+
+</div>
+</div>
+<a id="af84d53781c8aedf416213c58ab436051" name="af84d53781c8aedf416213c58ab436051"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af84d53781c8aedf416213c58ab436051">&#9670;&#160;</a></span>m_cur_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::SimTime::m_cur_time {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current simulation time. </p>
+
+</div>
+</div>
+<a id="a397bb5645ba2f33f8a9445b01f6cefc1" name="a397bb5645ba2f33f8a9445b01f6cefc1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a397bb5645ba2f33f8a9445b01f6cefc1">&#9670;&#160;</a></span>m_current_cfl</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::SimTime::m_current_cfl {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current CFL. </p>
+
+</div>
+</div>
+<a id="a2cae5d8dd27a4bad7692be53c23ff69f" name="a2cae5d8dd27a4bad7692be53c23ff69f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2cae5d8dd27a4bad7692be53c23ff69f">&#9670;&#160;</a></span>m_delay_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::SimTime::m_delay_time {-1.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Delayed adaptive stepping. </p>
+
+</div>
+</div>
+<a id="a7924f2258fbc04370d78b3c7628d5253" name="a7924f2258fbc04370d78b3c7628d5253"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7924f2258fbc04370d78b3c7628d5253">&#9670;&#160;</a></span>m_diff_cfl</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::SimTime::m_diff_cfl {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab539a6a3fb243931e312a2a54e9de524" name="ab539a6a3fb243931e312a2a54e9de524"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab539a6a3fb243931e312a2a54e9de524">&#9670;&#160;</a></span>m_dt</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Real&gt; amr_wind::SimTime::m_dt</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">        amrex::Vector&lt;amrex::Real&gt;(<a class="code hl_variable" href="#a9e401874e0f0490814f7ff358d9937a3">max_time_states</a>, 0.0_rt)</div>
+<div class="ttc" id="aclassamr__wind_1_1_sim_time_html_a9e401874e0f0490814f7ff358d9937a3"><div class="ttname"><a href="#a9e401874e0f0490814f7ff358d9937a3">amr_wind::SimTime::max_time_states</a></div><div class="ttdeci">static constexpr int max_time_states</div><div class="ttdef"><b>Definition</b> SimTime.H:35</div></div>
+</div><!-- fragment -->
+<p>Timestep sizes. </p>
+
+</div>
+</div>
+<a id="a79495e72aecd8c8cd123eb66d4da519d" name="a79495e72aecd8c8cd123eb66d4da519d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79495e72aecd8c8cd123eb66d4da519d">&#9670;&#160;</a></span>m_dt_calc</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::SimTime::m_dt_calc {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>delta_t calculated using CFL constraint </p>
+
+</div>
+</div>
+<a id="a975780d86d0a2c1db34371294a1e4401" name="a975780d86d0a2c1db34371294a1e4401"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a975780d86d0a2c1db34371294a1e4401">&#9670;&#160;</a></span>m_dt_growth</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::SimTime::m_dt_growth {0.1_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Maximum growth of dt between timesteps. </p>
+
+</div>
+</div>
+<a id="a72f32eeafb9e9933d0b49a9da206d84f" name="a72f32eeafb9e9933d0b49a9da206d84f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72f32eeafb9e9933d0b49a9da206d84f">&#9670;&#160;</a></span>m_fixed_dt</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::SimTime::m_fixed_dt {-1.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Fixed delta_t indicated by user. </p>
+
+</div>
+</div>
+<a id="a4716b1f308a00d7915433b57edb218d2" name="a4716b1f308a00d7915433b57edb218d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4716b1f308a00d7915433b57edb218d2">&#9670;&#160;</a></span>m_force_chkpt_dt</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::SimTime::m_force_chkpt_dt {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Bool for if checkpoint time interval should be forced. </p>
+
+</div>
+</div>
+<a id="a55c6c30c4449f94e16ad941c740249bc" name="a55c6c30c4449f94e16ad941c740249bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55c6c30c4449f94e16ad941c740249bc">&#9670;&#160;</a></span>m_force_chkpt_tol</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::SimTime::m_force_chkpt_tol {1.0e-3_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Relative (to chkpt_t_interval) tolerance for enforcing dt. </p>
+
+</div>
+</div>
+<a id="a19512f944bea32d228015c8ba47fdcb9" name="a19512f944bea32d228015c8ba47fdcb9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19512f944bea32d228015c8ba47fdcb9">&#9670;&#160;</a></span>m_force_dt_abs_tol</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::SimTime::m_force_dt_abs_tol {1.0e8_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Smallest absolute tolerance for enforcing dt, considering all. </p>
+
+</div>
+</div>
+<a id="a5990910a16521a7a9eb511ab8ad40ce6" name="a5990910a16521a7a9eb511ab8ad40ce6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5990910a16521a7a9eb511ab8ad40ce6">&#9670;&#160;</a></span>m_force_plt_dt</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::SimTime::m_force_plt_dt {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Bool for if plt time interval should be forced. </p>
+
+</div>
+</div>
+<a id="ace35d3275ed394d6de67ec93354e0628" name="ace35d3275ed394d6de67ec93354e0628"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace35d3275ed394d6de67ec93354e0628">&#9670;&#160;</a></span>m_force_plt_tol</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::SimTime::m_force_plt_tol {1.0e-3_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Relative (to plt_t_interval) tolerance for enforcing dt. </p>
+
+</div>
+</div>
+<a id="a9eea745371b7e5287bf093ecce06fd20" name="a9eea745371b7e5287bf093ecce06fd20"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9eea745371b7e5287bf093ecce06fd20">&#9670;&#160;</a></span>m_init_shrink</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::SimTime::m_init_shrink {0.1_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Initial reduction in timestep size for startup. </p>
+
+</div>
+</div>
+<a id="affc95aee2365bbdf04a5891527cc64da" name="affc95aee2365bbdf04a5891527cc64da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#affc95aee2365bbdf04a5891527cc64da">&#9670;&#160;</a></span>m_initial_dt</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::SimTime::m_initial_dt {-1.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Initial delta_t indicated by user. </p>
+
+</div>
+</div>
+<a id="a44153cb6d1c9e8205ea01f8d94623c1d" name="a44153cb6d1c9e8205ea01f8d94623c1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44153cb6d1c9e8205ea01f8d94623c1d">&#9670;&#160;</a></span>m_is_init</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::SimTime::m_is_init {true}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Flag indicating if this is initialization. </p>
+
+</div>
+</div>
+<a id="a8b6fa6fb0f801ffaedb7b767723c865a" name="a8b6fa6fb0f801ffaedb7b767723c865a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b6fa6fb0f801ffaedb7b767723c865a">&#9670;&#160;</a></span>m_max_cfl</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::SimTime::m_max_cfl {1.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Maximum CFL constraint. </p>
+
+</div>
+</div>
+<a id="a70ce5b873185ab2ed79c0dfc696667ff" name="a70ce5b873185ab2ed79c0dfc696667ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70ce5b873185ab2ed79c0dfc696667ff">&#9670;&#160;</a></span>m_max_dt</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::SimTime::m_max_dt {-1.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Maximum delta_t indicated by user. </p>
+
+</div>
+</div>
+<a id="acf8d70265ada849aaee61449a577d059" name="acf8d70265ada849aaee61449a577d059"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf8d70265ada849aaee61449a577d059">&#9670;&#160;</a></span>m_min_dt</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::SimTime::m_min_dt {-1.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Minimum delta_t indicated by user. </p>
+
+</div>
+</div>
+<a id="a5f95fe4cf5931ce58bee3d383f63ab1c" name="a5f95fe4cf5931ce58bee3d383f63ab1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f95fe4cf5931ce58bee3d383f63ab1c">&#9670;&#160;</a></span>m_new_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::SimTime::m_new_time {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Time where a new timestep will advance to. </p>
+
+</div>
+</div>
+<a id="af7ec2404b081292cd11f4b0d4a61efda" name="af7ec2404b081292cd11f4b0d4a61efda"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7ec2404b081292cd11f4b0d4a61efda">&#9670;&#160;</a></span>m_plt_delay</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::SimTime::m_plt_delay {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Time step delay for plot file output. </p>
+
+</div>
+</div>
+<a id="a1766b9001d51a0b049ac0ba96af607c3" name="a1766b9001d51a0b049ac0ba96af607c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1766b9001d51a0b049ac0ba96af607c3">&#9670;&#160;</a></span>m_plt_interval</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::SimTime::m_plt_interval {-1}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Time step interval for plot file output. </p>
+
+</div>
+</div>
+<a id="a4ee3e2b27e6e034516e8f8f7dc97bfb8" name="a4ee3e2b27e6e034516e8f8f7dc97bfb8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ee3e2b27e6e034516e8f8f7dc97bfb8">&#9670;&#160;</a></span>m_plt_start_index</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::SimTime::m_plt_start_index {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Initial starting time index for generating output files. </p>
+
+</div>
+</div>
+<a id="a6dc095fdda1f1c2300d9311b6d6cf919" name="a6dc095fdda1f1c2300d9311b6d6cf919"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6dc095fdda1f1c2300d9311b6d6cf919">&#9670;&#160;</a></span>m_plt_start_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::SimTime::m_plt_start_time {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Initial starting time for generating output files (time-based) </p>
+
+</div>
+</div>
+<a id="aef9c1610d5c15753b80ad0459e9829cd" name="aef9c1610d5c15753b80ad0459e9829cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef9c1610d5c15753b80ad0459e9829cd">&#9670;&#160;</a></span>m_plt_t_delay</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::SimTime::m_plt_t_delay {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Time delay for plot file output. </p>
+
+</div>
+</div>
+<a id="a02ee3add960d76cd2d1b50418218e667" name="a02ee3add960d76cd2d1b50418218e667"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02ee3add960d76cd2d1b50418218e667">&#9670;&#160;</a></span>m_plt_t_interval</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::SimTime::m_plt_t_interval {-1.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Time interval for plot file output. </p>
+
+</div>
+</div>
+<a id="a9a0d061df717516fdbdc537d0a3dfdac" name="a9a0d061df717516fdbdc537d0a3dfdac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a0d061df717516fdbdc537d0a3dfdac">&#9670;&#160;</a></span>m_plt_t_tol</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::SimTime::m_plt_t_tol {std::numeric_limits&lt;float&gt;::epsilon() * 1.0e1_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Relative (to dt) tolerance for plot time interval output. </p>
+
+</div>
+</div>
+<a id="aca4e0966414624e9d66675415712596e" name="aca4e0966414624e9d66675415712596e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca4e0966414624e9d66675415712596e">&#9670;&#160;</a></span>m_postprocess_enforce_dt</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;bool&gt; amr_wind::SimTime::m_postprocess_enforce_dt</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Timestep considerations from postprocessing instances. </p>
+
+</div>
+</div>
+<a id="a0a9d2dd393142e15481eab4733296ef0" name="a0a9d2dd393142e15481eab4733296ef0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a9d2dd393142e15481eab4733296ef0">&#9670;&#160;</a></span>m_postprocess_enforce_dt_tol</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Real&gt; amr_wind::SimTime::m_postprocess_enforce_dt_tol</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a926134ce7c65c31180411beb031455d1" name="a926134ce7c65c31180411beb031455d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a926134ce7c65c31180411beb031455d1">&#9670;&#160;</a></span>m_postprocess_time_delay</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Real&gt; amr_wind::SimTime::m_postprocess_time_delay</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aeb04944dd986db6f221620610f3f68fc" name="aeb04944dd986db6f221620610f3f68fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb04944dd986db6f221620610f3f68fc">&#9670;&#160;</a></span>m_postprocess_time_interval</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Real&gt; amr_wind::SimTime::m_postprocess_time_interval</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a269349568cbdd13facecc64817a3bef3" name="a269349568cbdd13facecc64817a3bef3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a269349568cbdd13facecc64817a3bef3">&#9670;&#160;</a></span>m_profiling_interval</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::SimTime::m_profiling_interval {-1}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Time step interval for profiling output. </p>
+
+</div>
+</div>
+<a id="a6be0aac645481139a518a80f022b2819" name="a6be0aac645481139a518a80f022b2819"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6be0aac645481139a518a80f022b2819">&#9670;&#160;</a></span>m_regrid_interval</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::SimTime::m_regrid_interval {-1}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Time interval for regridding. </p>
+
+</div>
+</div>
+<a id="a568f3f4365613f1de3c07358254c9596" name="a568f3f4365613f1de3c07358254c9596"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a568f3f4365613f1de3c07358254c9596">&#9670;&#160;</a></span>m_regrid_start_index</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::SimTime::m_regrid_start_index {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Initial starting time index for regriding. </p>
+
+</div>
+</div>
+<a id="a945f026f7bcc0659bf3a8da2d48c1270" name="a945f026f7bcc0659bf3a8da2d48c1270"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a945f026f7bcc0659bf3a8da2d48c1270">&#9670;&#160;</a></span>m_src_cfl</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::SimTime::m_src_cfl {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6011d3cfee0b2028895b4db9214a0b53" name="a6011d3cfee0b2028895b4db9214a0b53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6011d3cfee0b2028895b4db9214a0b53">&#9670;&#160;</a></span>m_start_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::SimTime::m_start_time {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Starting simulation time (to track restart) </p>
+
+</div>
+</div>
+<a id="afb8ce7d7e2c56c3f7d587d05e8189561" name="afb8ce7d7e2c56c3f7d587d05e8189561"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb8ce7d7e2c56c3f7d587d05e8189561">&#9670;&#160;</a></span>m_start_time_index</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::SimTime::m_start_time_index {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Initial starting time index. </p>
+
+</div>
+</div>
+<a id="af16aae1b47b8528e01b54867706ae020" name="af16aae1b47b8528e01b54867706ae020"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af16aae1b47b8528e01b54867706ae020">&#9670;&#160;</a></span>m_stop_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::SimTime::m_stop_time {-1.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Max time for simulation. </p>
+
+</div>
+</div>
+<a id="a3ad942580cb423547b22449c9be0760b" name="a3ad942580cb423547b22449c9be0760b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ad942580cb423547b22449c9be0760b">&#9670;&#160;</a></span>m_stop_time_index</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::SimTime::m_stop_time_index {-1}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Maximum timesteps for simulation. </p>
+
+</div>
+</div>
+<a id="a112f5ff9e516cdf78e269b54228436e0" name="a112f5ff9e516cdf78e269b54228436e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a112f5ff9e516cdf78e269b54228436e0">&#9670;&#160;</a></span>m_time_index</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::SimTime::m_time_index {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Counter for the number of timesteps since start of simulation. </p>
+
+</div>
+</div>
+<a id="abe5eddfb61bb074c35a3becafca982f1" name="abe5eddfb61bb074c35a3becafca982f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe5eddfb61bb074c35a3becafca982f1">&#9670;&#160;</a></span>m_use_force_cfl</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::SimTime::m_use_force_cfl {true}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Flag indicating if forcing should be included in CFL calculation. </p>
+
+</div>
+</div>
+<a id="a3c8b0703be201660e4b689bff270f37a" name="a3c8b0703be201660e4b689bff270f37a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c8b0703be201660e4b689bff270f37a">&#9670;&#160;</a></span>m_verbose</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::SimTime::m_verbose {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Verbosity. </p>
+
+</div>
+</div>
+<a id="a9e401874e0f0490814f7ff358d9937a3" name="a9e401874e0f0490814f7ff358d9937a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e401874e0f0490814f7ff358d9937a3">&#9670;&#160;</a></span>max_time_states</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::SimTime::max_time_states = 3</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/core/<a class="el" href="_sim_time_8_h_source.html">SimTime.H</a></li>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/core/<a class="el" href="_sim_time_8cpp.html">SimTime.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

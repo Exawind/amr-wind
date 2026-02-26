@@ -1,0 +1,14 @@
+.. meta::aad283b427a1a9bbffba44e5be4003ae440a9b4caee2ba28a0987dacca736e85f9b7fe387692a1739c631b175a53c9bbaf8c7b0e23b76fca88b422e8b54021e6
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ib::ops::InitDataOp&lt; GeomTrait, typename &gt; Struct Template Reference
+
+InitDataOp&lt; GeomTrait, typename &gt; Struct Template Reference
+=================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ib_1_1ops_1_1_init_data_op.html

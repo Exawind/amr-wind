@@ -1,0 +1,14 @@
+.. meta::73efed42685e2dbe6addbf0bc3c12295f1f1d3731fa6778ccacab0e695748520f3ff45e94c966ca5590afb3a358ed1a175cd081f5322083f713cf85b278256cd
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/boundary_conditions/wall_models/LogLaw.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/boundary\_conditions/wall\_models/LogLaw.H Source File
+===================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _log_law_8_h_source.html

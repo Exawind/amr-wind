@@ -1,0 +1,14 @@
+.. meta::68612816515b1b4970d20b1e1ea26f0e1f4dc73d08d51c70e00b708e62cb08fc25092c73b365d8d693bbd262c235600ed0ceef5cbf3d524345459b92ab44a04b
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::FieldRegOp&lt; TKE, Scheme &gt; Struct Template Reference
+
+FieldRegOp&lt; TKE, Scheme &gt; Struct Template Reference
+=========================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1pde_1_1_field_reg_op_3_01_t_k_e_00_01_scheme_01_4.html

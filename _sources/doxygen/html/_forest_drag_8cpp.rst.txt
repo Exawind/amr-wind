@@ -1,0 +1,14 @@
+.. meta::4690baffe7041e18fa0439acd23106cb79ab76ebc3b04311d20e76e8344310fa6b3da8e30c54225faf5811777d2f094b29900400ea44f212158c396e8a6c56a2
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/ForestDrag.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/physics/ForestDrag.cpp File Reference
+==================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _forest_drag_8cpp.html

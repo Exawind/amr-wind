@@ -1,0 +1,14 @@
+.. meta::cfac1b3ff3d061f2aecc69186cd59cb26fce59e3aab211f1866fbdee68f08dee31675fa7411e84506d7a734f9f776a6a8d4ed8e5903ce11fdb842eb5e20cd303
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/setup/init.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/setup/init.cpp File Reference
+==========================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: init_8cpp.html

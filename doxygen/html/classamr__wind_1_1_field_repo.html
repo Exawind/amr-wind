@@ -1,0 +1,1925 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::FieldRepo Class Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::FieldRepo Class Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/classamr__wind_1_1_field_repo.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="fieldrepo-class-reference">
+<h1>FieldRepo Class Reference<a class="headerlink" href="#fieldrepo-class-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::FieldRepo Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="classamr__wind_1_1_field_repo.html">FieldRepo</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a> &#124;
+<a href="#friends">Friends</a> &#124;
+<a href="classamr__wind_1_1_field_repo-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::FieldRepo Class Reference<div class="ingroups"><a class="el" href="group__core.html">AMR-Wind core</a> &raquo; <a class="el" href="group__fields.html">Field management</a></div></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_field_repo_8_h_source.html">FieldRepo.H</a>&gt;</code></p>
+<div class="dynheader">
+Collaboration diagram for amr_wind::FieldRepo:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1_field_repo__coll__graph.svg" width="344" height="388"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a50092b4a6c226447ec09c587bd7d280d" id="r_a50092b4a6c226447ec09c587bd7d280d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a50092b4a6c226447ec09c587bd7d280d">FieldRepo</a> (const amrex::AmrCore &amp;<a class="el" href="#ae8c15fbffc4349aa8919d84ed157ef2c">mesh</a>)</td></tr>
+<tr class="memitem:a8f8d645fd3b2fe14d7d701d58ef3fe2a" id="r_a8f8d645fd3b2fe14d7d701d58ef3fe2a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8f8d645fd3b2fe14d7d701d58ef3fe2a">FieldRepo</a> (const <a class="el" href="classamr__wind_1_1_field_repo.html">FieldRepo</a> &amp;)=delete</td></tr>
+<tr class="memitem:a4564a129cf83f0a68fd245166b797f7d" id="r_a4564a129cf83f0a68fd245166b797f7d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field_repo.html">FieldRepo</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4564a129cf83f0a68fd245166b797f7d">operator=</a> (const <a class="el" href="classamr__wind_1_1_field_repo.html">FieldRepo</a> &amp;)=delete</td></tr>
+<tr class="memitem:a13ca93f0e2989dabf57cf1f0d7f7f7bf" id="r_a13ca93f0e2989dabf57cf1f0d7f7f7bf"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a13ca93f0e2989dabf57cf1f0d7f7f7bf">~FieldRepo</a> ()=default</td></tr>
+<tr class="memitem:a5f4a299c1da8670f55b7a3f76af48758" id="r_a5f4a299c1da8670f55b7a3f76af48758"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5f4a299c1da8670f55b7a3f76af48758">make_new_level_from_scratch</a> (int lev, amrex::Real time, const amrex::BoxArray &amp;ba, const amrex::DistributionMapping &amp;dm)</td></tr>
+<tr class="memdesc:a5f4a299c1da8670f55b7a3f76af48758"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform field data management tasks when amrex::AmrCore::MakeNewLevelFromScratch is called.  <br /></td></tr>
+<tr class="memitem:ac240904cb09281407c86061db8e9007c" id="r_ac240904cb09281407c86061db8e9007c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac240904cb09281407c86061db8e9007c">make_new_level_from_coarse</a> (int lev, amrex::Real time, const amrex::BoxArray &amp;ba, const amrex::DistributionMapping &amp;dm)</td></tr>
+<tr class="memitem:aecf0bf9c5170f11b7fd216ae1e46235a" id="r_aecf0bf9c5170f11b7fd216ae1e46235a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aecf0bf9c5170f11b7fd216ae1e46235a">remake_level</a> (int lev, amrex::Real time, const amrex::BoxArray &amp;ba, const amrex::DistributionMapping &amp;dm)</td></tr>
+<tr class="memitem:a01b87f65eb6d7ce098aac888ba9e0b99" id="r_a01b87f65eb6d7ce098aac888ba9e0b99"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a01b87f65eb6d7ce098aac888ba9e0b99">clear_level</a> (int lev)</td></tr>
+<tr class="memdesc:a01b87f65eb6d7ce098aac888ba9e0b99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove a level during regrid.  <br /></td></tr>
+<tr class="memitem:ab32deb69eae7b3f9e048f3a8fe3f8ed7" id="r_ab32deb69eae7b3f9e048f3a8fe3f8ed7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab32deb69eae7b3f9e048f3a8fe3f8ed7">declare_field</a> (const std::string &amp;name, int ncomp=1, int ngrow=0, int nstates=1, <a class="el" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a> floc=<a class="el" href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aadeaa44e5e872be992b4109cf1fbfe41e">FieldLoc::CELL</a>)</td></tr>
+<tr class="memitem:ae83967e90e7c9a3ac8bd77c9fe490678" id="r_ae83967e90e7c9a3ac8bd77c9fe490678"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae83967e90e7c9a3ac8bd77c9fe490678">declare_cc_field</a> (const std::string &amp;name, const int ncomp=1, const int ngrow=0, const int nstates=1)</td></tr>
+<tr class="memitem:a77ed3696c63cbad6c87b6a1483df01eb" id="r_a77ed3696c63cbad6c87b6a1483df01eb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a77ed3696c63cbad6c87b6a1483df01eb">declare_nd_field</a> (const std::string &amp;name, const int ncomp=1, const int ngrow=0, const int nstates=1)</td></tr>
+<tr class="memitem:a095653d368ee8cebe2e8154183ceff26" id="r_a095653d368ee8cebe2e8154183ceff26"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a095653d368ee8cebe2e8154183ceff26">declare_xf_field</a> (const std::string &amp;name, const int ncomp=1, const int ngrow=0, const int nstates=1)</td></tr>
+<tr class="memitem:a9449c56cdd62bf570610ccd8d4b8c62c" id="r_a9449c56cdd62bf570610ccd8d4b8c62c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9449c56cdd62bf570610ccd8d4b8c62c">declare_yf_field</a> (const std::string &amp;name, const int ncomp=1, const int ngrow=0, const int nstates=1)</td></tr>
+<tr class="memitem:a8a6539dd2a946872fa96193a5a6ec4a3" id="r_a8a6539dd2a946872fa96193a5a6ec4a3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8a6539dd2a946872fa96193a5a6ec4a3">declare_zf_field</a> (const std::string &amp;name, const int ncomp=1, const int ngrow=0, const int nstates=1)</td></tr>
+<tr class="memitem:a802253e1c94acc55ce431e93b53112a8" id="r_a802253e1c94acc55ce431e93b53112a8"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; <a class="el" href="classamr__wind_1_1_field.html">Field</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a802253e1c94acc55ce431e93b53112a8">declare_face_normal_field</a> (const amrex::Vector&lt; std::string &gt; &amp;names, const int ncomp=1, const int ngrow=0, const int nstates=1)</td></tr>
+<tr class="memitem:ac6473f5fa392cdfe08c5fb11d5676940" id="r_ac6473f5fa392cdfe08c5fb11d5676940"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac6473f5fa392cdfe08c5fb11d5676940">get_field</a> (const std::string &amp;name, <a class="el" href="group__fields.html#ga5251ec6b376231128a9647f3028dbac0">FieldState</a> fstate=<a class="el" href="group__fields.html#gga5251ec6b376231128a9647f3028dbac0a03c2e7e41ffc181a4e84080b4710e81e">FieldState::New</a>) const</td></tr>
+<tr class="memitem:a229435f22567851793883c61b40b8406" id="r_a229435f22567851793883c61b40b8406"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a229435f22567851793883c61b40b8406">get_field</a> (const int field_id) const</td></tr>
+<tr class="memitem:abf6df2e2d26eb9a04a5c6c4fda84e11b" id="r_abf6df2e2d26eb9a04a5c6c4fda84e11b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abf6df2e2d26eb9a04a5c6c4fda84e11b">get_mesh_mapping_field</a> (<a class="el" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a> floc) const</td></tr>
+<tr class="memitem:a8b595a52147362c56888921ce0f42a0c" id="r_a8b595a52147362c56888921ce0f42a0c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8b595a52147362c56888921ce0f42a0c">get_mesh_mapping_det_j</a> (<a class="el" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a> floc) const</td></tr>
+<tr class="memitem:a98a03968e8782601fe9a0707624381de" id="r_a98a03968e8782601fe9a0707624381de"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a98a03968e8782601fe9a0707624381de">field_exists</a> (const std::string &amp;name, <a class="el" href="group__fields.html#ga5251ec6b376231128a9647f3028dbac0">FieldState</a> fstate=<a class="el" href="group__fields.html#gga5251ec6b376231128a9647f3028dbac0a03c2e7e41ffc181a4e84080b4710e81e">FieldState::New</a>) const</td></tr>
+<tr class="memdesc:a98a03968e8782601fe9a0707624381de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query if field uniquely identified by name and time state exists in repository.  <br /></td></tr>
+<tr class="memitem:a3771665ca4306b4034e5d0fc8c4b260b" id="r_a3771665ca4306b4034e5d0fc8c4b260b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_int_field.html">IntField</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3771665ca4306b4034e5d0fc8c4b260b">declare_int_field</a> (const std::string &amp;name, int ncomp=1, int ngrow=0, int nstates=1, <a class="el" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a> floc=<a class="el" href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aadeaa44e5e872be992b4109cf1fbfe41e">FieldLoc::CELL</a>)</td></tr>
+<tr class="memitem:a539f5c1eb69afde2e2dfd0f177d0ddbf" id="r_a539f5c1eb69afde2e2dfd0f177d0ddbf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_int_field.html">IntField</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a539f5c1eb69afde2e2dfd0f177d0ddbf">get_int_field</a> (const std::string &amp;name, <a class="el" href="group__fields.html#ga5251ec6b376231128a9647f3028dbac0">FieldState</a> fstate=<a class="el" href="group__fields.html#gga5251ec6b376231128a9647f3028dbac0a03c2e7e41ffc181a4e84080b4710e81e">FieldState::New</a>) const</td></tr>
+<tr class="memdesc:a539f5c1eb69afde2e2dfd0f177d0ddbf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a reference to an integer field.  <br /></td></tr>
+<tr class="memitem:a08b2f9d1a414ecbf126951f59ff0bb0f" id="r_a08b2f9d1a414ecbf126951f59ff0bb0f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_int_field.html">IntField</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a08b2f9d1a414ecbf126951f59ff0bb0f">get_int_field</a> (const int field_id) const</td></tr>
+<tr class="memitem:a40b1a9a2f67c66ead0f687c4ef0ff5a4" id="r_a40b1a9a2f67c66ead0f687c4ef0ff5a4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a40b1a9a2f67c66ead0f687c4ef0ff5a4">int_field_exists</a> (const std::string &amp;name, <a class="el" href="group__fields.html#ga5251ec6b376231128a9647f3028dbac0">FieldState</a> fstate=<a class="el" href="group__fields.html#gga5251ec6b376231128a9647f3028dbac0a03c2e7e41ffc181a4e84080b4710e81e">FieldState::New</a>) const</td></tr>
+<tr class="memdesc:a40b1a9a2f67c66ead0f687c4ef0ff5a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query if an integer field exists.  <br /></td></tr>
+<tr class="memitem:acfad499585f6bbdab7e4f1c1d12ed742" id="r_acfad499585f6bbdab7e4f1c1d12ed742"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1_scratch_field.html">ScratchField</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acfad499585f6bbdab7e4f1c1d12ed742">create_scratch_field</a> (const std::string &amp;name, int ncomp=1, int nghost=0, <a class="el" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a> floc=<a class="el" href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aadeaa44e5e872be992b4109cf1fbfe41e">FieldLoc::CELL</a>) const</td></tr>
+<tr class="memitem:a9a75acd1a3fe539415f81338ff94d218" id="r_a9a75acd1a3fe539415f81338ff94d218"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1_scratch_field.html">ScratchField</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9a75acd1a3fe539415f81338ff94d218">create_scratch_field</a> (int ncomp=1, int nghost=0, <a class="el" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a> floc=<a class="el" href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aadeaa44e5e872be992b4109cf1fbfe41e">FieldLoc::CELL</a>) const</td></tr>
+<tr class="memitem:a08bf020c72eb90a6349cc7a5f6133835" id="r_a08bf020c72eb90a6349cc7a5f6133835"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1_scratch_field.html">ScratchField</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a08bf020c72eb90a6349cc7a5f6133835">create_scratch_field_on_host</a> (const std::string &amp;name, int ncomp=1, int nghost=0, <a class="el" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a> floc=<a class="el" href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aadeaa44e5e872be992b4109cf1fbfe41e">FieldLoc::CELL</a>) const</td></tr>
+<tr class="memitem:a150dca8463cb84481847c26b02a2a5d0" id="r_a150dca8463cb84481847c26b02a2a5d0"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1_scratch_field.html">ScratchField</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a150dca8463cb84481847c26b02a2a5d0">create_scratch_field_on_host</a> (int ncomp=1, int nghost=0, <a class="el" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a> floc=<a class="el" href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aadeaa44e5e872be992b4109cf1fbfe41e">FieldLoc::CELL</a>) const</td></tr>
+<tr class="memitem:a984cc3b2d1da7af9c2015266a72a5e4a" id="r_a984cc3b2d1da7af9c2015266a72a5e4a"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1_int_scratch_field.html">IntScratchField</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a984cc3b2d1da7af9c2015266a72a5e4a">create_int_scratch_field_on_host</a> (const std::string &amp;name, int ncomp=1, int nghost=0, <a class="el" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a> floc=<a class="el" href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aadeaa44e5e872be992b4109cf1fbfe41e">FieldLoc::CELL</a>) const</td></tr>
+<tr class="memitem:ab78a354137476a810da94229a206b1d9" id="r_ab78a354137476a810da94229a206b1d9"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1_int_scratch_field.html">IntScratchField</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab78a354137476a810da94229a206b1d9">create_int_scratch_field_on_host</a> (int ncomp=1, int nghost=0, <a class="el" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a> floc=<a class="el" href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aadeaa44e5e872be992b4109cf1fbfe41e">FieldLoc::CELL</a>) const</td></tr>
+<tr class="memitem:a5a644339969ae5041ab4f4a6e8a67b78" id="r_a5a644339969ae5041ab4f4a6e8a67b78"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5a644339969ae5041ab4f4a6e8a67b78">advance_states</a> ()</td></tr>
+<tr class="memdesc:a5a644339969ae5041ab4f4a6e8a67b78"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance all fields with more than one timestate to the new timestep.  <br /></td></tr>
+<tr class="memitem:ae8c15fbffc4349aa8919d84ed157ef2c" id="r_ae8c15fbffc4349aa8919d84ed157ef2c"><td class="memItemLeft" align="right" valign="top">const amrex::AmrCore &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae8c15fbffc4349aa8919d84ed157ef2c">mesh</a> () const</td></tr>
+<tr class="memdesc:ae8c15fbffc4349aa8919d84ed157ef2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a reference to the underlying AMR mesh instance.  <br /></td></tr>
+<tr class="memitem:abda9f9ce1b9e66391a4e865f91dddb7b" id="r_abda9f9ce1b9e66391a4e865f91dddb7b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abda9f9ce1b9e66391a4e865f91dddb7b">num_active_levels</a> () const</td></tr>
+<tr class="memdesc:abda9f9ce1b9e66391a4e865f91dddb7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total number of levels currently active in the AMR mesh.  <br /></td></tr>
+<tr class="memitem:aa56115715010f7e9f6d97759b2ad62c5" id="r_aa56115715010f7e9f6d97759b2ad62c5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa56115715010f7e9f6d97759b2ad62c5">num_fields</a> () const</td></tr>
+<tr class="memdesc:aa56115715010f7e9f6d97759b2ad62c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of fields registered in the database.  <br /></td></tr>
+<tr class="memitem:acdfde6309c440228333b0ef8b0f5aa3b" id="r_acdfde6309c440228333b0ef8b0f5aa3b"><td class="memItemLeft" align="right" valign="top">const amrex::Vector&lt; std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1_field.html">Field</a> &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acdfde6309c440228333b0ef8b0f5aa3b">fields</a> () const</td></tr>
+<tr class="memdesc:acdfde6309c440228333b0ef8b0f5aa3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return list of fields registered (for unit-test purposes only)  <br /></td></tr>
+<tr class="memitem:a3a04ce725f5b155b8a237d30461da3ab" id="r_a3a04ce725f5b155b8a237d30461da3ab"><td class="memItemLeft" align="right" valign="top">const amrex::FabFactory&lt; amrex::FArrayBox &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3a04ce725f5b155b8a237d30461da3ab">factory</a> (int lev) const</td></tr>
+<tr class="memdesc:a3a04ce725f5b155b8a237d30461da3ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return factory instance at a given level.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:a184d7b074ddb07c9d3694ff9bd65efea" id="r_a184d7b074ddb07c9d3694ff9bd65efea"><td class="memItemLeft" align="right" valign="top">amrex::MultiFab &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a184d7b074ddb07c9d3694ff9bd65efea">get_multifab</a> (const unsigned fid, const int lev)</td></tr>
+<tr class="memitem:a3b4cf1d03de2ffb2d3f8f70e2dd6908b" id="r_a3b4cf1d03de2ffb2d3f8f70e2dd6908b"><td class="memItemLeft" align="right" valign="top">amrex::iMultiFab &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3b4cf1d03de2ffb2d3f8f70e2dd6908b">get_int_fab</a> (const unsigned fid, const int lev)</td></tr>
+<tr class="memitem:a3e79c6725ebf7d039dc3707282b6e137" id="r_a3e79c6725ebf7d039dc3707282b6e137"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3e79c6725ebf7d039dc3707282b6e137">create_state</a> (<a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;field, <a class="el" href="group__fields.html#ga5251ec6b376231128a9647f3028dbac0">FieldState</a> fstate)</td></tr>
+<tr class="memdesc:a3e79c6725ebf7d039dc3707282b6e137"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new state for a field.  <br /></td></tr>
+<tr class="memitem:aa16d5e00de4896e2819bf4e3f87cc1a8" id="r_aa16d5e00de4896e2819bf4e3f87cc1a8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa16d5e00de4896e2819bf4e3f87cc1a8">allocate_field_data</a> (int lev, const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;field, <a class="el" href="structamr__wind_1_1_level_data_holder.html">LevelDataHolder</a> &amp;level_data, const amrex::FabFactory&lt; amrex::FArrayBox &gt; &amp;<a class="el" href="#a3a04ce725f5b155b8a237d30461da3ab">factory</a>)</td></tr>
+<tr class="memdesc:aa16d5e00de4896e2819bf4e3f87cc1a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate field data for a single level outside of regrid.  <br /></td></tr>
+<tr class="memitem:a9d3dca9f6cac615012238ce7471e67c5" id="r_a9d3dca9f6cac615012238ce7471e67c5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9d3dca9f6cac615012238ce7471e67c5">allocate_field_data</a> (<a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;field)</td></tr>
+<tr class="memdesc:a9d3dca9f6cac615012238ce7471e67c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate field data at all levels.  <br /></td></tr>
+<tr class="memitem:a39b937a96c3aa7bc222cdb79b9a1e8c9" id="r_a39b937a96c3aa7bc222cdb79b9a1e8c9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a39b937a96c3aa7bc222cdb79b9a1e8c9">allocate_field_data</a> (const amrex::BoxArray &amp;ba, const amrex::DistributionMapping &amp;dm, <a class="el" href="structamr__wind_1_1_level_data_holder.html">LevelDataHolder</a> &amp;level_data, const amrex::FabFactory&lt; amrex::FArrayBox &gt; &amp;<a class="el" href="#a3a04ce725f5b155b8a237d30461da3ab">factory</a>)</td></tr>
+<tr class="memdesc:a39b937a96c3aa7bc222cdb79b9a1e8c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate data at a level during regrid.  <br /></td></tr>
+<tr class="memitem:afdb8e23de43dd99ac50e6645126b192b" id="r_afdb8e23de43dd99ac50e6645126b192b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afdb8e23de43dd99ac50e6645126b192b">allocate_field_data</a> (int lev, const <a class="el" href="classamr__wind_1_1_int_field.html">IntField</a> &amp;field, <a class="el" href="structamr__wind_1_1_level_data_holder.html">LevelDataHolder</a> &amp;level_data)</td></tr>
+<tr class="memitem:a0babd3abd4e7bbd22dd515ae9d326d3a" id="r_a0babd3abd4e7bbd22dd515ae9d326d3a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0babd3abd4e7bbd22dd515ae9d326d3a">allocate_field_data</a> (const <a class="el" href="classamr__wind_1_1_int_field.html">IntField</a> &amp;field)</td></tr>
+<tr class="memitem:ac0435ef94439c97359d0394113f4335e" id="r_ac0435ef94439c97359d0394113f4335e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac0435ef94439c97359d0394113f4335e">allocate_field_data</a> (const amrex::BoxArray &amp;ba, const amrex::DistributionMapping &amp;dm, <a class="el" href="structamr__wind_1_1_level_data_holder.html">LevelDataHolder</a> &amp;level_data, const amrex::FabFactory&lt; amrex::IArrayBox &gt; &amp;<a class="el" href="#a3a04ce725f5b155b8a237d30461da3ab">factory</a>)</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:a1a2fe397c6939923cb4c9600cf07931f" id="r_a1a2fe397c6939923cb4c9600cf07931f"><td class="memItemLeft" align="right" valign="top">const amrex::AmrCore &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1a2fe397c6939923cb4c9600cf07931f">m_mesh</a></td></tr>
+<tr class="memdesc:a1a2fe397c6939923cb4c9600cf07931f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reference to the mesh instance.  <br /></td></tr>
+<tr class="memitem:a5be22728d89b80234619aa5acd7cdec9" id="r_a5be22728d89b80234619aa5acd7cdec9"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; std::unique_ptr&lt; <a class="el" href="structamr__wind_1_1_level_data_holder.html">LevelDataHolder</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5be22728d89b80234619aa5acd7cdec9">m_leveldata</a></td></tr>
+<tr class="memdesc:a5be22728d89b80234619aa5acd7cdec9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Array (size: nlevels) of data holder that contains another array of MultiFabs for all fields at that level.  <br /></td></tr>
+<tr class="memitem:a4fcb6497fe20552def4023e7124f26b9" id="r_a4fcb6497fe20552def4023e7124f26b9"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1_field.html">Field</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4fcb6497fe20552def4023e7124f26b9">m_field_vec</a></td></tr>
+<tr class="memdesc:a4fcb6497fe20552def4023e7124f26b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">References to field instances identified by unique integer.  <br /></td></tr>
+<tr class="memitem:a3ac5648a93cd10f1d64381d96037bd21" id="r_a3ac5648a93cd10f1d64381d96037bd21"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1_int_field.html">IntField</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3ac5648a93cd10f1d64381d96037bd21">m_int_field_vec</a></td></tr>
+<tr class="memdesc:a3ac5648a93cd10f1d64381d96037bd21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reference to integer field instances identified by unique integer.  <br /></td></tr>
+<tr class="memitem:a900a3102668fa61051ee08370b5e25fa" id="r_a900a3102668fa61051ee08370b5e25fa"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a900a3102668fa61051ee08370b5e25fa">m_fid_map</a></td></tr>
+<tr class="memdesc:a900a3102668fa61051ee08370b5e25fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map of field name to unique integer ID for lookups.  <br /></td></tr>
+<tr class="memitem:a233f9a7842763fd9523589c7f34693bb" id="r_a233f9a7842763fd9523589c7f34693bb"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a233f9a7842763fd9523589c7f34693bb">m_int_fid_map</a></td></tr>
+<tr class="memdesc:a233f9a7842763fd9523589c7f34693bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map of integer field name to unique integer ID for lookups.  <br /></td></tr>
+<tr class="memitem:a24731ca76ea3e4b1da972b13f349a0ac" id="r_a24731ca76ea3e4b1da972b13f349a0ac"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a24731ca76ea3e4b1da972b13f349a0ac">m_is_initialized</a> {false}</td></tr>
+<tr class="memdesc:a24731ca76ea3e4b1da972b13f349a0ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flag indicating if mesh is available to allocate field data.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-friends" class="groupheader"><a id="friends" name="friends"></a>
+Friends</h2></td></tr>
+<tr class="memitem:aaec47a26a3c11c1debd3ed922b69cbd2" id="r_aaec47a26a3c11c1debd3ed922b69cbd2"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaec47a26a3c11c1debd3ed922b69cbd2">Field</a></td></tr>
+<tr class="memitem:ae5ba94b163a0e8d7b2719c7f3103a651" id="r_ae5ba94b163a0e8d7b2719c7f3103a651"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae5ba94b163a0e8d7b2719c7f3103a651">IntField</a></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p><a class="el" href="classamr__wind_1_1_field.html">Field</a> Repository</p>
+<p><a class="el" href="classamr__wind_1_1_field_repo.html">FieldRepo</a> is a database that manages handling of fields used during a simulation. It provides an interface to automatically handle the creation/destruction of lower-level data structures (amrex::MultiFab) during regrids and handles the interface between the actual data and the <a class="el" href="classamr__wind_1_1_field.html">amr_wind::Field</a> interface which doesn't hold any actual data.</p>
+<p><a class="el" href="classamr__wind_1_1_field_repo.html">FieldRepo</a> allows the user to declare instances of fields and their types (e.g., cell or node cenrered), and allows querying and accessing these fields at different places in the code and ensures the same data is accessed everywhere.</p>
+<p>Fields can be declared at any time, even before the actual mesh instance is created, and it is recommended that they be created before mesh is initialized so that initialization happens automatically. When fields are declared before a mesh is available, data allocation is deferred until the mesh is generated (<span class="tt">MakeNewLevelFromScratch</span>). However, if a mesh is available, data is allocated and ready for use immediately upon declaration.</p>
+<p><a class="el" href="classamr__wind_1_1_field.html">Field</a> declarations use a unique string name to differentiate different fields. If <a class="el" href="#ab32deb69eae7b3f9e048f3a8fe3f8ed7">amr_wind::FieldRepo::declare_field</a> is called multiple times with the same field name, the previously created instance is returned on subsequent calls. However, an error is raised if the subsequent calls do not have the same field parameters (e.g., number of components, states, or ghost cells).</p>
+<p>Fields can be accessed using <a class="el" href="#ac6473f5fa392cdfe08c5fb11d5676940">amr_wind::FieldRepo::get_field</a> method. Unlike the declaration method, this method will raise an error if no field exists. <a class="el" href="#a98a03968e8782601fe9a0707624381de" title="Query if field uniquely identified by name and time state exists in repository.">amr_wind::FieldRepo::field_exists</a> can be used to determine if a field exists in the repository.</p>
+<p><a class="el" href="classamr__wind_1_1_field_repo.html">FieldRepo</a> also manages integer fields (<a class="el" href="classamr__wind_1_1_int_field.html">IntField</a>) as well as creation of <a class="el" href="classamr__wind_1_1_scratch_field.html">ScratchField</a> instances. </p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a50092b4a6c226447ec09c587bd7d280d" name="a50092b4a6c226447ec09c587bd7d280d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50092b4a6c226447ec09c587bd7d280d">&#9670;&#160;</a></span>FieldRepo() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::FieldRepo::FieldRepo </td>
+          <td>(</td>
+          <td class="paramtype">const amrex::AmrCore &amp;</td>          <td class="paramname"><span class="paramname"><em>mesh</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel explicit">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8f8d645fd3b2fe14d7d701d58ef3fe2a" name="a8f8d645fd3b2fe14d7d701d58ef3fe2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f8d645fd3b2fe14d7d701d58ef3fe2a">&#9670;&#160;</a></span>FieldRepo() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::FieldRepo::FieldRepo </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_field_repo.html">FieldRepo</a> &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel delete">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a13ca93f0e2989dabf57cf1f0d7f7f7bf" name="a13ca93f0e2989dabf57cf1f0d7f7f7bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13ca93f0e2989dabf57cf1f0d7f7f7bf">&#9670;&#160;</a></span>~FieldRepo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::FieldRepo::~FieldRepo </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a5a644339969ae5041ab4f4a6e8a67b78" name="a5a644339969ae5041ab4f4a6e8a67b78"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a644339969ae5041ab4f4a6e8a67b78">&#9670;&#160;</a></span>advance_states()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::FieldRepo::advance_states </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance all fields with more than one timestate to the new timestep. </p>
+
+</div>
+</div>
+<a id="a39b937a96c3aa7bc222cdb79b9a1e8c9" name="a39b937a96c3aa7bc222cdb79b9a1e8c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39b937a96c3aa7bc222cdb79b9a1e8c9">&#9670;&#160;</a></span>allocate_field_data() <span class="overload">[1/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::FieldRepo::allocate_field_data </td>
+          <td>(</td>
+          <td class="paramtype">const amrex::BoxArray &amp;</td>          <td class="paramname"><span class="paramname"><em>ba</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::DistributionMapping &amp;</td>          <td class="paramname"><span class="paramname"><em>dm</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structamr__wind_1_1_level_data_holder.html">LevelDataHolder</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>level_data</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::FabFactory&lt; amrex::FArrayBox &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>factory</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Allocate data at a level during regrid. </p>
+
+</div>
+</div>
+<a id="ac0435ef94439c97359d0394113f4335e" name="ac0435ef94439c97359d0394113f4335e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0435ef94439c97359d0394113f4335e">&#9670;&#160;</a></span>allocate_field_data() <span class="overload">[2/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::FieldRepo::allocate_field_data </td>
+          <td>(</td>
+          <td class="paramtype">const amrex::BoxArray &amp;</td>          <td class="paramname"><span class="paramname"><em>ba</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::DistributionMapping &amp;</td>          <td class="paramname"><span class="paramname"><em>dm</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structamr__wind_1_1_level_data_holder.html">LevelDataHolder</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>level_data</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::FabFactory&lt; amrex::IArrayBox &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>factory</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0babd3abd4e7bbd22dd515ae9d326d3a" name="a0babd3abd4e7bbd22dd515ae9d326d3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0babd3abd4e7bbd22dd515ae9d326d3a">&#9670;&#160;</a></span>allocate_field_data() <span class="overload">[3/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::FieldRepo::allocate_field_data </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_int_field.html">IntField</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>field</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9d3dca9f6cac615012238ce7471e67c5" name="a9d3dca9f6cac615012238ce7471e67c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d3dca9f6cac615012238ce7471e67c5">&#9670;&#160;</a></span>allocate_field_data() <span class="overload">[4/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::FieldRepo::allocate_field_data </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>field</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Allocate field data at all levels. </p>
+
+</div>
+</div>
+<a id="aa16d5e00de4896e2819bf4e3f87cc1a8" name="aa16d5e00de4896e2819bf4e3f87cc1a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa16d5e00de4896e2819bf4e3f87cc1a8">&#9670;&#160;</a></span>allocate_field_data() <span class="overload">[5/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::FieldRepo::allocate_field_data </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>lev</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>field</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structamr__wind_1_1_level_data_holder.html">LevelDataHolder</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>level_data</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::FabFactory&lt; amrex::FArrayBox &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>factory</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Allocate field data for a single level outside of regrid. </p>
+
+</div>
+</div>
+<a id="afdb8e23de43dd99ac50e6645126b192b" name="afdb8e23de43dd99ac50e6645126b192b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afdb8e23de43dd99ac50e6645126b192b">&#9670;&#160;</a></span>allocate_field_data() <span class="overload">[6/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::FieldRepo::allocate_field_data </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>lev</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_int_field.html">IntField</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>field</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structamr__wind_1_1_level_data_holder.html">LevelDataHolder</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>level_data</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a01b87f65eb6d7ce098aac888ba9e0b99" name="a01b87f65eb6d7ce098aac888ba9e0b99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01b87f65eb6d7ce098aac888ba9e0b99">&#9670;&#160;</a></span>clear_level()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::FieldRepo::clear_level </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>lev</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove a level during regrid. </p>
+
+</div>
+</div>
+<a id="a984cc3b2d1da7af9c2015266a72a5e4a" name="a984cc3b2d1da7af9c2015266a72a5e4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a984cc3b2d1da7af9c2015266a72a5e4a">&#9670;&#160;</a></span>create_int_scratch_field_on_host() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1_int_scratch_field.html">IntScratchField</a> &gt; amr_wind::FieldRepo::create_int_scratch_field_on_host </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>name</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>ncomp</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>nghost</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a></td>          <td class="paramname"><span class="paramname"><em>floc</em></span><span class="paramdefsep"> = </span><span class="paramdefval"><a class="el" href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aadeaa44e5e872be992b4109cf1fbfe41e">FieldLoc::CELL</a></span>&#160;) const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab78a354137476a810da94229a206b1d9" name="ab78a354137476a810da94229a206b1d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab78a354137476a810da94229a206b1d9">&#9670;&#160;</a></span>create_int_scratch_field_on_host() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1_int_scratch_field.html">IntScratchField</a> &gt; amr_wind::FieldRepo::create_int_scratch_field_on_host </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>ncomp</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>nghost</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a></td>          <td class="paramname"><span class="paramname"><em>floc</em></span><span class="paramdefsep"> = </span><span class="paramdefval"><a class="el" href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aadeaa44e5e872be992b4109cf1fbfe41e">FieldLoc::CELL</a></span>&#160;) const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acfad499585f6bbdab7e4f1c1d12ed742" name="acfad499585f6bbdab7e4f1c1d12ed742"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfad499585f6bbdab7e4f1c1d12ed742">&#9670;&#160;</a></span>create_scratch_field() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1_scratch_field.html">ScratchField</a> &gt; amr_wind::FieldRepo::create_scratch_field </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>name</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>ncomp</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>nghost</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a></td>          <td class="paramname"><span class="paramname"><em>floc</em></span><span class="paramdefsep"> = </span><span class="paramdefval"><a class="el" href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aadeaa44e5e872be992b4109cf1fbfe41e">FieldLoc::CELL</a></span>&#160;) const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Create a scratch field</p>
+<p><a class="el" href="classamr__wind_1_1_scratch_field.html">ScratchField</a> is a temporary field used to compute and store intermediate quantities that are needed within a timestep. Scratch fields provide an API similar to <a class="el" href="classamr__wind_1_1_field.html">Field</a>, but do not contain multiple states. The underlying MultiFab data is not managed by <a class="el" href="classamr__wind_1_1_field_repo.html">FieldRepo</a> and, therefore, <a class="el" href="classamr__wind_1_1_scratch_field.html">ScratchField</a> do not survive a regrid. This method returns a unique_ptr instance that is only valid within a timestep. It is not safe to hold a reference to the <a class="el" href="classamr__wind_1_1_scratch_field.html">ScratchField</a> object across timesteps. </p>
+
+</div>
+</div>
+<a id="a9a75acd1a3fe539415f81338ff94d218" name="a9a75acd1a3fe539415f81338ff94d218"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a75acd1a3fe539415f81338ff94d218">&#9670;&#160;</a></span>create_scratch_field() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1_scratch_field.html">ScratchField</a> &gt; amr_wind::FieldRepo::create_scratch_field </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>ncomp</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>nghost</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a></td>          <td class="paramname"><span class="paramname"><em>floc</em></span><span class="paramdefsep"> = </span><span class="paramdefval"><a class="el" href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aadeaa44e5e872be992b4109cf1fbfe41e">FieldLoc::CELL</a></span>&#160;) const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Create a scratch field</p>
+<p><a class="el" href="classamr__wind_1_1_scratch_field.html">ScratchField</a> is a temporary field used to compute and store intermediate quantities that are needed within a timestep. Scratch fields provide an API similar to <a class="el" href="classamr__wind_1_1_field.html">Field</a>, but do not contain multiple states. The underlying MultiFab data is not managed by <a class="el" href="classamr__wind_1_1_field_repo.html">FieldRepo</a> and, therefore, <a class="el" href="classamr__wind_1_1_scratch_field.html">ScratchField</a> do not survive a regrid. This method returns a unique_ptr instance that is only valid within a timestep. It is not safe to hold a reference to the <a class="el" href="classamr__wind_1_1_scratch_field.html">ScratchField</a> object across timesteps. </p>
+
+</div>
+</div>
+<a id="a08bf020c72eb90a6349cc7a5f6133835" name="a08bf020c72eb90a6349cc7a5f6133835"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08bf020c72eb90a6349cc7a5f6133835">&#9670;&#160;</a></span>create_scratch_field_on_host() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1_scratch_field.html">ScratchField</a> &gt; amr_wind::FieldRepo::create_scratch_field_on_host </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>name</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>ncomp</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>nghost</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a></td>          <td class="paramname"><span class="paramname"><em>floc</em></span><span class="paramdefsep"> = </span><span class="paramdefval"><a class="el" href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aadeaa44e5e872be992b4109cf1fbfe41e">FieldLoc::CELL</a></span>&#160;) const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a150dca8463cb84481847c26b02a2a5d0" name="a150dca8463cb84481847c26b02a2a5d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a150dca8463cb84481847c26b02a2a5d0">&#9670;&#160;</a></span>create_scratch_field_on_host() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1_scratch_field.html">ScratchField</a> &gt; amr_wind::FieldRepo::create_scratch_field_on_host </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>ncomp</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>nghost</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a></td>          <td class="paramname"><span class="paramname"><em>floc</em></span><span class="paramdefsep"> = </span><span class="paramdefval"><a class="el" href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aadeaa44e5e872be992b4109cf1fbfe41e">FieldLoc::CELL</a></span>&#160;) const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3e79c6725ebf7d039dc3707282b6e137" name="a3e79c6725ebf7d039dc3707282b6e137"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e79c6725ebf7d039dc3707282b6e137">&#9670;&#160;</a></span>create_state()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp; amr_wind::FieldRepo::create_state </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>field</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__fields.html#ga5251ec6b376231128a9647f3028dbac0">FieldState</a></td>          <td class="paramname"><span class="paramname"><em>fstate</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create a new state for a field. </p>
+
+</div>
+</div>
+<a id="ae83967e90e7c9a3ac8bd77c9fe490678" name="ae83967e90e7c9a3ac8bd77c9fe490678"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae83967e90e7c9a3ac8bd77c9fe490678">&#9670;&#160;</a></span>declare_cc_field()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp; amr_wind::FieldRepo::declare_cc_field </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>name</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>ncomp</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>ngrow</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>nstates</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1</span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Declare a cell-centered field</p>
+<p>This is a convenience wrapper around <span class="tt">declare_field</span></p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#ab32deb69eae7b3f9e048f3a8fe3f8ed7">amr_wind::FieldRepo::declare_field</a> </dd></dl>
+
+</div>
+</div>
+<a id="a802253e1c94acc55ce431e93b53112a8" name="a802253e1c94acc55ce431e93b53112a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a802253e1c94acc55ce431e93b53112a8">&#9670;&#160;</a></span>declare_face_normal_field()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt; <a class="el" href="classamr__wind_1_1_field.html">Field</a> * &gt; amr_wind::FieldRepo::declare_face_normal_field </td>
+          <td>(</td>
+          <td class="paramtype">const amrex::Vector&lt; std::string &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>names</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>ncomp</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>ngrow</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>nstates</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1</span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Declare a vector field with components in the x,y,z faces</p>
+<p>This is a convenience function around <span class="tt">declare_field</span> </p>
+
+</div>
+</div>
+<a id="ab32deb69eae7b3f9e048f3a8fe3f8ed7" name="ab32deb69eae7b3f9e048f3a8fe3f8ed7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab32deb69eae7b3f9e048f3a8fe3f8ed7">&#9670;&#160;</a></span>declare_field()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp; amr_wind::FieldRepo::declare_field </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>name</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>ncomp</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>ngrow</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>nstates</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a></td>          <td class="paramname"><span class="paramname"><em>floc</em></span><span class="paramdefsep"> = </span><span class="paramdefval"><a class="el" href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aadeaa44e5e872be992b4109cf1fbfe41e">FieldLoc::CELL</a></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Create a new field instance</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>Unique identifier for this field </td></tr>
+    <tr><td class="paramname">ncomp</td><td>Number of components in this field (default: 1) </td></tr>
+    <tr><td class="paramname">ngrow</td><td>Number of ghost cells/nodes for this field (default: 1) </td></tr>
+    <tr><td class="paramname">nstates</td><td>Number of time states for this field (default: 1) </td></tr>
+    <tr><td class="paramname">floc</td><td><a class="el" href="classamr__wind_1_1_field.html">Field</a> location (default: cell-centered) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a3771665ca4306b4034e5d0fc8c4b260b" name="a3771665ca4306b4034e5d0fc8c4b260b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3771665ca4306b4034e5d0fc8c4b260b">&#9670;&#160;</a></span>declare_int_field()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_int_field.html">IntField</a> &amp; amr_wind::FieldRepo::declare_int_field </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>name</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>ncomp</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>ngrow</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>nstates</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a></td>          <td class="paramname"><span class="paramname"><em>floc</em></span><span class="paramdefsep"> = </span><span class="paramdefval"><a class="el" href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aadeaa44e5e872be992b4109cf1fbfe41e">FieldLoc::CELL</a></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Declare an integer field</p>
+<p>Integer fields are used for masks and iblanking with overset meshes</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>[in] Unique identifier for the field </td></tr>
+    <tr><td class="paramname">ncomp</td><td>Number of components in this field (default: 1) </td></tr>
+    <tr><td class="paramname">ngrow</td><td>Number of ghost cells/nodes for this field (default: 1) </td></tr>
+    <tr><td class="paramname">nstates</td><td>Number of time states for this field (default: 1) </td></tr>
+    <tr><td class="paramname">floc</td><td><a class="el" href="classamr__wind_1_1_field.html">Field</a> location (default: cell-centered) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a77ed3696c63cbad6c87b6a1483df01eb" name="a77ed3696c63cbad6c87b6a1483df01eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77ed3696c63cbad6c87b6a1483df01eb">&#9670;&#160;</a></span>declare_nd_field()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp; amr_wind::FieldRepo::declare_nd_field </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>name</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>ncomp</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>ngrow</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>nstates</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1</span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Declare a node-centered field</p>
+<p>This is a convenience wrapper around <span class="tt">declare_field</span></p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#ab32deb69eae7b3f9e048f3a8fe3f8ed7">amr_wind::FieldRepo::declare_field</a> </dd></dl>
+
+</div>
+</div>
+<a id="a095653d368ee8cebe2e8154183ceff26" name="a095653d368ee8cebe2e8154183ceff26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a095653d368ee8cebe2e8154183ceff26">&#9670;&#160;</a></span>declare_xf_field()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp; amr_wind::FieldRepo::declare_xf_field </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>name</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>ncomp</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>ngrow</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>nstates</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1</span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Declare a face field on the faces with normal in x-direction</p>
+<p>This is a convenience wrapper around <span class="tt">declare_field</span></p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#ab32deb69eae7b3f9e048f3a8fe3f8ed7">amr_wind::FieldRepo::declare_field</a> </dd></dl>
+
+</div>
+</div>
+<a id="a9449c56cdd62bf570610ccd8d4b8c62c" name="a9449c56cdd62bf570610ccd8d4b8c62c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9449c56cdd62bf570610ccd8d4b8c62c">&#9670;&#160;</a></span>declare_yf_field()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp; amr_wind::FieldRepo::declare_yf_field </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>name</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>ncomp</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>ngrow</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>nstates</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1</span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Declare a face field on the faces with normal in y-direction</p>
+<p>This is a convenience wrapper around <span class="tt">declare_field</span></p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#ab32deb69eae7b3f9e048f3a8fe3f8ed7">amr_wind::FieldRepo::declare_field</a> </dd></dl>
+
+</div>
+</div>
+<a id="a8a6539dd2a946872fa96193a5a6ec4a3" name="a8a6539dd2a946872fa96193a5a6ec4a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a6539dd2a946872fa96193a5a6ec4a3">&#9670;&#160;</a></span>declare_zf_field()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp; amr_wind::FieldRepo::declare_zf_field </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>name</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>ncomp</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>ngrow</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>nstates</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1</span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Declare a face field on the faces with normal in z-direction</p>
+<p>This is a convenience wrapper around <span class="tt">declare_field</span></p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#ab32deb69eae7b3f9e048f3a8fe3f8ed7">amr_wind::FieldRepo::declare_field</a> </dd></dl>
+
+</div>
+</div>
+<a id="a3a04ce725f5b155b8a237d30461da3ab" name="a3a04ce725f5b155b8a237d30461da3ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a04ce725f5b155b8a237d30461da3ab">&#9670;&#160;</a></span>factory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const amrex::FabFactory&lt; amrex::FArrayBox &gt; &amp; amr_wind::FieldRepo::factory </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>lev</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return factory instance at a given level. </p>
+
+</div>
+</div>
+<a id="a98a03968e8782601fe9a0707624381de" name="a98a03968e8782601fe9a0707624381de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98a03968e8782601fe9a0707624381de">&#9670;&#160;</a></span>field_exists()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::FieldRepo::field_exists </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>name</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__fields.html#ga5251ec6b376231128a9647f3028dbac0">FieldState</a></td>          <td class="paramname"><span class="paramname"><em>fstate</em></span><span class="paramdefsep"> = </span><span class="paramdefval"><a class="el" href="group__fields.html#gga5251ec6b376231128a9647f3028dbac0a03c2e7e41ffc181a4e84080b4710e81e">FieldState::New</a></span>&#160;) const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Query if field uniquely identified by name and time state exists in repository. </p>
+
+</div>
+</div>
+<a id="acdfde6309c440228333b0ef8b0f5aa3b" name="acdfde6309c440228333b0ef8b0f5aa3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acdfde6309c440228333b0ef8b0f5aa3b">&#9670;&#160;</a></span>fields()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const amrex::Vector&lt; std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1_field.html">Field</a> &gt; &gt; &amp; amr_wind::FieldRepo::fields </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return list of fields registered (for unit-test purposes only) </p>
+
+</div>
+</div>
+<a id="a229435f22567851793883c61b40b8406" name="a229435f22567851793883c61b40b8406"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a229435f22567851793883c61b40b8406">&#9670;&#160;</a></span>get_field() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp; amr_wind::FieldRepo::get_field </td>
+          <td>(</td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>field_id</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return a previously created field using a unique identifier </p>
+
+</div>
+</div>
+<a id="ac6473f5fa392cdfe08c5fb11d5676940" name="ac6473f5fa392cdfe08c5fb11d5676940"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6473f5fa392cdfe08c5fb11d5676940">&#9670;&#160;</a></span>get_field() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp; amr_wind::FieldRepo::get_field </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>name</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__fields.html#ga5251ec6b376231128a9647f3028dbac0">FieldState</a></td>          <td class="paramname"><span class="paramname"><em>fstate</em></span><span class="paramdefsep"> = </span><span class="paramdefval"><a class="el" href="group__fields.html#gga5251ec6b376231128a9647f3028dbac0a03c2e7e41ffc181a4e84080b4710e81e">FieldState::New</a></span>&#160;) const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Return a previously created field identified by name and time state </p>
+
+</div>
+</div>
+<a id="a3b4cf1d03de2ffb2d3f8f70e2dd6908b" name="a3b4cf1d03de2ffb2d3f8f70e2dd6908b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b4cf1d03de2ffb2d3f8f70e2dd6908b">&#9670;&#160;</a></span>get_int_fab()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::iMultiFab &amp; amr_wind::FieldRepo::get_int_fab </td>
+          <td>(</td>
+          <td class="paramtype">const unsigned</td>          <td class="paramname"><span class="paramname"><em>fid</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>lev</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return the integer fab instance for a field at a given level</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">fid</td><td>Unique integer field identifier for this field </td></tr>
+    <tr><td class="paramname">lev</td><td>AMR level </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a08b2f9d1a414ecbf126951f59ff0bb0f" name="a08b2f9d1a414ecbf126951f59ff0bb0f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08b2f9d1a414ecbf126951f59ff0bb0f">&#9670;&#160;</a></span>get_int_field() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_int_field.html">IntField</a> &amp; amr_wind::FieldRepo::get_int_field </td>
+          <td>(</td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>field_id</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return a reference to a previously created integer field using unique identifier </p>
+
+</div>
+</div>
+<a id="a539f5c1eb69afde2e2dfd0f177d0ddbf" name="a539f5c1eb69afde2e2dfd0f177d0ddbf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a539f5c1eb69afde2e2dfd0f177d0ddbf">&#9670;&#160;</a></span>get_int_field() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_int_field.html">IntField</a> &amp; amr_wind::FieldRepo::get_int_field </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>name</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__fields.html#ga5251ec6b376231128a9647f3028dbac0">FieldState</a></td>          <td class="paramname"><span class="paramname"><em>fstate</em></span><span class="paramdefsep"> = </span><span class="paramdefval"><a class="el" href="group__fields.html#gga5251ec6b376231128a9647f3028dbac0a03c2e7e41ffc181a4e84080b4710e81e">FieldState::New</a></span>&#160;) const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return a reference to an integer field. </p>
+
+</div>
+</div>
+<a id="a8b595a52147362c56888921ce0f42a0c" name="a8b595a52147362c56888921ce0f42a0c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b595a52147362c56888921ce0f42a0c">&#9670;&#160;</a></span>get_mesh_mapping_det_j()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp; amr_wind::FieldRepo::get_mesh_mapping_det_j </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a></td>          <td class="paramname"><span class="paramname"><em>floc</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Return a previously created mesh mapping detJ using field location </p>
+
+</div>
+</div>
+<a id="abf6df2e2d26eb9a04a5c6c4fda84e11b" name="abf6df2e2d26eb9a04a5c6c4fda84e11b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf6df2e2d26eb9a04a5c6c4fda84e11b">&#9670;&#160;</a></span>get_mesh_mapping_field()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp; amr_wind::FieldRepo::get_mesh_mapping_field </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a></td>          <td class="paramname"><span class="paramname"><em>floc</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Return a previously created mesh mapping field using field location </p>
+
+</div>
+</div>
+<a id="a184d7b074ddb07c9d3694ff9bd65efea" name="a184d7b074ddb07c9d3694ff9bd65efea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a184d7b074ddb07c9d3694ff9bd65efea">&#9670;&#160;</a></span>get_multifab()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::MultiFab &amp; amr_wind::FieldRepo::get_multifab </td>
+          <td>(</td>
+          <td class="paramtype">const unsigned</td>          <td class="paramname"><span class="paramname"><em>fid</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>lev</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return the amrex::MultiFab instance for a field at a given level</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">fid</td><td>Unique integer field identifier for this field </td></tr>
+    <tr><td class="paramname">lev</td><td>AMR level </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a40b1a9a2f67c66ead0f687c4ef0ff5a4" name="a40b1a9a2f67c66ead0f687c4ef0ff5a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40b1a9a2f67c66ead0f687c4ef0ff5a4">&#9670;&#160;</a></span>int_field_exists()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::FieldRepo::int_field_exists </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>name</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__fields.html#ga5251ec6b376231128a9647f3028dbac0">FieldState</a></td>          <td class="paramname"><span class="paramname"><em>fstate</em></span><span class="paramdefsep"> = </span><span class="paramdefval"><a class="el" href="group__fields.html#gga5251ec6b376231128a9647f3028dbac0a03c2e7e41ffc181a4e84080b4710e81e">FieldState::New</a></span>&#160;) const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Query if an integer field exists. </p>
+
+</div>
+</div>
+<a id="ac240904cb09281407c86061db8e9007c" name="ac240904cb09281407c86061db8e9007c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac240904cb09281407c86061db8e9007c">&#9670;&#160;</a></span>make_new_level_from_coarse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::FieldRepo::make_new_level_from_coarse </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>lev</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>time</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::BoxArray &amp;</td>          <td class="paramname"><span class="paramname"><em>ba</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::DistributionMapping &amp;</td>          <td class="paramname"><span class="paramname"><em>dm</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Allocate and initialize data on a finer level from the next coarser level</p>
+<p>This is called by the AmrCore automatically during regrid process </p>
+
+</div>
+</div>
+<a id="a5f4a299c1da8670f55b7a3f76af48758" name="a5f4a299c1da8670f55b7a3f76af48758"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f4a299c1da8670f55b7a3f76af48758">&#9670;&#160;</a></span>make_new_level_from_scratch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::FieldRepo::make_new_level_from_scratch </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>lev</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>time</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::BoxArray &amp;</td>          <td class="paramname"><span class="paramname"><em>ba</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::DistributionMapping &amp;</td>          <td class="paramname"><span class="paramname"><em>dm</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Perform field data management tasks when amrex::AmrCore::MakeNewLevelFromScratch is called. </p>
+
+</div>
+</div>
+<a id="ae8c15fbffc4349aa8919d84ed157ef2c" name="ae8c15fbffc4349aa8919d84ed157ef2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8c15fbffc4349aa8919d84ed157ef2c">&#9670;&#160;</a></span>mesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const amrex::AmrCore &amp; amr_wind::FieldRepo::mesh </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return a reference to the underlying AMR mesh instance. </p>
+
+</div>
+</div>
+<a id="abda9f9ce1b9e66391a4e865f91dddb7b" name="abda9f9ce1b9e66391a4e865f91dddb7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abda9f9ce1b9e66391a4e865f91dddb7b">&#9670;&#160;</a></span>num_active_levels()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::FieldRepo::num_active_levels </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Total number of levels currently active in the AMR mesh. </p>
+
+</div>
+</div>
+<a id="aa56115715010f7e9f6d97759b2ad62c5" name="aa56115715010f7e9f6d97759b2ad62c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa56115715010f7e9f6d97759b2ad62c5">&#9670;&#160;</a></span>num_fields()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::FieldRepo::num_fields </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of fields registered in the database. </p>
+
+</div>
+</div>
+<a id="a4564a129cf83f0a68fd245166b797f7d" name="a4564a129cf83f0a68fd245166b797f7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4564a129cf83f0a68fd245166b797f7d">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field_repo.html">FieldRepo</a> &amp; amr_wind::FieldRepo::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_field_repo.html">FieldRepo</a> &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel delete">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aecf0bf9c5170f11b7fd216ae1e46235a" name="aecf0bf9c5170f11b7fd216ae1e46235a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aecf0bf9c5170f11b7fd216ae1e46235a">&#9670;&#160;</a></span>remake_level()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::FieldRepo::remake_level </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>lev</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>time</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::BoxArray &amp;</td>          <td class="paramname"><span class="paramname"><em>ba</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::DistributionMapping &amp;</td>          <td class="paramname"><span class="paramname"><em>dm</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Allocate and initialize data on an existing level during regrid</p>
+<p>This is called by the AmrCore automatically during regrid process </p>
+
+</div>
+</div>
+<a name="doc-related-members" id="doc-related-members"></a><h2 id="header-doc-related-members" class="groupheader">Friends And Related Symbol Documentation</h2>
+<a id="aaec47a26a3c11c1debd3ed922b69cbd2" name="aaec47a26a3c11c1debd3ed922b69cbd2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaec47a26a3c11c1debd3ed922b69cbd2">&#9670;&#160;</a></span>Field</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classamr__wind_1_1_field.html">Field</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel friend">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae5ba94b163a0e8d7b2719c7f3103a651" name="ae5ba94b163a0e8d7b2719c7f3103a651"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5ba94b163a0e8d7b2719c7f3103a651">&#9670;&#160;</a></span>IntField</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classamr__wind_1_1_int_field.html">IntField</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel friend">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a900a3102668fa61051ee08370b5e25fa" name="a900a3102668fa61051ee08370b5e25fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a900a3102668fa61051ee08370b5e25fa">&#9670;&#160;</a></span>m_fid_map</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;std::string, size_t&gt; amr_wind::FieldRepo::m_fid_map</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Map of field name to unique integer ID for lookups. </p>
+
+</div>
+</div>
+<a id="a4fcb6497fe20552def4023e7124f26b9" name="a4fcb6497fe20552def4023e7124f26b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4fcb6497fe20552def4023e7124f26b9">&#9670;&#160;</a></span>m_field_vec</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;std::unique_ptr&lt;<a class="el" href="classamr__wind_1_1_field.html">Field</a>&gt; &gt; amr_wind::FieldRepo::m_field_vec</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel mutable">mutable</span><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>References to field instances identified by unique integer. </p>
+
+</div>
+</div>
+<a id="a233f9a7842763fd9523589c7f34693bb" name="a233f9a7842763fd9523589c7f34693bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a233f9a7842763fd9523589c7f34693bb">&#9670;&#160;</a></span>m_int_fid_map</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;std::string, size_t&gt; amr_wind::FieldRepo::m_int_fid_map</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Map of integer field name to unique integer ID for lookups. </p>
+
+</div>
+</div>
+<a id="a3ac5648a93cd10f1d64381d96037bd21" name="a3ac5648a93cd10f1d64381d96037bd21"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ac5648a93cd10f1d64381d96037bd21">&#9670;&#160;</a></span>m_int_field_vec</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;std::unique_ptr&lt;<a class="el" href="classamr__wind_1_1_int_field.html">IntField</a>&gt; &gt; amr_wind::FieldRepo::m_int_field_vec</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel mutable">mutable</span><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reference to integer field instances identified by unique integer. </p>
+
+</div>
+</div>
+<a id="a24731ca76ea3e4b1da972b13f349a0ac" name="a24731ca76ea3e4b1da972b13f349a0ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24731ca76ea3e4b1da972b13f349a0ac">&#9670;&#160;</a></span>m_is_initialized</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::FieldRepo::m_is_initialized {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Flag indicating if mesh is available to allocate field data. </p>
+
+</div>
+</div>
+<a id="a5be22728d89b80234619aa5acd7cdec9" name="a5be22728d89b80234619aa5acd7cdec9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5be22728d89b80234619aa5acd7cdec9">&#9670;&#160;</a></span>m_leveldata</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;std::unique_ptr&lt;<a class="el" href="structamr__wind_1_1_level_data_holder.html">LevelDataHolder</a>&gt; &gt; amr_wind::FieldRepo::m_leveldata</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Array (size: nlevels) of data holder that contains another array of MultiFabs for all fields at that level. </p>
+
+</div>
+</div>
+<a id="a1a2fe397c6939923cb4c9600cf07931f" name="a1a2fe397c6939923cb4c9600cf07931f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a2fe397c6939923cb4c9600cf07931f">&#9670;&#160;</a></span>m_mesh</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const amrex::AmrCore&amp; amr_wind::FieldRepo::m_mesh</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reference to the mesh instance. </p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/core/<a class="el" href="_field_repo_8_h_source.html">FieldRepo.H</a></li>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/core/<a class="el" href="_field_repo_8cpp.html">FieldRepo.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

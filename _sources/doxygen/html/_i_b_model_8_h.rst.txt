@@ -1,0 +1,14 @@
+.. meta::da802067f43f51d5f3bc9ca205462dbe66ea7387c25788a220ff0a42b48088c46a14baecab619efec8333f0b5d6a77083f72db0115f91c2ccfb0d1217bf32080
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/immersed_boundary/IBModel.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/immersed\_boundary/IBModel.H File Reference
+========================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _i_b_model_8_h.html

@@ -1,0 +1,14 @@
+.. meta::d839c8c794d397715ee570e89dc50fb54be4b948e349dde22eaad502b9ff48e5643545bbeb59a2990780c7ba47dbc1d1e242a30d45a9d68a28d1e464b24f2b73
+
+:orphan:
+
+.. title:: AMR-Wind API: Temperature transport equation
+
+Temperature transport equation
+==============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: group__temp__eqn.html

@@ -1,0 +1,547 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::pde::icns::RayleighDamping Class Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::pde::icns::RayleighDamping Class Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/classamr__wind_1_1pde_1_1icns_1_1_rayleigh_damping.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="rayleighdamping-class-reference">
+<h1>RayleighDamping Class Reference<a class="headerlink" href="#rayleighdamping-class-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::pde::icns::RayleighDamping Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="namespaceamr__wind_1_1pde.html">pde</a></li><li class="navelem"><a href="namespaceamr__wind_1_1pde_1_1icns.html">icns</a></li><li class="navelem"><a href="classamr__wind_1_1pde_1_1icns_1_1_rayleigh_damping.html">RayleighDamping</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
+<a href="classamr__wind_1_1pde_1_1icns_1_1_rayleigh_damping-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::pde::icns::RayleighDamping Class Reference<div class="ingroups"><a class="el" href="group__eqsys.html">Equation Systems</a> &raquo; <a class="el" href="group__icns.html">Incompressible Navier-Stokes</a> &raquo; <a class="el" href="group__icns__src.html">ICNS Source terms</a></div></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_rayleigh_damping_8_h_source.html">RayleighDamping.H</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for amr_wind::pde::icns::RayleighDamping:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1pde_1_1icns_1_1_rayleigh_damping__inherit__graph.svg" width="199" height="154"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for amr_wind::pde::icns::RayleighDamping:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1pde_1_1icns_1_1_rayleigh_damping__coll__graph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:ad9178fee8dc45fa648cc530c1abb0cd7" id="r_ad9178fee8dc45fa648cc530c1abb0cd7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad9178fee8dc45fa648cc530c1abb0cd7">RayleighDamping</a> (const <a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;)</td></tr>
+<tr class="memitem:ad3a5279e6034aa8e8237223ae8bdec26" id="r_ad3a5279e6034aa8e8237223ae8bdec26"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad3a5279e6034aa8e8237223ae8bdec26">~RayleighDamping</a> () override</td></tr>
+<tr class="memitem:a815a490403d6f1ae0dd34940b0adaa4a" id="r_a815a490403d6f1ae0dd34940b0adaa4a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a815a490403d6f1ae0dd34940b0adaa4a">operator()</a> (int lev, const amrex::MFIter &amp;mfi, const amrex::Box &amp;bx, <a class="el" href="group__fields.html#ga5251ec6b376231128a9647f3028dbac0">FieldState</a> fstate, const amrex::Array4&lt; amrex::Real &gt; &amp;src_term) const override</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a21682b5ec0baeed2f7a2bffb6fe211a5" id="r_a21682b5ec0baeed2f7a2bffb6fe211a5"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a21682b5ec0baeed2f7a2bffb6fe211a5">identifier</a> ()</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:ac9f6cd9eeb01103f933a0cd1167fa199" id="r_ac9f6cd9eeb01103f933a0cd1167fa199"><td class="memItemLeft" align="right" valign="top">const amrex::AmrCore &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac9f6cd9eeb01103f933a0cd1167fa199">m_mesh</a></td></tr>
+<tr class="memitem:aa89358a1ab220ea6e5eb8282a1a16cea" id="r_aa89358a1ab220ea6e5eb8282a1a16cea"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa89358a1ab220ea6e5eb8282a1a16cea">m_velocity</a></td></tr>
+<tr class="memitem:aa5f22cc9dacd339dcf7953ebee5d4d36" id="r_aa5f22cc9dacd339dcf7953ebee5d4d36"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa5f22cc9dacd339dcf7953ebee5d4d36">m_ref_vel</a> {15.0_rt, 0.0_rt, 0.0_rt}</td></tr>
+<tr class="memdesc:aa5f22cc9dacd339dcf7953ebee5d4d36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reference velocity defined as an input.  <br /></td></tr>
+<tr class="memitem:aad8d0efc46c002fdca17a090c144920f" id="r_aad8d0efc46c002fdca17a090c144920f"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aad8d0efc46c002fdca17a090c144920f">m_dRD</a> {500.}</td></tr>
+<tr class="memdesc:aad8d0efc46c002fdca17a090c144920f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Full length of the damping layer.  <br /></td></tr>
+<tr class="memitem:a9a3f611782e6db5dd277d75b312c6cd2" id="r_a9a3f611782e6db5dd277d75b312c6cd2"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9a3f611782e6db5dd277d75b312c6cd2">m_dFull</a> {300.}</td></tr>
+<tr class="memdesc:a9a3f611782e6db5dd277d75b312c6cd2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Damping length.  <br /></td></tr>
+<tr class="memitem:a777498208cdd07bbacd0e94605532d3d" id="r_a777498208cdd07bbacd0e94605532d3d"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a777498208cdd07bbacd0e94605532d3d">m_tau</a> {5.0_rt}</td></tr>
+<tr class="memdesc:a777498208cdd07bbacd0e94605532d3d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time scale defined by the user.  <br /></td></tr>
+<tr class="memitem:abac78e129ded59d5c67b6433ea1dac0e" id="r_abac78e129ded59d5c67b6433ea1dac0e"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abac78e129ded59d5c67b6433ea1dac0e">m_fcoord</a> {1, 1, 1}</td></tr>
+<tr class="memdesc:abac78e129ded59d5c67b6433ea1dac0e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Which coordinate directions are forced.  <br /></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Apply Rayleigh damping as a source terms</p>
+<p>The implementation is based on a private communication I (G. Deskos) had with Matt Churchfield </p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="ad9178fee8dc45fa648cc530c1abb0cd7" name="ad9178fee8dc45fa648cc530c1abb0cd7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9178fee8dc45fa648cc530c1abb0cd7">&#9670;&#160;</a></span>RayleighDamping()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::pde::icns::RayleighDamping::RayleighDamping </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>sim</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel explicit">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad3a5279e6034aa8e8237223ae8bdec26" name="ad3a5279e6034aa8e8237223ae8bdec26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3a5279e6034aa8e8237223ae8bdec26">&#9670;&#160;</a></span>~RayleighDamping()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::pde::icns::RayleighDamping::~RayleighDamping </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a21682b5ec0baeed2f7a2bffb6fe211a5" name="a21682b5ec0baeed2f7a2bffb6fe211a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21682b5ec0baeed2f7a2bffb6fe211a5">&#9670;&#160;</a></span>identifier()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::pde::icns::RayleighDamping::identifier </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a815a490403d6f1ae0dd34940b0adaa4a" name="a815a490403d6f1ae0dd34940b0adaa4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a815a490403d6f1ae0dd34940b0adaa4a">&#9670;&#160;</a></span>operator()()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::pde::icns::RayleighDamping::operator() </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>lev</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::MFIter &amp;</td>          <td class="paramname"><span class="paramname"><em>mfi</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Box &amp;</td>          <td class="paramname"><span class="paramname"><em>bx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__fields.html#ga5251ec6b376231128a9647f3028dbac0">FieldState</a></td>          <td class="paramname"><span class="paramname"><em>fstate</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Array4&lt; amrex::Real &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>src_term</em></span>&#160;) const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a9a3f611782e6db5dd277d75b312c6cd2" name="a9a3f611782e6db5dd277d75b312c6cd2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a3f611782e6db5dd277d75b312c6cd2">&#9670;&#160;</a></span>m_dFull</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::pde::icns::RayleighDamping::m_dFull {300.}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Damping length. </p>
+
+</div>
+</div>
+<a id="aad8d0efc46c002fdca17a090c144920f" name="aad8d0efc46c002fdca17a090c144920f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad8d0efc46c002fdca17a090c144920f">&#9670;&#160;</a></span>m_dRD</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::pde::icns::RayleighDamping::m_dRD {500.}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Full length of the damping layer. </p>
+
+</div>
+</div>
+<a id="abac78e129ded59d5c67b6433ea1dac0e" name="abac78e129ded59d5c67b6433ea1dac0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abac78e129ded59d5c67b6433ea1dac0e">&#9670;&#160;</a></span>m_fcoord</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;int&gt; amr_wind::pde::icns::RayleighDamping::m_fcoord {1, 1, 1}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Which coordinate directions are forced. </p>
+
+</div>
+</div>
+<a id="ac9f6cd9eeb01103f933a0cd1167fa199" name="ac9f6cd9eeb01103f933a0cd1167fa199"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9f6cd9eeb01103f933a0cd1167fa199">&#9670;&#160;</a></span>m_mesh</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const amrex::AmrCore&amp; amr_wind::pde::icns::RayleighDamping::m_mesh</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa5f22cc9dacd339dcf7953ebee5d4d36" name="aa5f22cc9dacd339dcf7953ebee5d4d36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5f22cc9dacd339dcf7953ebee5d4d36">&#9670;&#160;</a></span>m_ref_vel</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Real&gt; amr_wind::pde::icns::RayleighDamping::m_ref_vel {15.0_rt, 0.0_rt, 0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reference velocity defined as an input. </p>
+
+</div>
+</div>
+<a id="a777498208cdd07bbacd0e94605532d3d" name="a777498208cdd07bbacd0e94605532d3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a777498208cdd07bbacd0e94605532d3d">&#9670;&#160;</a></span>m_tau</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::pde::icns::RayleighDamping::m_tau {5.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Time scale defined by the user. </p>
+
+</div>
+</div>
+<a id="aa89358a1ab220ea6e5eb8282a1a16cea" name="aa89358a1ab220ea6e5eb8282a1a16cea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa89358a1ab220ea6e5eb8282a1a16cea">&#9670;&#160;</a></span>m_velocity</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_field.html">Field</a>&amp; amr_wind::pde::icns::RayleighDamping::m_velocity</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/icns/source_terms/<a class="el" href="_rayleigh_damping_8_h_source.html">RayleighDamping.H</a></li>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/icns/source_terms/<a class="el" href="_rayleigh_damping_8cpp.html">RayleighDamping.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

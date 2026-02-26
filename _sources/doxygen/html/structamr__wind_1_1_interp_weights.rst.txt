@@ -1,0 +1,14 @@
+.. meta::6509770cccba4f692f08070fffd178be0dcaa7a2f5155179663d1f18b7110ea98972075275e9b8027c69f96ee3de57944a13958aac5d8796b6cb6f309f42245a
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::InterpWeights Struct Reference
+
+InterpWeights Struct Reference
+==============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1_interp_weights.html

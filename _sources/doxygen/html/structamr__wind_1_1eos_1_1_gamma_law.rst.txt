@@ -1,0 +1,14 @@
+.. meta::44c436c2f9e6ad30b0aff2b914b3bbd935971b3ea3eef10f66a6fe28a9bd7a72312c52a2d4d1dc5034fcf411b2246d4c800cddc9a3b90a43681205cac130b261
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::eos::GammaLaw Struct Reference
+
+GammaLaw Struct Reference
+=========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1eos_1_1_gamma_law.html

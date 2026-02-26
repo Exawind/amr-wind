@@ -1,0 +1,14 @@
+.. meta::d955330d97499cd8431778142d3a1745a76b39894f704b11f77a7100bdde9c160c166bd595817b1c16dc340283d5373c1d6ae8d0f28f23735e34e90ed0b6c382
+
+:orphan:
+
+.. title:: AMR-Wind API: ext_turb::KynemaTurbine Struct Reference
+
+KynemaTurbine Struct Reference
+==============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structext__turb_1_1_kynema_turbine.html

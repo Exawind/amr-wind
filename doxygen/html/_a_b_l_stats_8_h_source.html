@@ -1,0 +1,473 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/ABLStats.H Source File &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/ABLStats.H Source File</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/_a_b_l_stats_8_h_source.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="home-runner-work-amr-wind-amr-wind-amr-wind-wind-energy-ablstats-h-source-file">
+<h1>/home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/ABLStats.H Source File<a class="headerlink" href="#home-runner-work-amr-wind-amr-wind-amr-wind-wind-energy-ablstats-h-source-file" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/ABLStats.H Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="dir_d85575251dd712327fe3cf057fa568b4.html">amr-wind</a></li><li class="navelem"><a href="dir_212148f97b8bb53ebaebb3bf8a8b5de4.html">amr-wind</a></li><li class="navelem"><a href="dir_b33158d99c61436f71711cd504567082.html">wind_energy</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="headertitle"><div class="title">ABLStats.H</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="_a_b_l_stats_8_h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef ABLISTATS_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define ABLISTATS_H</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="_a_b_l_stats_base_8_h.html">amr-wind/wind_energy/ABLStatsBase.H</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="_c_f_d_sim_8_h.html">amr-wind/CFDSim.H</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="_transport_model_8_h.html">amr-wind/transport_models/TransportModel.H</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="_field_plane_averaging_8_h.html">amr-wind/utilities/FieldPlaneAveraging.H</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="_field_plane_averaging_fine_8_h.html">amr-wind/utilities/FieldPlaneAveragingFine.H</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="_second_moment_averaging_8_h.html">amr-wind/utilities/SecondMomentAveraging.H</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="_third_moment_averaging_8_h.html">amr-wind/utilities/ThirdMomentAveraging.H</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="_post_processing_8_h.html">amr-wind/utilities/PostProcessing.H</a>&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="_sampler_base_8_h.html">amr-wind/utilities/sampling/SamplerBase.H</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="_sampling_container_8_h.html">amr-wind/utilities/sampling/SamplingContainer.H</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="_a_b_l_wall_function_8_h.html">amr-wind/wind_energy/ABLWallFunction.H</a>&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;AMReX_REAL.H&quot;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">using namespace </span>amrex::literals;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceamr__wind.html">amr_wind</a> {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceamr__wind_1_1pde_1_1icns.html">pde::icns</a> {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">class </span><a class="code hl_class" href="classamr__wind_1_1pde_1_1icns_1_1_a_b_l_forcing.html">ABLForcing</a>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">class </span><a class="code hl_class" href="classamr__wind_1_1pde_1_1icns_1_1_a_b_l_meso_forcing_mom.html">ABLMesoForcingMom</a>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>} <span class="comment">// namespace pde::icns</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceamr__wind_1_1pde_1_1temperature.html">pde::temperature</a> {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">class </span><a class="code hl_class" href="classamr__wind_1_1pde_1_1temperature_1_1_a_b_l_meso_forcing_temp.html">ABLMesoForcingTemp</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>}</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span></div>
+<div class="foldopen" id="foldopen00038" data-start="{" data-end="};">
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html">   38</a></span><span class="keyword">class </span><a class="code hl_function" href="classamr__wind_1_1_a_b_l_stats.html#aa8caed60f9c6350623bb22a53c35116c">ABLStats</a> : <span class="keyword">public</span> ABLStatsBase::Register&lt;ABLStats&gt;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>{</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#ac03383fce9129ed1253f57415d3ebc36">   41</a></span>    <span class="keyword">static</span> std::string <a class="code hl_function" href="classamr__wind_1_1_a_b_l_stats.html#ac03383fce9129ed1253f57415d3ebc36">identifier</a>() { <span class="keywordflow">return</span> <span class="stringliteral">&quot;precursor&quot;</span>; }</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <a class="code hl_function" href="classamr__wind_1_1_a_b_l_stats.html#aa8caed60f9c6350623bb22a53c35116c">ABLStats</a>(</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <a class="code hl_class" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; <span class="comment">/*sim*/</span>, <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_a_b_l_wall_function.html">ABLWallFunction</a>&amp; <span class="comment">/*abl_wall_func*/</span>, <span class="keywordtype">int</span> dir);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#a21b1b5c08c56047489be63efa0c97e86">   46</a></span>    <a class="code hl_function" href="classamr__wind_1_1_a_b_l_stats.html#a21b1b5c08c56047489be63efa0c97e86">~ABLStats</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#a49a76bff679626b6d676dc09f8960c2e">   48</a></span>    <a class="code hl_enumeration" href="namespaceamr__wind.html#aab9c5258858498704f6e53ed29085e07">ABLStatsMode</a> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_stats.html#a49a76bff679626b6d676dc09f8960c2e">abl_mode</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceamr__wind.html#aab9c5258858498704f6e53ed29085e07a5a317d3dd3f7a2f675975a6d0c11c629">ABLStatsMode::computed</a>; }</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="comment">// Perform initialization actions after the mesh has been created</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_stats.html#a10f24444f900b9d2aa23bb234b744723">post_init_actions</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span></div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#ab388843e29711e040ecf07903c30edbb">   54</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_stats.html#ab388843e29711e040ecf07903c30edbb">pre_advance_work</a>()<span class="keyword"> override </span>{}</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span></div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_stats.html#aec7a561d671e0c36ca6e1e265854f07a">post_advance_work</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span></div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_stats.html#ad1e4778520470b054ec25b89c2bbbc77">compute_zi</a>();</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span></div>
+<div class="foldopen" id="foldopen00063" data-start="{" data-end="}">
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#a59d1c2cfe261c1a202ffb2937e23be13">   63</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_vel_plane_averaging_fine.html">VelPlaneAveragingFine</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_a_b_l_stats.html#a59d1c2cfe261c1a202ffb2937e23be13">vel_profile</a>()<span class="keyword"> const override</span></div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_stats.html#ac068bbc765e3b5bc3fc91b527850101c">m_pa_vel_fine</a>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    };</div>
+</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span></div>
+<div class="foldopen" id="foldopen00069" data-start="{" data-end="}">
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#a71b79b30a545ecfa29852062909a8d32">   69</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_vel_plane_averaging.html">VelPlaneAveraging</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_a_b_l_stats.html#a71b79b30a545ecfa29852062909a8d32">vel_profile_coarse</a>()<span class="keyword"> const override</span></div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_stats.html#aa357c1c7164562435339c29ec618660a">m_pa_vel</a>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    };</div>
+</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span></div>
+<div class="foldopen" id="foldopen00075" data-start="{" data-end="}">
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#a8c459b8784c3bf3bc7dd8e80ca5e15b5">   75</a></span>    <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceamr__wind.html#a786ec0c89796180da3204a4f86c4624e">FieldPlaneAveraging</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_a_b_l_stats.html#a8c459b8784c3bf3bc7dd8e80ca5e15b5">theta_profile</a>()<span class="keyword"> const override</span></div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_stats.html#a727c90819a09eb277188669b929d86a9">m_pa_temp</a>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    }</div>
+</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span></div>
+<div class="foldopen" id="foldopen00081" data-start="{" data-end="}">
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#a6348fa8793f6fc2a3391f3ff6b093128">   81</a></span>    <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceamr__wind.html#ad3f1a45798cd043b881ee76d55a33c1d">FieldPlaneAveragingFine</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_a_b_l_stats.html#a6348fa8793f6fc2a3391f3ff6b093128">theta_profile_fine</a>()<span class="keyword"> const override</span></div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_stats.html#ad4f82fd5b0fb5e18a0425f580e071e96">m_pa_temp_fine</a>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    }</div>
+</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="foldopen" id="foldopen00086" data-start="{" data-end="}">
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#a02f19880597146c1db228d91d4397c84">   86</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_stats.html#a02f19880597146c1db228d91d4397c84">register_forcing_term</a>(<a class="code hl_class" href="classamr__wind_1_1pde_1_1icns_1_1_a_b_l_forcing.html">pde::icns::ABLForcing</a>* forcing)<span class="keyword"> const override</span></div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_stats.html#abdd39455c915266e038f51a1081dc798">m_abl_forcing</a> = forcing;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    }</div>
+</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="foldopen" id="foldopen00091" data-start="{" data-end="}">
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#a77a2ae29be4d6b92d7e67059c4f3ac1d">   91</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_stats.html#a77a2ae29be4d6b92d7e67059c4f3ac1d">register_meso_mom_forcing</a>(</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        <a class="code hl_class" href="classamr__wind_1_1pde_1_1icns_1_1_a_b_l_meso_forcing_mom.html">pde::icns::ABLMesoForcingMom</a>* forcing)<span class="keyword"> const override</span></div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_stats.html#a619b851daec4eb124cdeb97a3dad65d9">m_abl_meso_mom_forcing</a> = forcing;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    }</div>
+</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
+<div class="foldopen" id="foldopen00097" data-start="{" data-end="}">
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#a8e68bdf851cb6d936ba2fd982381b983">   97</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_stats.html#a8e68bdf851cb6d936ba2fd982381b983">register_meso_temp_forcing</a>(</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        <a class="code hl_class" href="classamr__wind_1_1pde_1_1temperature_1_1_a_b_l_meso_forcing_temp.html">pde::temperature::ABLMesoForcingTemp</a>* forcing)<span class="keyword"> const override</span></div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_stats.html#a1c6967e9064189dc0249bc8ccfefbf93">m_abl_meso_temp_forcing</a> = forcing;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    }</div>
+</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span></div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keywordtype">void</span></div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <a class="code hl_function" href="classamr__wind_1_1_a_b_l_stats.html#af5cb85ea90866d23dfee73c889dcad8e">calc_sfs_stress_avgs</a>(<a class="code hl_class" href="classamr__wind_1_1_scratch_field.html">ScratchField</a>&amp; sfs_stress, <a class="code hl_class" href="classamr__wind_1_1_scratch_field.html">ScratchField</a>&amp; t_sfs_stress);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span></div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_stats.html#a33883fe1ff0f45973a6fa069e5f20226">calc_tke_diffusion</a>(</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        <a class="code hl_class" href="classamr__wind_1_1_scratch_field.html">ScratchField</a>&amp; <a class="code hl_namespace" href="namespacediffusion.html">diffusion</a>,</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; buoy_prod,</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; shear_prod,</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; dissipation,</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        amrex::Real dt);</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span><span class="keyword">protected</span>:</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_stats.html#a5ea79728407a3151c3f336ee5435c61a">initialize</a>();</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span></div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_stats.html#af0970ccc325fe14551231fca1f7a95ad">calc_averages</a>();</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span></div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_stats.html#ac3c8b088bfb12d10543e1b10ad20cc52">process_output</a>();</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span></div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_stats.html#a2dda9089ffdb5351f92c723fae2b8a4c">prepare_ascii_file</a>();</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_stats.html#a4c2f4724f4b9c8228c31cc6b205b20a6">prepare_netcdf_file</a>();</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span></div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_stats.html#a1bec55e1f0fa395e1cbb03f331d23c6a">write_netcdf</a>();</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span></div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_stats.html#a90d6c78bf800e96f300fdb8341c5d1bb">write_ascii</a>();</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span> </div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#a93f0da575cc7dcb6ed9f530d1da0bb21">  141</a></span>    <a class="code hl_class" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_stats.html#a93f0da575cc7dcb6ed9f530d1da0bb21">m_sim</a>;</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#a39a3f312a5de3eac70639b152fe9cf53">  142</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_a_b_l_wall_function.html">ABLWallFunction</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_stats.html#a39a3f312a5de3eac70639b152fe9cf53">m_abl_wall_func</a>;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#a357b0cbed6dde5f242953ebb888c1d19">  143</a></span>    <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_stats.html#a357b0cbed6dde5f242953ebb888c1d19">m_temperature</a>;</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#a13e9575b6676b4fc58c3b6673ecb1ef7">  144</a></span>    <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_stats.html#a13e9575b6676b4fc58c3b6673ecb1ef7">m_mueff</a>;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span> </div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#aa357c1c7164562435339c29ec618660a">  146</a></span>    <a class="code hl_class" href="classamr__wind_1_1_vel_plane_averaging.html">VelPlaneAveraging</a> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_stats.html#aa357c1c7164562435339c29ec618660a">m_pa_vel</a>;</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#a727c90819a09eb277188669b929d86a9">  147</a></span>    <a class="code hl_typedef" href="namespaceamr__wind.html#a786ec0c89796180da3204a4f86c4624e">FieldPlaneAveraging</a> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_stats.html#a727c90819a09eb277188669b929d86a9">m_pa_temp</a>;</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#ac068bbc765e3b5bc3fc91b527850101c">  148</a></span>    <a class="code hl_class" href="classamr__wind_1_1_vel_plane_averaging_fine.html">VelPlaneAveragingFine</a> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_stats.html#ac068bbc765e3b5bc3fc91b527850101c">m_pa_vel_fine</a>;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#ad4f82fd5b0fb5e18a0425f580e071e96">  149</a></span>    <a class="code hl_typedef" href="namespaceamr__wind.html#ad3f1a45798cd043b881ee76d55a33c1d">FieldPlaneAveragingFine</a> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_stats.html#ad4f82fd5b0fb5e18a0425f580e071e96">m_pa_temp_fine</a>;</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#af92c9ac286aba759677ee02ae3099ccf">  150</a></span>    <a class="code hl_typedef" href="namespaceamr__wind.html#a786ec0c89796180da3204a4f86c4624e">FieldPlaneAveraging</a> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_stats.html#af92c9ac286aba759677ee02ae3099ccf">m_pa_mueff</a>;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#aac384df5bbdfb32daaf197dde322057c">  151</a></span>    <a class="code hl_class" href="classamr__wind_1_1_second_moment_averaging.html">SecondMomentAveraging</a> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_stats.html#aac384df5bbdfb32daaf197dde322057c">m_pa_tt</a>;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#ad543a5634822dc9a36465174d25c18c6">  152</a></span>    <a class="code hl_class" href="classamr__wind_1_1_second_moment_averaging.html">SecondMomentAveraging</a> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_stats.html#ad543a5634822dc9a36465174d25c18c6">m_pa_tu</a>;</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#ab2a84a73c137745ba1420f349b5387ca">  153</a></span>    <a class="code hl_class" href="classamr__wind_1_1_second_moment_averaging.html">SecondMomentAveraging</a> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_stats.html#ab2a84a73c137745ba1420f349b5387ca">m_pa_uu</a>;</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#a52583aba134845784b68cd456179e9aa">  154</a></span>    <a class="code hl_class" href="classamr__wind_1_1_third_moment_averaging.html">ThirdMomentAveraging</a> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_stats.html#a52583aba134845784b68cd456179e9aa">m_pa_uuu</a>;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span></div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#abdd39455c915266e038f51a1081dc798">  157</a></span>    <span class="keyword">mutable</span> <a class="code hl_class" href="classamr__wind_1_1pde_1_1icns_1_1_a_b_l_forcing.html">pde::icns::ABLForcing</a>* <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_stats.html#abdd39455c915266e038f51a1081dc798">m_abl_forcing</a>{<span class="keyword">nullptr</span>};</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span> </div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#a619b851daec4eb124cdeb97a3dad65d9">  159</a></span>    <span class="keyword">mutable</span> <a class="code hl_class" href="classamr__wind_1_1pde_1_1icns_1_1_a_b_l_meso_forcing_mom.html">pde::icns::ABLMesoForcingMom</a>* <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_stats.html#a619b851daec4eb124cdeb97a3dad65d9">m_abl_meso_mom_forcing</a>{<span class="keyword">nullptr</span>};</div>
+<div class="foldopen" id="foldopen00160" data-start="{" data-end="};">
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#a1c6967e9064189dc0249bc8ccfefbf93">  160</a></span>    <span class="keyword">mutable</span> <a class="code hl_class" href="classamr__wind_1_1pde_1_1temperature_1_1_a_b_l_meso_forcing_temp.html">pde::temperature::ABLMesoForcingTemp</a>* <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_stats.html#a1c6967e9064189dc0249bc8ccfefbf93">m_abl_meso_temp_forcing</a>{</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>        <span class="keyword">nullptr</span>};</div>
+</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span></div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span><span class="preprocessor">#ifdef AMR_WIND_USE_NETCDF</span></div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#a8144513a5c459c24cb7a69875ce7654f">  165</a></span>    std::string <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_stats.html#a8144513a5c459c24cb7a69875ce7654f">m_out_fmt</a>{<span class="stringliteral">&quot;netcdf&quot;</span>};</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#ad4c731709e4a82efa30c7cda905b8ad5">  166</a></span>    std::string <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_stats.html#ad4c731709e4a82efa30c7cda905b8ad5">m_ncfile_name</a>;</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    std::string <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_stats.html#a8144513a5c459c24cb7a69875ce7654f">m_out_fmt</a>{<span class="stringliteral">&quot;ascii&quot;</span>};</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#af7b6f3aef54255ec24041ff2ff569c35">  170</a></span>    std::string <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_stats.html#af7b6f3aef54255ec24041ff2ff569c35">m_ascii_file_name</a>;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span></div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#a6399f25d1e434cdb8a19c8d710764183">  173</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_stats.html#a6399f25d1e434cdb8a19c8d710764183">m_out_freq</a>{100};</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span></div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#adcc1d262addf189bd6889d6335fed06a">  176</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_stats.html#adcc1d262addf189bd6889d6335fed06a">m_gravity</a>{9.81_rt};</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span></div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#af5facbe8f0dbd966456367561bf40ac1">  179</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_stats.html#af5facbe8f0dbd966456367561bf40ac1">m_kappa</a>{0.41_rt};</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span></div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#a480b263791dfd269655d7f464a83fe94">  182</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_stats.html#a480b263791dfd269655d7f464a83fe94">m_zi</a>{0.0_rt};</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span></div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#aa7bca2677d9a7eb75044abf4b7e3d599">  185</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_stats.html#aa7bca2677d9a7eb75044abf4b7e3d599">m_normal_dir</a>{2};</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span></div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#a62f85526175cbff54f2df7fb5df343dc">  188</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_stats.html#a62f85526175cbff54f2df7fb5df343dc">m_dn</a>{0.0_rt};</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span></div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#ac8ccde45533cb341e23be5bbaf05f298">  191</a></span>    <span class="keywordtype">size_t</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_stats.html#ac8ccde45533cb341e23be5bbaf05f298">m_ncells_h1</a>{0};</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#ad6e128608230baf160a0f790b9c847b9">  192</a></span>    <span class="keywordtype">size_t</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_stats.html#ad6e128608230baf160a0f790b9c847b9">m_ncells_h2</a>{0};</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span></div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_stats.html#aff255ea517877c536be4a6d92e0fe164">  195</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_stats.html#aff255ea517877c536be4a6d92e0fe164">m_do_energy_budget</a>{<span class="keyword">false</span>};</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>};</div>
+</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span> </div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>} <span class="comment">// namespace amr_wind</span></div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span> </div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span><span class="preprocessor">#endif </span><span class="comment">/* ABLISTATS_H */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="a_a_b_l_stats_base_8_h_html"><div class="ttname"><a href="_a_b_l_stats_base_8_h.html">ABLStatsBase.H</a></div></div>
+<div class="ttc" id="a_a_b_l_wall_function_8_h_html"><div class="ttname"><a href="_a_b_l_wall_function_8_h.html">ABLWallFunction.H</a></div></div>
+<div class="ttc" id="a_c_f_d_sim_8_h_html"><div class="ttname"><a href="_c_f_d_sim_8_h.html">CFDSim.H</a></div></div>
+<div class="ttc" id="a_field_plane_averaging_8_h_html"><div class="ttname"><a href="_field_plane_averaging_8_h.html">FieldPlaneAveraging.H</a></div></div>
+<div class="ttc" id="a_field_plane_averaging_fine_8_h_html"><div class="ttname"><a href="_field_plane_averaging_fine_8_h.html">FieldPlaneAveragingFine.H</a></div></div>
+<div class="ttc" id="a_post_processing_8_h_html"><div class="ttname"><a href="_post_processing_8_h.html">PostProcessing.H</a></div></div>
+<div class="ttc" id="a_sampler_base_8_h_html"><div class="ttname"><a href="_sampler_base_8_h.html">SamplerBase.H</a></div></div>
+<div class="ttc" id="a_sampling_container_8_h_html"><div class="ttname"><a href="_sampling_container_8_h.html">SamplingContainer.H</a></div></div>
+<div class="ttc" id="a_second_moment_averaging_8_h_html"><div class="ttname"><a href="_second_moment_averaging_8_h.html">SecondMomentAveraging.H</a></div></div>
+<div class="ttc" id="a_third_moment_averaging_8_h_html"><div class="ttname"><a href="_third_moment_averaging_8_h.html">ThirdMomentAveraging.H</a></div></div>
+<div class="ttc" id="a_transport_model_8_h_html"><div class="ttname"><a href="_transport_model_8_h.html">TransportModel.H</a></div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_a02f19880597146c1db228d91d4397c84"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#a02f19880597146c1db228d91d4397c84">amr_wind::ABLStats::register_forcing_term</a></div><div class="ttdeci">void register_forcing_term(pde::icns::ABLForcing *forcing) const override</div><div class="ttdef"><b>Definition</b> ABLStats.H:86</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_a10f24444f900b9d2aa23bb234b744723"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#a10f24444f900b9d2aa23bb234b744723">amr_wind::ABLStats::post_init_actions</a></div><div class="ttdeci">void post_init_actions() override</div><div class="ttdef"><b>Definition</b> ABLStats.cpp:43</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_a13e9575b6676b4fc58c3b6673ecb1ef7"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#a13e9575b6676b4fc58c3b6673ecb1ef7">amr_wind::ABLStats::m_mueff</a></div><div class="ttdeci">Field &amp; m_mueff</div><div class="ttdef"><b>Definition</b> ABLStats.H:144</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_a1bec55e1f0fa395e1cbb03f331d23c6a"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#a1bec55e1f0fa395e1cbb03f331d23c6a">amr_wind::ABLStats::write_netcdf</a></div><div class="ttdeci">void write_netcdf()</div><div class="ttdoc">Write sampled data into a NetCDF file.</div><div class="ttdef"><b>Definition</b> ABLStats.cpp:582</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_a1c6967e9064189dc0249bc8ccfefbf93"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#a1c6967e9064189dc0249bc8ccfefbf93">amr_wind::ABLStats::m_abl_meso_temp_forcing</a></div><div class="ttdeci">pde::temperature::ABLMesoForcingTemp * m_abl_meso_temp_forcing</div><div class="ttdef"><b>Definition</b> ABLStats.H:160</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_a21b1b5c08c56047489be63efa0c97e86"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#a21b1b5c08c56047489be63efa0c97e86">amr_wind::ABLStats::~ABLStats</a></div><div class="ttdeci">~ABLStats() override</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_a2dda9089ffdb5351f92c723fae2b8a4c"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#a2dda9089ffdb5351f92c723fae2b8a4c">amr_wind::ABLStats::prepare_ascii_file</a></div><div class="ttdeci">virtual void prepare_ascii_file()</div><div class="ttdoc">Prepare ASCII file.</div><div class="ttdef"><b>Definition</b> ABLStats.cpp:451</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_a33883fe1ff0f45973a6fa069e5f20226"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#a33883fe1ff0f45973a6fa069e5f20226">amr_wind::ABLStats::calc_tke_diffusion</a></div><div class="ttdeci">void calc_tke_diffusion(ScratchField &amp;diffusion, const Field &amp;buoy_prod, const Field &amp;shear_prod, const Field &amp;dissipation, amrex::Real dt)</div><div class="ttdoc">Calculate tke diffusion term by eliminating other terms.</div><div class="ttdef"><b>Definition</b> ABLStats.cpp:157</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_a357b0cbed6dde5f242953ebb888c1d19"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#a357b0cbed6dde5f242953ebb888c1d19">amr_wind::ABLStats::m_temperature</a></div><div class="ttdeci">Field &amp; m_temperature</div><div class="ttdef"><b>Definition</b> ABLStats.H:143</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_a39a3f312a5de3eac70639b152fe9cf53"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#a39a3f312a5de3eac70639b152fe9cf53">amr_wind::ABLStats::m_abl_wall_func</a></div><div class="ttdeci">const ABLWallFunction &amp; m_abl_wall_func</div><div class="ttdef"><b>Definition</b> ABLStats.H:142</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_a480b263791dfd269655d7f464a83fe94"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#a480b263791dfd269655d7f464a83fe94">amr_wind::ABLStats::m_zi</a></div><div class="ttdeci">amrex::Real m_zi</div><div class="ttdoc">Variable to store capping inversion height.</div><div class="ttdef"><b>Definition</b> ABLStats.H:182</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_a49a76bff679626b6d676dc09f8960c2e"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#a49a76bff679626b6d676dc09f8960c2e">amr_wind::ABLStats::abl_mode</a></div><div class="ttdeci">ABLStatsMode abl_mode() const override</div><div class="ttdef"><b>Definition</b> ABLStats.H:48</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_a4c2f4724f4b9c8228c31cc6b205b20a6"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#a4c2f4724f4b9c8228c31cc6b205b20a6">amr_wind::ABLStats::prepare_netcdf_file</a></div><div class="ttdeci">virtual void prepare_netcdf_file()</div><div class="ttdoc">Prepare NetCDF metadata.</div><div class="ttdef"><b>Definition</b> ABLStats.cpp:476</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_a52583aba134845784b68cd456179e9aa"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#a52583aba134845784b68cd456179e9aa">amr_wind::ABLStats::m_pa_uuu</a></div><div class="ttdeci">ThirdMomentAveraging m_pa_uuu</div><div class="ttdef"><b>Definition</b> ABLStats.H:154</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_a59d1c2cfe261c1a202ffb2937e23be13"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#a59d1c2cfe261c1a202ffb2937e23be13">amr_wind::ABLStats::vel_profile</a></div><div class="ttdeci">const VelPlaneAveragingFine &amp; vel_profile() const override</div><div class="ttdoc">Return vel plane averaging instance.</div><div class="ttdef"><b>Definition</b> ABLStats.H:63</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_a5ea79728407a3151c3f336ee5435c61a"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#a5ea79728407a3151c3f336ee5435c61a">amr_wind::ABLStats::initialize</a></div><div class="ttdeci">void initialize()</div><div class="ttdoc">Read user inputs and create the necessary files.</div><div class="ttdef"><b>Definition</b> ABLStats.cpp:49</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_a619b851daec4eb124cdeb97a3dad65d9"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#a619b851daec4eb124cdeb97a3dad65d9">amr_wind::ABLStats::m_abl_meso_mom_forcing</a></div><div class="ttdeci">pde::icns::ABLMesoForcingMom * m_abl_meso_mom_forcing</div><div class="ttdef"><b>Definition</b> ABLStats.H:159</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_a62f85526175cbff54f2df7fb5df343dc"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#a62f85526175cbff54f2df7fb5df343dc">amr_wind::ABLStats::m_dn</a></div><div class="ttdeci">amrex::Real m_dn</div><div class="ttdoc">Cell spacing at the coarsest level.</div><div class="ttdef"><b>Definition</b> ABLStats.H:188</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_a6348fa8793f6fc2a3391f3ff6b093128"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#a6348fa8793f6fc2a3391f3ff6b093128">amr_wind::ABLStats::theta_profile_fine</a></div><div class="ttdeci">const FieldPlaneAveragingFine &amp; theta_profile_fine() const override</div><div class="ttdoc">Return instance that handles temperature statistics.</div><div class="ttdef"><b>Definition</b> ABLStats.H:81</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_a6399f25d1e434cdb8a19c8d710764183"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#a6399f25d1e434cdb8a19c8d710764183">amr_wind::ABLStats::m_out_freq</a></div><div class="ttdeci">int m_out_freq</div><div class="ttdoc">Frequency of data sampling and output.</div><div class="ttdef"><b>Definition</b> ABLStats.H:173</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_a71b79b30a545ecfa29852062909a8d32"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#a71b79b30a545ecfa29852062909a8d32">amr_wind::ABLStats::vel_profile_coarse</a></div><div class="ttdeci">const VelPlaneAveraging &amp; vel_profile_coarse() const override</div><div class="ttdoc">Return vel plane averaging instance.</div><div class="ttdef"><b>Definition</b> ABLStats.H:69</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_a727c90819a09eb277188669b929d86a9"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#a727c90819a09eb277188669b929d86a9">amr_wind::ABLStats::m_pa_temp</a></div><div class="ttdeci">FieldPlaneAveraging m_pa_temp</div><div class="ttdef"><b>Definition</b> ABLStats.H:147</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_a77a2ae29be4d6b92d7e67059c4f3ac1d"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#a77a2ae29be4d6b92d7e67059c4f3ac1d">amr_wind::ABLStats::register_meso_mom_forcing</a></div><div class="ttdeci">void register_meso_mom_forcing(pde::icns::ABLMesoForcingMom *forcing) const override</div><div class="ttdef"><b>Definition</b> ABLStats.H:91</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_a8144513a5c459c24cb7a69875ce7654f"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#a8144513a5c459c24cb7a69875ce7654f">amr_wind::ABLStats::m_out_fmt</a></div><div class="ttdeci">std::string m_out_fmt</div><div class="ttdoc">Format of the data output (ascii, netcdf, etc.)</div><div class="ttdef"><b>Definition</b> ABLStats.H:165</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_a8c459b8784c3bf3bc7dd8e80ca5e15b5"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#a8c459b8784c3bf3bc7dd8e80ca5e15b5">amr_wind::ABLStats::theta_profile</a></div><div class="ttdeci">const FieldPlaneAveraging &amp; theta_profile() const override</div><div class="ttdoc">Return instance that handles temperature statistics.</div><div class="ttdef"><b>Definition</b> ABLStats.H:75</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_a8e68bdf851cb6d936ba2fd982381b983"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#a8e68bdf851cb6d936ba2fd982381b983">amr_wind::ABLStats::register_meso_temp_forcing</a></div><div class="ttdeci">void register_meso_temp_forcing(pde::temperature::ABLMesoForcingTemp *forcing) const override</div><div class="ttdef"><b>Definition</b> ABLStats.H:97</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_a90d6c78bf800e96f300fdb8341c5d1bb"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#a90d6c78bf800e96f300fdb8341c5d1bb">amr_wind::ABLStats::write_ascii</a></div><div class="ttdeci">virtual void write_ascii()</div><div class="ttdef"><b>Definition</b> ABLStats.cpp:381</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_a93f0da575cc7dcb6ed9f530d1da0bb21"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#a93f0da575cc7dcb6ed9f530d1da0bb21">amr_wind::ABLStats::m_sim</a></div><div class="ttdeci">CFDSim &amp; m_sim</div><div class="ttdef"><b>Definition</b> ABLStats.H:141</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_aa357c1c7164562435339c29ec618660a"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#aa357c1c7164562435339c29ec618660a">amr_wind::ABLStats::m_pa_vel</a></div><div class="ttdeci">VelPlaneAveraging m_pa_vel</div><div class="ttdef"><b>Definition</b> ABLStats.H:146</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_aa7bca2677d9a7eb75044abf4b7e3d599"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#aa7bca2677d9a7eb75044abf4b7e3d599">amr_wind::ABLStats::m_normal_dir</a></div><div class="ttdeci">int m_normal_dir</div><div class="ttdoc">Wall-normal direction axis.</div><div class="ttdef"><b>Definition</b> ABLStats.H:185</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_aa8caed60f9c6350623bb22a53c35116c"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#aa8caed60f9c6350623bb22a53c35116c">amr_wind::ABLStats::ABLStats</a></div><div class="ttdeci">ABLStats(CFDSim &amp;, const ABLWallFunction &amp;, int dir)</div><div class="ttdef"><b>Definition</b> ABLStats.cpp:24</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_aac384df5bbdfb32daaf197dde322057c"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#aac384df5bbdfb32daaf197dde322057c">amr_wind::ABLStats::m_pa_tt</a></div><div class="ttdeci">SecondMomentAveraging m_pa_tt</div><div class="ttdef"><b>Definition</b> ABLStats.H:151</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_ab2a84a73c137745ba1420f349b5387ca"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#ab2a84a73c137745ba1420f349b5387ca">amr_wind::ABLStats::m_pa_uu</a></div><div class="ttdeci">SecondMomentAveraging m_pa_uu</div><div class="ttdef"><b>Definition</b> ABLStats.H:153</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_ab388843e29711e040ecf07903c30edbb"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#ab388843e29711e040ecf07903c30edbb">amr_wind::ABLStats::pre_advance_work</a></div><div class="ttdeci">void pre_advance_work() override</div><div class="ttdoc">Perform actions before a new timestep.</div><div class="ttdef"><b>Definition</b> ABLStats.H:54</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_abdd39455c915266e038f51a1081dc798"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#abdd39455c915266e038f51a1081dc798">amr_wind::ABLStats::m_abl_forcing</a></div><div class="ttdeci">pde::icns::ABLForcing * m_abl_forcing</div><div class="ttdoc">Reference to ABL forcing term if present.</div><div class="ttdef"><b>Definition</b> ABLStats.H:157</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_ac03383fce9129ed1253f57415d3ebc36"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#ac03383fce9129ed1253f57415d3ebc36">amr_wind::ABLStats::identifier</a></div><div class="ttdeci">static std::string identifier()</div><div class="ttdef"><b>Definition</b> ABLStats.H:41</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_ac068bbc765e3b5bc3fc91b527850101c"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#ac068bbc765e3b5bc3fc91b527850101c">amr_wind::ABLStats::m_pa_vel_fine</a></div><div class="ttdeci">VelPlaneAveragingFine m_pa_vel_fine</div><div class="ttdef"><b>Definition</b> ABLStats.H:148</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_ac3c8b088bfb12d10543e1b10ad20cc52"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#ac3c8b088bfb12d10543e1b10ad20cc52">amr_wind::ABLStats::process_output</a></div><div class="ttdeci">virtual void process_output()</div><div class="ttdoc">Output data based on user-defined format.</div><div class="ttdef"><b>Definition</b> ABLStats.cpp:366</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_ac8ccde45533cb341e23be5bbaf05f298"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#ac8ccde45533cb341e23be5bbaf05f298">amr_wind::ABLStats::m_ncells_h1</a></div><div class="ttdeci">size_t m_ncells_h1</div><div class="ttdoc">Number of cells in the horizontal direction.</div><div class="ttdef"><b>Definition</b> ABLStats.H:191</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_ad1e4778520470b054ec25b89c2bbbc77"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#ad1e4778520470b054ec25b89c2bbbc77">amr_wind::ABLStats::compute_zi</a></div><div class="ttdeci">void compute_zi()</div><div class="ttdoc">Compute height of capping inversion.</div><div class="ttdef"><b>Definition</b> ABLStats.cpp:238</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_ad4c731709e4a82efa30c7cda905b8ad5"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#ad4c731709e4a82efa30c7cda905b8ad5">amr_wind::ABLStats::m_ncfile_name</a></div><div class="ttdeci">std::string m_ncfile_name</div><div class="ttdef"><b>Definition</b> ABLStats.H:166</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_ad4f82fd5b0fb5e18a0425f580e071e96"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#ad4f82fd5b0fb5e18a0425f580e071e96">amr_wind::ABLStats::m_pa_temp_fine</a></div><div class="ttdeci">FieldPlaneAveragingFine m_pa_temp_fine</div><div class="ttdef"><b>Definition</b> ABLStats.H:149</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_ad543a5634822dc9a36465174d25c18c6"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#ad543a5634822dc9a36465174d25c18c6">amr_wind::ABLStats::m_pa_tu</a></div><div class="ttdeci">SecondMomentAveraging m_pa_tu</div><div class="ttdef"><b>Definition</b> ABLStats.H:152</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_ad6e128608230baf160a0f790b9c847b9"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#ad6e128608230baf160a0f790b9c847b9">amr_wind::ABLStats::m_ncells_h2</a></div><div class="ttdeci">size_t m_ncells_h2</div><div class="ttdef"><b>Definition</b> ABLStats.H:192</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_adcc1d262addf189bd6889d6335fed06a"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#adcc1d262addf189bd6889d6335fed06a">amr_wind::ABLStats::m_gravity</a></div><div class="ttdeci">amrex::Real m_gravity</div><div class="ttdoc">Acceleration due to gravity magnitude.</div><div class="ttdef"><b>Definition</b> ABLStats.H:176</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_aec7a561d671e0c36ca6e1e265854f07a"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#aec7a561d671e0c36ca6e1e265854f07a">amr_wind::ABLStats::post_advance_work</a></div><div class="ttdeci">void post_advance_work() override</div><div class="ttdoc">Process fields given timestep and output to disk.</div><div class="ttdef"><b>Definition</b> ABLStats.cpp:214</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_af0970ccc325fe14551231fca1f7a95ad"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#af0970ccc325fe14551231fca1f7a95ad">amr_wind::ABLStats::calc_averages</a></div><div class="ttdeci">void calc_averages()</div><div class="ttdoc">Calculate plane average profiles.</div><div class="ttdef"><b>Definition</b> ABLStats.cpp:99</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_af5cb85ea90866d23dfee73c889dcad8e"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#af5cb85ea90866d23dfee73c889dcad8e">amr_wind::ABLStats::calc_sfs_stress_avgs</a></div><div class="ttdeci">void calc_sfs_stress_avgs(ScratchField &amp;sfs_stress, ScratchField &amp;t_sfs_stress)</div><div class="ttdoc">Calculate sfs stress averages.</div><div class="ttdef"><b>Definition</b> ABLStats.cpp:110</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_af5facbe8f0dbd966456367561bf40ac1"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#af5facbe8f0dbd966456367561bf40ac1">amr_wind::ABLStats::m_kappa</a></div><div class="ttdeci">amrex::Real m_kappa</div><div class="ttdoc">Von-Karman constant.</div><div class="ttdef"><b>Definition</b> ABLStats.H:179</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_af7b6f3aef54255ec24041ff2ff569c35"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#af7b6f3aef54255ec24041ff2ff569c35">amr_wind::ABLStats::m_ascii_file_name</a></div><div class="ttdeci">std::string m_ascii_file_name</div><div class="ttdef"><b>Definition</b> ABLStats.H:170</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_af92c9ac286aba759677ee02ae3099ccf"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#af92c9ac286aba759677ee02ae3099ccf">amr_wind::ABLStats::m_pa_mueff</a></div><div class="ttdeci">FieldPlaneAveraging m_pa_mueff</div><div class="ttdef"><b>Definition</b> ABLStats.H:150</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_stats_html_aff255ea517877c536be4a6d92e0fe164"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_stats.html#aff255ea517877c536be4a6d92e0fe164">amr_wind::ABLStats::m_do_energy_budget</a></div><div class="ttdeci">bool m_do_energy_budget</div><div class="ttdoc">Do energy budget.</div><div class="ttdef"><b>Definition</b> ABLStats.H:195</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_wall_function_html"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_wall_function.html">amr_wind::ABLWallFunction</a></div><div class="ttdef"><b>Definition</b> ABLWallFunction.H:24</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html">amr_wind::CFDSim</a></div><div class="ttdef"><b>Definition</b> CFDSim.H:54</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_html"><div class="ttname"><a href="classamr__wind_1_1_field.html">amr_wind::Field</a></div><div class="ttdef"><b>Definition</b> Field.H:112</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_scratch_field_html"><div class="ttname"><a href="classamr__wind_1_1_scratch_field.html">amr_wind::ScratchField</a></div><div class="ttdef"><b>Definition</b> ScratchField.H:30</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_second_moment_averaging_html"><div class="ttname"><a href="classamr__wind_1_1_second_moment_averaging.html">amr_wind::SecondMomentAveraging</a></div><div class="ttdef"><b>Definition</b> SecondMomentAveraging.H:26</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_third_moment_averaging_html"><div class="ttname"><a href="classamr__wind_1_1_third_moment_averaging.html">amr_wind::ThirdMomentAveraging</a></div><div class="ttdef"><b>Definition</b> ThirdMomentAveraging.H:16</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_vel_plane_averaging_fine_html"><div class="ttname"><a href="classamr__wind_1_1_vel_plane_averaging_fine.html">amr_wind::VelPlaneAveragingFine</a></div><div class="ttdef"><b>Definition</b> FieldPlaneAveragingFine.H:144</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_vel_plane_averaging_html"><div class="ttname"><a href="classamr__wind_1_1_vel_plane_averaging.html">amr_wind::VelPlaneAveraging</a></div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.H:146</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1icns_1_1_a_b_l_forcing_html"><div class="ttname"><a href="classamr__wind_1_1pde_1_1icns_1_1_a_b_l_forcing.html">amr_wind::pde::icns::ABLForcing</a></div><div class="ttdef"><b>Definition</b> ABLForcing.H:20</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1icns_1_1_a_b_l_meso_forcing_mom_html"><div class="ttname"><a href="classamr__wind_1_1pde_1_1icns_1_1_a_b_l_meso_forcing_mom.html">amr_wind::pde::icns::ABLMesoForcingMom</a></div><div class="ttdef"><b>Definition</b> ABLMesoForcingMom.H:26</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1temperature_1_1_a_b_l_meso_forcing_temp_html"><div class="ttname"><a href="classamr__wind_1_1pde_1_1temperature_1_1_a_b_l_meso_forcing_temp.html">amr_wind::pde::temperature::ABLMesoForcingTemp</a></div><div class="ttdef"><b>Definition</b> ABLMesoForcingTemp.H:19</div></div>
+<div class="ttc" id="anamespaceamr__wind_1_1pde_1_1icns_html"><div class="ttname"><a href="namespaceamr__wind_1_1pde_1_1icns.html">amr_wind::pde::icns</a></div><div class="ttdef"><b>Definition</b> ABLForcing.cpp:14</div></div>
+<div class="ttc" id="anamespaceamr__wind_1_1pde_1_1temperature_html"><div class="ttname"><a href="namespaceamr__wind_1_1pde_1_1temperature.html">amr_wind::pde::temperature</a></div><div class="ttdef"><b>Definition</b> ABLMesoForcingTemp.cpp:16</div></div>
+<div class="ttc" id="anamespaceamr__wind_html"><div class="ttname"><a href="namespaceamr__wind.html">amr_wind</a></div><div class="ttdoc">This test case is intended as an evaluation of the momentum advection scheme.</div><div class="ttdef"><b>Definition</b> BCInterface.cpp:10</div></div>
+<div class="ttc" id="anamespaceamr__wind_html_a786ec0c89796180da3204a4f86c4624e"><div class="ttname"><a href="namespaceamr__wind.html#a786ec0c89796180da3204a4f86c4624e">amr_wind::FieldPlaneAveraging</a></div><div class="ttdeci">FPlaneAveraging&lt; Field &gt; FieldPlaneAveraging</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.H:139</div></div>
+<div class="ttc" id="anamespaceamr__wind_html_aab9c5258858498704f6e53ed29085e07"><div class="ttname"><a href="namespaceamr__wind.html#aab9c5258858498704f6e53ed29085e07">amr_wind::ABLStatsMode</a></div><div class="ttdeci">ABLStatsMode</div><div class="ttdef"><b>Definition</b> ABLStatsBase.H:18</div></div>
+<div class="ttc" id="anamespaceamr__wind_html_aab9c5258858498704f6e53ed29085e07a5a317d3dd3f7a2f675975a6d0c11c629"><div class="ttname"><a href="namespaceamr__wind.html#aab9c5258858498704f6e53ed29085e07a5a317d3dd3f7a2f675975a6d0c11c629">amr_wind::ABLStatsMode::computed</a></div><div class="ttdeci">@ computed</div><div class="ttdef"><b>Definition</b> ABLStatsBase.H:19</div></div>
+<div class="ttc" id="anamespaceamr__wind_html_ad3f1a45798cd043b881ee76d55a33c1d"><div class="ttname"><a href="namespaceamr__wind.html#ad3f1a45798cd043b881ee76d55a33c1d">amr_wind::FieldPlaneAveragingFine</a></div><div class="ttdeci">FPlaneAveragingFine&lt; Field &gt; FieldPlaneAveragingFine</div><div class="ttdef"><b>Definition</b> FieldPlaneAveragingFine.H:137</div></div>
+<div class="ttc" id="anamespacediffusion_html"><div class="ttname"><a href="namespacediffusion.html">diffusion</a></div><div class="ttdef"><b>Definition</b> diffusion.H:7</div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

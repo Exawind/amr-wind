@@ -1,0 +1,14 @@
+.. meta::8d25b30ee37792902630d8c20a1e825201a09afd70cdbebf31ca77d7865cdbc99af9486cebe571efe042f45d6fdca52b09d80739d93278ec43d7440985263b06
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::averaging::ReAveraging Class Reference
+
+ReAveraging Class Reference
+===========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1averaging_1_1_re_averaging.html

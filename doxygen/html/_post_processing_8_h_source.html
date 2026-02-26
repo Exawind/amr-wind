@@ -1,0 +1,437 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/PostProcessing.H Source File &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/PostProcessing.H Source File</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/_post_processing_8_h_source.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="home-runner-work-amr-wind-amr-wind-amr-wind-utilities-postprocessing-h-source-file">
+<h1>/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/PostProcessing.H Source File<a class="headerlink" href="#home-runner-work-amr-wind-amr-wind-amr-wind-utilities-postprocessing-h-source-file" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/PostProcessing.H Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="dir_d85575251dd712327fe3cf057fa568b4.html">amr-wind</a></li><li class="navelem"><a href="dir_212148f97b8bb53ebaebb3bf8a8b5de4.html">amr-wind</a></li><li class="navelem"><a href="dir_e9168f3bfea397a173489332f8554c97.html">utilities</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="headertitle"><div class="title">PostProcessing.H</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="_post_processing_8_h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef POSTPROCESSING_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define POSTPROCESSING_H</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="_factory_8_h.html">amr-wind/core/Factory.H</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;AMReX_ParmParse.H&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;AMReX_REAL.H&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">using namespace </span>amrex::literals;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceamr__wind.html">amr_wind</a> {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">class </span><a class="code hl_class" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span></div>
+<div class="foldopen" id="foldopen00031" data-start="{" data-end="};">
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_post_process_base.html">   31</a></span><span class="keyword">class </span><a class="code hl_class" href="classamr__wind_1_1_post_process_base.html">PostProcessBase</a></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    : <span class="keyword">public</span> <a class="code hl_function" href="structamr__wind_1_1_factory.html#a9e905d4e76d3a3da2786ec0dcd758b77">Factory</a>&lt;PostProcessBase, CFDSim&amp;, const std::string&amp;&gt;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>{</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_post_process_base.html#aadd3620958031d76cadcccd04411d360">   35</a></span>    <span class="keyword">static</span> std::string <a class="code hl_function" href="classamr__wind_1_1_post_process_base.html#aadd3620958031d76cadcccd04411d360">base_identifier</a>() { <span class="keywordflow">return</span> <span class="stringliteral">&quot;PostProcessBase&quot;</span>; }</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_post_process_base.html#ac7b56a46e8f3e51ddb1b9add1a23b0b1">   37</a></span>    <a class="code hl_function" href="classamr__wind_1_1_post_process_base.html#ac7b56a46e8f3e51ddb1b9add1a23b0b1">~PostProcessBase</a>() <span class="keyword">override</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_post_process_base.html#a130982947f10f26448687769ddb511f4">   39</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_post_process_base.html#a130982947f10f26448687769ddb511f4">pre_init_actions</a>() = 0;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span></div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_post_process_base.html#a6532c848427b5814e09ce6c1ea0a5e2c">   46</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_post_process_base.html#a6532c848427b5814e09ce6c1ea0a5e2c">initialize</a>() = 0;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_post_process_base.html#add9a9d4e150782f1948c99a308d7b607">   50</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_post_process_base.html#add9a9d4e150782f1948c99a308d7b607">post_advance_work</a>() = 0;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span></div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_post_process_base.html#a9a0d9ff0c32f6161f7d161dbd393f9af">   54</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_post_process_base.html#a9a0d9ff0c32f6161f7d161dbd393f9af">output_actions</a>() = 0;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span></div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_post_process_base.html#ac9b6396dee8bec82005d7df63a33320e">   57</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_post_process_base.html#ac9b6396dee8bec82005d7df63a33320e">post_regrid_actions</a>() = 0;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="foldopen" id="foldopen00059" data-start="{" data-end="}">
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_post_process_base.html#ac709f76f3c6b7ec48a99e5b2ee05cbb3">   59</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_post_process_base.html#ac709f76f3c6b7ec48a99e5b2ee05cbb3">populate_output_parameters</a>(amrex::ParmParse&amp; pp)</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    {</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        pp.query(<span class="stringliteral">&quot;output_interval&quot;</span>, <a class="code hl_variable" href="classamr__wind_1_1_post_process_base.html#a56b5bdf55698abe660d15f51f3f4fbca">m_out_interval</a>);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        pp.query(<span class="stringliteral">&quot;output_time_interval&quot;</span>, <a class="code hl_variable" href="classamr__wind_1_1_post_process_base.html#a054738653f74eef98205148fd44d3cd4">m_out_time_interval</a>);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        pp.query(<span class="stringliteral">&quot;output_delay&quot;</span>, <a class="code hl_variable" href="classamr__wind_1_1_post_process_base.html#a3035972c07183f9f9860e1394389c304">m_out_delay</a>);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        pp.query(<span class="stringliteral">&quot;output_time_delay&quot;</span>, <a class="code hl_variable" href="classamr__wind_1_1_post_process_base.html#aad94b64986786458a3e976500d60ec9b">m_out_time_delay</a>);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        pp.query(<span class="stringliteral">&quot;enforce_output_time_dt&quot;</span>, <a class="code hl_variable" href="classamr__wind_1_1_post_process_base.html#a9fdbfb5f4d877ed20207bda9645c2a2a">m_enforce_dt</a>);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        pp.query(<span class="stringliteral">&quot;enforce_output_time_dt_reltol&quot;</span>, <a class="code hl_variable" href="classamr__wind_1_1_post_process_base.html#a19c813537550b7cb19063f85b313dbb6">m_enforce_dt_tol</a>);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        <span class="comment">// Check for presence of arguments</span></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> has_interval = pp.contains(<span class="stringliteral">&quot;output_interval&quot;</span>);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> has_time_int = pp.contains(<span class="stringliteral">&quot;output_time_interval&quot;</span>);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> has_frequency = pp.contains(<span class="stringliteral">&quot;output_frequency&quot;</span>);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        <span class="keywordflow">if</span> (has_frequency) {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>            <span class="keywordflow">if</span> (has_interval) {</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>                amrex::Print()</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>                    &lt;&lt; <span class="stringliteral">&quot;WARNING: output_interval and output_frequency &quot;</span></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                       <span class="stringliteral">&quot;(legacy argument) are both specified; &quot;</span></div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                       <span class="stringliteral">&quot;output_frequency will be ignored.\n&quot;</span>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                pp.get(<span class="stringliteral">&quot;output_frequency&quot;</span>, <a class="code hl_variable" href="classamr__wind_1_1_post_process_base.html#a56b5bdf55698abe660d15f51f3f4fbca">m_out_interval</a>);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                amrex::Print()</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                    &lt;&lt; <span class="stringliteral">&quot;WARNING: legacy input argument of output_frequency has &quot;</span></div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                       <span class="stringliteral">&quot;been specified; the code will function as normal, but &quot;</span></div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>                       <span class="stringliteral">&quot;the new input argument of output_interval is &quot;</span></div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>                       <span class="stringliteral">&quot;preferred.\n&quot;</span>;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>            }</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        }</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        <span class="comment">// Because of default, interval is valid unless turned off;</span></div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        <span class="comment">// time_interval is invalid unless turned on</span></div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> has_valid_interval =</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>            (has_interval || has_frequency) ? <a class="code hl_variable" href="classamr__wind_1_1_post_process_base.html#a56b5bdf55698abe660d15f51f3f4fbca">m_out_interval</a> &gt; 0 : <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> has_valid_interval_present =</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>            (has_interval || has_frequency) ? <a class="code hl_variable" href="classamr__wind_1_1_post_process_base.html#a56b5bdf55698abe660d15f51f3f4fbca">m_out_interval</a> &gt; 0 : <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> has_valid_time_int =</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            has_time_int ? <a class="code hl_variable" href="classamr__wind_1_1_post_process_base.html#a054738653f74eef98205148fd44d3cd4">m_out_time_interval</a> &gt; 0. : <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        <span class="keywordflow">if</span> (!(has_valid_interval || has_valid_time_int)) {</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>            amrex::Abort(</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>                <span class="stringliteral">&quot;post_processing output timing parameters are specified, but &quot;</span></div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>                <span class="stringliteral">&quot;none are valid. Please specify an output_interval (or &quot;</span></div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>                <span class="stringliteral">&quot;output_frequency) greater than 0 or an output_time_interval &quot;</span></div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>                <span class="stringliteral">&quot;greater than 0.0_rt, or rely on the default output_interval.&quot;</span>);</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        }</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        <span class="keywordflow">if</span> (has_valid_interval_present &amp;&amp; has_valid_time_int) {</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>            amrex::Abort(</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>                <span class="stringliteral">&quot;output_interval (or output_frequency) and &quot;</span></div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>                <span class="stringliteral">&quot;output_time_interval are both specified. timestep- and &quot;</span></div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>                <span class="stringliteral">&quot;time-based output parameters should not be used together; &quot;</span></div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>                <span class="stringliteral">&quot;please only specify one.&quot;</span>);</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        }</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        <span class="keywordflow">if</span> (!has_valid_time_int &amp;&amp; <a class="code hl_variable" href="classamr__wind_1_1_post_process_base.html#a9fdbfb5f4d877ed20207bda9645c2a2a">m_enforce_dt</a>) {</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>            amrex::Abort(</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>                <span class="stringliteral">&quot;enforce_output_time_dt is true, but output_time_interval &quot;</span></div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>                <span class="stringliteral">&quot;has not been specified.&quot;</span>);</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        }</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        <span class="comment">// Because of default, turn off step interval when time interval is</span></div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>        <span class="comment">// meant to replace it</span></div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        <span class="keywordflow">if</span> (has_valid_time_int &amp;&amp; !(has_interval || has_frequency)) {</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>            <a class="code hl_variable" href="classamr__wind_1_1_post_process_base.html#a56b5bdf55698abe660d15f51f3f4fbca">m_out_interval</a> = -1;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        }</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    }</div>
+</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span></div>
+<div class="foldopen" id="foldopen00128" data-start="{" data-end="}">
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_post_process_base.html#adcff80700954a45a886329176165cd9f">  128</a></span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classamr__wind_1_1_post_process_base.html#adcff80700954a45a886329176165cd9f">do_output_now</a>(</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> ntime,</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>        <span class="keyword">const</span> amrex::Real time,</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>        <span class="keyword">const</span> amrex::Real dt,</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>        amrex::Real tol)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        <span class="comment">// Choose smallest tolerance between incoming and local</span></div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>        tol = amrex::min&lt;amrex::Real&gt;(tol, <a class="code hl_variable" href="classamr__wind_1_1_post_process_base.html#a23f7222a102c120f69dbf35557ba9957">m_out_time_tol</a> * dt);</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span> </div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> step_based =</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>            (<a class="code hl_variable" href="classamr__wind_1_1_post_process_base.html#a56b5bdf55698abe660d15f51f3f4fbca">m_out_interval</a> &gt; 0) &amp;&amp;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>            ((ntime - <a class="code hl_variable" href="classamr__wind_1_1_post_process_base.html#a3035972c07183f9f9860e1394389c304">m_out_delay</a> &gt;= 0) &amp;&amp; (ntime % <a class="code hl_variable" href="classamr__wind_1_1_post_process_base.html#a56b5bdf55698abe660d15f51f3f4fbca">m_out_interval</a> == 0));</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> time_based =</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>            (<a class="code hl_variable" href="classamr__wind_1_1_post_process_base.html#a054738653f74eef98205148fd44d3cd4">m_out_time_interval</a> &gt; 0.0_rt) &amp;&amp;</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>            ((time + tol - <a class="code hl_variable" href="classamr__wind_1_1_post_process_base.html#aad94b64986786458a3e976500d60ec9b">m_out_time_delay</a> &gt;= 0.0_rt) &amp;&amp;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>             (time + tol -</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>                  (std::floor((time + tol) / <a class="code hl_variable" href="classamr__wind_1_1_post_process_base.html#a054738653f74eef98205148fd44d3cd4">m_out_time_interval</a>) *</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>                   <a class="code hl_variable" href="classamr__wind_1_1_post_process_base.html#a054738653f74eef98205148fd44d3cd4">m_out_time_interval</a>) &lt;</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>              dt));</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span> </div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>        <span class="keywordflow">return</span> (step_based || time_based);</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    }</div>
+</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span> </div>
+<div class="foldopen" id="foldopen00151" data-start="{" data-end="}">
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_post_process_base.html#a625fef7119feeab300279fe1cc081933">  151</a></span>    [[nodiscard]] amrex::Real <a class="code hl_function" href="classamr__wind_1_1_post_process_base.html#a625fef7119feeab300279fe1cc081933">output_time_interval</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_post_process_base.html#a054738653f74eef98205148fd44d3cd4">m_out_time_interval</a>;</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    }</div>
+</div>
+<div class="foldopen" id="foldopen00155" data-start="{" data-end="}">
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_post_process_base.html#aa7084949472f00dfaddfb4a960e02733">  155</a></span>    [[nodiscard]] amrex::Real <a class="code hl_function" href="classamr__wind_1_1_post_process_base.html#aa7084949472f00dfaddfb4a960e02733">output_time_delay</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_post_process_base.html#aad94b64986786458a3e976500d60ec9b">m_out_time_delay</a>;</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    }</div>
+</div>
+<div class="foldopen" id="foldopen00159" data-start="{" data-end="}">
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_post_process_base.html#a8afcc88addfb4c1472915b5a105aabba">  159</a></span>    [[nodiscard]] amrex::Real <a class="code hl_function" href="classamr__wind_1_1_post_process_base.html#a8afcc88addfb4c1472915b5a105aabba">enforce_dt_tolerance</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_post_process_base.html#a19c813537550b7cb19063f85b313dbb6">m_enforce_dt_tol</a>;</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    }</div>
+</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_post_process_base.html#adfb619c6e455d567d3832a1435222967">  163</a></span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classamr__wind_1_1_post_process_base.html#adfb619c6e455d567d3832a1435222967">enforce_dt</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_post_process_base.html#a9fdbfb5f4d877ed20207bda9645c2a2a">m_enforce_dt</a>; }</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span> </div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span><span class="keyword">protected</span>:</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_post_process_base.html#a56b5bdf55698abe660d15f51f3f4fbca">  167</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classamr__wind_1_1_post_process_base.html#a56b5bdf55698abe660d15f51f3f4fbca">m_out_interval</a>{10};</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_post_process_base.html#a054738653f74eef98205148fd44d3cd4">  169</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_post_process_base.html#a054738653f74eef98205148fd44d3cd4">m_out_time_interval</a>{-1.0_rt};</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_post_process_base.html#a3035972c07183f9f9860e1394389c304">  171</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classamr__wind_1_1_post_process_base.html#a3035972c07183f9f9860e1394389c304">m_out_delay</a>{0};</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_post_process_base.html#aad94b64986786458a3e976500d60ec9b">  173</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_post_process_base.html#aad94b64986786458a3e976500d60ec9b">m_out_time_delay</a>{0.0_rt};</div>
+<div class="foldopen" id="foldopen00175" data-start="{" data-end="};">
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_post_process_base.html#a23f7222a102c120f69dbf35557ba9957">  175</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_post_process_base.html#a23f7222a102c120f69dbf35557ba9957">m_out_time_tol</a>{</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        std::numeric_limits&lt;amrex::Real&gt;::epsilon() * 1.0e4_rt};</div>
+</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span></div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_post_process_base.html#a19c813537550b7cb19063f85b313dbb6">  178</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_post_process_base.html#a19c813537550b7cb19063f85b313dbb6">m_enforce_dt_tol</a>{1.0e-3_rt};</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_post_process_base.html#a9fdbfb5f4d877ed20207bda9645c2a2a">  180</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="classamr__wind_1_1_post_process_base.html#a9fdbfb5f4d877ed20207bda9645c2a2a">m_enforce_dt</a>{<span class="keyword">false</span>};</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>};</div>
+</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span></div>
+<div class="foldopen" id="foldopen00192" data-start="{" data-end="};">
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_post_process_manager.html">  192</a></span><span class="keyword">class </span><a class="code hl_function" href="classamr__wind_1_1_post_process_manager.html#a1a3fb6d5ae63d5830d8a0911be3fa634">PostProcessManager</a></div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>{</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classamr__wind_1_1_post_process_manager.html#a1a3fb6d5ae63d5830d8a0911be3fa634">PostProcessManager</a>(<a class="code hl_class" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; sim);</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span> </div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_post_process_manager.html#a60517a8736ae31f5851965c90de3a1be">  197</a></span>    <a class="code hl_function" href="classamr__wind_1_1_post_process_manager.html#a60517a8736ae31f5851965c90de3a1be">~PostProcessManager</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span> </div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_post_process_manager.html#a26f1e1e83a8160f4e1b1207e766c786d">pre_init_actions</a>();</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span></div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_post_process_manager.html#a925b00a24b2a0d98bbb234e78ca3d724">post_init_actions</a>();</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span></div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_post_process_manager.html#a4d5406aa1c418d901e729d70c3e70d26">post_advance_work</a>();</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span></div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_post_process_manager.html#acbf889c4803bf69f9fc23b73443aab3b">final_output</a>();</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span> </div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_post_process_manager.html#aa12a7b3662b1dba4251548d5b1203ff8">post_regrid_actions</a>();</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span> </div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_post_process_manager.html#ab94f78b6d7902bec73e9bae9daf1139d">  218</a></span>    <a class="code hl_class" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1_post_process_manager.html#ab94f78b6d7902bec73e9bae9daf1139d">m_sim</a>;</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span> </div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_post_process_manager.html#aee8ec252b8d7223046863841230c8841">  220</a></span>    amrex::Vector&lt;std::unique_ptr&lt;PostProcessBase&gt;&gt; <a class="code hl_variable" href="classamr__wind_1_1_post_process_manager.html#aee8ec252b8d7223046863841230c8841">m_post</a>;</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>};</div>
+</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span> </div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>} <span class="comment">// namespace amr_wind</span></div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span> </div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span><span class="preprocessor">#endif </span><span class="comment">/* POSTPROCESSING_H */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="a_factory_8_h_html"><div class="ttname"><a href="_factory_8_h.html">Factory.H</a></div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html">amr_wind::CFDSim</a></div><div class="ttdef"><b>Definition</b> CFDSim.H:54</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_post_process_base_html"><div class="ttname"><a href="classamr__wind_1_1_post_process_base.html">amr_wind::PostProcessBase</a></div><div class="ttdef"><b>Definition</b> PostProcessing.H:33</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_post_process_base_html_a054738653f74eef98205148fd44d3cd4"><div class="ttname"><a href="classamr__wind_1_1_post_process_base.html#a054738653f74eef98205148fd44d3cd4">amr_wind::PostProcessBase::m_out_time_interval</a></div><div class="ttdeci">amrex::Real m_out_time_interval</div><div class="ttdoc">Time interval for output.</div><div class="ttdef"><b>Definition</b> PostProcessing.H:169</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_post_process_base_html_a130982947f10f26448687769ddb511f4"><div class="ttname"><a href="classamr__wind_1_1_post_process_base.html#a130982947f10f26448687769ddb511f4">amr_wind::PostProcessBase::pre_init_actions</a></div><div class="ttdeci">virtual void pre_init_actions()=0</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_post_process_base_html_a19c813537550b7cb19063f85b313dbb6"><div class="ttname"><a href="classamr__wind_1_1_post_process_base.html#a19c813537550b7cb19063f85b313dbb6">amr_wind::PostProcessBase::m_enforce_dt_tol</a></div><div class="ttdeci">amrex::Real m_enforce_dt_tol</div><div class="ttdoc">Relative (to m_out_time_interval) tolerance for enforcing dt.</div><div class="ttdef"><b>Definition</b> PostProcessing.H:178</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_post_process_base_html_a23f7222a102c120f69dbf35557ba9957"><div class="ttname"><a href="classamr__wind_1_1_post_process_base.html#a23f7222a102c120f69dbf35557ba9957">amr_wind::PostProcessBase::m_out_time_tol</a></div><div class="ttdeci">amrex::Real m_out_time_tol</div><div class="ttdoc">Relative (to dt) tolerance for time interval output.</div><div class="ttdef"><b>Definition</b> PostProcessing.H:175</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_post_process_base_html_a3035972c07183f9f9860e1394389c304"><div class="ttname"><a href="classamr__wind_1_1_post_process_base.html#a3035972c07183f9f9860e1394389c304">amr_wind::PostProcessBase::m_out_delay</a></div><div class="ttdeci">int m_out_delay</div><div class="ttdoc">Time step delay for output.</div><div class="ttdef"><b>Definition</b> PostProcessing.H:171</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_post_process_base_html_a56b5bdf55698abe660d15f51f3f4fbca"><div class="ttname"><a href="classamr__wind_1_1_post_process_base.html#a56b5bdf55698abe660d15f51f3f4fbca">amr_wind::PostProcessBase::m_out_interval</a></div><div class="ttdeci">int m_out_interval</div><div class="ttdoc">Time step interval for output.</div><div class="ttdef"><b>Definition</b> PostProcessing.H:167</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_post_process_base_html_a625fef7119feeab300279fe1cc081933"><div class="ttname"><a href="classamr__wind_1_1_post_process_base.html#a625fef7119feeab300279fe1cc081933">amr_wind::PostProcessBase::output_time_interval</a></div><div class="ttdeci">amrex::Real output_time_interval() const</div><div class="ttdef"><b>Definition</b> PostProcessing.H:151</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_post_process_base_html_a6532c848427b5814e09ce6c1ea0a5e2c"><div class="ttname"><a href="classamr__wind_1_1_post_process_base.html#a6532c848427b5814e09ce6c1ea0a5e2c">amr_wind::PostProcessBase::initialize</a></div><div class="ttdeci">virtual void initialize()=0</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_post_process_base_html_a8afcc88addfb4c1472915b5a105aabba"><div class="ttname"><a href="classamr__wind_1_1_post_process_base.html#a8afcc88addfb4c1472915b5a105aabba">amr_wind::PostProcessBase::enforce_dt_tolerance</a></div><div class="ttdeci">amrex::Real enforce_dt_tolerance() const</div><div class="ttdef"><b>Definition</b> PostProcessing.H:159</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_post_process_base_html_a9a0d9ff0c32f6161f7d161dbd393f9af"><div class="ttname"><a href="classamr__wind_1_1_post_process_base.html#a9a0d9ff0c32f6161f7d161dbd393f9af">amr_wind::PostProcessBase::output_actions</a></div><div class="ttdeci">virtual void output_actions()=0</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_post_process_base_html_a9fdbfb5f4d877ed20207bda9645c2a2a"><div class="ttname"><a href="classamr__wind_1_1_post_process_base.html#a9fdbfb5f4d877ed20207bda9645c2a2a">amr_wind::PostProcessBase::m_enforce_dt</a></div><div class="ttdeci">bool m_enforce_dt</div><div class="ttdoc">Flag for enforcing time step based on output time.</div><div class="ttdef"><b>Definition</b> PostProcessing.H:180</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_post_process_base_html_aa7084949472f00dfaddfb4a960e02733"><div class="ttname"><a href="classamr__wind_1_1_post_process_base.html#aa7084949472f00dfaddfb4a960e02733">amr_wind::PostProcessBase::output_time_delay</a></div><div class="ttdeci">amrex::Real output_time_delay() const</div><div class="ttdef"><b>Definition</b> PostProcessing.H:155</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_post_process_base_html_aad94b64986786458a3e976500d60ec9b"><div class="ttname"><a href="classamr__wind_1_1_post_process_base.html#aad94b64986786458a3e976500d60ec9b">amr_wind::PostProcessBase::m_out_time_delay</a></div><div class="ttdeci">amrex::Real m_out_time_delay</div><div class="ttdoc">Time delay for output.</div><div class="ttdef"><b>Definition</b> PostProcessing.H:173</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_post_process_base_html_aadd3620958031d76cadcccd04411d360"><div class="ttname"><a href="classamr__wind_1_1_post_process_base.html#aadd3620958031d76cadcccd04411d360">amr_wind::PostProcessBase::base_identifier</a></div><div class="ttdeci">static std::string base_identifier()</div><div class="ttdef"><b>Definition</b> PostProcessing.H:35</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_post_process_base_html_ac709f76f3c6b7ec48a99e5b2ee05cbb3"><div class="ttname"><a href="classamr__wind_1_1_post_process_base.html#ac709f76f3c6b7ec48a99e5b2ee05cbb3">amr_wind::PostProcessBase::populate_output_parameters</a></div><div class="ttdeci">void populate_output_parameters(amrex::ParmParse &amp;pp)</div><div class="ttdef"><b>Definition</b> PostProcessing.H:59</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_post_process_base_html_ac7b56a46e8f3e51ddb1b9add1a23b0b1"><div class="ttname"><a href="classamr__wind_1_1_post_process_base.html#ac7b56a46e8f3e51ddb1b9add1a23b0b1">amr_wind::PostProcessBase::~PostProcessBase</a></div><div class="ttdeci">~PostProcessBase() override=default</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_post_process_base_html_ac9b6396dee8bec82005d7df63a33320e"><div class="ttname"><a href="classamr__wind_1_1_post_process_base.html#ac9b6396dee8bec82005d7df63a33320e">amr_wind::PostProcessBase::post_regrid_actions</a></div><div class="ttdeci">virtual void post_regrid_actions()=0</div><div class="ttdoc">Actions to perform post regrid.</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_post_process_base_html_adcff80700954a45a886329176165cd9f"><div class="ttname"><a href="classamr__wind_1_1_post_process_base.html#adcff80700954a45a886329176165cd9f">amr_wind::PostProcessBase::do_output_now</a></div><div class="ttdeci">bool do_output_now(const int ntime, const amrex::Real time, const amrex::Real dt, amrex::Real tol) const</div><div class="ttdoc">Determine if output will happen this time step.</div><div class="ttdef"><b>Definition</b> PostProcessing.H:128</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_post_process_base_html_add9a9d4e150782f1948c99a308d7b607"><div class="ttname"><a href="classamr__wind_1_1_post_process_base.html#add9a9d4e150782f1948c99a308d7b607">amr_wind::PostProcessBase::post_advance_work</a></div><div class="ttdeci">virtual void post_advance_work()=0</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_post_process_base_html_adfb619c6e455d567d3832a1435222967"><div class="ttname"><a href="classamr__wind_1_1_post_process_base.html#adfb619c6e455d567d3832a1435222967">amr_wind::PostProcessBase::enforce_dt</a></div><div class="ttdeci">bool enforce_dt() const</div><div class="ttdef"><b>Definition</b> PostProcessing.H:163</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_post_process_manager_html_a1a3fb6d5ae63d5830d8a0911be3fa634"><div class="ttname"><a href="classamr__wind_1_1_post_process_manager.html#a1a3fb6d5ae63d5830d8a0911be3fa634">amr_wind::PostProcessManager::PostProcessManager</a></div><div class="ttdeci">PostProcessManager(CFDSim &amp;sim)</div><div class="ttdef"><b>Definition</b> PostProcessing.cpp:24</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_post_process_manager_html_a26f1e1e83a8160f4e1b1207e766c786d"><div class="ttname"><a href="classamr__wind_1_1_post_process_manager.html#a26f1e1e83a8160f4e1b1207e766c786d">amr_wind::PostProcessManager::pre_init_actions</a></div><div class="ttdeci">void pre_init_actions()</div><div class="ttdef"><b>Definition</b> PostProcessing.cpp:26</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_post_process_manager_html_a4d5406aa1c418d901e729d70c3e70d26"><div class="ttname"><a href="classamr__wind_1_1_post_process_manager.html#a4d5406aa1c418d901e729d70c3e70d26">amr_wind::PostProcessManager::post_advance_work</a></div><div class="ttdeci">void post_advance_work()</div><div class="ttdoc">Call all registered utilities to perform actions after a timestep.</div><div class="ttdef"><b>Definition</b> PostProcessing.cpp:68</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_post_process_manager_html_a60517a8736ae31f5851965c90de3a1be"><div class="ttname"><a href="classamr__wind_1_1_post_process_manager.html#a60517a8736ae31f5851965c90de3a1be">amr_wind::PostProcessManager::~PostProcessManager</a></div><div class="ttdeci">~PostProcessManager()=default</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_post_process_manager_html_a925b00a24b2a0d98bbb234e78ca3d724"><div class="ttname"><a href="classamr__wind_1_1_post_process_manager.html#a925b00a24b2a0d98bbb234e78ca3d724">amr_wind::PostProcessManager::post_init_actions</a></div><div class="ttdeci">void post_init_actions()</div><div class="ttdef"><b>Definition</b> PostProcessing.cpp:47</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_post_process_manager_html_aa12a7b3662b1dba4251548d5b1203ff8"><div class="ttname"><a href="classamr__wind_1_1_post_process_manager.html#aa12a7b3662b1dba4251548d5b1203ff8">amr_wind::PostProcessManager::post_regrid_actions</a></div><div class="ttdeci">void post_regrid_actions()</div><div class="ttdef"><b>Definition</b> PostProcessing.cpp:96</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_post_process_manager_html_ab94f78b6d7902bec73e9bae9daf1139d"><div class="ttname"><a href="classamr__wind_1_1_post_process_manager.html#ab94f78b6d7902bec73e9bae9daf1139d">amr_wind::PostProcessManager::m_sim</a></div><div class="ttdeci">CFDSim &amp; m_sim</div><div class="ttdef"><b>Definition</b> PostProcessing.H:218</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_post_process_manager_html_acbf889c4803bf69f9fc23b73443aab3b"><div class="ttname"><a href="classamr__wind_1_1_post_process_manager.html#acbf889c4803bf69f9fc23b73443aab3b">amr_wind::PostProcessManager::final_output</a></div><div class="ttdeci">void final_output()</div><div class="ttdoc">Call all registered utilities to output at final time.</div><div class="ttdef"><b>Definition</b> PostProcessing.cpp:82</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_post_process_manager_html_aee8ec252b8d7223046863841230c8841"><div class="ttname"><a href="classamr__wind_1_1_post_process_manager.html#aee8ec252b8d7223046863841230c8841">amr_wind::PostProcessManager::m_post</a></div><div class="ttdeci">amrex::Vector&lt; std::unique_ptr&lt; PostProcessBase &gt; &gt; m_post</div><div class="ttdef"><b>Definition</b> PostProcessing.H:220</div></div>
+<div class="ttc" id="anamespaceamr__wind_html"><div class="ttname"><a href="namespaceamr__wind.html">amr_wind</a></div><div class="ttdoc">This test case is intended as an evaluation of the momentum advection scheme.</div><div class="ttdef"><b>Definition</b> BCInterface.cpp:10</div></div>
+<div class="ttc" id="astructamr__wind_1_1_factory_html_a9e905d4e76d3a3da2786ec0dcd758b77"><div class="ttname"><a href="structamr__wind_1_1_factory.html#a9e905d4e76d3a3da2786ec0dcd758b77">amr_wind::Factory&lt; PostProcessBase, CFDSim &amp;, const std::string &amp; &gt;::Factory</a></div><div class="ttdeci">Factory()=default</div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,14 @@
+.. meta::4c04c8fcff96a0dd6463af5c6c085602c483d5b9eb2ce55ad9d7c4534b4ee5f250d5e2d6e8a473ad6b6c18a556c22457431aadf3a5bc5cab46662be6de29a26c
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::wave_energy::WaveEnergy Class Reference
+
+WaveEnergy Class Reference
+==========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1wave__energy_1_1_wave_energy.html

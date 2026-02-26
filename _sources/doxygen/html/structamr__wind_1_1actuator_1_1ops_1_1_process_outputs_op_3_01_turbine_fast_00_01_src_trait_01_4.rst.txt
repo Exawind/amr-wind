@@ -1,0 +1,14 @@
+.. meta::6c65e8622b25c70a04f686dde8a6d8418e3ee4a9cfa848e0f51aee305aa34badc78bb19f059d8148d4ad7620a263b432664a25f80464fd1c8581b731ef26ac29
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::ProcessOutputsOp&lt; TurbineFast, SrcTrait &gt; Struct Template Reference
+
+ProcessOutputsOp&lt; TurbineFast, SrcTrait &gt; Struct Template Reference
+=========================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1ops_1_1_process_outputs_op_3_01_turbine_fast_00_01_src_trait_01_4.html

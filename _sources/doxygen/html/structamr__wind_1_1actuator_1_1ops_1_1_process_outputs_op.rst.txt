@@ -1,0 +1,14 @@
+.. meta::d06f0c050b65c3cb3077381e4997ddb3ac5ac9fc40add4ee25cc98dbc5d8030c66960dc95a6fd53ea40f8243fa5a9d9901316e3c74344a4807417cab0c983856
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::ProcessOutputsOp&lt; ActTrait, SrcTrait, typename &gt; Struct Template Reference
+
+ProcessOutputsOp&lt; ActTrait, SrcTrait, typename &gt; Struct Template Reference
+================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1ops_1_1_process_outputs_op.html

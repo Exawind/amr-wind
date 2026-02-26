@@ -1,0 +1,14 @@
+.. meta::51099742a15e34685f96566f334af4b5cc48774b6ed365e3fdd33fcdbe8dd671ded6e33c4a02cc8302b70f143228283bccc08a810879ae11ea5c184f7b6ab86d
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ocean_waves::ops::ProcessOutputsOp&lt; WaveTheoryTrait, typename &gt; Struct Template Reference
+
+ProcessOutputsOp&lt; WaveTheoryTrait, typename &gt; Struct Template Reference
+=============================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ocean__waves_1_1ops_1_1_process_outputs_op.html

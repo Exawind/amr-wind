@@ -1,0 +1,1479 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::sampling::DTUSpinnerSampler Class Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::sampling::DTUSpinnerSampler Class Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dtuspinnersampler-class-reference">
+<h1>DTUSpinnerSampler Class Reference<a class="headerlink" href="#dtuspinnersampler-class-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::sampling::DTUSpinnerSampler Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="namespaceamr__wind_1_1sampling.html">sampling</a></li><li class="navelem"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html">DTUSpinnerSampler</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
+<a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::sampling::DTUSpinnerSampler Class Reference<div class="ingroups"><a class="el" href="group__utilities.html">Utilities</a> &raquo; <a class="el" href="group__sampling.html">Data-sampling utilities</a></div></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_d_t_u_spinner_sampler_8_h_source.html">DTUSpinnerSampler.H</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for amr_wind::sampling::DTUSpinnerSampler:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler__inherit__graph.svg" width="182" height="315"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for amr_wind::sampling::DTUSpinnerSampler:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler__coll__graph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:ab7ac0a5ebbb28cfba6148b2e24fa1639" id="r_ab7ac0a5ebbb28cfba6148b2e24fa1639"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab7ac0a5ebbb28cfba6148b2e24fa1639">DTUSpinnerSampler</a> (const <a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;)</td></tr>
+<tr class="memitem:a9ba3e9004d2af24220c270f7ec42cfbe" id="r_a9ba3e9004d2af24220c270f7ec42cfbe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9ba3e9004d2af24220c270f7ec42cfbe">initialize</a> (const std::string &amp;key) override</td></tr>
+<tr class="memitem:a090bb6c4ece8543ba2b578ab59769897" id="r_a090bb6c4ece8543ba2b578ab59769897"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a090bb6c4ece8543ba2b578ab59769897">sampling_locations</a> (<a class="el" href="structamr__wind_1_1sampling_1_1_sample_loc_type.html">SampleLocType</a> &amp;) const override</td></tr>
+<tr class="memitem:ad10ff752e968e4d519e81da1e18c15a9" id="r_ad10ff752e968e4d519e81da1e18c15a9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad10ff752e968e4d519e81da1e18c15a9">sampling_locations</a> (<a class="el" href="structamr__wind_1_1sampling_1_1_sample_loc_type.html">SampleLocType</a> &amp;, const amrex::Box &amp;) const override</td></tr>
+<tr class="memdesc:ad10ff752e968e4d519e81da1e18c15a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Populate the vector with coordinates of the sampling locations inside a box.  <br /></td></tr>
+<tr class="memitem:aac044c2a1dad7e47633c7530513436db" id="r_aac044c2a1dad7e47633c7530513436db"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aac044c2a1dad7e47633c7530513436db">update_sampling_locations</a> () override</td></tr>
+<tr class="memitem:a0bf90a7213d45746a2787ffa4e54a026" id="r_a0bf90a7213d45746a2787ffa4e54a026"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0bf90a7213d45746a2787ffa4e54a026">post_sample_actions</a> () override</td></tr>
+<tr class="memitem:acfc31c252b33cf03dd79277b0a42bc30" id="r_acfc31c252b33cf03dd79277b0a42bc30"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acfc31c252b33cf03dd79277b0a42bc30">num_points</a> () const override</td></tr>
+<tr class="memitem:aa64015d8f9094e4cd9055921d805e612" id="r_aa64015d8f9094e4cd9055921d805e612"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa64015d8f9094e4cd9055921d805e612">num_output_points</a> () const override</td></tr>
+<tr class="memitem:afff1fca140950106a848b340f5131f91" id="r_afff1fca140950106a848b340f5131f91"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afff1fca140950106a848b340f5131f91">sampletype</a> () const override</td></tr>
+<tr class="memdesc:afff1fca140950106a848b340f5131f91"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of this sampling object.  <br /></td></tr>
+<tr class="memitem:a16c57af54890b48fffb67824790a634c" id="r_a16c57af54890b48fffb67824790a634c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a16c57af54890b48fffb67824790a634c">define_netcdf_metadata</a> (const <a class="el" href="classncutils_1_1_n_c_group.html">ncutils::NCGroup</a> &amp;) const override</td></tr>
+<tr class="memitem:ac03b9c77baedb4c48beead518178680f" id="r_ac03b9c77baedb4c48beead518178680f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac03b9c77baedb4c48beead518178680f">populate_netcdf_metadata</a> (const <a class="el" href="classncutils_1_1_n_c_group.html">ncutils::NCGroup</a> &amp;) const override</td></tr>
+<tr class="memitem:ac10319f35cb32b1a9cfba85030147861" id="r_ac10319f35cb32b1a9cfba85030147861"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac10319f35cb32b1a9cfba85030147861">output_netcdf_data</a> (const <a class="el" href="classncutils_1_1_n_c_group.html">ncutils::NCGroup</a> &amp;, size_t) const override</td></tr>
+<tr class="inherit_header pub_methods_classamr__wind_1_1sampling_1_1_lidar_sampler"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classamr__wind_1_1sampling_1_1_lidar_sampler')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classamr__wind_1_1sampling_1_1_lidar_sampler.html">amr_wind::sampling::LidarSampler</a></td></tr>
+<tr class="memitem:af4ddc6cd90fb725eb3fb9a0bf624d754 inherit pub_methods_classamr__wind_1_1sampling_1_1_lidar_sampler" id="r_af4ddc6cd90fb725eb3fb9a0bf624d754"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_lidar_sampler.html#af4ddc6cd90fb725eb3fb9a0bf624d754">LidarSampler</a> (const <a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;)</td></tr>
+<tr class="memitem:a1d5f65bee9d6d5c33947e7a2a38f4d85 inherit pub_methods_classamr__wind_1_1sampling_1_1_lidar_sampler" id="r_a1d5f65bee9d6d5c33947e7a2a38f4d85"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_lidar_sampler.html#a1d5f65bee9d6d5c33947e7a2a38f4d85">initialize</a> (const std::string &amp;key) override</td></tr>
+<tr class="memitem:ac9c9a2346f997be7d266217869d887f6 inherit pub_methods_classamr__wind_1_1sampling_1_1_lidar_sampler" id="r_ac9c9a2346f997be7d266217869d887f6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_lidar_sampler.html#ac9c9a2346f997be7d266217869d887f6">update_sampling_locations</a> () override</td></tr>
+<tr class="memitem:a560786b391d2a253952ae6c8a2883cb2 inherit pub_methods_classamr__wind_1_1sampling_1_1_lidar_sampler" id="r_a560786b391d2a253952ae6c8a2883cb2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_lidar_sampler.html#a560786b391d2a253952ae6c8a2883cb2">post_sample_actions</a> () override</td></tr>
+<tr class="memitem:a0d81a87dfdd838639edd408aea9c81b0 inherit pub_methods_classamr__wind_1_1sampling_1_1_lidar_sampler" id="r_a0d81a87dfdd838639edd408aea9c81b0"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_lidar_sampler.html#a0d81a87dfdd838639edd408aea9c81b0">sampletype</a> () const override</td></tr>
+<tr class="memdesc:a0d81a87dfdd838639edd408aea9c81b0 inherit pub_methods_classamr__wind_1_1sampling_1_1_lidar_sampler"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of this sampling object.  <br /></td></tr>
+<tr class="memitem:a65924d4aaa57fc6f87a2ada9dbc56f16 inherit pub_methods_classamr__wind_1_1sampling_1_1_lidar_sampler" id="r_a65924d4aaa57fc6f87a2ada9dbc56f16"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_lidar_sampler.html#a65924d4aaa57fc6f87a2ada9dbc56f16">define_netcdf_metadata</a> (const <a class="el" href="classncutils_1_1_n_c_group.html">ncutils::NCGroup</a> &amp;) const override</td></tr>
+<tr class="memitem:a7a253ac57fc744634b944a43ff5679dd inherit pub_methods_classamr__wind_1_1sampling_1_1_lidar_sampler" id="r_a7a253ac57fc744634b944a43ff5679dd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_lidar_sampler.html#a7a253ac57fc744634b944a43ff5679dd">populate_netcdf_metadata</a> (const <a class="el" href="classncutils_1_1_n_c_group.html">ncutils::NCGroup</a> &amp;) const override</td></tr>
+<tr class="memitem:a843fc61be1ec9374208f4531a13bcf25 inherit pub_methods_classamr__wind_1_1sampling_1_1_lidar_sampler" id="r_a843fc61be1ec9374208f4531a13bcf25"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_lidar_sampler.html#a843fc61be1ec9374208f4531a13bcf25">output_netcdf_data</a> (const <a class="el" href="classncutils_1_1_n_c_group.html">ncutils::NCGroup</a> &amp;, size_t) const override</td></tr>
+<tr class="inherit_header pub_methods_classamr__wind_1_1sampling_1_1_line_sampler"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classamr__wind_1_1sampling_1_1_line_sampler')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classamr__wind_1_1sampling_1_1_line_sampler.html">amr_wind::sampling::LineSampler</a></td></tr>
+<tr class="memitem:a6a7ac18e9796a64be244ea995dc6485b inherit pub_methods_classamr__wind_1_1sampling_1_1_line_sampler" id="r_a6a7ac18e9796a64be244ea995dc6485b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_line_sampler.html#a6a7ac18e9796a64be244ea995dc6485b">LineSampler</a> (const <a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;)</td></tr>
+<tr class="memitem:a63a8d92a98c1b9e0c33eef40ddd22b0c inherit pub_methods_classamr__wind_1_1sampling_1_1_line_sampler" id="r_a63a8d92a98c1b9e0c33eef40ddd22b0c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_line_sampler.html#a63a8d92a98c1b9e0c33eef40ddd22b0c">~LineSampler</a> () override</td></tr>
+<tr class="memitem:a1afba46f7f456597d8542b7b8fbfdc7c inherit pub_methods_classamr__wind_1_1sampling_1_1_line_sampler" id="r_a1afba46f7f456597d8542b7b8fbfdc7c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_line_sampler.html#a1afba46f7f456597d8542b7b8fbfdc7c">initialize</a> (const std::string &amp;key) override</td></tr>
+<tr class="memitem:a865fd046c913c2bb78ba3c6606658e42 inherit pub_methods_classamr__wind_1_1sampling_1_1_line_sampler" id="r_a865fd046c913c2bb78ba3c6606658e42"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_line_sampler.html#a865fd046c913c2bb78ba3c6606658e42">check_bounds</a> () override</td></tr>
+<tr class="memdesc:a865fd046c913c2bb78ba3c6606658e42 inherit pub_methods_classamr__wind_1_1sampling_1_1_line_sampler"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check and fix the bounds of the sampler so the probes are in the domain.  <br /></td></tr>
+<tr class="memitem:aad89aca95068e241581a52ce91786abe inherit pub_methods_classamr__wind_1_1sampling_1_1_line_sampler" id="r_aad89aca95068e241581a52ce91786abe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_line_sampler.html#aad89aca95068e241581a52ce91786abe">sampling_locations</a> (<a class="el" href="structamr__wind_1_1sampling_1_1_sample_loc_type.html">SampleLocType</a> &amp;) const override</td></tr>
+<tr class="memdesc:aad89aca95068e241581a52ce91786abe inherit pub_methods_classamr__wind_1_1sampling_1_1_line_sampler"><td class="mdescLeft">&#160;</td><td class="mdescRight">Populate and return a vector of probe locations to be sampled.  <br /></td></tr>
+<tr class="memitem:a06cd4a2cda73770eef6043a1553e5f35 inherit pub_methods_classamr__wind_1_1sampling_1_1_line_sampler" id="r_a06cd4a2cda73770eef6043a1553e5f35"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_line_sampler.html#a06cd4a2cda73770eef6043a1553e5f35">sampling_locations</a> (<a class="el" href="structamr__wind_1_1sampling_1_1_sample_loc_type.html">SampleLocType</a> &amp;, const amrex::Box &amp;) const override</td></tr>
+<tr class="memdesc:a06cd4a2cda73770eef6043a1553e5f35 inherit pub_methods_classamr__wind_1_1sampling_1_1_line_sampler"><td class="mdescLeft">&#160;</td><td class="mdescRight">Populate the vector with coordinates of the sampling locations inside a box.  <br /></td></tr>
+<tr class="memitem:a92919083c81ab735f4016e0dea8f97f0 inherit pub_methods_classamr__wind_1_1sampling_1_1_line_sampler" id="r_a92919083c81ab735f4016e0dea8f97f0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_line_sampler.html#a92919083c81ab735f4016e0dea8f97f0">output_locations</a> (<a class="el" href="structamr__wind_1_1sampling_1_1_sample_loc_type.html">SampleLocType</a> &amp;sample_locs) const override</td></tr>
+<tr class="memitem:a493533ec9fb3555c64935b7ede639d50 inherit pub_methods_classamr__wind_1_1sampling_1_1_line_sampler" id="r_a493533ec9fb3555c64935b7ede639d50"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_line_sampler.html#a493533ec9fb3555c64935b7ede639d50">define_netcdf_metadata</a> (const <a class="el" href="classncutils_1_1_n_c_group.html">ncutils::NCGroup</a> &amp;) const override</td></tr>
+<tr class="memitem:a6547cd91458ba7d484bbd899cdd11935 inherit pub_methods_classamr__wind_1_1sampling_1_1_line_sampler" id="r_a6547cd91458ba7d484bbd899cdd11935"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_line_sampler.html#a6547cd91458ba7d484bbd899cdd11935">populate_netcdf_metadata</a> (const <a class="el" href="classncutils_1_1_n_c_group.html">ncutils::NCGroup</a> &amp;) const override</td></tr>
+<tr class="memitem:a147a61b58eb6c44d5a64642de5f7e72e inherit pub_methods_classamr__wind_1_1sampling_1_1_line_sampler" id="r_a147a61b58eb6c44d5a64642de5f7e72e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_line_sampler.html#a147a61b58eb6c44d5a64642de5f7e72e">label</a> () const override</td></tr>
+<tr class="memdesc:a147a61b58eb6c44d5a64642de5f7e72e inherit pub_methods_classamr__wind_1_1sampling_1_1_line_sampler"><td class="mdescLeft">&#160;</td><td class="mdescRight">Name of this sampling object.  <br /></td></tr>
+<tr class="memitem:a723bb862066a5807a376bc0dc34bd410 inherit pub_methods_classamr__wind_1_1sampling_1_1_line_sampler" id="r_a723bb862066a5807a376bc0dc34bd410"><td class="memItemLeft" align="right" valign="top">std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_line_sampler.html#a723bb862066a5807a376bc0dc34bd410">label</a> () override</td></tr>
+<tr class="memitem:aa3dc227f1a1e07e48753bad2c575e8df inherit pub_methods_classamr__wind_1_1sampling_1_1_line_sampler" id="r_aa3dc227f1a1e07e48753bad2c575e8df"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_line_sampler.html#aa3dc227f1a1e07e48753bad2c575e8df">sampletype</a> () const override</td></tr>
+<tr class="memdesc:aa3dc227f1a1e07e48753bad2c575e8df inherit pub_methods_classamr__wind_1_1sampling_1_1_line_sampler"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of this sampling object.  <br /></td></tr>
+<tr class="memitem:aeb5447e0dd9974de85293556cb2fb0d2 inherit pub_methods_classamr__wind_1_1sampling_1_1_line_sampler" id="r_aeb5447e0dd9974de85293556cb2fb0d2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_line_sampler.html#aeb5447e0dd9974de85293556cb2fb0d2">id</a> () const override</td></tr>
+<tr class="memdesc:aeb5447e0dd9974de85293556cb2fb0d2 inherit pub_methods_classamr__wind_1_1sampling_1_1_line_sampler"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unique identifier for this set of probe locations.  <br /></td></tr>
+<tr class="memitem:a823d8f3a5dbfd17cbc79862a87d0a8d0 inherit pub_methods_classamr__wind_1_1sampling_1_1_line_sampler" id="r_a823d8f3a5dbfd17cbc79862a87d0a8d0"><td class="memItemLeft" align="right" valign="top">int &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_line_sampler.html#a823d8f3a5dbfd17cbc79862a87d0a8d0">id</a> () override</td></tr>
+<tr class="memitem:a0d43f0779bdb4c2ff6c7025dadf95ad0 inherit pub_methods_classamr__wind_1_1sampling_1_1_line_sampler" id="r_a0d43f0779bdb4c2ff6c7025dadf95ad0"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_line_sampler.html#a0d43f0779bdb4c2ff6c7025dadf95ad0">num_points</a> () const override</td></tr>
+<tr class="memdesc:a0d43f0779bdb4c2ff6c7025dadf95ad0 inherit pub_methods_classamr__wind_1_1sampling_1_1_line_sampler"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of probe locations along the line.  <br /></td></tr>
+<tr class="memitem:adb2e97c39609b4ad8980900aa5ba09a1 inherit pub_methods_classamr__wind_1_1sampling_1_1_line_sampler" id="r_adb2e97c39609b4ad8980900aa5ba09a1"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_line_sampler.html#adb2e97c39609b4ad8980900aa5ba09a1">num_output_points</a> () const override</td></tr>
+<tr class="memdesc:adb2e97c39609b4ad8980900aa5ba09a1 inherit pub_methods_classamr__wind_1_1sampling_1_1_line_sampler"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of output probe locations (after data reduction etc.)  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:ab9a56ef4f27f49ab541e00f922612246" id="r_ab9a56ef4f27f49ab541e00f922612246"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab9a56ef4f27f49ab541e00f922612246">identifier</a> ()</td></tr>
+<tr class="memitem:a654abb9b45ac65539f7421cd45fa42d4" id="r_a654abb9b45ac65539f7421cd45fa42d4"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a654abb9b45ac65539f7421cd45fa42d4">generate_lidar_pattern</a> (<a class="el" href="structamr__wind_1_1sampling_1_1_prism_parameters.html">PrismParameters</a> InnerPrism, <a class="el" href="structamr__wind_1_1sampling_1_1_prism_parameters.html">PrismParameters</a> OuterPrism, amrex::Real time)</td></tr>
+<tr class="memitem:a26e4f870998cc9f8e6624a0187fad79c" id="r_a26e4f870998cc9f8e6624a0187fad79c"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a26e4f870998cc9f8e6624a0187fad79c">adjust_lidar_pattern</a> (<a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> beamPt, amrex::Real yaw, amrex::Real pitch, amrex::Real roll)</td></tr>
+<tr class="inherit_header pub_static_methods_classamr__wind_1_1sampling_1_1_lidar_sampler"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_static_methods_classamr__wind_1_1sampling_1_1_lidar_sampler')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Static Public Member Functions inherited from <a class="el" href="classamr__wind_1_1sampling_1_1_lidar_sampler.html">amr_wind::sampling::LidarSampler</a></td></tr>
+<tr class="memitem:a92ca5a69fdc411848d79a21fbd267811 inherit pub_static_methods_classamr__wind_1_1sampling_1_1_lidar_sampler" id="r_a92ca5a69fdc411848d79a21fbd267811"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_lidar_sampler.html#a92ca5a69fdc411848d79a21fbd267811">identifier</a> ()</td></tr>
+<tr class="inherit_header pub_static_methods_classamr__wind_1_1sampling_1_1_line_sampler"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_static_methods_classamr__wind_1_1sampling_1_1_line_sampler')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Static Public Member Functions inherited from <a class="el" href="classamr__wind_1_1sampling_1_1_line_sampler.html">amr_wind::sampling::LineSampler</a></td></tr>
+<tr class="memitem:a9830a96894130e38e608a8ae6ebcf2ef inherit pub_static_methods_classamr__wind_1_1sampling_1_1_line_sampler" id="r_a9830a96894130e38e608a8ae6ebcf2ef"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_line_sampler.html#a9830a96894130e38e608a8ae6ebcf2ef">identifier</a> ()</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:aec542d4508dd30100672a9889607802b" id="r_aec542d4508dd30100672a9889607802b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aec542d4508dd30100672a9889607802b">m_ns</a> {1}</td></tr>
+<tr class="memitem:a3e5e4a049f8894a90d36ba587240fc75" id="r_a3e5e4a049f8894a90d36ba587240fc75"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3e5e4a049f8894a90d36ba587240fc75">m_ntotal</a> {1}</td></tr>
+<tr class="memitem:a2078a95ea0c2853a9ea0dead3d960884" id="r_a2078a95ea0c2853a9ea0dead3d960884"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2078a95ea0c2853a9ea0dead3d960884">m_update_count</a> {0}</td></tr>
+<tr class="memitem:a45195bda8241bf901367a233b28b8803" id="r_a45195bda8241bf901367a233b28b8803"><td class="memItemLeft" align="right" valign="top">const amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a45195bda8241bf901367a233b28b8803">m_radtodeg</a> {180.0_rt / std::numbers::pi_v&lt;amrex::Real&gt;}</td></tr>
+<tr class="memitem:a6385f29c55f64dc2c5e8931b8b766b4e" id="r_a6385f29c55f64dc2c5e8931b8b766b4e"><td class="memItemLeft" align="right" valign="top">const amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6385f29c55f64dc2c5e8931b8b766b4e">m_pi</a> {std::numbers::pi_v&lt;amrex::Real&gt;}</td></tr>
+<tr class="memitem:a490ce7c64a69660f36dec721d0a01182" id="r_a490ce7c64a69660f36dec721d0a01182"><td class="memItemLeft" align="right" valign="top">const amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a490ce7c64a69660f36dec721d0a01182">m_twopi</a> {2.0_rt * std::numbers::pi_v&lt;amrex::Real&gt;}</td></tr>
+<tr class="memitem:a28b64bae22988627b1d8c2f9ff4f584e" id="r_a28b64bae22988627b1d8c2f9ff4f584e"><td class="memItemLeft" align="right" valign="top">const amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a28b64bae22988627b1d8c2f9ff4f584e">m_threepi</a> {3.0_rt * std::numbers::pi_v&lt;amrex::Real&gt;}</td></tr>
+<tr class="memitem:acced2172a668f8c6552aed002d91456f" id="r_acced2172a668f8c6552aed002d91456f"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acced2172a668f8c6552aed002d91456f">m_time_sampling</a> {0.0_rt}</td></tr>
+<tr class="memitem:a9c797ba9e470526389d470f094422c2b" id="r_a9c797ba9e470526389d470f094422c2b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structamr__wind_1_1sampling_1_1_prism_parameters.html">PrismParameters</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9c797ba9e470526389d470f094422c2b">m_InnerPrism</a></td></tr>
+<tr class="memitem:af28731ad8931cf1d974df4172a3bd090" id="r_af28731ad8931cf1d974df4172a3bd090"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structamr__wind_1_1sampling_1_1_prism_parameters.html">PrismParameters</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af28731ad8931cf1d974df4172a3bd090">m_OuterPrism</a></td></tr>
+<tr class="memitem:af121e1ed2d3d22905f0b52c545a71d3c" id="r_af121e1ed2d3d22905f0b52c545a71d3c"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af121e1ed2d3d22905f0b52c545a71d3c">m_lidar_center</a> {0.0_rt, 0.0_rt, 0.0_rt}</td></tr>
+<tr class="memitem:a3f8b1b96c4b32db484dade9b79ec6e2e" id="r_a3f8b1b96c4b32db484dade9b79ec6e2e"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3f8b1b96c4b32db484dade9b79ec6e2e">m_scan_time</a> {2.0_rt}</td></tr>
+<tr class="memitem:a14237bbb4f1e092d77427441e717a5f4" id="r_a14237bbb4f1e092d77427441e717a5f4"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a14237bbb4f1e092d77427441e717a5f4">m_num_samples</a> {984.0_rt}</td></tr>
+<tr class="memitem:a580b653156cebfc064e7d585da74a677" id="r_a580b653156cebfc064e7d585da74a677"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a580b653156cebfc064e7d585da74a677">m_beam_length</a> {270.0_rt}</td></tr>
+<tr class="memitem:a8618e0dd6446f551a0484080e36f1a37" id="r_a8618e0dd6446f551a0484080e36f1a37"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8618e0dd6446f551a0484080e36f1a37">m_beam_points</a> {432}</td></tr>
+<tr class="memitem:aec706504575c2d774f4357006b8ede94" id="r_aec706504575c2d774f4357006b8ede94"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aec706504575c2d774f4357006b8ede94">m_fixed_yaw</a> {0.0_rt}</td></tr>
+<tr class="memitem:aa9c6e90df764b6fee5556f75bd7be8ae" id="r_aa9c6e90df764b6fee5556f75bd7be8ae"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa9c6e90df764b6fee5556f75bd7be8ae">m_fixed_roll</a> {0.0_rt}</td></tr>
+<tr class="memitem:a4dffa20c301d19364b36ae8ba00fe0f5" id="r_a4dffa20c301d19364b36ae8ba00fe0f5"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4dffa20c301d19364b36ae8ba00fe0f5">m_fixed_tilt</a> {0.0_rt}</td></tr>
+<tr class="memitem:abefb1c23c5d127bb9ce76058523f1910" id="r_abefb1c23c5d127bb9ce76058523f1910"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abefb1c23c5d127bb9ce76058523f1910">m_hub_yaw</a> {0.0_rt}</td></tr>
+<tr class="memitem:a7d61d0c95f1b51eaf01ac738f30ba2cf" id="r_a7d61d0c95f1b51eaf01ac738f30ba2cf"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7d61d0c95f1b51eaf01ac738f30ba2cf">m_hub_roll</a> {0.0_rt}</td></tr>
+<tr class="memitem:af3f66609493bc15e7ee7055dba089c9d" id="r_af3f66609493bc15e7ee7055dba089c9d"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af3f66609493bc15e7ee7055dba089c9d">m_hub_tilt</a> {0.0_rt}</td></tr>
+<tr class="memitem:a415272a8b602dfff148d9c6096b7e4f9" id="r_a415272a8b602dfff148d9c6096b7e4f9"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a415272a8b602dfff148d9c6096b7e4f9">m_spinner_mode</a> {&quot;fixed&quot;}</td></tr>
+<tr class="memitem:aeef2c224271dc1edf1f4a27f66d895fe" id="r_aeef2c224271dc1edf1f4a27f66d895fe"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeef2c224271dc1edf1f4a27f66d895fe">m_turbine_label</a></td></tr>
+<tr class="memitem:a2bb5cf15a4f57a06ef9a89231aee0586" id="r_a2bb5cf15a4f57a06ef9a89231aee0586"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2bb5cf15a4f57a06ef9a89231aee0586">m_hub_debug</a> {false}</td></tr>
+<tr class="memitem:ac4dcaabfe6194476cdb90ee3b8183ac6" id="r_ac4dcaabfe6194476cdb90ee3b8183ac6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac4dcaabfe6194476cdb90ee3b8183ac6">m_hub_location</a> {0, 0, 0}</td></tr>
+<tr class="memitem:a7588de354ff0a560e68ba868b5e4a04d" id="r_a7588de354ff0a560e68ba868b5e4a04d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7588de354ff0a560e68ba868b5e4a04d">m_hub_location_init</a> {0, 0, 0}</td></tr>
+<tr class="memitem:ae6160709fb025684f32a48bd3e378e28" id="r_ae6160709fb025684f32a48bd3e378e28"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae6160709fb025684f32a48bd3e378e28">m_last_hub_yaw</a> {0.0_rt}</td></tr>
+<tr class="memitem:a4f6b5d00158aa5037c7c18d9ff54b572" id="r_a4f6b5d00158aa5037c7c18d9ff54b572"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4f6b5d00158aa5037c7c18d9ff54b572">m_last_hub_roll</a> {0.0_rt}</td></tr>
+<tr class="memitem:aed806c18a7a41523b0d0c9a54f54d2bd" id="r_aed806c18a7a41523b0d0c9a54f54d2bd"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aed806c18a7a41523b0d0c9a54f54d2bd">m_last_hub_tilt</a> {0.0_rt}</td></tr>
+<tr class="memitem:ae02db562bdb48a21ab2e0c6eeb29b9e4" id="r_ae02db562bdb48a21ab2e0c6eeb29b9e4"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae02db562bdb48a21ab2e0c6eeb29b9e4">m_last_lidar_center</a> {0.0_rt, 0.0_rt, 0.0_rt}</td></tr>
+<tr class="memitem:ae54c711f0dd8035f56cf02cf2a77387b" id="r_ae54c711f0dd8035f56cf02cf2a77387b"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae54c711f0dd8035f56cf02cf2a77387b">m_step_lidar_center</a> {0.0_rt, 0.0_rt, 0.0_rt}</td></tr>
+<tr class="memitem:aeb58281e48d317688846d5b45f026269" id="r_aeb58281e48d317688846d5b45f026269"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeb58281e48d317688846d5b45f026269">m_fill_val</a> {-99999.99_rt}</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pro_attribs_classamr__wind_1_1sampling_1_1_lidar_sampler"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classamr__wind_1_1sampling_1_1_lidar_sampler')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classamr__wind_1_1sampling_1_1_lidar_sampler.html">amr_wind::sampling::LidarSampler</a></td></tr>
+<tr class="memitem:ad317e568afffeef83f022861cd5e32f3 inherit pro_attribs_classamr__wind_1_1sampling_1_1_lidar_sampler" id="r_ad317e568afffeef83f022861cd5e32f3"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_lidar_sampler.html#ad317e568afffeef83f022861cd5e32f3">m_origin</a></td></tr>
+<tr class="memitem:af66aa4d5b0a0d6842937663f8d119df0 inherit pro_attribs_classamr__wind_1_1sampling_1_1_lidar_sampler" id="r_af66aa4d5b0a0d6842937663f8d119df0"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_lidar_sampler.html#af66aa4d5b0a0d6842937663f8d119df0">m_time_table</a></td></tr>
+<tr class="memitem:aaa92e85177ddfc88552f0eb26af82d4c inherit pro_attribs_classamr__wind_1_1sampling_1_1_lidar_sampler" id="r_aaa92e85177ddfc88552f0eb26af82d4c"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_lidar_sampler.html#aaa92e85177ddfc88552f0eb26af82d4c">m_azimuth_table</a></td></tr>
+<tr class="memitem:afbafd0a1de9a6e89781c1dc48ed021a7 inherit pro_attribs_classamr__wind_1_1sampling_1_1_lidar_sampler" id="r_afbafd0a1de9a6e89781c1dc48ed021a7"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_lidar_sampler.html#afbafd0a1de9a6e89781c1dc48ed021a7">m_elevation_table</a></td></tr>
+<tr class="memitem:a1fea2635dad7c531b9be6945a62cf495 inherit pro_attribs_classamr__wind_1_1sampling_1_1_lidar_sampler" id="r_a1fea2635dad7c531b9be6945a62cf495"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_lidar_sampler.html#a1fea2635dad7c531b9be6945a62cf495">m_length</a> {0}</td></tr>
+<tr class="memitem:a1c76378c519aa25a8c20017dd8eb82f4 inherit pro_attribs_classamr__wind_1_1sampling_1_1_lidar_sampler" id="r_a1c76378c519aa25a8c20017dd8eb82f4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_lidar_sampler.html#a1c76378c519aa25a8c20017dd8eb82f4">m_periodic</a> {true}</td></tr>
+<tr class="memitem:ae6787e16277057810bab0d6588dc652a inherit pro_attribs_classamr__wind_1_1sampling_1_1_lidar_sampler" id="r_ae6787e16277057810bab0d6588dc652a"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_lidar_sampler.html#ae6787e16277057810bab0d6588dc652a">m_period</a> {std::numeric_limits&lt;amrex::Real&gt;::max()}</td></tr>
+<tr class="inherit_header pro_attribs_classamr__wind_1_1sampling_1_1_line_sampler"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classamr__wind_1_1sampling_1_1_line_sampler')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classamr__wind_1_1sampling_1_1_line_sampler.html">amr_wind::sampling::LineSampler</a></td></tr>
+<tr class="memitem:a302db4a1f4741695efb10b190e51307e inherit pro_attribs_classamr__wind_1_1sampling_1_1_line_sampler" id="r_a302db4a1f4741695efb10b190e51307e"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_line_sampler.html#a302db4a1f4741695efb10b190e51307e">m_sim</a></td></tr>
+<tr class="memitem:a1f0f4b6f2f7f93fe7d8a47f9f51f130a inherit pro_attribs_classamr__wind_1_1sampling_1_1_line_sampler" id="r_a1f0f4b6f2f7f93fe7d8a47f9f51f130a"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_line_sampler.html#a1f0f4b6f2f7f93fe7d8a47f9f51f130a">m_start</a></td></tr>
+<tr class="memitem:ad3d042f1d4a9cf0c787f6c1c4e9b9b5c inherit pro_attribs_classamr__wind_1_1sampling_1_1_line_sampler" id="r_ad3d042f1d4a9cf0c787f6c1c4e9b9b5c"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_line_sampler.html#ad3d042f1d4a9cf0c787f6c1c4e9b9b5c">m_end</a></td></tr>
+<tr class="memitem:a9f083bdd2d3b2caebafa9fecce182375 inherit pro_attribs_classamr__wind_1_1sampling_1_1_line_sampler" id="r_a9f083bdd2d3b2caebafa9fecce182375"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_line_sampler.html#a9f083bdd2d3b2caebafa9fecce182375">m_label</a></td></tr>
+<tr class="memitem:a886f836a94d85f509008db6f4bc2a5f4 inherit pro_attribs_classamr__wind_1_1sampling_1_1_line_sampler" id="r_a886f836a94d85f509008db6f4bc2a5f4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_line_sampler.html#a886f836a94d85f509008db6f4bc2a5f4">m_id</a> {-1}</td></tr>
+<tr class="memitem:a4b6fc31470738d730bafd5e402e00683 inherit pro_attribs_classamr__wind_1_1sampling_1_1_line_sampler" id="r_a4b6fc31470738d730bafd5e402e00683"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1sampling_1_1_line_sampler.html#a4b6fc31470738d730bafd5e402e00683">m_npts</a> {0}</td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Sample data along a line that moves in time</p>
+<p>Defines probes along a line defined by a time history from <span class="tt">m_azimuth_table</span> and <span class="tt">m_elevation_table</span> with a length of <span class="tt">m_length</span>. This determines the <span class="tt">start</span> and <span class="tt">end</span> points at every time-step and divides the line into equal segments as determined by <span class="tt">num_points</span>. The length of each segment is given by </p><p class="formulaDsp">
+\[ m_length / (num_points - 1) \]
+</p>
+ </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="ab7ac0a5ebbb28cfba6148b2e24fa1639" name="ab7ac0a5ebbb28cfba6148b2e24fa1639"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7ac0a5ebbb28cfba6148b2e24fa1639">&#9670;&#160;</a></span>DTUSpinnerSampler()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::sampling::DTUSpinnerSampler::DTUSpinnerSampler </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>sim</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel explicit">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a26e4f870998cc9f8e6624a0187fad79c" name="a26e4f870998cc9f8e6624a0187fad79c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26e4f870998cc9f8e6624a0187fad79c">&#9670;&#160;</a></span>adjust_lidar_pattern()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> amr_wind::sampling::DTUSpinnerSampler::adjust_lidar_pattern </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a></td>          <td class="paramname"><span class="paramname"><em>beamPt</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>yaw</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>pitch</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>roll</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a16c57af54890b48fffb67824790a634c" name="a16c57af54890b48fffb67824790a634c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16c57af54890b48fffb67824790a634c">&#9670;&#160;</a></span>define_netcdf_metadata()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::sampling::DTUSpinnerSampler::define_netcdf_metadata </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classncutils_1_1_n_c_group.html">ncutils::NCGroup</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>grp</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a654abb9b45ac65539f7421cd45fa42d4" name="a654abb9b45ac65539f7421cd45fa42d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a654abb9b45ac65539f7421cd45fa42d4">&#9670;&#160;</a></span>generate_lidar_pattern()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> amr_wind::sampling::DTUSpinnerSampler::generate_lidar_pattern </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structamr__wind_1_1sampling_1_1_prism_parameters.html">PrismParameters</a></td>          <td class="paramname"><span class="paramname"><em>InnerPrism</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structamr__wind_1_1sampling_1_1_prism_parameters.html">PrismParameters</a></td>          <td class="paramname"><span class="paramname"><em>OuterPrism</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>time</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab9a56ef4f27f49ab541e00f922612246" name="ab9a56ef4f27f49ab541e00f922612246"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9a56ef4f27f49ab541e00f922612246">&#9670;&#160;</a></span>identifier()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::sampling::DTUSpinnerSampler::identifier </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9ba3e9004d2af24220c270f7ec42cfbe" name="a9ba3e9004d2af24220c270f7ec42cfbe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ba3e9004d2af24220c270f7ec42cfbe">&#9670;&#160;</a></span>initialize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::sampling::DTUSpinnerSampler::initialize </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>key</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Read user inputs and initialize the sampling object</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>Prefix used to parse inputs from file </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aa64015d8f9094e4cd9055921d805e612" name="aa64015d8f9094e4cd9055921d805e612"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa64015d8f9094e4cd9055921d805e612">&#9670;&#160;</a></span>num_output_points()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long amr_wind::sampling::DTUSpinnerSampler::num_output_points </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acfc31c252b33cf03dd79277b0a42bc30" name="acfc31c252b33cf03dd79277b0a42bc30"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfc31c252b33cf03dd79277b0a42bc30">&#9670;&#160;</a></span>num_points()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long amr_wind::sampling::DTUSpinnerSampler::num_points </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac10319f35cb32b1a9cfba85030147861" name="ac10319f35cb32b1a9cfba85030147861"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac10319f35cb32b1a9cfba85030147861">&#9670;&#160;</a></span>output_netcdf_data()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::sampling::DTUSpinnerSampler::output_netcdf_data </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classncutils_1_1_n_c_group.html">ncutils::NCGroup</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>grp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>nt</em></span>&#160;) const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac03b9c77baedb4c48beead518178680f" name="ac03b9c77baedb4c48beead518178680f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac03b9c77baedb4c48beead518178680f">&#9670;&#160;</a></span>populate_netcdf_metadata()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::sampling::DTUSpinnerSampler::populate_netcdf_metadata </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classncutils_1_1_n_c_group.html">ncutils::NCGroup</a> &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0bf90a7213d45746a2787ffa4e54a026" name="a0bf90a7213d45746a2787ffa4e54a026"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0bf90a7213d45746a2787ffa4e54a026">&#9670;&#160;</a></span>post_sample_actions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::sampling::DTUSpinnerSampler::post_sample_actions </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afff1fca140950106a848b340f5131f91" name="afff1fca140950106a848b340f5131f91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afff1fca140950106a848b340f5131f91">&#9670;&#160;</a></span>sampletype()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::sampling::DTUSpinnerSampler::sampletype </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Type of this sampling object. </p>
+
+</div>
+</div>
+<a id="a090bb6c4ece8543ba2b578ab59769897" name="a090bb6c4ece8543ba2b578ab59769897"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a090bb6c4ece8543ba2b578ab59769897">&#9670;&#160;</a></span>sampling_locations() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::sampling::DTUSpinnerSampler::sampling_locations </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structamr__wind_1_1sampling_1_1_sample_loc_type.html">SampleLocType</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>sample_locs</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Update the position of the sampling locations in time </p>
+
+</div>
+</div>
+<a id="ad10ff752e968e4d519e81da1e18c15a9" name="ad10ff752e968e4d519e81da1e18c15a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad10ff752e968e4d519e81da1e18c15a9">&#9670;&#160;</a></span>sampling_locations() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::sampling::DTUSpinnerSampler::sampling_locations </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structamr__wind_1_1sampling_1_1_sample_loc_type.html">SampleLocType</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>sample_locs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Box &amp;</td>          <td class="paramname"><span class="paramname"><em>box</em></span>&#160;) const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Populate the vector with coordinates of the sampling locations inside a box. </p>
+
+</div>
+</div>
+<a id="aac044c2a1dad7e47633c7530513436db" name="aac044c2a1dad7e47633c7530513436db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac044c2a1dad7e47633c7530513436db">&#9670;&#160;</a></span>update_sampling_locations()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::sampling::DTUSpinnerSampler::update_sampling_locations </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Determine how the subsampling will be done </p>
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a580b653156cebfc064e7d585da74a677" name="a580b653156cebfc064e7d585da74a677"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a580b653156cebfc064e7d585da74a677">&#9670;&#160;</a></span>m_beam_length</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::sampling::DTUSpinnerSampler::m_beam_length {270.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8618e0dd6446f551a0484080e36f1a37" name="a8618e0dd6446f551a0484080e36f1a37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8618e0dd6446f551a0484080e36f1a37">&#9670;&#160;</a></span>m_beam_points</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::sampling::DTUSpinnerSampler::m_beam_points {432}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aeb58281e48d317688846d5b45f026269" name="aeb58281e48d317688846d5b45f026269"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb58281e48d317688846d5b45f026269">&#9670;&#160;</a></span>m_fill_val</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::sampling::DTUSpinnerSampler::m_fill_val {-99999.99_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa9c6e90df764b6fee5556f75bd7be8ae" name="aa9c6e90df764b6fee5556f75bd7be8ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9c6e90df764b6fee5556f75bd7be8ae">&#9670;&#160;</a></span>m_fixed_roll</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::sampling::DTUSpinnerSampler::m_fixed_roll {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4dffa20c301d19364b36ae8ba00fe0f5" name="a4dffa20c301d19364b36ae8ba00fe0f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4dffa20c301d19364b36ae8ba00fe0f5">&#9670;&#160;</a></span>m_fixed_tilt</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::sampling::DTUSpinnerSampler::m_fixed_tilt {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aec706504575c2d774f4357006b8ede94" name="aec706504575c2d774f4357006b8ede94"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec706504575c2d774f4357006b8ede94">&#9670;&#160;</a></span>m_fixed_yaw</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::sampling::DTUSpinnerSampler::m_fixed_yaw {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2bb5cf15a4f57a06ef9a89231aee0586" name="a2bb5cf15a4f57a06ef9a89231aee0586"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2bb5cf15a4f57a06ef9a89231aee0586">&#9670;&#160;</a></span>m_hub_debug</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::sampling::DTUSpinnerSampler::m_hub_debug {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac4dcaabfe6194476cdb90ee3b8183ac6" name="ac4dcaabfe6194476cdb90ee3b8183ac6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4dcaabfe6194476cdb90ee3b8183ac6">&#9670;&#160;</a></span>m_hub_location</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> amr_wind::sampling::DTUSpinnerSampler::m_hub_location {0, 0, 0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7588de354ff0a560e68ba868b5e4a04d" name="a7588de354ff0a560e68ba868b5e4a04d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7588de354ff0a560e68ba868b5e4a04d">&#9670;&#160;</a></span>m_hub_location_init</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> amr_wind::sampling::DTUSpinnerSampler::m_hub_location_init {0, 0, 0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7d61d0c95f1b51eaf01ac738f30ba2cf" name="a7d61d0c95f1b51eaf01ac738f30ba2cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d61d0c95f1b51eaf01ac738f30ba2cf">&#9670;&#160;</a></span>m_hub_roll</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::sampling::DTUSpinnerSampler::m_hub_roll {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af3f66609493bc15e7ee7055dba089c9d" name="af3f66609493bc15e7ee7055dba089c9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3f66609493bc15e7ee7055dba089c9d">&#9670;&#160;</a></span>m_hub_tilt</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::sampling::DTUSpinnerSampler::m_hub_tilt {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abefb1c23c5d127bb9ce76058523f1910" name="abefb1c23c5d127bb9ce76058523f1910"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abefb1c23c5d127bb9ce76058523f1910">&#9670;&#160;</a></span>m_hub_yaw</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::sampling::DTUSpinnerSampler::m_hub_yaw {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9c797ba9e470526389d470f094422c2b" name="a9c797ba9e470526389d470f094422c2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c797ba9e470526389d470f094422c2b">&#9670;&#160;</a></span>m_InnerPrism</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structamr__wind_1_1sampling_1_1_prism_parameters.html">PrismParameters</a> amr_wind::sampling::DTUSpinnerSampler::m_InnerPrism</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4f6b5d00158aa5037c7c18d9ff54b572" name="a4f6b5d00158aa5037c7c18d9ff54b572"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f6b5d00158aa5037c7c18d9ff54b572">&#9670;&#160;</a></span>m_last_hub_roll</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::sampling::DTUSpinnerSampler::m_last_hub_roll {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aed806c18a7a41523b0d0c9a54f54d2bd" name="aed806c18a7a41523b0d0c9a54f54d2bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed806c18a7a41523b0d0c9a54f54d2bd">&#9670;&#160;</a></span>m_last_hub_tilt</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::sampling::DTUSpinnerSampler::m_last_hub_tilt {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae6160709fb025684f32a48bd3e378e28" name="ae6160709fb025684f32a48bd3e378e28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6160709fb025684f32a48bd3e378e28">&#9670;&#160;</a></span>m_last_hub_yaw</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::sampling::DTUSpinnerSampler::m_last_hub_yaw {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae02db562bdb48a21ab2e0c6eeb29b9e4" name="ae02db562bdb48a21ab2e0c6eeb29b9e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae02db562bdb48a21ab2e0c6eeb29b9e4">&#9670;&#160;</a></span>m_last_lidar_center</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Real&gt; amr_wind::sampling::DTUSpinnerSampler::m_last_lidar_center {0.0_rt, 0.0_rt, 0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af121e1ed2d3d22905f0b52c545a71d3c" name="af121e1ed2d3d22905f0b52c545a71d3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af121e1ed2d3d22905f0b52c545a71d3c">&#9670;&#160;</a></span>m_lidar_center</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Real&gt; amr_wind::sampling::DTUSpinnerSampler::m_lidar_center {0.0_rt, 0.0_rt, 0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aec542d4508dd30100672a9889607802b" name="aec542d4508dd30100672a9889607802b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec542d4508dd30100672a9889607802b">&#9670;&#160;</a></span>m_ns</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::sampling::DTUSpinnerSampler::m_ns {1}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3e5e4a049f8894a90d36ba587240fc75" name="a3e5e4a049f8894a90d36ba587240fc75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e5e4a049f8894a90d36ba587240fc75">&#9670;&#160;</a></span>m_ntotal</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long amr_wind::sampling::DTUSpinnerSampler::m_ntotal {1}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a14237bbb4f1e092d77427441e717a5f4" name="a14237bbb4f1e092d77427441e717a5f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14237bbb4f1e092d77427441e717a5f4">&#9670;&#160;</a></span>m_num_samples</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::sampling::DTUSpinnerSampler::m_num_samples {984.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af28731ad8931cf1d974df4172a3bd090" name="af28731ad8931cf1d974df4172a3bd090"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af28731ad8931cf1d974df4172a3bd090">&#9670;&#160;</a></span>m_OuterPrism</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structamr__wind_1_1sampling_1_1_prism_parameters.html">PrismParameters</a> amr_wind::sampling::DTUSpinnerSampler::m_OuterPrism</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6385f29c55f64dc2c5e8931b8b766b4e" name="a6385f29c55f64dc2c5e8931b8b766b4e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6385f29c55f64dc2c5e8931b8b766b4e">&#9670;&#160;</a></span>m_pi</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const amrex::Real amr_wind::sampling::DTUSpinnerSampler::m_pi {std::numbers::pi_v&lt;amrex::Real&gt;}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a45195bda8241bf901367a233b28b8803" name="a45195bda8241bf901367a233b28b8803"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45195bda8241bf901367a233b28b8803">&#9670;&#160;</a></span>m_radtodeg</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const amrex::Real amr_wind::sampling::DTUSpinnerSampler::m_radtodeg {180.0_rt / std::numbers::pi_v&lt;amrex::Real&gt;}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3f8b1b96c4b32db484dade9b79ec6e2e" name="a3f8b1b96c4b32db484dade9b79ec6e2e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f8b1b96c4b32db484dade9b79ec6e2e">&#9670;&#160;</a></span>m_scan_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::sampling::DTUSpinnerSampler::m_scan_time {2.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a415272a8b602dfff148d9c6096b7e4f9" name="a415272a8b602dfff148d9c6096b7e4f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a415272a8b602dfff148d9c6096b7e4f9">&#9670;&#160;</a></span>m_spinner_mode</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::sampling::DTUSpinnerSampler::m_spinner_mode {&quot;fixed&quot;}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae54c711f0dd8035f56cf02cf2a77387b" name="ae54c711f0dd8035f56cf02cf2a77387b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae54c711f0dd8035f56cf02cf2a77387b">&#9670;&#160;</a></span>m_step_lidar_center</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Real&gt; amr_wind::sampling::DTUSpinnerSampler::m_step_lidar_center {0.0_rt, 0.0_rt, 0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a28b64bae22988627b1d8c2f9ff4f584e" name="a28b64bae22988627b1d8c2f9ff4f584e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28b64bae22988627b1d8c2f9ff4f584e">&#9670;&#160;</a></span>m_threepi</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const amrex::Real amr_wind::sampling::DTUSpinnerSampler::m_threepi {3.0_rt * std::numbers::pi_v&lt;amrex::Real&gt;}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acced2172a668f8c6552aed002d91456f" name="acced2172a668f8c6552aed002d91456f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acced2172a668f8c6552aed002d91456f">&#9670;&#160;</a></span>m_time_sampling</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::sampling::DTUSpinnerSampler::m_time_sampling {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aeef2c224271dc1edf1f4a27f66d895fe" name="aeef2c224271dc1edf1f4a27f66d895fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeef2c224271dc1edf1f4a27f66d895fe">&#9670;&#160;</a></span>m_turbine_label</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::sampling::DTUSpinnerSampler::m_turbine_label</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a490ce7c64a69660f36dec721d0a01182" name="a490ce7c64a69660f36dec721d0a01182"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a490ce7c64a69660f36dec721d0a01182">&#9670;&#160;</a></span>m_twopi</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const amrex::Real amr_wind::sampling::DTUSpinnerSampler::m_twopi {2.0_rt * std::numbers::pi_v&lt;amrex::Real&gt;}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2078a95ea0c2853a9ea0dead3d960884" name="a2078a95ea0c2853a9ea0dead3d960884"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2078a95ea0c2853a9ea0dead3d960884">&#9670;&#160;</a></span>m_update_count</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::sampling::DTUSpinnerSampler::m_update_count {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/<a class="el" href="_d_t_u_spinner_sampler_8_h_source.html">DTUSpinnerSampler.H</a></li>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/<a class="el" href="_d_t_u_spinner_sampler_8cpp.html">DTUSpinnerSampler.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

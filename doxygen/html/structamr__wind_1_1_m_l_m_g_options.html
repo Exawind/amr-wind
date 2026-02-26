@@ -1,0 +1,922 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::MLMGOptions Struct Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::MLMGOptions Struct Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/structamr__wind_1_1_m_l_m_g_options.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="mlmgoptions-struct-reference">
+<h1>MLMGOptions Struct Reference<a class="headerlink" href="#mlmgoptions-struct-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::MLMGOptions Struct Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="structamr__wind_1_1_m_l_m_g_options.html">MLMGOptions</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="#pri-methods">Private Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
+<a href="structamr__wind_1_1_m_l_m_g_options-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::MLMGOptions Struct Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_m_l_m_g_options_8_h_source.html">MLMGOptions.H</a>&gt;</code></p>
+<div class="dynheader">
+Collaboration diagram for amr_wind::MLMGOptions:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="structamr__wind_1_1_m_l_m_g_options__coll__graph.svg" width="263" height="262"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a093835ce737816481dbb589a677c80c2" id="r_a093835ce737816481dbb589a677c80c2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a093835ce737816481dbb589a677c80c2">MLMGOptions</a> (const std::string &amp;prefix)</td></tr>
+<tr class="memitem:ae56475d9a69df5d159d5c117ff3759a6" id="r_ae56475d9a69df5d159d5c117ff3759a6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae56475d9a69df5d159d5c117ff3759a6">MLMGOptions</a> (const std::string &amp;default_prefix, const std::string &amp;custom_prefix)</td></tr>
+<tr class="memitem:a19f5b4dffb7c8e8bd6e69ce89469ecd1" id="r_a19f5b4dffb7c8e8bd6e69ce89469ecd1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a19f5b4dffb7c8e8bd6e69ce89469ecd1">operator()</a> (amrex::MLMG &amp;)</td></tr>
+<tr class="memitem:ae3f8458a5d186d1e797e7535f6fe14c2" id="r_ae3f8458a5d186d1e797e7535f6fe14c2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae3f8458a5d186d1e797e7535f6fe14c2">operator()</a> (Hydro::NodalProjector &amp;)</td></tr>
+<tr class="memitem:a85d0211a915bff4a71949b9e70d407ea" id="r_a85d0211a915bff4a71949b9e70d407ea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a85d0211a915bff4a71949b9e70d407ea">operator()</a> (Hydro::MacProjector &amp;)</td></tr>
+<tr class="memitem:a2ff9a42d23103c6b5557e53a025c8c50" id="r_a2ff9a42d23103c6b5557e53a025c8c50"><td class="memItemLeft" align="right" valign="top">amrex::LPInfo &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2ff9a42d23103c6b5557e53a025c8c50">lpinfo</a> ()</td></tr>
+<tr class="memdesc:a2ff9a42d23103c6b5557e53a025c8c50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Linear operator options during construction.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a42490d63789f614c0e1af79c66c94174" id="r_a42490d63789f614c0e1af79c66c94174"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a42490d63789f614c0e1af79c66c94174">max_order</a> {2}</td></tr>
+<tr class="memitem:a69e80c9b1ce5dd8eddf6983e30d29467" id="r_a69e80c9b1ce5dd8eddf6983e30d29467"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a69e80c9b1ce5dd8eddf6983e30d29467">rel_tol</a> {std::numeric_limits&lt;amrex::Real&gt;::epsilon() * 1.0e5_rt}</td></tr>
+<tr class="memdesc:a69e80c9b1ce5dd8eddf6983e30d29467"><td class="mdescLeft">&#160;</td><td class="mdescRight">Relative tolerance for convergence of MLMG solvers.  <br /></td></tr>
+<tr class="memitem:a4de6e04bc65f67cd9d4287a584b28dec" id="r_a4de6e04bc65f67cd9d4287a584b28dec"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4de6e04bc65f67cd9d4287a584b28dec">abs_tol</a> {std::numeric_limits&lt;amrex::Real&gt;::epsilon() * 1.0e2_rt}</td></tr>
+<tr class="memdesc:a4de6e04bc65f67cd9d4287a584b28dec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Absolute tolerance for convergence checks.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-methods" class="groupheader"><a id="pri-methods" name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:a6a3d95aa99afb286b05b25db35d8c46d" id="r_a6a3d95aa99afb286b05b25db35d8c46d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6a3d95aa99afb286b05b25db35d8c46d">parse_options</a> (const std::string &amp;)</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a75199734c45386eb32ac24e4fc402d01" id="r_a75199734c45386eb32ac24e4fc402d01"><td class="memItemLeft" align="right" valign="top">amrex::LPInfo&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a75199734c45386eb32ac24e4fc402d01">m_lpinfo</a></td></tr>
+<tr class="memdesc:a75199734c45386eb32ac24e4fc402d01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Linear operator info object.  <br /></td></tr>
+<tr class="memitem:aa1a93df43898f9cdb4c4d7e05c563149" id="r_aa1a93df43898f9cdb4c4d7e05c563149"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa1a93df43898f9cdb4c4d7e05c563149">m_bottom_solver_type</a> {&quot;bicgstab&quot;}</td></tr>
+<tr class="memdesc:aa1a93df43898f9cdb4c4d7e05c563149"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bottom solver type bicgstab, cg, hypre, etc.  <br /></td></tr>
+<tr class="memitem:a8cb5b0323e9b5c3b3b7f5a6d7afe76c4" id="r_a8cb5b0323e9b5c3b3b7f5a6d7afe76c4"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8cb5b0323e9b5c3b3b7f5a6d7afe76c4">m_hypre_namespace</a> {&quot;hypre&quot;}</td></tr>
+<tr class="memdesc:a8cb5b0323e9b5c3b3b7f5a6d7afe76c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Options namespace for hypre solvers.  <br /></td></tr>
+<tr class="memitem:a1b4477e05a3c69653c22896281895bdb" id="r_a1b4477e05a3c69653c22896281895bdb"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1b4477e05a3c69653c22896281895bdb">m_hypre_interface</a> {&quot;ij&quot;}</td></tr>
+<tr class="memdesc:a1b4477e05a3c69653c22896281895bdb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Options of hypre interface.  <br /></td></tr>
+<tr class="memitem:a2e1e09a64914f94580797b69fc7077d4" id="r_a2e1e09a64914f94580797b69fc7077d4"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2e1e09a64914f94580797b69fc7077d4">m_bottom_rel_tol</a></td></tr>
+<tr class="memdesc:a2e1e09a64914f94580797b69fc7077d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Relative tolerance for convergence of MLMG solvers.  <br /></td></tr>
+<tr class="memitem:a66e70cc048e5a6e8872dff4636d1d35a" id="r_a66e70cc048e5a6e8872dff4636d1d35a"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a66e70cc048e5a6e8872dff4636d1d35a">m_bottom_abs_tol</a></td></tr>
+<tr class="memdesc:a66e70cc048e5a6e8872dff4636d1d35a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Absolute tolerance for convergence checks.  <br /></td></tr>
+<tr class="memitem:a18dcc92c8fae9f834f971bdebe43a7ea" id="r_a18dcc92c8fae9f834f971bdebe43a7ea"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a18dcc92c8fae9f834f971bdebe43a7ea">m_verbose</a> {0}</td></tr>
+<tr class="memitem:ad37fb7b5c1374005984854a8c87ef454" id="r_ad37fb7b5c1374005984854a8c87ef454"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad37fb7b5c1374005984854a8c87ef454">m_max_iter</a> {200}</td></tr>
+<tr class="memitem:a879e87255da9887ae427328d64b3f876" id="r_a879e87255da9887ae427328d64b3f876"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a879e87255da9887ae427328d64b3f876">m_max_fmg_iters</a> {0}</td></tr>
+<tr class="memitem:aaa04482ba7a2dfe4994dec362a921cdb" id="r_aaa04482ba7a2dfe4994dec362a921cdb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaa04482ba7a2dfe4994dec362a921cdb">m_num_pre_smooth</a> {2}</td></tr>
+<tr class="memitem:a0f013f7487a4ea71d7a53255d58ad6ee" id="r_a0f013f7487a4ea71d7a53255d58ad6ee"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0f013f7487a4ea71d7a53255d58ad6ee">m_num_post_smooth</a> {2}</td></tr>
+<tr class="memitem:a9be9df2ef25ae941276920bbb6c57b99" id="r_a9be9df2ef25ae941276920bbb6c57b99"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9be9df2ef25ae941276920bbb6c57b99">m_num_final_smooth</a> {8}</td></tr>
+<tr class="memitem:a1c2a861575a241fd81226c7511dcddf2" id="r_a1c2a861575a241fd81226c7511dcddf2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1c2a861575a241fd81226c7511dcddf2">m_num_bottom_smooth</a> {0}</td></tr>
+<tr class="memitem:a884953c378d481cc36a033a5d1c3bc52" id="r_a884953c378d481cc36a033a5d1c3bc52"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a884953c378d481cc36a033a5d1c3bc52">m_bottom_verbose</a> {0}</td></tr>
+<tr class="memitem:ad264d933cb59d8ff47c800e4ec381094" id="r_ad264d933cb59d8ff47c800e4ec381094"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad264d933cb59d8ff47c800e4ec381094">m_bottom_max_iter</a> {200}</td></tr>
+<tr class="memdesc:ad264d933cb59d8ff47c800e4ec381094"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum iterations for the bottom solver.  <br /></td></tr>
+<tr class="memitem:a1397e0f59f25369fdb4ecb05623576f2" id="r_a1397e0f59f25369fdb4ecb05623576f2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1397e0f59f25369fdb4ecb05623576f2">m_do_fixed_iters</a> {true}</td></tr>
+<tr class="memdesc:a1397e0f59f25369fdb4ecb05623576f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">If set to true, AMReX won't abort if linear solver doesn't converge within max iterations.  <br /></td></tr>
+<tr class="memitem:acf4597247b86eee039374784357eec82" id="r_acf4597247b86eee039374784357eec82"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acf4597247b86eee039374784357eec82">m_do_nsolve</a> {false}</td></tr>
+<tr class="memdesc:acf4597247b86eee039374784357eec82"><td class="mdescLeft">&#160;</td><td class="mdescRight">option to use the nsolve bottom solver added to help with overset masking  <br /></td></tr>
+<tr class="memitem:ad746e1d8bb6a863e6bcd56cea005a790" id="r_ad746e1d8bb6a863e6bcd56cea005a790"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad746e1d8bb6a863e6bcd56cea005a790">m_nsolve_grid_size</a> {16}</td></tr>
+<tr class="memdesc:ad746e1d8bb6a863e6bcd56cea005a790"><td class="mdescLeft">&#160;</td><td class="mdescRight">set grid size for nsolve  <br /></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Interface to control the behavior of AMReX LinearSolvers</p>
+<p><a class="el" href="structamr__wind_1_1_m_l_m_g_options.html">MLMGOptions</a> provides a unified interface to set options to the linear operator object, MLMG solver, external solvers (e.g., hypre), as well as MacProjector and NodalProjector objects. </p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a093835ce737816481dbb589a677c80c2" name="a093835ce737816481dbb589a677c80c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a093835ce737816481dbb589a677c80c2">&#9670;&#160;</a></span>MLMGOptions() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::MLMGOptions::MLMGOptions </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>prefix</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel explicit">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Parse user options with a given prefix</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">prefix</td><td>Prefix used to parse user inputs, e.g., mac_proj </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ae56475d9a69df5d159d5c117ff3759a6" name="ae56475d9a69df5d159d5c117ff3759a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae56475d9a69df5d159d5c117ff3759a6">&#9670;&#160;</a></span>MLMGOptions() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::MLMGOptions::MLMGOptions </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>default_prefix</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>custom_prefix</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Parse options in two stages</p>
+<p>This constructor parses the default options from <span class="tt">default_prefix</span> and then overrides certain options based on a custom prefix.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">default_prefix</td><td>Namespace for default options </td></tr>
+    <tr><td class="paramname">custom_prefix</td><td>Namespace for override options </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a2ff9a42d23103c6b5557e53a025c8c50" name="a2ff9a42d23103c6b5557e53a025c8c50"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ff9a42d23103c6b5557e53a025c8c50">&#9670;&#160;</a></span>lpinfo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::LPInfo &amp; amr_wind::MLMGOptions::lpinfo </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Linear operator options during construction. </p>
+
+</div>
+</div>
+<a id="a19f5b4dffb7c8e8bd6e69ce89469ecd1" name="a19f5b4dffb7c8e8bd6e69ce89469ecd1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19f5b4dffb7c8e8bd6e69ce89469ecd1">&#9670;&#160;</a></span>operator()() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::MLMGOptions::operator() </td>
+          <td>(</td>
+          <td class="paramtype">amrex::MLMG &amp;</td>          <td class="paramname"><span class="paramname"><em>mlmg</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a85d0211a915bff4a71949b9e70d407ea" name="a85d0211a915bff4a71949b9e70d407ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85d0211a915bff4a71949b9e70d407ea">&#9670;&#160;</a></span>operator()() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::MLMGOptions::operator() </td>
+          <td>(</td>
+          <td class="paramtype">Hydro::MacProjector &amp;</td>          <td class="paramname"><span class="paramname"><em>mac_proj</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae3f8458a5d186d1e797e7535f6fe14c2" name="ae3f8458a5d186d1e797e7535f6fe14c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3f8458a5d186d1e797e7535f6fe14c2">&#9670;&#160;</a></span>operator()() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::MLMGOptions::operator() </td>
+          <td>(</td>
+          <td class="paramtype">Hydro::NodalProjector &amp;</td>          <td class="paramname"><span class="paramname"><em>nodal_proj</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6a3d95aa99afb286b05b25db35d8c46d" name="a6a3d95aa99afb286b05b25db35d8c46d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a3d95aa99afb286b05b25db35d8c46d">&#9670;&#160;</a></span>parse_options()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::MLMGOptions::parse_options </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>prefix</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a4de6e04bc65f67cd9d4287a584b28dec" name="a4de6e04bc65f67cd9d4287a584b28dec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4de6e04bc65f67cd9d4287a584b28dec">&#9670;&#160;</a></span>abs_tol</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::MLMGOptions::abs_tol {std::numeric_limits&lt;amrex::Real&gt;::epsilon() * 1.0e2_rt}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Absolute tolerance for convergence checks. </p>
+
+</div>
+</div>
+<a id="a66e70cc048e5a6e8872dff4636d1d35a" name="a66e70cc048e5a6e8872dff4636d1d35a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66e70cc048e5a6e8872dff4636d1d35a">&#9670;&#160;</a></span>m_bottom_abs_tol</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::MLMGOptions::m_bottom_abs_tol</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">{</div>
+<div class="line">        std::numeric_limits&lt;amrex::Real&gt;::epsilon() * 1.0e4_rt}</div>
+</div><!-- fragment -->
+<p>Absolute tolerance for convergence checks. </p>
+
+</div>
+</div>
+<a id="ad264d933cb59d8ff47c800e4ec381094" name="ad264d933cb59d8ff47c800e4ec381094"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad264d933cb59d8ff47c800e4ec381094">&#9670;&#160;</a></span>m_bottom_max_iter</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::MLMGOptions::m_bottom_max_iter {200}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Maximum iterations for the bottom solver. </p>
+
+</div>
+</div>
+<a id="a2e1e09a64914f94580797b69fc7077d4" name="a2e1e09a64914f94580797b69fc7077d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e1e09a64914f94580797b69fc7077d4">&#9670;&#160;</a></span>m_bottom_rel_tol</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::MLMGOptions::m_bottom_rel_tol</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">{</div>
+<div class="line">        std::numeric_limits&lt;amrex::Real&gt;::epsilon() * 1.0e12_rt}</div>
+</div><!-- fragment -->
+<p>Relative tolerance for convergence of MLMG solvers. </p>
+
+</div>
+</div>
+<a id="aa1a93df43898f9cdb4c4d7e05c563149" name="aa1a93df43898f9cdb4c4d7e05c563149"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1a93df43898f9cdb4c4d7e05c563149">&#9670;&#160;</a></span>m_bottom_solver_type</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::MLMGOptions::m_bottom_solver_type {&quot;bicgstab&quot;}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Bottom solver type bicgstab, cg, hypre, etc. </p>
+
+</div>
+</div>
+<a id="a884953c378d481cc36a033a5d1c3bc52" name="a884953c378d481cc36a033a5d1c3bc52"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a884953c378d481cc36a033a5d1c3bc52">&#9670;&#160;</a></span>m_bottom_verbose</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::MLMGOptions::m_bottom_verbose {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Set verbosity for AMReX bottom solvers</p>
+<p>When using hypre as the bottom solver, this option is not passed to hypre. Instead user must set <span class="tt">hypre.verbose</span> to control the hypre solver verbosity and <span class="tt">hypre.bamg_verbose</span> to control BoomerAMG verbosity (when used as a preconditioner). </p>
+
+</div>
+</div>
+<a id="a1397e0f59f25369fdb4ecb05623576f2" name="a1397e0f59f25369fdb4ecb05623576f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1397e0f59f25369fdb4ecb05623576f2">&#9670;&#160;</a></span>m_do_fixed_iters</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::MLMGOptions::m_do_fixed_iters {true}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>If set to true, AMReX won't abort if linear solver doesn't converge within max iterations. </p>
+
+</div>
+</div>
+<a id="acf4597247b86eee039374784357eec82" name="acf4597247b86eee039374784357eec82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf4597247b86eee039374784357eec82">&#9670;&#160;</a></span>m_do_nsolve</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::MLMGOptions::m_do_nsolve {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>option to use the nsolve bottom solver added to help with overset masking </p>
+
+</div>
+</div>
+<a id="a1b4477e05a3c69653c22896281895bdb" name="a1b4477e05a3c69653c22896281895bdb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b4477e05a3c69653c22896281895bdb">&#9670;&#160;</a></span>m_hypre_interface</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::MLMGOptions::m_hypre_interface {&quot;ij&quot;}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Options of hypre interface. </p>
+
+</div>
+</div>
+<a id="a8cb5b0323e9b5c3b3b7f5a6d7afe76c4" name="a8cb5b0323e9b5c3b3b7f5a6d7afe76c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8cb5b0323e9b5c3b3b7f5a6d7afe76c4">&#9670;&#160;</a></span>m_hypre_namespace</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::MLMGOptions::m_hypre_namespace {&quot;hypre&quot;}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Options namespace for hypre solvers. </p>
+
+</div>
+</div>
+<a id="a75199734c45386eb32ac24e4fc402d01" name="a75199734c45386eb32ac24e4fc402d01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75199734c45386eb32ac24e4fc402d01">&#9670;&#160;</a></span>m_lpinfo</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::LPInfo amr_wind::MLMGOptions::m_lpinfo</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Linear operator info object. </p>
+
+</div>
+</div>
+<a id="a879e87255da9887ae427328d64b3f876" name="a879e87255da9887ae427328d64b3f876"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a879e87255da9887ae427328d64b3f876">&#9670;&#160;</a></span>m_max_fmg_iters</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::MLMGOptions::m_max_fmg_iters {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad37fb7b5c1374005984854a8c87ef454" name="ad37fb7b5c1374005984854a8c87ef454"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad37fb7b5c1374005984854a8c87ef454">&#9670;&#160;</a></span>m_max_iter</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::MLMGOptions::m_max_iter {200}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad746e1d8bb6a863e6bcd56cea005a790" name="ad746e1d8bb6a863e6bcd56cea005a790"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad746e1d8bb6a863e6bcd56cea005a790">&#9670;&#160;</a></span>m_nsolve_grid_size</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::MLMGOptions::m_nsolve_grid_size {16}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>set grid size for nsolve </p>
+
+</div>
+</div>
+<a id="a1c2a861575a241fd81226c7511dcddf2" name="a1c2a861575a241fd81226c7511dcddf2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c2a861575a241fd81226c7511dcddf2">&#9670;&#160;</a></span>m_num_bottom_smooth</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::MLMGOptions::m_num_bottom_smooth {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9be9df2ef25ae941276920bbb6c57b99" name="a9be9df2ef25ae941276920bbb6c57b99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9be9df2ef25ae941276920bbb6c57b99">&#9670;&#160;</a></span>m_num_final_smooth</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::MLMGOptions::m_num_final_smooth {8}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0f013f7487a4ea71d7a53255d58ad6ee" name="a0f013f7487a4ea71d7a53255d58ad6ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f013f7487a4ea71d7a53255d58ad6ee">&#9670;&#160;</a></span>m_num_post_smooth</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::MLMGOptions::m_num_post_smooth {2}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aaa04482ba7a2dfe4994dec362a921cdb" name="aaa04482ba7a2dfe4994dec362a921cdb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa04482ba7a2dfe4994dec362a921cdb">&#9670;&#160;</a></span>m_num_pre_smooth</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::MLMGOptions::m_num_pre_smooth {2}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a18dcc92c8fae9f834f971bdebe43a7ea" name="a18dcc92c8fae9f834f971bdebe43a7ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18dcc92c8fae9f834f971bdebe43a7ea">&#9670;&#160;</a></span>m_verbose</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::MLMGOptions::m_verbose {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Verbosity of the MLMG and Projector interfaces </p>
+
+</div>
+</div>
+<a id="a42490d63789f614c0e1af79c66c94174" name="a42490d63789f614c0e1af79c66c94174"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42490d63789f614c0e1af79c66c94174">&#9670;&#160;</a></span>max_order</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::MLMGOptions::max_order {2}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a69e80c9b1ce5dd8eddf6983e30d29467" name="a69e80c9b1ce5dd8eddf6983e30d29467"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69e80c9b1ce5dd8eddf6983e30d29467">&#9670;&#160;</a></span>rel_tol</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::MLMGOptions::rel_tol {std::numeric_limits&lt;amrex::Real&gt;::epsilon() * 1.0e5_rt}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Relative tolerance for convergence of MLMG solvers. </p>
+
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following files:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/core/<a class="el" href="_m_l_m_g_options_8_h_source.html">MLMGOptions.H</a></li>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/core/<a class="el" href="_m_l_m_g_options_8cpp.html">MLMGOptions.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

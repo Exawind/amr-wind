@@ -1,0 +1,14 @@
+.. meta::f53b7b958c7f34c5c11e6c644bb70f917b5b724edbd5ff5f60053e16bf8bb3b1128118db63b1922addc93c60c0cb6f43ab1274f09748bdf884e6eb3616b2bde4
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::nodal_projection Namespace Reference
+
+nodal\_projection Namespace Reference
+=====================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: namespaceamr__wind_1_1nodal__projection.html

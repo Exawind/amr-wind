@@ -1,0 +1,14 @@
+.. meta::415599051682329006d8bc9885cb264fcbc1c3c1c2746275cdaa31de8a3aefefe485704f7f4006571be19c2252d04882005fe70eeca3639c42d768c729aa10eb
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::ReadInputsOp&lt; TurbineKynema, SrcTrait &gt; Struct Template Reference
+
+ReadInputsOp&lt; TurbineKynema, SrcTrait &gt; Struct Template Reference
+=======================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1ops_1_1_read_inputs_op_3_01_turbine_kynema_00_01_src_trait_01_4.html

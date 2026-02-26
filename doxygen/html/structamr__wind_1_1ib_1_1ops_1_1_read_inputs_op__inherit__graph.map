@@ -1,0 +1,9 @@
+<map id="amr_wind::ib::ops::ReadInputsOp&lt; GeomTrait, typename &gt;" name="amr_wind::ib::ops::ReadInputsOp&lt; GeomTrait, typename &gt;">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,62,204,117"/>
+<area shape="rect" id="Node000002" href="$structamr__wind_1_1ib_1_1ops_1_1_read_inputs_op_3_01_box_01_4.html" title=" " alt="" coords="360,5,528,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="217,61,228,59,359,35,360,41,228,64,218,66"/>
+<area shape="rect" id="Node000003" href="$structamr__wind_1_1ib_1_1ops_1_1_read_inputs_op_3_01_cylinder_01_4.html" title=" " alt="" coords="345,69,543,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="218,87,345,87,345,92,218,92"/>
+<area shape="rect" id="Node000004" href="$structamr__wind_1_1ib_1_1ops_1_1_read_inputs_op_3_01_sphere_01_4.html" title=" " alt="" coords="350,133,538,173"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="218,113,228,115,350,136,350,142,228,120,217,118"/>
+</map>

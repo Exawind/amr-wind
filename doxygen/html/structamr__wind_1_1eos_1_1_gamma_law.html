@@ -1,0 +1,483 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::eos::GammaLaw Struct Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::eos::GammaLaw Struct Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/structamr__wind_1_1eos_1_1_gamma_law.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="gammalaw-struct-reference">
+<h1>GammaLaw Struct Reference<a class="headerlink" href="#gammalaw-struct-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::eos::GammaLaw Struct Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="namespaceamr__wind_1_1eos.html">eos</a></li><li class="navelem"><a href="structamr__wind_1_1eos_1_1_gamma_law.html">GammaLaw</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="structamr__wind_1_1eos_1_1_gamma_law-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::eos::GammaLaw Struct Reference<div class="ingroups"><a class="el" href="group__eos.html">Equation of state models</a></div></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_e_o_s_model_8_h_source.html">EOSModel.H</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-types" class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a66ccc4917750ab1b9a903b051707b40d" id="r_a66ccc4917750ab1b9a903b051707b40d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a66ccc4917750ab1b9a903b051707b40d">eos_type</a> = <a class="el" href="structamr__wind_1_1eos_1_1_gamma_law.html">GammaLaw</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a8498420166e469313e5661feef5b2a8b" id="r_a8498420166e469313e5661feef5b2a8b"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8498420166e469313e5661feef5b2a8b">p_rth</a> (const amrex::Real rho, const amrex::Real theta, const amrex::Real qv=0.0_rt) const</td></tr>
+<tr class="memitem:a5b1c8d4d08a2ef3556c2da0025934878" id="r_a5b1c8d4d08a2ef3556c2da0025934878"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5b1c8d4d08a2ef3556c2da0025934878">dp_constanttheta</a> (const amrex::Real rho, const amrex::Real theta, const amrex::Real qv=0.0_rt) const</td></tr>
+<tr class="memitem:a4c7a409384baedde234c771597f1d795" id="r_a4c7a409384baedde234c771597f1d795"><td class="memTemplParams" colspan="2">template&lt;class... Args&gt; </td></tr>
+<tr class="memitem:a4c7a409384baedde234c771597f1d795 template"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4c7a409384baedde234c771597f1d795">GammaLaw</a> (const amrex::Real p0=1.0e-5_rt)</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a875fe24ef9c09727fcfdcdb1cada1b76" id="r_a875fe24ef9c09727fcfdcdb1cada1b76"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a875fe24ef9c09727fcfdcdb1cada1b76">identifier</a> ()</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:add76b23bf87877e1567dc8f012c81009" id="r_add76b23bf87877e1567dc8f012c81009"><td class="memItemLeft" align="right" valign="top">const amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#add76b23bf87877e1567dc8f012c81009">m_gamma</a> {<a class="el" href="namespaceamr__wind_1_1constants.html#aac4c172492314acb5c8c61aecbfb7ffb">constants::HEAT_CAPACITY_RATIO</a>}</td></tr>
+<tr class="memitem:ab72da9ff96f2732a0e71b3b03ab8c991" id="r_ab72da9ff96f2732a0e71b3b03ab8c991"><td class="memItemLeft" align="right" valign="top">const amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab72da9ff96f2732a0e71b3b03ab8c991">m_p0</a> {1.0e5_rt}</td></tr>
+<tr class="memitem:abdb0d1d1fdb3a138e6c51dde76bfc37f" id="r_abdb0d1d1fdb3a138e6c51dde76bfc37f"><td class="memItemLeft" align="right" valign="top">const amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abdb0d1d1fdb3a138e6c51dde76bfc37f">m_ip0</a> {1.0e-5_rt}</td></tr>
+<tr class="memitem:accc27d36ad27822f2a443f60dcbc641e" id="r_accc27d36ad27822f2a443f60dcbc641e"><td class="memItemLeft" align="right" valign="top">const amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#accc27d36ad27822f2a443f60dcbc641e">m_air_gas_constant</a></td></tr>
+<tr class="memitem:a090b3125d7acd9d6e18de5d9f5901e2b" id="r_a090b3125d7acd9d6e18de5d9f5901e2b"><td class="memItemLeft" align="right" valign="top">const amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a090b3125d7acd9d6e18de5d9f5901e2b">m_water_vapor_gas_constant</a></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Gamma law equation of state </p>
+</div><a name="doc-typedef-members" id="doc-typedef-members"></a><h2 id="header-doc-typedef-members" class="groupheader">Member Typedef Documentation</h2>
+<a id="a66ccc4917750ab1b9a903b051707b40d" name="a66ccc4917750ab1b9a903b051707b40d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66ccc4917750ab1b9a903b051707b40d">&#9670;&#160;</a></span>eos_type</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#a66ccc4917750ab1b9a903b051707b40d">amr_wind::eos::GammaLaw::eos_type</a> = <a class="el" href="structamr__wind_1_1eos_1_1_gamma_law.html">GammaLaw</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a4c7a409384baedde234c771597f1d795" name="a4c7a409384baedde234c771597f1d795"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c7a409384baedde234c771597f1d795">&#9670;&#160;</a></span>GammaLaw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE amr_wind::eos::GammaLaw::GammaLaw </td>
+          <td>(</td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>p0</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1.0e-5_rt</span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel explicit">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a5b1c8d4d08a2ef3556c2da0025934878" name="a5b1c8d4d08a2ef3556c2da0025934878"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b1c8d4d08a2ef3556c2da0025934878">&#9670;&#160;</a></span>dp_constanttheta()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real amr_wind::eos::GammaLaw::dp_constanttheta </td>
+          <td>(</td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>rho</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>theta</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>qv</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0.0_rt</span>&#160;) const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return dP/drho at constant theta</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">rho</td><td>density </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">theta</td><td>potential temperature </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">qv</td><td>water vapor </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>pressure </dd></dl>
+
+</div>
+</div>
+<a id="a875fe24ef9c09727fcfdcdb1cada1b76" name="a875fe24ef9c09727fcfdcdb1cada1b76"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a875fe24ef9c09727fcfdcdb1cada1b76">&#9670;&#160;</a></span>identifier()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::eos::GammaLaw::identifier </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8498420166e469313e5661feef5b2a8b" name="a8498420166e469313e5661feef5b2a8b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8498420166e469313e5661feef5b2a8b">&#9670;&#160;</a></span>p_rth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real amr_wind::eos::GammaLaw::p_rth </td>
+          <td>(</td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>rho</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>theta</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>qv</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0.0_rt</span>&#160;) const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return pressure given density and potential temperature</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">rho</td><td>density </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">theta</td><td>potential temperature </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">qv</td><td>water vapor </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>pressure </dd></dl>
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="accc27d36ad27822f2a443f60dcbc641e" name="accc27d36ad27822f2a443f60dcbc641e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#accc27d36ad27822f2a443f60dcbc641e">&#9670;&#160;</a></span>m_air_gas_constant</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const amrex::Real amr_wind::eos::GammaLaw::m_air_gas_constant</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">{</div>
+<div class="line">        <a class="code hl_variable" href="namespaceamr__wind_1_1constants.html#aeaf4754f02cbe6c4111dc13a431cca18">constants::UNIVERSAL_GAS_CONSTANT</a> / <a class="code hl_variable" href="namespaceamr__wind_1_1constants.html#afadfc322e5370a74af9c672ddd9889bd">constants::MOLAR_MASS_AIR</a>}</div>
+<div class="ttc" id="anamespaceamr__wind_1_1constants_html_aeaf4754f02cbe6c4111dc13a431cca18"><div class="ttname"><a href="namespaceamr__wind_1_1constants.html#aeaf4754f02cbe6c4111dc13a431cca18">amr_wind::constants::UNIVERSAL_GAS_CONSTANT</a></div><div class="ttdeci">static constexpr amrex::Real UNIVERSAL_GAS_CONSTANT</div><div class="ttdoc">Universal gas constant (J/K mol)</div><div class="ttdef"><b>Definition</b> constants.H:46</div></div>
+<div class="ttc" id="anamespaceamr__wind_1_1constants_html_afadfc322e5370a74af9c672ddd9889bd"><div class="ttname"><a href="namespaceamr__wind_1_1constants.html#afadfc322e5370a74af9c672ddd9889bd">amr_wind::constants::MOLAR_MASS_AIR</a></div><div class="ttdeci">static constexpr amrex::Real MOLAR_MASS_AIR</div><div class="ttdoc">Molar mass of air (kg/mol)</div><div class="ttdef"><b>Definition</b> constants.H:53</div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="add76b23bf87877e1567dc8f012c81009" name="add76b23bf87877e1567dc8f012c81009"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add76b23bf87877e1567dc8f012c81009">&#9670;&#160;</a></span>m_gamma</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const amrex::Real amr_wind::eos::GammaLaw::m_gamma {<a class="el" href="namespaceamr__wind_1_1constants.html#aac4c172492314acb5c8c61aecbfb7ffb">constants::HEAT_CAPACITY_RATIO</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abdb0d1d1fdb3a138e6c51dde76bfc37f" name="abdb0d1d1fdb3a138e6c51dde76bfc37f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abdb0d1d1fdb3a138e6c51dde76bfc37f">&#9670;&#160;</a></span>m_ip0</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const amrex::Real amr_wind::eos::GammaLaw::m_ip0 {1.0e-5_rt}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab72da9ff96f2732a0e71b3b03ab8c991" name="ab72da9ff96f2732a0e71b3b03ab8c991"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab72da9ff96f2732a0e71b3b03ab8c991">&#9670;&#160;</a></span>m_p0</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const amrex::Real amr_wind::eos::GammaLaw::m_p0 {1.0e5_rt}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a090b3125d7acd9d6e18de5d9f5901e2b" name="a090b3125d7acd9d6e18de5d9f5901e2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a090b3125d7acd9d6e18de5d9f5901e2b">&#9670;&#160;</a></span>m_water_vapor_gas_constant</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const amrex::Real amr_wind::eos::GammaLaw::m_water_vapor_gas_constant</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">{</div>
+<div class="line">        <a class="code hl_variable" href="namespaceamr__wind_1_1constants.html#aeaf4754f02cbe6c4111dc13a431cca18">constants::UNIVERSAL_GAS_CONSTANT</a> / <a class="code hl_variable" href="namespaceamr__wind_1_1constants.html#ab1e02a6792723218a84a129487326bd2">constants::MOLAR_MASS_WATER_VAPOR</a>}</div>
+<div class="ttc" id="anamespaceamr__wind_1_1constants_html_ab1e02a6792723218a84a129487326bd2"><div class="ttname"><a href="namespaceamr__wind_1_1constants.html#ab1e02a6792723218a84a129487326bd2">amr_wind::constants::MOLAR_MASS_WATER_VAPOR</a></div><div class="ttdeci">static constexpr amrex::Real MOLAR_MASS_WATER_VAPOR</div><div class="ttdoc">Molar mass of water vapor (kg/mol)</div><div class="ttdef"><b>Definition</b> constants.H:56</div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/eos_models/<a class="el" href="_e_o_s_model_8_h_source.html">EOSModel.H</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

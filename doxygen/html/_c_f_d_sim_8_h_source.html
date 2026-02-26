@@ -1,0 +1,471 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/CFDSim.H Source File &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/CFDSim.H Source File</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/_c_f_d_sim_8_h_source.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="home-runner-work-amr-wind-amr-wind-amr-wind-cfdsim-h-source-file">
+<h1>/home/runner/work/amr-wind/amr-wind/amr-wind/CFDSim.H Source File<a class="headerlink" href="#home-runner-work-amr-wind-amr-wind-amr-wind-cfdsim-h-source-file" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/CFDSim.H Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="dir_d85575251dd712327fe3cf057fa568b4.html">amr-wind</a></li><li class="navelem"><a href="dir_212148f97b8bb53ebaebb3bf8a8b5de4.html">amr-wind</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="headertitle"><div class="title">CFDSim.H</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="_c_f_d_sim_8_h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef CFDSIM_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define CFDSIM_H</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;AMReX_AmrCore.H&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="_sim_time_8_h.html">amr-wind/core/SimTime.H</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="_field_repo_8_h.html">amr-wind/core/FieldRepo.H</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="_p_d_e_base_8_h.html">amr-wind/equation_systems/PDEBase.H</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="_physics_8_h.html">amr-wind/core/Physics.H</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="_mesh_map_8_h.html">amr-wind/core/MeshMap.H</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="helics_8_h.html">amr-wind/helics.H</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="_a_b_l_read_e_r_f_function_8_h.html">amr-wind/wind_energy/ABLReadERFFunction.H</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">class </span>MultiBlockContainer;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceamr__wind.html">amr_wind</a> {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">class </span><a class="code hl_class" href="classamr__wind_1_1_i_o_manager.html">IOManager</a>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">class </span><a class="code hl_class" href="classamr__wind_1_1_post_process_manager.html">PostProcessManager</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">class </span><a class="code hl_class" href="classamr__wind_1_1_overset_manager.html">OversetManager</a>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">class </span><a class="code hl_class" href="classamr__wind_1_1_ext_solver_mgr.html">ExtSolverMgr</a>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">class </span><a class="code hl_class" href="classamr__wind_1_1_helics_storage.html">HelicsStorage</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="foldopen" id="foldopen00026" data-start="{" data-end="}">
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="namespaceamr__wind_1_1transport.html">   26</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceamr__wind_1_1transport.html">transport</a> {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">class </span><a class="code hl_class" href="classamr__wind_1_1transport_1_1_transport_model.html">TransportModel</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>}</div>
+</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="foldopen" id="foldopen00030" data-start="{" data-end="}">
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="namespaceamr__wind_1_1turbulence.html">   30</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceamr__wind_1_1turbulence.html">turbulence</a> {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keyword">class </span><a class="code hl_class" href="classamr__wind_1_1turbulence_1_1_turbulence_model.html">TurbulenceModel</a>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>}</div>
+</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span></div>
+<div class="foldopen" id="foldopen00053" data-start="{" data-end="};">
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html">   53</a></span><span class="keyword">class </span><a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#aafb7a00e73a1179364ea87ade2f76b7c">CFDSim</a></div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>{</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#aafb7a00e73a1179364ea87ade2f76b7c">CFDSim</a>(amrex::AmrCore&amp; <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#a67bec35eb742e0aa053daeec7a145623">mesh</a>);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#ae1e27e7b01a5adc3d7e0acd627f78038">   58</a></span>    <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#ae1e27e7b01a5adc3d7e0acd627f78038">~CFDSim</a>();</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span></div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#a67bec35eb742e0aa053daeec7a145623">   61</a></span>    amrex::AmrCore&amp; <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#a67bec35eb742e0aa053daeec7a145623">mesh</a>() { <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#a90607ccba30799874dc0290b3c042080">m_mesh</a>; }</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#acaba15701632f79d5ccaf77ab49c8d2d">   62</a></span>    <span class="keyword">const</span> amrex::AmrCore&amp; <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#acaba15701632f79d5ccaf77ab49c8d2d">mesh</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#a90607ccba30799874dc0290b3c042080">m_mesh</a>; }</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span></div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#acc9a7c3dd126cd2cc0c9909a2ba99964">   65</a></span>    <a class="code hl_class" href="classamr__wind_1_1_sim_time.html">SimTime</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#acc9a7c3dd126cd2cc0c9909a2ba99964">time</a>() { <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#a0facb4b61242dc1816694b8cd5d6e10d">m_time</a>; }</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#ac8738fd77d59703564ff9ac796e3ddab">   66</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_sim_time.html">SimTime</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#ac8738fd77d59703564ff9ac796e3ddab">time</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#a0facb4b61242dc1816694b8cd5d6e10d">m_time</a>; }</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#a79d8ee029983b3a26823f419ae0c29c4">   68</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#a79d8ee029983b3a26823f419ae0c29c4">set_mbc</a>(MultiBlockContainer* <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#a4ecdd24a8755a50683d103b8042f20e1">mbc</a>) { <a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#a696caa0554de0d6654ec41c56522adaf">m_mbc</a> = <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#a4ecdd24a8755a50683d103b8042f20e1">mbc</a>; }</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#a4ecdd24a8755a50683d103b8042f20e1">   69</a></span>    MultiBlockContainer** <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#a4ecdd24a8755a50683d103b8042f20e1">mbc</a>() { <span class="keywordflow">return</span> &amp;<a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#a696caa0554de0d6654ec41c56522adaf">m_mbc</a>; }</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#a0666d1f64f9eae5c515b7ac037b2e8d1">   71</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#a0666d1f64f9eae5c515b7ac037b2e8d1">set_read_erf</a>(<a class="code hl_typedef" href="_a_b_l_read_e_r_f_function_8_h.html#a60bde95e8ae1fed3798c17458998ef53">ReadERFFunction</a> fcn) { <a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#a3c337aaacb0a8b5ffb28f65b3d19c340">m_read_erf</a> = std::move(fcn); }</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#a6dd5c99d952ae1ab27a98f48d53f3976">   72</a></span>    <a class="code hl_typedef" href="_a_b_l_read_e_r_f_function_8_h.html#a60bde95e8ae1fed3798c17458998ef53">ReadERFFunction</a>* <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#a6dd5c99d952ae1ab27a98f48d53f3976">get_read_erf</a>() { <span class="keywordflow">return</span> &amp;<a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#a3c337aaacb0a8b5ffb28f65b3d19c340">m_read_erf</a>; }</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span></div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#a1dacbace38d17434b65a58eb16b57b0f">   75</a></span>    <a class="code hl_class" href="classamr__wind_1_1_field_repo.html">FieldRepo</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#a1dacbace38d17434b65a58eb16b57b0f">repo</a>() { <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#aaa5de8a5b179362b9f3d4287c5b6ca3d">m_repo</a>; }</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#a5c1e8c18769d076009780ff878bcc0d5">   76</a></span>    <a class="code hl_class" href="classamr__wind_1_1_field_repo.html">FieldRepo</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#a5c1e8c18769d076009780ff878bcc0d5">repo</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#aaa5de8a5b179362b9f3d4287c5b6ca3d">m_repo</a>; }</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#affd19520a434054aaa96d524611fe4a0">   78</a></span>    <a class="code hl_class" href="classamr__wind_1_1pde_1_1_p_d_e_mgr.html">pde::PDEMgr</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#affd19520a434054aaa96d524611fe4a0">pde_manager</a>() { <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#ad46e8f65e8a5bf3e8c47412e93dea750">m_pde_mgr</a>; }</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#a1a70bceeccd1185e633da28292c162a6">   79</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1pde_1_1_p_d_e_mgr.html">pde::PDEMgr</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#a1a70bceeccd1185e633da28292c162a6">pde_manager</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#ad46e8f65e8a5bf3e8c47412e93dea750">m_pde_mgr</a>; }</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#a2a74b9369a4e62c306f04aae40b3dcde">   81</a></span>    <a class="code hl_class" href="classamr__wind_1_1_physics_mgr.html">PhysicsMgr</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#a2a74b9369a4e62c306f04aae40b3dcde">physics_manager</a>() { <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#aa785cee753653dbf12de72a8984110bd">m_physics_mgr</a>; }</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#a773085270fee91f0ff5eb7a2841cc5ca">   82</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_physics_mgr.html">PhysicsMgr</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#a773085270fee91f0ff5eb7a2841cc5ca">physics_manager</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#aa785cee753653dbf12de72a8984110bd">m_physics_mgr</a>; }</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#a5438f62be5cb7871e9b5834b6876e84e">   84</a></span>    <a class="code hl_typedef" href="classamr__wind_1_1_coll_mgr.html#a42023c48d3e1fac30a08f8a49d63a96b">PhysicsMgr::TypeVector</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#a5438f62be5cb7871e9b5834b6876e84e">physics</a>() { <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#aa785cee753653dbf12de72a8984110bd">m_physics_mgr</a>.objects(); }</div>
+<div class="foldopen" id="foldopen00085" data-start="{" data-end="}">
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#a1b7387f3823dfb687922b96856de3f03">   85</a></span>    <span class="keyword">const</span> <a class="code hl_typedef" href="classamr__wind_1_1_coll_mgr.html#a42023c48d3e1fac30a08f8a49d63a96b">PhysicsMgr::TypeVector</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#a1b7387f3823dfb687922b96856de3f03">physics</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#aa785cee753653dbf12de72a8984110bd">m_physics_mgr</a>.objects();</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    }</div>
+</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#a6aabc33b8493484aa0dae18cf381ae5f">   90</a></span>    <a class="code hl_class" href="classamr__wind_1_1transport_1_1_transport_model.html">transport::TransportModel</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#a6aabc33b8493484aa0dae18cf381ae5f">transport_model</a>() { <span class="keywordflow">return</span> *<a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#aad8becabefc0d45162f9cdc195e9d83e">m_transport</a>; }</div>
+<div class="foldopen" id="foldopen00091" data-start="{" data-end="}">
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#aacc1758611adf7c417b0e17252390877">   91</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1transport_1_1_transport_model.html">transport::TransportModel</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#aacc1758611adf7c417b0e17252390877">transport_model</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        <span class="keywordflow">return</span> *<a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#aad8becabefc0d45162f9cdc195e9d83e">m_transport</a>;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    }</div>
+</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#a0695572d3a0f43578633008e5f8abd9f">   96</a></span>    <a class="code hl_class" href="classamr__wind_1_1turbulence_1_1_turbulence_model.html">turbulence::TurbulenceModel</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#a0695572d3a0f43578633008e5f8abd9f">turbulence_model</a>() { <span class="keywordflow">return</span> *<a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#a2762b8660720b5dd4059f41e825273bf">m_turbulence</a>; }</div>
+<div class="foldopen" id="foldopen00097" data-start="{" data-end="}">
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#adf96139d4b3d2e7313d220ae9d2c5209">   97</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1turbulence_1_1_turbulence_model.html">turbulence::TurbulenceModel</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#adf96139d4b3d2e7313d220ae9d2c5209">turbulence_model</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        <span class="keywordflow">return</span> *<a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#a2762b8660720b5dd4059f41e825273bf">m_turbulence</a>;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    }</div>
+</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#afd5a79a98ac6931e65955e829c89811b">  102</a></span>    <a class="code hl_class" href="classamr__wind_1_1_i_o_manager.html">IOManager</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#afd5a79a98ac6931e65955e829c89811b">io_manager</a>() { <span class="keywordflow">return</span> *<a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#a24e396b26831a0e256a86ba25f6769df">m_io_mgr</a>; }</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#aee2051b1c9af2beebb6b3194fadaa9f9">  103</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_i_o_manager.html">IOManager</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#aee2051b1c9af2beebb6b3194fadaa9f9">io_manager</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> *<a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#a24e396b26831a0e256a86ba25f6769df">m_io_mgr</a>; }</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#a5e4a870590ff92d4e1826c7a3c32742e">  105</a></span>    <a class="code hl_class" href="classamr__wind_1_1_post_process_manager.html">PostProcessManager</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#a5e4a870590ff92d4e1826c7a3c32742e">post_manager</a>() { <span class="keywordflow">return</span> *<a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#acfaf5f13f5a45d43008e24cecd0921f5">m_post_mgr</a>; }</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#aeb362caa2702fac4a5b5ef82fed34918">  106</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_post_process_manager.html">PostProcessManager</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#aeb362caa2702fac4a5b5ef82fed34918">post_manager</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> *<a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#acfaf5f13f5a45d43008e24cecd0921f5">m_post_mgr</a>; }</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#a898e2f7293c3f3f62fd422265dbedee3">  108</a></span>    <a class="code hl_class" href="classamr__wind_1_1_overset_manager.html">OversetManager</a>* <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#a898e2f7293c3f3f62fd422265dbedee3">overset_manager</a>() { <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#abebb27632f154b202bc19a4fe9e8a9ac">m_overset_mgr</a>.get(); }</div>
+<div class="foldopen" id="foldopen00109" data-start="{" data-end="}">
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#a48686f1084e4c6eb7d299a1b06071f85">  109</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_overset_manager.html">OversetManager</a>* <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#a48686f1084e4c6eb7d299a1b06071f85">overset_manager</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#abebb27632f154b202bc19a4fe9e8a9ac">m_overset_mgr</a>.get();</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    }</div>
+</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#a7890fca6cc81c095ccd0d90752de2ce7">  114</a></span>    <a class="code hl_class" href="classamr__wind_1_1_mesh_map.html">MeshMap</a>* <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#a7890fca6cc81c095ccd0d90752de2ce7">mesh_mapping</a>() { <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#adf95802c51467a518ac5feb3d89c4033">m_mesh_map</a>.get(); }</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#a456fd7985ad63fd125ef7f93682bea3d">  115</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_mesh_map.html">MeshMap</a>* <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#a456fd7985ad63fd125ef7f93682bea3d">mesh_mapping</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#adf95802c51467a518ac5feb3d89c4033">m_mesh_map</a>.get(); }</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#addcdd0c9ded838f7ebf0089ebfb1757f">  117</a></span>    <a class="code hl_class" href="classamr__wind_1_1_ext_solver_mgr.html">ExtSolverMgr</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#addcdd0c9ded838f7ebf0089ebfb1757f">ext_solver_manager</a>() { <span class="keywordflow">return</span> *<a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#a1292456aba07ab0db70fd04817888624">m_ext_solver_mgr</a>; }</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#affc26cf4c22e403a54c5b809ab825916">  118</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_ext_solver_mgr.html">ExtSolverMgr</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#affc26cf4c22e403a54c5b809ab825916">ext_solver_manager</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> *<a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#a1292456aba07ab0db70fd04817888624">m_ext_solver_mgr</a>; }</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#a1ce8d83e35f5ff73092f569ad0154298">  120</a></span>    <a class="code hl_class" href="classamr__wind_1_1_helics_storage.html">HelicsStorage</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#a1ce8d83e35f5ff73092f569ad0154298">helics</a>() { <span class="keywordflow">return</span> *<a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#ac6c2af9ba17efb56680939e9bf225526">m_helics</a>; }</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#a3d8bbb9c8c8629c55901da10df2273a6">  121</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_helics_storage.html">HelicsStorage</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#a3d8bbb9c8c8629c55901da10df2273a6">helics</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> *<a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#ac6c2af9ba17efb56680939e9bf225526">m_helics</a>; }</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> </div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#ad413351ee8d8f9a1a6426381b901722d">has_overset</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span></div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#a38352fcd7176c0ddeb9a3bad5a2c2d0f">create_transport_model</a>();</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span></div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#a7d2e1f641120e5beda72137cf63175ba">create_turbulence_model</a>();</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span></div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#a9735fb288e32066d72b08e2301ff124f">init_physics</a>();</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span></div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#a7240a4f11bc3c04fc7d22a022714b796">activate_overset</a>();</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span></div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#a0f3d109d2dbde00aa30cf2178b3e03b1">activate_mesh_map</a>();</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span> </div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#a4b6af83220a2981976a9f9bcaa7057f6">  140</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#a4b6af83220a2981976a9f9bcaa7057f6">has_mesh_mapping</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#ac07de1ae33572504eb9a2520b90b805f">m_mesh_mapping</a>; }</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span> </div>
+<div class="foldopen" id="foldopen00142" data-start="{" data-end="}">
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#a66bd3890c504244e0b59726297aec8da">  142</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#a66bd3890c504244e0b59726297aec8da">set_during_overset_advance</a>(<span class="keyword">const</span> <span class="keywordtype">bool</span> flag)</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    {</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>        <a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#a67dd1fdc52764597fd904d890aab80fb">m_during_overset_advance</a> = flag;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    }</div>
+</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span> </div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#a706621c4f55189e31d92aa63dcf9effe">  147</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#a706621c4f55189e31d92aa63dcf9effe">is_during_overset_advance</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#a67dd1fdc52764597fd904d890aab80fb">m_during_overset_advance</a>; }</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span> </div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classamr__wind_1_1_c_f_d_sim.html#a99a359a5ed963e8b4eeba53ab27a5d21">is_anelastic</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span> </div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#a90607ccba30799874dc0290b3c042080">  152</a></span>    amrex::AmrCore&amp; <a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#a90607ccba30799874dc0290b3c042080">m_mesh</a>;</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span> </div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#a0facb4b61242dc1816694b8cd5d6e10d">  154</a></span>    <a class="code hl_class" href="classamr__wind_1_1_sim_time.html">SimTime</a> <a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#a0facb4b61242dc1816694b8cd5d6e10d">m_time</a>;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span> </div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#aaa5de8a5b179362b9f3d4287c5b6ca3d">  156</a></span>    <span class="keyword">mutable</span> <a class="code hl_class" href="classamr__wind_1_1_field_repo.html">FieldRepo</a> <a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#aaa5de8a5b179362b9f3d4287c5b6ca3d">m_repo</a>;</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span> </div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#ad46e8f65e8a5bf3e8c47412e93dea750">  158</a></span>    <a class="code hl_class" href="classamr__wind_1_1pde_1_1_p_d_e_mgr.html">pde::PDEMgr</a> <a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#ad46e8f65e8a5bf3e8c47412e93dea750">m_pde_mgr</a>;</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span> </div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#aa785cee753653dbf12de72a8984110bd">  160</a></span>    <a class="code hl_class" href="classamr__wind_1_1_physics_mgr.html">PhysicsMgr</a> <a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#aa785cee753653dbf12de72a8984110bd">m_physics_mgr</a>;</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span> </div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#aad8becabefc0d45162f9cdc195e9d83e">  162</a></span>    std::unique_ptr&lt;transport::TransportModel&gt; <a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#aad8becabefc0d45162f9cdc195e9d83e">m_transport</a>;</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span> </div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#a2762b8660720b5dd4059f41e825273bf">  164</a></span>    std::unique_ptr&lt;turbulence::TurbulenceModel&gt; <a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#a2762b8660720b5dd4059f41e825273bf">m_turbulence</a>;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span> </div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#a24e396b26831a0e256a86ba25f6769df">  166</a></span>    std::unique_ptr&lt;IOManager&gt; <a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#a24e396b26831a0e256a86ba25f6769df">m_io_mgr</a>;</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span> </div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#acfaf5f13f5a45d43008e24cecd0921f5">  168</a></span>    std::unique_ptr&lt;PostProcessManager&gt; <a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#acfaf5f13f5a45d43008e24cecd0921f5">m_post_mgr</a>;</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span> </div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#abebb27632f154b202bc19a4fe9e8a9ac">  170</a></span>    std::unique_ptr&lt;OversetManager&gt; <a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#abebb27632f154b202bc19a4fe9e8a9ac">m_overset_mgr</a>;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span> </div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#adf95802c51467a518ac5feb3d89c4033">  172</a></span>    std::unique_ptr&lt;MeshMap&gt; <a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#adf95802c51467a518ac5feb3d89c4033">m_mesh_map</a>;</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span> </div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#a1292456aba07ab0db70fd04817888624">  174</a></span>    std::unique_ptr&lt;ExtSolverMgr&gt; <a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#a1292456aba07ab0db70fd04817888624">m_ext_solver_mgr</a>;</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span> </div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#ac6c2af9ba17efb56680939e9bf225526">  176</a></span>    std::unique_ptr&lt;HelicsStorage&gt; <a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#ac6c2af9ba17efb56680939e9bf225526">m_helics</a>;</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span> </div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#ac07de1ae33572504eb9a2520b90b805f">  178</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#ac07de1ae33572504eb9a2520b90b805f">m_mesh_mapping</a>{<span class="keyword">false</span>};</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span> </div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    <span class="comment">// State of solver - know if during an overset timestep or not</span></div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#a67dd1fdc52764597fd904d890aab80fb">  181</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#a67dd1fdc52764597fd904d890aab80fb">m_during_overset_advance</a>{<span class="keyword">false</span>};</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span> </div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#a696caa0554de0d6654ec41c56522adaf">  183</a></span>    MultiBlockContainer* <a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#a696caa0554de0d6654ec41c56522adaf">m_mbc</a>{<span class="keyword">nullptr</span>};</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_c_f_d_sim.html#a3c337aaacb0a8b5ffb28f65b3d19c340">  184</a></span>    <a class="code hl_typedef" href="_a_b_l_read_e_r_f_function_8_h.html#a60bde95e8ae1fed3798c17458998ef53">ReadERFFunction</a> <a class="code hl_variable" href="classamr__wind_1_1_c_f_d_sim.html#a3c337aaacb0a8b5ffb28f65b3d19c340">m_read_erf</a>{<span class="keyword">nullptr</span>};</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>};</div>
+</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span> </div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>} <span class="comment">// namespace amr_wind</span></div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span> </div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span><span class="preprocessor">#endif </span><span class="comment">/* CFDSIM_H */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="a_a_b_l_read_e_r_f_function_8_h_html"><div class="ttname"><a href="_a_b_l_read_e_r_f_function_8_h.html">ABLReadERFFunction.H</a></div></div>
+<div class="ttc" id="a_a_b_l_read_e_r_f_function_8_h_html_a60bde95e8ae1fed3798c17458998ef53"><div class="ttname"><a href="_a_b_l_read_e_r_f_function_8_h.html#a60bde95e8ae1fed3798c17458998ef53">ReadERFFunction</a></div><div class="ttdeci">std::function&lt; void( const amrex::Real time, amrex::Vector&lt; amrex::Real &gt; &amp;, amr_wind::InletData &amp;, const amrex::Vector&lt; amr_wind::Field * &gt; &amp;, MultiBlockContainer *)&gt; ReadERFFunction</div><div class="ttdef"><b>Definition</b> ABLReadERFFunction.H:10</div></div>
+<div class="ttc" id="a_field_repo_8_h_html"><div class="ttname"><a href="_field_repo_8_h.html">FieldRepo.H</a></div></div>
+<div class="ttc" id="a_mesh_map_8_h_html"><div class="ttname"><a href="_mesh_map_8_h.html">MeshMap.H</a></div></div>
+<div class="ttc" id="a_p_d_e_base_8_h_html"><div class="ttname"><a href="_p_d_e_base_8_h.html">PDEBase.H</a></div></div>
+<div class="ttc" id="a_physics_8_h_html"><div class="ttname"><a href="_physics_8_h.html">Physics.H</a></div></div>
+<div class="ttc" id="a_sim_time_8_h_html"><div class="ttname"><a href="_sim_time_8_h.html">SimTime.H</a></div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a0666d1f64f9eae5c515b7ac037b2e8d1"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a0666d1f64f9eae5c515b7ac037b2e8d1">amr_wind::CFDSim::set_read_erf</a></div><div class="ttdeci">void set_read_erf(ReadERFFunction fcn)</div><div class="ttdef"><b>Definition</b> CFDSim.H:71</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a0695572d3a0f43578633008e5f8abd9f"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a0695572d3a0f43578633008e5f8abd9f">amr_wind::CFDSim::turbulence_model</a></div><div class="ttdeci">turbulence::TurbulenceModel &amp; turbulence_model()</div><div class="ttdef"><b>Definition</b> CFDSim.H:96</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a0f3d109d2dbde00aa30cf2178b3e03b1"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a0f3d109d2dbde00aa30cf2178b3e03b1">amr_wind::CFDSim::activate_mesh_map</a></div><div class="ttdeci">void activate_mesh_map()</div><div class="ttdoc">Activate mesh mapping.</div><div class="ttdef"><b>Definition</b> CFDSim.cpp:77</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a0facb4b61242dc1816694b8cd5d6e10d"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a0facb4b61242dc1816694b8cd5d6e10d">amr_wind::CFDSim::m_time</a></div><div class="ttdeci">SimTime m_time</div><div class="ttdef"><b>Definition</b> CFDSim.H:154</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a1292456aba07ab0db70fd04817888624"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a1292456aba07ab0db70fd04817888624">amr_wind::CFDSim::m_ext_solver_mgr</a></div><div class="ttdeci">std::unique_ptr&lt; ExtSolverMgr &gt; m_ext_solver_mgr</div><div class="ttdef"><b>Definition</b> CFDSim.H:174</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a1a70bceeccd1185e633da28292c162a6"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a1a70bceeccd1185e633da28292c162a6">amr_wind::CFDSim::pde_manager</a></div><div class="ttdeci">const pde::PDEMgr &amp; pde_manager() const</div><div class="ttdef"><b>Definition</b> CFDSim.H:79</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a1b7387f3823dfb687922b96856de3f03"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a1b7387f3823dfb687922b96856de3f03">amr_wind::CFDSim::physics</a></div><div class="ttdeci">const PhysicsMgr::TypeVector &amp; physics() const</div><div class="ttdef"><b>Definition</b> CFDSim.H:85</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a1ce8d83e35f5ff73092f569ad0154298"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a1ce8d83e35f5ff73092f569ad0154298">amr_wind::CFDSim::helics</a></div><div class="ttdeci">HelicsStorage &amp; helics()</div><div class="ttdef"><b>Definition</b> CFDSim.H:120</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a1dacbace38d17434b65a58eb16b57b0f"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a1dacbace38d17434b65a58eb16b57b0f">amr_wind::CFDSim::repo</a></div><div class="ttdeci">FieldRepo &amp; repo()</div><div class="ttdoc">Return the field repository.</div><div class="ttdef"><b>Definition</b> CFDSim.H:75</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a24e396b26831a0e256a86ba25f6769df"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a24e396b26831a0e256a86ba25f6769df">amr_wind::CFDSim::m_io_mgr</a></div><div class="ttdeci">std::unique_ptr&lt; IOManager &gt; m_io_mgr</div><div class="ttdef"><b>Definition</b> CFDSim.H:166</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a2762b8660720b5dd4059f41e825273bf"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a2762b8660720b5dd4059f41e825273bf">amr_wind::CFDSim::m_turbulence</a></div><div class="ttdeci">std::unique_ptr&lt; turbulence::TurbulenceModel &gt; m_turbulence</div><div class="ttdef"><b>Definition</b> CFDSim.H:164</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a2a74b9369a4e62c306f04aae40b3dcde"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a2a74b9369a4e62c306f04aae40b3dcde">amr_wind::CFDSim::physics_manager</a></div><div class="ttdeci">PhysicsMgr &amp; physics_manager()</div><div class="ttdef"><b>Definition</b> CFDSim.H:81</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a38352fcd7176c0ddeb9a3bad5a2c2d0f"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a38352fcd7176c0ddeb9a3bad5a2c2d0f">amr_wind::CFDSim::create_transport_model</a></div><div class="ttdeci">void create_transport_model()</div><div class="ttdoc">Instantiate the transport model based on user inputs.</div><div class="ttdef"><b>Definition</b> CFDSim.cpp:26</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a3c337aaacb0a8b5ffb28f65b3d19c340"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a3c337aaacb0a8b5ffb28f65b3d19c340">amr_wind::CFDSim::m_read_erf</a></div><div class="ttdeci">ReadERFFunction m_read_erf</div><div class="ttdef"><b>Definition</b> CFDSim.H:184</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a3d8bbb9c8c8629c55901da10df2273a6"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a3d8bbb9c8c8629c55901da10df2273a6">amr_wind::CFDSim::helics</a></div><div class="ttdeci">const HelicsStorage &amp; helics() const</div><div class="ttdef"><b>Definition</b> CFDSim.H:121</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a456fd7985ad63fd125ef7f93682bea3d"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a456fd7985ad63fd125ef7f93682bea3d">amr_wind::CFDSim::mesh_mapping</a></div><div class="ttdeci">const MeshMap * mesh_mapping() const</div><div class="ttdef"><b>Definition</b> CFDSim.H:115</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a48686f1084e4c6eb7d299a1b06071f85"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a48686f1084e4c6eb7d299a1b06071f85">amr_wind::CFDSim::overset_manager</a></div><div class="ttdeci">const OversetManager * overset_manager() const</div><div class="ttdef"><b>Definition</b> CFDSim.H:109</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a4b6af83220a2981976a9f9bcaa7057f6"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a4b6af83220a2981976a9f9bcaa7057f6">amr_wind::CFDSim::has_mesh_mapping</a></div><div class="ttdeci">bool has_mesh_mapping() const</div><div class="ttdef"><b>Definition</b> CFDSim.H:140</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a4ecdd24a8755a50683d103b8042f20e1"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a4ecdd24a8755a50683d103b8042f20e1">amr_wind::CFDSim::mbc</a></div><div class="ttdeci">MultiBlockContainer ** mbc()</div><div class="ttdef"><b>Definition</b> CFDSim.H:69</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a5438f62be5cb7871e9b5834b6876e84e"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a5438f62be5cb7871e9b5834b6876e84e">amr_wind::CFDSim::physics</a></div><div class="ttdeci">PhysicsMgr::TypeVector &amp; physics()</div><div class="ttdef"><b>Definition</b> CFDSim.H:84</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a5c1e8c18769d076009780ff878bcc0d5"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a5c1e8c18769d076009780ff878bcc0d5">amr_wind::CFDSim::repo</a></div><div class="ttdeci">FieldRepo &amp; repo() const</div><div class="ttdef"><b>Definition</b> CFDSim.H:76</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a5e4a870590ff92d4e1826c7a3c32742e"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a5e4a870590ff92d4e1826c7a3c32742e">amr_wind::CFDSim::post_manager</a></div><div class="ttdeci">PostProcessManager &amp; post_manager()</div><div class="ttdef"><b>Definition</b> CFDSim.H:105</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a66bd3890c504244e0b59726297aec8da"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a66bd3890c504244e0b59726297aec8da">amr_wind::CFDSim::set_during_overset_advance</a></div><div class="ttdeci">void set_during_overset_advance(const bool flag)</div><div class="ttdef"><b>Definition</b> CFDSim.H:142</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a67bec35eb742e0aa053daeec7a145623"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a67bec35eb742e0aa053daeec7a145623">amr_wind::CFDSim::mesh</a></div><div class="ttdeci">amrex::AmrCore &amp; mesh()</div><div class="ttdoc">Return the AMR mesh hierarchy.</div><div class="ttdef"><b>Definition</b> CFDSim.H:61</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a67dd1fdc52764597fd904d890aab80fb"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a67dd1fdc52764597fd904d890aab80fb">amr_wind::CFDSim::m_during_overset_advance</a></div><div class="ttdeci">bool m_during_overset_advance</div><div class="ttdef"><b>Definition</b> CFDSim.H:181</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a696caa0554de0d6654ec41c56522adaf"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a696caa0554de0d6654ec41c56522adaf">amr_wind::CFDSim::m_mbc</a></div><div class="ttdeci">MultiBlockContainer * m_mbc</div><div class="ttdef"><b>Definition</b> CFDSim.H:183</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a6aabc33b8493484aa0dae18cf381ae5f"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a6aabc33b8493484aa0dae18cf381ae5f">amr_wind::CFDSim::transport_model</a></div><div class="ttdeci">transport::TransportModel &amp; transport_model()</div><div class="ttdef"><b>Definition</b> CFDSim.H:90</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a6dd5c99d952ae1ab27a98f48d53f3976"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a6dd5c99d952ae1ab27a98f48d53f3976">amr_wind::CFDSim::get_read_erf</a></div><div class="ttdeci">ReadERFFunction * get_read_erf()</div><div class="ttdef"><b>Definition</b> CFDSim.H:72</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a706621c4f55189e31d92aa63dcf9effe"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a706621c4f55189e31d92aa63dcf9effe">amr_wind::CFDSim::is_during_overset_advance</a></div><div class="ttdeci">bool is_during_overset_advance() const</div><div class="ttdef"><b>Definition</b> CFDSim.H:147</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a7240a4f11bc3c04fc7d22a022714b796"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a7240a4f11bc3c04fc7d22a022714b796">amr_wind::CFDSim::activate_overset</a></div><div class="ttdeci">void activate_overset()</div><div class="ttdoc">Activate overset connectivity.</div><div class="ttdef"><b>Definition</b> CFDSim.cpp:67</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a773085270fee91f0ff5eb7a2841cc5ca"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a773085270fee91f0ff5eb7a2841cc5ca">amr_wind::CFDSim::physics_manager</a></div><div class="ttdeci">const PhysicsMgr &amp; physics_manager() const</div><div class="ttdef"><b>Definition</b> CFDSim.H:82</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a7890fca6cc81c095ccd0d90752de2ce7"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a7890fca6cc81c095ccd0d90752de2ce7">amr_wind::CFDSim::mesh_mapping</a></div><div class="ttdeci">MeshMap * mesh_mapping()</div><div class="ttdef"><b>Definition</b> CFDSim.H:114</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a79d8ee029983b3a26823f419ae0c29c4"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a79d8ee029983b3a26823f419ae0c29c4">amr_wind::CFDSim::set_mbc</a></div><div class="ttdeci">void set_mbc(MultiBlockContainer *mbc)</div><div class="ttdef"><b>Definition</b> CFDSim.H:68</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a7d2e1f641120e5beda72137cf63175ba"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a7d2e1f641120e5beda72137cf63175ba">amr_wind::CFDSim::create_turbulence_model</a></div><div class="ttdeci">void create_turbulence_model()</div><div class="ttdoc">Instantiate the turbulence model based on user inputs.</div><div class="ttdef"><b>Definition</b> CFDSim.cpp:37</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a898e2f7293c3f3f62fd422265dbedee3"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a898e2f7293c3f3f62fd422265dbedee3">amr_wind::CFDSim::overset_manager</a></div><div class="ttdeci">OversetManager * overset_manager()</div><div class="ttdef"><b>Definition</b> CFDSim.H:108</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a90607ccba30799874dc0290b3c042080"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a90607ccba30799874dc0290b3c042080">amr_wind::CFDSim::m_mesh</a></div><div class="ttdeci">amrex::AmrCore &amp; m_mesh</div><div class="ttdef"><b>Definition</b> CFDSim.H:152</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a9735fb288e32066d72b08e2301ff124f"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a9735fb288e32066d72b08e2301ff124f">amr_wind::CFDSim::init_physics</a></div><div class="ttdeci">void init_physics()</div><div class="ttdoc">Instantiate all physics instances based on user inputs.</div><div class="ttdef"><b>Definition</b> CFDSim.cpp:56</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_a99a359a5ed963e8b4eeba53ab27a5d21"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#a99a359a5ed963e8b4eeba53ab27a5d21">amr_wind::CFDSim::is_anelastic</a></div><div class="ttdeci">bool is_anelastic() const</div><div class="ttdef"><b>Definition</b> CFDSim.cpp:88</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_aa785cee753653dbf12de72a8984110bd"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#aa785cee753653dbf12de72a8984110bd">amr_wind::CFDSim::m_physics_mgr</a></div><div class="ttdeci">PhysicsMgr m_physics_mgr</div><div class="ttdef"><b>Definition</b> CFDSim.H:160</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_aaa5de8a5b179362b9f3d4287c5b6ca3d"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#aaa5de8a5b179362b9f3d4287c5b6ca3d">amr_wind::CFDSim::m_repo</a></div><div class="ttdeci">FieldRepo m_repo</div><div class="ttdef"><b>Definition</b> CFDSim.H:156</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_aacc1758611adf7c417b0e17252390877"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#aacc1758611adf7c417b0e17252390877">amr_wind::CFDSim::transport_model</a></div><div class="ttdeci">const transport::TransportModel &amp; transport_model() const</div><div class="ttdef"><b>Definition</b> CFDSim.H:91</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_aad8becabefc0d45162f9cdc195e9d83e"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#aad8becabefc0d45162f9cdc195e9d83e">amr_wind::CFDSim::m_transport</a></div><div class="ttdeci">std::unique_ptr&lt; transport::TransportModel &gt; m_transport</div><div class="ttdef"><b>Definition</b> CFDSim.H:162</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_aafb7a00e73a1179364ea87ade2f76b7c"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#aafb7a00e73a1179364ea87ade2f76b7c">amr_wind::CFDSim::CFDSim</a></div><div class="ttdeci">CFDSim(amrex::AmrCore &amp;mesh)</div><div class="ttdef"><b>Definition</b> CFDSim.cpp:14</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_abebb27632f154b202bc19a4fe9e8a9ac"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#abebb27632f154b202bc19a4fe9e8a9ac">amr_wind::CFDSim::m_overset_mgr</a></div><div class="ttdeci">std::unique_ptr&lt; OversetManager &gt; m_overset_mgr</div><div class="ttdef"><b>Definition</b> CFDSim.H:170</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_ac07de1ae33572504eb9a2520b90b805f"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#ac07de1ae33572504eb9a2520b90b805f">amr_wind::CFDSim::m_mesh_mapping</a></div><div class="ttdeci">bool m_mesh_mapping</div><div class="ttdef"><b>Definition</b> CFDSim.H:178</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_ac6c2af9ba17efb56680939e9bf225526"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#ac6c2af9ba17efb56680939e9bf225526">amr_wind::CFDSim::m_helics</a></div><div class="ttdeci">std::unique_ptr&lt; HelicsStorage &gt; m_helics</div><div class="ttdef"><b>Definition</b> CFDSim.H:176</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_ac8738fd77d59703564ff9ac796e3ddab"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#ac8738fd77d59703564ff9ac796e3ddab">amr_wind::CFDSim::time</a></div><div class="ttdeci">const SimTime &amp; time() const</div><div class="ttdef"><b>Definition</b> CFDSim.H:66</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_acaba15701632f79d5ccaf77ab49c8d2d"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#acaba15701632f79d5ccaf77ab49c8d2d">amr_wind::CFDSim::mesh</a></div><div class="ttdeci">const amrex::AmrCore &amp; mesh() const</div><div class="ttdef"><b>Definition</b> CFDSim.H:62</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_acc9a7c3dd126cd2cc0c9909a2ba99964"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#acc9a7c3dd126cd2cc0c9909a2ba99964">amr_wind::CFDSim::time</a></div><div class="ttdeci">SimTime &amp; time()</div><div class="ttdoc">Return simulation time control.</div><div class="ttdef"><b>Definition</b> CFDSim.H:65</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_acfaf5f13f5a45d43008e24cecd0921f5"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#acfaf5f13f5a45d43008e24cecd0921f5">amr_wind::CFDSim::m_post_mgr</a></div><div class="ttdeci">std::unique_ptr&lt; PostProcessManager &gt; m_post_mgr</div><div class="ttdef"><b>Definition</b> CFDSim.H:168</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_ad413351ee8d8f9a1a6426381b901722d"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#ad413351ee8d8f9a1a6426381b901722d">amr_wind::CFDSim::has_overset</a></div><div class="ttdeci">bool has_overset() const</div><div class="ttdef"><b>Definition</b> CFDSim.cpp:75</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_ad46e8f65e8a5bf3e8c47412e93dea750"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#ad46e8f65e8a5bf3e8c47412e93dea750">amr_wind::CFDSim::m_pde_mgr</a></div><div class="ttdeci">pde::PDEMgr m_pde_mgr</div><div class="ttdef"><b>Definition</b> CFDSim.H:158</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_addcdd0c9ded838f7ebf0089ebfb1757f"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#addcdd0c9ded838f7ebf0089ebfb1757f">amr_wind::CFDSim::ext_solver_manager</a></div><div class="ttdeci">ExtSolverMgr &amp; ext_solver_manager()</div><div class="ttdef"><b>Definition</b> CFDSim.H:117</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_adf95802c51467a518ac5feb3d89c4033"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#adf95802c51467a518ac5feb3d89c4033">amr_wind::CFDSim::m_mesh_map</a></div><div class="ttdeci">std::unique_ptr&lt; MeshMap &gt; m_mesh_map</div><div class="ttdef"><b>Definition</b> CFDSim.H:172</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_adf96139d4b3d2e7313d220ae9d2c5209"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#adf96139d4b3d2e7313d220ae9d2c5209">amr_wind::CFDSim::turbulence_model</a></div><div class="ttdeci">const turbulence::TurbulenceModel &amp; turbulence_model() const</div><div class="ttdef"><b>Definition</b> CFDSim.H:97</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_ae1e27e7b01a5adc3d7e0acd627f78038"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#ae1e27e7b01a5adc3d7e0acd627f78038">amr_wind::CFDSim::~CFDSim</a></div><div class="ttdeci">~CFDSim()</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_aeb362caa2702fac4a5b5ef82fed34918"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#aeb362caa2702fac4a5b5ef82fed34918">amr_wind::CFDSim::post_manager</a></div><div class="ttdeci">const PostProcessManager &amp; post_manager() const</div><div class="ttdef"><b>Definition</b> CFDSim.H:106</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_aee2051b1c9af2beebb6b3194fadaa9f9"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#aee2051b1c9af2beebb6b3194fadaa9f9">amr_wind::CFDSim::io_manager</a></div><div class="ttdeci">const IOManager &amp; io_manager() const</div><div class="ttdef"><b>Definition</b> CFDSim.H:103</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_afd5a79a98ac6931e65955e829c89811b"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#afd5a79a98ac6931e65955e829c89811b">amr_wind::CFDSim::io_manager</a></div><div class="ttdeci">IOManager &amp; io_manager()</div><div class="ttdef"><b>Definition</b> CFDSim.H:102</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_affc26cf4c22e403a54c5b809ab825916"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#affc26cf4c22e403a54c5b809ab825916">amr_wind::CFDSim::ext_solver_manager</a></div><div class="ttdeci">const ExtSolverMgr &amp; ext_solver_manager() const</div><div class="ttdef"><b>Definition</b> CFDSim.H:118</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html_affd19520a434054aaa96d524611fe4a0"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html#affd19520a434054aaa96d524611fe4a0">amr_wind::CFDSim::pde_manager</a></div><div class="ttdeci">pde::PDEMgr &amp; pde_manager()</div><div class="ttdef"><b>Definition</b> CFDSim.H:78</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_coll_mgr_html_a42023c48d3e1fac30a08f8a49d63a96b"><div class="ttname"><a href="classamr__wind_1_1_coll_mgr.html#a42023c48d3e1fac30a08f8a49d63a96b">amr_wind::CollMgr&lt; PhysicsMgr, Physics &gt;::TypeVector</a></div><div class="ttdeci">amrex::Vector&lt; TypePtr &gt; TypeVector</div><div class="ttdef"><b>Definition</b> CollMgr.H:25</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_ext_solver_mgr_html"><div class="ttname"><a href="classamr__wind_1_1_ext_solver_mgr.html">amr_wind::ExtSolverMgr</a></div><div class="ttdef"><b>Definition</b> ExtSolver.H:20</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html">amr_wind::FieldRepo</a></div><div class="ttdef"><b>Definition</b> FieldRepo.H:86</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_helics_storage_html"><div class="ttname"><a href="classamr__wind_1_1_helics_storage.html">amr_wind::HelicsStorage</a></div><div class="ttdef"><b>Definition</b> helics.H:20</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_i_o_manager_html"><div class="ttname"><a href="classamr__wind_1_1_i_o_manager.html">amr_wind::IOManager</a></div><div class="ttdef"><b>Definition</b> IOManager.H:32</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_mesh_map_html"><div class="ttname"><a href="classamr__wind_1_1_mesh_map.html">amr_wind::MeshMap</a></div><div class="ttdef"><b>Definition</b> MeshMap.H:31</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_overset_manager_html"><div class="ttname"><a href="classamr__wind_1_1_overset_manager.html">amr_wind::OversetManager</a></div><div class="ttdef"><b>Definition</b> OversetManager.H:23</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_physics_mgr_html"><div class="ttname"><a href="classamr__wind_1_1_physics_mgr.html">amr_wind::PhysicsMgr</a></div><div class="ttdef"><b>Definition</b> Physics.H:100</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_post_process_manager_html"><div class="ttname"><a href="classamr__wind_1_1_post_process_manager.html">amr_wind::PostProcessManager</a></div><div class="ttdef"><b>Definition</b> PostProcessing.H:193</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_sim_time_html"><div class="ttname"><a href="classamr__wind_1_1_sim_time.html">amr_wind::SimTime</a></div><div class="ttdef"><b>Definition</b> SimTime.H:33</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1_p_d_e_mgr_html"><div class="ttname"><a href="classamr__wind_1_1pde_1_1_p_d_e_mgr.html">amr_wind::pde::PDEMgr</a></div><div class="ttdef"><b>Definition</b> PDEBase.H:117</div></div>
+<div class="ttc" id="aclassamr__wind_1_1transport_1_1_transport_model_html"><div class="ttname"><a href="classamr__wind_1_1transport_1_1_transport_model.html">amr_wind::transport::TransportModel</a></div><div class="ttdef"><b>Definition</b> TransportModel.H:32</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_turbulence_model_html"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_turbulence_model.html">amr_wind::turbulence::TurbulenceModel</a></div><div class="ttdef"><b>Definition</b> TurbulenceModel.H:32</div></div>
+<div class="ttc" id="ahelics_8_h_html"><div class="ttname"><a href="helics_8_h.html">helics.H</a></div></div>
+<div class="ttc" id="anamespaceamr__wind_1_1transport_html"><div class="ttname"><a href="namespaceamr__wind_1_1transport.html">amr_wind::transport</a></div><div class="ttdef"><b>Definition</b> CFDSim.H:26</div></div>
+<div class="ttc" id="anamespaceamr__wind_1_1turbulence_html"><div class="ttname"><a href="namespaceamr__wind_1_1turbulence.html">amr_wind::turbulence</a></div><div class="ttdef"><b>Definition</b> CFDSim.H:30</div></div>
+<div class="ttc" id="anamespaceamr__wind_html"><div class="ttname"><a href="namespaceamr__wind.html">amr_wind</a></div><div class="ttdoc">This test case is intended as an evaluation of the momentum advection scheme.</div><div class="ttdef"><b>Definition</b> BCInterface.cpp:10</div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

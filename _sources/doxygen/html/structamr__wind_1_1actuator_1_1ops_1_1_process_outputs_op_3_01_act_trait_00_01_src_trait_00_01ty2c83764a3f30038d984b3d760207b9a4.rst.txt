@@ -1,0 +1,14 @@
+.. meta::4341e30dc9e4f1782ae05a597608a3c7ae229b7e85dc970ec5d2cc8a01fa61e3e908a82975edef9d2a3d28dd05db5b8376fb012c110da153f2b1a7d7c47ae811
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::ProcessOutputsOp&lt; ActTrait, SrcTrait, typename std::enable_if_t&lt; std::is_base_of_v&lt; WingType, ActTrait &gt; &amp;&amp;UseDefaultOp&lt; ActTrait, ActSrcLine &gt;::process_outputs &gt; &gt; Struct Template Reference
+
+process\_outputs &gt; &gt; Struct Template Reference
+====================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1ops_1_1_process_outputs_op_3_01_act_trait_00_01_src_trait_00_01ty2c83764a3f30038d984b3d760207b9a4.html

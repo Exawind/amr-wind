@@ -1,0 +1,14 @@
+.. meta::056e8866a889190d1ca2556b576e61a0c356b8399bd95a78561533deaff1b19aa6c031139497e859d8ecf5c033a154585586e6782426fd8c92d3fedadb2f83dd
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ActGrid Struct Reference
+
+ActGrid Struct Reference
+========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1_act_grid.html

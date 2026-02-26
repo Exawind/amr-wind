@@ -1,0 +1,14 @@
+.. meta::754e5720abda1d2f10ba55bf01154b341da370ac3ebeaebe99ee3a0b426bca28852d1e668bc850c0b0ef84deb7f90cafafb1b94462c429f2325927f90727d6c8
+
+:orphan:
+
+.. title:: AMR-Wind API: Member List
+
+Member List
+===========
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1pde_1_1_i_c_n_s_diff_scalar_segregated_op-members.html

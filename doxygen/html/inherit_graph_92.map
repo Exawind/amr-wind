@@ -1,0 +1,19 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" title=" " alt="" coords="5,215,216,284"/>
+<area shape="rect" id="Node000001" href="$structamr__wind_1_1derived_1_1_divergence.html" title=" " alt="" coords="264,5,415,45"/>
+<area shape="poly" id="edge63_Node000000_Node000001" title=" " alt="" coords="137,202,190,128,224,89,262,55,282,43,284,48,266,59,228,93,194,131,141,205"/>
+<area shape="rect" id="Node000002" href="$structamr__wind_1_1derived_1_1_field_components.html" title=" " alt="" coords="264,69,415,109"/>
+<area shape="poly" id="edge64_Node000000_Node000002" title=" " alt="" coords="155,203,205,160,263,119,285,107,287,112,265,124,208,164,159,207"/>
+<area shape="rect" id="Node000003" href="$structamr__wind_1_1derived_1_1_gradient.html" title=" " alt="" coords="264,133,415,173"/>
+<area shape="poly" id="edge65_Node000000_Node000003" title=" " alt="" coords="206,207,289,171,291,176,208,211"/>
+<area shape="rect" id="Node000004" href="$structamr__wind_1_1derived_1_1_laplacian.html" title=" " alt="" coords="264,197,415,237"/>
+<area shape="poly" id="edge66_Node000000_Node000004" title=" " alt="" coords="230,230,263,225,264,230,230,235"/>
+<area shape="rect" id="Node000005" href="$structamr__wind_1_1derived_1_1_q_criterion.html" title=" " alt="" coords="264,261,415,301"/>
+<area shape="poly" id="edge67_Node000000_Node000005" title=" " alt="" coords="230,263,264,268,263,273,230,269"/>
+<area shape="rect" id="Node000006" href="$structamr__wind_1_1derived_1_1_q_criterion_nondim.html" title=" " alt="" coords="264,325,415,365"/>
+<area shape="poly" id="edge68_Node000000_Node000006" title=" " alt="" coords="208,287,291,323,289,328,206,292"/>
+<area shape="rect" id="Node000007" href="$structamr__wind_1_1derived_1_1_strain_rate_mag.html" title=" " alt="" coords="264,389,415,429"/>
+<area shape="poly" id="edge69_Node000000_Node000007" title=" " alt="" coords="159,291,208,334,265,375,287,387,285,392,263,380,205,338,155,295"/>
+<area shape="rect" id="Node000008" href="$structamr__wind_1_1derived_1_1_vorticity_mag.html" title=" " alt="" coords="264,453,415,493"/>
+<area shape="poly" id="edge70_Node000000_Node000008" title=" " alt="" coords="141,294,194,368,228,406,266,439,284,451,282,455,262,443,224,409,190,371,137,297"/>
+</map>

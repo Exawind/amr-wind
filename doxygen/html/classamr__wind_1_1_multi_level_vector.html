@@ -1,0 +1,540 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::MultiLevelVector Class Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::MultiLevelVector Class Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/classamr__wind_1_1_multi_level_vector.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="multilevelvector-class-reference">
+<h1>MultiLevelVector Class Reference<a class="headerlink" href="#multilevelvector-class-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::MultiLevelVector Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="classamr__wind_1_1_multi_level_vector.html">MultiLevelVector</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
+<a href="classamr__wind_1_1_multi_level_vector-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::MultiLevelVector Class Reference<div class="ingroups"><a class="el" href="group__utilities.html">Utilities</a></div></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_multi_level_vector_8_h_source.html">MultiLevelVector.H</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:ab6ebda83c4effb6f30b1853278405d7b" id="r_ab6ebda83c4effb6f30b1853278405d7b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab6ebda83c4effb6f30b1853278405d7b">MultiLevelVector</a> (const <a class="el" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a> floc=<a class="el" href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aadeaa44e5e872be992b4109cf1fbfe41e">FieldLoc::CELL</a>)</td></tr>
+<tr class="memitem:a9b8bc1272761ba6345ed7955175d610b" id="r_a9b8bc1272761ba6345ed7955175d610b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9b8bc1272761ba6345ed7955175d610b">resize</a> (int axis, const amrex::Vector&lt; amrex::Geometry &gt; &amp;geom)</td></tr>
+<tr class="memitem:a822931fa8523e95978e9c98f8d9b5192" id="r_a822931fa8523e95978e9c98f8d9b5192"><td class="memItemLeft" align="right" valign="top">const amrex::Vector&lt; amrex::Real &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a822931fa8523e95978e9c98f8d9b5192">host_data</a> (const int lev) const</td></tr>
+<tr class="memitem:a6ce5883612400067d57fd49631a124d0" id="r_a6ce5883612400067d57fd49631a124d0"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6ce5883612400067d57fd49631a124d0">host_data</a> (const int lev)</td></tr>
+<tr class="memitem:aeb9d15b23aac597c67e72178882f8601" id="r_aeb9d15b23aac597c67e72178882f8601"><td class="memItemLeft" align="right" valign="top">const amrex::Gpu::DeviceVector&lt; amrex::Real &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeb9d15b23aac597c67e72178882f8601">device_data</a> (const int lev) const</td></tr>
+<tr class="memitem:aadc44302423846abf2df16a77566b154" id="r_aadc44302423846abf2df16a77566b154"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aadc44302423846abf2df16a77566b154">copy_host_to_device</a> ()</td></tr>
+<tr class="memitem:a096fe280650510c75870b3784f819064" id="r_a096fe280650510c75870b3784f819064"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a096fe280650510c75870b3784f819064">copy_to_field</a> (<a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;fld)</td></tr>
+<tr class="memitem:a1bb02a28f50ed45a9dfcc822e6aba626" id="r_a1bb02a28f50ed45a9dfcc822e6aba626"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1bb02a28f50ed45a9dfcc822e6aba626">size</a> () const</td></tr>
+<tr class="memitem:a05ce681605d43d0bc18f39dfd06bab04" id="r_a05ce681605d43d0bc18f39dfd06bab04"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a05ce681605d43d0bc18f39dfd06bab04">ncells</a> (const int lev) const</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:acb9a23db7bffac5b6cc52038a126e38a" id="r_acb9a23db7bffac5b6cc52038a126e38a"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acb9a23db7bffac5b6cc52038a126e38a">m_floc</a></td></tr>
+<tr class="memitem:a4c52ca81ea58e2ef7d775dfa935ab572" id="r_a4c52ca81ea58e2ef7d775dfa935ab572"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4c52ca81ea58e2ef7d775dfa935ab572">m_axis</a> {2}</td></tr>
+<tr class="memitem:a0dcfebda32ee8a6cb66fb0d4a07fde53" id="r_a0dcfebda32ee8a6cb66fb0d4a07fde53"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Gpu::DeviceVector&lt; amrex::Real &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0dcfebda32ee8a6cb66fb0d4a07fde53">m_data_d</a></td></tr>
+<tr class="memitem:afb6a281df2c7867c22dfee536dce34d5" id="r_afb6a281df2c7867c22dfee536dce34d5"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Vector&lt; amrex::Real &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afb6a281df2c7867c22dfee536dce34d5">m_data_h</a></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Multi-level vector</p>
+<p>This class enables multi-level vectors. The primary vector is the size of the number of levels and it contains host and device vectors sized for the number of points in a given direction of the domain. </p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="ab6ebda83c4effb6f30b1853278405d7b" name="ab6ebda83c4effb6f30b1853278405d7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6ebda83c4effb6f30b1853278405d7b">&#9670;&#160;</a></span>MultiLevelVector()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::MultiLevelVector::MultiLevelVector </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a></td>          <td class="paramname"><span class="paramname"><em>floc</em></span><span class="paramdefsep"> = </span><span class="paramdefval"><a class="el" href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aadeaa44e5e872be992b4109cf1fbfe41e">FieldLoc::CELL</a></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="aadc44302423846abf2df16a77566b154" name="aadc44302423846abf2df16a77566b154"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aadc44302423846abf2df16a77566b154">&#9670;&#160;</a></span>copy_host_to_device()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::MultiLevelVector::copy_host_to_device </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a096fe280650510c75870b3784f819064" name="a096fe280650510c75870b3784f819064"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a096fe280650510c75870b3784f819064">&#9670;&#160;</a></span>copy_to_field()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::MultiLevelVector::copy_to_field </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>fld</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aeb9d15b23aac597c67e72178882f8601" name="aeb9d15b23aac597c67e72178882f8601"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb9d15b23aac597c67e72178882f8601">&#9670;&#160;</a></span>device_data()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const amrex::Gpu::DeviceVector&lt; amrex::Real &gt; &amp; amr_wind::MultiLevelVector::device_data </td>
+          <td>(</td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>lev</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6ce5883612400067d57fd49631a124d0" name="a6ce5883612400067d57fd49631a124d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ce5883612400067d57fd49631a124d0">&#9670;&#160;</a></span>host_data() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt; amrex::Real &gt; &amp; amr_wind::MultiLevelVector::host_data </td>
+          <td>(</td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>lev</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a822931fa8523e95978e9c98f8d9b5192" name="a822931fa8523e95978e9c98f8d9b5192"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a822931fa8523e95978e9c98f8d9b5192">&#9670;&#160;</a></span>host_data() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const amrex::Vector&lt; amrex::Real &gt; &amp; amr_wind::MultiLevelVector::host_data </td>
+          <td>(</td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>lev</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a05ce681605d43d0bc18f39dfd06bab04" name="a05ce681605d43d0bc18f39dfd06bab04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05ce681605d43d0bc18f39dfd06bab04">&#9670;&#160;</a></span>ncells()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::MultiLevelVector::ncells </td>
+          <td>(</td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>lev</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9b8bc1272761ba6345ed7955175d610b" name="a9b8bc1272761ba6345ed7955175d610b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b8bc1272761ba6345ed7955175d610b">&#9670;&#160;</a></span>resize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::MultiLevelVector::resize </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>axis</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Vector&lt; amrex::Geometry &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>geom</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1bb02a28f50ed45a9dfcc822e6aba626" name="a1bb02a28f50ed45a9dfcc822e6aba626"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1bb02a28f50ed45a9dfcc822e6aba626">&#9670;&#160;</a></span>size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::MultiLevelVector::size </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a4c52ca81ea58e2ef7d775dfa935ab572" name="a4c52ca81ea58e2ef7d775dfa935ab572"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c52ca81ea58e2ef7d775dfa935ab572">&#9670;&#160;</a></span>m_axis</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::MultiLevelVector::m_axis {2}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0dcfebda32ee8a6cb66fb0d4a07fde53" name="a0dcfebda32ee8a6cb66fb0d4a07fde53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0dcfebda32ee8a6cb66fb0d4a07fde53">&#9670;&#160;</a></span>m_data_d</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Gpu::DeviceVector&lt;amrex::Real&gt; &gt; amr_wind::MultiLevelVector::m_data_d</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afb6a281df2c7867c22dfee536dce34d5" name="afb6a281df2c7867c22dfee536dce34d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb6a281df2c7867c22dfee536dce34d5">&#9670;&#160;</a></span>m_data_h</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Vector&lt;amrex::Real&gt; &gt; amr_wind::MultiLevelVector::m_data_h</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acb9a23db7bffac5b6cc52038a126e38a" name="acb9a23db7bffac5b6cc52038a126e38a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb9a23db7bffac5b6cc52038a126e38a">&#9670;&#160;</a></span>m_floc</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a> amr_wind::MultiLevelVector::m_floc</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/<a class="el" href="_multi_level_vector_8_h_source.html">MultiLevelVector.H</a></li>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/<a class="el" href="_multi_level_vector_8cpp.html">MultiLevelVector.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

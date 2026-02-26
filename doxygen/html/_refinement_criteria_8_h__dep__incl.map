@@ -1,0 +1,54 @@
+<map id="/home/runner/work/amr&#45;wind/amr&#45;wind/amr&#45;wind/utilities/tagging/RefinementCriteria.H" name="/home/runner/work/amr&#45;wind/amr&#45;wind/amr&#45;wind/utilities/tagging/RefinementCriteria.H">
+<area shape="rect" id="Node000001" title=" " alt="" coords="1403,5,1673,60"/>
+<area shape="rect" id="Node000002" href="$incflo_8cpp.html" title=" " alt="" coords="5,115,196,170"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1390,41,1112,50,775,65,451,85,318,97,216,111,183,118,182,113,215,105,317,92,451,80,774,59,1112,45,1389,35"/>
+<area shape="rect" id="Node000003" href="$init_8cpp.html" title=" " alt="" coords="36,233,227,287"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="1390,38,1093,44,743,57,577,66,433,78,323,93,285,101,261,110,242,124,232,140,223,158,209,179,159,234,155,231,205,176,219,155,228,137,238,121,258,106,284,96,322,87,432,73,576,61,742,51,1093,39,1389,33"/>
+<area shape="rect" id="Node000004" href="$_cart_box_refinement_8_h.html" title=" " alt="" coords="272,115,545,170"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="1390,42,1014,63,788,83,564,111,521,118,520,113,563,105,788,78,1013,58,1389,36"/>
+<area shape="rect" id="Node000006" href="$_curvature_refinement_8_h.html" title=" " alt="" coords="575,115,861,170"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="1390,56,861,125,861,120,1389,51"/>
+<area shape="rect" id="Node000008" href="$_field_refinement_8_h.html" title=" " alt="" coords="1005,115,1257,170"/>
+<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="1426,66,1231,118,1229,113,1425,61"/>
+<area shape="rect" id="Node000010" href="$_geometry_refinement_8_h.html" title=" " alt="" coords="1395,115,1681,170"/>
+<area shape="poly" id="edge10_Node000001_Node000010" title=" " alt="" coords="1541,74,1541,115,1535,115,1535,74"/>
+<area shape="rect" id="Node000018" href="$_gradient_mag_refinement_8_h.html" title=" " alt="" coords="1706,108,1922,177"/>
+<area shape="poly" id="edge18_Node000001_Node000018" title=" " alt="" coords="1619,62,1729,105,1727,110,1617,67"/>
+<area shape="rect" id="Node000020" href="$_overset_refinement_8_h.html" title=" " alt="" coords="1946,115,2218,170"/>
+<area shape="poly" id="edge20_Node000001_Node000020" title=" " alt="" coords="1687,58,1935,105,1969,113,1968,118,1933,111,1686,63"/>
+<area shape="rect" id="Node000022" href="$_q_criterion_refinement_8_h.html" title=" " alt="" coords="2243,115,2529,170"/>
+<area shape="poly" id="edge22_Node000001_Node000022" title=" " alt="" coords="1687,43,1941,67,2230,105,2271,113,2270,118,2230,111,1941,73,1686,48"/>
+<area shape="rect" id="Node000024" href="$_refinement_criteria_8cpp.html" title=" " alt="" coords="2554,115,2837,170"/>
+<area shape="poly" id="edge24_Node000001_Node000024" title=" " alt="" coords="1687,36,1861,44,2075,57,2309,77,2542,105,2585,113,2584,118,2542,111,2308,82,2075,62,1861,49,1687,41"/>
+<area shape="rect" id="Node000025" href="$_vorticity_mag_refinement_8_h.html" title=" " alt="" coords="2992,108,3207,177"/>
+<area shape="poly" id="edge25_Node000001_Node000025" title=" " alt="" coords="1686,36,2201,59,2524,79,2849,105,2992,123,2991,128,2848,111,2524,84,2201,64,1686,41"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="334,178,196,235,193,230,332,173"/>
+<area shape="rect" id="Node000005" href="$_cart_box_refinement_8cpp.html" title=" " alt="" coords="251,233,537,287"/>
+<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="406,184,400,233,395,232,401,183"/>
+<area shape="rect" id="Node000007" href="$_curvature_refinement_8cpp.html" title=" " alt="" coords="562,233,861,287"/>
+<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="718,184,716,233,710,232,713,183"/>
+<area shape="rect" id="Node000009" href="$_field_refinement_8cpp.html" title=" " alt="" coords="885,233,1151,287"/>
+<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="1098,182,1046,234,1042,230,1094,178"/>
+<area shape="rect" id="Node000011" href="$_box_refiner_8_h.html" title=" " alt="" coords="1175,233,1391,287"/>
+<area shape="poly" id="edge11_Node000010_Node000011" title=" " alt="" coords="1469,178,1342,235,1340,230,1467,173"/>
+<area shape="rect" id="Node000013" href="$_cylinder_refiner_8_h.html" title=" " alt="" coords="1415,233,1661,287"/>
+<area shape="poly" id="edge13_Node000010_Node000013" title=" " alt="" coords="1541,184,1541,232,1535,232,1535,184"/>
+<area shape="rect" id="Node000015" href="$_geometry_refinement_8cpp.html" title=" " alt="" coords="1685,233,1983,287"/>
+<area shape="poly" id="edge15_Node000010_Node000015" title=" " alt="" coords="1619,172,1768,230,1766,235,1617,177"/>
+<area shape="rect" id="Node000016" href="$_u_d_f_refiner_8_h.html" title=" " alt="" coords="2007,233,2226,287"/>
+<area shape="poly" id="edge16_Node000010_Node000016" title=" " alt="" coords="1671,170,1694,175,1845,197,1912,207,1996,223,2027,230,2026,235,1995,228,1911,212,1845,203,1694,180,1670,175"/>
+<area shape="rect" id="Node000012" href="$_box_refiner_8cpp.html" title=" " alt="" coords="1162,343,1391,397"/>
+<area shape="poly" id="edge12_Node000011_Node000012" title=" " alt="" coords="1283,302,1281,343,1276,342,1278,301"/>
+<area shape="rect" id="Node000014" href="$_cylinder_refiner_8cpp.html" title=" " alt="" coords="1415,343,1674,397"/>
+<area shape="poly" id="edge14_Node000013_Node000014" title=" " alt="" coords="1543,301,1546,342,1540,343,1538,302"/>
+<area shape="rect" id="Node000017" href="$_u_d_f_refiner_8cpp.html" title=" " alt="" coords="2001,343,2233,397"/>
+<area shape="poly" id="edge17_Node000016_Node000017" title=" " alt="" coords="2119,302,2119,342,2114,342,2114,302"/>
+<area shape="rect" id="Node000019" href="$_gradient_mag_refinement_8cpp.html" title=" " alt="" coords="2250,225,2466,295"/>
+<area shape="poly" id="edge19_Node000018_Node000019" title=" " alt="" coords="1936,175,2022,190,2089,199,2155,207,2239,223,2250,225,2249,231,2237,228,2155,213,2088,204,2021,196,1935,180"/>
+<area shape="rect" id="Node000021" href="$_overset_refinement_8cpp.html" title=" " alt="" coords="2490,233,2775,287"/>
+<area shape="poly" id="edge21_Node000020_Node000021" title=" " alt="" coords="2210,170,2231,175,2479,223,2514,230,2513,235,2477,228,2229,180,2209,176"/>
+<area shape="rect" id="Node000023" href="$_q_criterion_refinement_8cpp.html" title=" " alt="" coords="2800,233,3100,287"/>
+<area shape="poly" id="edge23_Node000022_Node000023" title=" " alt="" coords="2521,170,2543,175,2788,223,2824,230,2823,235,2787,228,2541,180,2520,175"/>
+<area shape="rect" id="Node000026" href="$_vorticity_mag_refinement_8cpp.html" title=" " alt="" coords="3124,225,3339,295"/>
+<area shape="poly" id="edge26_Node000025_Node000026" title=" " alt="" coords="3150,184,3194,223,3191,227,3146,189"/>
+</map>

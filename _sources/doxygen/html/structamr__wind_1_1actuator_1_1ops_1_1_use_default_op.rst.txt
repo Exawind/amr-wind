@@ -1,0 +1,14 @@
+.. meta::e0aea6fab28b66ea425ab5fb82af567fa05e3350b271d653f7f7830a5522d9f0ea70dbb01de17929c4d96a88d6842dc6415da56fa3bbe8732cc910a6e8617dd0
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::UseDefaultOp&lt; ActTrait, SrcTrait &gt; Struct Template Reference
+
+UseDefaultOp&lt; ActTrait, SrcTrait &gt; Struct Template Reference
+==================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1ops_1_1_use_default_op.html

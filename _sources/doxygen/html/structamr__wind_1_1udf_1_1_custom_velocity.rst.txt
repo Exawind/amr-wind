@@ -1,0 +1,14 @@
+.. meta::bbdb8d5e9e8d31ae8c790415250673dd2058cb2f7d5ba88c9013f444ec3133cdc4a14f9c7ff2cf3821e075050f3826fe39e72d7e493ab3d40d35bebbd744a3b5
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::udf::CustomVelocity Struct Reference
+
+CustomVelocity Struct Reference
+===============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1udf_1_1_custom_velocity.html

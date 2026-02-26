@@ -1,0 +1,13 @@
+<map id="amr_wind::actuator::TurbineType" name="amr_wind::actuator::TurbineType">
+<area shape="rect" id="Node000001" title=" " alt="" coords="203,69,351,109"/>
+<area shape="rect" id="Node000003" href="$structamr__wind_1_1actuator_1_1_turbine_from_ext_solver.html" title=" " alt="" coords="912,11,1121,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="344,62,399,47,531,19,636,5,741,4,875,15,912,20,912,25,874,20,741,10,636,11,532,24,401,52,346,67"/>
+<area shape="rect" id="Node000004" href="$structamr__wind_1_1actuator_1_1_turbine_from_ext_solver.html" title=" " alt="" coords="899,116,1135,185"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="344,111,401,127,533,147,666,157,792,159,898,156,898,161,792,164,666,162,532,152,399,132,343,116"/>
+<area shape="rect" id="Node000005" href="$structamr__wind_1_1actuator_1_1_turbine_from_ext_solver.html" title=" " alt="" coords="400,62,620,117"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="364,87,400,87,400,92,364,92"/>
+<area shape="rect" id="Node000002" href="$structamr__wind_1_1actuator_1_1_actuator_type.html" title=" " alt="" coords="5,69,153,109"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="167,87,203,87,203,92,167,92"/>
+<area shape="poly" id="edge5_Node000005_Node000003" title=" " alt="" coords="633,77,874,57,911,54,912,59,875,63,634,83"/>
+<area shape="poly" id="edge6_Node000005_Node000004" title=" " alt="" coords="612,117,644,124,775,140,899,147,898,152,775,145,644,129,611,123"/>
+</map>

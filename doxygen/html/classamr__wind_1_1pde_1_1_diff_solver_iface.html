@@ -1,0 +1,707 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::pde::DiffSolverIface&amp;lt; LinOp &amp;gt; Class Template Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::pde::DiffSolverIface&amp;lt; LinOp &amp;gt; Class Template Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/classamr__wind_1_1pde_1_1_diff_solver_iface.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="diffsolveriface-lt-linop-gt-class-template-reference">
+<h1>DiffSolverIface&amp;lt; LinOp &amp;gt; Class Template Reference<a class="headerlink" href="#diffsolveriface-lt-linop-gt-class-template-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::pde::DiffSolverIface&lt; LinOp &gt; Class Template Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="namespaceamr__wind_1_1pde.html">pde</a></li><li class="navelem"><a href="classamr__wind_1_1pde_1_1_diff_solver_iface.html">DiffSolverIface</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a> &#124;
+<a href="classamr__wind_1_1pde_1_1_diff_solver_iface-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::pde::DiffSolverIface&lt; LinOp &gt; Class Template Reference<div class="ingroups"><a class="el" href="group__eqsys.html">Equation Systems</a> &raquo; <a class="el" href="group__pdeop.html">PDE Operators</a></div></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_diffusion_ops_8_h_source.html">DiffusionOps.H</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for amr_wind::pde::DiffSolverIface&lt; LinOp &gt;:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1pde_1_1_diff_solver_iface__inherit__graph.svg" width="100%" height="504"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for amr_wind::pde::DiffSolverIface&lt; LinOp &gt;:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1pde_1_1_diff_solver_iface__coll__graph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:ac222ba98378cc5546940d144b7d3360e" id="r_ac222ba98378cc5546940d144b7d3360e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac222ba98378cc5546940d144b7d3360e">DiffSolverIface</a> (<a class="el" href="structamr__wind_1_1pde_1_1_p_d_e_fields.html">PDEFields</a> &amp;fields, bool has_overset, bool mesh_mapping, const std::string &amp;prefix=&quot;diffusion&quot;)</td></tr>
+<tr class="memitem:af2e147ed1661cc4cc0c7b06dd7af2674" id="r_af2e147ed1661cc4cc0c7b06dd7af2674"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af2e147ed1661cc4cc0c7b06dd7af2674">~DiffSolverIface</a> ()=default</td></tr>
+<tr class="memitem:a5743feacbf2d5991defc8f66b22378b7" id="r_a5743feacbf2d5991defc8f66b22378b7"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5743feacbf2d5991defc8f66b22378b7">linsys_solve</a> (amrex::Real dt)</td></tr>
+<tr class="memitem:a75672e028d6aef1bd000ceee22cd55aa" id="r_a75672e028d6aef1bd000ceee22cd55aa"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a75672e028d6aef1bd000ceee22cd55aa">linsys_solve_impl</a> ()</td></tr>
+<tr class="memitem:a72062b0b4f0454ad256b75067187bea7" id="r_a72062b0b4f0454ad256b75067187bea7"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a72062b0b4f0454ad256b75067187bea7">set_acoeffs</a> (LinOp &amp;linop, <a class="el" href="group__fields.html#ga5251ec6b376231128a9647f3028dbac0">FieldState</a> fstate)</td></tr>
+<tr class="memitem:abcd59c7db7c7b30819a51c79cda8c956" id="r_abcd59c7db7c7b30819a51c79cda8c956"><td class="memTemplParams" colspan="2">template&lt;typename L&gt; </td></tr>
+<tr class="memitem:abcd59c7db7c7b30819a51c79cda8c956 template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abcd59c7db7c7b30819a51c79cda8c956">set_bcoeffs</a> (L &amp;linop, std::enable_if_t&lt; std::is_same_v&lt; L, amrex::MLTensorOp &gt; &gt; *=nullptr)</td></tr>
+<tr class="memitem:a65b130e307b7fea9009fdd0528df8cc7" id="r_a65b130e307b7fea9009fdd0528df8cc7"><td class="memTemplParams" colspan="2">template&lt;typename L&gt; </td></tr>
+<tr class="memitem:a65b130e307b7fea9009fdd0528df8cc7 template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a65b130e307b7fea9009fdd0528df8cc7">set_bcoeffs</a> (L &amp;linop, std::enable_if_t&lt; std::is_same_v&lt; L, amrex::MLABecLaplacian &gt; &gt; *=nullptr)</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:ab4cb681103bc9557163b2ace50d1ccc7" id="r_ab4cb681103bc9557163b2ace50d1ccc7"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab4cb681103bc9557163b2ace50d1ccc7">setup_operator</a> (LinOp &amp;linop, amrex::Real alpha, amrex::Real beta, <a class="el" href="group__fields.html#ga5251ec6b376231128a9647f3028dbac0">FieldState</a> fstate)</td></tr>
+<tr class="memdesc:ab4cb681103bc9557163b2ace50d1ccc7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets up the linear operator (e.g., setup BCs, etc.)  <br /></td></tr>
+<tr class="memitem:a0e9172fa5d5e2474937a706acc4f3536" id="r_a0e9172fa5d5e2474937a706acc4f3536"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0e9172fa5d5e2474937a706acc4f3536">setup_solver</a> (amrex::MLMG &amp;mlmg)</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:a1a6ce75cdb4bf108e438485aa0985144" id="r_a1a6ce75cdb4bf108e438485aa0985144"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structamr__wind_1_1pde_1_1_p_d_e_fields.html">PDEFields</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1a6ce75cdb4bf108e438485aa0985144">m_pdefields</a></td></tr>
+<tr class="memitem:a31f3d877a22d1cb98079f1a71c8ce5eb" id="r_a31f3d877a22d1cb98079f1a71c8ce5eb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a31f3d877a22d1cb98079f1a71c8ce5eb">m_density</a></td></tr>
+<tr class="memitem:a6f15f9f764454ec4e9f7d6a736ea33f2" id="r_a6f15f9f764454ec4e9f7d6a736ea33f2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structamr__wind_1_1_m_l_m_g_options.html">MLMGOptions</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6f15f9f764454ec4e9f7d6a736ea33f2">m_options</a></td></tr>
+<tr class="memitem:a797932df5341d1cd5400f9e3bc5b1600" id="r_a797932df5341d1cd5400f9e3bc5b1600"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a797932df5341d1cd5400f9e3bc5b1600">m_mesh_mapping</a> {false}</td></tr>
+<tr class="memitem:aba0ec30ccc2b7595459b8ecd8a9e7b1a" id="r_aba0ec30ccc2b7595459b8ecd8a9e7b1a"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; LinOp &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aba0ec30ccc2b7595459b8ecd8a9e7b1a">m_solver</a></td></tr>
+<tr class="memitem:a5a2d5effb4c1325b0e4baaa81162efdb" id="r_a5a2d5effb4c1325b0e4baaa81162efdb"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; LinOp &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5a2d5effb4c1325b0e4baaa81162efdb">m_applier</a></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename LinOp&gt;<br />
+class amr_wind::pde::DiffSolverIface&lt; LinOp &gt;</div><p>Base class for all diffusion operators</p>
+<p>This class provides the common operations for an implicit solution of a convection-diffusion equation within AMR-Wind.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">LinOp</td><td>The linear operator (see <a href="https://amrex-codes.github.io/amrex/docs_html/LinearSolvers.html">AMREeX docs</a>) </td></tr>
+  </table>
+  </dd>
+</dl>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="ac222ba98378cc5546940d144b7d3360e" name="ac222ba98378cc5546940d144b7d3360e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac222ba98378cc5546940d144b7d3360e">&#9670;&#160;</a></span>DiffSolverIface()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename LinOp&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1pde_1_1_diff_solver_iface.html">amr_wind::pde::DiffSolverIface</a>&lt; LinOp &gt;::DiffSolverIface </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structamr__wind_1_1pde_1_1_p_d_e_fields.html">PDEFields</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>fields</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>has_overset</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>mesh_mapping</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>prefix</em></span><span class="paramdefsep"> = </span><span class="paramdefval">&quot;diffusion&quot;</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af2e147ed1661cc4cc0c7b06dd7af2674" name="af2e147ed1661cc4cc0c7b06dd7af2674"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2e147ed1661cc4cc0c7b06dd7af2674">&#9670;&#160;</a></span>~DiffSolverIface()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename LinOp&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classamr__wind_1_1pde_1_1_diff_solver_iface.html">amr_wind::pde::DiffSolverIface</a>&lt; LinOp &gt;::~<a class="el" href="classamr__wind_1_1pde_1_1_diff_solver_iface.html">DiffSolverIface</a> </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel virtual">virtual</span><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a5743feacbf2d5991defc8f66b22378b7" name="a5743feacbf2d5991defc8f66b22378b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5743feacbf2d5991defc8f66b22378b7">&#9670;&#160;</a></span>linsys_solve()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename LinOp&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classamr__wind_1_1pde_1_1_diff_solver_iface.html">amr_wind::pde::DiffSolverIface</a>&lt; LinOp &gt;::linsys_solve </td>
+          <td>(</td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>dt</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Implicit solve and update of a linear system</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dt</td><td>timestep size </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a75672e028d6aef1bd000ceee22cd55aa" name="a75672e028d6aef1bd000ceee22cd55aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75672e028d6aef1bd000ceee22cd55aa">&#9670;&#160;</a></span>linsys_solve_impl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename LinOp&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classamr__wind_1_1pde_1_1_diff_solver_iface.html">amr_wind::pde::DiffSolverIface</a>&lt; LinOp &gt;::linsys_solve_impl </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a72062b0b4f0454ad256b75067187bea7" name="a72062b0b4f0454ad256b75067187bea7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72062b0b4f0454ad256b75067187bea7">&#9670;&#160;</a></span>set_acoeffs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename LinOp&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classamr__wind_1_1pde_1_1_diff_solver_iface.html">amr_wind::pde::DiffSolverIface</a>&lt; LinOp &gt;::set_acoeffs </td>
+          <td>(</td>
+          <td class="paramtype">LinOp &amp;</td>          <td class="paramname"><span class="paramname"><em>linop</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__fields.html#ga5251ec6b376231128a9647f3028dbac0">FieldState</a></td>          <td class="paramname"><span class="paramname"><em>fstate</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented in <a class="el" href="structamr__wind_1_1pde_1_1_diffusion_op_3_01_s_d_r_00_01_scheme_01_4.html#a20580008a1ccbf542c8f1550456ac9c6">amr_wind::pde::DiffusionOp&lt; SDR, Scheme &gt;</a>, and <a class="el" href="structamr__wind_1_1pde_1_1_diffusion_op_3_01_t_k_e_00_01_scheme_01_4.html#ad210813c76433e59fa22ea07ae8fcb02">amr_wind::pde::DiffusionOp&lt; TKE, Scheme &gt;</a>.</p>
+
+</div>
+</div>
+<a id="a65b130e307b7fea9009fdd0528df8cc7" name="a65b130e307b7fea9009fdd0528df8cc7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65b130e307b7fea9009fdd0528df8cc7">&#9670;&#160;</a></span>set_bcoeffs() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename LinOp&gt; </div>
+<div class="memtemplate">
+template&lt;typename L&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classamr__wind_1_1pde_1_1_diff_solver_iface.html">amr_wind::pde::DiffSolverIface</a>&lt; LinOp &gt;::set_bcoeffs </td>
+          <td>(</td>
+          <td class="paramtype">L &amp;</td>          <td class="paramname"><span class="paramname"><em>linop</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::enable_if_t&lt; std::is_same_v&lt; L, amrex::MLABecLaplacian &gt; &gt; *</td>          <td class="paramname"><span class="paramname"><em></em></span><span class="paramdefsep"> = </span><span class="paramdefval">nullptr</span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abcd59c7db7c7b30819a51c79cda8c956" name="abcd59c7db7c7b30819a51c79cda8c956"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abcd59c7db7c7b30819a51c79cda8c956">&#9670;&#160;</a></span>set_bcoeffs() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename LinOp&gt; </div>
+<div class="memtemplate">
+template&lt;typename L&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classamr__wind_1_1pde_1_1_diff_solver_iface.html">amr_wind::pde::DiffSolverIface</a>&lt; LinOp &gt;::set_bcoeffs </td>
+          <td>(</td>
+          <td class="paramtype">L &amp;</td>          <td class="paramname"><span class="paramname"><em>linop</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::enable_if_t&lt; std::is_same_v&lt; L, amrex::MLTensorOp &gt; &gt; *</td>          <td class="paramname"><span class="paramname"><em></em></span><span class="paramdefsep"> = </span><span class="paramdefval">nullptr</span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab4cb681103bc9557163b2ace50d1ccc7" name="ab4cb681103bc9557163b2ace50d1ccc7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4cb681103bc9557163b2ace50d1ccc7">&#9670;&#160;</a></span>setup_operator()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename LinOp&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classamr__wind_1_1pde_1_1_diff_solver_iface.html">amr_wind::pde::DiffSolverIface</a>&lt; LinOp &gt;::setup_operator </td>
+          <td>(</td>
+          <td class="paramtype">LinOp &amp;</td>          <td class="paramname"><span class="paramname"><em>linop</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>alpha</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>beta</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__fields.html#ga5251ec6b376231128a9647f3028dbac0">FieldState</a></td>          <td class="paramname"><span class="paramname"><em>fstate</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets up the linear operator (e.g., setup BCs, etc.) </p>
+
+</div>
+</div>
+<a id="a0e9172fa5d5e2474937a706acc4f3536" name="a0e9172fa5d5e2474937a706acc4f3536"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e9172fa5d5e2474937a706acc4f3536">&#9670;&#160;</a></span>setup_solver()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename LinOp&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classamr__wind_1_1pde_1_1_diff_solver_iface.html">amr_wind::pde::DiffSolverIface</a>&lt; LinOp &gt;::setup_solver </td>
+          <td>(</td>
+          <td class="paramtype">amrex::MLMG &amp;</td>          <td class="paramname"><span class="paramname"><em>mlmg</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a5a2d5effb4c1325b0e4baaa81162efdb" name="a5a2d5effb4c1325b0e4baaa81162efdb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a2d5effb4c1325b0e4baaa81162efdb">&#9670;&#160;</a></span>m_applier</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename LinOp&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;LinOp&gt; <a class="el" href="classamr__wind_1_1pde_1_1_diff_solver_iface.html">amr_wind::pde::DiffSolverIface</a>&lt; LinOp &gt;::m_applier</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a31f3d877a22d1cb98079f1a71c8ce5eb" name="a31f3d877a22d1cb98079f1a71c8ce5eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31f3d877a22d1cb98079f1a71c8ce5eb">&#9670;&#160;</a></span>m_density</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename LinOp&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="el" href="classamr__wind_1_1pde_1_1_diff_solver_iface.html">amr_wind::pde::DiffSolverIface</a>&lt; LinOp &gt;::m_density</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a797932df5341d1cd5400f9e3bc5b1600" name="a797932df5341d1cd5400f9e3bc5b1600"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a797932df5341d1cd5400f9e3bc5b1600">&#9670;&#160;</a></span>m_mesh_mapping</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename LinOp&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classamr__wind_1_1pde_1_1_diff_solver_iface.html">amr_wind::pde::DiffSolverIface</a>&lt; LinOp &gt;::m_mesh_mapping {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6f15f9f764454ec4e9f7d6a736ea33f2" name="a6f15f9f764454ec4e9f7d6a736ea33f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f15f9f764454ec4e9f7d6a736ea33f2">&#9670;&#160;</a></span>m_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename LinOp&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structamr__wind_1_1_m_l_m_g_options.html">MLMGOptions</a> <a class="el" href="classamr__wind_1_1pde_1_1_diff_solver_iface.html">amr_wind::pde::DiffSolverIface</a>&lt; LinOp &gt;::m_options</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1a6ce75cdb4bf108e438485aa0985144" name="a1a6ce75cdb4bf108e438485aa0985144"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a6ce75cdb4bf108e438485aa0985144">&#9670;&#160;</a></span>m_pdefields</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename LinOp&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structamr__wind_1_1pde_1_1_p_d_e_fields.html">PDEFields</a>&amp; <a class="el" href="classamr__wind_1_1pde_1_1_diff_solver_iface.html">amr_wind::pde::DiffSolverIface</a>&lt; LinOp &gt;::m_pdefields</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aba0ec30ccc2b7595459b8ecd8a9e7b1a" name="aba0ec30ccc2b7595459b8ecd8a9e7b1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba0ec30ccc2b7595459b8ecd8a9e7b1a">&#9670;&#160;</a></span>m_solver</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename LinOp&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;LinOp&gt; <a class="el" href="classamr__wind_1_1pde_1_1_diff_solver_iface.html">amr_wind::pde::DiffSolverIface</a>&lt; LinOp &gt;::m_solver</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/<a class="el" href="_diffusion_ops_8_h_source.html">DiffusionOps.H</a></li>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/<a class="el" href="_diffusion_ops_8cpp.html">DiffusionOps.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

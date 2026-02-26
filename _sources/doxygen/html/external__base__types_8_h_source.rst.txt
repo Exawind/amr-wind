@@ -1,0 +1,14 @@
+.. meta::0aeb54a35a33b9f3775834706590b71baf30a759b1e5e63df4c3b3cd8e6a52bf50b653d5b2478671e19b600db5fe98c853918bd2502809f0b36e7867afd48a0a
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/actuator/turbine/external/external_base_types.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/wind\_energy/actuator/turbine/external/external\_base\_types.H Source File
+=======================================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: external__base__types_8_h_source.html

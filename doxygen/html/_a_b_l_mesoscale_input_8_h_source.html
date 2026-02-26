@@ -1,0 +1,343 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/ABLMesoscaleInput.H Source File &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/ABLMesoscaleInput.H Source File</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/_a_b_l_mesoscale_input_8_h_source.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="home-runner-work-amr-wind-amr-wind-amr-wind-wind-energy-ablmesoscaleinput-h-source-file">
+<h1>/home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/ABLMesoscaleInput.H Source File<a class="headerlink" href="#home-runner-work-amr-wind-amr-wind-amr-wind-wind-energy-ablmesoscaleinput-h-source-file" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/ABLMesoscaleInput.H Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="dir_d85575251dd712327fe3cf057fa568b4.html">amr-wind</a></li><li class="navelem"><a href="dir_212148f97b8bb53ebaebb3bf8a8b5de4.html">amr-wind</a></li><li class="navelem"><a href="dir_b33158d99c61436f71711cd504567082.html">wind_energy</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="headertitle"><div class="title">ABLMesoscaleInput.H</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="_a_b_l_mesoscale_input_8_h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef ABLMESOSCALEINPUT_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define ABLMESOSCALEINPUT_H</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;AMReX_REAL.H&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;AMReX_Vector.H&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceamr__wind.html">amr_wind</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="foldopen" id="foldopen00010" data-start="{" data-end="};">
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_input.html">   10</a></span><span class="keyword">class </span><a class="code hl_function" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#ae46283c4a39ba16211b3c18a916103eb">ABLMesoscaleInput</a></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>{</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="comment">// cppcheck-suppress noExplicitConstructor</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <a class="code hl_function" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#ae46283c4a39ba16211b3c18a916103eb">ABLMesoscaleInput</a>(std::string ncfile, std::string var_prefix = <span class="stringliteral">&quot;&quot;</span>);</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a7f30eca72ba93f48bef4cbccba79b68f">   17</a></span>    <a class="code hl_function" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a7f30eca72ba93f48bef4cbccba79b68f">~ABLMesoscaleInput</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="foldopen" id="foldopen00019" data-start="{" data-end="}">
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a2c0bc44172470aa5b4825655e789ba88">   19</a></span>    [[nodiscard]] <span class="keyword">const</span> amrex::Vector&lt;amrex::Real&gt;&amp; <a class="code hl_function" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a2c0bc44172470aa5b4825655e789ba88">meso_heights</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a48922ad93d872d58180c0600253b6423">m_height</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    }</div>
+</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="foldopen" id="foldopen00024" data-start="{" data-end="}">
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a6dfdaa1e005608873dd33a01101ec3ae">   24</a></span>    [[nodiscard]] <span class="keyword">const</span> amrex::Vector&lt;amrex::Real&gt;&amp; <a class="code hl_function" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a6dfdaa1e005608873dd33a01101ec3ae">meso_times</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#ada3c45a8be7afed333a0094c37362674">m_time</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    }</div>
+</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="foldopen" id="foldopen00029" data-start="{" data-end="}">
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#ae0f6c7d73914c04e551a5c5476db4c72">   29</a></span>    [[nodiscard]] <span class="keyword">const</span> amrex::Vector&lt;amrex::Real&gt;&amp; <a class="code hl_function" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#ae0f6c7d73914c04e551a5c5476db4c72">meso_u</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a6a3a3d2eed30c5437c420ffd3186f6ce">m_u</a>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    }</div>
+</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="foldopen" id="foldopen00034" data-start="{" data-end="}">
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a5ee426ebbc8cb2a4853af5b6877c45d3">   34</a></span>    [[nodiscard]] <span class="keyword">const</span> amrex::Vector&lt;amrex::Real&gt;&amp; <a class="code hl_function" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a5ee426ebbc8cb2a4853af5b6877c45d3">meso_v</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a2b82a077da207e4d60a1efebb6e0f1bd">m_v</a>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    }</div>
+</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="foldopen" id="foldopen00039" data-start="{" data-end="}">
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a38cbacd7047e5e0acb887e7eb8c3b661">   39</a></span>    [[nodiscard]] <span class="keyword">const</span> amrex::Vector&lt;amrex::Real&gt;&amp; <a class="code hl_function" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a38cbacd7047e5e0acb887e7eb8c3b661">meso_temp</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a92f0815eff02655edb712ae48abc82e4">m_temp</a>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    }</div>
+</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="foldopen" id="foldopen00044" data-start="{" data-end="}">
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a6a71cc07a957246088180f50cfcd37f4">   44</a></span>    [[nodiscard]] <span class="keyword">const</span> amrex::Vector&lt;amrex::Real&gt;&amp; <a class="code hl_function" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a6a71cc07a957246088180f50cfcd37f4">meso_tflux</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a4594c73a1090d786159534b0e717b3b3">m_tflux</a>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    }</div>
+</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    [[nodiscard]] <span class="keyword">const</span> amrex::Vector&lt;amrex::Real&gt;&amp;</div>
+<div class="foldopen" id="foldopen00050" data-start="{" data-end="}">
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a6d87debee5a1aaf44b85886a1e68594f">   50</a></span>    <a class="code hl_function" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a6d87debee5a1aaf44b85886a1e68594f">meso_transition_height</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a1e14ad7729b7f1b551382c5adfa36ac2">m_transition_height</a>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    }</div>
+</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a39ddf1b6039fc7e1b64f30af8abdcfde">   55</a></span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a39ddf1b6039fc7e1b64f30af8abdcfde">is_tendency_forcing</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a2c4f778ad690a9e8978dcd30a07470e4">m_abl_tendency</a>; }</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#ab1aee508e2a20218ca89db51c0fb0363">   57</a></span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#ab1aee508e2a20218ca89db51c0fb0363">nheights</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#ae187d0539b82c4f51a5441772fcc7fbc">m_nheight</a>; }</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a5e5d806a5be83217ad139f6debd1ff87">   58</a></span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a5e5d806a5be83217ad139f6debd1ff87">times</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a80474c9188657e6879a1abf1ed175a77">m_ntime</a>; }</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#aba812759f9a315a579e5e85600190ea0">   61</a></span>    std::string <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#aba812759f9a315a579e5e85600190ea0">m_filename</a>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a2ca282660002ebe978980dd55d978995">   62</a></span>    std::string <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a2ca282660002ebe978980dd55d978995">m_var_prefix</a>; <span class="comment">// to support legacy WRF meso input files</span></div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a48922ad93d872d58180c0600253b6423">   64</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a48922ad93d872d58180c0600253b6423">m_height</a>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#ada3c45a8be7afed333a0094c37362674">   65</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#ada3c45a8be7afed333a0094c37362674">m_time</a>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a6a3a3d2eed30c5437c420ffd3186f6ce">   67</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a6a3a3d2eed30c5437c420ffd3186f6ce">m_u</a>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a2b82a077da207e4d60a1efebb6e0f1bd">   68</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a2b82a077da207e4d60a1efebb6e0f1bd">m_v</a>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a92f0815eff02655edb712ae48abc82e4">   69</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a92f0815eff02655edb712ae48abc82e4">m_temp</a>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a4594c73a1090d786159534b0e717b3b3">   70</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a4594c73a1090d786159534b0e717b3b3">m_tflux</a>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="comment">// possible unexpected behaviors, as described in</span></div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="comment">// ec5eb95c6ca853ce0fea8488e3f2515a2d6374e7</span></div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="comment">//</span></div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="comment">// See also:</span></div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="comment">// - wind_energy/ABLMesoscaleInput.cpp</span></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="comment">// - equation_systems/icns/source_terms/ABLMesoForcingMom.cpp</span></div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="comment">// - equation_systems/temperature/source_terms/ABLMesoForcingTemp.cpp</span></div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="comment">//</span></div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="comment">// workaround is to not try to read in and update this transition height</span></div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="comment">// variable on the fly</span></div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a1e14ad7729b7f1b551382c5adfa36ac2">   82</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a1e14ad7729b7f1b551382c5adfa36ac2">m_transition_height</a>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#ae187d0539b82c4f51a5441772fcc7fbc">   84</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#ae187d0539b82c4f51a5441772fcc7fbc">m_nheight</a>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a80474c9188657e6879a1abf1ed175a77">   85</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a80474c9188657e6879a1abf1ed175a77">m_ntime</a>;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a2c4f778ad690a9e8978dcd30a07470e4">   86</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a2c4f778ad690a9e8978dcd30a07470e4">m_abl_tendency</a>{<span class="keyword">false</span>};</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>};</div>
+</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>} <span class="comment">// namespace amr_wind</span></div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_input_html_a1e14ad7729b7f1b551382c5adfa36ac2"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a1e14ad7729b7f1b551382c5adfa36ac2">amr_wind::ABLMesoscaleInput::m_transition_height</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_transition_height</div><div class="ttdef"><b>Definition</b> ABLMesoscaleInput.H:82</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_input_html_a2b82a077da207e4d60a1efebb6e0f1bd"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a2b82a077da207e4d60a1efebb6e0f1bd">amr_wind::ABLMesoscaleInput::m_v</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_v</div><div class="ttdef"><b>Definition</b> ABLMesoscaleInput.H:68</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_input_html_a2c0bc44172470aa5b4825655e789ba88"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a2c0bc44172470aa5b4825655e789ba88">amr_wind::ABLMesoscaleInput::meso_heights</a></div><div class="ttdeci">const amrex::Vector&lt; amrex::Real &gt; &amp; meso_heights() const</div><div class="ttdef"><b>Definition</b> ABLMesoscaleInput.H:19</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_input_html_a2c4f778ad690a9e8978dcd30a07470e4"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a2c4f778ad690a9e8978dcd30a07470e4">amr_wind::ABLMesoscaleInput::m_abl_tendency</a></div><div class="ttdeci">bool m_abl_tendency</div><div class="ttdef"><b>Definition</b> ABLMesoscaleInput.H:86</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_input_html_a2ca282660002ebe978980dd55d978995"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a2ca282660002ebe978980dd55d978995">amr_wind::ABLMesoscaleInput::m_var_prefix</a></div><div class="ttdeci">std::string m_var_prefix</div><div class="ttdef"><b>Definition</b> ABLMesoscaleInput.H:62</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_input_html_a38cbacd7047e5e0acb887e7eb8c3b661"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a38cbacd7047e5e0acb887e7eb8c3b661">amr_wind::ABLMesoscaleInput::meso_temp</a></div><div class="ttdeci">const amrex::Vector&lt; amrex::Real &gt; &amp; meso_temp() const</div><div class="ttdef"><b>Definition</b> ABLMesoscaleInput.H:39</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_input_html_a39ddf1b6039fc7e1b64f30af8abdcfde"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a39ddf1b6039fc7e1b64f30af8abdcfde">amr_wind::ABLMesoscaleInput::is_tendency_forcing</a></div><div class="ttdeci">bool is_tendency_forcing() const</div><div class="ttdef"><b>Definition</b> ABLMesoscaleInput.H:55</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_input_html_a4594c73a1090d786159534b0e717b3b3"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a4594c73a1090d786159534b0e717b3b3">amr_wind::ABLMesoscaleInput::m_tflux</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_tflux</div><div class="ttdef"><b>Definition</b> ABLMesoscaleInput.H:70</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_input_html_a48922ad93d872d58180c0600253b6423"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a48922ad93d872d58180c0600253b6423">amr_wind::ABLMesoscaleInput::m_height</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_height</div><div class="ttdef"><b>Definition</b> ABLMesoscaleInput.H:64</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_input_html_a5e5d806a5be83217ad139f6debd1ff87"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a5e5d806a5be83217ad139f6debd1ff87">amr_wind::ABLMesoscaleInput::times</a></div><div class="ttdeci">int times() const</div><div class="ttdef"><b>Definition</b> ABLMesoscaleInput.H:58</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_input_html_a5ee426ebbc8cb2a4853af5b6877c45d3"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a5ee426ebbc8cb2a4853af5b6877c45d3">amr_wind::ABLMesoscaleInput::meso_v</a></div><div class="ttdeci">const amrex::Vector&lt; amrex::Real &gt; &amp; meso_v() const</div><div class="ttdef"><b>Definition</b> ABLMesoscaleInput.H:34</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_input_html_a6a3a3d2eed30c5437c420ffd3186f6ce"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a6a3a3d2eed30c5437c420ffd3186f6ce">amr_wind::ABLMesoscaleInput::m_u</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_u</div><div class="ttdef"><b>Definition</b> ABLMesoscaleInput.H:67</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_input_html_a6a71cc07a957246088180f50cfcd37f4"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a6a71cc07a957246088180f50cfcd37f4">amr_wind::ABLMesoscaleInput::meso_tflux</a></div><div class="ttdeci">const amrex::Vector&lt; amrex::Real &gt; &amp; meso_tflux() const</div><div class="ttdef"><b>Definition</b> ABLMesoscaleInput.H:44</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_input_html_a6d87debee5a1aaf44b85886a1e68594f"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a6d87debee5a1aaf44b85886a1e68594f">amr_wind::ABLMesoscaleInput::meso_transition_height</a></div><div class="ttdeci">const amrex::Vector&lt; amrex::Real &gt; &amp; meso_transition_height() const</div><div class="ttdef"><b>Definition</b> ABLMesoscaleInput.H:50</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_input_html_a6dfdaa1e005608873dd33a01101ec3ae"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a6dfdaa1e005608873dd33a01101ec3ae">amr_wind::ABLMesoscaleInput::meso_times</a></div><div class="ttdeci">const amrex::Vector&lt; amrex::Real &gt; &amp; meso_times() const</div><div class="ttdef"><b>Definition</b> ABLMesoscaleInput.H:24</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_input_html_a7f30eca72ba93f48bef4cbccba79b68f"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a7f30eca72ba93f48bef4cbccba79b68f">amr_wind::ABLMesoscaleInput::~ABLMesoscaleInput</a></div><div class="ttdeci">~ABLMesoscaleInput()=default</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_input_html_a80474c9188657e6879a1abf1ed175a77"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a80474c9188657e6879a1abf1ed175a77">amr_wind::ABLMesoscaleInput::m_ntime</a></div><div class="ttdeci">int m_ntime</div><div class="ttdef"><b>Definition</b> ABLMesoscaleInput.H:85</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_input_html_a92f0815eff02655edb712ae48abc82e4"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_input.html#a92f0815eff02655edb712ae48abc82e4">amr_wind::ABLMesoscaleInput::m_temp</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_temp</div><div class="ttdef"><b>Definition</b> ABLMesoscaleInput.H:69</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_input_html_ab1aee508e2a20218ca89db51c0fb0363"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_input.html#ab1aee508e2a20218ca89db51c0fb0363">amr_wind::ABLMesoscaleInput::nheights</a></div><div class="ttdeci">int nheights() const</div><div class="ttdef"><b>Definition</b> ABLMesoscaleInput.H:57</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_input_html_aba812759f9a315a579e5e85600190ea0"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_input.html#aba812759f9a315a579e5e85600190ea0">amr_wind::ABLMesoscaleInput::m_filename</a></div><div class="ttdeci">std::string m_filename</div><div class="ttdef"><b>Definition</b> ABLMesoscaleInput.H:61</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_input_html_ada3c45a8be7afed333a0094c37362674"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_input.html#ada3c45a8be7afed333a0094c37362674">amr_wind::ABLMesoscaleInput::m_time</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_time</div><div class="ttdef"><b>Definition</b> ABLMesoscaleInput.H:65</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_input_html_ae0f6c7d73914c04e551a5c5476db4c72"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_input.html#ae0f6c7d73914c04e551a5c5476db4c72">amr_wind::ABLMesoscaleInput::meso_u</a></div><div class="ttdeci">const amrex::Vector&lt; amrex::Real &gt; &amp; meso_u() const</div><div class="ttdef"><b>Definition</b> ABLMesoscaleInput.H:29</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_input_html_ae187d0539b82c4f51a5441772fcc7fbc"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_input.html#ae187d0539b82c4f51a5441772fcc7fbc">amr_wind::ABLMesoscaleInput::m_nheight</a></div><div class="ttdeci">int m_nheight</div><div class="ttdef"><b>Definition</b> ABLMesoscaleInput.H:84</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_input_html_ae46283c4a39ba16211b3c18a916103eb"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_input.html#ae46283c4a39ba16211b3c18a916103eb">amr_wind::ABLMesoscaleInput::ABLMesoscaleInput</a></div><div class="ttdeci">ABLMesoscaleInput(std::string ncfile, std::string var_prefix=&quot;&quot;)</div><div class="ttdef"><b>Definition</b> ABLMesoscaleInput.cpp:10</div></div>
+<div class="ttc" id="anamespaceamr__wind_html"><div class="ttname"><a href="namespaceamr__wind.html">amr_wind</a></div><div class="ttdoc">This test case is intended as an evaluation of the momentum advection scheme.</div><div class="ttdef"><b>Definition</b> BCInterface.cpp:10</div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

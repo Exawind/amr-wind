@@ -1,0 +1,14 @@
+.. meta::13616cd4c960063fe9abcfc4b84b75b3de36d09ca32d1f9217345457e86a7f65ded2f4055b2fe0974c0523970fae814ea62a51de49250f4dd44dfb4cf3cb4b08
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ib::ops::ComputeForceOp&lt; GeomTrait, typename &gt; Struct Template Reference
+
+ComputeForceOp&lt; GeomTrait, typename &gt; Struct Template Reference
+=====================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ib_1_1ops_1_1_compute_force_op.html

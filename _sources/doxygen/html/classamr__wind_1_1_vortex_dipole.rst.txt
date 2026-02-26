@@ -1,0 +1,14 @@
+.. meta::e3c6490c4e993e9552a8f3849d50eeb561469845d14b2048be6ee86473a96f696d8378274749a3fe3cca05fdf029fa52f78d97dfe8ca4e739616c4adcd8df6bc
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::VortexDipole Class Reference
+
+VortexDipole Class Reference
+============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_vortex_dipole.html

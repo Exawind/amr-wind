@@ -1,0 +1,14 @@
+.. meta::d369463520cd63c6fbb1f8b03b50565eff56a26f8b5bacd6a516103ae3b5f4fdeead99ddb8aba8c200bd4de44c1c9bcc9b88be2b4a92a6e89fca004f483ec5a4
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::BCSrcTerm Class Reference
+
+BCSrcTerm Class Reference
+=========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_b_c_src_term.html

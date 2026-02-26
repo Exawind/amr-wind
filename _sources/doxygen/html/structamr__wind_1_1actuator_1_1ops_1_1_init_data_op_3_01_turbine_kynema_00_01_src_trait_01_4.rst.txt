@@ -1,0 +1,14 @@
+.. meta::d952419acb1ffcaf7cfb9673b9202a366f2b57512c3aab6caefecca8203a710171fa4fc81df28667b8acf93e07b3caa2dce63625f3b93a1fbed492766e3da726
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::InitDataOp&lt; TurbineKynema, SrcTrait &gt; Struct Template Reference
+
+InitDataOp&lt; TurbineKynema, SrcTrait &gt; Struct Template Reference
+=====================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1ops_1_1_init_data_op_3_01_turbine_kynema_00_01_src_trait_01_4.html

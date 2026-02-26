@@ -1,0 +1,14 @@
+.. meta::5f4467688a86bbf98e985b3f730abc65715586fbb95e2ff3a7bf5ba9b7b8abdcace3544a3cf077b6e798a81685b593e47518353c9ec322a937ff739b9dd6a820
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/ABLBoundaryPlane.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/wind\_energy/ABLBoundaryPlane.cpp File Reference
+=============================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _a_b_l_boundary_plane_8cpp.html

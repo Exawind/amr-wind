@@ -1,0 +1,14 @@
+.. meta::1451650e169a33cb04ede3752b0ec6c0c8256352a497bc061fc0775c900459ca9bffaad4493eedf9e4a1a749f7faf08d09938d45781bb574f483a16028e486ca
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::PDEFields Struct Reference
+
+PDEFields Struct Reference
+==========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1pde_1_1_p_d_e_fields.html

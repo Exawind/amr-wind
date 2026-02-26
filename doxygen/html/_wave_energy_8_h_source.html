@@ -1,0 +1,314 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/WaveEnergy.H Source File &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/WaveEnergy.H Source File</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/_wave_energy_8_h_source.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="home-runner-work-amr-wind-amr-wind-amr-wind-utilities-sampling-waveenergy-h-source-file">
+<h1>/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/WaveEnergy.H Source File<a class="headerlink" href="#home-runner-work-amr-wind-amr-wind-amr-wind-utilities-sampling-waveenergy-h-source-file" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/WaveEnergy.H Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="dir_d85575251dd712327fe3cf057fa568b4.html">amr-wind</a></li><li class="navelem"><a href="dir_212148f97b8bb53ebaebb3bf8a8b5de4.html">amr-wind</a></li><li class="navelem"><a href="dir_e9168f3bfea397a173489332f8554c97.html">utilities</a></li><li class="navelem"><a href="dir_75d00a63057b46a9c7c9a2874a64aec1.html">sampling</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="headertitle"><div class="title">WaveEnergy.H</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="_wave_energy_8_h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef WAVEENERGY_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define WAVEENERGY_H</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="_c_f_d_sim_8_h.html">amr-wind/CFDSim.H</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="_post_processing_8_h.html">amr-wind/utilities/PostProcessing.H</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;AMReX_REAL.H&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">using namespace </span>amrex::literals;</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceamr__wind_1_1wave__energy.html">amr_wind::wave_energy</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span></div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="};">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html">   32</a></span><span class="keyword">class </span><a class="code hl_function" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#aa51a0f9f57354dc4be71c510220a18c2">WaveEnergy</a> : <span class="keyword">public</span> PostProcessBase::Register&lt;WaveEnergy&gt;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>{</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#aa0502413327d2f1c8d97ed47810021f3">   35</a></span>    <span class="keyword">static</span> std::string <a class="code hl_function" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#aa0502413327d2f1c8d97ed47810021f3">identifier</a>() { <span class="keywordflow">return</span> <span class="stringliteral">&quot;WaveEnergy&quot;</span>; }</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <a class="code hl_function" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#aa51a0f9f57354dc4be71c510220a18c2">WaveEnergy</a>(<a class="code hl_class" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; <span class="comment">/*sim*/</span>, std::string <span class="comment">/*label*/</span>);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a1e27ffb05808eddd7790e9194b1515be">   39</a></span>    <a class="code hl_function" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a1e27ffb05808eddd7790e9194b1515be">~WaveEnergy</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#aa9b4788427b189a0fdf67916cfcc0439">   42</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#aa9b4788427b189a0fdf67916cfcc0439">pre_init_actions</a>()<span class="keyword"> override </span>{}</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a482227de0ce4464d9e851d5aaa7949a6">initialize</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a68a22e219688dd835760b1d75bcfd83e">   47</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a68a22e219688dd835760b1d75bcfd83e">post_advance_work</a>()<span class="keyword"> override </span>{};</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#ab4c027d76e9879b56869d84e6acf2d8d">output_actions</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a9b39b54aeca9ed8a95be37bb92d31304">   52</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a9b39b54aeca9ed8a95be37bb92d31304">post_regrid_actions</a>()<span class="keyword"> override </span>{}</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    amrex::Real <a class="code hl_function" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#aa4642b60f9e31fee95c7b543e651eb96">calculate_kinetic_energy</a>();</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    amrex::Real <a class="code hl_function" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#af4e3ed7f04ec06cd77357c11e3acb48a">calculate_potential_energy</a>();</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span></div>
+<div class="foldopen" id="foldopen00059" data-start="{" data-end="}">
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a5091c0be49a706690d1dfcf39424a697">   59</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a5091c0be49a706690d1dfcf39424a697">wave_energy</a>(amrex::Real&amp; ke, amrex::Real&amp; pe)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        ke = <a class="code hl_variable" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a395564b4e51f6ceaf23574549ac47c4f">m_wave_kinetic_energy</a>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        pe = <a class="code hl_variable" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#afede3680bed59b9947a885dc187df5ad">m_wave_potential_energy</a>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    };</div>
+</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a442423d04775d766143093fb14ecb97e">prepare_ascii_file</a>();</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span></div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#aee9ab119d466d20695e04ab7bfcfcc2b">write_ascii</a>();</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span></div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a395564b4e51f6ceaf23574549ac47c4f">   73</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a395564b4e51f6ceaf23574549ac47c4f">m_wave_kinetic_energy</a>{0.0_rt};</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#afede3680bed59b9947a885dc187df5ad">   74</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#afede3680bed59b9947a885dc187df5ad">m_wave_potential_energy</a>{0.0_rt};</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a806e926c87150afddf278078a152b028">   77</a></span>    <a class="code hl_class" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a806e926c87150afddf278078a152b028">m_sim</a>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span></div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a1e4420ae4b9942547ee9b4de95edec16">   84</a></span>    <span class="keyword">const</span> std::string <a class="code hl_variable" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a1e4420ae4b9942547ee9b4de95edec16">m_label</a>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span></div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno"><a class="line" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a9fb2eab15fe7af43e4dccdb4b00f4442">   87</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a9fb2eab15fe7af43e4dccdb4b00f4442">m_velocity</a>;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno"><a class="line" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a900743bb93539102dbe8fdb17b4b0785">   89</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a900743bb93539102dbe8fdb17b4b0785">m_vof</a>;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span></div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a9fad51cdfbf86c01df1786d8de666e5c">   92</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a9fad51cdfbf86c01df1786d8de666e5c">m_gravity</a>{0.0_rt, 0.0_rt, -9.81_rt};</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span></div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno"><a class="line" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a4f1b0dfc71a18be70c2dadbb70f9aafe">   95</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a4f1b0dfc71a18be70c2dadbb70f9aafe">m_pe_off</a> = 0.0_rt;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno"><a class="line" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a32b4765012f6968d18ec82b09e799a9a">   97</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a32b4765012f6968d18ec82b09e799a9a">m_escl</a> = 1.0_rt;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span></div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno"><a class="line" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a09dd0336850eb3878f84712b66b0ffe1">  100</a></span>    std::string <a class="code hl_variable" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a09dd0336850eb3878f84712b66b0ffe1">m_out_fname</a>;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span></div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno"><a class="line" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a36372e90feb32fab21499f3322eb7714">  103</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a36372e90feb32fab21499f3322eb7714">m_width</a>{22};</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span></div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno"><a class="line" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#af81b6ea9afe09194a128c2acfff8ec2e">  106</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#af81b6ea9afe09194a128c2acfff8ec2e">m_precision</a>{12};</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>};</div>
+</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>} <span class="comment">// namespace amr_wind::wave_energy</span></div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span><span class="preprocessor">#endif </span><span class="comment">/* WAVEENERGY_H */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="a_c_f_d_sim_8_h_html"><div class="ttname"><a href="_c_f_d_sim_8_h.html">CFDSim.H</a></div></div>
+<div class="ttc" id="a_post_processing_8_h_html"><div class="ttname"><a href="_post_processing_8_h.html">PostProcessing.H</a></div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html">amr_wind::CFDSim</a></div><div class="ttdef"><b>Definition</b> CFDSim.H:54</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_html"><div class="ttname"><a href="classamr__wind_1_1_field.html">amr_wind::Field</a></div><div class="ttdef"><b>Definition</b> Field.H:112</div></div>
+<div class="ttc" id="aclassamr__wind_1_1wave__energy_1_1_wave_energy_html_a09dd0336850eb3878f84712b66b0ffe1"><div class="ttname"><a href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a09dd0336850eb3878f84712b66b0ffe1">amr_wind::wave_energy::WaveEnergy::m_out_fname</a></div><div class="ttdeci">std::string m_out_fname</div><div class="ttdoc">filename for ASCII output</div><div class="ttdef"><b>Definition</b> WaveEnergy.H:100</div></div>
+<div class="ttc" id="aclassamr__wind_1_1wave__energy_1_1_wave_energy_html_a1e27ffb05808eddd7790e9194b1515be"><div class="ttname"><a href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a1e27ffb05808eddd7790e9194b1515be">amr_wind::wave_energy::WaveEnergy::~WaveEnergy</a></div><div class="ttdeci">~WaveEnergy() override</div></div>
+<div class="ttc" id="aclassamr__wind_1_1wave__energy_1_1_wave_energy_html_a1e4420ae4b9942547ee9b4de95edec16"><div class="ttname"><a href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a1e4420ae4b9942547ee9b4de95edec16">amr_wind::wave_energy::WaveEnergy::m_label</a></div><div class="ttdeci">const std::string m_label</div><div class="ttdef"><b>Definition</b> WaveEnergy.H:84</div></div>
+<div class="ttc" id="aclassamr__wind_1_1wave__energy_1_1_wave_energy_html_a32b4765012f6968d18ec82b09e799a9a"><div class="ttname"><a href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a32b4765012f6968d18ec82b09e799a9a">amr_wind::wave_energy::WaveEnergy::m_escl</a></div><div class="ttdeci">amrex::Real m_escl</div><div class="ttdoc">volumetric scaling for each energy</div><div class="ttdef"><b>Definition</b> WaveEnergy.H:97</div></div>
+<div class="ttc" id="aclassamr__wind_1_1wave__energy_1_1_wave_energy_html_a36372e90feb32fab21499f3322eb7714"><div class="ttname"><a href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a36372e90feb32fab21499f3322eb7714">amr_wind::wave_energy::WaveEnergy::m_width</a></div><div class="ttdeci">int m_width</div><div class="ttdoc">width in ASCII output</div><div class="ttdef"><b>Definition</b> WaveEnergy.H:103</div></div>
+<div class="ttc" id="aclassamr__wind_1_1wave__energy_1_1_wave_energy_html_a395564b4e51f6ceaf23574549ac47c4f"><div class="ttname"><a href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a395564b4e51f6ceaf23574549ac47c4f">amr_wind::wave_energy::WaveEnergy::m_wave_kinetic_energy</a></div><div class="ttdeci">amrex::Real m_wave_kinetic_energy</div><div class="ttdoc">store the total wave energy</div><div class="ttdef"><b>Definition</b> WaveEnergy.H:73</div></div>
+<div class="ttc" id="aclassamr__wind_1_1wave__energy_1_1_wave_energy_html_a442423d04775d766143093fb14ecb97e"><div class="ttname"><a href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a442423d04775d766143093fb14ecb97e">amr_wind::wave_energy::WaveEnergy::prepare_ascii_file</a></div><div class="ttdeci">virtual void prepare_ascii_file()</div><div class="ttdoc">prepare ASCII file and directory</div><div class="ttdef"><b>Definition</b> WaveEnergy.cpp:178</div></div>
+<div class="ttc" id="aclassamr__wind_1_1wave__energy_1_1_wave_energy_html_a482227de0ce4464d9e851d5aaa7949a6"><div class="ttname"><a href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a482227de0ce4464d9e851d5aaa7949a6">amr_wind::wave_energy::WaveEnergy::initialize</a></div><div class="ttdeci">void initialize() override</div><div class="ttdoc">Read user inputs and get information needed for calculations.</div><div class="ttdef"><b>Definition</b> WaveEnergy.cpp:24</div></div>
+<div class="ttc" id="aclassamr__wind_1_1wave__energy_1_1_wave_energy_html_a4f1b0dfc71a18be70c2dadbb70f9aafe"><div class="ttname"><a href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a4f1b0dfc71a18be70c2dadbb70f9aafe">amr_wind::wave_energy::WaveEnergy::m_pe_off</a></div><div class="ttdeci">amrex::Real m_pe_off</div><div class="ttdoc">offset for potential energy calculation</div><div class="ttdef"><b>Definition</b> WaveEnergy.H:95</div></div>
+<div class="ttc" id="aclassamr__wind_1_1wave__energy_1_1_wave_energy_html_a5091c0be49a706690d1dfcf39424a697"><div class="ttname"><a href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a5091c0be49a706690d1dfcf39424a697">amr_wind::wave_energy::WaveEnergy::wave_energy</a></div><div class="ttdeci">void wave_energy(amrex::Real &amp;ke, amrex::Real &amp;pe) const</div><div class="ttdoc">Output private variables that store energy measurements.</div><div class="ttdef"><b>Definition</b> WaveEnergy.H:59</div></div>
+<div class="ttc" id="aclassamr__wind_1_1wave__energy_1_1_wave_energy_html_a68a22e219688dd835760b1d75bcfd83e"><div class="ttname"><a href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a68a22e219688dd835760b1d75bcfd83e">amr_wind::wave_energy::WaveEnergy::post_advance_work</a></div><div class="ttdeci">void post_advance_work() override</div><div class="ttdef"><b>Definition</b> WaveEnergy.H:47</div></div>
+<div class="ttc" id="aclassamr__wind_1_1wave__energy_1_1_wave_energy_html_a806e926c87150afddf278078a152b028"><div class="ttname"><a href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a806e926c87150afddf278078a152b028">amr_wind::wave_energy::WaveEnergy::m_sim</a></div><div class="ttdeci">CFDSim &amp; m_sim</div><div class="ttdoc">Reference to the CFD sim.</div><div class="ttdef"><b>Definition</b> WaveEnergy.H:77</div></div>
+<div class="ttc" id="aclassamr__wind_1_1wave__energy_1_1_wave_energy_html_a900743bb93539102dbe8fdb17b4b0785"><div class="ttname"><a href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a900743bb93539102dbe8fdb17b4b0785">amr_wind::wave_energy::WaveEnergy::m_vof</a></div><div class="ttdeci">const Field &amp; m_vof</div><div class="ttdoc">reference to vof</div><div class="ttdef"><b>Definition</b> WaveEnergy.H:89</div></div>
+<div class="ttc" id="aclassamr__wind_1_1wave__energy_1_1_wave_energy_html_a9b39b54aeca9ed8a95be37bb92d31304"><div class="ttname"><a href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a9b39b54aeca9ed8a95be37bb92d31304">amr_wind::wave_energy::WaveEnergy::post_regrid_actions</a></div><div class="ttdeci">void post_regrid_actions() override</div><div class="ttdef"><b>Definition</b> WaveEnergy.H:52</div></div>
+<div class="ttc" id="aclassamr__wind_1_1wave__energy_1_1_wave_energy_html_a9fad51cdfbf86c01df1786d8de666e5c"><div class="ttname"><a href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a9fad51cdfbf86c01df1786d8de666e5c">amr_wind::wave_energy::WaveEnergy::m_gravity</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_gravity</div><div class="ttdoc">gravity vector</div><div class="ttdef"><b>Definition</b> WaveEnergy.H:92</div></div>
+<div class="ttc" id="aclassamr__wind_1_1wave__energy_1_1_wave_energy_html_a9fb2eab15fe7af43e4dccdb4b00f4442"><div class="ttname"><a href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#a9fb2eab15fe7af43e4dccdb4b00f4442">amr_wind::wave_energy::WaveEnergy::m_velocity</a></div><div class="ttdeci">const Field &amp; m_velocity</div><div class="ttdoc">reference to velocity</div><div class="ttdef"><b>Definition</b> WaveEnergy.H:87</div></div>
+<div class="ttc" id="aclassamr__wind_1_1wave__energy_1_1_wave_energy_html_aa0502413327d2f1c8d97ed47810021f3"><div class="ttname"><a href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#aa0502413327d2f1c8d97ed47810021f3">amr_wind::wave_energy::WaveEnergy::identifier</a></div><div class="ttdeci">static std::string identifier()</div><div class="ttdef"><b>Definition</b> WaveEnergy.H:35</div></div>
+<div class="ttc" id="aclassamr__wind_1_1wave__energy_1_1_wave_energy_html_aa4642b60f9e31fee95c7b543e651eb96"><div class="ttname"><a href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#aa4642b60f9e31fee95c7b543e651eb96">amr_wind::wave_energy::WaveEnergy::calculate_kinetic_energy</a></div><div class="ttdeci">amrex::Real calculate_kinetic_energy()</div><div class="ttdoc">Calculate the sum of stated energy in liquid phase.</div><div class="ttdef"><b>Definition</b> WaveEnergy.cpp:50</div></div>
+<div class="ttc" id="aclassamr__wind_1_1wave__energy_1_1_wave_energy_html_aa51a0f9f57354dc4be71c510220a18c2"><div class="ttname"><a href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#aa51a0f9f57354dc4be71c510220a18c2">amr_wind::wave_energy::WaveEnergy::WaveEnergy</a></div><div class="ttdeci">WaveEnergy(CFDSim &amp;, std::string)</div><div class="ttdef"><b>Definition</b> WaveEnergy.cpp:15</div></div>
+<div class="ttc" id="aclassamr__wind_1_1wave__energy_1_1_wave_energy_html_aa9b4788427b189a0fdf67916cfcc0439"><div class="ttname"><a href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#aa9b4788427b189a0fdf67916cfcc0439">amr_wind::wave_energy::WaveEnergy::pre_init_actions</a></div><div class="ttdeci">void pre_init_actions() override</div><div class="ttdoc">Perform actions before mesh is created.</div><div class="ttdef"><b>Definition</b> WaveEnergy.H:42</div></div>
+<div class="ttc" id="aclassamr__wind_1_1wave__energy_1_1_wave_energy_html_ab4c027d76e9879b56869d84e6acf2d8d"><div class="ttname"><a href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#ab4c027d76e9879b56869d84e6acf2d8d">amr_wind::wave_energy::WaveEnergy::output_actions</a></div><div class="ttdeci">void output_actions() override</div><div class="ttdoc">Integrate energy components and output to file.</div><div class="ttdef"><b>Definition</b> WaveEnergy.cpp:167</div></div>
+<div class="ttc" id="aclassamr__wind_1_1wave__energy_1_1_wave_energy_html_aee9ab119d466d20695e04ab7bfcfcc2b"><div class="ttname"><a href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#aee9ab119d466d20695e04ab7bfcfcc2b">amr_wind::wave_energy::WaveEnergy::write_ascii</a></div><div class="ttdeci">virtual void write_ascii()</div><div class="ttdoc">Output sampled data in ASCII format.</div><div class="ttdef"><b>Definition</b> WaveEnergy.cpp:195</div></div>
+<div class="ttc" id="aclassamr__wind_1_1wave__energy_1_1_wave_energy_html_af4e3ed7f04ec06cd77357c11e3acb48a"><div class="ttname"><a href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#af4e3ed7f04ec06cd77357c11e3acb48a">amr_wind::wave_energy::WaveEnergy::calculate_potential_energy</a></div><div class="ttdeci">amrex::Real calculate_potential_energy()</div><div class="ttdef"><b>Definition</b> WaveEnergy.cpp:105</div></div>
+<div class="ttc" id="aclassamr__wind_1_1wave__energy_1_1_wave_energy_html_af81b6ea9afe09194a128c2acfff8ec2e"><div class="ttname"><a href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#af81b6ea9afe09194a128c2acfff8ec2e">amr_wind::wave_energy::WaveEnergy::m_precision</a></div><div class="ttdeci">int m_precision</div><div class="ttdoc">precision in ASCII output</div><div class="ttdef"><b>Definition</b> WaveEnergy.H:106</div></div>
+<div class="ttc" id="aclassamr__wind_1_1wave__energy_1_1_wave_energy_html_afede3680bed59b9947a885dc187df5ad"><div class="ttname"><a href="classamr__wind_1_1wave__energy_1_1_wave_energy.html#afede3680bed59b9947a885dc187df5ad">amr_wind::wave_energy::WaveEnergy::m_wave_potential_energy</a></div><div class="ttdeci">amrex::Real m_wave_potential_energy</div><div class="ttdef"><b>Definition</b> WaveEnergy.H:74</div></div>
+<div class="ttc" id="anamespaceamr__wind_1_1wave__energy_html"><div class="ttname"><a href="namespaceamr__wind_1_1wave__energy.html">amr_wind::wave_energy</a></div><div class="ttdef"><b>Definition</b> WaveEnergy.cpp:13</div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,14 @@
+.. meta::ff04952799e798c224568c7f3ea6bc898c034ee459eb01f95aa866443a4280ee8aeb50da7bd5f5755dc4e3d7f2bb734efe8a4019799de86ba9581a801fd826c2
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/turbulence/RANS/KLAxell.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/turbulence/RANS/KLAxell.H File Reference
+=====================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _k_l_axell_8_h.html

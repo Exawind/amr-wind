@@ -1,0 +1,618 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::pde::icns::CoriolisForcing Class Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::pde::icns::CoriolisForcing Class Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/classamr__wind_1_1pde_1_1icns_1_1_coriolis_forcing.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="coriolisforcing-class-reference">
+<h1>CoriolisForcing Class Reference<a class="headerlink" href="#coriolisforcing-class-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::pde::icns::CoriolisForcing Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="namespaceamr__wind_1_1pde.html">pde</a></li><li class="navelem"><a href="namespaceamr__wind_1_1pde_1_1icns.html">icns</a></li><li class="navelem"><a href="classamr__wind_1_1pde_1_1icns_1_1_coriolis_forcing.html">CoriolisForcing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
+<a href="classamr__wind_1_1pde_1_1icns_1_1_coriolis_forcing-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::pde::icns::CoriolisForcing Class Reference<div class="ingroups"><a class="el" href="group__eqsys.html">Equation Systems</a> &raquo; <a class="el" href="group__icns.html">Incompressible Navier-Stokes</a> &raquo; <a class="el" href="group__icns__src.html">ICNS Source terms</a> &#124; <a class="el" href="group__physics.html">Physics models</a> &raquo; <a class="el" href="group__wind.html">Wind energy modeling</a> &raquo; <a class="el" href="group__we__abl.html">ABL</a></div></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_coriolis_forcing_8_h_source.html">CoriolisForcing.H</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for amr_wind::pde::icns::CoriolisForcing:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1pde_1_1icns_1_1_coriolis_forcing__inherit__graph.svg" width="199" height="154"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for amr_wind::pde::icns::CoriolisForcing:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1pde_1_1icns_1_1_coriolis_forcing__coll__graph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a1e273d7a6b8b2b621fe9a3d39d0e37fb" id="r_a1e273d7a6b8b2b621fe9a3d39d0e37fb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1e273d7a6b8b2b621fe9a3d39d0e37fb">CoriolisForcing</a> (const <a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;)</td></tr>
+<tr class="memitem:a6f70cfd341d628632a2aca0f5108725c" id="r_a6f70cfd341d628632a2aca0f5108725c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6f70cfd341d628632a2aca0f5108725c">~CoriolisForcing</a> () override</td></tr>
+<tr class="memitem:aec58d042813567a06fffc0421bd2ec60" id="r_aec58d042813567a06fffc0421bd2ec60"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aec58d042813567a06fffc0421bd2ec60">operator()</a> (int lev, const amrex::MFIter &amp;mfi, const amrex::Box &amp;bx, <a class="el" href="group__fields.html#ga5251ec6b376231128a9647f3028dbac0">FieldState</a> fstate, const amrex::Array4&lt; amrex::Real &gt; &amp;src_term) const override</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a9a8f88c51615b8e2638d838adeb2434f" id="r_a9a8f88c51615b8e2638d838adeb2434f"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9a8f88c51615b8e2638d838adeb2434f">identifier</a> ()</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a3f0200f6da57cd259a78cd163f0c700f" id="r_a3f0200f6da57cd259a78cd163f0c700f"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3f0200f6da57cd259a78cd163f0c700f">m_velocity</a></td></tr>
+<tr class="memitem:a02213c07a3301b2751b2c6f05ab100d6" id="r_a02213c07a3301b2751b2c6f05ab100d6"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a02213c07a3301b2751b2c6f05ab100d6">m_latitude</a> {0.0_rt}</td></tr>
+<tr class="memdesc:a02213c07a3301b2751b2c6f05ab100d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Latitude where the Coriolis forcing is computed (+ve northern hemisphere)  <br /></td></tr>
+<tr class="memitem:a3b444f7e500a85a6ce9f932a09fae413" id="r_a3b444f7e500a85a6ce9f932a09fae413"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3b444f7e500a85a6ce9f932a09fae413">m_sinphi</a> {0.0_rt}</td></tr>
+<tr class="memitem:a7bc6bd84cbb6792548e92e0ab8109bdd" id="r_a7bc6bd84cbb6792548e92e0ab8109bdd"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7bc6bd84cbb6792548e92e0ab8109bdd">m_cosphi</a> {0.0_rt}</td></tr>
+<tr class="memitem:ae6199fa3be14941a597536b4e77cfbce" id="r_ae6199fa3be14941a597536b4e77cfbce"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae6199fa3be14941a597536b4e77cfbce">m_omega</a> {7.3e-5_rt}</td></tr>
+<tr class="memdesc:ae6199fa3be14941a597536b4e77cfbce"><td class="mdescLeft">&#160;</td><td class="mdescRight">omega --&gt; Earth’s rotation angular speed  <br /></td></tr>
+<tr class="memitem:a5ebc42ef0bc9c8e20c2a8979ac00eb73" id="r_a5ebc42ef0bc9c8e20c2a8979ac00eb73"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5ebc42ef0bc9c8e20c2a8979ac00eb73">m_coriolis_factor</a> {0.0_rt}</td></tr>
+<tr class="memdesc:a5ebc42ef0bc9c8e20c2a8979ac00eb73"><td class="mdescLeft">&#160;</td><td class="mdescRight">2.0_rt * omega  <br /></td></tr>
+<tr class="memitem:a0bdd808e0115999c4c4a1fd54cb2ebcf" id="r_a0bdd808e0115999c4c4a1fd54cb2ebcf"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0bdd808e0115999c4c4a1fd54cb2ebcf">m_is_horizontal</a> {false}</td></tr>
+<tr id="pri-attribs-0" class="groupHeader"><td colspan="2"><div class="groupHeader"></div></td></tr>
+<tr class="memitem:a86e6a367d9712a8dd3012fa0fb4cb15b" id="r_a86e6a367d9712a8dd3012fa0fb4cb15b"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a86e6a367d9712a8dd3012fa0fb4cb15b">m_east</a> {1.0_rt, 0.0_rt, 0.0_rt}</td></tr>
+<tr class="memitem:a0b2096ab90d2a355519dfdfdaa899c1d" id="r_a0b2096ab90d2a355519dfdfdaa899c1d"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0b2096ab90d2a355519dfdfdaa899c1d">m_north</a> {0.0_rt, 1.0_rt, 0.0_rt}</td></tr>
+<tr class="memitem:af8c564155378e0d8310868294cc0a8f9" id="r_af8c564155378e0d8310868294cc0a8f9"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af8c564155378e0d8310868294cc0a8f9">m_up</a> {0.0_rt, 0.0_rt, 1.0_rt}</td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Account for Coriolis forcing due to earth's rotation </p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a1e273d7a6b8b2b621fe9a3d39d0e37fb" name="a1e273d7a6b8b2b621fe9a3d39d0e37fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e273d7a6b8b2b621fe9a3d39d0e37fb">&#9670;&#160;</a></span>CoriolisForcing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::pde::icns::CoriolisForcing::CoriolisForcing </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>sim</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel explicit">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Coriolis term for planetary rotation</p>
+<p>Parameters are read from the <span class="tt">abl</span> namespace in the input file. The following parameters are available:</p>
+<ul>
+<li><span class="tt">latitude</span>: The latitude (in degrees) where the Coriolis term is computed. This argument is mandatory.</li>
+<li><span class="tt">east_vector</span>, <span class="tt">north_vector</span> (Optional) Vectors specifying the east and north directions with respect to computational domain</li>
+<li><span class="tt">rotational_time_period</span> Time period for planetary rotation (default: 86400 seconds) </li>
+</ul>
+
+</div>
+</div>
+<a id="a6f70cfd341d628632a2aca0f5108725c" name="a6f70cfd341d628632a2aca0f5108725c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f70cfd341d628632a2aca0f5108725c">&#9670;&#160;</a></span>~CoriolisForcing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::pde::icns::CoriolisForcing::~CoriolisForcing </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a9a8f88c51615b8e2638d838adeb2434f" name="a9a8f88c51615b8e2638d838adeb2434f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a8f88c51615b8e2638d838adeb2434f">&#9670;&#160;</a></span>identifier()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::pde::icns::CoriolisForcing::identifier </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aec58d042813567a06fffc0421bd2ec60" name="aec58d042813567a06fffc0421bd2ec60"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec58d042813567a06fffc0421bd2ec60">&#9670;&#160;</a></span>operator()()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::pde::icns::CoriolisForcing::operator() </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>lev</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::MFIter &amp;</td>          <td class="paramname"><span class="paramname"><em>mfi</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Box &amp;</td>          <td class="paramname"><span class="paramname"><em>bx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__fields.html#ga5251ec6b376231128a9647f3028dbac0">FieldState</a></td>          <td class="paramname"><span class="paramname"><em>fstate</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Array4&lt; amrex::Real &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>src_term</em></span>&#160;) const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a5ebc42ef0bc9c8e20c2a8979ac00eb73" name="a5ebc42ef0bc9c8e20c2a8979ac00eb73"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ebc42ef0bc9c8e20c2a8979ac00eb73">&#9670;&#160;</a></span>m_coriolis_factor</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::pde::icns::CoriolisForcing::m_coriolis_factor {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>2.0_rt * omega </p>
+
+</div>
+</div>
+<a id="a7bc6bd84cbb6792548e92e0ab8109bdd" name="a7bc6bd84cbb6792548e92e0ab8109bdd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bc6bd84cbb6792548e92e0ab8109bdd">&#9670;&#160;</a></span>m_cosphi</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::pde::icns::CoriolisForcing::m_cosphi {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a86e6a367d9712a8dd3012fa0fb4cb15b" name="a86e6a367d9712a8dd3012fa0fb4cb15b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86e6a367d9712a8dd3012fa0fb4cb15b">&#9670;&#160;</a></span>m_east</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Real&gt; amr_wind::pde::icns::CoriolisForcing::m_east {1.0_rt, 0.0_rt, 0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Orientation of the grid w.r.t. to planetary coordinate system </p>
+
+</div>
+</div>
+<a id="a0bdd808e0115999c4c4a1fd54cb2ebcf" name="a0bdd808e0115999c4c4a1fd54cb2ebcf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0bdd808e0115999c4c4a1fd54cb2ebcf">&#9670;&#160;</a></span>m_is_horizontal</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::pde::icns::CoriolisForcing::m_is_horizontal {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a02213c07a3301b2751b2c6f05ab100d6" name="a02213c07a3301b2751b2c6f05ab100d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02213c07a3301b2751b2c6f05ab100d6">&#9670;&#160;</a></span>m_latitude</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::pde::icns::CoriolisForcing::m_latitude {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Latitude where the Coriolis forcing is computed (+ve northern hemisphere) </p>
+
+</div>
+</div>
+<a id="a0b2096ab90d2a355519dfdfdaa899c1d" name="a0b2096ab90d2a355519dfdfdaa899c1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b2096ab90d2a355519dfdfdaa899c1d">&#9670;&#160;</a></span>m_north</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Real&gt; amr_wind::pde::icns::CoriolisForcing::m_north {0.0_rt, 1.0_rt, 0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae6199fa3be14941a597536b4e77cfbce" name="ae6199fa3be14941a597536b4e77cfbce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6199fa3be14941a597536b4e77cfbce">&#9670;&#160;</a></span>m_omega</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::pde::icns::CoriolisForcing::m_omega {7.3e-5_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>omega --&gt; Earth’s rotation angular speed </p>
+
+</div>
+</div>
+<a id="a3b444f7e500a85a6ce9f932a09fae413" name="a3b444f7e500a85a6ce9f932a09fae413"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b444f7e500a85a6ce9f932a09fae413">&#9670;&#160;</a></span>m_sinphi</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::pde::icns::CoriolisForcing::m_sinphi {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af8c564155378e0d8310868294cc0a8f9" name="af8c564155378e0d8310868294cc0a8f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8c564155378e0d8310868294cc0a8f9">&#9670;&#160;</a></span>m_up</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Real&gt; amr_wind::pde::icns::CoriolisForcing::m_up {0.0_rt, 0.0_rt, 1.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3f0200f6da57cd259a78cd163f0c700f" name="a3f0200f6da57cd259a78cd163f0c700f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f0200f6da57cd259a78cd163f0c700f">&#9670;&#160;</a></span>m_velocity</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_field.html">Field</a>&amp; amr_wind::pde::icns::CoriolisForcing::m_velocity</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/icns/source_terms/<a class="el" href="_coriolis_forcing_8_h_source.html">CoriolisForcing.H</a></li>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/icns/source_terms/<a class="el" href="_coriolis_forcing_8cpp.html">CoriolisForcing.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

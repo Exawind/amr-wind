@@ -1,0 +1,14 @@
+.. meta::507a798fb4664ea52ba2aa55fe1baa8a4b7ee103c3de1f578a0cdd4209727c2bace0d88b8927f3d84b5714cd03b32fa986d213bc5ea7b8cf293bdbcc151a3c79
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/fvm/curvature.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/fvm/curvature.H File Reference
+===========================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: curvature_8_h.html

@@ -1,0 +1,14 @@
+.. meta::741b5acc745db74a7951197da2272e92624ff860778efb1c096de97255d8bbd0106f01b0bef45da819d1a673466193fad47a9c2fb815d2f7900a28ac188e6d94
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/setup Directory Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/setup Directory Reference
+======================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: dir_c4854bfc4a822034715202efe12f7c01.html

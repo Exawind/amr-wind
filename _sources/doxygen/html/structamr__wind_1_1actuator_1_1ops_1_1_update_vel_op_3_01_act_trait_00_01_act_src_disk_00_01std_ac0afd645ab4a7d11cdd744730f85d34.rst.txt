@@ -1,0 +1,14 @@
+.. meta::8e4c89a8b6f2549c8aa7fd3f7ee503bf01dfe5c478d6d439beeadf9f577d78a690238df8bd0ff1e45e5c4e10c1c3634f4efd83a06d391b1c3457fa2cb3856e96
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::UpdateVelOp&lt; ActTrait, ActSrcDisk, std::enable_if_t&lt; std::is_base_of_v&lt; DiskType, ActTrait &gt; &gt; &gt; Struct Template Reference
+
+is\_base\_of\_v&lt; DiskType, ActTrait &gt; &gt; &gt; Struct Template Reference
+===============================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1ops_1_1_update_vel_op_3_01_act_trait_00_01_act_src_disk_00_01std_ac0afd645ab4a7d11cdd744730f85d34.html

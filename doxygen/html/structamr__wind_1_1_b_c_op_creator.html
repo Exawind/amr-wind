@@ -1,0 +1,435 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::BCOpCreator&amp;lt; InflowOp, WallOp &amp;gt; Struct Template Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::BCOpCreator&amp;lt; InflowOp, WallOp &amp;gt; Struct Template Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/structamr__wind_1_1_b_c_op_creator.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="bcopcreator-lt-inflowop-wallop-gt-struct-template-reference">
+<h1>BCOpCreator&amp;lt; InflowOp, WallOp &amp;gt; Struct Template Reference<a class="headerlink" href="#bcopcreator-lt-inflowop-wallop-gt-struct-template-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::BCOpCreator&lt; InflowOp, WallOp &gt; Struct Template Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="structamr__wind_1_1_b_c_op_creator.html">BCOpCreator</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="structamr__wind_1_1_b_c_op_creator-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::BCOpCreator&lt; InflowOp, WallOp &gt; Struct Template Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_field_b_c_ops_8_h_source.html">FieldBCOps.H</a>&gt;</code></p>
+<div class="dynheader">
+Collaboration diagram for amr_wind::BCOpCreator&lt; InflowOp, WallOp &gt;:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" loading="lazy" frameborder="0" src="structamr__wind_1_1_b_c_op_creator__coll__graph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-types" class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:af3ea15419aeb5297627ed70de84f083f" id="r_af3ea15419aeb5297627ed70de84f083f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af3ea15419aeb5297627ed70de84f083f">InflowOpType</a> = typename InflowOp::DeviceType</td></tr>
+<tr class="memitem:afbd951d1c54b190e55e7a8bbda745e21" id="r_afbd951d1c54b190e55e7a8bbda745e21"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afbd951d1c54b190e55e7a8bbda745e21">WallOpType</a> = typename WallOp::DeviceType</td></tr>
+<tr class="memitem:a9bee82831c1a53901ec34a56f4982533" id="r_a9bee82831c1a53901ec34a56f4982533"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9bee82831c1a53901ec34a56f4982533">FunctorType</a> = <a class="el" href="structamr__wind_1_1_dirichlet_op.html">DirichletOp</a>&lt;<a class="el" href="#af3ea15419aeb5297627ed70de84f083f">InflowOpType</a>, <a class="el" href="#afbd951d1c54b190e55e7a8bbda745e21">WallOpType</a>&gt;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a1387e2f6d51d58d7f577ee4807f62ec4" id="r_a1387e2f6d51d58d7f577ee4807f62ec4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1387e2f6d51d58d7f577ee4807f62ec4">BCOpCreator</a> (const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;fld)</td></tr>
+<tr class="memitem:a4b863a8e9380a001f3d35b291f131efa" id="r_a4b863a8e9380a001f3d35b291f131efa"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4b863a8e9380a001f3d35b291f131efa">BCOpCreator</a> (const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;fld, const InflowOp &amp;inflow_op, const WallOp &amp;wall_op)</td></tr>
+<tr class="memitem:a31ed1bbd61e6df4bd4cf1d09045d3225" id="r_a31ed1bbd61e6df4bd4cf1d09045d3225"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#a9bee82831c1a53901ec34a56f4982533">FunctorType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a31ed1bbd61e6df4bd4cf1d09045d3225">operator()</a> (const int face_dir=-1) const</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a8648ad3eef42f6dc28237957420f2843" id="r_a8648ad3eef42f6dc28237957420f2843"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8648ad3eef42f6dc28237957420f2843">m_field</a></td></tr>
+<tr class="memitem:ad46081753b48281f65231cb47525b123" id="r_ad46081753b48281f65231cb47525b123"><td class="memItemLeft" align="right" valign="top">InflowOp&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad46081753b48281f65231cb47525b123">m_inflow_op</a></td></tr>
+<tr class="memitem:ac9e2655da25e004277b0e2e41249f297" id="r_ac9e2655da25e004277b0e2e41249f297"><td class="memItemLeft" align="right" valign="top">WallOp&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac9e2655da25e004277b0e2e41249f297">m_wall_op</a></td></tr>
+</table>
+<a name="doc-typedef-members" id="doc-typedef-members"></a><h2 id="header-doc-typedef-members" class="groupheader">Member Typedef Documentation</h2>
+<a id="a9bee82831c1a53901ec34a56f4982533" name="a9bee82831c1a53901ec34a56f4982533"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9bee82831c1a53901ec34a56f4982533">&#9670;&#160;</a></span>FunctorType</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename InflowOp, typename WallOp&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structamr__wind_1_1_b_c_op_creator.html">amr_wind::BCOpCreator</a>&lt; InflowOp, WallOp &gt;::FunctorType = <a class="el" href="structamr__wind_1_1_dirichlet_op.html">DirichletOp</a>&lt;<a class="el" href="#af3ea15419aeb5297627ed70de84f083f">InflowOpType</a>, <a class="el" href="#afbd951d1c54b190e55e7a8bbda745e21">WallOpType</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af3ea15419aeb5297627ed70de84f083f" name="af3ea15419aeb5297627ed70de84f083f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3ea15419aeb5297627ed70de84f083f">&#9670;&#160;</a></span>InflowOpType</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename InflowOp, typename WallOp&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structamr__wind_1_1_b_c_op_creator.html">amr_wind::BCOpCreator</a>&lt; InflowOp, WallOp &gt;::InflowOpType = typename InflowOp::DeviceType</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afbd951d1c54b190e55e7a8bbda745e21" name="afbd951d1c54b190e55e7a8bbda745e21"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afbd951d1c54b190e55e7a8bbda745e21">&#9670;&#160;</a></span>WallOpType</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename InflowOp, typename WallOp&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structamr__wind_1_1_b_c_op_creator.html">amr_wind::BCOpCreator</a>&lt; InflowOp, WallOp &gt;::WallOpType = typename WallOp::DeviceType</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a1387e2f6d51d58d7f577ee4807f62ec4" name="a1387e2f6d51d58d7f577ee4807f62ec4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1387e2f6d51d58d7f577ee4807f62ec4">&#9670;&#160;</a></span>BCOpCreator() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename InflowOp, typename WallOp&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structamr__wind_1_1_b_c_op_creator.html">amr_wind::BCOpCreator</a>&lt; InflowOp, WallOp &gt;::BCOpCreator </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>fld</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel explicit">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4b863a8e9380a001f3d35b291f131efa" name="a4b863a8e9380a001f3d35b291f131efa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b863a8e9380a001f3d35b291f131efa">&#9670;&#160;</a></span>BCOpCreator() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename InflowOp, typename WallOp&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structamr__wind_1_1_b_c_op_creator.html">amr_wind::BCOpCreator</a>&lt; InflowOp, WallOp &gt;::BCOpCreator </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>fld</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const InflowOp &amp;</td>          <td class="paramname"><span class="paramname"><em>inflow_op</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const WallOp &amp;</td>          <td class="paramname"><span class="paramname"><em>wall_op</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel explicit">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a31ed1bbd61e6df4bd4cf1d09045d3225" name="a31ed1bbd61e6df4bd4cf1d09045d3225"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31ed1bbd61e6df4bd4cf1d09045d3225">&#9670;&#160;</a></span>operator()()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename InflowOp, typename WallOp&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a9bee82831c1a53901ec34a56f4982533">FunctorType</a> <a class="el" href="structamr__wind_1_1_b_c_op_creator.html">amr_wind::BCOpCreator</a>&lt; InflowOp, WallOp &gt;::operator() </td>
+          <td>(</td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>face_dir</em></span><span class="paramdefsep"> = </span><span class="paramdefval">-1</span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a8648ad3eef42f6dc28237957420f2843" name="a8648ad3eef42f6dc28237957420f2843"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8648ad3eef42f6dc28237957420f2843">&#9670;&#160;</a></span>m_field</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename InflowOp, typename WallOp&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="el" href="structamr__wind_1_1_b_c_op_creator.html">amr_wind::BCOpCreator</a>&lt; InflowOp, WallOp &gt;::m_field</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad46081753b48281f65231cb47525b123" name="ad46081753b48281f65231cb47525b123"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad46081753b48281f65231cb47525b123">&#9670;&#160;</a></span>m_inflow_op</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename InflowOp, typename WallOp&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">InflowOp <a class="el" href="structamr__wind_1_1_b_c_op_creator.html">amr_wind::BCOpCreator</a>&lt; InflowOp, WallOp &gt;::m_inflow_op</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac9e2655da25e004277b0e2e41249f297" name="ac9e2655da25e004277b0e2e41249f297"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9e2655da25e004277b0e2e41249f297">&#9670;&#160;</a></span>m_wall_op</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename InflowOp, typename WallOp&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">WallOp <a class="el" href="structamr__wind_1_1_b_c_op_creator.html">amr_wind::BCOpCreator</a>&lt; InflowOp, WallOp &gt;::m_wall_op</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/core/<a class="el" href="_field_b_c_ops_8_h_source.html">FieldBCOps.H</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

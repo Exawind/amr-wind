@@ -1,0 +1,14 @@
+.. meta::fa629238addb4f1adb775665b92e5b1208f59802aa682f508d29f73751d46baf1c73c2b63a8f0fad23d0759713c4bd878fcfd18bc3aead645e6b75e1a9d59c47
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::DirichletOp&lt; InflowOp, WallOp &gt; Struct Template Reference
+
+DirichletOp&lt; InflowOp, WallOp &gt; Struct Template Reference
+===============================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1_dirichlet_op.html

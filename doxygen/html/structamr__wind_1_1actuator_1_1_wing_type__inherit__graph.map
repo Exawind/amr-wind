@@ -1,0 +1,9 @@
+<map id="amr_wind::actuator::WingType" name="amr_wind::actuator::WingType">
+<area shape="rect" id="Node000001" title=" " alt="" coords="91,93,239,133"/>
+<area shape="rect" id="Node000003" href="$structamr__wind_1_1actuator_1_1_fixed_wing.html" title=" " alt="" coords="5,181,153,221"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="138,145,100,183,96,179,134,141"/>
+<area shape="rect" id="Node000004" href="$structamr__wind_1_1actuator_1_1_flat_plate.html" title=" " alt="" coords="177,181,325,221"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="195,141,234,179,230,183,192,145"/>
+<area shape="rect" id="Node000002" href="$structamr__wind_1_1actuator_1_1_actuator_type.html" title=" " alt="" coords="91,5,239,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="167,59,167,93,162,93,162,59"/>
+</map>

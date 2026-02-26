@@ -1,0 +1,14 @@
+.. meta::b35c8158011f212575e145875e3f62891886804d03b055a5c087672f489189083d87df70f8ddca734fcfe8d9b2ecc32bf531af95ba4180a2fc63036537e926ec
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::TurbulenceOp&lt; PDE &gt; Struct Template Reference
+
+TurbulenceOp&lt; PDE &gt; Struct Template Reference
+===================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1pde_1_1_turbulence_op.html

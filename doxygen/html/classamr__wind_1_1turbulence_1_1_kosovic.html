@@ -1,0 +1,1094 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::turbulence::Kosovic&amp;lt; Transport &amp;gt; Class Template Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::turbulence::Kosovic&amp;lt; Transport &amp;gt; Class Template Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/classamr__wind_1_1turbulence_1_1_kosovic.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="kosovic-lt-transport-gt-class-template-reference">
+<h1>Kosovic&amp;lt; Transport &amp;gt; Class Template Reference<a class="headerlink" href="#kosovic-lt-transport-gt-class-template-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::turbulence::Kosovic&lt; Transport &gt; Class Template Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="namespaceamr__wind_1_1turbulence.html">turbulence</a></li><li class="navelem"><a href="classamr__wind_1_1turbulence_1_1_kosovic.html">Kosovic</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
+<a href="classamr__wind_1_1turbulence_1_1_kosovic-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::turbulence::Kosovic&lt; Transport &gt; Class Template Reference<div class="ingroups"><a class="el" href="group__turb__model.html">Turbulence models</a></div></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_kosovic_8_h_source.html">Kosovic.H</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for amr_wind::turbulence::Kosovic&lt; Transport &gt;:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1turbulence_1_1_kosovic__inherit__graph.svg" width="262" height="539"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for amr_wind::turbulence::Kosovic&lt; Transport &gt;:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1turbulence_1_1_kosovic__coll__graph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a729dc5a6fd2e8b640487265bfc4cb2c5" id="r_a729dc5a6fd2e8b640487265bfc4cb2c5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a729dc5a6fd2e8b640487265bfc4cb2c5">Kosovic</a> (<a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;sim)</td></tr>
+<tr class="memitem:a7e498365f370a4cb729cc1fdfdd9db10" id="r_a7e498365f370a4cb729cc1fdfdd9db10"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7e498365f370a4cb729cc1fdfdd9db10">model_name</a> () const override</td></tr>
+<tr class="memdesc:a7e498365f370a4cb729cc1fdfdd9db10"><td class="mdescLeft">&#160;</td><td class="mdescRight">Model name for debugging purposes.  <br /></td></tr>
+<tr class="memitem:ae7fccb42654e2dac502cf73611aed975" id="r_ae7fccb42654e2dac502cf73611aed975"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae7fccb42654e2dac502cf73611aed975">update_turbulent_viscosity</a> (<a class="el" href="group__fields.html#ga5251ec6b376231128a9647f3028dbac0">FieldState</a> fstate, <a class="el" href="incflo__enums_8_h.html#a85b1059d3f82fd0319fd63b07f3c1500">DiffusionType</a>) override</td></tr>
+<tr class="memdesc:ae7fccb42654e2dac502cf73611aed975"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the turbulent viscosity field.  <br /></td></tr>
+<tr class="memitem:a55310ea1ba54d75c12240db47d1fb74b" id="r_a55310ea1ba54d75c12240db47d1fb74b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a55310ea1ba54d75c12240db47d1fb74b">post_advance_work</a> () override</td></tr>
+<tr class="memdesc:a55310ea1ba54d75c12240db47d1fb74b"><td class="mdescLeft">&#160;</td><td class="mdescRight">No post advance work for this model.  <br /></td></tr>
+<tr class="memitem:ac72c5a0298ba85292a199301349efa5f" id="r_ac72c5a0298ba85292a199301349efa5f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac72c5a0298ba85292a199301349efa5f">update_alphaeff</a> (<a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;<a class="el" href="classamr__wind_1_1turbulence_1_1_turb_model.html#ad0a36405a1ceb6b8a9754067822873f3">alphaeff</a>) override</td></tr>
+<tr class="memdesc:ac72c5a0298ba85292a199301349efa5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the effective thermal diffusivity field.  <br /></td></tr>
+<tr class="memitem:a53d456975e9dfc4d75e391d6b64f5061" id="r_a53d456975e9dfc4d75e391d6b64f5061"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a53d456975e9dfc4d75e391d6b64f5061">parse_model_coeffs</a> () override</td></tr>
+<tr class="memdesc:a53d456975e9dfc4d75e391d6b64f5061"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse turbulence model coefficients.  <br /></td></tr>
+<tr class="memitem:adb299b11753e520bbb0bce735035e3f9" id="r_adb299b11753e520bbb0bce735035e3f9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1turbulence_1_1_turbulence_model.html#aff9bb3a7eb48f42686b1175cc9fbd390">TurbulenceModel::CoeffsDictType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adb299b11753e520bbb0bce735035e3f9">model_coeffs</a> () const override</td></tr>
+<tr class="memdesc:adb299b11753e520bbb0bce735035e3f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return model coefficients dictionary.  <br /></td></tr>
+<tr class="inherit_header pub_methods_classamr__wind_1_1turbulence_1_1_turb_model_base"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classamr__wind_1_1turbulence_1_1_turb_model_base')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classamr__wind_1_1turbulence_1_1_turb_model_base.html">amr_wind::turbulence::TurbModelBase&lt; Transport &gt;</a></td></tr>
+<tr class="memitem:a8ec7868e5412b209ac0b1a89747e23e7 inherit pub_methods_classamr__wind_1_1turbulence_1_1_turb_model_base" id="r_a8ec7868e5412b209ac0b1a89747e23e7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1turbulence_1_1_turb_model_base.html#a8ec7868e5412b209ac0b1a89747e23e7">TurbModelBase</a> (<a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;sim)</td></tr>
+<tr class="memitem:a23f5ff14992ac88f83ba0742dc057408 inherit pub_methods_classamr__wind_1_1turbulence_1_1_turb_model_base" id="r_a23f5ff14992ac88f83ba0742dc057408"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1turbulence_1_1_turb_model_base.html#a23f5ff14992ac88f83ba0742dc057408">mu_turb</a> () override</td></tr>
+<tr class="memdesc:a23f5ff14992ac88f83ba0742dc057408 inherit pub_methods_classamr__wind_1_1turbulence_1_1_turb_model_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the turbulent viscosity field.  <br /></td></tr>
+<tr class="memitem:a01483293f9748826a0fbb57c1b810198 inherit pub_methods_classamr__wind_1_1turbulence_1_1_turb_model_base" id="r_a01483293f9748826a0fbb57c1b810198"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1turbulence_1_1_turb_model_base.html#a01483293f9748826a0fbb57c1b810198">alpha_turb</a> () override</td></tr>
+<tr class="memdesc:a01483293f9748826a0fbb57c1b810198 inherit pub_methods_classamr__wind_1_1turbulence_1_1_turb_model_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the turbulent thermal diffusivity field.  <br /></td></tr>
+<tr class="memitem:acb5f1030f6db7f7046830690f3c95d92 inherit pub_methods_classamr__wind_1_1turbulence_1_1_turb_model_base" id="r_acb5f1030f6db7f7046830690f3c95d92"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1turbulence_1_1_turb_model_base.html#acb5f1030f6db7f7046830690f3c95d92">update_mueff</a> (<a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;<a class="el" href="classamr__wind_1_1turbulence_1_1_turb_model.html#a72254514f6cb9dec5a1d294a7f38b261">mueff</a>) override</td></tr>
+<tr class="memitem:a6465df960aba7ea34ec75355019bee2f inherit pub_methods_classamr__wind_1_1turbulence_1_1_turb_model_base" id="r_a6465df960aba7ea34ec75355019bee2f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1turbulence_1_1_turb_model_base.html#a6465df960aba7ea34ec75355019bee2f">update_alphaeff</a> (<a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;<a class="el" href="classamr__wind_1_1turbulence_1_1_turb_model.html#ad0a36405a1ceb6b8a9754067822873f3">alphaeff</a>) override</td></tr>
+<tr class="memitem:ab0f163eeae57cc1b66b370162d75e8ec inherit pub_methods_classamr__wind_1_1turbulence_1_1_turb_model_base" id="r_ab0f163eeae57cc1b66b370162d75e8ec"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1turbulence_1_1_turb_model_base.html#ab0f163eeae57cc1b66b370162d75e8ec">update_scalar_diff</a> (<a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;deff, const std::string &amp;name) override</td></tr>
+<tr class="memdesc:ab0f163eeae57cc1b66b370162d75e8ec inherit pub_methods_classamr__wind_1_1turbulence_1_1_turb_model_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface to update scalar diffusivity based on Schmidt number.  <br /></td></tr>
+<tr class="inherit_header pub_methods_classamr__wind_1_1turbulence_1_1_turb_model"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classamr__wind_1_1turbulence_1_1_turb_model')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classamr__wind_1_1turbulence_1_1_turb_model.html">amr_wind::turbulence::TurbModel&lt; Transport &gt;</a></td></tr>
+<tr class="memitem:a9be7d103463187a98fd03905f48cb4aa inherit pub_methods_classamr__wind_1_1turbulence_1_1_turb_model" id="r_a9be7d103463187a98fd03905f48cb4aa"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1turbulence_1_1_turb_model.html#a9be7d103463187a98fd03905f48cb4aa">TurbModel</a> (<a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;sim)</td></tr>
+<tr class="memitem:a9d28cd86be74defeaf3dd6ea05a41f7b inherit pub_methods_classamr__wind_1_1turbulence_1_1_turb_model" id="r_a9d28cd86be74defeaf3dd6ea05a41f7b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1turbulence_1_1_turb_model.html#a9d28cd86be74defeaf3dd6ea05a41f7b">register_mueff_field</a> (<a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;<a class="el" href="classamr__wind_1_1turbulence_1_1_turb_model.html#a72254514f6cb9dec5a1d294a7f38b261">mueff</a>) override</td></tr>
+<tr class="memdesc:a9d28cd86be74defeaf3dd6ea05a41f7b inherit pub_methods_classamr__wind_1_1turbulence_1_1_turb_model"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register the effective viscosity (for momentum field)  <br /></td></tr>
+<tr class="memitem:a5ac63e2a09a0a47006425058a3016e05 inherit pub_methods_classamr__wind_1_1turbulence_1_1_turb_model" id="r_a5ac63e2a09a0a47006425058a3016e05"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1turbulence_1_1_turb_model.html#a5ac63e2a09a0a47006425058a3016e05">register_alphaeff_field</a> (<a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;<a class="el" href="classamr__wind_1_1turbulence_1_1_turb_model.html#ad0a36405a1ceb6b8a9754067822873f3">alphaeff</a>) override</td></tr>
+<tr class="memdesc:a5ac63e2a09a0a47006425058a3016e05 inherit pub_methods_classamr__wind_1_1turbulence_1_1_turb_model"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register the thermal diffusivity field.  <br /></td></tr>
+<tr class="memitem:a5700314939e5be776f3893e89016b58c inherit pub_methods_classamr__wind_1_1turbulence_1_1_turb_model" id="r_a5700314939e5be776f3893e89016b58c"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1_scratch_field.html">ScratchField</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1turbulence_1_1_turb_model.html#a5700314939e5be776f3893e89016b58c">mu</a> () override</td></tr>
+<tr class="memdesc:a5700314939e5be776f3893e89016b58c inherit pub_methods_classamr__wind_1_1turbulence_1_1_turb_model"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the dynamic viscosity field.  <br /></td></tr>
+<tr class="memitem:a1c438592932b3428a963579879b1f605 inherit pub_methods_classamr__wind_1_1turbulence_1_1_turb_model" id="r_a1c438592932b3428a963579879b1f605"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1_scratch_field.html">ScratchField</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1turbulence_1_1_turb_model.html#a1c438592932b3428a963579879b1f605">alpha</a> () override</td></tr>
+<tr class="memdesc:a1c438592932b3428a963579879b1f605 inherit pub_methods_classamr__wind_1_1turbulence_1_1_turb_model"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the thermal diffusivity field.  <br /></td></tr>
+<tr class="memitem:acc28293111ff447d67d479e0ea10444a inherit pub_methods_classamr__wind_1_1turbulence_1_1_turb_model" id="r_acc28293111ff447d67d479e0ea10444a"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1_scratch_field.html">ScratchField</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1turbulence_1_1_turb_model.html#acc28293111ff447d67d479e0ea10444a">scalar_diffusivity</a> (const std::string &amp;name) override</td></tr>
+<tr class="memdesc:acc28293111ff447d67d479e0ea10444a inherit pub_methods_classamr__wind_1_1turbulence_1_1_turb_model"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the scalar diffusivity field.  <br /></td></tr>
+<tr class="memitem:a72254514f6cb9dec5a1d294a7f38b261 inherit pub_methods_classamr__wind_1_1turbulence_1_1_turb_model" id="r_a72254514f6cb9dec5a1d294a7f38b261"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1turbulence_1_1_turb_model.html#a72254514f6cb9dec5a1d294a7f38b261">mueff</a> () override</td></tr>
+<tr class="memdesc:a72254514f6cb9dec5a1d294a7f38b261 inherit pub_methods_classamr__wind_1_1turbulence_1_1_turb_model"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the effective dynamic viscosity field.  <br /></td></tr>
+<tr class="memitem:ad0a36405a1ceb6b8a9754067822873f3 inherit pub_methods_classamr__wind_1_1turbulence_1_1_turb_model" id="r_ad0a36405a1ceb6b8a9754067822873f3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1turbulence_1_1_turb_model.html#ad0a36405a1ceb6b8a9754067822873f3">alphaeff</a> () override</td></tr>
+<tr class="memdesc:ad0a36405a1ceb6b8a9754067822873f3 inherit pub_methods_classamr__wind_1_1turbulence_1_1_turb_model"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the effective thermal diffusivity field.  <br /></td></tr>
+<tr class="inherit_header pub_methods_classamr__wind_1_1turbulence_1_1_turbulence_model"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classamr__wind_1_1turbulence_1_1_turbulence_model')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classamr__wind_1_1turbulence_1_1_turbulence_model.html">amr_wind::turbulence::TurbulenceModel</a></td></tr>
+<tr class="memitem:a4e654f30d70d6a87bc579fa9a9fb1221 inherit pub_methods_classamr__wind_1_1turbulence_1_1_turbulence_model" id="r_a4e654f30d70d6a87bc579fa9a9fb1221"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1turbulence_1_1_turbulence_model.html#a4e654f30d70d6a87bc579fa9a9fb1221">~TurbulenceModel</a> () override=default</td></tr>
+<tr class="memitem:a4740980b0b9511f06ee11195b5f3aeb0 inherit pub_methods_classamr__wind_1_1turbulence_1_1_turbulence_model" id="r_a4740980b0b9511f06ee11195b5f3aeb0"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1turbulence_1_1_turbulence_model.html#a4740980b0b9511f06ee11195b5f3aeb0">is_turbulent</a> () const</td></tr>
+<tr class="memdesc:a4740980b0b9511f06ee11195b5f3aeb0 inherit pub_methods_classamr__wind_1_1turbulence_1_1_turbulence_model"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flag indicating whether the model is turbulent.  <br /></td></tr>
+<tr class="inherit_header pub_methods_structamr__wind_1_1_factory"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_structamr__wind_1_1_factory')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="structamr__wind_1_1_factory.html">amr_wind::Factory&lt; TurbulenceModel, CFDSim &amp; &gt;</a></td></tr>
+<tr class="memitem:aa6fca890ed3550c62d0f65b8d3bc07ad inherit pub_methods_structamr__wind_1_1_factory" id="r_aa6fca890ed3550c62d0f65b8d3bc07ad"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1_factory.html#aa6fca890ed3550c62d0f65b8d3bc07ad">~Factory</a> ()=default</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a9e95283f6a6247490dc849a5a1206876" id="r_a9e95283f6a6247490dc849a5a1206876"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9e95283f6a6247490dc849a5a1206876">identifier</a> ()</td></tr>
+<tr class="inherit_header pub_static_methods_classamr__wind_1_1turbulence_1_1_turbulence_model"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_static_methods_classamr__wind_1_1turbulence_1_1_turbulence_model')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Static Public Member Functions inherited from <a class="el" href="classamr__wind_1_1turbulence_1_1_turbulence_model.html">amr_wind::turbulence::TurbulenceModel</a></td></tr>
+<tr class="memitem:a3757fe2e716a1db20876389ef79a2f32 inherit pub_static_methods_classamr__wind_1_1turbulence_1_1_turbulence_model" id="r_a3757fe2e716a1db20876389ef79a2f32"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1turbulence_1_1_turbulence_model.html#a3757fe2e716a1db20876389ef79a2f32">base_identifier</a> ()</td></tr>
+<tr class="inherit_header pub_static_methods_structamr__wind_1_1_factory"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_static_methods_structamr__wind_1_1_factory')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Static Public Member Functions inherited from <a class="el" href="structamr__wind_1_1_factory.html">amr_wind::Factory&lt; TurbulenceModel, CFDSim &amp; &gt;</a></td></tr>
+<tr class="memitem:a12435a8cce5e3b4e95324d3b638ca6a2 inherit pub_static_methods_structamr__wind_1_1_factory" id="r_a12435a8cce5e3b4e95324d3b638ca6a2"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; TurbulenceModel &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1_factory.html#a12435a8cce5e3b4e95324d3b638ca6a2">create</a> (const std::string &amp;key, Args... args)</td></tr>
+<tr class="memitem:a8d98edcc6f1e14d11dc8626d75498548 inherit pub_static_methods_structamr__wind_1_1_factory" id="r_a8d98edcc6f1e14d11dc8626d75498548"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1_factory.html#a8d98edcc6f1e14d11dc8626d75498548">print</a> (std::ostream &amp;os)</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a9c32f3404e1ffaa147c9b4aaede3e96c" id="r_a9c32f3404e1ffaa147c9b4aaede3e96c"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9c32f3404e1ffaa147c9b4aaede3e96c">m_Cb</a> {0.36_rt}</td></tr>
+<tr class="memdesc:a9c32f3404e1ffaa147c9b4aaede3e96c"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classamr__wind_1_1turbulence_1_1_kosovic.html">Kosovic</a> coefficient (default value set for <a class="el" href="classamr__wind_1_1_a_b_l.html">ABL</a> simulations)  <br /></td></tr>
+<tr class="memitem:a9af269206b82de4944aa164ab1e77ab6" id="r_a9af269206b82de4944aa164ab1e77ab6"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9af269206b82de4944aa164ab1e77ab6">m_Cs</a> {0.135_rt}</td></tr>
+<tr class="memitem:a57670f918dd820dbff96adf695434661" id="r_a57670f918dd820dbff96adf695434661"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a57670f918dd820dbff96adf695434661">m_C1</a> {2.1_rt}</td></tr>
+<tr class="memitem:a52e106f841b49bd9ce20845c9642eb75" id="r_a52e106f841b49bd9ce20845c9642eb75"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a52e106f841b49bd9ce20845c9642eb75">m_C2</a> {2.1_rt}</td></tr>
+<tr class="memitem:a688158c9381b9ed9e09f4b17f85c59b6" id="r_a688158c9381b9ed9e09f4b17f85c59b6"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a688158c9381b9ed9e09f4b17f85c59b6">m_Sk</a> {0.5_rt}</td></tr>
+<tr class="memitem:a4c6615075b10ff1a071cb1cfdc99812a" id="r_a4c6615075b10ff1a071cb1cfdc99812a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4c6615075b10ff1a071cb1cfdc99812a">m_surfaceRANS</a> {false}</td></tr>
+<tr class="memitem:a8fda72ff9ad5b5a6ee089774c9d1330e" id="r_a8fda72ff9ad5b5a6ee089774c9d1330e"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8fda72ff9ad5b5a6ee089774c9d1330e">m_surfaceFactor</a> {0.0_rt}</td></tr>
+<tr class="memitem:aa5e3596641d4c37ef4afcfcb42942c92" id="r_aa5e3596641d4c37ef4afcfcb42942c92"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa5e3596641d4c37ef4afcfcb42942c92">m_switchLoc</a> {24.0_rt}</td></tr>
+<tr class="memitem:aa4bfb3cbcd1fcc2794c3b6c973a94512" id="r_aa4bfb3cbcd1fcc2794c3b6c973a94512"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa4bfb3cbcd1fcc2794c3b6c973a94512">m_surfaceRANSExp</a> {2.0_rt}</td></tr>
+<tr class="memitem:a1691734a15c0afaf83cce8c655fe2258" id="r_a1691734a15c0afaf83cce8c655fe2258"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1691734a15c0afaf83cce8c655fe2258">m_LESTurnOff</a> {1.0e15_rt}</td></tr>
+<tr class="memitem:a7a5d25d3731f805dbf53a07456f12c07" id="r_a7a5d25d3731f805dbf53a07456f12c07"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7a5d25d3731f805dbf53a07456f12c07">m_writeTerms</a> {false}</td></tr>
+<tr class="memitem:a584ed89ea8b2648a570baad26fb399b8" id="r_a584ed89ea8b2648a570baad26fb399b8"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a584ed89ea8b2648a570baad26fb399b8">m_vel</a></td></tr>
+<tr class="memitem:a9b6f12238ef542d0e757ff8388a65784" id="r_a9b6f12238ef542d0e757ff8388a65784"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9b6f12238ef542d0e757ff8388a65784">m_rho</a></td></tr>
+<tr class="memitem:a41e79919f20351a647ebf4a7293468ea" id="r_a41e79919f20351a647ebf4a7293468ea"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a41e79919f20351a647ebf4a7293468ea">m_Nij</a></td></tr>
+<tr class="memitem:a6ab048295dd9a673110d3cdeb26192ba" id="r_a6ab048295dd9a673110d3cdeb26192ba"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6ab048295dd9a673110d3cdeb26192ba">m_divNij</a></td></tr>
+<tr class="memitem:a5541351384708e986710b9f5d4d62f40" id="r_a5541351384708e986710b9f5d4d62f40"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5541351384708e986710b9f5d4d62f40">m_wall_het_model</a> {&quot;none&quot;}</td></tr>
+<tr class="memitem:a1997810285c63dd2f486cb27018f7ed6" id="r_a1997810285c63dd2f486cb27018f7ed6"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1997810285c63dd2f486cb27018f7ed6">m_monin_obukhov_length</a> {<a class="el" href="namespaceamr__wind_1_1constants.html#abec95c34da71524c85927f9874a6368a">constants::LARGE_NUM</a>}</td></tr>
+<tr class="memitem:aab84a4530353937a57e42dfffb32c30b" id="r_aab84a4530353937a57e42dfffb32c30b"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aab84a4530353937a57e42dfffb32c30b">m_kappa</a> {0.41_rt}</td></tr>
+<tr class="memitem:a914a373a91dc120d18ff448e85e7e909" id="r_a914a373a91dc120d18ff448e85e7e909"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a914a373a91dc120d18ff448e85e7e909">m_gamma_m</a> {5.0_rt}</td></tr>
+<tr class="memitem:a7783c55edf69c231962119cea5a52143" id="r_a7783c55edf69c231962119cea5a52143"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7783c55edf69c231962119cea5a52143">m_beta_m</a> {16.0_rt}</td></tr>
+<tr class="memitem:ae147dc61bc6b68ccadcb6ac23985c5fa" id="r_ae147dc61bc6b68ccadcb6ac23985c5fa"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae147dc61bc6b68ccadcb6ac23985c5fa">m_surface_roughness_z0</a> {0.1_rt}</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pub_types_classamr__wind_1_1turbulence_1_1_turb_model"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_types_classamr__wind_1_1turbulence_1_1_turb_model')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Types inherited from <a class="el" href="classamr__wind_1_1turbulence_1_1_turb_model.html">amr_wind::turbulence::TurbModel&lt; Transport &gt;</a></td></tr>
+<tr class="memitem:aca9e02ea0326c1d557e1e417ddeb9265 inherit pub_types_classamr__wind_1_1turbulence_1_1_turb_model" id="r_aca9e02ea0326c1d557e1e417ddeb9265"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1turbulence_1_1_turb_model.html#aca9e02ea0326c1d557e1e417ddeb9265">TransportType</a> = Transport</td></tr>
+<tr class="inherit_header pub_types_classamr__wind_1_1turbulence_1_1_turbulence_model"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_types_classamr__wind_1_1turbulence_1_1_turbulence_model')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Types inherited from <a class="el" href="classamr__wind_1_1turbulence_1_1_turbulence_model.html">amr_wind::turbulence::TurbulenceModel</a></td></tr>
+<tr class="memitem:aff9bb3a7eb48f42686b1175cc9fbd390 inherit pub_types_classamr__wind_1_1turbulence_1_1_turbulence_model" id="r_aff9bb3a7eb48f42686b1175cc9fbd390"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1turbulence_1_1_turbulence_model.html#aff9bb3a7eb48f42686b1175cc9fbd390">CoeffsDictType</a> = std::unordered_map&lt;std::string, amrex::Real&gt;</td></tr>
+<tr class="memdesc:aff9bb3a7eb48f42686b1175cc9fbd390 inherit pub_types_classamr__wind_1_1turbulence_1_1_turbulence_model"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default identifier used by factor methods.  <br /></td></tr>
+<tr class="inherit_header pub_attribs_structamr__wind_1_1_factory"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_attribs_structamr__wind_1_1_factory')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Attributes inherited from <a class="el" href="structamr__wind_1_1_factory.html">amr_wind::Factory&lt; TurbulenceModel, CFDSim &amp; &gt;</a></td></tr>
+<tr class="memitem:a691df3b8a05db92b3de7712f18cfe8b8 inherit pub_attribs_structamr__wind_1_1_factory" id="r_a691df3b8a05db92b3de7712f18cfe8b8"><td class="memItemLeft" align="right" valign="top">friend&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1_factory.html#a691df3b8a05db92b3de7712f18cfe8b8">Base</a></td></tr>
+<tr class="inherit_header pro_attribs_classamr__wind_1_1turbulence_1_1_turb_model_base"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classamr__wind_1_1turbulence_1_1_turb_model_base')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classamr__wind_1_1turbulence_1_1_turb_model_base.html">amr_wind::turbulence::TurbModelBase&lt; Transport &gt;</a></td></tr>
+<tr class="memitem:ad98a7f6214603cf2397f6d739f54695b inherit pro_attribs_classamr__wind_1_1turbulence_1_1_turb_model_base" id="r_ad98a7f6214603cf2397f6d739f54695b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1turbulence_1_1_turb_model_base.html#ad98a7f6214603cf2397f6d739f54695b">m_mu_turb</a></td></tr>
+<tr class="memdesc:ad98a7f6214603cf2397f6d739f54695b inherit pro_attribs_classamr__wind_1_1turbulence_1_1_turb_model_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reference to the turbulent viscosity field.  <br /></td></tr>
+<tr class="memitem:a6087c36bc68ce74cd350014befbe0851 inherit pro_attribs_classamr__wind_1_1turbulence_1_1_turb_model_base" id="r_a6087c36bc68ce74cd350014befbe0851"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1turbulence_1_1_turb_model_base.html#a6087c36bc68ce74cd350014befbe0851">m_alpha_turb</a> {nullptr}</td></tr>
+<tr class="memdesc:a6087c36bc68ce74cd350014befbe0851 inherit pro_attribs_classamr__wind_1_1turbulence_1_1_turb_model_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reference to thermal diffusivity field.  <br /></td></tr>
+<tr class="inherit_header pro_attribs_classamr__wind_1_1turbulence_1_1_turb_model"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classamr__wind_1_1turbulence_1_1_turb_model')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classamr__wind_1_1turbulence_1_1_turb_model.html">amr_wind::turbulence::TurbModel&lt; Transport &gt;</a></td></tr>
+<tr class="memitem:a5d4ff811e0b5d420b3d141b423389b89 inherit pro_attribs_classamr__wind_1_1turbulence_1_1_turb_model" id="r_a5d4ff811e0b5d420b3d141b423389b89"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1turbulence_1_1_turb_model.html#a5d4ff811e0b5d420b3d141b423389b89">m_sim</a></td></tr>
+<tr class="memitem:ad855f90305c623a36a723479a165e761 inherit pro_attribs_classamr__wind_1_1turbulence_1_1_turb_model" id="r_ad855f90305c623a36a723479a165e761"><td class="memItemLeft" align="right" valign="top">Transport&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1turbulence_1_1_turb_model.html#ad855f90305c623a36a723479a165e761">m_transport</a></td></tr>
+<tr class="memdesc:ad855f90305c623a36a723479a165e761 inherit pro_attribs_classamr__wind_1_1turbulence_1_1_turb_model"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transport properties instance.  <br /></td></tr>
+<tr class="memitem:ab83ab2dba21cb0fb4eeac4ebf35fd13e inherit pro_attribs_classamr__wind_1_1turbulence_1_1_turb_model" id="r_ab83ab2dba21cb0fb4eeac4ebf35fd13e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1turbulence_1_1_turb_model.html#ab83ab2dba21cb0fb4eeac4ebf35fd13e">m_mueff</a> {nullptr}</td></tr>
+<tr class="memdesc:ab83ab2dba21cb0fb4eeac4ebf35fd13e inherit pro_attribs_classamr__wind_1_1turbulence_1_1_turb_model"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reference to the effective viscosity field.  <br /></td></tr>
+<tr class="memitem:a46a5b746e5d36be97452e281ef724285 inherit pro_attribs_classamr__wind_1_1turbulence_1_1_turb_model" id="r_a46a5b746e5d36be97452e281ef724285"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1turbulence_1_1_turb_model.html#a46a5b746e5d36be97452e281ef724285">m_alphaeff</a> {nullptr}</td></tr>
+<tr class="memdesc:a46a5b746e5d36be97452e281ef724285 inherit pro_attribs_classamr__wind_1_1turbulence_1_1_turb_model"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reference to the thermal diffusivity field.  <br /></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename Transport&gt;<br />
+class amr_wind::turbulence::Kosovic&lt; Transport &gt;</div><p><a class="el" href="classamr__wind_1_1turbulence_1_1_kosovic.html">Kosovic</a> LES Model </p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a729dc5a6fd2e8b640487265bfc4cb2c5" name="a729dc5a6fd2e8b640487265bfc4cb2c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a729dc5a6fd2e8b640487265bfc4cb2c5">&#9670;&#160;</a></span>Kosovic()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Transport&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1turbulence_1_1_kosovic.html">amr_wind::turbulence::Kosovic</a>&lt; Transport &gt;::Kosovic </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>sim</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel explicit">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a9e95283f6a6247490dc849a5a1206876" name="a9e95283f6a6247490dc849a5a1206876"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e95283f6a6247490dc849a5a1206876">&#9670;&#160;</a></span>identifier()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Transport&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string <a class="el" href="classamr__wind_1_1turbulence_1_1_kosovic.html">amr_wind::turbulence::Kosovic</a>&lt; Transport &gt;::identifier </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adb299b11753e520bbb0bce735035e3f9" name="adb299b11753e520bbb0bce735035e3f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb299b11753e520bbb0bce735035e3f9">&#9670;&#160;</a></span>model_coeffs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Transport&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1turbulence_1_1_turbulence_model.html#aff9bb3a7eb48f42686b1175cc9fbd390">TurbulenceModel::CoeffsDictType</a> <a class="el" href="classamr__wind_1_1turbulence_1_1_kosovic.html">amr_wind::turbulence::Kosovic</a>&lt; Transport &gt;::model_coeffs </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return model coefficients dictionary. </p>
+
+<p>Implements <a class="el" href="classamr__wind_1_1turbulence_1_1_turbulence_model.html#a5795d25fa26c2f97774acd79cbf115f9">amr_wind::turbulence::TurbulenceModel</a>.</p>
+
+</div>
+</div>
+<a id="a7e498365f370a4cb729cc1fdfdd9db10" name="a7e498365f370a4cb729cc1fdfdd9db10"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e498365f370a4cb729cc1fdfdd9db10">&#9670;&#160;</a></span>model_name()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Transport&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string <a class="el" href="classamr__wind_1_1turbulence_1_1_kosovic.html">amr_wind::turbulence::Kosovic</a>&lt; Transport &gt;::model_name </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Model name for debugging purposes. </p>
+
+<p>Implements <a class="el" href="classamr__wind_1_1turbulence_1_1_turbulence_model.html#abbcf292dc4ba7505f7b2f506f6105219">amr_wind::turbulence::TurbulenceModel</a>.</p>
+
+</div>
+</div>
+<a id="a53d456975e9dfc4d75e391d6b64f5061" name="a53d456975e9dfc4d75e391d6b64f5061"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53d456975e9dfc4d75e391d6b64f5061">&#9670;&#160;</a></span>parse_model_coeffs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Transport&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classamr__wind_1_1turbulence_1_1_kosovic.html">amr_wind::turbulence::Kosovic</a>&lt; Transport &gt;::parse_model_coeffs </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Parse turbulence model coefficients. </p>
+
+<p>Implements <a class="el" href="classamr__wind_1_1turbulence_1_1_turbulence_model.html#a7fd90f393f4e1dddbb166a8e9e138082">amr_wind::turbulence::TurbulenceModel</a>.</p>
+
+</div>
+</div>
+<a id="a55310ea1ba54d75c12240db47d1fb74b" name="a55310ea1ba54d75c12240db47d1fb74b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55310ea1ba54d75c12240db47d1fb74b">&#9670;&#160;</a></span>post_advance_work()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Transport&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classamr__wind_1_1turbulence_1_1_kosovic.html">amr_wind::turbulence::Kosovic</a>&lt; Transport &gt;::post_advance_work </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>No post advance work for this model. </p>
+
+<p>Implements <a class="el" href="classamr__wind_1_1turbulence_1_1_turbulence_model.html#a37e15accde7fa096b3aa1c0ab38a4bc0">amr_wind::turbulence::TurbulenceModel</a>.</p>
+
+</div>
+</div>
+<a id="ac72c5a0298ba85292a199301349efa5f" name="ac72c5a0298ba85292a199301349efa5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac72c5a0298ba85292a199301349efa5f">&#9670;&#160;</a></span>update_alphaeff()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Transport&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classamr__wind_1_1turbulence_1_1_kosovic.html">amr_wind::turbulence::Kosovic</a>&lt; Transport &gt;::update_alphaeff </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>alphaeff</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Update the effective thermal diffusivity field. </p>
+
+<p>Implements <a class="el" href="classamr__wind_1_1turbulence_1_1_turbulence_model.html#ae74d12585009fcf2f9481143d3031848">amr_wind::turbulence::TurbulenceModel</a>.</p>
+
+</div>
+</div>
+<a id="ae7fccb42654e2dac502cf73611aed975" name="ae7fccb42654e2dac502cf73611aed975"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7fccb42654e2dac502cf73611aed975">&#9670;&#160;</a></span>update_turbulent_viscosity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Transport&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classamr__wind_1_1turbulence_1_1_kosovic.html">amr_wind::turbulence::Kosovic</a>&lt; Transport &gt;::update_turbulent_viscosity </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__fields.html#ga5251ec6b376231128a9647f3028dbac0">FieldState</a></td>          <td class="paramname"><span class="paramname"><em>fstate</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="incflo__enums_8_h.html#a85b1059d3f82fd0319fd63b07f3c1500">DiffusionType</a></td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Update the turbulent viscosity field. </p>
+
+<p>Implements <a class="el" href="classamr__wind_1_1turbulence_1_1_turbulence_model.html#aaa0c24b2bcefe9e184241fe2f0b4ab25">amr_wind::turbulence::TurbulenceModel</a>.</p>
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a7783c55edf69c231962119cea5a52143" name="a7783c55edf69c231962119cea5a52143"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7783c55edf69c231962119cea5a52143">&#9670;&#160;</a></span>m_beta_m</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Transport&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real <a class="el" href="classamr__wind_1_1turbulence_1_1_kosovic.html">amr_wind::turbulence::Kosovic</a>&lt; Transport &gt;::m_beta_m {16.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a57670f918dd820dbff96adf695434661" name="a57670f918dd820dbff96adf695434661"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57670f918dd820dbff96adf695434661">&#9670;&#160;</a></span>m_C1</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Transport&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real <a class="el" href="classamr__wind_1_1turbulence_1_1_kosovic.html">amr_wind::turbulence::Kosovic</a>&lt; Transport &gt;::m_C1 {2.1_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a52e106f841b49bd9ce20845c9642eb75" name="a52e106f841b49bd9ce20845c9642eb75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52e106f841b49bd9ce20845c9642eb75">&#9670;&#160;</a></span>m_C2</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Transport&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real <a class="el" href="classamr__wind_1_1turbulence_1_1_kosovic.html">amr_wind::turbulence::Kosovic</a>&lt; Transport &gt;::m_C2 {2.1_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9c32f3404e1ffaa147c9b4aaede3e96c" name="a9c32f3404e1ffaa147c9b4aaede3e96c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c32f3404e1ffaa147c9b4aaede3e96c">&#9670;&#160;</a></span>m_Cb</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Transport&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real <a class="el" href="classamr__wind_1_1turbulence_1_1_kosovic.html">amr_wind::turbulence::Kosovic</a>&lt; Transport &gt;::m_Cb {0.36_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classamr__wind_1_1turbulence_1_1_kosovic.html">Kosovic</a> coefficient (default value set for <a class="el" href="classamr__wind_1_1_a_b_l.html">ABL</a> simulations) </p>
+
+</div>
+</div>
+<a id="a9af269206b82de4944aa164ab1e77ab6" name="a9af269206b82de4944aa164ab1e77ab6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9af269206b82de4944aa164ab1e77ab6">&#9670;&#160;</a></span>m_Cs</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Transport&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real <a class="el" href="classamr__wind_1_1turbulence_1_1_kosovic.html">amr_wind::turbulence::Kosovic</a>&lt; Transport &gt;::m_Cs {0.135_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6ab048295dd9a673110d3cdeb26192ba" name="a6ab048295dd9a673110d3cdeb26192ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ab048295dd9a673110d3cdeb26192ba">&#9670;&#160;</a></span>m_divNij</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Transport&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="el" href="classamr__wind_1_1turbulence_1_1_kosovic.html">amr_wind::turbulence::Kosovic</a>&lt; Transport &gt;::m_divNij</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a914a373a91dc120d18ff448e85e7e909" name="a914a373a91dc120d18ff448e85e7e909"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a914a373a91dc120d18ff448e85e7e909">&#9670;&#160;</a></span>m_gamma_m</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Transport&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real <a class="el" href="classamr__wind_1_1turbulence_1_1_kosovic.html">amr_wind::turbulence::Kosovic</a>&lt; Transport &gt;::m_gamma_m {5.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aab84a4530353937a57e42dfffb32c30b" name="aab84a4530353937a57e42dfffb32c30b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab84a4530353937a57e42dfffb32c30b">&#9670;&#160;</a></span>m_kappa</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Transport&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real <a class="el" href="classamr__wind_1_1turbulence_1_1_kosovic.html">amr_wind::turbulence::Kosovic</a>&lt; Transport &gt;::m_kappa {0.41_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1691734a15c0afaf83cce8c655fe2258" name="a1691734a15c0afaf83cce8c655fe2258"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1691734a15c0afaf83cce8c655fe2258">&#9670;&#160;</a></span>m_LESTurnOff</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Transport&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real <a class="el" href="classamr__wind_1_1turbulence_1_1_kosovic.html">amr_wind::turbulence::Kosovic</a>&lt; Transport &gt;::m_LESTurnOff {1.0e15_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1997810285c63dd2f486cb27018f7ed6" name="a1997810285c63dd2f486cb27018f7ed6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1997810285c63dd2f486cb27018f7ed6">&#9670;&#160;</a></span>m_monin_obukhov_length</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Transport&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real <a class="el" href="classamr__wind_1_1turbulence_1_1_kosovic.html">amr_wind::turbulence::Kosovic</a>&lt; Transport &gt;::m_monin_obukhov_length {<a class="el" href="namespaceamr__wind_1_1constants.html#abec95c34da71524c85927f9874a6368a">constants::LARGE_NUM</a>}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a41e79919f20351a647ebf4a7293468ea" name="a41e79919f20351a647ebf4a7293468ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41e79919f20351a647ebf4a7293468ea">&#9670;&#160;</a></span>m_Nij</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Transport&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="el" href="classamr__wind_1_1turbulence_1_1_kosovic.html">amr_wind::turbulence::Kosovic</a>&lt; Transport &gt;::m_Nij</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9b6f12238ef542d0e757ff8388a65784" name="a9b6f12238ef542d0e757ff8388a65784"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b6f12238ef542d0e757ff8388a65784">&#9670;&#160;</a></span>m_rho</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Transport&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="el" href="classamr__wind_1_1turbulence_1_1_kosovic.html">amr_wind::turbulence::Kosovic</a>&lt; Transport &gt;::m_rho</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a688158c9381b9ed9e09f4b17f85c59b6" name="a688158c9381b9ed9e09f4b17f85c59b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a688158c9381b9ed9e09f4b17f85c59b6">&#9670;&#160;</a></span>m_Sk</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Transport&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real <a class="el" href="classamr__wind_1_1turbulence_1_1_kosovic.html">amr_wind::turbulence::Kosovic</a>&lt; Transport &gt;::m_Sk {0.5_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae147dc61bc6b68ccadcb6ac23985c5fa" name="ae147dc61bc6b68ccadcb6ac23985c5fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae147dc61bc6b68ccadcb6ac23985c5fa">&#9670;&#160;</a></span>m_surface_roughness_z0</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Transport&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real <a class="el" href="classamr__wind_1_1turbulence_1_1_kosovic.html">amr_wind::turbulence::Kosovic</a>&lt; Transport &gt;::m_surface_roughness_z0 {0.1_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8fda72ff9ad5b5a6ee089774c9d1330e" name="a8fda72ff9ad5b5a6ee089774c9d1330e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8fda72ff9ad5b5a6ee089774c9d1330e">&#9670;&#160;</a></span>m_surfaceFactor</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Transport&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real <a class="el" href="classamr__wind_1_1turbulence_1_1_kosovic.html">amr_wind::turbulence::Kosovic</a>&lt; Transport &gt;::m_surfaceFactor {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4c6615075b10ff1a071cb1cfdc99812a" name="a4c6615075b10ff1a071cb1cfdc99812a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c6615075b10ff1a071cb1cfdc99812a">&#9670;&#160;</a></span>m_surfaceRANS</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Transport&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classamr__wind_1_1turbulence_1_1_kosovic.html">amr_wind::turbulence::Kosovic</a>&lt; Transport &gt;::m_surfaceRANS {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa4bfb3cbcd1fcc2794c3b6c973a94512" name="aa4bfb3cbcd1fcc2794c3b6c973a94512"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4bfb3cbcd1fcc2794c3b6c973a94512">&#9670;&#160;</a></span>m_surfaceRANSExp</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Transport&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real <a class="el" href="classamr__wind_1_1turbulence_1_1_kosovic.html">amr_wind::turbulence::Kosovic</a>&lt; Transport &gt;::m_surfaceRANSExp {2.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa5e3596641d4c37ef4afcfcb42942c92" name="aa5e3596641d4c37ef4afcfcb42942c92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5e3596641d4c37ef4afcfcb42942c92">&#9670;&#160;</a></span>m_switchLoc</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Transport&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real <a class="el" href="classamr__wind_1_1turbulence_1_1_kosovic.html">amr_wind::turbulence::Kosovic</a>&lt; Transport &gt;::m_switchLoc {24.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a584ed89ea8b2648a570baad26fb399b8" name="a584ed89ea8b2648a570baad26fb399b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a584ed89ea8b2648a570baad26fb399b8">&#9670;&#160;</a></span>m_vel</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Transport&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="el" href="classamr__wind_1_1turbulence_1_1_kosovic.html">amr_wind::turbulence::Kosovic</a>&lt; Transport &gt;::m_vel</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5541351384708e986710b9f5d4d62f40" name="a5541351384708e986710b9f5d4d62f40"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5541351384708e986710b9f5d4d62f40">&#9670;&#160;</a></span>m_wall_het_model</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Transport&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string <a class="el" href="classamr__wind_1_1turbulence_1_1_kosovic.html">amr_wind::turbulence::Kosovic</a>&lt; Transport &gt;::m_wall_het_model {&quot;none&quot;}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7a5d25d3731f805dbf53a07456f12c07" name="a7a5d25d3731f805dbf53a07456f12c07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a5d25d3731f805dbf53a07456f12c07">&#9670;&#160;</a></span>m_writeTerms</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Transport&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classamr__wind_1_1turbulence_1_1_kosovic.html">amr_wind::turbulence::Kosovic</a>&lt; Transport &gt;::m_writeTerms {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/turbulence/LES/<a class="el" href="_kosovic_8_h_source.html">Kosovic.H</a></li>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/turbulence/LES/<a class="el" href="_kosovic_8cpp.html">Kosovic.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

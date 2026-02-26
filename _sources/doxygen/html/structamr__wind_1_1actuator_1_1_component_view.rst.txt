@@ -1,0 +1,14 @@
+.. meta::a109b8e4b5a8d901eaf8f84dfb66e0c09963638134e7a14d5d31e24cdf19b7f87f5b5bc018d2a52305d107637771d493ee56d6536e5c81a2383a52dddc27984b
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ComponentView Struct Reference
+
+ComponentView Struct Reference
+==============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1_component_view.html

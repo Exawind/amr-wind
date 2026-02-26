@@ -1,0 +1,14 @@
+.. meta::17250462c097765c564e67a6a74e8892a53fc90decb0ec5d80421fb06b1de7cb3959da4965fe98b2afe631d280acc919e7042b65a08c97c000ae9acc17342691
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/fvm/gradient.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/fvm/gradient.H Source File
+=======================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: gradient_8_h_source.html

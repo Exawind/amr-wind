@@ -1,0 +1,14 @@
+.. meta::980bc54ed094fac13cd42846f2eca74dcdd68c12fcf496b19d92e253ca8e1a1622e1ab588511da228fa1a6c218c118e8d6a18aa034346cbf06ea2c84bc074168
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::vs::VectorT&lt; T &gt; Struct Template Reference
+
+VectorT&lt; T &gt; Struct Template Reference
+============================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1vs_1_1_vector_t.html

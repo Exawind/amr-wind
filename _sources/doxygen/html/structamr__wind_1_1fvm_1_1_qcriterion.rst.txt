@@ -1,0 +1,14 @@
+.. meta::555f191e754b1bbbef9a4a5b619de6ead2f8f854bf9ef5689f6f2783667fe8ecbc521a67f646ff7b62cdd1ee1300844b4deb63998dd7bc06561fddd7095eee14
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::fvm::Qcriterion&lt; FTypeIn, FTypeOut &gt; Struct Template Reference
+
+Qcriterion&lt; FTypeIn, FTypeOut &gt; Struct Template Reference
+===============================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1fvm_1_1_qcriterion.html

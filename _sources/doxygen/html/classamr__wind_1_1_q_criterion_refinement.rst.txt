@@ -1,0 +1,14 @@
+.. meta::a13d666a1388a9582f0a089317982c1f329af33d6d7e1ab2567bebb27ac72e1ca2e4629f951115b49f1e3b2272e1eea5cf311c0fc91013d5c05a568b8be4f094
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::QCriterionRefinement Class Reference
+
+QCriterionRefinement Class Reference
+====================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_q_criterion_refinement.html

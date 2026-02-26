@@ -1,0 +1,903 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::fvm::stencil::StencilJloKlo Struct Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::fvm::stencil::StencilJloKlo Struct Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/structamr__wind_1_1fvm_1_1stencil_1_1_stencil_jlo_klo.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="stenciljloklo-struct-reference">
+<h1>StencilJloKlo Struct Reference<a class="headerlink" href="#stenciljloklo-struct-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::fvm::stencil::StencilJloKlo Struct Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="namespaceamr__wind_1_1fvm.html">fvm</a></li><li class="navelem"><a href="namespaceamr__wind_1_1fvm_1_1stencil.html">stencil</a></li><li class="navelem"><a href="structamr__wind_1_1fvm_1_1stencil_1_1_stencil_jlo_klo.html">StencilJloKlo</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pub-static-attribs">Static Public Attributes</a> &#124;
+<a href="structamr__wind_1_1fvm_1_1stencil_1_1_stencil_jlo_klo-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::fvm::stencil::StencilJloKlo Struct Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="stencils_8_h_source.html">stencils.H</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a44d167c01d0d4fd1fafd9ddb4212fd53" id="r_a44d167c01d0d4fd1fafd9ddb4212fd53"><td class="memItemLeft" align="right" valign="top">static amrex::Box&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a44d167c01d0d4fd1fafd9ddb4212fd53">box</a> (const amrex::Box &amp;bx, const amrex::Geometry &amp;geom)</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-attribs" class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+Static Public Attributes</h2></td></tr>
+<tr class="memitem:a89af213de9d78b6ef88e563caf901323" id="r_a89af213de9d78b6ef88e563caf901323"><td class="memItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a89af213de9d78b6ef88e563caf901323">direction</a> = 11</td></tr>
+<tr class="memitem:afebcca486517416078ad1409410cd974" id="r_afebcca486517416078ad1409410cd974"><td class="memItemLeft" align="right" valign="top">static constexpr amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afebcca486517416078ad1409410cd974">c00</a> = 0.5_rt</td></tr>
+<tr class="memitem:aa610b1441216de975445269cad69c9ba" id="r_aa610b1441216de975445269cad69c9ba"><td class="memItemLeft" align="right" valign="top">static constexpr amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa610b1441216de975445269cad69c9ba">c01</a> = 0.0_rt</td></tr>
+<tr class="memitem:a020c0b9db2b266d5bdb66c6de3c73847" id="r_a020c0b9db2b266d5bdb66c6de3c73847"><td class="memItemLeft" align="right" valign="top">static constexpr amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a020c0b9db2b266d5bdb66c6de3c73847">c02</a> = -0.5_rt</td></tr>
+<tr class="memitem:ad78195ef1da09195e9960edc47dfee30" id="r_ad78195ef1da09195e9960edc47dfee30"><td class="memItemLeft" align="right" valign="top">static constexpr amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad78195ef1da09195e9960edc47dfee30">c10</a> = 1.0_rt / 3.0_rt</td></tr>
+<tr class="memitem:a377b41696c1c747fc5772c1d0efac0f7" id="r_a377b41696c1c747fc5772c1d0efac0f7"><td class="memItemLeft" align="right" valign="top">static constexpr amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a377b41696c1c747fc5772c1d0efac0f7">c11</a> = 1.0_rt</td></tr>
+<tr class="memitem:a8fe0f300b60f80754fafc5d2def623dc" id="r_a8fe0f300b60f80754fafc5d2def623dc"><td class="memItemLeft" align="right" valign="top">static constexpr amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8fe0f300b60f80754fafc5d2def623dc">c12</a> = -4.0_rt / 3.0_rt</td></tr>
+<tr class="memitem:aac10647b1c762694c484a019927af7cb" id="r_aac10647b1c762694c484a019927af7cb"><td class="memItemLeft" align="right" valign="top">static constexpr amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aac10647b1c762694c484a019927af7cb">c20</a> = <a class="el" href="#ad78195ef1da09195e9960edc47dfee30">c10</a></td></tr>
+<tr class="memitem:aa4054bb55bdc8ebe7c3c81376ecf30c8" id="r_aa4054bb55bdc8ebe7c3c81376ecf30c8"><td class="memItemLeft" align="right" valign="top">static constexpr amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa4054bb55bdc8ebe7c3c81376ecf30c8">c21</a> = <a class="el" href="#a377b41696c1c747fc5772c1d0efac0f7">c11</a></td></tr>
+<tr class="memitem:aec20b11945368107be303c5514076e37" id="r_aec20b11945368107be303c5514076e37"><td class="memItemLeft" align="right" valign="top">static constexpr amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aec20b11945368107be303c5514076e37">c22</a> = <a class="el" href="#a8fe0f300b60f80754fafc5d2def623dc">c12</a></td></tr>
+<tr class="memitem:a04534ee566e78ea1a529997c5f65b906" id="r_a04534ee566e78ea1a529997c5f65b906"><td class="memItemLeft" align="right" valign="top">static constexpr amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a04534ee566e78ea1a529997c5f65b906">s00</a> = 1.0_rt</td></tr>
+<tr class="memitem:ab25b1072233c7b271c2676cd040b2a0b" id="r_ab25b1072233c7b271c2676cd040b2a0b"><td class="memItemLeft" align="right" valign="top">static constexpr amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab25b1072233c7b271c2676cd040b2a0b">s01</a> = -2.0_rt</td></tr>
+<tr class="memitem:aabe42a8c316dbc00af614eae0b56c2a4" id="r_aabe42a8c316dbc00af614eae0b56c2a4"><td class="memItemLeft" align="right" valign="top">static constexpr amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aabe42a8c316dbc00af614eae0b56c2a4">s02</a> = 1.0_rt</td></tr>
+<tr class="memitem:ab46148a0c9bfced379ec035a92b9d50d" id="r_ab46148a0c9bfced379ec035a92b9d50d"><td class="memItemLeft" align="right" valign="top">static constexpr amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab46148a0c9bfced379ec035a92b9d50d">s10</a> = 4.0_rt / 3.0_rt</td></tr>
+<tr class="memitem:a33a624e214d17fcf9b198dde42db0c17" id="r_a33a624e214d17fcf9b198dde42db0c17"><td class="memItemLeft" align="right" valign="top">static constexpr amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a33a624e214d17fcf9b198dde42db0c17">s11</a> = -4.0_rt</td></tr>
+<tr class="memitem:a1596e986cfd71f7059b225e7b1586a5d" id="r_a1596e986cfd71f7059b225e7b1586a5d"><td class="memItemLeft" align="right" valign="top">static constexpr amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1596e986cfd71f7059b225e7b1586a5d">s12</a> = 8.0_rt / 3.0_rt</td></tr>
+<tr class="memitem:a5ff06323d044125e03b22d5fd743b796" id="r_a5ff06323d044125e03b22d5fd743b796"><td class="memItemLeft" align="right" valign="top">static constexpr amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5ff06323d044125e03b22d5fd743b796">s20</a> = <a class="el" href="#ab46148a0c9bfced379ec035a92b9d50d">s10</a></td></tr>
+<tr class="memitem:a2b797acca243797de60184f509a5b035" id="r_a2b797acca243797de60184f509a5b035"><td class="memItemLeft" align="right" valign="top">static constexpr amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2b797acca243797de60184f509a5b035">s21</a> = <a class="el" href="#a33a624e214d17fcf9b198dde42db0c17">s11</a></td></tr>
+<tr class="memitem:af94ba7e0613b04a6d6f25a1dfa575891" id="r_af94ba7e0613b04a6d6f25a1dfa575891"><td class="memItemLeft" align="right" valign="top">static constexpr amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af94ba7e0613b04a6d6f25a1dfa575891">s22</a> = <a class="el" href="#a1596e986cfd71f7059b225e7b1586a5d">s12</a></td></tr>
+<tr class="memitem:adae5c4bd8267aa31f3e010279bf57c15" id="r_adae5c4bd8267aa31f3e010279bf57c15"><td class="memItemLeft" align="right" valign="top">static constexpr amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adae5c4bd8267aa31f3e010279bf57c15">f00</a> = 0.25_rt</td></tr>
+<tr class="memitem:a01eb45042089000309e4e5c2207b0411" id="r_a01eb45042089000309e4e5c2207b0411"><td class="memItemLeft" align="right" valign="top">static constexpr amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a01eb45042089000309e4e5c2207b0411">f01</a> = 0.5_rt</td></tr>
+<tr class="memitem:abecfc58c78e4e8aa3aba4068b5c874a5" id="r_abecfc58c78e4e8aa3aba4068b5c874a5"><td class="memItemLeft" align="right" valign="top">static constexpr amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abecfc58c78e4e8aa3aba4068b5c874a5">f02</a> = 0.25_rt</td></tr>
+<tr class="memitem:aaf9281ac3e481a22734d4a3186e683b3" id="r_aaf9281ac3e481a22734d4a3186e683b3"><td class="memItemLeft" align="right" valign="top">static constexpr amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaf9281ac3e481a22734d4a3186e683b3">f10</a> = 0.125_rt</td></tr>
+<tr class="memitem:ab8bfed85e15bdc6d6dc380d6bd490900" id="r_ab8bfed85e15bdc6d6dc380d6bd490900"><td class="memItemLeft" align="right" valign="top">static constexpr amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab8bfed85e15bdc6d6dc380d6bd490900">f11</a> = 0.625_rt</td></tr>
+<tr class="memitem:aaf68bf9b502f025db4f8e2e1ed1526ed" id="r_aaf68bf9b502f025db4f8e2e1ed1526ed"><td class="memItemLeft" align="right" valign="top">static constexpr amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaf68bf9b502f025db4f8e2e1ed1526ed">f12</a> = 0.25_rt</td></tr>
+<tr class="memitem:ac106288a1598f6003fc285d162d58c8e" id="r_ac106288a1598f6003fc285d162d58c8e"><td class="memItemLeft" align="right" valign="top">static constexpr amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac106288a1598f6003fc285d162d58c8e">f20</a> = <a class="el" href="#aaf9281ac3e481a22734d4a3186e683b3">f10</a></td></tr>
+<tr class="memitem:a63f0c0a0a888bae74ab2d3184b7ca896" id="r_a63f0c0a0a888bae74ab2d3184b7ca896"><td class="memItemLeft" align="right" valign="top">static constexpr amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a63f0c0a0a888bae74ab2d3184b7ca896">f21</a> = <a class="el" href="#ab8bfed85e15bdc6d6dc380d6bd490900">f11</a></td></tr>
+<tr class="memitem:a2e7deca1359d3bc608741092856f9a6f" id="r_a2e7deca1359d3bc608741092856f9a6f"><td class="memItemLeft" align="right" valign="top">static constexpr amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2e7deca1359d3bc608741092856f9a6f">f22</a> = <a class="el" href="#aaf68bf9b502f025db4f8e2e1ed1526ed">f12</a></td></tr>
+</table>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a44d167c01d0d4fd1fafd9ddb4212fd53" name="a44d167c01d0d4fd1fafd9ddb4212fd53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44d167c01d0d4fd1fafd9ddb4212fd53">&#9670;&#160;</a></span>box()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Box amr_wind::fvm::stencil::StencilJloKlo::box </td>
+          <td>(</td>
+          <td class="paramtype">const amrex::Box &amp;</td>          <td class="paramname"><span class="paramname"><em>bx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Geometry &amp;</td>          <td class="paramname"><span class="paramname"><em>geom</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="afebcca486517416078ad1409410cd974" name="afebcca486517416078ad1409410cd974"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afebcca486517416078ad1409410cd974">&#9670;&#160;</a></span>c00</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::fvm::stencil::StencilJloKlo::c00 = 0.5_rt</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa610b1441216de975445269cad69c9ba" name="aa610b1441216de975445269cad69c9ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa610b1441216de975445269cad69c9ba">&#9670;&#160;</a></span>c01</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::fvm::stencil::StencilJloKlo::c01 = 0.0_rt</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a020c0b9db2b266d5bdb66c6de3c73847" name="a020c0b9db2b266d5bdb66c6de3c73847"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a020c0b9db2b266d5bdb66c6de3c73847">&#9670;&#160;</a></span>c02</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::fvm::stencil::StencilJloKlo::c02 = -0.5_rt</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad78195ef1da09195e9960edc47dfee30" name="ad78195ef1da09195e9960edc47dfee30"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad78195ef1da09195e9960edc47dfee30">&#9670;&#160;</a></span>c10</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::fvm::stencil::StencilJloKlo::c10 = 1.0_rt / 3.0_rt</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a377b41696c1c747fc5772c1d0efac0f7" name="a377b41696c1c747fc5772c1d0efac0f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a377b41696c1c747fc5772c1d0efac0f7">&#9670;&#160;</a></span>c11</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::fvm::stencil::StencilJloKlo::c11 = 1.0_rt</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8fe0f300b60f80754fafc5d2def623dc" name="a8fe0f300b60f80754fafc5d2def623dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8fe0f300b60f80754fafc5d2def623dc">&#9670;&#160;</a></span>c12</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::fvm::stencil::StencilJloKlo::c12 = -4.0_rt / 3.0_rt</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aac10647b1c762694c484a019927af7cb" name="aac10647b1c762694c484a019927af7cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac10647b1c762694c484a019927af7cb">&#9670;&#160;</a></span>c20</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::fvm::stencil::StencilJloKlo::c20 = <a class="el" href="#ad78195ef1da09195e9960edc47dfee30">c10</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa4054bb55bdc8ebe7c3c81376ecf30c8" name="aa4054bb55bdc8ebe7c3c81376ecf30c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4054bb55bdc8ebe7c3c81376ecf30c8">&#9670;&#160;</a></span>c21</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::fvm::stencil::StencilJloKlo::c21 = <a class="el" href="#a377b41696c1c747fc5772c1d0efac0f7">c11</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aec20b11945368107be303c5514076e37" name="aec20b11945368107be303c5514076e37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec20b11945368107be303c5514076e37">&#9670;&#160;</a></span>c22</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::fvm::stencil::StencilJloKlo::c22 = <a class="el" href="#a8fe0f300b60f80754fafc5d2def623dc">c12</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a89af213de9d78b6ef88e563caf901323" name="a89af213de9d78b6ef88e563caf901323"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89af213de9d78b6ef88e563caf901323">&#9670;&#160;</a></span>direction</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::fvm::stencil::StencilJloKlo::direction = 11</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adae5c4bd8267aa31f3e010279bf57c15" name="adae5c4bd8267aa31f3e010279bf57c15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adae5c4bd8267aa31f3e010279bf57c15">&#9670;&#160;</a></span>f00</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::fvm::stencil::StencilJloKlo::f00 = 0.25_rt</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a01eb45042089000309e4e5c2207b0411" name="a01eb45042089000309e4e5c2207b0411"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01eb45042089000309e4e5c2207b0411">&#9670;&#160;</a></span>f01</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::fvm::stencil::StencilJloKlo::f01 = 0.5_rt</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abecfc58c78e4e8aa3aba4068b5c874a5" name="abecfc58c78e4e8aa3aba4068b5c874a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abecfc58c78e4e8aa3aba4068b5c874a5">&#9670;&#160;</a></span>f02</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::fvm::stencil::StencilJloKlo::f02 = 0.25_rt</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aaf9281ac3e481a22734d4a3186e683b3" name="aaf9281ac3e481a22734d4a3186e683b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf9281ac3e481a22734d4a3186e683b3">&#9670;&#160;</a></span>f10</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::fvm::stencil::StencilJloKlo::f10 = 0.125_rt</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab8bfed85e15bdc6d6dc380d6bd490900" name="ab8bfed85e15bdc6d6dc380d6bd490900"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8bfed85e15bdc6d6dc380d6bd490900">&#9670;&#160;</a></span>f11</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::fvm::stencil::StencilJloKlo::f11 = 0.625_rt</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aaf68bf9b502f025db4f8e2e1ed1526ed" name="aaf68bf9b502f025db4f8e2e1ed1526ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf68bf9b502f025db4f8e2e1ed1526ed">&#9670;&#160;</a></span>f12</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::fvm::stencil::StencilJloKlo::f12 = 0.25_rt</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac106288a1598f6003fc285d162d58c8e" name="ac106288a1598f6003fc285d162d58c8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac106288a1598f6003fc285d162d58c8e">&#9670;&#160;</a></span>f20</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::fvm::stencil::StencilJloKlo::f20 = <a class="el" href="#aaf9281ac3e481a22734d4a3186e683b3">f10</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a63f0c0a0a888bae74ab2d3184b7ca896" name="a63f0c0a0a888bae74ab2d3184b7ca896"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63f0c0a0a888bae74ab2d3184b7ca896">&#9670;&#160;</a></span>f21</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::fvm::stencil::StencilJloKlo::f21 = <a class="el" href="#ab8bfed85e15bdc6d6dc380d6bd490900">f11</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2e7deca1359d3bc608741092856f9a6f" name="a2e7deca1359d3bc608741092856f9a6f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e7deca1359d3bc608741092856f9a6f">&#9670;&#160;</a></span>f22</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::fvm::stencil::StencilJloKlo::f22 = <a class="el" href="#aaf68bf9b502f025db4f8e2e1ed1526ed">f12</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a04534ee566e78ea1a529997c5f65b906" name="a04534ee566e78ea1a529997c5f65b906"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04534ee566e78ea1a529997c5f65b906">&#9670;&#160;</a></span>s00</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::fvm::stencil::StencilJloKlo::s00 = 1.0_rt</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab25b1072233c7b271c2676cd040b2a0b" name="ab25b1072233c7b271c2676cd040b2a0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab25b1072233c7b271c2676cd040b2a0b">&#9670;&#160;</a></span>s01</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::fvm::stencil::StencilJloKlo::s01 = -2.0_rt</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aabe42a8c316dbc00af614eae0b56c2a4" name="aabe42a8c316dbc00af614eae0b56c2a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabe42a8c316dbc00af614eae0b56c2a4">&#9670;&#160;</a></span>s02</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::fvm::stencil::StencilJloKlo::s02 = 1.0_rt</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab46148a0c9bfced379ec035a92b9d50d" name="ab46148a0c9bfced379ec035a92b9d50d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab46148a0c9bfced379ec035a92b9d50d">&#9670;&#160;</a></span>s10</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::fvm::stencil::StencilJloKlo::s10 = 4.0_rt / 3.0_rt</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a33a624e214d17fcf9b198dde42db0c17" name="a33a624e214d17fcf9b198dde42db0c17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33a624e214d17fcf9b198dde42db0c17">&#9670;&#160;</a></span>s11</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::fvm::stencil::StencilJloKlo::s11 = -4.0_rt</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1596e986cfd71f7059b225e7b1586a5d" name="a1596e986cfd71f7059b225e7b1586a5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1596e986cfd71f7059b225e7b1586a5d">&#9670;&#160;</a></span>s12</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::fvm::stencil::StencilJloKlo::s12 = 8.0_rt / 3.0_rt</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5ff06323d044125e03b22d5fd743b796" name="a5ff06323d044125e03b22d5fd743b796"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ff06323d044125e03b22d5fd743b796">&#9670;&#160;</a></span>s20</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::fvm::stencil::StencilJloKlo::s20 = <a class="el" href="#ab46148a0c9bfced379ec035a92b9d50d">s10</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2b797acca243797de60184f509a5b035" name="a2b797acca243797de60184f509a5b035"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b797acca243797de60184f509a5b035">&#9670;&#160;</a></span>s21</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::fvm::stencil::StencilJloKlo::s21 = <a class="el" href="#a33a624e214d17fcf9b198dde42db0c17">s11</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af94ba7e0613b04a6d6f25a1dfa575891" name="af94ba7e0613b04a6d6f25a1dfa575891"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af94ba7e0613b04a6d6f25a1dfa575891">&#9670;&#160;</a></span>s22</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::fvm::stencil::StencilJloKlo::s22 = <a class="el" href="#a1596e986cfd71f7059b225e7b1586a5d">s12</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/fvm/<a class="el" href="stencils_8_h_source.html">stencils.H</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

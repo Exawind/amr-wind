@@ -1,0 +1,14 @@
+.. meta::87e2bdaa75eb5074c18bea5dc49f1509f53f0972815100018c279dee672845f6deedd57f2ddb6d783a10b63b23b5073c5481df3f9038a648d12feb83774e2971
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::InitDataOp&lt; FlatPlate, ActSrcLine &gt; Struct Reference
+
+InitDataOp&lt; FlatPlate, ActSrcLine &gt; Struct Reference
+==========================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1ops_1_1_init_data_op_3_01_flat_plate_00_01_act_src_line_01_4.html

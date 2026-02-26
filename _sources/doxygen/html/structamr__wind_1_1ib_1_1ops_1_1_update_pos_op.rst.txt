@@ -1,0 +1,14 @@
+.. meta::154a0622765171685853c970109d7ec5aca7223908cb91be7dff716ebbf7bbd6343e6bb7e5d41572e5c4c52e06554e18ee303d20bdd6b0beb0a2e8b0e01332a7
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ib::ops::UpdatePosOp&lt; GeomTrait, typename &gt; Struct Template Reference
+
+UpdatePosOp&lt; GeomTrait, typename &gt; Struct Template Reference
+==================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ib_1_1ops_1_1_update_pos_op.html

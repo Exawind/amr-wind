@@ -1,0 +1,14 @@
+.. meta::c860e15f6adf025fe5ad97567b7d7a040fd8b84fa8cc04d4936e2ee89a8d7ff7e676f39e832c4daa369d8e3451831cb57e8207b8bf159b1aa558c98c12e13a20
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::UpdateVelOp&lt; TurbineFast, SrcTrait &gt; Struct Template Reference
+
+UpdateVelOp&lt; TurbineFast, SrcTrait &gt; Struct Template Reference
+====================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1ops_1_1_update_vel_op_3_01_turbine_fast_00_01_src_trait_01_4.html

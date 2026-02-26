@@ -1,0 +1,14 @@
+.. meta::05472759e1de2df416e9d711b59120a19db1d93414c73969444478914ded2e2780d8a01bb136bb4015bf9f0782df423da16353c36b2d2c84a3c132a83a878a7c
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::icns::BurggrafFlowForcing Class Reference
+
+BurggrafFlowForcing Class Reference
+===================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1pde_1_1icns_1_1_burggraf_flow_forcing.html

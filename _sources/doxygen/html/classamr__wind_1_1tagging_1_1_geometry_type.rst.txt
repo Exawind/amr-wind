@@ -1,0 +1,14 @@
+.. meta::5f6ebd418aec40c9f6725eb62368ded56f5304a409d30d2fe7d4664c05e8d4c7133fab8cfa75a2ce28906d26ffabb033f2842ac07a702d6599330c361c199fbb
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::tagging::GeometryType Class Reference
+
+GeometryType Class Reference
+============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1tagging_1_1_geometry_type.html

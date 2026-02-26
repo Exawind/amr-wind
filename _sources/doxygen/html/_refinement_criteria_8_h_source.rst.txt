@@ -1,0 +1,14 @@
+.. meta::22d2d327a2e0c27507dd22ae895c6edddc20d3af43b9f44509cbe526ad68b36f12eede8dde1e3358de9c47332e8840fdc12e34a55c09fe3cce8443e3b0e4bebd
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/tagging/RefinementCriteria.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/tagging/RefinementCriteria.H Source File
+===============================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _refinement_criteria_8_h_source.html

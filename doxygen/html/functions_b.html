@@ -1,0 +1,301 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: Class Members &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Class Members" href="functions_c.html" />
+    <link rel="prev" title="Class Members" href="functions.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../developer/documentation.html">Documentation</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">AMR-Wind API</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="pages.html">Related Pages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="topics.html">Topics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespaces_namespaces.html">Namespaces</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="annotated_classes.html">Classes</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="annotated.html">Class List</a></li>
+<li class="toctree-l4"><a class="reference internal" href="classes.html">Class Index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="inherits.html">Class Hierarchy</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="functions_class_members.html">Class Members</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="files_files.html">Files</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/unit_testing.html">Unit testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/regression_testing.html">Regression testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/verification.html">Verification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../developer/coding_guidelines.html">Coding Guidelines</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../developer/index.html">Developer Documentation</a></li>
+          <li class="breadcrumb-item"><a href="index.html">AMR-Wind API</a></li>
+          <li class="breadcrumb-item"><a href="annotated_classes.html">Classes</a></li>
+          <li class="breadcrumb-item"><a href="functions_class_members.html">Class Members</a></li>
+          <li class="breadcrumb-item"><a href="functions_all.html">All</a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: Class Members</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/functions_b.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="class-members">
+<h1>Class Members<a class="headerlink" href="#class-members" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: Class Members</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="contents">
+<div class="textblock">Here is a list of all class members with links to the classes they belong to:</div>
+
+<h3 class="doxsection"><a id="index_b" name="index_b"></a>- b -</h3><ul>
+<li>B&#160;:&#160;<a class="el" href="structamr__wind_1_1_log_law.html#a7bf8f7eab4681ae00897b36f85cb788e">amr_wind::LogLaw</a></li>
+<li>bar&#160;:&#160;<a class="el" href="structamr__wind_1_1udf_1_1_custom_velocity_1_1_device_op.html#a7714050ef24daac9b064c5a150094eef">amr_wind::udf::CustomVelocity::DeviceOp</a></li>
+<li>Base&#160;:&#160;<a class="el" href="structamr__wind_1_1_factory.html#a691df3b8a05db92b3de7712f18cfe8b8">amr_wind::Factory&lt; Base, Args &gt;</a></li>
+<li>base_identifier()&#160;:&#160;<a class="el" href="classamr__wind_1_1_a_b_l_stats_base.html#a69b6b671e659d7239c3f7ec9ccc3f3dd">amr_wind::ABLStatsBase</a>, <a class="el" href="classamr__wind_1_1actuator_1_1_actuator_model.html#ae6072727415bd152ad351600cc1e7cba">amr_wind::actuator::ActuatorModel</a>, <a class="el" href="classamr__wind_1_1averaging_1_1_field_time_average.html#a2de76aaa4fad3293cc27b40a12011cbb">amr_wind::averaging::FieldTimeAverage</a>, <a class="el" href="classamr__wind_1_1_derived_qty.html#a5e8854cce7b234f4327b161b0465610c">amr_wind::DerivedQty</a>, <a class="el" href="classamr__wind_1_1_ext_solver.html#ae7f97d2bc735a0464f0cec60daa76cf4">amr_wind::ExtSolver</a>, <a class="el" href="classamr__wind_1_1ib_1_1_immersed_boundary_model.html#a414e7e0a28f0383d1dbbffa6a820ebe2">amr_wind::ib::ImmersedBoundaryModel</a>, <a class="el" href="classamr__wind_1_1_mesh_map.html#aebf08acf3bf750cbf6f0e35e64d77bb7">amr_wind::MeshMap</a>, <a class="el" href="classamr__wind_1_1ocean__waves_1_1_ocean_waves_model.html#a845926538d3cccc89171dcaa02b99d15">amr_wind::ocean_waves::OceanWavesModel</a>, <a class="el" href="classamr__wind_1_1_overset_manager.html#a8a0321b1fe6670651b11bbe5e07ced4f">amr_wind::OversetManager</a>, <a class="el" href="classamr__wind_1_1pde_1_1_density_source.html#ae8e110cc2bd00a3a25625c01ee176fa4">amr_wind::pde::DensitySource</a>, <a class="el" href="classamr__wind_1_1pde_1_1_momentum_source.html#a85edb6605dd90e6e0cf14b4b03f19dbe">amr_wind::pde::MomentumSource</a>, <a class="el" href="classamr__wind_1_1pde_1_1_p_d_e_base.html#af89e30ba604f3b3a51ac0c19bcc500d9">amr_wind::pde::PDEBase</a>, <a class="el" href="classamr__wind_1_1pde_1_1_s_d_r_source.html#a4f923d17cfb6ba0c730281b88ff95c94">amr_wind::pde::SDRSource</a>, <a class="el" href="classamr__wind_1_1pde_1_1_source_term.html#a2fe764861c341451b8a9527d0b6c2af6">amr_wind::pde::SourceTerm</a>, <a class="el" href="classamr__wind_1_1pde_1_1_temperature_source.html#a1a656d7318408e13620e81ce0bef241b">amr_wind::pde::TemperatureSource</a>, <a class="el" href="classamr__wind_1_1pde_1_1_t_k_e_source.html#af6f7c2d80c1e1e8bc749209246bc6ac1">amr_wind::pde::TKESource</a>, <a class="el" href="classamr__wind_1_1_physics.html#a8bfde0d71b16ae65701c06c5b436dc6c">amr_wind::Physics</a>, <a class="el" href="classamr__wind_1_1_post_process_base.html#aadd3620958031d76cadcccd04411d360">amr_wind::PostProcessBase</a>, <a class="el" href="classamr__wind_1_1_refinement_criteria.html#aba4fd507f87b9ebf7233fb7aa7ac14b0">amr_wind::RefinementCriteria</a>, <a class="el" href="classamr__wind_1_1sampling_1_1_sampler_base.html#a2273778f721d9ac9e8963045ec0bd655">amr_wind::sampling::SamplerBase</a>, <a class="el" href="classamr__wind_1_1tagging_1_1_geometry_type.html#afb67909012c94e6bbbb782ac61da9112">amr_wind::tagging::GeometryType</a>, <a class="el" href="classamr__wind_1_1transport_1_1_transport_model.html#a9d47db3529c84e9b6ec0c014683b6c9c">amr_wind::transport::TransportModel</a>, <a class="el" href="classamr__wind_1_1turbulence_1_1_turbulence_model.html#a3757fe2e716a1db20876389ef79a2f32">amr_wind::turbulence::TurbulenceModel</a>, <a class="el" href="classamr__wind_1_1udf_1_1_u_d_f.html#a14ddf15e478e9b2016293b030f0fee85">amr_wind::udf::UDF</a></li>
+<li>base_name()&#160;:&#160;<a class="el" href="classamr__wind_1_1_field.html#a6b890c1f153b9233d5fed9f4061d3ba3">amr_wind::Field</a></li>
+<li>base_pos&#160;:&#160;<a class="el" href="structamr__wind_1_1actuator_1_1_turbine_info.html#a49d2eabf6c116f586798538f6611d051">amr_wind::actuator::TurbineInfo</a>, <a class="el" href="structext__turb_1_1_external_turbine.html#a7f21ab16276378fe6d9ae05235c93321">ext_turb::ExternalTurbine</a></li>
+<li>bc_functor()&#160;:&#160;<a class="el" href="classamr__wind_1_1_field_fill_patch_ops.html#a9005dfd2263ce5217e4333fa1b60122f">amr_wind::FieldFillPatchOps&lt; BCOpCreator &gt;</a></li>
+<li>bc_functor_face()&#160;:&#160;<a class="el" href="classamr__wind_1_1_field_fill_patch_ops.html#a7da4d654ce4c00a7fbe0c065f559ba24">amr_wind::FieldFillPatchOps&lt; BCOpCreator &gt;</a></li>
+<li>bc_initialized()&#160;:&#160;<a class="el" href="classamr__wind_1_1_field.html#abeb5fec1ed460309c8c558edacfc759a">amr_wind::Field</a>, <a class="el" href="structamr__wind_1_1_field_info.html#a97dbad8e0bdd612fda55b01f6539a52e">amr_wind::FieldInfo</a></li>
+<li>bc_type()&#160;:&#160;<a class="el" href="classamr__wind_1_1_field.html#a88b1c219ab8b1a21354787444619327d">amr_wind::Field</a></li>
+<li>bc_values()&#160;:&#160;<a class="el" href="classamr__wind_1_1_field.html#ab30cf6400cbc8e94f2e8a4e020a16b99">amr_wind::Field</a></li>
+<li>bc_values_device()&#160;:&#160;<a class="el" href="classamr__wind_1_1_field.html#a71520e64992b7672ae22b82ee60ffccd">amr_wind::Field</a></li>
+<li>BCDensityMod()&#160;:&#160;<a class="el" href="classamr__wind_1_1_b_c_density_mod.html#a6d93efa88721c5a5fc81b95f41f633d1">amr_wind::BCDensityMod</a></li>
+<li>BCFillPatchExtrap()&#160;:&#160;<a class="el" href="classamr__wind_1_1_b_c_fill_patch_extrap.html#ab655871c5ad513f4acec18027d8fdfd0">amr_wind::BCFillPatchExtrap</a></li>
+<li>BCIface()&#160;:&#160;<a class="el" href="classamr__wind_1_1_b_c_iface.html#a9c4dcba9672302d7bc123f98f6919cf6">amr_wind::BCIface</a></li>
+<li>BCOp()&#160;:&#160;<a class="el" href="structamr__wind_1_1pde_1_1_b_c_op_3_01_i_c_n_s_01_4.html#ab69c2778cfcb0bf70e4999d5d21d0869">amr_wind::pde::BCOp&lt; ICNS &gt;</a>, <a class="el" href="structamr__wind_1_1pde_1_1_b_c_op_3_01_p_d_e_00_01std_1_1enable__if__t_3_01std_1_1is__base__of__3cac9c19da295910043c5900f3cf7eab.html#aa4da95800f57ee6ea5f1235a574ce342">amr_wind::pde::BCOp&lt; PDE, std::enable_if_t&lt; std::is_base_of_v&lt; ScalarTransport, PDE &gt; &gt; &gt;</a>, <a class="el" href="structamr__wind_1_1pde_1_1_b_c_op_3_01_v_o_f_01_4.html#a3dfbbd6bc101d2527e37cea76d6f1da0">amr_wind::pde::BCOp&lt; VOF &gt;</a></li>
+<li>BCOpCreator()&#160;:&#160;<a class="el" href="structamr__wind_1_1_b_c_op_creator.html#a1387e2f6d51d58d7f577ee4807f62ec4">amr_wind::BCOpCreator&lt; InflowOp, WallOp &gt;</a></li>
+<li>BCPressure()&#160;:&#160;<a class="el" href="classamr__wind_1_1_b_c_pressure.html#a23ede706b51b2be975c6217734a0f97f">amr_wind::BCPressure</a></li>
+<li>bcrec()&#160;:&#160;<a class="el" href="classamr__wind_1_1_field.html#ae3622f302557c4f607c4557cac4ce442">amr_wind::Field</a></li>
+<li>bcrec_device()&#160;:&#160;<a class="el" href="classamr__wind_1_1_field.html#a40d0f4a276f53d9b8626d6190c257f42">amr_wind::Field</a></li>
+<li>BCScalar()&#160;:&#160;<a class="el" href="classamr__wind_1_1_b_c_scalar.html#a86e1a8745d0886eb676e235b7750eab2">amr_wind::BCScalar</a></li>
+<li>BCSrcTerm()&#160;:&#160;<a class="el" href="classamr__wind_1_1_b_c_src_term.html#acaae2b4fe53458a3bda6e0889de075bf">amr_wind::BCSrcTerm</a></li>
+<li>BCVelocity()&#160;:&#160;<a class="el" href="classamr__wind_1_1_b_c_velocity.html#a33929dacaaa75146795d37c291ba9223">amr_wind::BCVelocity</a></li>
+<li>BCVOF()&#160;:&#160;<a class="el" href="classamr__wind_1_1_b_c_v_o_f.html#a93553371c85577b216edad406d318b9c">amr_wind::BCVOF</a></li>
+<li>beach_length&#160;:&#160;<a class="el" href="structamr__wind_1_1ocean__waves_1_1_relax_zones_base_data.html#a43811016adfcb5fd0758e347f8b83efa">amr_wind::ocean_waves::RelaxZonesBaseData</a></li>
+<li>beach_length_factor&#160;:&#160;<a class="el" href="structamr__wind_1_1ocean__waves_1_1_relax_zones_base_data.html#a1d67c814dc59577b7247ed3fc8c97a8e">amr_wind::ocean_waves::RelaxZonesBaseData</a></li>
+<li>begin()&#160;:&#160;<a class="el" href="structamr__wind_1_1utils_1_1_slice.html#a8b8b77a0c03b0125a5abbaa0722b5ce9">amr_wind::utils::Slice&lt; T &gt;</a>, <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html#ae587c4da447ed794a4913adccebe41bb">amr_wind::vs::TensorT&lt; T &gt;</a>, <a class="el" href="structamr__wind_1_1vs_1_1_vector_t.html#a847d76c6275d9d99684e7ee89c9dfa8b">amr_wind::vs::VectorT&lt; T &gt;</a></li>
+<li>beta()&#160;:&#160;<a class="el" href="classamr__wind_1_1transport_1_1_const_transport.html#ab9538ab735f19945822d37dd5060835d">amr_wind::transport::ConstTransport</a>, <a class="el" href="classamr__wind_1_1transport_1_1_transport_model.html#ad4d4bce8e32bc8e9795275daf7fe47c1">amr_wind::transport::TransportModel</a>, <a class="el" href="classamr__wind_1_1transport_1_1_two_phase_transport.html#a2d70cb2033f1ad46aa416572c6bde872">amr_wind::transport::TwoPhaseTransport</a></li>
+<li>beta_h&#160;:&#160;<a class="el" href="structamr__wind_1_1_m_o_data.html#af07204fa274a12565e935ec331c4660d">amr_wind::MOData</a></li>
+<li>beta_impl()&#160;:&#160;<a class="el" href="classamr__wind_1_1transport_1_1_const_transport.html#a3c7bc76b50ef902326360f59025685ae">amr_wind::transport::ConstTransport</a>, <a class="el" href="classamr__wind_1_1transport_1_1_transport_model.html#ad1735ce13511eab180c4d2afcc3785f2">amr_wind::transport::TransportModel</a>, <a class="el" href="classamr__wind_1_1transport_1_1_two_phase_transport.html#a7a52b9a2ee54a298ec19f12f09aa2383">amr_wind::transport::TwoPhaseTransport</a></li>
+<li>beta_m&#160;:&#160;<a class="el" href="structamr__wind_1_1_m_o_data.html#a62cbfd5e9bf94de5727c90d2d0035144">amr_wind::MOData</a></li>
+<li>blade_x&#160;:&#160;<a class="el" href="structamr__wind_1_1actuator_1_1_wing_base_data.html#a1f3cca86310dd79c589a067f836cd5f9">amr_wind::actuator::WingBaseData</a></li>
+<li>blades&#160;:&#160;<a class="el" href="structamr__wind_1_1actuator_1_1_turbine_base_data.html#adc9dd878128bfe85c979e844eba14ea0">amr_wind::actuator::TurbineBaseData</a></li>
+<li>blend_forcings()&#160;:&#160;<a class="el" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a1a961f82890d89b5fdaf66b434da4728">amr_wind::ABLMesoscaleForcing</a></li>
+<li>bndry_plane()&#160;:&#160;<a class="el" href="classamr__wind_1_1_a_b_l.html#aa9b15c1cb680c0e1ada857e0711f517a">amr_wind::ABL</a></li>
+<li>body_index()&#160;:&#160;<a class="el" href="structext__turb_1_1_kynema_turbine.html#a6318944b56216569b930fb12ad7575fb">ext_turb::KynemaTurbine</a></li>
+<li>BodyForce()&#160;:&#160;<a class="el" href="classamr__wind_1_1pde_1_1icns_1_1_body_force.html#a9eb929a40c4855eec58d587db8328daf">amr_wind::pde::icns::BodyForce</a>, <a class="el" href="classamr__wind_1_1pde_1_1temperature_1_1_body_force.html#ae728904e60003b15d0f4ac62b581ed36">amr_wind::pde::temperature::BodyForce</a></li>
+<li>bottom_vel&#160;:&#160;<a class="el" href="structamr__wind_1_1udf_1_1_two_layer_1_1_device_op.html#a42d7e0df49b3fbbd62b8cf3d47bd97ac">amr_wind::udf::TwoLayer::DeviceOp</a></li>
+<li>bound_box&#160;:&#160;<a class="el" href="structamr__wind_1_1actuator_1_1_act_info.html#a9953c75f12f99eee553640ebb145477c">amr_wind::actuator::ActInfo</a>, <a class="el" href="structamr__wind_1_1ib_1_1_i_b_info.html#a49d458cf109b545c49be4ff3866caec3">amr_wind::ib::IBInfo</a>, <a class="el" href="classamr__wind_1_1tagging_1_1_box_refiner.html#ae1423b3f98c4dedae632b8a7ca94599f">amr_wind::tagging::BoxRefiner</a>, <a class="el" href="classamr__wind_1_1tagging_1_1_cylinder_refiner.html#ab8726537977f3167a64624de134cff0f">amr_wind::tagging::CylinderRefiner</a>, <a class="el" href="classamr__wind_1_1tagging_1_1_geometry_type.html#ae5b3fa52ff5a6c16c44ae8a28984ad82">amr_wind::tagging::GeometryType</a>, <a class="el" href="classamr__wind_1_1tagging_1_1_u_d_f_refiner.html#a77b010a75e3c8986692270c251f741df">amr_wind::tagging::UDFRefiner</a></li>
+<li>boundary_native_file_levels()&#160;:&#160;<a class="el" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a9fe55706e708f6d8ab6bba8b2be4958d">amr_wind::ABLBoundaryPlane</a></li>
+<li>bounding_box()&#160;:&#160;<a class="el" href="structamr__wind_1_1forestdrag_1_1_forest.html#a59051c2010f40f0446ac04268b6fecd3">amr_wind::forestdrag::Forest</a></li>
+<li>bounds_tol&#160;:&#160;<a class="el" href="classamr__wind_1_1sampling_1_1_sampler_base.html#a59e79a5c1940cd4b39e857c84c5534f4">amr_wind::sampling::SamplerBase</a></li>
+<li>BoussinesqBubble()&#160;:&#160;<a class="el" href="classamr__wind_1_1_boussinesq_bubble.html#a31a60338a2f99ceefdcc47cb4fdd9f53">amr_wind::BoussinesqBubble</a></li>
+<li>BoussinesqBubbleFieldInit()&#160;:&#160;<a class="el" href="classamr__wind_1_1_boussinesq_bubble_field_init.html#ad7def878e34a3d782be96914552247df">amr_wind::BoussinesqBubbleFieldInit</a></li>
+<li>BoussinesqBuoyancy()&#160;:&#160;<a class="el" href="classamr__wind_1_1pde_1_1icns_1_1_boussinesq_buoyancy.html#ac5fb566391484ac3313cdde5a81c0919">amr_wind::pde::icns::BoussinesqBuoyancy</a></li>
+<li>box()&#160;:&#160;<a class="el" href="structamr__wind_1_1fvm_1_1stencil_1_1_stencil_i_h_i.html#a3fbd385c756389e31a7e27e7af6b382d">amr_wind::fvm::stencil::StencilIHI</a>, <a class="el" href="structamr__wind_1_1fvm_1_1stencil_1_1_stencil_ihi_jhi.html#a9bc8521ae2aed89b5edddebc7e478e42">amr_wind::fvm::stencil::StencilIhiJhi</a>, <a class="el" href="structamr__wind_1_1fvm_1_1stencil_1_1_stencil_ihi_jhi_khi.html#a292cae4712f1d33459baa8db2886492f">amr_wind::fvm::stencil::StencilIhiJhiKhi</a>, <a class="el" href="structamr__wind_1_1fvm_1_1stencil_1_1_stencil_ihi_jhi_klo.html#aa0f16066431608ebb961f06910ebd6d1">amr_wind::fvm::stencil::StencilIhiJhiKlo</a>, <a class="el" href="structamr__wind_1_1fvm_1_1stencil_1_1_stencil_ihi_jlo.html#ad7c2ab2cda90c4dc1f84d11a17ba26df">amr_wind::fvm::stencil::StencilIhiJlo</a>, <a class="el" href="structamr__wind_1_1fvm_1_1stencil_1_1_stencil_ihi_jlo_khi.html#a7e84cd8b4810155177b4b536c346dc6b">amr_wind::fvm::stencil::StencilIhiJloKhi</a>, <a class="el" href="structamr__wind_1_1fvm_1_1stencil_1_1_stencil_ihi_jlo_klo.html#a6d7b6a8d49e1e43d76707f7d78a64123">amr_wind::fvm::stencil::StencilIhiJloKlo</a>, <a class="el" href="structamr__wind_1_1fvm_1_1stencil_1_1_stencil_ihi_khi.html#aac438e2b5ae7adc8167c9ac9f277c85f">amr_wind::fvm::stencil::StencilIhiKhi</a>, <a class="el" href="structamr__wind_1_1fvm_1_1stencil_1_1_stencil_ihi_klo.html#af061d34781799c402cf7c1fbf77f2ba7">amr_wind::fvm::stencil::StencilIhiKlo</a>, <a class="el" href="structamr__wind_1_1fvm_1_1stencil_1_1_stencil_i_l_o.html#a936e43962b5e42fddc944bc53a3524e2">amr_wind::fvm::stencil::StencilILO</a>, <a class="el" href="structamr__wind_1_1fvm_1_1stencil_1_1_stencil_ilo_jhi.html#a4810c4808e3fbfd81e116cf5913dd3b0">amr_wind::fvm::stencil::StencilIloJhi</a>, <a class="el" href="structamr__wind_1_1fvm_1_1stencil_1_1_stencil_ilo_jhi_khi.html#af806f6a3cfa4b3b555e09004a45d0f04">amr_wind::fvm::stencil::StencilIloJhiKhi</a>, <a class="el" href="structamr__wind_1_1fvm_1_1stencil_1_1_stencil_ilo_jhi_klo.html#af03db8c973120df17a6e3b559a007416">amr_wind::fvm::stencil::StencilIloJhiKlo</a>, <a class="el" href="structamr__wind_1_1fvm_1_1stencil_1_1_stencil_ilo_jlo.html#aa67410b43140c43cd4130b377459dc5f">amr_wind::fvm::stencil::StencilIloJlo</a>, <a class="el" href="structamr__wind_1_1fvm_1_1stencil_1_1_stencil_ilo_jlo_khi.html#a5263c1b2e132b1db1241f4068cfcee37">amr_wind::fvm::stencil::StencilIloJloKhi</a>, <a class="el" href="structamr__wind_1_1fvm_1_1stencil_1_1_stencil_ilo_jlo_klo.html#a1f25371055dcac46c828e94500cccc2c">amr_wind::fvm::stencil::StencilIloJloKlo</a>, <a class="el" href="structamr__wind_1_1fvm_1_1stencil_1_1_stencil_ilo_khi.html#adfec2cef0ae1ce1aee638c3773d5b993">amr_wind::fvm::stencil::StencilIloKhi</a>, <a class="el" href="structamr__wind_1_1fvm_1_1stencil_1_1_stencil_ilo_klo.html#a46333b1f6adbeef00843b1650c58714a">amr_wind::fvm::stencil::StencilIloKlo</a>, <a class="el" href="structamr__wind_1_1fvm_1_1stencil_1_1_stencil_interior.html#a3833a38d8e14821e522fbb61d882fcc4">amr_wind::fvm::stencil::StencilInterior</a>, <a class="el" href="structamr__wind_1_1fvm_1_1stencil_1_1_stencil_j_h_i.html#a9fd3839e53363fbc680dd4ce9b4c29b9">amr_wind::fvm::stencil::StencilJHI</a>, <a class="el" href="structamr__wind_1_1fvm_1_1stencil_1_1_stencil_jhi_khi.html#a694a4d20c89a251ca3dcc2361a168264">amr_wind::fvm::stencil::StencilJhiKhi</a>, <a class="el" href="structamr__wind_1_1fvm_1_1stencil_1_1_stencil_jhi_klo.html#a60e8762859ec6feae15c1420272e2030">amr_wind::fvm::stencil::StencilJhiKlo</a>, <a class="el" href="structamr__wind_1_1fvm_1_1stencil_1_1_stencil_j_l_o.html#a2b65c43207382babe60dd594a9cb005c">amr_wind::fvm::stencil::StencilJLO</a>, <a class="el" href="structamr__wind_1_1fvm_1_1stencil_1_1_stencil_jlo_khi.html#a7f1f842c0808cf7496db8588ff886df5">amr_wind::fvm::stencil::StencilJloKhi</a>, <a class="el" href="structamr__wind_1_1fvm_1_1stencil_1_1_stencil_jlo_klo.html#a44d167c01d0d4fd1fafd9ddb4212fd53">amr_wind::fvm::stencil::StencilJloKlo</a>, <a class="el" href="structamr__wind_1_1fvm_1_1stencil_1_1_stencil_k_h_i.html#aa629d431c7b06b588395b71fc77cec9d">amr_wind::fvm::stencil::StencilKHI</a>, <a class="el" href="structamr__wind_1_1fvm_1_1stencil_1_1_stencil_k_l_o.html#a332fa90aec57c967b2762553f39166f5">amr_wind::fvm::stencil::StencilKLO</a></li>
+<li>box_dims&#160;:&#160;<a class="el" href="structamr__wind_1_1_synth_turb_data.html#a62dece483dfd0a7f5c3d717978973e75">amr_wind::SynthTurbData</a>, <a class="el" href="structamr__wind_1_1_synth_turb_device_data.html#a2ef1a511144c7979b2ede787927ac040">amr_wind::SynthTurbDeviceData</a></li>
+<li>box_intersects_boundary()&#160;:&#160;<a class="el" href="classamr__wind_1_1_a_b_l_boundary_plane.html#afa9ccd482a897cdaf227ae9a621a8cf2">amr_wind::ABLBoundaryPlane</a></li>
+<li>box_len&#160;:&#160;<a class="el" href="structamr__wind_1_1_synth_turb_data.html#a0ab2ccd01c49a1fb02fc5aa0f4bb0d13">amr_wind::SynthTurbData</a>, <a class="el" href="structamr__wind_1_1_synth_turb_device_data.html#a89f20943646d455f1be393da5752c909">amr_wind::SynthTurbDeviceData</a></li>
+<li>boxarray_vec()&#160;:&#160;<a class="el" href="classamr__wind_1_1_cart_box_refinement.html#abb273911e652a761dce9eec16921342b">amr_wind::CartBoxRefinement</a></li>
+<li>BoxRefiner()&#160;:&#160;<a class="el" href="classamr__wind_1_1tagging_1_1_box_refiner.html#a52ffb612ed28f665188ef064deba3607">amr_wind::tagging::BoxRefiner</a></li>
+<li>BreakingWaves()&#160;:&#160;<a class="el" href="classamr__wind_1_1_breaking_waves.html#ac2db5b8782613fd3b5ca20a0ac011ded">amr_wind::BreakingWaves</a></li>
+<li>buffer_cf&#160;:&#160;<a class="el" href="structext__turb_1_1_kynema_turbine.html#a3d2b1d4150c4438feb964df0148ac7c4">ext_turb::KynemaTurbine</a></li>
+<li>buffer_f&#160;:&#160;<a class="el" href="structext__turb_1_1_kynema_turbine.html#a314ccae36c7694b9a587d1a345e5fde4">ext_turb::KynemaTurbine</a></li>
+<li>buffer_fv&#160;:&#160;<a class="el" href="structext__turb_1_1_kynema_turbine.html#a207b6e7066a54e9f3d9359b104df1e6b">ext_turb::KynemaTurbine</a></li>
+<li>buffer_ori&#160;:&#160;<a class="el" href="structext__turb_1_1_kynema_turbine.html#a08df7d1cd79859cd82f1d2a73259b43c">ext_turb::KynemaTurbine</a></li>
+<li>buffer_pf&#160;:&#160;<a class="el" href="structext__turb_1_1_kynema_turbine.html#ac3dc07e9b374ef1e49aea492c5ced160">ext_turb::KynemaTurbine</a></li>
+<li>buffer_pv&#160;:&#160;<a class="el" href="structext__turb_1_1_kynema_turbine.html#ad70b9bf1afd38fb2e374fc3796c911f8">ext_turb::KynemaTurbine</a></li>
+<li>buffer_sv&#160;:&#160;<a class="el" href="structext__turb_1_1_kynema_turbine.html#ae732d767a2248d3bb84884539f81ad20">ext_turb::KynemaTurbine</a></li>
+<li>BurggrafFlow()&#160;:&#160;<a class="el" href="classamr__wind_1_1burggraf_1_1_burggraf_flow.html#a8e803e2f2171a821cdbf54fc4e0205ed">amr_wind::burggraf::BurggrafFlow</a></li>
+<li>BurggrafFlowForcing()&#160;:&#160;<a class="el" href="classamr__wind_1_1pde_1_1icns_1_1_burggraf_flow_forcing.html#aad79e4cf98b185a34586cc8150054683">amr_wind::pde::icns::BurggrafFlowForcing</a></li>
+<li>BurggrafLid()&#160;:&#160;<a class="el" href="structamr__wind_1_1udf_1_1_burggraf_lid.html#a2e2e6edd6ada25c53fa02550e4fd4c92">amr_wind::udf::BurggrafLid</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="functions.html" class="btn btn-neutral float-left" title="Class Members" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="functions_c.html" class="btn btn-neutral float-right" title="Class Members" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

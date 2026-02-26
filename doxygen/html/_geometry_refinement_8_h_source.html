@@ -1,0 +1,296 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/tagging/GeometryRefinement.H Source File &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/tagging/GeometryRefinement.H Source File</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/_geometry_refinement_8_h_source.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="home-runner-work-amr-wind-amr-wind-amr-wind-utilities-tagging-geometryrefinement-h-source-file">
+<h1>/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/tagging/GeometryRefinement.H Source File<a class="headerlink" href="#home-runner-work-amr-wind-amr-wind-amr-wind-utilities-tagging-geometryrefinement-h-source-file" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/tagging/GeometryRefinement.H Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="dir_d85575251dd712327fe3cf057fa568b4.html">amr-wind</a></li><li class="navelem"><a href="dir_212148f97b8bb53ebaebb3bf8a8b5de4.html">amr-wind</a></li><li class="navelem"><a href="dir_e9168f3bfea397a173489332f8554c97.html">utilities</a></li><li class="navelem"><a href="dir_25b31749afd0d1f9c4a601d204acc003.html">tagging</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="headertitle"><div class="title">GeometryRefinement.H</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="_geometry_refinement_8_h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef GEOMETRYREFINEMENT_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define GEOMETRYREFINEMENT_H</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="index__operations_8_h.html">amr-wind/utilities/index_operations.H</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="_refinement_criteria_8_h.html">amr-wind/utilities/tagging/RefinementCriteria.H</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceamr__wind.html">amr_wind</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceamr__wind_1_1tagging.html">tagging</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span></div>
+<div class="foldopen" id="foldopen00013" data-start="{" data-end="};">
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="classamr__wind_1_1tagging_1_1_geometry_type.html">   13</a></span><span class="keyword">class </span><a class="code hl_function" href="classamr__wind_1_1tagging_1_1_geometry_type.html#a9c87382c1bed0c3407b9383166709753">GeometryType</a></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    : <span class="keyword">public</span> <a class="code hl_function" href="structamr__wind_1_1_factory.html#a9e905d4e76d3a3da2786ec0dcd758b77">Factory</a>&lt;GeometryType, const CFDSim&amp;, const std::string&amp;&gt;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>{</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="classamr__wind_1_1tagging_1_1_geometry_type.html#afb67909012c94e6bbbb782ac61da9112">   17</a></span>    <span class="keyword">static</span> std::string <a class="code hl_function" href="classamr__wind_1_1tagging_1_1_geometry_type.html#afb67909012c94e6bbbb782ac61da9112">base_identifier</a>() { <span class="keywordflow">return</span> <span class="stringliteral">&quot;GeometryType&quot;</span>; }</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="classamr__wind_1_1tagging_1_1_geometry_type.html#a9c87382c1bed0c3407b9383166709753">   19</a></span>    <a class="code hl_function" href="classamr__wind_1_1tagging_1_1_geometry_type.html#a9c87382c1bed0c3407b9383166709753">GeometryType</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="classamr__wind_1_1tagging_1_1_geometry_type.html#a0b8e7fddea78a6fbfca30abaafaafb04">   21</a></span>    <a class="code hl_function" href="classamr__wind_1_1tagging_1_1_geometry_type.html#a0b8e7fddea78a6fbfca30abaafaafb04">~GeometryType</a>() <span class="keyword">override</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classamr__wind_1_1tagging_1_1_geometry_type.html#a23212bd6d5ecc607dd09d5daf2c3f460">   23</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1tagging_1_1_geometry_type.html#a23212bd6d5ecc607dd09d5daf2c3f460">operator()</a>(</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        <span class="keyword">const</span> amrex::Box&amp;,</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <span class="keyword">const</span> amrex::Geometry&amp; geom,</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <span class="keyword">const</span> amrex::Array4&lt;amrex::TagBox::TagType&gt;&amp; tags) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classamr__wind_1_1tagging_1_1_geometry_type.html#ae5b3fa52ff5a6c16c44ae8a28984ad82">   28</a></span>    [[nodiscard]] <span class="keyword">virtual</span> <span class="keyword">const</span> amrex::RealBox&amp; <a class="code hl_function" href="classamr__wind_1_1tagging_1_1_geometry_type.html#ae5b3fa52ff5a6c16c44ae8a28984ad82">bound_box</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>};</div>
+</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>} <span class="comment">// namespace tagging</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span></div>
+<div class="foldopen" id="foldopen00036" data-start="{" data-end="};">
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_geometry_refinement.html">   36</a></span><span class="keyword">class </span><a class="code hl_function" href="classamr__wind_1_1_geometry_refinement.html#aabf90c11ef5586354074469987cf0e79">GeometryRefinement</a></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    : <span class="keyword">public</span> RefinementCriteria::Register&lt;GeometryRefinement&gt;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>{</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_geometry_refinement.html#aa85e90bd567db90eac9953ab57a3a3b5">   40</a></span>    <span class="keyword">static</span> std::string <a class="code hl_function" href="classamr__wind_1_1_geometry_refinement.html#aa85e90bd567db90eac9953ab57a3a3b5">identifier</a>() { <span class="keywordflow">return</span> <span class="stringliteral">&quot;GeometryRefinement&quot;</span>; }</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classamr__wind_1_1_geometry_refinement.html#aabf90c11ef5586354074469987cf0e79">GeometryRefinement</a>(<span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; <span class="comment">/*sim*/</span>);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_geometry_refinement.html#a09d10dfa043867fdb81bb1cba2171048">   44</a></span>    <a class="code hl_function" href="classamr__wind_1_1_geometry_refinement.html#a09d10dfa043867fdb81bb1cba2171048">~GeometryRefinement</a>() <span class="keyword">override</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span></div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_geometry_refinement.html#aad203588f9849dc1280394c98b09d62c">initialize</a>(<span class="keyword">const</span> std::string&amp; key) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordtype">void</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <a class="code hl_function" href="classamr__wind_1_1_geometry_refinement.html#a95e1ac8fd6c572d2ce33210173dc2611">operator()</a>(<span class="keywordtype">int</span> level, amrex::TagBoxArray&amp; tags, amrex::Real time, <span class="keywordtype">int</span> ngrow)</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_geometry_refinement.html#a89468dd487377af18b1b3b6945b26b5c">   54</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1_geometry_refinement.html#a89468dd487377af18b1b3b6945b26b5c">m_sim</a>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_geometry_refinement.html#abb1b31a4e1f3e85b169ba7ad3319907d">   56</a></span>    amrex::Vector&lt;std::unique_ptr&lt;tagging::GeometryType&gt;&gt; <a class="code hl_variable" href="classamr__wind_1_1_geometry_refinement.html#abb1b31a4e1f3e85b169ba7ad3319907d">m_geom_refiners</a>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span></div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_geometry_refinement.html#a4b1927c35acb6f3048f840de873d3c4a">   61</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classamr__wind_1_1_geometry_refinement.html#a4b1927c35acb6f3048f840de873d3c4a">m_set_level</a>{-1};</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="comment">// If the user hasn&#39;t specified a particular level, act on a range of levels</span></div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_geometry_refinement.html#a1586e299c27fac66bd2b5bbc1e70894b">   64</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classamr__wind_1_1_geometry_refinement.html#a1586e299c27fac66bd2b5bbc1e70894b">m_min_level</a>{0};</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_geometry_refinement.html#a93708194336817750765e32c5e72bc25">   65</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classamr__wind_1_1_geometry_refinement.html#a93708194336817750765e32c5e72bc25">m_max_level</a>{32};</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>};</div>
+</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>} <span class="comment">// namespace amr_wind</span></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="preprocessor">#endif </span><span class="comment">/* GEOMETRYREFINEMENT_H */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="a_refinement_criteria_8_h_html"><div class="ttname"><a href="_refinement_criteria_8_h.html">RefinementCriteria.H</a></div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html">amr_wind::CFDSim</a></div><div class="ttdef"><b>Definition</b> CFDSim.H:54</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_geometry_refinement_html_a09d10dfa043867fdb81bb1cba2171048"><div class="ttname"><a href="classamr__wind_1_1_geometry_refinement.html#a09d10dfa043867fdb81bb1cba2171048">amr_wind::GeometryRefinement::~GeometryRefinement</a></div><div class="ttdeci">~GeometryRefinement() override=default</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_geometry_refinement_html_a1586e299c27fac66bd2b5bbc1e70894b"><div class="ttname"><a href="classamr__wind_1_1_geometry_refinement.html#a1586e299c27fac66bd2b5bbc1e70894b">amr_wind::GeometryRefinement::m_min_level</a></div><div class="ttdeci">int m_min_level</div><div class="ttdef"><b>Definition</b> GeometryRefinement.H:64</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_geometry_refinement_html_a4b1927c35acb6f3048f840de873d3c4a"><div class="ttname"><a href="classamr__wind_1_1_geometry_refinement.html#a4b1927c35acb6f3048f840de873d3c4a">amr_wind::GeometryRefinement::m_set_level</a></div><div class="ttdeci">int m_set_level</div><div class="ttdef"><b>Definition</b> GeometryRefinement.H:61</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_geometry_refinement_html_a89468dd487377af18b1b3b6945b26b5c"><div class="ttname"><a href="classamr__wind_1_1_geometry_refinement.html#a89468dd487377af18b1b3b6945b26b5c">amr_wind::GeometryRefinement::m_sim</a></div><div class="ttdeci">const CFDSim &amp; m_sim</div><div class="ttdef"><b>Definition</b> GeometryRefinement.H:54</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_geometry_refinement_html_a93708194336817750765e32c5e72bc25"><div class="ttname"><a href="classamr__wind_1_1_geometry_refinement.html#a93708194336817750765e32c5e72bc25">amr_wind::GeometryRefinement::m_max_level</a></div><div class="ttdeci">int m_max_level</div><div class="ttdef"><b>Definition</b> GeometryRefinement.H:65</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_geometry_refinement_html_a95e1ac8fd6c572d2ce33210173dc2611"><div class="ttname"><a href="classamr__wind_1_1_geometry_refinement.html#a95e1ac8fd6c572d2ce33210173dc2611">amr_wind::GeometryRefinement::operator()</a></div><div class="ttdeci">void operator()(int level, amrex::TagBoxArray &amp;tags, amrex::Real time, int ngrow) override</div><div class="ttdef"><b>Definition</b> GeometryRefinement.cpp:34</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_geometry_refinement_html_aa85e90bd567db90eac9953ab57a3a3b5"><div class="ttname"><a href="classamr__wind_1_1_geometry_refinement.html#aa85e90bd567db90eac9953ab57a3a3b5">amr_wind::GeometryRefinement::identifier</a></div><div class="ttdeci">static std::string identifier()</div><div class="ttdef"><b>Definition</b> GeometryRefinement.H:40</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_geometry_refinement_html_aabf90c11ef5586354074469987cf0e79"><div class="ttname"><a href="classamr__wind_1_1_geometry_refinement.html#aabf90c11ef5586354074469987cf0e79">amr_wind::GeometryRefinement::GeometryRefinement</a></div><div class="ttdeci">GeometryRefinement(const CFDSim &amp;)</div><div class="ttdef"><b>Definition</b> GeometryRefinement.cpp:9</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_geometry_refinement_html_aad203588f9849dc1280394c98b09d62c"><div class="ttname"><a href="classamr__wind_1_1_geometry_refinement.html#aad203588f9849dc1280394c98b09d62c">amr_wind::GeometryRefinement::initialize</a></div><div class="ttdeci">void initialize(const std::string &amp;key) override</div><div class="ttdoc">Read input file and initialize boxarray used to refine each level.</div><div class="ttdef"><b>Definition</b> GeometryRefinement.cpp:13</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_geometry_refinement_html_abb1b31a4e1f3e85b169ba7ad3319907d"><div class="ttname"><a href="classamr__wind_1_1_geometry_refinement.html#abb1b31a4e1f3e85b169ba7ad3319907d">amr_wind::GeometryRefinement::m_geom_refiners</a></div><div class="ttdeci">amrex::Vector&lt; std::unique_ptr&lt; tagging::GeometryType &gt; &gt; m_geom_refiners</div><div class="ttdef"><b>Definition</b> GeometryRefinement.H:56</div></div>
+<div class="ttc" id="aclassamr__wind_1_1tagging_1_1_geometry_type_html_a0b8e7fddea78a6fbfca30abaafaafb04"><div class="ttname"><a href="classamr__wind_1_1tagging_1_1_geometry_type.html#a0b8e7fddea78a6fbfca30abaafaafb04">amr_wind::tagging::GeometryType::~GeometryType</a></div><div class="ttdeci">~GeometryType() override=default</div></div>
+<div class="ttc" id="aclassamr__wind_1_1tagging_1_1_geometry_type_html_a23212bd6d5ecc607dd09d5daf2c3f460"><div class="ttname"><a href="classamr__wind_1_1tagging_1_1_geometry_type.html#a23212bd6d5ecc607dd09d5daf2c3f460">amr_wind::tagging::GeometryType::operator()</a></div><div class="ttdeci">virtual void operator()(const amrex::Box &amp;, const amrex::Geometry &amp;geom, const amrex::Array4&lt; amrex::TagBox::TagType &gt; &amp;tags) const =0</div></div>
+<div class="ttc" id="aclassamr__wind_1_1tagging_1_1_geometry_type_html_a9c87382c1bed0c3407b9383166709753"><div class="ttname"><a href="classamr__wind_1_1tagging_1_1_geometry_type.html#a9c87382c1bed0c3407b9383166709753">amr_wind::tagging::GeometryType::GeometryType</a></div><div class="ttdeci">GeometryType()=default</div></div>
+<div class="ttc" id="aclassamr__wind_1_1tagging_1_1_geometry_type_html_ae5b3fa52ff5a6c16c44ae8a28984ad82"><div class="ttname"><a href="classamr__wind_1_1tagging_1_1_geometry_type.html#ae5b3fa52ff5a6c16c44ae8a28984ad82">amr_wind::tagging::GeometryType::bound_box</a></div><div class="ttdeci">virtual const amrex::RealBox &amp; bound_box() const =0</div></div>
+<div class="ttc" id="aclassamr__wind_1_1tagging_1_1_geometry_type_html_afb67909012c94e6bbbb782ac61da9112"><div class="ttname"><a href="classamr__wind_1_1tagging_1_1_geometry_type.html#afb67909012c94e6bbbb782ac61da9112">amr_wind::tagging::GeometryType::base_identifier</a></div><div class="ttdeci">static std::string base_identifier()</div><div class="ttdef"><b>Definition</b> GeometryRefinement.H:17</div></div>
+<div class="ttc" id="aindex__operations_8_h_html"><div class="ttname"><a href="index__operations_8_h.html">index_operations.H</a></div></div>
+<div class="ttc" id="anamespaceamr__wind_1_1tagging_html"><div class="ttname"><a href="namespaceamr__wind_1_1tagging.html">amr_wind::tagging</a></div><div class="ttdef"><b>Definition</b> BoxRefiner.cpp:9</div></div>
+<div class="ttc" id="anamespaceamr__wind_html"><div class="ttname"><a href="namespaceamr__wind.html">amr_wind</a></div><div class="ttdoc">This test case is intended as an evaluation of the momentum advection scheme.</div><div class="ttdef"><b>Definition</b> BCInterface.cpp:10</div></div>
+<div class="ttc" id="astructamr__wind_1_1_factory_html_a9e905d4e76d3a3da2786ec0dcd758b77"><div class="ttname"><a href="structamr__wind_1_1_factory.html#a9e905d4e76d3a3da2786ec0dcd758b77">amr_wind::Factory&lt; GeometryType, const CFDSim &amp;, const std::string &amp; &gt;::Factory</a></div><div class="ttdeci">Factory()=default</div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

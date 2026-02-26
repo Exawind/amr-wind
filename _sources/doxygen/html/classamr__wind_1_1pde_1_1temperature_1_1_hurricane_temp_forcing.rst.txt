@@ -1,0 +1,14 @@
+.. meta::679d9b1aea513ca055773a96b21986b7cadfb64ce09dd2d04009c87853f93ebc43ad338b6e6ac2f9176a2e5d0377489db11276465ebd08796b1e9207cfff50bf
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::temperature::HurricaneTempForcing Class Reference
+
+HurricaneTempForcing Class Reference
+====================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1pde_1_1temperature_1_1_hurricane_temp_forcing.html

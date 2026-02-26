@@ -1,0 +1,14 @@
+.. meta::87ce375dea5c9f9b47377db4d9013e00a560e5c2682c60973266149e1dcdc7f9c2e9ea420f8c7fe1913d265734251856e8d2510caadc3922308b7f39778c16bb
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::averaging::TimeAveraging Class Reference
+
+TimeAveraging Class Reference
+=============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1averaging_1_1_time_averaging.html

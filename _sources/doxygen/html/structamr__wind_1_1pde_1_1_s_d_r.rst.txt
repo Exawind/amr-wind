@@ -1,0 +1,14 @@
+.. meta::c6d56b23e45cdf074d43e5603443050c71f1151dbb11592e46b86645aec7a42d8613d7c8a3a81909c4d28822c4b014d08994d49ba715279105875d827a1cdb95
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::SDR Struct Reference
+
+SDR Struct Reference
+====================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1pde_1_1_s_d_r.html

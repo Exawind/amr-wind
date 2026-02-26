@@ -1,0 +1,14 @@
+.. meta::8de2407592be4936b8716614a17f899b5ccc83a0998df53dc9f2b2d185e08945fc46373d3e7e192ff485fd6b0dd17c5df445445515724085a365b425d52ecbdd
+
+:orphan:
+
+.. title:: AMR-Wind API: Ocean Waves module
+
+Ocean Waves module
+==================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: group__ocean__waves.html

@@ -1,0 +1,1742 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::CFDSim Class Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::CFDSim Class Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/classamr__wind_1_1_c_f_d_sim.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="cfdsim-class-reference">
+<h1>CFDSim Class Reference<a class="headerlink" href="#cfdsim-class-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::CFDSim Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
+<a href="classamr__wind_1_1_c_f_d_sim-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::CFDSim Class Reference<div class="ingroups"><a class="el" href="group__core.html">AMR-Wind core</a></div></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_c_f_d_sim_8_h_source.html">CFDSim.H</a>&gt;</code></p>
+<div class="dynheader">
+Collaboration diagram for amr_wind::CFDSim:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1_c_f_d_sim__coll__graph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:aafb7a00e73a1179364ea87ade2f76b7c" id="r_aafb7a00e73a1179364ea87ade2f76b7c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aafb7a00e73a1179364ea87ade2f76b7c">CFDSim</a> (amrex::AmrCore &amp;<a class="el" href="#a67bec35eb742e0aa053daeec7a145623">mesh</a>)</td></tr>
+<tr class="memitem:ae1e27e7b01a5adc3d7e0acd627f78038" id="r_ae1e27e7b01a5adc3d7e0acd627f78038"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae1e27e7b01a5adc3d7e0acd627f78038">~CFDSim</a> ()</td></tr>
+<tr class="memitem:a67bec35eb742e0aa053daeec7a145623" id="r_a67bec35eb742e0aa053daeec7a145623"><td class="memItemLeft" align="right" valign="top">amrex::AmrCore &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a67bec35eb742e0aa053daeec7a145623">mesh</a> ()</td></tr>
+<tr class="memdesc:a67bec35eb742e0aa053daeec7a145623"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the AMR mesh hierarchy.  <br /></td></tr>
+<tr class="memitem:acaba15701632f79d5ccaf77ab49c8d2d" id="r_acaba15701632f79d5ccaf77ab49c8d2d"><td class="memItemLeft" align="right" valign="top">const amrex::AmrCore &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acaba15701632f79d5ccaf77ab49c8d2d">mesh</a> () const</td></tr>
+<tr class="memitem:acc9a7c3dd126cd2cc0c9909a2ba99964" id="r_acc9a7c3dd126cd2cc0c9909a2ba99964"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_sim_time.html">SimTime</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acc9a7c3dd126cd2cc0c9909a2ba99964">time</a> ()</td></tr>
+<tr class="memdesc:acc9a7c3dd126cd2cc0c9909a2ba99964"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return simulation time control.  <br /></td></tr>
+<tr class="memitem:ac8738fd77d59703564ff9ac796e3ddab" id="r_ac8738fd77d59703564ff9ac796e3ddab"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_sim_time.html">SimTime</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac8738fd77d59703564ff9ac796e3ddab">time</a> () const</td></tr>
+<tr class="memitem:a79d8ee029983b3a26823f419ae0c29c4" id="r_a79d8ee029983b3a26823f419ae0c29c4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a79d8ee029983b3a26823f419ae0c29c4">set_mbc</a> (MultiBlockContainer *<a class="el" href="#a4ecdd24a8755a50683d103b8042f20e1">mbc</a>)</td></tr>
+<tr class="memitem:a4ecdd24a8755a50683d103b8042f20e1" id="r_a4ecdd24a8755a50683d103b8042f20e1"><td class="memItemLeft" align="right" valign="top">MultiBlockContainer **&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4ecdd24a8755a50683d103b8042f20e1">mbc</a> ()</td></tr>
+<tr class="memitem:a0666d1f64f9eae5c515b7ac037b2e8d1" id="r_a0666d1f64f9eae5c515b7ac037b2e8d1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0666d1f64f9eae5c515b7ac037b2e8d1">set_read_erf</a> (<a class="el" href="_a_b_l_read_e_r_f_function_8_h.html#a60bde95e8ae1fed3798c17458998ef53">ReadERFFunction</a> fcn)</td></tr>
+<tr class="memitem:a6dd5c99d952ae1ab27a98f48d53f3976" id="r_a6dd5c99d952ae1ab27a98f48d53f3976"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_a_b_l_read_e_r_f_function_8_h.html#a60bde95e8ae1fed3798c17458998ef53">ReadERFFunction</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6dd5c99d952ae1ab27a98f48d53f3976">get_read_erf</a> ()</td></tr>
+<tr class="memitem:a1dacbace38d17434b65a58eb16b57b0f" id="r_a1dacbace38d17434b65a58eb16b57b0f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field_repo.html">FieldRepo</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1dacbace38d17434b65a58eb16b57b0f">repo</a> ()</td></tr>
+<tr class="memdesc:a1dacbace38d17434b65a58eb16b57b0f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the field repository.  <br /></td></tr>
+<tr class="memitem:a5c1e8c18769d076009780ff878bcc0d5" id="r_a5c1e8c18769d076009780ff878bcc0d5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field_repo.html">FieldRepo</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5c1e8c18769d076009780ff878bcc0d5">repo</a> () const</td></tr>
+<tr class="memitem:affd19520a434054aaa96d524611fe4a0" id="r_affd19520a434054aaa96d524611fe4a0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1pde_1_1_p_d_e_mgr.html">pde::PDEMgr</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#affd19520a434054aaa96d524611fe4a0">pde_manager</a> ()</td></tr>
+<tr class="memitem:a1a70bceeccd1185e633da28292c162a6" id="r_a1a70bceeccd1185e633da28292c162a6"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1pde_1_1_p_d_e_mgr.html">pde::PDEMgr</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1a70bceeccd1185e633da28292c162a6">pde_manager</a> () const</td></tr>
+<tr class="memitem:a2a74b9369a4e62c306f04aae40b3dcde" id="r_a2a74b9369a4e62c306f04aae40b3dcde"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_physics_mgr.html">PhysicsMgr</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2a74b9369a4e62c306f04aae40b3dcde">physics_manager</a> ()</td></tr>
+<tr class="memitem:a773085270fee91f0ff5eb7a2841cc5ca" id="r_a773085270fee91f0ff5eb7a2841cc5ca"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_physics_mgr.html">PhysicsMgr</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a773085270fee91f0ff5eb7a2841cc5ca">physics_manager</a> () const</td></tr>
+<tr class="memitem:a5438f62be5cb7871e9b5834b6876e84e" id="r_a5438f62be5cb7871e9b5834b6876e84e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_coll_mgr.html#a42023c48d3e1fac30a08f8a49d63a96b">PhysicsMgr::TypeVector</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5438f62be5cb7871e9b5834b6876e84e">physics</a> ()</td></tr>
+<tr class="memitem:a1b7387f3823dfb687922b96856de3f03" id="r_a1b7387f3823dfb687922b96856de3f03"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_coll_mgr.html#a42023c48d3e1fac30a08f8a49d63a96b">PhysicsMgr::TypeVector</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1b7387f3823dfb687922b96856de3f03">physics</a> () const</td></tr>
+<tr class="memitem:a6aabc33b8493484aa0dae18cf381ae5f" id="r_a6aabc33b8493484aa0dae18cf381ae5f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1transport_1_1_transport_model.html">transport::TransportModel</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6aabc33b8493484aa0dae18cf381ae5f">transport_model</a> ()</td></tr>
+<tr class="memitem:aacc1758611adf7c417b0e17252390877" id="r_aacc1758611adf7c417b0e17252390877"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1transport_1_1_transport_model.html">transport::TransportModel</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aacc1758611adf7c417b0e17252390877">transport_model</a> () const</td></tr>
+<tr class="memitem:a0695572d3a0f43578633008e5f8abd9f" id="r_a0695572d3a0f43578633008e5f8abd9f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1turbulence_1_1_turbulence_model.html">turbulence::TurbulenceModel</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0695572d3a0f43578633008e5f8abd9f">turbulence_model</a> ()</td></tr>
+<tr class="memitem:adf96139d4b3d2e7313d220ae9d2c5209" id="r_adf96139d4b3d2e7313d220ae9d2c5209"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1turbulence_1_1_turbulence_model.html">turbulence::TurbulenceModel</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adf96139d4b3d2e7313d220ae9d2c5209">turbulence_model</a> () const</td></tr>
+<tr class="memitem:afd5a79a98ac6931e65955e829c89811b" id="r_afd5a79a98ac6931e65955e829c89811b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_i_o_manager.html">IOManager</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afd5a79a98ac6931e65955e829c89811b">io_manager</a> ()</td></tr>
+<tr class="memitem:aee2051b1c9af2beebb6b3194fadaa9f9" id="r_aee2051b1c9af2beebb6b3194fadaa9f9"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_i_o_manager.html">IOManager</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aee2051b1c9af2beebb6b3194fadaa9f9">io_manager</a> () const</td></tr>
+<tr class="memitem:a5e4a870590ff92d4e1826c7a3c32742e" id="r_a5e4a870590ff92d4e1826c7a3c32742e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_post_process_manager.html">PostProcessManager</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5e4a870590ff92d4e1826c7a3c32742e">post_manager</a> ()</td></tr>
+<tr class="memitem:aeb362caa2702fac4a5b5ef82fed34918" id="r_aeb362caa2702fac4a5b5ef82fed34918"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_post_process_manager.html">PostProcessManager</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeb362caa2702fac4a5b5ef82fed34918">post_manager</a> () const</td></tr>
+<tr class="memitem:a898e2f7293c3f3f62fd422265dbedee3" id="r_a898e2f7293c3f3f62fd422265dbedee3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_overset_manager.html">OversetManager</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a898e2f7293c3f3f62fd422265dbedee3">overset_manager</a> ()</td></tr>
+<tr class="memitem:a48686f1084e4c6eb7d299a1b06071f85" id="r_a48686f1084e4c6eb7d299a1b06071f85"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_overset_manager.html">OversetManager</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a48686f1084e4c6eb7d299a1b06071f85">overset_manager</a> () const</td></tr>
+<tr class="memitem:a7890fca6cc81c095ccd0d90752de2ce7" id="r_a7890fca6cc81c095ccd0d90752de2ce7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_mesh_map.html">MeshMap</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7890fca6cc81c095ccd0d90752de2ce7">mesh_mapping</a> ()</td></tr>
+<tr class="memitem:a456fd7985ad63fd125ef7f93682bea3d" id="r_a456fd7985ad63fd125ef7f93682bea3d"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_mesh_map.html">MeshMap</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a456fd7985ad63fd125ef7f93682bea3d">mesh_mapping</a> () const</td></tr>
+<tr class="memitem:addcdd0c9ded838f7ebf0089ebfb1757f" id="r_addcdd0c9ded838f7ebf0089ebfb1757f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_ext_solver_mgr.html">ExtSolverMgr</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#addcdd0c9ded838f7ebf0089ebfb1757f">ext_solver_manager</a> ()</td></tr>
+<tr class="memitem:affc26cf4c22e403a54c5b809ab825916" id="r_affc26cf4c22e403a54c5b809ab825916"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_ext_solver_mgr.html">ExtSolverMgr</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#affc26cf4c22e403a54c5b809ab825916">ext_solver_manager</a> () const</td></tr>
+<tr class="memitem:a1ce8d83e35f5ff73092f569ad0154298" id="r_a1ce8d83e35f5ff73092f569ad0154298"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_helics_storage.html">HelicsStorage</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1ce8d83e35f5ff73092f569ad0154298">helics</a> ()</td></tr>
+<tr class="memitem:a3d8bbb9c8c8629c55901da10df2273a6" id="r_a3d8bbb9c8c8629c55901da10df2273a6"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_helics_storage.html">HelicsStorage</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3d8bbb9c8c8629c55901da10df2273a6">helics</a> () const</td></tr>
+<tr class="memitem:ad413351ee8d8f9a1a6426381b901722d" id="r_ad413351ee8d8f9a1a6426381b901722d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad413351ee8d8f9a1a6426381b901722d">has_overset</a> () const</td></tr>
+<tr class="memitem:a38352fcd7176c0ddeb9a3bad5a2c2d0f" id="r_a38352fcd7176c0ddeb9a3bad5a2c2d0f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a38352fcd7176c0ddeb9a3bad5a2c2d0f">create_transport_model</a> ()</td></tr>
+<tr class="memdesc:a38352fcd7176c0ddeb9a3bad5a2c2d0f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instantiate the transport model based on user inputs.  <br /></td></tr>
+<tr class="memitem:a7d2e1f641120e5beda72137cf63175ba" id="r_a7d2e1f641120e5beda72137cf63175ba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7d2e1f641120e5beda72137cf63175ba">create_turbulence_model</a> ()</td></tr>
+<tr class="memdesc:a7d2e1f641120e5beda72137cf63175ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instantiate the turbulence model based on user inputs.  <br /></td></tr>
+<tr class="memitem:a9735fb288e32066d72b08e2301ff124f" id="r_a9735fb288e32066d72b08e2301ff124f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9735fb288e32066d72b08e2301ff124f">init_physics</a> ()</td></tr>
+<tr class="memdesc:a9735fb288e32066d72b08e2301ff124f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instantiate all physics instances based on user inputs.  <br /></td></tr>
+<tr class="memitem:a7240a4f11bc3c04fc7d22a022714b796" id="r_a7240a4f11bc3c04fc7d22a022714b796"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7240a4f11bc3c04fc7d22a022714b796">activate_overset</a> ()</td></tr>
+<tr class="memdesc:a7240a4f11bc3c04fc7d22a022714b796"><td class="mdescLeft">&#160;</td><td class="mdescRight">Activate overset connectivity.  <br /></td></tr>
+<tr class="memitem:a0f3d109d2dbde00aa30cf2178b3e03b1" id="r_a0f3d109d2dbde00aa30cf2178b3e03b1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0f3d109d2dbde00aa30cf2178b3e03b1">activate_mesh_map</a> ()</td></tr>
+<tr class="memdesc:a0f3d109d2dbde00aa30cf2178b3e03b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Activate mesh mapping.  <br /></td></tr>
+<tr class="memitem:a4b6af83220a2981976a9f9bcaa7057f6" id="r_a4b6af83220a2981976a9f9bcaa7057f6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4b6af83220a2981976a9f9bcaa7057f6">has_mesh_mapping</a> () const</td></tr>
+<tr class="memitem:a66bd3890c504244e0b59726297aec8da" id="r_a66bd3890c504244e0b59726297aec8da"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a66bd3890c504244e0b59726297aec8da">set_during_overset_advance</a> (const bool flag)</td></tr>
+<tr class="memitem:a706621c4f55189e31d92aa63dcf9effe" id="r_a706621c4f55189e31d92aa63dcf9effe"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a706621c4f55189e31d92aa63dcf9effe">is_during_overset_advance</a> () const</td></tr>
+<tr class="memitem:a99a359a5ed963e8b4eeba53ab27a5d21" id="r_a99a359a5ed963e8b4eeba53ab27a5d21"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a99a359a5ed963e8b4eeba53ab27a5d21">is_anelastic</a> () const</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a90607ccba30799874dc0290b3c042080" id="r_a90607ccba30799874dc0290b3c042080"><td class="memItemLeft" align="right" valign="top">amrex::AmrCore &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a90607ccba30799874dc0290b3c042080">m_mesh</a></td></tr>
+<tr class="memitem:a0facb4b61242dc1816694b8cd5d6e10d" id="r_a0facb4b61242dc1816694b8cd5d6e10d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_sim_time.html">SimTime</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0facb4b61242dc1816694b8cd5d6e10d">m_time</a></td></tr>
+<tr class="memitem:aaa5de8a5b179362b9f3d4287c5b6ca3d" id="r_aaa5de8a5b179362b9f3d4287c5b6ca3d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field_repo.html">FieldRepo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaa5de8a5b179362b9f3d4287c5b6ca3d">m_repo</a></td></tr>
+<tr class="memitem:ad46e8f65e8a5bf3e8c47412e93dea750" id="r_ad46e8f65e8a5bf3e8c47412e93dea750"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1pde_1_1_p_d_e_mgr.html">pde::PDEMgr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad46e8f65e8a5bf3e8c47412e93dea750">m_pde_mgr</a></td></tr>
+<tr class="memitem:aa785cee753653dbf12de72a8984110bd" id="r_aa785cee753653dbf12de72a8984110bd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_physics_mgr.html">PhysicsMgr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa785cee753653dbf12de72a8984110bd">m_physics_mgr</a></td></tr>
+<tr class="memitem:aad8becabefc0d45162f9cdc195e9d83e" id="r_aad8becabefc0d45162f9cdc195e9d83e"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1transport_1_1_transport_model.html">transport::TransportModel</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aad8becabefc0d45162f9cdc195e9d83e">m_transport</a></td></tr>
+<tr class="memitem:a2762b8660720b5dd4059f41e825273bf" id="r_a2762b8660720b5dd4059f41e825273bf"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1turbulence_1_1_turbulence_model.html">turbulence::TurbulenceModel</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2762b8660720b5dd4059f41e825273bf">m_turbulence</a></td></tr>
+<tr class="memitem:a24e396b26831a0e256a86ba25f6769df" id="r_a24e396b26831a0e256a86ba25f6769df"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1_i_o_manager.html">IOManager</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a24e396b26831a0e256a86ba25f6769df">m_io_mgr</a></td></tr>
+<tr class="memitem:acfaf5f13f5a45d43008e24cecd0921f5" id="r_acfaf5f13f5a45d43008e24cecd0921f5"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1_post_process_manager.html">PostProcessManager</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acfaf5f13f5a45d43008e24cecd0921f5">m_post_mgr</a></td></tr>
+<tr class="memitem:abebb27632f154b202bc19a4fe9e8a9ac" id="r_abebb27632f154b202bc19a4fe9e8a9ac"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1_overset_manager.html">OversetManager</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abebb27632f154b202bc19a4fe9e8a9ac">m_overset_mgr</a></td></tr>
+<tr class="memitem:adf95802c51467a518ac5feb3d89c4033" id="r_adf95802c51467a518ac5feb3d89c4033"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1_mesh_map.html">MeshMap</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adf95802c51467a518ac5feb3d89c4033">m_mesh_map</a></td></tr>
+<tr class="memitem:a1292456aba07ab0db70fd04817888624" id="r_a1292456aba07ab0db70fd04817888624"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1_ext_solver_mgr.html">ExtSolverMgr</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1292456aba07ab0db70fd04817888624">m_ext_solver_mgr</a></td></tr>
+<tr class="memitem:ac6c2af9ba17efb56680939e9bf225526" id="r_ac6c2af9ba17efb56680939e9bf225526"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1_helics_storage.html">HelicsStorage</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac6c2af9ba17efb56680939e9bf225526">m_helics</a></td></tr>
+<tr class="memitem:ac07de1ae33572504eb9a2520b90b805f" id="r_ac07de1ae33572504eb9a2520b90b805f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac07de1ae33572504eb9a2520b90b805f">m_mesh_mapping</a> {false}</td></tr>
+<tr class="memitem:a67dd1fdc52764597fd904d890aab80fb" id="r_a67dd1fdc52764597fd904d890aab80fb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a67dd1fdc52764597fd904d890aab80fb">m_during_overset_advance</a> {false}</td></tr>
+<tr class="memitem:a696caa0554de0d6654ec41c56522adaf" id="r_a696caa0554de0d6654ec41c56522adaf"><td class="memItemLeft" align="right" valign="top">MultiBlockContainer *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a696caa0554de0d6654ec41c56522adaf">m_mbc</a> {nullptr}</td></tr>
+<tr class="memitem:a3c337aaacb0a8b5ffb28f65b3d19c340" id="r_a3c337aaacb0a8b5ffb28f65b3d19c340"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_a_b_l_read_e_r_f_function_8_h.html#a60bde95e8ae1fed3798c17458998ef53">ReadERFFunction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3c337aaacb0a8b5ffb28f65b3d19c340">m_read_erf</a> {nullptr}</td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Data structures for a CFD simulation</p>
+<p><a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> represents the amr-wind execution environment and manages all the necessary components used to perform a simulation. Each simulation contains a single <a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> instance that holds references to the mesh, <a class="el" href="classamr__wind_1_1_field_repo.html">FieldRepo</a>, <a class="el" href="classamr__wind_1_1_sim_time.html">SimTime</a>, <a class="el" href="classamr__wind_1_1_physics_mgr.html">PhysicsMgr</a>, <a class="el" href="classamr__wind_1_1pde_1_1_p_d_e_mgr.html">pde::PDEMgr</a>, <a class="el" href="classamr__wind_1_1_i_o_manager.html">IOManager</a>, and post-processing manager instances. This class is just a data holder and does not perform any computational logic itself. The computational heavy-lifting is performed by the class instances within a time integration loop. </p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="aafb7a00e73a1179364ea87ade2f76b7c" name="aafb7a00e73a1179364ea87ade2f76b7c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafb7a00e73a1179364ea87ade2f76b7c">&#9670;&#160;</a></span>CFDSim()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::CFDSim::CFDSim </td>
+          <td>(</td>
+          <td class="paramtype">amrex::AmrCore &amp;</td>          <td class="paramname"><span class="paramname"><em>mesh</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel explicit">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae1e27e7b01a5adc3d7e0acd627f78038" name="ae1e27e7b01a5adc3d7e0acd627f78038"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1e27e7b01a5adc3d7e0acd627f78038">&#9670;&#160;</a></span>~CFDSim()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::CFDSim::~CFDSim </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a0f3d109d2dbde00aa30cf2178b3e03b1" name="a0f3d109d2dbde00aa30cf2178b3e03b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f3d109d2dbde00aa30cf2178b3e03b1">&#9670;&#160;</a></span>activate_mesh_map()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::CFDSim::activate_mesh_map </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Activate mesh mapping. </p>
+
+</div>
+</div>
+<a id="a7240a4f11bc3c04fc7d22a022714b796" name="a7240a4f11bc3c04fc7d22a022714b796"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7240a4f11bc3c04fc7d22a022714b796">&#9670;&#160;</a></span>activate_overset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::CFDSim::activate_overset </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Activate overset connectivity. </p>
+
+</div>
+</div>
+<a id="a38352fcd7176c0ddeb9a3bad5a2c2d0f" name="a38352fcd7176c0ddeb9a3bad5a2c2d0f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38352fcd7176c0ddeb9a3bad5a2c2d0f">&#9670;&#160;</a></span>create_transport_model()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::CFDSim::create_transport_model </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Instantiate the transport model based on user inputs. </p>
+
+</div>
+</div>
+<a id="a7d2e1f641120e5beda72137cf63175ba" name="a7d2e1f641120e5beda72137cf63175ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d2e1f641120e5beda72137cf63175ba">&#9670;&#160;</a></span>create_turbulence_model()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::CFDSim::create_turbulence_model </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Instantiate the turbulence model based on user inputs. </p>
+
+</div>
+</div>
+<a id="addcdd0c9ded838f7ebf0089ebfb1757f" name="addcdd0c9ded838f7ebf0089ebfb1757f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#addcdd0c9ded838f7ebf0089ebfb1757f">&#9670;&#160;</a></span>ext_solver_manager() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_ext_solver_mgr.html">ExtSolverMgr</a> &amp; amr_wind::CFDSim::ext_solver_manager </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="affc26cf4c22e403a54c5b809ab825916" name="affc26cf4c22e403a54c5b809ab825916"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#affc26cf4c22e403a54c5b809ab825916">&#9670;&#160;</a></span>ext_solver_manager() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_ext_solver_mgr.html">ExtSolverMgr</a> &amp; amr_wind::CFDSim::ext_solver_manager </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6dd5c99d952ae1ab27a98f48d53f3976" name="a6dd5c99d952ae1ab27a98f48d53f3976"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6dd5c99d952ae1ab27a98f48d53f3976">&#9670;&#160;</a></span>get_read_erf()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="_a_b_l_read_e_r_f_function_8_h.html#a60bde95e8ae1fed3798c17458998ef53">ReadERFFunction</a> * amr_wind::CFDSim::get_read_erf </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4b6af83220a2981976a9f9bcaa7057f6" name="a4b6af83220a2981976a9f9bcaa7057f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b6af83220a2981976a9f9bcaa7057f6">&#9670;&#160;</a></span>has_mesh_mapping()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::CFDSim::has_mesh_mapping </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad413351ee8d8f9a1a6426381b901722d" name="ad413351ee8d8f9a1a6426381b901722d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad413351ee8d8f9a1a6426381b901722d">&#9670;&#160;</a></span>has_overset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::CFDSim::has_overset </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1ce8d83e35f5ff73092f569ad0154298" name="a1ce8d83e35f5ff73092f569ad0154298"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ce8d83e35f5ff73092f569ad0154298">&#9670;&#160;</a></span>helics() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_helics_storage.html">HelicsStorage</a> &amp; amr_wind::CFDSim::helics </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3d8bbb9c8c8629c55901da10df2273a6" name="a3d8bbb9c8c8629c55901da10df2273a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d8bbb9c8c8629c55901da10df2273a6">&#9670;&#160;</a></span>helics() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_helics_storage.html">HelicsStorage</a> &amp; amr_wind::CFDSim::helics </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9735fb288e32066d72b08e2301ff124f" name="a9735fb288e32066d72b08e2301ff124f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9735fb288e32066d72b08e2301ff124f">&#9670;&#160;</a></span>init_physics()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::CFDSim::init_physics </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Instantiate all physics instances based on user inputs. </p>
+
+</div>
+</div>
+<a id="afd5a79a98ac6931e65955e829c89811b" name="afd5a79a98ac6931e65955e829c89811b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd5a79a98ac6931e65955e829c89811b">&#9670;&#160;</a></span>io_manager() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_i_o_manager.html">IOManager</a> &amp; amr_wind::CFDSim::io_manager </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aee2051b1c9af2beebb6b3194fadaa9f9" name="aee2051b1c9af2beebb6b3194fadaa9f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee2051b1c9af2beebb6b3194fadaa9f9">&#9670;&#160;</a></span>io_manager() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_i_o_manager.html">IOManager</a> &amp; amr_wind::CFDSim::io_manager </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a99a359a5ed963e8b4eeba53ab27a5d21" name="a99a359a5ed963e8b4eeba53ab27a5d21"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99a359a5ed963e8b4eeba53ab27a5d21">&#9670;&#160;</a></span>is_anelastic()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::CFDSim::is_anelastic </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a706621c4f55189e31d92aa63dcf9effe" name="a706621c4f55189e31d92aa63dcf9effe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a706621c4f55189e31d92aa63dcf9effe">&#9670;&#160;</a></span>is_during_overset_advance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::CFDSim::is_during_overset_advance </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4ecdd24a8755a50683d103b8042f20e1" name="a4ecdd24a8755a50683d103b8042f20e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ecdd24a8755a50683d103b8042f20e1">&#9670;&#160;</a></span>mbc()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">MultiBlockContainer ** amr_wind::CFDSim::mbc </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a67bec35eb742e0aa053daeec7a145623" name="a67bec35eb742e0aa053daeec7a145623"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67bec35eb742e0aa053daeec7a145623">&#9670;&#160;</a></span>mesh() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::AmrCore &amp; amr_wind::CFDSim::mesh </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the AMR mesh hierarchy. </p>
+
+</div>
+</div>
+<a id="acaba15701632f79d5ccaf77ab49c8d2d" name="acaba15701632f79d5ccaf77ab49c8d2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acaba15701632f79d5ccaf77ab49c8d2d">&#9670;&#160;</a></span>mesh() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const amrex::AmrCore &amp; amr_wind::CFDSim::mesh </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7890fca6cc81c095ccd0d90752de2ce7" name="a7890fca6cc81c095ccd0d90752de2ce7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7890fca6cc81c095ccd0d90752de2ce7">&#9670;&#160;</a></span>mesh_mapping() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_mesh_map.html">MeshMap</a> * amr_wind::CFDSim::mesh_mapping </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a456fd7985ad63fd125ef7f93682bea3d" name="a456fd7985ad63fd125ef7f93682bea3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a456fd7985ad63fd125ef7f93682bea3d">&#9670;&#160;</a></span>mesh_mapping() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_mesh_map.html">MeshMap</a> * amr_wind::CFDSim::mesh_mapping </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a898e2f7293c3f3f62fd422265dbedee3" name="a898e2f7293c3f3f62fd422265dbedee3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a898e2f7293c3f3f62fd422265dbedee3">&#9670;&#160;</a></span>overset_manager() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_overset_manager.html">OversetManager</a> * amr_wind::CFDSim::overset_manager </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a48686f1084e4c6eb7d299a1b06071f85" name="a48686f1084e4c6eb7d299a1b06071f85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48686f1084e4c6eb7d299a1b06071f85">&#9670;&#160;</a></span>overset_manager() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_overset_manager.html">OversetManager</a> * amr_wind::CFDSim::overset_manager </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="affd19520a434054aaa96d524611fe4a0" name="affd19520a434054aaa96d524611fe4a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#affd19520a434054aaa96d524611fe4a0">&#9670;&#160;</a></span>pde_manager() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1pde_1_1_p_d_e_mgr.html">pde::PDEMgr</a> &amp; amr_wind::CFDSim::pde_manager </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1a70bceeccd1185e633da28292c162a6" name="a1a70bceeccd1185e633da28292c162a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a70bceeccd1185e633da28292c162a6">&#9670;&#160;</a></span>pde_manager() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1pde_1_1_p_d_e_mgr.html">pde::PDEMgr</a> &amp; amr_wind::CFDSim::pde_manager </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5438f62be5cb7871e9b5834b6876e84e" name="a5438f62be5cb7871e9b5834b6876e84e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5438f62be5cb7871e9b5834b6876e84e">&#9670;&#160;</a></span>physics() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_coll_mgr.html#a42023c48d3e1fac30a08f8a49d63a96b">PhysicsMgr::TypeVector</a> &amp; amr_wind::CFDSim::physics </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1b7387f3823dfb687922b96856de3f03" name="a1b7387f3823dfb687922b96856de3f03"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b7387f3823dfb687922b96856de3f03">&#9670;&#160;</a></span>physics() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_coll_mgr.html#a42023c48d3e1fac30a08f8a49d63a96b">PhysicsMgr::TypeVector</a> &amp; amr_wind::CFDSim::physics </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2a74b9369a4e62c306f04aae40b3dcde" name="a2a74b9369a4e62c306f04aae40b3dcde"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a74b9369a4e62c306f04aae40b3dcde">&#9670;&#160;</a></span>physics_manager() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_physics_mgr.html">PhysicsMgr</a> &amp; amr_wind::CFDSim::physics_manager </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a773085270fee91f0ff5eb7a2841cc5ca" name="a773085270fee91f0ff5eb7a2841cc5ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a773085270fee91f0ff5eb7a2841cc5ca">&#9670;&#160;</a></span>physics_manager() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_physics_mgr.html">PhysicsMgr</a> &amp; amr_wind::CFDSim::physics_manager </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5e4a870590ff92d4e1826c7a3c32742e" name="a5e4a870590ff92d4e1826c7a3c32742e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e4a870590ff92d4e1826c7a3c32742e">&#9670;&#160;</a></span>post_manager() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_post_process_manager.html">PostProcessManager</a> &amp; amr_wind::CFDSim::post_manager </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aeb362caa2702fac4a5b5ef82fed34918" name="aeb362caa2702fac4a5b5ef82fed34918"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb362caa2702fac4a5b5ef82fed34918">&#9670;&#160;</a></span>post_manager() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_post_process_manager.html">PostProcessManager</a> &amp; amr_wind::CFDSim::post_manager </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1dacbace38d17434b65a58eb16b57b0f" name="a1dacbace38d17434b65a58eb16b57b0f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1dacbace38d17434b65a58eb16b57b0f">&#9670;&#160;</a></span>repo() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field_repo.html">FieldRepo</a> &amp; amr_wind::CFDSim::repo </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the field repository. </p>
+
+</div>
+</div>
+<a id="a5c1e8c18769d076009780ff878bcc0d5" name="a5c1e8c18769d076009780ff878bcc0d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c1e8c18769d076009780ff878bcc0d5">&#9670;&#160;</a></span>repo() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field_repo.html">FieldRepo</a> &amp; amr_wind::CFDSim::repo </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a66bd3890c504244e0b59726297aec8da" name="a66bd3890c504244e0b59726297aec8da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66bd3890c504244e0b59726297aec8da">&#9670;&#160;</a></span>set_during_overset_advance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::CFDSim::set_during_overset_advance </td>
+          <td>(</td>
+          <td class="paramtype">const bool</td>          <td class="paramname"><span class="paramname"><em>flag</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a79d8ee029983b3a26823f419ae0c29c4" name="a79d8ee029983b3a26823f419ae0c29c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79d8ee029983b3a26823f419ae0c29c4">&#9670;&#160;</a></span>set_mbc()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::CFDSim::set_mbc </td>
+          <td>(</td>
+          <td class="paramtype">MultiBlockContainer *</td>          <td class="paramname"><span class="paramname"><em>mbc</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0666d1f64f9eae5c515b7ac037b2e8d1" name="a0666d1f64f9eae5c515b7ac037b2e8d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0666d1f64f9eae5c515b7ac037b2e8d1">&#9670;&#160;</a></span>set_read_erf()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::CFDSim::set_read_erf </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="_a_b_l_read_e_r_f_function_8_h.html#a60bde95e8ae1fed3798c17458998ef53">ReadERFFunction</a></td>          <td class="paramname"><span class="paramname"><em>fcn</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acc9a7c3dd126cd2cc0c9909a2ba99964" name="acc9a7c3dd126cd2cc0c9909a2ba99964"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc9a7c3dd126cd2cc0c9909a2ba99964">&#9670;&#160;</a></span>time() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_sim_time.html">SimTime</a> &amp; amr_wind::CFDSim::time </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return simulation time control. </p>
+
+</div>
+</div>
+<a id="ac8738fd77d59703564ff9ac796e3ddab" name="ac8738fd77d59703564ff9ac796e3ddab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8738fd77d59703564ff9ac796e3ddab">&#9670;&#160;</a></span>time() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_sim_time.html">SimTime</a> &amp; amr_wind::CFDSim::time </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6aabc33b8493484aa0dae18cf381ae5f" name="a6aabc33b8493484aa0dae18cf381ae5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6aabc33b8493484aa0dae18cf381ae5f">&#9670;&#160;</a></span>transport_model() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1transport_1_1_transport_model.html">transport::TransportModel</a> &amp; amr_wind::CFDSim::transport_model </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aacc1758611adf7c417b0e17252390877" name="aacc1758611adf7c417b0e17252390877"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aacc1758611adf7c417b0e17252390877">&#9670;&#160;</a></span>transport_model() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1transport_1_1_transport_model.html">transport::TransportModel</a> &amp; amr_wind::CFDSim::transport_model </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0695572d3a0f43578633008e5f8abd9f" name="a0695572d3a0f43578633008e5f8abd9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0695572d3a0f43578633008e5f8abd9f">&#9670;&#160;</a></span>turbulence_model() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1turbulence_1_1_turbulence_model.html">turbulence::TurbulenceModel</a> &amp; amr_wind::CFDSim::turbulence_model </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adf96139d4b3d2e7313d220ae9d2c5209" name="adf96139d4b3d2e7313d220ae9d2c5209"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf96139d4b3d2e7313d220ae9d2c5209">&#9670;&#160;</a></span>turbulence_model() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1turbulence_1_1_turbulence_model.html">turbulence::TurbulenceModel</a> &amp; amr_wind::CFDSim::turbulence_model </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a67dd1fdc52764597fd904d890aab80fb" name="a67dd1fdc52764597fd904d890aab80fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67dd1fdc52764597fd904d890aab80fb">&#9670;&#160;</a></span>m_during_overset_advance</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::CFDSim::m_during_overset_advance {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1292456aba07ab0db70fd04817888624" name="a1292456aba07ab0db70fd04817888624"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1292456aba07ab0db70fd04817888624">&#9670;&#160;</a></span>m_ext_solver_mgr</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classamr__wind_1_1_ext_solver_mgr.html">ExtSolverMgr</a>&gt; amr_wind::CFDSim::m_ext_solver_mgr</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac6c2af9ba17efb56680939e9bf225526" name="ac6c2af9ba17efb56680939e9bf225526"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6c2af9ba17efb56680939e9bf225526">&#9670;&#160;</a></span>m_helics</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classamr__wind_1_1_helics_storage.html">HelicsStorage</a>&gt; amr_wind::CFDSim::m_helics</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a24e396b26831a0e256a86ba25f6769df" name="a24e396b26831a0e256a86ba25f6769df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24e396b26831a0e256a86ba25f6769df">&#9670;&#160;</a></span>m_io_mgr</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classamr__wind_1_1_i_o_manager.html">IOManager</a>&gt; amr_wind::CFDSim::m_io_mgr</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a696caa0554de0d6654ec41c56522adaf" name="a696caa0554de0d6654ec41c56522adaf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a696caa0554de0d6654ec41c56522adaf">&#9670;&#160;</a></span>m_mbc</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">MultiBlockContainer* amr_wind::CFDSim::m_mbc {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a90607ccba30799874dc0290b3c042080" name="a90607ccba30799874dc0290b3c042080"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90607ccba30799874dc0290b3c042080">&#9670;&#160;</a></span>m_mesh</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::AmrCore&amp; amr_wind::CFDSim::m_mesh</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adf95802c51467a518ac5feb3d89c4033" name="adf95802c51467a518ac5feb3d89c4033"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf95802c51467a518ac5feb3d89c4033">&#9670;&#160;</a></span>m_mesh_map</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classamr__wind_1_1_mesh_map.html">MeshMap</a>&gt; amr_wind::CFDSim::m_mesh_map</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac07de1ae33572504eb9a2520b90b805f" name="ac07de1ae33572504eb9a2520b90b805f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac07de1ae33572504eb9a2520b90b805f">&#9670;&#160;</a></span>m_mesh_mapping</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::CFDSim::m_mesh_mapping {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abebb27632f154b202bc19a4fe9e8a9ac" name="abebb27632f154b202bc19a4fe9e8a9ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abebb27632f154b202bc19a4fe9e8a9ac">&#9670;&#160;</a></span>m_overset_mgr</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classamr__wind_1_1_overset_manager.html">OversetManager</a>&gt; amr_wind::CFDSim::m_overset_mgr</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad46e8f65e8a5bf3e8c47412e93dea750" name="ad46e8f65e8a5bf3e8c47412e93dea750"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad46e8f65e8a5bf3e8c47412e93dea750">&#9670;&#160;</a></span>m_pde_mgr</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1pde_1_1_p_d_e_mgr.html">pde::PDEMgr</a> amr_wind::CFDSim::m_pde_mgr</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa785cee753653dbf12de72a8984110bd" name="aa785cee753653dbf12de72a8984110bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa785cee753653dbf12de72a8984110bd">&#9670;&#160;</a></span>m_physics_mgr</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_physics_mgr.html">PhysicsMgr</a> amr_wind::CFDSim::m_physics_mgr</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acfaf5f13f5a45d43008e24cecd0921f5" name="acfaf5f13f5a45d43008e24cecd0921f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfaf5f13f5a45d43008e24cecd0921f5">&#9670;&#160;</a></span>m_post_mgr</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classamr__wind_1_1_post_process_manager.html">PostProcessManager</a>&gt; amr_wind::CFDSim::m_post_mgr</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3c337aaacb0a8b5ffb28f65b3d19c340" name="a3c337aaacb0a8b5ffb28f65b3d19c340"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c337aaacb0a8b5ffb28f65b3d19c340">&#9670;&#160;</a></span>m_read_erf</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="_a_b_l_read_e_r_f_function_8_h.html#a60bde95e8ae1fed3798c17458998ef53">ReadERFFunction</a> amr_wind::CFDSim::m_read_erf {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aaa5de8a5b179362b9f3d4287c5b6ca3d" name="aaa5de8a5b179362b9f3d4287c5b6ca3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa5de8a5b179362b9f3d4287c5b6ca3d">&#9670;&#160;</a></span>m_repo</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field_repo.html">FieldRepo</a> amr_wind::CFDSim::m_repo</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel mutable">mutable</span><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0facb4b61242dc1816694b8cd5d6e10d" name="a0facb4b61242dc1816694b8cd5d6e10d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0facb4b61242dc1816694b8cd5d6e10d">&#9670;&#160;</a></span>m_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_sim_time.html">SimTime</a> amr_wind::CFDSim::m_time</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aad8becabefc0d45162f9cdc195e9d83e" name="aad8becabefc0d45162f9cdc195e9d83e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad8becabefc0d45162f9cdc195e9d83e">&#9670;&#160;</a></span>m_transport</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classamr__wind_1_1transport_1_1_transport_model.html">transport::TransportModel</a>&gt; amr_wind::CFDSim::m_transport</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2762b8660720b5dd4059f41e825273bf" name="a2762b8660720b5dd4059f41e825273bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2762b8660720b5dd4059f41e825273bf">&#9670;&#160;</a></span>m_turbulence</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classamr__wind_1_1turbulence_1_1_turbulence_model.html">turbulence::TurbulenceModel</a>&gt; amr_wind::CFDSim::m_turbulence</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/<a class="el" href="_c_f_d_sim_8_h_source.html">CFDSim.H</a></li>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/<a class="el" href="_c_f_d_sim_8cpp.html">CFDSim.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

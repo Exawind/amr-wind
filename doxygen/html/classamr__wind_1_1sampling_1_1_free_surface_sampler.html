@@ -1,0 +1,1361 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::sampling::FreeSurfaceSampler Class Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::sampling::FreeSurfaceSampler Class Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/classamr__wind_1_1sampling_1_1_free_surface_sampler.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="freesurfacesampler-class-reference">
+<h1>FreeSurfaceSampler Class Reference<a class="headerlink" href="#freesurfacesampler-class-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::sampling::FreeSurfaceSampler Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="namespaceamr__wind_1_1sampling.html">sampling</a></li><li class="navelem"><a href="classamr__wind_1_1sampling_1_1_free_surface_sampler.html">FreeSurfaceSampler</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
+<a href="classamr__wind_1_1sampling_1_1_free_surface_sampler-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::sampling::FreeSurfaceSampler Class Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_free_surface_sampler_8_h_source.html">FreeSurfaceSampler.H</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for amr_wind::sampling::FreeSurfaceSampler:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1sampling_1_1_free_surface_sampler__inherit__graph.svg" width="194" height="139"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for amr_wind::sampling::FreeSurfaceSampler:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1sampling_1_1_free_surface_sampler__coll__graph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a71b11a40abdf27f460431a72563ea1c0" id="r_a71b11a40abdf27f460431a72563ea1c0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a71b11a40abdf27f460431a72563ea1c0">FreeSurfaceSampler</a> (<a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;)</td></tr>
+<tr class="memitem:ad4e7103184a5cd5856d022d197ced45e" id="r_ad4e7103184a5cd5856d022d197ced45e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad4e7103184a5cd5856d022d197ced45e">~FreeSurfaceSampler</a> () override</td></tr>
+<tr class="memitem:a1cee76690f0951c0e5213d4fe09c80fc" id="r_a1cee76690f0951c0e5213d4fe09c80fc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1cee76690f0951c0e5213d4fe09c80fc">initialize</a> (const std::string &amp;key) override</td></tr>
+<tr class="memdesc:a1cee76690f0951c0e5213d4fe09c80fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read user inputs and create mesh-based information for locating interface.  <br /></td></tr>
+<tr class="memitem:aae07813cc2d3d90992c7501b0160071a" id="r_aae07813cc2d3d90992c7501b0160071a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aae07813cc2d3d90992c7501b0160071a">check_bounds</a> () override</td></tr>
+<tr class="memdesc:aae07813cc2d3d90992c7501b0160071a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check and fix the bounds of the sampler so the probes are in the domain.  <br /></td></tr>
+<tr class="memitem:abdb1562732382ad8fa18e528be537a4d" id="r_abdb1562732382ad8fa18e528be537a4d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abdb1562732382ad8fa18e528be537a4d">sampling_locations</a> (<a class="el" href="structamr__wind_1_1sampling_1_1_sample_loc_type.html">SampleLocType</a> &amp;) const override</td></tr>
+<tr class="memdesc:abdb1562732382ad8fa18e528be537a4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Populate and return a vector of probe locations to be sampled.  <br /></td></tr>
+<tr class="memitem:a4e5834ecd944d4af12aa9c8eef1eb60b" id="r_a4e5834ecd944d4af12aa9c8eef1eb60b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4e5834ecd944d4af12aa9c8eef1eb60b">sampling_locations</a> (<a class="el" href="structamr__wind_1_1sampling_1_1_sample_loc_type.html">SampleLocType</a> &amp;, const amrex::Box &amp;) const override</td></tr>
+<tr class="memdesc:a4e5834ecd944d4af12aa9c8eef1eb60b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Populate the vector with coordinates of the sampling locations inside a box.  <br /></td></tr>
+<tr class="memitem:a67e45c3886eb6b7deb7e99b5a83dd8c4" id="r_a67e45c3886eb6b7deb7e99b5a83dd8c4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a67e45c3886eb6b7deb7e99b5a83dd8c4">output_locations</a> (<a class="el" href="structamr__wind_1_1sampling_1_1_sample_loc_type.html">SampleLocType</a> &amp;sample_locs) const override</td></tr>
+<tr class="memitem:ac715c56b5816d28517d0b9eaa6494956" id="r_ac715c56b5816d28517d0b9eaa6494956"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac715c56b5816d28517d0b9eaa6494956">update_sampling_locations</a> () override</td></tr>
+<tr class="memdesc:ac715c56b5816d28517d0b9eaa6494956"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find heights associated with 2D sample locations.  <br /></td></tr>
+<tr class="memitem:aec92a8ee1b3dbbc33f9ae15a03434179" id="r_aec92a8ee1b3dbbc33f9ae15a03434179"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aec92a8ee1b3dbbc33f9ae15a03434179">post_regrid_actions</a> () override</td></tr>
+<tr class="memdesc:aec92a8ee1b3dbbc33f9ae15a03434179"><td class="mdescLeft">&#160;</td><td class="mdescRight">Redo some of the initialization work when the grid changes.  <br /></td></tr>
+<tr class="memitem:acc4eb1584c70acc8636e1acb2f2ba690" id="r_acc4eb1584c70acc8636e1acb2f2ba690"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acc4eb1584c70acc8636e1acb2f2ba690">define_netcdf_metadata</a> (const <a class="el" href="classncutils_1_1_n_c_group.html">ncutils::NCGroup</a> &amp;) const override</td></tr>
+<tr class="memitem:af727136703a31217283926b57d217be8" id="r_af727136703a31217283926b57d217be8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af727136703a31217283926b57d217be8">populate_netcdf_metadata</a> (const <a class="el" href="classncutils_1_1_n_c_group.html">ncutils::NCGroup</a> &amp;) const override</td></tr>
+<tr class="memitem:a9f6be5279852e25993cef3777df67d7f" id="r_a9f6be5279852e25993cef3777df67d7f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9f6be5279852e25993cef3777df67d7f">output_netcdf_data</a> (const <a class="el" href="classncutils_1_1_n_c_group.html">ncutils::NCGroup</a> &amp;, size_t) const override</td></tr>
+<tr class="memitem:a52f22695e22f9cf7da24f4d3c65a7632" id="r_a52f22695e22f9cf7da24f4d3c65a7632"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a52f22695e22f9cf7da24f4d3c65a7632">label</a> () const override</td></tr>
+<tr class="memdesc:a52f22695e22f9cf7da24f4d3c65a7632"><td class="mdescLeft">&#160;</td><td class="mdescRight">Name of this sampling object.  <br /></td></tr>
+<tr class="memitem:ac367abac8d3eb2670d3044e75fd59dad" id="r_ac367abac8d3eb2670d3044e75fd59dad"><td class="memItemLeft" align="right" valign="top">std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac367abac8d3eb2670d3044e75fd59dad">label</a> () override</td></tr>
+<tr class="memitem:a8d1d44e1adb0b41c99635cc5d4b3804f" id="r_a8d1d44e1adb0b41c99635cc5d4b3804f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8d1d44e1adb0b41c99635cc5d4b3804f">sampletype</a> () const override</td></tr>
+<tr class="memdesc:a8d1d44e1adb0b41c99635cc5d4b3804f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of this sampling object.  <br /></td></tr>
+<tr class="memitem:af07f6002369074f3b6065d6f81b93653" id="r_af07f6002369074f3b6065d6f81b93653"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af07f6002369074f3b6065d6f81b93653">id</a> () const override</td></tr>
+<tr class="memdesc:af07f6002369074f3b6065d6f81b93653"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unique identifier for this set of probe locations.  <br /></td></tr>
+<tr class="memitem:ae4ebda19b6b2cae06c1bbed6999494a8" id="r_ae4ebda19b6b2cae06c1bbed6999494a8"><td class="memItemLeft" align="right" valign="top">int &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae4ebda19b6b2cae06c1bbed6999494a8">id</a> () override</td></tr>
+<tr class="memitem:aa2100d2a659b1bfaccccfb675695ae5f" id="r_aa2100d2a659b1bfaccccfb675695ae5f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa2100d2a659b1bfaccccfb675695ae5f">num_gridpoints</a> () const</td></tr>
+<tr class="memdesc:aa2100d2a659b1bfaccccfb675695ae5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Output functions for private variables Number of 2D grid points.  <br /></td></tr>
+<tr class="memitem:ac125d36071e6e37f2412e596db55470d" id="r_ac125d36071e6e37f2412e596db55470d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac125d36071e6e37f2412e596db55470d">num_instances</a> () const</td></tr>
+<tr class="memdesc:ac125d36071e6e37f2412e596db55470d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of instances.  <br /></td></tr>
+<tr class="memitem:a806abf668198dde11af769c5dece4151" id="r_a806abf668198dde11af769c5dece4151"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a806abf668198dde11af769c5dece4151">num_points</a> () const override</td></tr>
+<tr class="memdesc:a806abf668198dde11af769c5dece4151"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of points, total.  <br /></td></tr>
+<tr class="memitem:aab60ee2249f3537c0d1b1f7a47e09e29" id="r_aab60ee2249f3537c0d1b1f7a47e09e29"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aab60ee2249f3537c0d1b1f7a47e09e29">num_output_points</a> () const override</td></tr>
+<tr class="memitem:a14d87c16bf708289f4791724b900ba07" id="r_a14d87c16bf708289f4791724b900ba07"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Array&lt; amrex::Real, 2 &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a14d87c16bf708289f4791724b900ba07">grid_locations</a> () const</td></tr>
+<tr class="memdesc:a14d87c16bf708289f4791724b900ba07"><td class="mdescLeft">&#160;</td><td class="mdescRight">Locations.  <br /></td></tr>
+<tr class="memitem:aa677d3573cbb397c2ea9409b48145ab8" id="r_aa677d3573cbb397c2ea9409b48145ab8"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa677d3573cbb397c2ea9409b48145ab8">heights</a> () const</td></tr>
+<tr class="memdesc:aa677d3573cbb397c2ea9409b48145ab8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Outputs (heights)  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a22fc4c54e71efcfcc6436580719c6398" id="r_a22fc4c54e71efcfcc6436580719c6398"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a22fc4c54e71efcfcc6436580719c6398">identifier</a> ()</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a31c7ffa6c41d4a970eb1da41c32bdba7" id="r_a31c7ffa6c41d4a970eb1da41c32bdba7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a31c7ffa6c41d4a970eb1da41c32bdba7">m_sim</a></td></tr>
+<tr class="memitem:acbf6495a08561a06c8b203fd9dd7a4a4" id="r_acbf6495a08561a06c8b203fd9dd7a4a4"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acbf6495a08561a06c8b203fd9dd7a4a4">m_vof</a></td></tr>
+<tr class="memdesc:acbf6495a08561a06c8b203fd9dd7a4a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">reference to VOF  <br /></td></tr>
+<tr class="memitem:a1426dfe978cc5559d8838aa4fd380e9e" id="r_a1426dfe978cc5559d8838aa4fd380e9e"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1426dfe978cc5559d8838aa4fd380e9e">m_npts_dir</a></td></tr>
+<tr class="memdesc:a1426dfe978cc5559d8838aa4fd380e9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number or points on 2D grid in each direction.  <br /></td></tr>
+<tr class="memitem:a2d700a11831012bc71dee607c9a30e1d" id="r_a2d700a11831012bc71dee607c9a30e1d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2d700a11831012bc71dee607c9a30e1d">m_npts</a> {0}</td></tr>
+<tr class="memitem:ae32b79ee0ec1be28f71a4ec16d8f585d" id="r_ae32b79ee0ec1be28f71a4ec16d8f585d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae32b79ee0ec1be28f71a4ec16d8f585d">m_ninst</a> {1}</td></tr>
+<tr class="memdesc:ae32b79ee0ec1be28f71a4ec16d8f585d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of instances (possible sampling points per location, like in the case of a breaking wave)  <br /></td></tr>
+<tr class="memitem:a5e1354830fd8db4e7c7f1111cd44e835" id="r_a5e1354830fd8db4e7c7f1111cd44e835"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5e1354830fd8db4e7c7f1111cd44e835">m_coorddir</a> {2}</td></tr>
+<tr class="memdesc:a5e1354830fd8db4e7c7f1111cd44e835"><td class="mdescLeft">&#160;</td><td class="mdescRight">Coordinate direction to search along, default is z (this also determines the meaning of start and end points)  <br /></td></tr>
+<tr class="memitem:a0daf91a25d774edc0596104c154db012" id="r_a0daf91a25d774edc0596104c154db012"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0daf91a25d774edc0596104c154db012">m_gc0</a> = 0</td></tr>
+<tr class="memdesc:a0daf91a25d774edc0596104c154db012"><td class="mdescLeft">&#160;</td><td class="mdescRight">Grid coordinates, determined as a function of m_coorddir.  <br /></td></tr>
+<tr class="memitem:a5a575519c70f8d795517c35122127ec7" id="r_a5a575519c70f8d795517c35122127ec7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5a575519c70f8d795517c35122127ec7">m_gc1</a> = 1</td></tr>
+<tr class="memitem:aed896f41dace8e43c5b66988313f2287" id="r_aed896f41dace8e43c5b66988313f2287"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aed896f41dace8e43c5b66988313f2287">m_start</a></td></tr>
+<tr class="memdesc:aed896f41dace8e43c5b66988313f2287"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parameters to set up plane.  <br /></td></tr>
+<tr class="memitem:aa52578060bccf7a93e72d67d7a2e3219" id="r_aa52578060bccf7a93e72d67d7a2e3219"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa52578060bccf7a93e72d67d7a2e3219">m_end</a></td></tr>
+<tr class="memitem:a27816410520ce6efc0f3abc0159eb7bb" id="r_a27816410520ce6efc0f3abc0159eb7bb"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Array&lt; amrex::Real, 2 &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a27816410520ce6efc0f3abc0159eb7bb">m_grid_locs</a></td></tr>
+<tr class="memdesc:a27816410520ce6efc0f3abc0159eb7bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Locations of points in 2D grid.  <br /></td></tr>
+<tr class="memitem:a195fe0cc0e8f13c31a9c23f4216bf555" id="r_a195fe0cc0e8f13c31a9c23f4216bf555"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a195fe0cc0e8f13c31a9c23f4216bf555">m_out</a></td></tr>
+<tr class="memdesc:a195fe0cc0e8f13c31a9c23f4216bf555"><td class="mdescLeft">&#160;</td><td class="mdescRight">Output coordinate.  <br /></td></tr>
+<tr class="memitem:ab32653ea5991b750e64d0bfb2d960b98" id="r_ab32653ea5991b750e64d0bfb2d960b98"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab32653ea5991b750e64d0bfb2d960b98">m_use_linear</a> {false}</td></tr>
+<tr class="memdesc:ab32653ea5991b750e64d0bfb2d960b98"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flag to use linear interpolation for surface finding in part of domain.  <br /></td></tr>
+<tr class="memitem:aa62afdd80774041c0997c6983fcaa61a" id="r_aa62afdd80774041c0997c6983fcaa61a"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa62afdd80774041c0997c6983fcaa61a">m_lx_linear</a> {0.}</td></tr>
+<tr class="memdesc:aa62afdd80774041c0997c6983fcaa61a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parameter for optional linear interpolation.  <br /></td></tr>
+<tr class="memitem:acac164db3227015478db7cb2ce8baac6" id="r_acac164db3227015478db7cb2ce8baac6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acac164db3227015478db7cb2ce8baac6">m_ncomp</a> {1}</td></tr>
+<tr class="memdesc:acac164db3227015478db7cb2ce8baac6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Max number of sample points found in a single cell.  <br /></td></tr>
+<tr class="memitem:ae6832e26d296d4229cbfdbb614a1ceac" id="r_ae6832e26d296d4229cbfdbb614a1ceac"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae6832e26d296d4229cbfdbb614a1ceac">m_ncmax</a> {8}</td></tr>
+<tr class="memdesc:ae6832e26d296d4229cbfdbb614a1ceac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Max number of sample points allowed in a single cell.  <br /></td></tr>
+<tr class="memitem:a549659b6e1a0ba3a6cb82e43f28b2e6f" id="r_a549659b6e1a0ba3a6cb82e43f28b2e6f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a549659b6e1a0ba3a6cb82e43f28b2e6f">m_label</a></td></tr>
+<tr class="memitem:a81c81d1570ee1af609ef62bc22f4577d" id="r_a81c81d1570ee1af609ef62bc22f4577d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a81c81d1570ee1af609ef62bc22f4577d">m_id</a> {-1}</td></tr>
+</table>
+<a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a71b11a40abdf27f460431a72563ea1c0" name="a71b11a40abdf27f460431a72563ea1c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71b11a40abdf27f460431a72563ea1c0">&#9670;&#160;</a></span>FreeSurfaceSampler()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::sampling::FreeSurfaceSampler::FreeSurfaceSampler </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>sim</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad4e7103184a5cd5856d022d197ced45e" name="ad4e7103184a5cd5856d022d197ced45e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4e7103184a5cd5856d022d197ced45e">&#9670;&#160;</a></span>~FreeSurfaceSampler()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::sampling::FreeSurfaceSampler::~FreeSurfaceSampler </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="aae07813cc2d3d90992c7501b0160071a" name="aae07813cc2d3d90992c7501b0160071a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae07813cc2d3d90992c7501b0160071a">&#9670;&#160;</a></span>check_bounds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::sampling::FreeSurfaceSampler::check_bounds </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Check and fix the bounds of the sampler so the probes are in the domain. </p>
+
+</div>
+</div>
+<a id="acc4eb1584c70acc8636e1acb2f2ba690" name="acc4eb1584c70acc8636e1acb2f2ba690"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc4eb1584c70acc8636e1acb2f2ba690">&#9670;&#160;</a></span>define_netcdf_metadata()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::sampling::FreeSurfaceSampler::define_netcdf_metadata </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classncutils_1_1_n_c_group.html">ncutils::NCGroup</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>grp</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a14d87c16bf708289f4791724b900ba07" name="a14d87c16bf708289f4791724b900ba07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14d87c16bf708289f4791724b900ba07">&#9670;&#160;</a></span>grid_locations()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt; amrex::Array&lt; amrex::Real, 2 &gt; &gt; amr_wind::sampling::FreeSurfaceSampler::grid_locations </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Locations. </p>
+
+</div>
+</div>
+<a id="aa677d3573cbb397c2ea9409b48145ab8" name="aa677d3573cbb397c2ea9409b48145ab8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa677d3573cbb397c2ea9409b48145ab8">&#9670;&#160;</a></span>heights()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt; amrex::Real &gt; amr_wind::sampling::FreeSurfaceSampler::heights </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Outputs (heights) </p>
+
+</div>
+</div>
+<a id="af07f6002369074f3b6065d6f81b93653" name="af07f6002369074f3b6065d6f81b93653"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af07f6002369074f3b6065d6f81b93653">&#9670;&#160;</a></span>id() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::sampling::FreeSurfaceSampler::id </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Unique identifier for this set of probe locations. </p>
+
+</div>
+</div>
+<a id="ae4ebda19b6b2cae06c1bbed6999494a8" name="ae4ebda19b6b2cae06c1bbed6999494a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4ebda19b6b2cae06c1bbed6999494a8">&#9670;&#160;</a></span>id() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int &amp; amr_wind::sampling::FreeSurfaceSampler::id </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a22fc4c54e71efcfcc6436580719c6398" name="a22fc4c54e71efcfcc6436580719c6398"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22fc4c54e71efcfcc6436580719c6398">&#9670;&#160;</a></span>identifier()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::sampling::FreeSurfaceSampler::identifier </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1cee76690f0951c0e5213d4fe09c80fc" name="a1cee76690f0951c0e5213d4fe09c80fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1cee76690f0951c0e5213d4fe09c80fc">&#9670;&#160;</a></span>initialize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::sampling::FreeSurfaceSampler::initialize </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>key</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Read user inputs and create mesh-based information for locating interface. </p>
+
+</div>
+</div>
+<a id="a52f22695e22f9cf7da24f4d3c65a7632" name="a52f22695e22f9cf7da24f4d3c65a7632"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52f22695e22f9cf7da24f4d3c65a7632">&#9670;&#160;</a></span>label() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::sampling::FreeSurfaceSampler::label </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Name of this sampling object. </p>
+
+</div>
+</div>
+<a id="ac367abac8d3eb2670d3044e75fd59dad" name="ac367abac8d3eb2670d3044e75fd59dad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac367abac8d3eb2670d3044e75fd59dad">&#9670;&#160;</a></span>label() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string &amp; amr_wind::sampling::FreeSurfaceSampler::label </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa2100d2a659b1bfaccccfb675695ae5f" name="aa2100d2a659b1bfaccccfb675695ae5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2100d2a659b1bfaccccfb675695ae5f">&#9670;&#160;</a></span>num_gridpoints()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::sampling::FreeSurfaceSampler::num_gridpoints </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Output functions for private variables Number of 2D grid points. </p>
+
+</div>
+</div>
+<a id="ac125d36071e6e37f2412e596db55470d" name="ac125d36071e6e37f2412e596db55470d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac125d36071e6e37f2412e596db55470d">&#9670;&#160;</a></span>num_instances()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::sampling::FreeSurfaceSampler::num_instances </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of instances. </p>
+
+</div>
+</div>
+<a id="aab60ee2249f3537c0d1b1f7a47e09e29" name="aab60ee2249f3537c0d1b1f7a47e09e29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab60ee2249f3537c0d1b1f7a47e09e29">&#9670;&#160;</a></span>num_output_points()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long amr_wind::sampling::FreeSurfaceSampler::num_output_points </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a806abf668198dde11af769c5dece4151" name="a806abf668198dde11af769c5dece4151"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a806abf668198dde11af769c5dece4151">&#9670;&#160;</a></span>num_points()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long amr_wind::sampling::FreeSurfaceSampler::num_points </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of points, total. </p>
+
+</div>
+</div>
+<a id="a67e45c3886eb6b7deb7e99b5a83dd8c4" name="a67e45c3886eb6b7deb7e99b5a83dd8c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67e45c3886eb6b7deb7e99b5a83dd8c4">&#9670;&#160;</a></span>output_locations()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::sampling::FreeSurfaceSampler::output_locations </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structamr__wind_1_1sampling_1_1_sample_loc_type.html">SampleLocType</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>sample_locs</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9f6be5279852e25993cef3777df67d7f" name="a9f6be5279852e25993cef3777df67d7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f6be5279852e25993cef3777df67d7f">&#9670;&#160;</a></span>output_netcdf_data()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::sampling::FreeSurfaceSampler::output_netcdf_data </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classncutils_1_1_n_c_group.html">ncutils::NCGroup</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>grp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>nt</em></span>&#160;) const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af727136703a31217283926b57d217be8" name="af727136703a31217283926b57d217be8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af727136703a31217283926b57d217be8">&#9670;&#160;</a></span>populate_netcdf_metadata()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::sampling::FreeSurfaceSampler::populate_netcdf_metadata </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classncutils_1_1_n_c_group.html">ncutils::NCGroup</a> &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aec92a8ee1b3dbbc33f9ae15a03434179" name="aec92a8ee1b3dbbc33f9ae15a03434179"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec92a8ee1b3dbbc33f9ae15a03434179">&#9670;&#160;</a></span>post_regrid_actions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::sampling::FreeSurfaceSampler::post_regrid_actions </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Redo some of the initialization work when the grid changes. </p>
+
+</div>
+</div>
+<a id="a8d1d44e1adb0b41c99635cc5d4b3804f" name="a8d1d44e1adb0b41c99635cc5d4b3804f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d1d44e1adb0b41c99635cc5d4b3804f">&#9670;&#160;</a></span>sampletype()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::sampling::FreeSurfaceSampler::sampletype </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Type of this sampling object. </p>
+
+</div>
+</div>
+<a id="abdb1562732382ad8fa18e528be537a4d" name="abdb1562732382ad8fa18e528be537a4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abdb1562732382ad8fa18e528be537a4d">&#9670;&#160;</a></span>sampling_locations() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::sampling::FreeSurfaceSampler::sampling_locations </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structamr__wind_1_1sampling_1_1_sample_loc_type.html">SampleLocType</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>sample_locs</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Populate and return a vector of probe locations to be sampled. </p>
+
+</div>
+</div>
+<a id="a4e5834ecd944d4af12aa9c8eef1eb60b" name="a4e5834ecd944d4af12aa9c8eef1eb60b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e5834ecd944d4af12aa9c8eef1eb60b">&#9670;&#160;</a></span>sampling_locations() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::sampling::FreeSurfaceSampler::sampling_locations </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structamr__wind_1_1sampling_1_1_sample_loc_type.html">SampleLocType</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>sample_locs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Box &amp;</td>          <td class="paramname"><span class="paramname"><em>box</em></span>&#160;) const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Populate the vector with coordinates of the sampling locations inside a box. </p>
+
+</div>
+</div>
+<a id="ac715c56b5816d28517d0b9eaa6494956" name="ac715c56b5816d28517d0b9eaa6494956"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac715c56b5816d28517d0b9eaa6494956">&#9670;&#160;</a></span>update_sampling_locations()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::sampling::FreeSurfaceSampler::update_sampling_locations </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Find heights associated with 2D sample locations. </p>
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a5e1354830fd8db4e7c7f1111cd44e835" name="a5e1354830fd8db4e7c7f1111cd44e835"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e1354830fd8db4e7c7f1111cd44e835">&#9670;&#160;</a></span>m_coorddir</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::sampling::FreeSurfaceSampler::m_coorddir {2}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Coordinate direction to search along, default is z (this also determines the meaning of start and end points) </p>
+
+</div>
+</div>
+<a id="aa52578060bccf7a93e72d67d7a2e3219" name="aa52578060bccf7a93e72d67d7a2e3219"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa52578060bccf7a93e72d67d7a2e3219">&#9670;&#160;</a></span>m_end</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Real&gt; amr_wind::sampling::FreeSurfaceSampler::m_end</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0daf91a25d774edc0596104c154db012" name="a0daf91a25d774edc0596104c154db012"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0daf91a25d774edc0596104c154db012">&#9670;&#160;</a></span>m_gc0</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::sampling::FreeSurfaceSampler::m_gc0 = 0</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Grid coordinates, determined as a function of m_coorddir. </p>
+
+</div>
+</div>
+<a id="a5a575519c70f8d795517c35122127ec7" name="a5a575519c70f8d795517c35122127ec7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a575519c70f8d795517c35122127ec7">&#9670;&#160;</a></span>m_gc1</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::sampling::FreeSurfaceSampler::m_gc1 = 1</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a27816410520ce6efc0f3abc0159eb7bb" name="a27816410520ce6efc0f3abc0159eb7bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27816410520ce6efc0f3abc0159eb7bb">&#9670;&#160;</a></span>m_grid_locs</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Array&lt;amrex::Real, 2&gt; &gt; amr_wind::sampling::FreeSurfaceSampler::m_grid_locs</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Locations of points in 2D grid. </p>
+
+</div>
+</div>
+<a id="a81c81d1570ee1af609ef62bc22f4577d" name="a81c81d1570ee1af609ef62bc22f4577d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81c81d1570ee1af609ef62bc22f4577d">&#9670;&#160;</a></span>m_id</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::sampling::FreeSurfaceSampler::m_id {-1}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a549659b6e1a0ba3a6cb82e43f28b2e6f" name="a549659b6e1a0ba3a6cb82e43f28b2e6f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a549659b6e1a0ba3a6cb82e43f28b2e6f">&#9670;&#160;</a></span>m_label</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::sampling::FreeSurfaceSampler::m_label</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa62afdd80774041c0997c6983fcaa61a" name="aa62afdd80774041c0997c6983fcaa61a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa62afdd80774041c0997c6983fcaa61a">&#9670;&#160;</a></span>m_lx_linear</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::sampling::FreeSurfaceSampler::m_lx_linear {0.}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Parameter for optional linear interpolation. </p>
+
+</div>
+</div>
+<a id="ae6832e26d296d4229cbfdbb614a1ceac" name="ae6832e26d296d4229cbfdbb614a1ceac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6832e26d296d4229cbfdbb614a1ceac">&#9670;&#160;</a></span>m_ncmax</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::sampling::FreeSurfaceSampler::m_ncmax {8}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Max number of sample points allowed in a single cell. </p>
+
+</div>
+</div>
+<a id="acac164db3227015478db7cb2ce8baac6" name="acac164db3227015478db7cb2ce8baac6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acac164db3227015478db7cb2ce8baac6">&#9670;&#160;</a></span>m_ncomp</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::sampling::FreeSurfaceSampler::m_ncomp {1}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Max number of sample points found in a single cell. </p>
+
+</div>
+</div>
+<a id="ae32b79ee0ec1be28f71a4ec16d8f585d" name="ae32b79ee0ec1be28f71a4ec16d8f585d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae32b79ee0ec1be28f71a4ec16d8f585d">&#9670;&#160;</a></span>m_ninst</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::sampling::FreeSurfaceSampler::m_ninst {1}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of instances (possible sampling points per location, like in the case of a breaking wave) </p>
+
+</div>
+</div>
+<a id="a2d700a11831012bc71dee607c9a30e1d" name="a2d700a11831012bc71dee607c9a30e1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d700a11831012bc71dee607c9a30e1d">&#9670;&#160;</a></span>m_npts</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::sampling::FreeSurfaceSampler::m_npts {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1426dfe978cc5559d8838aa4fd380e9e" name="a1426dfe978cc5559d8838aa4fd380e9e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1426dfe978cc5559d8838aa4fd380e9e">&#9670;&#160;</a></span>m_npts_dir</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;int&gt; amr_wind::sampling::FreeSurfaceSampler::m_npts_dir</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number or points on 2D grid in each direction. </p>
+
+</div>
+</div>
+<a id="a195fe0cc0e8f13c31a9c23f4216bf555" name="a195fe0cc0e8f13c31a9c23f4216bf555"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a195fe0cc0e8f13c31a9c23f4216bf555">&#9670;&#160;</a></span>m_out</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Real&gt; amr_wind::sampling::FreeSurfaceSampler::m_out</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Output coordinate. </p>
+
+</div>
+</div>
+<a id="a31c7ffa6c41d4a970eb1da41c32bdba7" name="a31c7ffa6c41d4a970eb1da41c32bdba7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31c7ffa6c41d4a970eb1da41c32bdba7">&#9670;&#160;</a></span>m_sim</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; amr_wind::sampling::FreeSurfaceSampler::m_sim</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aed896f41dace8e43c5b66988313f2287" name="aed896f41dace8e43c5b66988313f2287"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed896f41dace8e43c5b66988313f2287">&#9670;&#160;</a></span>m_start</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Real&gt; amr_wind::sampling::FreeSurfaceSampler::m_start</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Parameters to set up plane. </p>
+
+</div>
+</div>
+<a id="ab32653ea5991b750e64d0bfb2d960b98" name="ab32653ea5991b750e64d0bfb2d960b98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab32653ea5991b750e64d0bfb2d960b98">&#9670;&#160;</a></span>m_use_linear</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::sampling::FreeSurfaceSampler::m_use_linear {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Flag to use linear interpolation for surface finding in part of domain. </p>
+
+</div>
+</div>
+<a id="acbf6495a08561a06c8b203fd9dd7a4a4" name="acbf6495a08561a06c8b203fd9dd7a4a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acbf6495a08561a06c8b203fd9dd7a4a4">&#9670;&#160;</a></span>m_vof</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_field.html">Field</a>&amp; amr_wind::sampling::FreeSurfaceSampler::m_vof</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>reference to VOF </p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/<a class="el" href="_free_surface_sampler_8_h_source.html">FreeSurfaceSampler.H</a></li>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/<a class="el" href="_free_surface_sampler_8cpp.html">FreeSurfaceSampler.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

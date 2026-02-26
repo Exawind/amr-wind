@@ -1,0 +1,258 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/overset/OversetManager.H Source File &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/overset/OversetManager.H Source File</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/_overset_manager_8_h_source.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="home-runner-work-amr-wind-amr-wind-amr-wind-overset-oversetmanager-h-source-file">
+<h1>/home/runner/work/amr-wind/amr-wind/amr-wind/overset/OversetManager.H Source File<a class="headerlink" href="#home-runner-work-amr-wind-amr-wind-amr-wind-overset-oversetmanager-h-source-file" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/overset/OversetManager.H Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="dir_d85575251dd712327fe3cf057fa568b4.html">amr-wind</a></li><li class="navelem"><a href="dir_212148f97b8bb53ebaebb3bf8a8b5de4.html">amr-wind</a></li><li class="navelem"><a href="dir_36870694adceb415f28b3a8e8d793680.html">overset</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="headertitle"><div class="title">OversetManager.H</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="_overset_manager_8_h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef OVERSETMANAGER_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define OVERSETMANAGER_H</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="_factory_8_h.html">amr-wind/core/Factory.H</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceamr__wind.html">amr_wind</a> {</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">class </span><a class="code hl_class" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>;</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span></div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="};">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_overset_manager.html">   22</a></span><span class="keyword">class </span><a class="code hl_class" href="classamr__wind_1_1_overset_manager.html">OversetManager</a> : <span class="keyword">public</span> <a class="code hl_function" href="structamr__wind_1_1_factory.html#a9e905d4e76d3a3da2786ec0dcd758b77">Factory</a>&lt;OversetManager, CFDSim&amp;&gt;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>{</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_overset_manager.html#a8a0321b1fe6670651b11bbe5e07ced4f">   25</a></span>    <span class="keyword">static</span> std::string <a class="code hl_function" href="classamr__wind_1_1_overset_manager.html#a8a0321b1fe6670651b11bbe5e07ced4f">base_identifier</a>() { <span class="keywordflow">return</span> <span class="stringliteral">&quot;OversetManager&quot;</span>; }</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_overset_manager.html#a9aba2fba3a1b8dcb41a975a6ad9f153d">   32</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_overset_manager.html#a9aba2fba3a1b8dcb41a975a6ad9f153d">post_init_actions</a>() = 0;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_overset_manager.html#a6a8ce8e50772391d15177f8f33c4aca1">   36</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_overset_manager.html#a6a8ce8e50772391d15177f8f33c4aca1">post_regrid_actions</a>() = 0;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_overset_manager.html#adbef6f8e57ba5a2f4acf4301509166e8">   45</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_overset_manager.html#adbef6f8e57ba5a2f4acf4301509166e8">pre_overset_conn_work</a>() = 0;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_overset_manager.html#a15aec98cb6801fd877984fe2ba7d6c06">   52</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_overset_manager.html#a15aec98cb6801fd877984fe2ba7d6c06">post_overset_conn_work</a>() = 0;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span></div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_overset_manager.html#acc42e62d7bc831bab8a946390ee58391">   59</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_overset_manager.html#acc42e62d7bc831bab8a946390ee58391">register_solution</a>(</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <span class="keyword">const</span> std::vector&lt;std::string&gt;&amp; cell_vars,</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <span class="keyword">const</span> std::vector&lt;std::string&gt;&amp; node_vars) = 0;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span></div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_overset_manager.html#a1ada3778bee8180cbe5f74aa38b3f27a">   65</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_overset_manager.html#a1ada3778bee8180cbe5f74aa38b3f27a">update_solution</a>() = 0;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>};</div>
+</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>} <span class="comment">// namespace amr_wind</span></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="preprocessor">#endif </span><span class="comment">/* OVERSETMANAGER_H */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="a_factory_8_h_html"><div class="ttname"><a href="_factory_8_h.html">Factory.H</a></div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html">amr_wind::CFDSim</a></div><div class="ttdef"><b>Definition</b> CFDSim.H:54</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_overset_manager_html"><div class="ttname"><a href="classamr__wind_1_1_overset_manager.html">amr_wind::OversetManager</a></div><div class="ttdef"><b>Definition</b> OversetManager.H:23</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_overset_manager_html_a15aec98cb6801fd877984fe2ba7d6c06"><div class="ttname"><a href="classamr__wind_1_1_overset_manager.html#a15aec98cb6801fd877984fe2ba7d6c06">amr_wind::OversetManager::post_overset_conn_work</a></div><div class="ttdeci">virtual void post_overset_conn_work()=0</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_overset_manager_html_a1ada3778bee8180cbe5f74aa38b3f27a"><div class="ttname"><a href="classamr__wind_1_1_overset_manager.html#a1ada3778bee8180cbe5f74aa38b3f27a">amr_wind::OversetManager::update_solution</a></div><div class="ttdeci">virtual void update_solution()=0</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_overset_manager_html_a6a8ce8e50772391d15177f8f33c4aca1"><div class="ttname"><a href="classamr__wind_1_1_overset_manager.html#a6a8ce8e50772391d15177f8f33c4aca1">amr_wind::OversetManager::post_regrid_actions</a></div><div class="ttdeci">virtual void post_regrid_actions()=0</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_overset_manager_html_a8a0321b1fe6670651b11bbe5e07ced4f"><div class="ttname"><a href="classamr__wind_1_1_overset_manager.html#a8a0321b1fe6670651b11bbe5e07ced4f">amr_wind::OversetManager::base_identifier</a></div><div class="ttdeci">static std::string base_identifier()</div><div class="ttdef"><b>Definition</b> OversetManager.H:25</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_overset_manager_html_a9aba2fba3a1b8dcb41a975a6ad9f153d"><div class="ttname"><a href="classamr__wind_1_1_overset_manager.html#a9aba2fba3a1b8dcb41a975a6ad9f153d">amr_wind::OversetManager::post_init_actions</a></div><div class="ttdeci">virtual void post_init_actions()=0</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_overset_manager_html_acc42e62d7bc831bab8a946390ee58391"><div class="ttname"><a href="classamr__wind_1_1_overset_manager.html#acc42e62d7bc831bab8a946390ee58391">amr_wind::OversetManager::register_solution</a></div><div class="ttdeci">virtual void register_solution(const std::vector&lt; std::string &gt; &amp;cell_vars, const std::vector&lt; std::string &gt; &amp;node_vars)=0</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_overset_manager_html_adbef6f8e57ba5a2f4acf4301509166e8"><div class="ttname"><a href="classamr__wind_1_1_overset_manager.html#adbef6f8e57ba5a2f4acf4301509166e8">amr_wind::OversetManager::pre_overset_conn_work</a></div><div class="ttdeci">virtual void pre_overset_conn_work()=0</div></div>
+<div class="ttc" id="anamespaceamr__wind_html"><div class="ttname"><a href="namespaceamr__wind.html">amr_wind</a></div><div class="ttdoc">This test case is intended as an evaluation of the momentum advection scheme.</div><div class="ttdef"><b>Definition</b> BCInterface.cpp:10</div></div>
+<div class="ttc" id="astructamr__wind_1_1_factory_html_a9e905d4e76d3a3da2786ec0dcd758b77"><div class="ttname"><a href="structamr__wind_1_1_factory.html#a9e905d4e76d3a3da2786ec0dcd758b77">amr_wind::Factory&lt; OversetManager, CFDSim &amp; &gt;::Factory</a></div><div class="ttdeci">Factory()=default</div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

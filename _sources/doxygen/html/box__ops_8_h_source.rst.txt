@@ -1,0 +1,14 @@
+.. meta::9fb6e4fcfbe59a02ee6f63f901f42195b7bb728d269dcaf58d1214d9246db2a3b820f78ba6edb0b391fea4e1d6aefd0a87e323462627099bda11408f28bf7d89
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/immersed_boundary/bluff_body/box_ops.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/immersed\_boundary/bluff\_body/box\_ops.H Source File
+==================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: box__ops_8_h_source.html

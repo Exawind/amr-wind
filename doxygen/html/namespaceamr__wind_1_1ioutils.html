@@ -1,0 +1,378 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::ioutils Namespace Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::ioutils Namespace Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/namespaceamr__wind_1_1ioutils.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ioutils-namespace-reference">
+<h1>ioutils Namespace Reference<a class="headerlink" href="#ioutils-namespace-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::ioutils Namespace Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="namespaceamr__wind_1_1ioutils.html">ioutils</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#func-members">Functions</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::ioutils Namespace Reference</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:ada37d8fbe996e8d7b1c245cbb6f6ff86" id="r_ada37d8fbe996e8d7b1c245cbb6f6ff86"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ada37d8fbe996e8d7b1c245cbb6f6ff86">goto_next_line</a> (std::istream &amp;is)</td></tr>
+<tr class="memitem:a92a0422dddaec840c3f71e76d19ec3d7" id="r_a92a0422dddaec840c3f71e76d19ec3d7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a92a0422dddaec840c3f71e76d19ec3d7">read_flat_grid_file</a> (const std::string &amp;fname, amrex::Vector&lt; amrex::Real &gt; &amp;xs, amrex::Vector&lt; amrex::Real &gt; &amp;ys, amrex::Vector&lt; amrex::Real &gt; &amp;zs)</td></tr>
+<tr class="memitem:aa5842ecc67c0a5fc8725ff227ce11fe4" id="r_aa5842ecc67c0a5fc8725ff227ce11fe4"><td class="memItemLeft" align="right" valign="top">AMREX_INLINE std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa5842ecc67c0a5fc8725ff227ce11fe4">amr_wind_version</a> ()</td></tr>
+<tr class="memitem:ac11f9b86e38d1f4cf04d9a08ad4ff457" id="r_ac11f9b86e38d1f4cf04d9a08ad4ff457"><td class="memItemLeft" align="right" valign="top">AMREX_INLINE std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac11f9b86e38d1f4cf04d9a08ad4ff457">timestamp</a> ()</td></tr>
+<tr class="memitem:a5b045a925301a8bfebeb47de49ad6065" id="r_a5b045a925301a8bfebeb47de49ad6065"><td class="memItemLeft" align="right" valign="top">AMREX_INLINE void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5b045a925301a8bfebeb47de49ad6065">add_var_names</a> (amrex::Vector&lt; std::string &gt; &amp;vnames, const std::string &amp;fname, const int ncomp)</td></tr>
+<tr class="memitem:a869178c0f7b3d2c541efd842b0227d84" id="r_a869178c0f7b3d2c541efd842b0227d84"><td class="memTemplParams" colspan="2">template&lt;typename T&gt; </td></tr>
+<tr class="memitem:a869178c0f7b3d2c541efd842b0227d84 template"><td class="memItemLeft" align="right" valign="top">AMREX_INLINE bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a869178c0f7b3d2c541efd842b0227d84">all_distinct</a> (const amrex::Vector&lt; T &gt; &amp;vec)</td></tr>
+<tr class="memitem:a91f9d3dc891adf7b4b0108fadd84584c" id="r_a91f9d3dc891adf7b4b0108fadd84584c"><td class="memItemLeft" align="right" valign="top">AMREX_INLINE void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a91f9d3dc891adf7b4b0108fadd84584c">assert_with_message</a> (const bool val, const std::string &amp;msg)</td></tr>
+</table>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
+<a id="a5b045a925301a8bfebeb47de49ad6065" name="a5b045a925301a8bfebeb47de49ad6065"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b045a925301a8bfebeb47de49ad6065">&#9670;&#160;</a></span>add_var_names()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_INLINE void amr_wind::ioutils::add_var_names </td>
+          <td>(</td>
+          <td class="paramtype">amrex::Vector&lt; std::string &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>vnames</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>fname</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>ncomp</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Generate field names for multi-component fields</p>
+<p>Function generates variable names based on the number of components in the field. If the field is a scalar, it just inserts the variable name. For vectors it appends "x, y, z" to the components, and for all other fields it numbers the components start with 0. </p>
+
+</div>
+</div>
+<a id="a869178c0f7b3d2c541efd842b0227d84" name="a869178c0f7b3d2c541efd842b0227d84"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a869178c0f7b3d2c541efd842b0227d84">&#9670;&#160;</a></span>all_distinct()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_INLINE bool amr_wind::ioutils::all_distinct </td>
+          <td>(</td>
+          <td class="paramtype">const amrex::Vector&lt; T &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>vec</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa5842ecc67c0a5fc8725ff227ce11fe4" name="aa5842ecc67c0a5fc8725ff227ce11fe4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5842ecc67c0a5fc8725ff227ce11fe4">&#9670;&#160;</a></span>amr_wind_version()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_INLINE std::string amr_wind::ioutils::amr_wind_version </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a91f9d3dc891adf7b4b0108fadd84584c" name="a91f9d3dc891adf7b4b0108fadd84584c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91f9d3dc891adf7b4b0108fadd84584c">&#9670;&#160;</a></span>assert_with_message()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_INLINE void amr_wind::ioutils::assert_with_message </td>
+          <td>(</td>
+          <td class="paramtype">const bool</td>          <td class="paramname"><span class="paramname"><em>val</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>msg</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ada37d8fbe996e8d7b1c245cbb6f6ff86" name="ada37d8fbe996e8d7b1c245cbb6f6ff86"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada37d8fbe996e8d7b1c245cbb6f6ff86">&#9670;&#160;</a></span>goto_next_line()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ioutils::goto_next_line </td>
+          <td>(</td>
+          <td class="paramtype">std::istream &amp;</td>          <td class="paramname"><span class="paramname"><em>is</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a92a0422dddaec840c3f71e76d19ec3d7" name="a92a0422dddaec840c3f71e76d19ec3d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92a0422dddaec840c3f71e76d19ec3d7">&#9670;&#160;</a></span>read_flat_grid_file()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ioutils::read_flat_grid_file </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>fname</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Vector&lt; amrex::Real &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>xs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Vector&lt; amrex::Real &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>ys</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Vector&lt; amrex::Real &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>zs</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Read a flattened 2D grid file</p>
+<p>File is assumed to contain a single column with the following data: [nx, ny, x values (len = nx), y values (len = ny), z values (len = nx * ny)] </p>
+
+</div>
+</div>
+<a id="ac11f9b86e38d1f4cf04d9a08ad4ff457" name="ac11f9b86e38d1f4cf04d9a08ad4ff457"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac11f9b86e38d1f4cf04d9a08ad4ff457">&#9670;&#160;</a></span>timestamp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_INLINE std::string amr_wind::ioutils::timestamp </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

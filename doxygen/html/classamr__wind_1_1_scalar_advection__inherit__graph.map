@@ -1,0 +1,5 @@
+<map id="amr_wind::ScalarAdvection" name="amr_wind::ScalarAdvection">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,108,204,133"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="23,5,187,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="107,74,107,108,102,108,102,74"/>
+</map>

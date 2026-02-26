@@ -1,0 +1,14 @@
+.. meta::1cdb2ad71e0820b3e2d8941d8d825e6fff58d42dde71c32fcd01277aff35ca99713677d51025f4431ab7dc5440652e17fd4ffbd6ee4fd1b701b828ad299d4810
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::synth_turb::PowerLawOp Struct Reference
+
+PowerLawOp Struct Reference
+===========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1synth__turb_1_1_power_law_op.html

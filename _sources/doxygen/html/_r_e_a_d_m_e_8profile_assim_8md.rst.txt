@@ -1,0 +1,14 @@
+.. meta::43d75780930f173fd70ecb36c36b3387f023db78656df769e5f6edd0c55aa4882786316925ee5d3fb90e089faba7e9d2ea9434384c4548dca6f29a05009b83df
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/README.profileAssim.md File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/wind\_energy/README.profileAssim.md File Reference
+===============================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _r_e_a_d_m_e_8profile_assim_8md.html

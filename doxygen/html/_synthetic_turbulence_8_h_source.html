@@ -1,0 +1,519 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/SyntheticTurbulence.H Source File &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/SyntheticTurbulence.H Source File</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/_synthetic_turbulence_8_h_source.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="home-runner-work-amr-wind-amr-wind-amr-wind-physics-syntheticturbulence-h-source-file">
+<h1>/home/runner/work/amr-wind/amr-wind/amr-wind/physics/SyntheticTurbulence.H Source File<a class="headerlink" href="#home-runner-work-amr-wind-amr-wind-amr-wind-physics-syntheticturbulence-h-source-file" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/SyntheticTurbulence.H Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="dir_d85575251dd712327fe3cf057fa568b4.html">amr-wind</a></li><li class="navelem"><a href="dir_212148f97b8bb53ebaebb3bf8a8b5de4.html">amr-wind</a></li><li class="navelem"><a href="dir_f00f788038d28a6de62e2305131ce6f9.html">physics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="headertitle"><div class="title">SyntheticTurbulence.H</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="_synthetic_turbulence_8_h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef SYNTHETICTURBULENCE_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define SYNTHETICTURBULENCE_H</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="_physics_8_h.html">amr-wind/core/Physics.H</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="_field_8_h.html">amr-wind/core/Field.H</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="vector__space_8_h.html">amr-wind/core/vs/vector_space.H</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="_c_f_d_sim_8_h.html">amr-wind/CFDSim.H</a>&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;AMReX_REAL.H&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">using namespace </span>amrex::literals;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceamr__wind.html">amr_wind</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceamr__wind_1_1synth__turb.html">synth_turb</a> {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="foldopen" id="foldopen00020" data-start="{" data-end="};">
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structamr__wind_1_1synth__turb_1_1_mean_vel_op.html">   20</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structamr__wind_1_1synth__turb_1_1_mean_vel_op.html">MeanVelOp</a></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>{</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real</div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="}">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structamr__wind_1_1synth__turb_1_1_mean_vel_op.html#a3b2eaaf817a0a02a1f269659800eb256">   23</a></span>    <a class="code hl_function" href="structamr__wind_1_1synth__turb_1_1_mean_vel_op.html#a3b2eaaf817a0a02a1f269659800eb256">operator()</a>(amrex::Real <span class="comment">/* height */</span>)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="structamr__wind_1_1synth__turb_1_1_mean_vel_op.html#a795abd4d339c1027e42d58ae1965cdb2">m_ref_vel</a>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    }</div>
+</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structamr__wind_1_1synth__turb_1_1_mean_vel_op.html#a795abd4d339c1027e42d58ae1965cdb2">   28</a></span>    <span class="keyword">const</span> amrex::Real <a class="code hl_variable" href="structamr__wind_1_1synth__turb_1_1_mean_vel_op.html#a795abd4d339c1027e42d58ae1965cdb2">m_ref_vel</a>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>};</div>
+</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="foldopen" id="foldopen00031" data-start="{" data-end="};">
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classamr__wind_1_1synth__turb_1_1_mean_profile.html">   31</a></span><span class="keyword">class </span><a class="code hl_function" href="classamr__wind_1_1synth__turb_1_1_mean_profile.html#a9ec3f6da1c40a1a0b3d71f906987179d">MeanProfile</a></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>{</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="keyword">public</span>:</div>
+<div class="foldopen" id="foldopen00034" data-start="{" data-end="}">
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classamr__wind_1_1synth__turb_1_1_mean_profile.html#a9ec3f6da1c40a1a0b3d71f906987179d">   34</a></span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classamr__wind_1_1synth__turb_1_1_mean_profile.html#a9ec3f6da1c40a1a0b3d71f906987179d">MeanProfile</a>(amrex::Real ref_vel, <span class="keywordtype">int</span> <a class="code hl_function" href="classamr__wind_1_1synth__turb_1_1_mean_profile.html#aa5aabf5d3d737e97606bb258d0825a65">shear_dir</a> = 2)</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        : <a class="code hl_variable" href="classamr__wind_1_1synth__turb_1_1_mean_profile.html#a92e1fbd752f8467a960e4efd575eeaac">m_op</a>{ref_vel}, <a class="code hl_variable" href="classamr__wind_1_1synth__turb_1_1_mean_profile.html#a34a75e74834c13ad0768898b95bafc76">m_ref_vel</a>(ref_vel), <a class="code hl_variable" href="classamr__wind_1_1synth__turb_1_1_mean_profile.html#a5451d5bfbb4a3993f964fda49ccd8ff2">m_shear_dir</a>(<a class="code hl_function" href="classamr__wind_1_1synth__turb_1_1_mean_profile.html#aa5aabf5d3d737e97606bb258d0825a65">shear_dir</a>)</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    {}</div>
+</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classamr__wind_1_1synth__turb_1_1_mean_profile.html#ae4d7e38bb2a1126cdfb526d506263753">   38</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classamr__wind_1_1synth__turb_1_1_mean_profile.html#ae4d7e38bb2a1126cdfb526d506263753">~MeanProfile</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classamr__wind_1_1synth__turb_1_1_mean_profile.html#a7325d2488536e7fac02263fed12e9a82">   40</a></span>    [[nodiscard]] amrex::Real <a class="code hl_function" href="classamr__wind_1_1synth__turb_1_1_mean_profile.html#a7325d2488536e7fac02263fed12e9a82">reference_velocity</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1synth__turb_1_1_mean_profile.html#a34a75e74834c13ad0768898b95bafc76">m_ref_vel</a>; }</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classamr__wind_1_1synth__turb_1_1_mean_profile.html#aa5aabf5d3d737e97606bb258d0825a65">   42</a></span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classamr__wind_1_1synth__turb_1_1_mean_profile.html#aa5aabf5d3d737e97606bb258d0825a65">shear_dir</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1synth__turb_1_1_mean_profile.html#a5451d5bfbb4a3993f964fda49ccd8ff2">m_shear_dir</a>; }</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classamr__wind_1_1synth__turb_1_1_mean_profile.html#aedc28e517370e72a9f56d80b4bcc97d0">   44</a></span>    [[nodiscard]] <a class="code hl_struct" href="structamr__wind_1_1synth__turb_1_1_mean_vel_op.html">MeanVelOp</a> <a class="code hl_function" href="classamr__wind_1_1synth__turb_1_1_mean_profile.html#aedc28e517370e72a9f56d80b4bcc97d0">device_instance</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1synth__turb_1_1_mean_profile.html#a92e1fbd752f8467a960e4efd575eeaac">m_op</a>; }</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classamr__wind_1_1synth__turb_1_1_mean_profile.html#a92e1fbd752f8467a960e4efd575eeaac">   47</a></span>    <a class="code hl_struct" href="structamr__wind_1_1synth__turb_1_1_mean_vel_op.html">MeanVelOp</a> <a class="code hl_variable" href="classamr__wind_1_1synth__turb_1_1_mean_profile.html#a92e1fbd752f8467a960e4efd575eeaac">m_op</a>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classamr__wind_1_1synth__turb_1_1_mean_profile.html#a34a75e74834c13ad0768898b95bafc76">   49</a></span>    <span class="keyword">const</span> amrex::Real <a class="code hl_variable" href="classamr__wind_1_1synth__turb_1_1_mean_profile.html#a34a75e74834c13ad0768898b95bafc76">m_ref_vel</a>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classamr__wind_1_1synth__turb_1_1_mean_profile.html#a5451d5bfbb4a3993f964fda49ccd8ff2">   50</a></span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="classamr__wind_1_1synth__turb_1_1_mean_profile.html#a5451d5bfbb4a3993f964fda49ccd8ff2">m_shear_dir</a>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>};</div>
+</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>} <span class="comment">// namespace synth_turb</span></div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="foldopen" id="foldopen00055" data-start="{" data-end="};">
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_synth_turb_data.html">   55</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structamr__wind_1_1_synth_turb_data.html">SynthTurbData</a></div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>{</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="comment">// Dimensions of the box</span></div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_synth_turb_data.html#a62dece483dfd0a7f5c3d717978973e75">   58</a></span>    <a class="code hl_struct" href="structamr__wind_1_1vs_1_1_vector_t.html">vs::VectorT&lt;int&gt;</a> <a class="code hl_variable" href="structamr__wind_1_1_synth_turb_data.html#a62dece483dfd0a7f5c3d717978973e75">box_dims</a>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="comment">// Length of the boxes in each direction</span></div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_synth_turb_data.html#a0ab2ccd01c49a1fb02fc5aa0f4bb0d13">   61</a></span>    <a class="code hl_typedef" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> <a class="code hl_variable" href="structamr__wind_1_1_synth_turb_data.html#a0ab2ccd01c49a1fb02fc5aa0f4bb0d13">box_len</a>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_synth_turb_data.html#a2974e634772a8af25111690dcff2d6d5">   63</a></span>    <a class="code hl_typedef" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> <a class="code hl_variable" href="structamr__wind_1_1_synth_turb_data.html#a2974e634772a8af25111690dcff2d6d5">dx</a>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="comment">// Reference point for the turbulence box. Reference is the mid-point of the</span></div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="comment">// turbulence grid at the plane where it is injected into the CFD flow</span></div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="comment">// field.</span></div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_synth_turb_data.html#aff1c99df67993898d954d413a59970f7">   68</a></span>    <a class="code hl_typedef" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> <a class="code hl_variable" href="structamr__wind_1_1_synth_turb_data.html#aff1c99df67993898d954d413a59970f7">origin</a>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="comment">// Transformation matrix to convert from global coordinate system to local</span></div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="comment">// coordinate system</span></div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_synth_turb_data.html#a220e525c1e38d1b02e32b16de0438972">   72</a></span>    <a class="code hl_typedef" href="namespaceamr__wind_1_1vs.html#add4ffb20497b62d4b485d7c483dcd80f">vs::Tensor</a> <a class="code hl_variable" href="structamr__wind_1_1_synth_turb_data.html#a220e525c1e38d1b02e32b16de0438972">tr_mat</a>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="comment">// Perturbation velocities (2, ny, nz)</span></div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_synth_turb_data.html#aebef44020136139f5d9e944b7ac1ee28">   75</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="structamr__wind_1_1_synth_turb_data.html#aebef44020136139f5d9e944b7ac1ee28">uvel</a>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_synth_turb_data.html#ad00e0294eaa2d7adbc3a0be2d500a7b3">   76</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="structamr__wind_1_1_synth_turb_data.html#ad00e0294eaa2d7adbc3a0be2d500a7b3">vvel</a>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_synth_turb_data.html#ad49acf133fe1b1959b1cc7759054b6e8">   77</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="structamr__wind_1_1_synth_turb_data.html#ad49acf133fe1b1959b1cc7759054b6e8">wvel</a>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_synth_turb_data.html#a567e866adf6d74f7b0e8d9c47dda6205">   79</a></span>    amrex::Gpu::DeviceVector&lt;amrex::Real&gt; <a class="code hl_variable" href="structamr__wind_1_1_synth_turb_data.html#a567e866adf6d74f7b0e8d9c47dda6205">uvel_d</a>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_synth_turb_data.html#a34ca0ed30ce54265b1587de9a71bb406">   80</a></span>    amrex::Gpu::DeviceVector&lt;amrex::Real&gt; <a class="code hl_variable" href="structamr__wind_1_1_synth_turb_data.html#a34ca0ed30ce54265b1587de9a71bb406">vvel_d</a>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_synth_turb_data.html#a96d83693ffdbcc4ec37255a8d48cd08f">   81</a></span>    amrex::Gpu::DeviceVector&lt;amrex::Real&gt; <a class="code hl_variable" href="structamr__wind_1_1_synth_turb_data.html#a96d83693ffdbcc4ec37255a8d48cd08f">wvel_d</a>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="comment">// Indices of the two planes stored in the data arrays</span></div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_synth_turb_data.html#a6205dee76df79ef16b697f3cbaf2638a">   84</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structamr__wind_1_1_synth_turb_data.html#a6205dee76df79ef16b697f3cbaf2638a">ileft</a>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_synth_turb_data.html#a81ce805a346ad168d9349e74a5e88b25">   85</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structamr__wind_1_1_synth_turb_data.html#a81ce805a346ad168d9349e74a5e88b25">iright</a>;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>};</div>
+</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="foldopen" id="foldopen00088" data-start="{" data-end="};">
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_synth_turb_device_data.html">   88</a></span><span class="keyword">struct </span><a class="code hl_function" href="structamr__wind_1_1_synth_turb_device_data.html#aab30662a25d632c0d9eb1d246b0c16b0">SynthTurbDeviceData</a></div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>{</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="comment">// Dimensions of the box</span></div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_synth_turb_device_data.html#a2ef1a511144c7979b2ede787927ac040">   91</a></span>    <a class="code hl_struct" href="structamr__wind_1_1vs_1_1_vector_t.html">vs::VectorT&lt;int&gt;</a> <a class="code hl_variable" href="structamr__wind_1_1_synth_turb_device_data.html#a2ef1a511144c7979b2ede787927ac040">box_dims</a>;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="comment">// Length of the boxes in each direction</span></div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_synth_turb_device_data.html#a89f20943646d455f1be393da5752c909">   94</a></span>    <a class="code hl_typedef" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> <a class="code hl_variable" href="structamr__wind_1_1_synth_turb_device_data.html#a89f20943646d455f1be393da5752c909">box_len</a>;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_synth_turb_device_data.html#afa7a95a373b99d3db38b4434445c1ccb">   96</a></span>    <a class="code hl_typedef" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> <a class="code hl_variable" href="structamr__wind_1_1_synth_turb_device_data.html#afa7a95a373b99d3db38b4434445c1ccb">dx</a>;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="comment">// Reference point for the turbulence box. Reference is the mid-point of the</span></div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="comment">// turbulence grid at the plane where it is injected into the CFD flow</span></div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="comment">// field.</span></div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_synth_turb_device_data.html#a9b6a45f7867bba599dd91647bf1f29fb">  101</a></span>    <a class="code hl_typedef" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> <a class="code hl_variable" href="structamr__wind_1_1_synth_turb_device_data.html#a9b6a45f7867bba599dd91647bf1f29fb">origin</a>;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="comment">// Transformation matrix to convert from global coordinate system to local</span></div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="comment">// coordinate system</span></div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_synth_turb_device_data.html#acc2859bbd7137a488eaf914f86d7a963">  105</a></span>    <a class="code hl_typedef" href="namespaceamr__wind_1_1vs.html#add4ffb20497b62d4b485d7c483dcd80f">vs::Tensor</a> <a class="code hl_variable" href="structamr__wind_1_1_synth_turb_device_data.html#acc2859bbd7137a488eaf914f86d7a963">tr_mat</a>;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_synth_turb_device_data.html#a884bbd34463c44129c492b72b931e4df">  107</a></span>    amrex::Real* <a class="code hl_variable" href="structamr__wind_1_1_synth_turb_device_data.html#a884bbd34463c44129c492b72b931e4df">uvel</a>;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_synth_turb_device_data.html#adeaea474c618d16a2e66a35b52f98ea7">  108</a></span>    amrex::Real* <a class="code hl_variable" href="structamr__wind_1_1_synth_turb_device_data.html#adeaea474c618d16a2e66a35b52f98ea7">vvel</a>;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_synth_turb_device_data.html#af7167dbc256fb54b26b0cbdc0357186d">  109</a></span>    amrex::Real* <a class="code hl_variable" href="structamr__wind_1_1_synth_turb_device_data.html#af7167dbc256fb54b26b0cbdc0357186d">wvel</a>;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="comment">// Indices of the two planes stored in the data arrays</span></div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_synth_turb_device_data.html#addbd79de25c76b90b246f8f8aad0a103">  112</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structamr__wind_1_1_synth_turb_device_data.html#addbd79de25c76b90b246f8f8aad0a103">ileft</a>;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_synth_turb_device_data.html#a1c9f8d6df4dbe983da61d77599797662">  113</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structamr__wind_1_1_synth_turb_device_data.html#a1c9f8d6df4dbe983da61d77599797662">iright</a>;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="foldopen" id="foldopen00115" data-start="{" data-end="}">
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_synth_turb_device_data.html#aab30662a25d632c0d9eb1d246b0c16b0">  115</a></span>    <span class="keyword">explicit</span> <a class="code hl_function" href="structamr__wind_1_1_synth_turb_device_data.html#aab30662a25d632c0d9eb1d246b0c16b0">SynthTurbDeviceData</a>(<a class="code hl_struct" href="structamr__wind_1_1_synth_turb_data.html">SynthTurbData</a>&amp; hdata)</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        : <a class="code hl_variable" href="structamr__wind_1_1_synth_turb_device_data.html#a2ef1a511144c7979b2ede787927ac040">box_dims</a>(hdata.<a class="code hl_variable" href="structamr__wind_1_1_synth_turb_device_data.html#a2ef1a511144c7979b2ede787927ac040">box_dims</a>)</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>        , <a class="code hl_variable" href="structamr__wind_1_1_synth_turb_device_data.html#a89f20943646d455f1be393da5752c909">box_len</a>(hdata.<a class="code hl_variable" href="structamr__wind_1_1_synth_turb_device_data.html#a89f20943646d455f1be393da5752c909">box_len</a>)</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        , <a class="code hl_variable" href="structamr__wind_1_1_synth_turb_device_data.html#afa7a95a373b99d3db38b4434445c1ccb">dx</a>(hdata.<a class="code hl_variable" href="structamr__wind_1_1_synth_turb_device_data.html#afa7a95a373b99d3db38b4434445c1ccb">dx</a>)</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        , <a class="code hl_variable" href="structamr__wind_1_1_synth_turb_device_data.html#a9b6a45f7867bba599dd91647bf1f29fb">origin</a>(hdata.<a class="code hl_variable" href="structamr__wind_1_1_synth_turb_device_data.html#a9b6a45f7867bba599dd91647bf1f29fb">origin</a>)</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        , <a class="code hl_variable" href="structamr__wind_1_1_synth_turb_device_data.html#acc2859bbd7137a488eaf914f86d7a963">tr_mat</a>(hdata.<a class="code hl_variable" href="structamr__wind_1_1_synth_turb_device_data.html#acc2859bbd7137a488eaf914f86d7a963">tr_mat</a>)</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>        , <a class="code hl_variable" href="structamr__wind_1_1_synth_turb_device_data.html#a884bbd34463c44129c492b72b931e4df">uvel</a>(hdata.uvel_d.data())</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        , <a class="code hl_variable" href="structamr__wind_1_1_synth_turb_device_data.html#adeaea474c618d16a2e66a35b52f98ea7">vvel</a>(hdata.vvel_d.data())</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>        , <a class="code hl_variable" href="structamr__wind_1_1_synth_turb_device_data.html#af7167dbc256fb54b26b0cbdc0357186d">wvel</a>(hdata.wvel_d.data())</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        , <a class="code hl_variable" href="structamr__wind_1_1_synth_turb_device_data.html#addbd79de25c76b90b246f8f8aad0a103">ileft</a>(hdata.<a class="code hl_variable" href="structamr__wind_1_1_synth_turb_device_data.html#addbd79de25c76b90b246f8f8aad0a103">ileft</a>)</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>        , <a class="code hl_variable" href="structamr__wind_1_1_synth_turb_device_data.html#a1c9f8d6df4dbe983da61d77599797662">iright</a>(hdata.<a class="code hl_variable" href="structamr__wind_1_1_synth_turb_device_data.html#a1c9f8d6df4dbe983da61d77599797662">iright</a>)</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    {}</div>
+</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>};</div>
+</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span></div>
+<div class="foldopen" id="foldopen00132" data-start="{" data-end="};">
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_interp_weights.html">  132</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structamr__wind_1_1_interp_weights.html">InterpWeights</a></div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>{</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_interp_weights.html#abedf039ed0a37f40dc44823c25d7b07e">  134</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structamr__wind_1_1_interp_weights.html#abedf039ed0a37f40dc44823c25d7b07e">il</a>, <a class="code hl_variable" href="structamr__wind_1_1_interp_weights.html#a8d9e57ce8a40d3ac927e88b689d9fd00">ir</a>, <a class="code hl_variable" href="structamr__wind_1_1_interp_weights.html#ab06a1f41b5ff29b11ff8678290f3bfe4">jl</a>, <a class="code hl_variable" href="structamr__wind_1_1_interp_weights.html#ab8a1d82f1b872bebe3f94ab268cd126e">jr</a>, <a class="code hl_variable" href="structamr__wind_1_1_interp_weights.html#ac8be56efcfec20d0a74edbb538ab2f6a">kl</a>, <a class="code hl_variable" href="structamr__wind_1_1_interp_weights.html#a359a3ce4325ad659e0b0b232b8c4e96d">kr</a>;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_interp_weights.html#a5ba7fe1e66b44ea5752ef810de0c02a6">  135</a></span>    amrex::Real <a class="code hl_variable" href="structamr__wind_1_1_interp_weights.html#a5ba7fe1e66b44ea5752ef810de0c02a6">xl</a>, <a class="code hl_variable" href="structamr__wind_1_1_interp_weights.html#a70c53d98d12d8419f6c38d9a3dbdc28b">xr</a>, <a class="code hl_variable" href="structamr__wind_1_1_interp_weights.html#a47904e1522e312ae69d74feb2233126a">yl</a>, <a class="code hl_variable" href="structamr__wind_1_1_interp_weights.html#a772591d5db305ae5ea0c0ceb009496ab">yr</a>, <a class="code hl_variable" href="structamr__wind_1_1_interp_weights.html#ac5497f6941d64ce7e6e8ff815385edb5">zl</a>, <a class="code hl_variable" href="structamr__wind_1_1_interp_weights.html#a86a34486abef54367855104830129a70">zr</a>;</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>};</div>
+</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span></div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span> </div>
+<div class="foldopen" id="foldopen00150" data-start="{" data-end="};">
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_synthetic_turbulence.html">  150</a></span><span class="keyword">class </span><a class="code hl_function" href="classamr__wind_1_1_synthetic_turbulence.html#a01693c924fd8ef65b499b06193eb3d82">SyntheticTurbulence</a> : <span class="keyword">public</span> Physics::Register&lt;SyntheticTurbulence&gt;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>{</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_synthetic_turbulence.html#a0575f7ebe01203e18198b8e7064f2b68">  153</a></span>    <span class="keyword">static</span> std::string <a class="code hl_function" href="classamr__wind_1_1_synthetic_turbulence.html#a0575f7ebe01203e18198b8e7064f2b68">identifier</a>() { <span class="keywordflow">return</span> <span class="stringliteral">&quot;SyntheticTurbulence&quot;</span>; }</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span> </div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classamr__wind_1_1_synthetic_turbulence.html#aa5e0ee75a46462d6dd8e5f7926bb1a0c">SyntheticTurbulence</a>(<span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; sim);</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span> </div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_synthetic_turbulence.html#aa5e0ee75a46462d6dd8e5f7926bb1a0c">  157</a></span>    <a class="code hl_function" href="classamr__wind_1_1_synthetic_turbulence.html#aa5e0ee75a46462d6dd8e5f7926bb1a0c">SyntheticTurbulence</a>() = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_synthetic_turbulence.html#a0aae77b0d7e87c6084ee10ced24a9519">  158</a></span>    <a class="code hl_function" href="classamr__wind_1_1_synthetic_turbulence.html#a0aae77b0d7e87c6084ee10ced24a9519">SyntheticTurbulence</a>(<span class="keyword">const</span> <a class="code hl_function" href="classamr__wind_1_1_synthetic_turbulence.html#a01693c924fd8ef65b499b06193eb3d82">SyntheticTurbulence</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_synthetic_turbulence.html#a667533fa6a4b35efbfbffaacdd95bba3">  159</a></span>    <a class="code hl_function" href="classamr__wind_1_1_synthetic_turbulence.html#a01693c924fd8ef65b499b06193eb3d82">SyntheticTurbulence</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_synthetic_turbulence.html#a667533fa6a4b35efbfbffaacdd95bba3">operator=</a>(<span class="keyword">const</span> <a class="code hl_function" href="classamr__wind_1_1_synthetic_turbulence.html#a01693c924fd8ef65b499b06193eb3d82">SyntheticTurbulence</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span> </div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_synthetic_turbulence.html#a07b37966768e8747c84aab1b27b9a7ab">  161</a></span>    <a class="code hl_function" href="classamr__wind_1_1_synthetic_turbulence.html#a07b37966768e8747c84aab1b27b9a7ab">~SyntheticTurbulence</a>() <span class="keyword">override</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span> </div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_synthetic_turbulence.html#a7c31ed613d2b449dc54be845419c2056">initialize_fields</a>(<span class="keywordtype">int</span> level, <span class="keyword">const</span> amrex::Geometry&amp; geom) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span> </div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_synthetic_turbulence.html#ac96fe1aa1d983575a71aa543a69e8eb3">  165</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_synthetic_turbulence.html#ac96fe1aa1d983575a71aa543a69e8eb3">post_init_actions</a>()<span class="keyword"> override </span>{}</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span> </div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_synthetic_turbulence.html#a6daf2a34d667ff2d5b8ec1ccc115de22">  167</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_synthetic_turbulence.html#a6daf2a34d667ff2d5b8ec1ccc115de22">post_regrid_actions</a>()<span class="keyword"> override </span>{}</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span> </div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_synthetic_turbulence.html#a222889c2df7a9ba1b865efc305fcf170">pre_advance_work</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span> </div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_synthetic_turbulence.html#a29afade1ab819a2c0b6430cc2daf8e4b">  171</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_synthetic_turbulence.html#a29afade1ab819a2c0b6430cc2daf8e4b">post_advance_work</a>()<span class="keyword"> override </span>{}</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span> </div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_synthetic_turbulence.html#a71071355cef2f3d974b884b068d9c57e">initialize</a>();</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span> </div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_synthetic_turbulence.html#acf4baf8a4e30e41b37ea562b20151569">update</a>();</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span> </div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_synthetic_turbulence.html#a3c86a293a01b6441efd8514b1ba0792b">update_impl</a>(</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structamr__wind_1_1_synth_turb_device_data.html">SynthTurbDeviceData</a>&amp; <span class="comment">/*turb_grid*/</span>,</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structamr__wind_1_1_interp_weights.html">InterpWeights</a>&amp; <span class="comment">/*weights*/</span>,</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>        <span class="keyword">const</span> T&amp; <span class="comment">/*velfunc*/</span>);</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span> </div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_synthetic_turbulence.html#a66eebf7dd120c3a1d3dc670afa1a9c37">  184</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_sim_time.html">amr_wind::SimTime</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1_synthetic_turbulence.html#a66eebf7dd120c3a1d3dc670afa1a9c37">m_time</a>;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_synthetic_turbulence.html#ab10a75508a4497d18ca910b0d60b7885">  185</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_field_repo.html">FieldRepo</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1_synthetic_turbulence.html#ab10a75508a4497d18ca910b0d60b7885">m_repo</a>;</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_synthetic_turbulence.html#af5620ae1f2611166c345050a71a2538f">  186</a></span>    <span class="keyword">const</span> amrex::AmrCore&amp; <a class="code hl_variable" href="classamr__wind_1_1_synthetic_turbulence.html#af5620ae1f2611166c345050a71a2538f">m_mesh</a>;</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_synthetic_turbulence.html#a6beccc2e50f415b33cd83e78bf1a06a6">  187</a></span>    <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1_synthetic_turbulence.html#a6beccc2e50f415b33cd83e78bf1a06a6">m_velocity</a>;</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_synthetic_turbulence.html#a6aefeb94dcbf12d63676ba628386f209">  188</a></span>    <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1_synthetic_turbulence.html#a6aefeb94dcbf12d63676ba628386f209">m_density</a>;</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_synthetic_turbulence.html#aaea305b49d09df3ad333f4e2d5ff09b3">  189</a></span>    <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1_synthetic_turbulence.html#aaea305b49d09df3ad333f4e2d5ff09b3">m_turb_force</a>;</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span> </div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    <span class="comment">// Turbulence file name</span></div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_synthetic_turbulence.html#a1d43a38019c00b079621ec72a55ea8ad">  192</a></span>    std::string <a class="code hl_variable" href="classamr__wind_1_1_synthetic_turbulence.html#a1d43a38019c00b079621ec72a55ea8ad">m_turb_filename</a>;</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span> </div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    <span class="comment">// Turbulence box data</span></div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_synthetic_turbulence.html#ac03a159eb2bca32792d2fd5752f3fcd5">  195</a></span>    <a class="code hl_struct" href="structamr__wind_1_1_synth_turb_data.html">SynthTurbData</a> <a class="code hl_variable" href="classamr__wind_1_1_synthetic_turbulence.html#ac03a159eb2bca32792d2fd5752f3fcd5">m_turb_grid</a>;</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span> </div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_synthetic_turbulence.html#a8ced367457dff58cc9e078f0b36bae8d">  197</a></span>    std::unique_ptr&lt;synth_turb::MeanProfile&gt; <a class="code hl_variable" href="classamr__wind_1_1_synthetic_turbulence.html#a8ced367457dff58cc9e078f0b36bae8d">m_wind_profile</a>;</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span> </div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_synthetic_turbulence.html#ab112e059a8e919b27bfaf104e11d9642">  199</a></span>    std::string <a class="code hl_variable" href="classamr__wind_1_1_synthetic_turbulence.html#ab112e059a8e919b27bfaf104e11d9642">m_mean_wind_type</a>{<span class="stringliteral">&quot;ConstValue&quot;</span>};</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_synthetic_turbulence.html#ab02d83dfb2a2b3d2c84dbe7b4e3ee9cb">  200</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_synthetic_turbulence.html#ab02d83dfb2a2b3d2c84dbe7b4e3ee9cb">m_epsilon</a>;</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_synthetic_turbulence.html#aa7471fe62da9dc0ee3a962d20fc90a13">  201</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_synthetic_turbulence.html#aa7471fe62da9dc0ee3a962d20fc90a13">m_gauss_scaling</a>;</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span> </div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_synthetic_turbulence.html#a248cfc65ae4985ca32c925209b0d7681">  203</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_synthetic_turbulence.html#a248cfc65ae4985ca32c925209b0d7681">m_time_offset</a>{0.0_rt};</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    <span class="comment">// Duration of the synthetic turbulence injection. Unused if &lt; 0</span></div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_synthetic_turbulence.html#aeb87b421d1185c25f2f4045c77fe480f">  205</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_synthetic_turbulence.html#aeb87b421d1185c25f2f4045c77fe480f">m_duration</a>{-1};</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span> </div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_synthetic_turbulence.html#a4b9e7d26295a55834570bf8e3918ba36">  207</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="classamr__wind_1_1_synthetic_turbulence.html#a4b9e7d26295a55834570bf8e3918ba36">m_is_init</a>{<span class="keyword">true</span>};</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>};</div>
+</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span> </div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>} <span class="comment">// namespace amr_wind</span></div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span> </div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span><span class="preprocessor">#endif </span><span class="comment">/* SyntheticTurbulence_H */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="a_c_f_d_sim_8_h_html"><div class="ttname"><a href="_c_f_d_sim_8_h.html">CFDSim.H</a></div></div>
+<div class="ttc" id="a_field_8_h_html"><div class="ttname"><a href="_field_8_h.html">Field.H</a></div></div>
+<div class="ttc" id="a_physics_8_h_html"><div class="ttname"><a href="_physics_8_h.html">Physics.H</a></div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html">amr_wind::CFDSim</a></div><div class="ttdef"><b>Definition</b> CFDSim.H:54</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_html"><div class="ttname"><a href="classamr__wind_1_1_field.html">amr_wind::Field</a></div><div class="ttdef"><b>Definition</b> Field.H:112</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html">amr_wind::FieldRepo</a></div><div class="ttdef"><b>Definition</b> FieldRepo.H:86</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_sim_time_html"><div class="ttname"><a href="classamr__wind_1_1_sim_time.html">amr_wind::SimTime</a></div><div class="ttdef"><b>Definition</b> SimTime.H:33</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_synthetic_turbulence_html_a01693c924fd8ef65b499b06193eb3d82"><div class="ttname"><a href="classamr__wind_1_1_synthetic_turbulence.html#a01693c924fd8ef65b499b06193eb3d82">amr_wind::SyntheticTurbulence::SyntheticTurbulence</a></div><div class="ttdeci">SyntheticTurbulence(const CFDSim &amp;sim)</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.cpp:366</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_synthetic_turbulence_html_a0575f7ebe01203e18198b8e7064f2b68"><div class="ttname"><a href="classamr__wind_1_1_synthetic_turbulence.html#a0575f7ebe01203e18198b8e7064f2b68">amr_wind::SyntheticTurbulence::identifier</a></div><div class="ttdeci">static std::string identifier()</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:153</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_synthetic_turbulence_html_a07b37966768e8747c84aab1b27b9a7ab"><div class="ttname"><a href="classamr__wind_1_1_synthetic_turbulence.html#a07b37966768e8747c84aab1b27b9a7ab">amr_wind::SyntheticTurbulence::~SyntheticTurbulence</a></div><div class="ttdeci">~SyntheticTurbulence() override=default</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_synthetic_turbulence_html_a0aae77b0d7e87c6084ee10ced24a9519"><div class="ttname"><a href="classamr__wind_1_1_synthetic_turbulence.html#a0aae77b0d7e87c6084ee10ced24a9519">amr_wind::SyntheticTurbulence::SyntheticTurbulence</a></div><div class="ttdeci">SyntheticTurbulence(const SyntheticTurbulence &amp;)=delete</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_synthetic_turbulence_html_a1d43a38019c00b079621ec72a55ea8ad"><div class="ttname"><a href="classamr__wind_1_1_synthetic_turbulence.html#a1d43a38019c00b079621ec72a55ea8ad">amr_wind::SyntheticTurbulence::m_turb_filename</a></div><div class="ttdeci">std::string m_turb_filename</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:192</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_synthetic_turbulence_html_a222889c2df7a9ba1b865efc305fcf170"><div class="ttname"><a href="classamr__wind_1_1_synthetic_turbulence.html#a222889c2df7a9ba1b865efc305fcf170">amr_wind::SyntheticTurbulence::pre_advance_work</a></div><div class="ttdeci">void pre_advance_work() override</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.cpp:496</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_synthetic_turbulence_html_a248cfc65ae4985ca32c925209b0d7681"><div class="ttname"><a href="classamr__wind_1_1_synthetic_turbulence.html#a248cfc65ae4985ca32c925209b0d7681">amr_wind::SyntheticTurbulence::m_time_offset</a></div><div class="ttdeci">amrex::Real m_time_offset</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:203</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_synthetic_turbulence_html_a29afade1ab819a2c0b6430cc2daf8e4b"><div class="ttname"><a href="classamr__wind_1_1_synthetic_turbulence.html#a29afade1ab819a2c0b6430cc2daf8e4b">amr_wind::SyntheticTurbulence::post_advance_work</a></div><div class="ttdeci">void post_advance_work() override</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:171</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_synthetic_turbulence_html_a3c86a293a01b6441efd8514b1ba0792b"><div class="ttname"><a href="classamr__wind_1_1_synthetic_turbulence.html#a3c86a293a01b6441efd8514b1ba0792b">amr_wind::SyntheticTurbulence::update_impl</a></div><div class="ttdeci">void update_impl(const SynthTurbDeviceData &amp;, const InterpWeights &amp;, const T &amp;)</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.cpp:566</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_synthetic_turbulence_html_a4b9e7d26295a55834570bf8e3918ba36"><div class="ttname"><a href="classamr__wind_1_1_synthetic_turbulence.html#a4b9e7d26295a55834570bf8e3918ba36">amr_wind::SyntheticTurbulence::m_is_init</a></div><div class="ttdeci">bool m_is_init</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:207</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_synthetic_turbulence_html_a667533fa6a4b35efbfbffaacdd95bba3"><div class="ttname"><a href="classamr__wind_1_1_synthetic_turbulence.html#a667533fa6a4b35efbfbffaacdd95bba3">amr_wind::SyntheticTurbulence::operator=</a></div><div class="ttdeci">SyntheticTurbulence &amp; operator=(const SyntheticTurbulence &amp;)=delete</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_synthetic_turbulence_html_a66eebf7dd120c3a1d3dc670afa1a9c37"><div class="ttname"><a href="classamr__wind_1_1_synthetic_turbulence.html#a66eebf7dd120c3a1d3dc670afa1a9c37">amr_wind::SyntheticTurbulence::m_time</a></div><div class="ttdeci">const amr_wind::SimTime &amp; m_time</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:184</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_synthetic_turbulence_html_a6aefeb94dcbf12d63676ba628386f209"><div class="ttname"><a href="classamr__wind_1_1_synthetic_turbulence.html#a6aefeb94dcbf12d63676ba628386f209">amr_wind::SyntheticTurbulence::m_density</a></div><div class="ttdeci">Field &amp; m_density</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:188</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_synthetic_turbulence_html_a6beccc2e50f415b33cd83e78bf1a06a6"><div class="ttname"><a href="classamr__wind_1_1_synthetic_turbulence.html#a6beccc2e50f415b33cd83e78bf1a06a6">amr_wind::SyntheticTurbulence::m_velocity</a></div><div class="ttdeci">Field &amp; m_velocity</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:187</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_synthetic_turbulence_html_a6daf2a34d667ff2d5b8ec1ccc115de22"><div class="ttname"><a href="classamr__wind_1_1_synthetic_turbulence.html#a6daf2a34d667ff2d5b8ec1ccc115de22">amr_wind::SyntheticTurbulence::post_regrid_actions</a></div><div class="ttdeci">void post_regrid_actions() override</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:167</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_synthetic_turbulence_html_a71071355cef2f3d974b884b068d9c57e"><div class="ttname"><a href="classamr__wind_1_1_synthetic_turbulence.html#a71071355cef2f3d974b884b068d9c57e">amr_wind::SyntheticTurbulence::initialize</a></div><div class="ttdeci">void initialize()</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.cpp:505</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_synthetic_turbulence_html_a7c31ed613d2b449dc54be845419c2056"><div class="ttname"><a href="classamr__wind_1_1_synthetic_turbulence.html#a7c31ed613d2b449dc54be845419c2056">amr_wind::SyntheticTurbulence::initialize_fields</a></div><div class="ttdeci">void initialize_fields(int level, const amrex::Geometry &amp;geom) override</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.cpp:492</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_synthetic_turbulence_html_a8ced367457dff58cc9e078f0b36bae8d"><div class="ttname"><a href="classamr__wind_1_1_synthetic_turbulence.html#a8ced367457dff58cc9e078f0b36bae8d">amr_wind::SyntheticTurbulence::m_wind_profile</a></div><div class="ttdeci">std::unique_ptr&lt; synth_turb::MeanProfile &gt; m_wind_profile</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:197</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_synthetic_turbulence_html_aa5e0ee75a46462d6dd8e5f7926bb1a0c"><div class="ttname"><a href="classamr__wind_1_1_synthetic_turbulence.html#aa5e0ee75a46462d6dd8e5f7926bb1a0c">amr_wind::SyntheticTurbulence::SyntheticTurbulence</a></div><div class="ttdeci">SyntheticTurbulence()=delete</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_synthetic_turbulence_html_aa7471fe62da9dc0ee3a962d20fc90a13"><div class="ttname"><a href="classamr__wind_1_1_synthetic_turbulence.html#aa7471fe62da9dc0ee3a962d20fc90a13">amr_wind::SyntheticTurbulence::m_gauss_scaling</a></div><div class="ttdeci">amrex::Real m_gauss_scaling</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:201</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_synthetic_turbulence_html_aaea305b49d09df3ad333f4e2d5ff09b3"><div class="ttname"><a href="classamr__wind_1_1_synthetic_turbulence.html#aaea305b49d09df3ad333f4e2d5ff09b3">amr_wind::SyntheticTurbulence::m_turb_force</a></div><div class="ttdeci">Field &amp; m_turb_force</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:189</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_synthetic_turbulence_html_ab02d83dfb2a2b3d2c84dbe7b4e3ee9cb"><div class="ttname"><a href="classamr__wind_1_1_synthetic_turbulence.html#ab02d83dfb2a2b3d2c84dbe7b4e3ee9cb">amr_wind::SyntheticTurbulence::m_epsilon</a></div><div class="ttdeci">amrex::Real m_epsilon</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:200</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_synthetic_turbulence_html_ab10a75508a4497d18ca910b0d60b7885"><div class="ttname"><a href="classamr__wind_1_1_synthetic_turbulence.html#ab10a75508a4497d18ca910b0d60b7885">amr_wind::SyntheticTurbulence::m_repo</a></div><div class="ttdeci">const FieldRepo &amp; m_repo</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:185</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_synthetic_turbulence_html_ab112e059a8e919b27bfaf104e11d9642"><div class="ttname"><a href="classamr__wind_1_1_synthetic_turbulence.html#ab112e059a8e919b27bfaf104e11d9642">amr_wind::SyntheticTurbulence::m_mean_wind_type</a></div><div class="ttdeci">std::string m_mean_wind_type</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:199</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_synthetic_turbulence_html_ac03a159eb2bca32792d2fd5752f3fcd5"><div class="ttname"><a href="classamr__wind_1_1_synthetic_turbulence.html#ac03a159eb2bca32792d2fd5752f3fcd5">amr_wind::SyntheticTurbulence::m_turb_grid</a></div><div class="ttdeci">SynthTurbData m_turb_grid</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:195</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_synthetic_turbulence_html_ac96fe1aa1d983575a71aa543a69e8eb3"><div class="ttname"><a href="classamr__wind_1_1_synthetic_turbulence.html#ac96fe1aa1d983575a71aa543a69e8eb3">amr_wind::SyntheticTurbulence::post_init_actions</a></div><div class="ttdeci">void post_init_actions() override</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:165</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_synthetic_turbulence_html_acf4baf8a4e30e41b37ea562b20151569"><div class="ttname"><a href="classamr__wind_1_1_synthetic_turbulence.html#acf4baf8a4e30e41b37ea562b20151569">amr_wind::SyntheticTurbulence::update</a></div><div class="ttdeci">void update()</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.cpp:519</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_synthetic_turbulence_html_aeb87b421d1185c25f2f4045c77fe480f"><div class="ttname"><a href="classamr__wind_1_1_synthetic_turbulence.html#aeb87b421d1185c25f2f4045c77fe480f">amr_wind::SyntheticTurbulence::m_duration</a></div><div class="ttdeci">amrex::Real m_duration</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:205</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_synthetic_turbulence_html_af5620ae1f2611166c345050a71a2538f"><div class="ttname"><a href="classamr__wind_1_1_synthetic_turbulence.html#af5620ae1f2611166c345050a71a2538f">amr_wind::SyntheticTurbulence::m_mesh</a></div><div class="ttdeci">const amrex::AmrCore &amp; m_mesh</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:186</div></div>
+<div class="ttc" id="aclassamr__wind_1_1synth__turb_1_1_mean_profile_html_a34a75e74834c13ad0768898b95bafc76"><div class="ttname"><a href="classamr__wind_1_1synth__turb_1_1_mean_profile.html#a34a75e74834c13ad0768898b95bafc76">amr_wind::synth_turb::MeanProfile::m_ref_vel</a></div><div class="ttdeci">const amrex::Real m_ref_vel</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:49</div></div>
+<div class="ttc" id="aclassamr__wind_1_1synth__turb_1_1_mean_profile_html_a5451d5bfbb4a3993f964fda49ccd8ff2"><div class="ttname"><a href="classamr__wind_1_1synth__turb_1_1_mean_profile.html#a5451d5bfbb4a3993f964fda49ccd8ff2">amr_wind::synth_turb::MeanProfile::m_shear_dir</a></div><div class="ttdeci">const int m_shear_dir</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:50</div></div>
+<div class="ttc" id="aclassamr__wind_1_1synth__turb_1_1_mean_profile_html_a7325d2488536e7fac02263fed12e9a82"><div class="ttname"><a href="classamr__wind_1_1synth__turb_1_1_mean_profile.html#a7325d2488536e7fac02263fed12e9a82">amr_wind::synth_turb::MeanProfile::reference_velocity</a></div><div class="ttdeci">amrex::Real reference_velocity() const</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:40</div></div>
+<div class="ttc" id="aclassamr__wind_1_1synth__turb_1_1_mean_profile_html_a92e1fbd752f8467a960e4efd575eeaac"><div class="ttname"><a href="classamr__wind_1_1synth__turb_1_1_mean_profile.html#a92e1fbd752f8467a960e4efd575eeaac">amr_wind::synth_turb::MeanProfile::m_op</a></div><div class="ttdeci">MeanVelOp m_op</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:47</div></div>
+<div class="ttc" id="aclassamr__wind_1_1synth__turb_1_1_mean_profile_html_a9ec3f6da1c40a1a0b3d71f906987179d"><div class="ttname"><a href="classamr__wind_1_1synth__turb_1_1_mean_profile.html#a9ec3f6da1c40a1a0b3d71f906987179d">amr_wind::synth_turb::MeanProfile::MeanProfile</a></div><div class="ttdeci">MeanProfile(amrex::Real ref_vel, int shear_dir=2)</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:34</div></div>
+<div class="ttc" id="aclassamr__wind_1_1synth__turb_1_1_mean_profile_html_aa5aabf5d3d737e97606bb258d0825a65"><div class="ttname"><a href="classamr__wind_1_1synth__turb_1_1_mean_profile.html#aa5aabf5d3d737e97606bb258d0825a65">amr_wind::synth_turb::MeanProfile::shear_dir</a></div><div class="ttdeci">int shear_dir() const</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:42</div></div>
+<div class="ttc" id="aclassamr__wind_1_1synth__turb_1_1_mean_profile_html_ae4d7e38bb2a1126cdfb526d506263753"><div class="ttname"><a href="classamr__wind_1_1synth__turb_1_1_mean_profile.html#ae4d7e38bb2a1126cdfb526d506263753">amr_wind::synth_turb::MeanProfile::~MeanProfile</a></div><div class="ttdeci">virtual ~MeanProfile()=default</div></div>
+<div class="ttc" id="aclassamr__wind_1_1synth__turb_1_1_mean_profile_html_aedc28e517370e72a9f56d80b4bcc97d0"><div class="ttname"><a href="classamr__wind_1_1synth__turb_1_1_mean_profile.html#aedc28e517370e72a9f56d80b4bcc97d0">amr_wind::synth_turb::MeanProfile::device_instance</a></div><div class="ttdeci">MeanVelOp device_instance() const</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:44</div></div>
+<div class="ttc" id="anamespaceamr__wind_1_1synth__turb_html"><div class="ttname"><a href="namespaceamr__wind_1_1synth__turb.html">amr_wind::synth_turb</a></div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.cpp:17</div></div>
+<div class="ttc" id="anamespaceamr__wind_1_1vs_html_a9c7552f03579943dc17ba67341db8aa4"><div class="ttname"><a href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">amr_wind::vs::Vector</a></div><div class="ttdeci">VectorT&lt; amrex::Real &gt; Vector</div><div class="ttdef"><b>Definition</b> vector.H:145</div></div>
+<div class="ttc" id="anamespaceamr__wind_1_1vs_html_add4ffb20497b62d4b485d7c483dcd80f"><div class="ttname"><a href="namespaceamr__wind_1_1vs.html#add4ffb20497b62d4b485d7c483dcd80f">amr_wind::vs::Tensor</a></div><div class="ttdeci">TensorT&lt; amrex::Real &gt; Tensor</div><div class="ttdef"><b>Definition</b> tensor.H:158</div></div>
+<div class="ttc" id="anamespaceamr__wind_html"><div class="ttname"><a href="namespaceamr__wind.html">amr_wind</a></div><div class="ttdoc">This test case is intended as an evaluation of the momentum advection scheme.</div><div class="ttdef"><b>Definition</b> BCInterface.cpp:10</div></div>
+<div class="ttc" id="astructamr__wind_1_1_interp_weights_html"><div class="ttname"><a href="structamr__wind_1_1_interp_weights.html">amr_wind::InterpWeights</a></div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:133</div></div>
+<div class="ttc" id="astructamr__wind_1_1_interp_weights_html_a359a3ce4325ad659e0b0b232b8c4e96d"><div class="ttname"><a href="structamr__wind_1_1_interp_weights.html#a359a3ce4325ad659e0b0b232b8c4e96d">amr_wind::InterpWeights::kr</a></div><div class="ttdeci">int kr</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:134</div></div>
+<div class="ttc" id="astructamr__wind_1_1_interp_weights_html_a47904e1522e312ae69d74feb2233126a"><div class="ttname"><a href="structamr__wind_1_1_interp_weights.html#a47904e1522e312ae69d74feb2233126a">amr_wind::InterpWeights::yl</a></div><div class="ttdeci">amrex::Real yl</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:135</div></div>
+<div class="ttc" id="astructamr__wind_1_1_interp_weights_html_a5ba7fe1e66b44ea5752ef810de0c02a6"><div class="ttname"><a href="structamr__wind_1_1_interp_weights.html#a5ba7fe1e66b44ea5752ef810de0c02a6">amr_wind::InterpWeights::xl</a></div><div class="ttdeci">amrex::Real xl</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:135</div></div>
+<div class="ttc" id="astructamr__wind_1_1_interp_weights_html_a70c53d98d12d8419f6c38d9a3dbdc28b"><div class="ttname"><a href="structamr__wind_1_1_interp_weights.html#a70c53d98d12d8419f6c38d9a3dbdc28b">amr_wind::InterpWeights::xr</a></div><div class="ttdeci">amrex::Real xr</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:135</div></div>
+<div class="ttc" id="astructamr__wind_1_1_interp_weights_html_a772591d5db305ae5ea0c0ceb009496ab"><div class="ttname"><a href="structamr__wind_1_1_interp_weights.html#a772591d5db305ae5ea0c0ceb009496ab">amr_wind::InterpWeights::yr</a></div><div class="ttdeci">amrex::Real yr</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:135</div></div>
+<div class="ttc" id="astructamr__wind_1_1_interp_weights_html_a86a34486abef54367855104830129a70"><div class="ttname"><a href="structamr__wind_1_1_interp_weights.html#a86a34486abef54367855104830129a70">amr_wind::InterpWeights::zr</a></div><div class="ttdeci">amrex::Real zr</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:135</div></div>
+<div class="ttc" id="astructamr__wind_1_1_interp_weights_html_a8d9e57ce8a40d3ac927e88b689d9fd00"><div class="ttname"><a href="structamr__wind_1_1_interp_weights.html#a8d9e57ce8a40d3ac927e88b689d9fd00">amr_wind::InterpWeights::ir</a></div><div class="ttdeci">int ir</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:134</div></div>
+<div class="ttc" id="astructamr__wind_1_1_interp_weights_html_ab06a1f41b5ff29b11ff8678290f3bfe4"><div class="ttname"><a href="structamr__wind_1_1_interp_weights.html#ab06a1f41b5ff29b11ff8678290f3bfe4">amr_wind::InterpWeights::jl</a></div><div class="ttdeci">int jl</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:134</div></div>
+<div class="ttc" id="astructamr__wind_1_1_interp_weights_html_ab8a1d82f1b872bebe3f94ab268cd126e"><div class="ttname"><a href="structamr__wind_1_1_interp_weights.html#ab8a1d82f1b872bebe3f94ab268cd126e">amr_wind::InterpWeights::jr</a></div><div class="ttdeci">int jr</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:134</div></div>
+<div class="ttc" id="astructamr__wind_1_1_interp_weights_html_abedf039ed0a37f40dc44823c25d7b07e"><div class="ttname"><a href="structamr__wind_1_1_interp_weights.html#abedf039ed0a37f40dc44823c25d7b07e">amr_wind::InterpWeights::il</a></div><div class="ttdeci">int il</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:134</div></div>
+<div class="ttc" id="astructamr__wind_1_1_interp_weights_html_ac5497f6941d64ce7e6e8ff815385edb5"><div class="ttname"><a href="structamr__wind_1_1_interp_weights.html#ac5497f6941d64ce7e6e8ff815385edb5">amr_wind::InterpWeights::zl</a></div><div class="ttdeci">amrex::Real zl</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:135</div></div>
+<div class="ttc" id="astructamr__wind_1_1_interp_weights_html_ac8be56efcfec20d0a74edbb538ab2f6a"><div class="ttname"><a href="structamr__wind_1_1_interp_weights.html#ac8be56efcfec20d0a74edbb538ab2f6a">amr_wind::InterpWeights::kl</a></div><div class="ttdeci">int kl</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:134</div></div>
+<div class="ttc" id="astructamr__wind_1_1_synth_turb_data_html"><div class="ttname"><a href="structamr__wind_1_1_synth_turb_data.html">amr_wind::SynthTurbData</a></div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:56</div></div>
+<div class="ttc" id="astructamr__wind_1_1_synth_turb_data_html_a0ab2ccd01c49a1fb02fc5aa0f4bb0d13"><div class="ttname"><a href="structamr__wind_1_1_synth_turb_data.html#a0ab2ccd01c49a1fb02fc5aa0f4bb0d13">amr_wind::SynthTurbData::box_len</a></div><div class="ttdeci">vs::Vector box_len</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:61</div></div>
+<div class="ttc" id="astructamr__wind_1_1_synth_turb_data_html_a220e525c1e38d1b02e32b16de0438972"><div class="ttname"><a href="structamr__wind_1_1_synth_turb_data.html#a220e525c1e38d1b02e32b16de0438972">amr_wind::SynthTurbData::tr_mat</a></div><div class="ttdeci">vs::Tensor tr_mat</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:72</div></div>
+<div class="ttc" id="astructamr__wind_1_1_synth_turb_data_html_a2974e634772a8af25111690dcff2d6d5"><div class="ttname"><a href="structamr__wind_1_1_synth_turb_data.html#a2974e634772a8af25111690dcff2d6d5">amr_wind::SynthTurbData::dx</a></div><div class="ttdeci">vs::Vector dx</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:63</div></div>
+<div class="ttc" id="astructamr__wind_1_1_synth_turb_data_html_a34ca0ed30ce54265b1587de9a71bb406"><div class="ttname"><a href="structamr__wind_1_1_synth_turb_data.html#a34ca0ed30ce54265b1587de9a71bb406">amr_wind::SynthTurbData::vvel_d</a></div><div class="ttdeci">amrex::Gpu::DeviceVector&lt; amrex::Real &gt; vvel_d</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:80</div></div>
+<div class="ttc" id="astructamr__wind_1_1_synth_turb_data_html_a567e866adf6d74f7b0e8d9c47dda6205"><div class="ttname"><a href="structamr__wind_1_1_synth_turb_data.html#a567e866adf6d74f7b0e8d9c47dda6205">amr_wind::SynthTurbData::uvel_d</a></div><div class="ttdeci">amrex::Gpu::DeviceVector&lt; amrex::Real &gt; uvel_d</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:79</div></div>
+<div class="ttc" id="astructamr__wind_1_1_synth_turb_data_html_a6205dee76df79ef16b697f3cbaf2638a"><div class="ttname"><a href="structamr__wind_1_1_synth_turb_data.html#a6205dee76df79ef16b697f3cbaf2638a">amr_wind::SynthTurbData::ileft</a></div><div class="ttdeci">int ileft</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:84</div></div>
+<div class="ttc" id="astructamr__wind_1_1_synth_turb_data_html_a62dece483dfd0a7f5c3d717978973e75"><div class="ttname"><a href="structamr__wind_1_1_synth_turb_data.html#a62dece483dfd0a7f5c3d717978973e75">amr_wind::SynthTurbData::box_dims</a></div><div class="ttdeci">vs::VectorT&lt; int &gt; box_dims</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:58</div></div>
+<div class="ttc" id="astructamr__wind_1_1_synth_turb_data_html_a81ce805a346ad168d9349e74a5e88b25"><div class="ttname"><a href="structamr__wind_1_1_synth_turb_data.html#a81ce805a346ad168d9349e74a5e88b25">amr_wind::SynthTurbData::iright</a></div><div class="ttdeci">int iright</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:85</div></div>
+<div class="ttc" id="astructamr__wind_1_1_synth_turb_data_html_a96d83693ffdbcc4ec37255a8d48cd08f"><div class="ttname"><a href="structamr__wind_1_1_synth_turb_data.html#a96d83693ffdbcc4ec37255a8d48cd08f">amr_wind::SynthTurbData::wvel_d</a></div><div class="ttdeci">amrex::Gpu::DeviceVector&lt; amrex::Real &gt; wvel_d</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:81</div></div>
+<div class="ttc" id="astructamr__wind_1_1_synth_turb_data_html_ad00e0294eaa2d7adbc3a0be2d500a7b3"><div class="ttname"><a href="structamr__wind_1_1_synth_turb_data.html#ad00e0294eaa2d7adbc3a0be2d500a7b3">amr_wind::SynthTurbData::vvel</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; vvel</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:76</div></div>
+<div class="ttc" id="astructamr__wind_1_1_synth_turb_data_html_ad49acf133fe1b1959b1cc7759054b6e8"><div class="ttname"><a href="structamr__wind_1_1_synth_turb_data.html#ad49acf133fe1b1959b1cc7759054b6e8">amr_wind::SynthTurbData::wvel</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; wvel</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:77</div></div>
+<div class="ttc" id="astructamr__wind_1_1_synth_turb_data_html_aebef44020136139f5d9e944b7ac1ee28"><div class="ttname"><a href="structamr__wind_1_1_synth_turb_data.html#aebef44020136139f5d9e944b7ac1ee28">amr_wind::SynthTurbData::uvel</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; uvel</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:75</div></div>
+<div class="ttc" id="astructamr__wind_1_1_synth_turb_data_html_aff1c99df67993898d954d413a59970f7"><div class="ttname"><a href="structamr__wind_1_1_synth_turb_data.html#aff1c99df67993898d954d413a59970f7">amr_wind::SynthTurbData::origin</a></div><div class="ttdeci">vs::Vector origin</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:68</div></div>
+<div class="ttc" id="astructamr__wind_1_1_synth_turb_device_data_html"><div class="ttname"><a href="structamr__wind_1_1_synth_turb_device_data.html">amr_wind::SynthTurbDeviceData</a></div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:89</div></div>
+<div class="ttc" id="astructamr__wind_1_1_synth_turb_device_data_html_a1c9f8d6df4dbe983da61d77599797662"><div class="ttname"><a href="structamr__wind_1_1_synth_turb_device_data.html#a1c9f8d6df4dbe983da61d77599797662">amr_wind::SynthTurbDeviceData::iright</a></div><div class="ttdeci">int iright</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:113</div></div>
+<div class="ttc" id="astructamr__wind_1_1_synth_turb_device_data_html_a2ef1a511144c7979b2ede787927ac040"><div class="ttname"><a href="structamr__wind_1_1_synth_turb_device_data.html#a2ef1a511144c7979b2ede787927ac040">amr_wind::SynthTurbDeviceData::box_dims</a></div><div class="ttdeci">vs::VectorT&lt; int &gt; box_dims</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:91</div></div>
+<div class="ttc" id="astructamr__wind_1_1_synth_turb_device_data_html_a884bbd34463c44129c492b72b931e4df"><div class="ttname"><a href="structamr__wind_1_1_synth_turb_device_data.html#a884bbd34463c44129c492b72b931e4df">amr_wind::SynthTurbDeviceData::uvel</a></div><div class="ttdeci">amrex::Real * uvel</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:107</div></div>
+<div class="ttc" id="astructamr__wind_1_1_synth_turb_device_data_html_a89f20943646d455f1be393da5752c909"><div class="ttname"><a href="structamr__wind_1_1_synth_turb_device_data.html#a89f20943646d455f1be393da5752c909">amr_wind::SynthTurbDeviceData::box_len</a></div><div class="ttdeci">vs::Vector box_len</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:94</div></div>
+<div class="ttc" id="astructamr__wind_1_1_synth_turb_device_data_html_a9b6a45f7867bba599dd91647bf1f29fb"><div class="ttname"><a href="structamr__wind_1_1_synth_turb_device_data.html#a9b6a45f7867bba599dd91647bf1f29fb">amr_wind::SynthTurbDeviceData::origin</a></div><div class="ttdeci">vs::Vector origin</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:101</div></div>
+<div class="ttc" id="astructamr__wind_1_1_synth_turb_device_data_html_aab30662a25d632c0d9eb1d246b0c16b0"><div class="ttname"><a href="structamr__wind_1_1_synth_turb_device_data.html#aab30662a25d632c0d9eb1d246b0c16b0">amr_wind::SynthTurbDeviceData::SynthTurbDeviceData</a></div><div class="ttdeci">SynthTurbDeviceData(SynthTurbData &amp;hdata)</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:115</div></div>
+<div class="ttc" id="astructamr__wind_1_1_synth_turb_device_data_html_acc2859bbd7137a488eaf914f86d7a963"><div class="ttname"><a href="structamr__wind_1_1_synth_turb_device_data.html#acc2859bbd7137a488eaf914f86d7a963">amr_wind::SynthTurbDeviceData::tr_mat</a></div><div class="ttdeci">vs::Tensor tr_mat</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:105</div></div>
+<div class="ttc" id="astructamr__wind_1_1_synth_turb_device_data_html_addbd79de25c76b90b246f8f8aad0a103"><div class="ttname"><a href="structamr__wind_1_1_synth_turb_device_data.html#addbd79de25c76b90b246f8f8aad0a103">amr_wind::SynthTurbDeviceData::ileft</a></div><div class="ttdeci">int ileft</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:112</div></div>
+<div class="ttc" id="astructamr__wind_1_1_synth_turb_device_data_html_adeaea474c618d16a2e66a35b52f98ea7"><div class="ttname"><a href="structamr__wind_1_1_synth_turb_device_data.html#adeaea474c618d16a2e66a35b52f98ea7">amr_wind::SynthTurbDeviceData::vvel</a></div><div class="ttdeci">amrex::Real * vvel</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:108</div></div>
+<div class="ttc" id="astructamr__wind_1_1_synth_turb_device_data_html_af7167dbc256fb54b26b0cbdc0357186d"><div class="ttname"><a href="structamr__wind_1_1_synth_turb_device_data.html#af7167dbc256fb54b26b0cbdc0357186d">amr_wind::SynthTurbDeviceData::wvel</a></div><div class="ttdeci">amrex::Real * wvel</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:109</div></div>
+<div class="ttc" id="astructamr__wind_1_1_synth_turb_device_data_html_afa7a95a373b99d3db38b4434445c1ccb"><div class="ttname"><a href="structamr__wind_1_1_synth_turb_device_data.html#afa7a95a373b99d3db38b4434445c1ccb">amr_wind::SynthTurbDeviceData::dx</a></div><div class="ttdeci">vs::Vector dx</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:96</div></div>
+<div class="ttc" id="astructamr__wind_1_1synth__turb_1_1_mean_vel_op_html"><div class="ttname"><a href="structamr__wind_1_1synth__turb_1_1_mean_vel_op.html">amr_wind::synth_turb::MeanVelOp</a></div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:21</div></div>
+<div class="ttc" id="astructamr__wind_1_1synth__turb_1_1_mean_vel_op_html_a3b2eaaf817a0a02a1f269659800eb256"><div class="ttname"><a href="structamr__wind_1_1synth__turb_1_1_mean_vel_op.html#a3b2eaaf817a0a02a1f269659800eb256">amr_wind::synth_turb::MeanVelOp::operator()</a></div><div class="ttdeci">AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(amrex::Real) const</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:23</div></div>
+<div class="ttc" id="astructamr__wind_1_1synth__turb_1_1_mean_vel_op_html_a795abd4d339c1027e42d58ae1965cdb2"><div class="ttname"><a href="structamr__wind_1_1synth__turb_1_1_mean_vel_op.html#a795abd4d339c1027e42d58ae1965cdb2">amr_wind::synth_turb::MeanVelOp::m_ref_vel</a></div><div class="ttdeci">const amrex::Real m_ref_vel</div><div class="ttdef"><b>Definition</b> SyntheticTurbulence.H:28</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html">amr_wind::vs::VectorT</a></div><div class="ttdef"><b>Definition</b> vector.H:13</div></div>
+<div class="ttc" id="avector__space_8_h_html"><div class="ttname"><a href="vector__space_8_h.html">vector_space.H</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

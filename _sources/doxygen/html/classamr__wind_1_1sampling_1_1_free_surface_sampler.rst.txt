@@ -1,0 +1,14 @@
+.. meta::0c86e423267e14c95cddc6a6326cece79d8cd6145e384ee76158b4c6622fcc7d0cb970ac9160049d297d9a951a06f8ba0a64a81da5d7aa3ae6eeb60b7b55f71b
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::sampling::FreeSurfaceSampler Class Reference
+
+FreeSurfaceSampler Class Reference
+==================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1sampling_1_1_free_surface_sampler.html

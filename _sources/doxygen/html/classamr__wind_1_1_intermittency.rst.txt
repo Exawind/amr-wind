@@ -1,0 +1,14 @@
+.. meta::ed239bcb126fae32efc1ba6d31e6e4e9630a8eda5d32817e6ed8336d6e5e4ff88c8cb0082b520a5a2f3e9e9737b028b52f1814bf50fea04e7514e086c5d424a6
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::Intermittency Class Reference
+
+Intermittency Class Reference
+=============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_intermittency.html

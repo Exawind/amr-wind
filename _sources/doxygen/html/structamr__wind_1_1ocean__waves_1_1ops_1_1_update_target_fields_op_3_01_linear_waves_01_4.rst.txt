@@ -1,0 +1,14 @@
+.. meta::609633db88f59cd555105ec15b58f28b3dc469e2b4ecfbd65edc0509edf1eaa3482c4eca14a642b9724daaa2ddfa9af89a3e05c25b6ecdb7495f1e287817336c
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ocean_waves::ops::UpdateTargetFieldsOp&lt; LinearWaves &gt; Struct Reference
+
+UpdateTargetFieldsOp&lt; LinearWaves &gt; Struct Reference
+==========================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ocean__waves_1_1ops_1_1_update_target_fields_op_3_01_linear_waves_01_4.html

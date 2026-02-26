@@ -1,0 +1,9 @@
+<map id="amr_wind::ib::ops::ProcessOutputsOp&lt; GeomTrait, typename std::enable_if_t&lt; std::is_base_of_v&lt; BluffBodyType, GeomTrait &gt; &gt; &gt;" name="amr_wind::ib::ops::ProcessOutputsOp&lt; GeomTrait, typename std::enable_if_t&lt; std::is_base_of_v&lt; BluffBodyType, GeomTrait &gt; &gt; &gt;">
+<area shape="rect" id="Node000001" title=" " alt="" coords="29,280,302,364"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="31,109,118,135"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="83,147,98,198,121,255,135,278,131,281,116,257,93,200,78,149"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="5,5,144,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="77,59,77,109,72,109,72,59"/>
+<area shape="rect" id="Node000004" href="$structamr__wind_1_1ib_1_1ops_1_1_process_outputs_op.html" title=" " alt="" coords="143,95,369,149"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="255,164,247,210,229,257,212,281,208,278,224,255,242,208,250,163"/>
+</map>

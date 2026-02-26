@@ -1,0 +1,14 @@
+.. meta::180ea9fee0614cf6f78efe4486f849bb50d03d0377f52d563d4381c5a69644cf4c818b5db3f62420e77fd35d599b4302bb1b56e3a9139e95456db1310c5cf2fb
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ocean_waves::ops::UpdateTargetFieldsSecondaryOp&lt; WaveTheoryTrait, typename &gt; Struct Template Reference
+
+UpdateTargetFieldsSecondaryOp&lt; WaveTheoryTrait, typename &gt; Struct Template Reference
+==========================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ocean__waves_1_1ops_1_1_update_target_fields_secondary_op.html

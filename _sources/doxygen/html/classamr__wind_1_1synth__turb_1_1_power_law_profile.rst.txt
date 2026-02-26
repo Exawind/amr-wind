@@ -1,0 +1,14 @@
+.. meta::f20117bfa467f9846e7b011b46724304bd02a4819ba055ae7709d546535059a16b3eb06b69dcb02c4f51f38fed916a07f1950a2c04add1a1722965c8d8b45356
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::synth_turb::PowerLawProfile Class Reference
+
+PowerLawProfile Class Reference
+===============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1synth__turb_1_1_power_law_profile.html

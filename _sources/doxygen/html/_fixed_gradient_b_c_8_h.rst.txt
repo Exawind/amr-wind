@@ -1,0 +1,14 @@
+.. meta::c0dacf33413ec9c55fb1236dca64593bd95b301a919a9bb1d9c7e2cba3078a4d7586f0a58233210f0bd7b6af5034ddbd71b4bdc13e6d88d3d9448a201ed19257
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/boundary_conditions/FixedGradientBC.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/boundary\_conditions/FixedGradientBC.H File Reference
+==================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _fixed_gradient_b_c_8_h.html

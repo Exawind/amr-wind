@@ -1,0 +1,14 @@
+.. meta::a461dab9d4c2f08161547a728f2f45b862fa1d4830cb95671f6306659afbfb135e20a52d850221dbe790741b31ed63959bab8e6ee18b0ee0d329d2f231985a1e
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/sdr -&gt; core Relation
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/equation\_systems/sdr -&gt; core Relation
+======================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: dir_000038_000010.html

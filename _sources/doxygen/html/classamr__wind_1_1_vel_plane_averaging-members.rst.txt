@@ -1,0 +1,14 @@
+.. meta::df04b37b82016b7e64b971704fad0e195de999cc3826ab3b6c2ec13a3f1dae2bdcfbbb84cf3a6b73c7ef987770b653e41377e7571f4285a7b2bae66987ba0fd1
+
+:orphan:
+
+.. title:: AMR-Wind API: Member List
+
+Member List
+===========
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_vel_plane_averaging-members.html

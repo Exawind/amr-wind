@@ -1,0 +1,7 @@
+<map id="amr_wind::DirichletOp&lt; InflowOp, WallOp &gt;" name="amr_wind::DirichletOp&lt; InflowOp, WallOp &gt;">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,37,172,77"/>
+<area shape="rect" id="Node000002" href="$structamr__wind_1_1_dirichlet_op.html" title=" " alt="" coords="451,5,695,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="185,48,450,31,451,36,186,54"/>
+<area shape="rect" id="Node000003" href="$structamr__wind_1_1_dirichlet_op.html" title=" " alt="" coords="461,69,684,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="186,75,196,76,334,86,461,88,461,94,334,91,196,81,185,80"/>
+</map>

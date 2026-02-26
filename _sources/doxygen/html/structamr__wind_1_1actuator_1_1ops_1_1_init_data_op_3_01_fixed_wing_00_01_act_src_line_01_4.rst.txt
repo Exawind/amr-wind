@@ -1,0 +1,14 @@
+.. meta::e40ef3f85a9abc6d67733bdccffe8a6a6d25c9c37d20126afa2c05562ef9097a8adead56e432c761394fe87f6eb41fb55273b45b771b2e1482825a3fa75e61e0
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::InitDataOp&lt; FixedWing, ActSrcLine &gt; Struct Reference
+
+InitDataOp&lt; FixedWing, ActSrcLine &gt; Struct Reference
+==========================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1ops_1_1_init_data_op_3_01_fixed_wing_00_01_act_src_line_01_4.html

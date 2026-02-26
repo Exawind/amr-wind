@@ -1,0 +1,905 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::field_norms::FieldNorms Class Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::field_norms::FieldNorms Class Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/classamr__wind_1_1field__norms_1_1_field_norms.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="fieldnorms-class-reference">
+<h1>FieldNorms Class Reference<a class="headerlink" href="#fieldnorms-class-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::field_norms::FieldNorms Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="namespaceamr__wind_1_1field__norms.html">field_norms</a></li><li class="navelem"><a href="classamr__wind_1_1field__norms_1_1_field_norms.html">FieldNorms</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pri-methods">Private Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
+<a href="classamr__wind_1_1field__norms_1_1_field_norms-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::field_norms::FieldNorms Class Reference<div class="ingroups"><a class="el" href="group__utilities.html">Utilities</a> &raquo; <a class="el" href="group__sampling.html">Data-sampling utilities</a></div></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_field_norms_8_h_source.html">FieldNorms.H</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for amr_wind::field_norms::FieldNorms:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1field__norms_1_1_field_norms__inherit__graph.svg" width="207" height="168"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for amr_wind::field_norms::FieldNorms:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1field__norms_1_1_field_norms__coll__graph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a2535bd2662caef8d5786b1c38fbab1b1" id="r_a2535bd2662caef8d5786b1c38fbab1b1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2535bd2662caef8d5786b1c38fbab1b1">FieldNorms</a> (<a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;, std::string)</td></tr>
+<tr class="memitem:a3916bf079c6bcd56fcf6159ecada1dbd" id="r_a3916bf079c6bcd56fcf6159ecada1dbd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3916bf079c6bcd56fcf6159ecada1dbd">~FieldNorms</a> () override</td></tr>
+<tr class="memitem:aeb7e61a1706e6547b7804899311cee65" id="r_aeb7e61a1706e6547b7804899311cee65"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeb7e61a1706e6547b7804899311cee65">pre_init_actions</a> () override</td></tr>
+<tr class="memdesc:aeb7e61a1706e6547b7804899311cee65"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform actions before mesh is created.  <br /></td></tr>
+<tr class="memitem:a2396e3a218892727e1c6e156aa87d3f1" id="r_a2396e3a218892727e1c6e156aa87d3f1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2396e3a218892727e1c6e156aa87d3f1">initialize</a> () override</td></tr>
+<tr class="memdesc:a2396e3a218892727e1c6e156aa87d3f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read user inputs and create the different data probe instances.  <br /></td></tr>
+<tr class="memitem:ab4e810c3f0765ff7b59b633ded6b6602" id="r_ab4e810c3f0765ff7b59b633ded6b6602"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab4e810c3f0765ff7b59b633ded6b6602">post_advance_work</a> () override</td></tr>
+<tr class="memitem:a0d7ed0afaa717c864ec7f1da4aa28c11" id="r_a0d7ed0afaa717c864ec7f1da4aa28c11"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0d7ed0afaa717c864ec7f1da4aa28c11">output_actions</a> () override</td></tr>
+<tr class="memitem:a9bed4c79a3e41246702c0ab12e76e956" id="r_a9bed4c79a3e41246702c0ab12e76e956"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9bed4c79a3e41246702c0ab12e76e956">post_regrid_actions</a> () override</td></tr>
+<tr class="memitem:a3ebf833be9c1e556caebd8f20d831010" id="r_a3ebf833be9c1e556caebd8f20d831010"><td class="memItemLeft" align="right" valign="top">const amrex::Vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3ebf833be9c1e556caebd8f20d831010">var_names</a> () const</td></tr>
+<tr class="memitem:a1ba457d7bcf4e9cd5b5e423771a6edd2" id="r_a1ba457d7bcf4e9cd5b5e423771a6edd2"><td class="memItemLeft" align="right" valign="top">const amrex::Vector&lt; amrex::Real &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1ba457d7bcf4e9cd5b5e423771a6edd2">field_norms</a> () const</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:aa0b644e646ebcf70c8d44a3af63c5115" id="r_aa0b644e646ebcf70c8d44a3af63c5115"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa0b644e646ebcf70c8d44a3af63c5115">identifier</a> ()</td></tr>
+<tr class="memitem:a40d3b6bb266bc2b59b22e3afebcdb67b" id="r_a40d3b6bb266bc2b59b22e3afebcdb67b"><td class="memItemLeft" align="right" valign="top">static amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a40d3b6bb266bc2b59b22e3afebcdb67b">get_norm</a> (const <a class="el" href="classamr__wind_1_1_field.html">amr_wind::Field</a> &amp;field, int comp, int ncomp, int norm_type, bool use_mask)</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-methods" class="groupheader"><a id="pri-methods" name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:a6a6e5ce90f6ed0a52c0a67ebe16cf3f9" id="r_a6a6e5ce90f6ed0a52c0a67ebe16cf3f9"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6a6e5ce90f6ed0a52c0a67ebe16cf3f9">prepare_ascii_file</a> ()</td></tr>
+<tr class="memdesc:a6a6e5ce90f6ed0a52c0a67ebe16cf3f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">prepare ASCII file and directory  <br /></td></tr>
+<tr class="memitem:a96b3ede8558bf23910e10b2e939a4629" id="r_a96b3ede8558bf23910e10b2e939a4629"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a96b3ede8558bf23910e10b2e939a4629">write_ascii</a> ()</td></tr>
+<tr class="memdesc:a96b3ede8558bf23910e10b2e939a4629"><td class="mdescLeft">&#160;</td><td class="mdescRight">Output sampled data in ASCII format.  <br /></td></tr>
+<tr class="memitem:a08ad99ff4648ef9837edfa2ddcde2666" id="r_a08ad99ff4648ef9837edfa2ddcde2666"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a08ad99ff4648ef9837edfa2ddcde2666">process_field_norms</a> ()</td></tr>
+<tr class="memdesc:a08ad99ff4648ef9837edfa2ddcde2666"><td class="mdescLeft">&#160;</td><td class="mdescRight">process all fields and calculate norms  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a91cf275c7f6144bcff02b8d62173abc8" id="r_a91cf275c7f6144bcff02b8d62173abc8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a91cf275c7f6144bcff02b8d62173abc8">m_sim</a></td></tr>
+<tr class="memdesc:a91cf275c7f6144bcff02b8d62173abc8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reference to the CFD sim.  <br /></td></tr>
+<tr class="memitem:ad10ff9aa372543f513850240d157f7b8" id="r_ad10ff9aa372543f513850240d157f7b8"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad10ff9aa372543f513850240d157f7b8">m_var_names</a></td></tr>
+<tr class="memdesc:ad10ff9aa372543f513850240d157f7b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">List of variable names for output.  <br /></td></tr>
+<tr class="memitem:a408c23b5887320105f843d2fff08a40a" id="r_a408c23b5887320105f843d2fff08a40a"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a408c23b5887320105f843d2fff08a40a">m_fnorms</a></td></tr>
+<tr class="memdesc:a408c23b5887320105f843d2fff08a40a"><td class="mdescLeft">&#160;</td><td class="mdescRight">List holding norms for all fields and their components.  <br /></td></tr>
+<tr class="memitem:a26b78136d2174999412a376ca0c0659f" id="r_a26b78136d2174999412a376ca0c0659f"><td class="memItemLeft" align="right" valign="top">const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a26b78136d2174999412a376ca0c0659f">m_label</a></td></tr>
+<tr class="memitem:a1b33c25aaf8737daab012c222f4809b4" id="r_a1b33c25aaf8737daab012c222f4809b4"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1b33c25aaf8737daab012c222f4809b4">m_out_fname</a></td></tr>
+<tr class="memdesc:a1b33c25aaf8737daab012c222f4809b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">filename for ASCII output  <br /></td></tr>
+<tr class="memitem:a3c68256423ff3bf4c1cd86d5ae26db93" id="r_a3c68256423ff3bf4c1cd86d5ae26db93"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3c68256423ff3bf4c1cd86d5ae26db93">m_width</a> {18}</td></tr>
+<tr class="memdesc:a3c68256423ff3bf4c1cd86d5ae26db93"><td class="mdescLeft">&#160;</td><td class="mdescRight">width in ASCII output  <br /></td></tr>
+<tr class="memitem:a7102d28db0c662115c530f90fe7bb997" id="r_a7102d28db0c662115c530f90fe7bb997"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7102d28db0c662115c530f90fe7bb997">m_precision</a> {10}</td></tr>
+<tr class="memdesc:a7102d28db0c662115c530f90fe7bb997"><td class="mdescLeft">&#160;</td><td class="mdescRight">precision in ASCII output  <br /></td></tr>
+<tr class="memitem:a025180f69b875b68beefdd6404f88cfc" id="r_a025180f69b875b68beefdd6404f88cfc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a025180f69b875b68beefdd6404f88cfc">m_norm_type</a> {2}</td></tr>
+<tr class="memdesc:a025180f69b875b68beefdd6404f88cfc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of norm.  <br /></td></tr>
+<tr class="memitem:a5649ddb17f7859c3e69241679af59bf3" id="r_a5649ddb17f7859c3e69241679af59bf3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5649ddb17f7859c3e69241679af59bf3">m_use_mask</a> {true}</td></tr>
+<tr class="memdesc:a5649ddb17f7859c3e69241679af59bf3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mask redundant grids (finest available grid only)  <br /></td></tr>
+<tr class="memitem:a6fae4acb45c121457a725765be81c86f" id="r_a6fae4acb45c121457a725765be81c86f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6fae4acb45c121457a725765be81c86f">m_use_vector_magnitude</a> {false}</td></tr>
+<tr class="memdesc:a6fae4acb45c121457a725765be81c86f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Consider vector magnitude, not separate vector components.  <br /></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>field norm object</p>
+<p>A concrete implementation of the post-processing interface that deals with norms of fields. FIXME: need to update this </p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a2535bd2662caef8d5786b1c38fbab1b1" name="a2535bd2662caef8d5786b1c38fbab1b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2535bd2662caef8d5786b1c38fbab1b1">&#9670;&#160;</a></span>FieldNorms()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::field_norms::FieldNorms::FieldNorms </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>sim</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>label</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3916bf079c6bcd56fcf6159ecada1dbd" name="a3916bf079c6bcd56fcf6159ecada1dbd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3916bf079c6bcd56fcf6159ecada1dbd">&#9670;&#160;</a></span>~FieldNorms()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::field_norms::FieldNorms::~FieldNorms </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a1ba457d7bcf4e9cd5b5e423771a6edd2" name="a1ba457d7bcf4e9cd5b5e423771a6edd2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ba457d7bcf4e9cd5b5e423771a6edd2">&#9670;&#160;</a></span>field_norms()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const amrex::Vector&lt; amrex::Real &gt; &amp; amr_wind::field_norms::FieldNorms::field_norms </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a40d3b6bb266bc2b59b22e3afebcdb67b" name="a40d3b6bb266bc2b59b22e3afebcdb67b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40d3b6bb266bc2b59b22e3afebcdb67b">&#9670;&#160;</a></span>get_norm()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::field_norms::FieldNorms::get_norm </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_field.html">amr_wind::Field</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>field</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>comp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>ncomp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>norm_type</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>use_mask</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa0b644e646ebcf70c8d44a3af63c5115" name="aa0b644e646ebcf70c8d44a3af63c5115"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0b644e646ebcf70c8d44a3af63c5115">&#9670;&#160;</a></span>identifier()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::field_norms::FieldNorms::identifier </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2396e3a218892727e1c6e156aa87d3f1" name="a2396e3a218892727e1c6e156aa87d3f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2396e3a218892727e1c6e156aa87d3f1">&#9670;&#160;</a></span>initialize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::field_norms::FieldNorms::initialize </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Read user inputs and create the different data probe instances. </p>
+
+</div>
+</div>
+<a id="a0d7ed0afaa717c864ec7f1da4aa28c11" name="a0d7ed0afaa717c864ec7f1da4aa28c11"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d7ed0afaa717c864ec7f1da4aa28c11">&#9670;&#160;</a></span>output_actions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::field_norms::FieldNorms::output_actions </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab4e810c3f0765ff7b59b633ded6b6602" name="ab4e810c3f0765ff7b59b633ded6b6602"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4e810c3f0765ff7b59b633ded6b6602">&#9670;&#160;</a></span>post_advance_work()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::field_norms::FieldNorms::post_advance_work </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9bed4c79a3e41246702c0ab12e76e956" name="a9bed4c79a3e41246702c0ab12e76e956"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9bed4c79a3e41246702c0ab12e76e956">&#9670;&#160;</a></span>post_regrid_actions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::field_norms::FieldNorms::post_regrid_actions </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aeb7e61a1706e6547b7804899311cee65" name="aeb7e61a1706e6547b7804899311cee65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb7e61a1706e6547b7804899311cee65">&#9670;&#160;</a></span>pre_init_actions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::field_norms::FieldNorms::pre_init_actions </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Perform actions before mesh is created. </p>
+
+</div>
+</div>
+<a id="a6a6e5ce90f6ed0a52c0a67ebe16cf3f9" name="a6a6e5ce90f6ed0a52c0a67ebe16cf3f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a6e5ce90f6ed0a52c0a67ebe16cf3f9">&#9670;&#160;</a></span>prepare_ascii_file()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::field_norms::FieldNorms::prepare_ascii_file </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>prepare ASCII file and directory </p>
+
+</div>
+</div>
+<a id="a08ad99ff4648ef9837edfa2ddcde2666" name="a08ad99ff4648ef9837edfa2ddcde2666"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08ad99ff4648ef9837edfa2ddcde2666">&#9670;&#160;</a></span>process_field_norms()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::field_norms::FieldNorms::process_field_norms </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>process all fields and calculate norms </p>
+
+</div>
+</div>
+<a id="a3ebf833be9c1e556caebd8f20d831010" name="a3ebf833be9c1e556caebd8f20d831010"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ebf833be9c1e556caebd8f20d831010">&#9670;&#160;</a></span>var_names()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const amrex::Vector&lt; std::string &gt; &amp; amr_wind::field_norms::FieldNorms::var_names </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a96b3ede8558bf23910e10b2e939a4629" name="a96b3ede8558bf23910e10b2e939a4629"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96b3ede8558bf23910e10b2e939a4629">&#9670;&#160;</a></span>write_ascii()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::field_norms::FieldNorms::write_ascii </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Output sampled data in ASCII format. </p>
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a408c23b5887320105f843d2fff08a40a" name="a408c23b5887320105f843d2fff08a40a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a408c23b5887320105f843d2fff08a40a">&#9670;&#160;</a></span>m_fnorms</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Real&gt; amr_wind::field_norms::FieldNorms::m_fnorms</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>List holding norms for all fields and their components. </p>
+
+</div>
+</div>
+<a id="a26b78136d2174999412a376ca0c0659f" name="a26b78136d2174999412a376ca0c0659f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26b78136d2174999412a376ca0c0659f">&#9670;&#160;</a></span>m_label</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string amr_wind::field_norms::FieldNorms::m_label</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Name of this sampling object.</p>
+<p>The label is used to read user inputs from file and is also used for naming files directories depending on the output format. </p>
+
+</div>
+</div>
+<a id="a025180f69b875b68beefdd6404f88cfc" name="a025180f69b875b68beefdd6404f88cfc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a025180f69b875b68beefdd6404f88cfc">&#9670;&#160;</a></span>m_norm_type</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::field_norms::FieldNorms::m_norm_type {2}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Type of norm. </p>
+
+</div>
+</div>
+<a id="a1b33c25aaf8737daab012c222f4809b4" name="a1b33c25aaf8737daab012c222f4809b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b33c25aaf8737daab012c222f4809b4">&#9670;&#160;</a></span>m_out_fname</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::field_norms::FieldNorms::m_out_fname</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>filename for ASCII output </p>
+
+</div>
+</div>
+<a id="a7102d28db0c662115c530f90fe7bb997" name="a7102d28db0c662115c530f90fe7bb997"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7102d28db0c662115c530f90fe7bb997">&#9670;&#160;</a></span>m_precision</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::field_norms::FieldNorms::m_precision {10}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>precision in ASCII output </p>
+
+</div>
+</div>
+<a id="a91cf275c7f6144bcff02b8d62173abc8" name="a91cf275c7f6144bcff02b8d62173abc8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91cf275c7f6144bcff02b8d62173abc8">&#9670;&#160;</a></span>m_sim</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; amr_wind::field_norms::FieldNorms::m_sim</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reference to the CFD sim. </p>
+
+</div>
+</div>
+<a id="a5649ddb17f7859c3e69241679af59bf3" name="a5649ddb17f7859c3e69241679af59bf3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5649ddb17f7859c3e69241679af59bf3">&#9670;&#160;</a></span>m_use_mask</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::field_norms::FieldNorms::m_use_mask {true}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Mask redundant grids (finest available grid only) </p>
+
+</div>
+</div>
+<a id="a6fae4acb45c121457a725765be81c86f" name="a6fae4acb45c121457a725765be81c86f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6fae4acb45c121457a725765be81c86f">&#9670;&#160;</a></span>m_use_vector_magnitude</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::field_norms::FieldNorms::m_use_vector_magnitude {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Consider vector magnitude, not separate vector components. </p>
+
+</div>
+</div>
+<a id="ad10ff9aa372543f513850240d157f7b8" name="ad10ff9aa372543f513850240d157f7b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad10ff9aa372543f513850240d157f7b8">&#9670;&#160;</a></span>m_var_names</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;std::string&gt; amr_wind::field_norms::FieldNorms::m_var_names</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>List of variable names for output. </p>
+
+</div>
+</div>
+<a id="a3c68256423ff3bf4c1cd86d5ae26db93" name="a3c68256423ff3bf4c1cd86d5ae26db93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c68256423ff3bf4c1cd86d5ae26db93">&#9670;&#160;</a></span>m_width</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::field_norms::FieldNorms::m_width {18}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>width in ASCII output </p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/<a class="el" href="_field_norms_8_h_source.html">FieldNorms.H</a></li>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/<a class="el" href="_field_norms_8cpp.html">FieldNorms.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

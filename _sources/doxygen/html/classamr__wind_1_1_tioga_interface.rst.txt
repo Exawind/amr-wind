@@ -1,0 +1,14 @@
+.. meta::797d5a92bc9011f51788872f459235c496ea0a7256796ba33047e1319ead113e99f3d37b46c2f722574c31d3fec053765e4b2ee5c8dcea54ab6512c9e0ad2d97
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::TiogaInterface Class Reference
+
+TiogaInterface Class Reference
+==============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_tioga_interface.html

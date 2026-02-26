@@ -1,0 +1,14 @@
+.. meta::ce5772451937cc253c2f0ac2396557204d92142dea067ac6ef65f370e3e9685a04ad9764d93aff4076addf304f9530368d05179fae2cb228f9894376ee55b8d4
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::MassInflowOutflowBC Class Reference
+
+MassInflowOutflowBC Class Reference
+===================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_mass_inflow_outflow_b_c.html

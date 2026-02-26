@@ -1,0 +1,14 @@
+.. meta::9171b6bb712677b4fb8df0de0c585b2211756e31748f3f0eab070348ba4f10a23502ec04ab395063b92884a47666d1fef0b804e409d7cd5c7ae3bd4759e00120
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ShearStressLocal Struct Reference
+
+ShearStressLocal Struct Reference
+=================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1_shear_stress_local.html

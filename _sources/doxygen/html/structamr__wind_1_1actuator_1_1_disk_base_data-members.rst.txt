@@ -1,0 +1,14 @@
+.. meta::b4a7e607fb6729bde3d7cb28172f10ef60b8ca54076f675eb08ad8465494bb8ea74d58775c3ae9d5e7b2007ab6ca896533a11b371ca89df71af562aa7b52b9e1
+
+:orphan:
+
+.. title:: AMR-Wind API: Member List
+
+Member List
+===========
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1_disk_base_data-members.html

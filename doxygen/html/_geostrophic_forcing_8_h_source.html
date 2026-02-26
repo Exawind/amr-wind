@@ -1,0 +1,302 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/icns/source_terms/GeostrophicForcing.H Source File &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/icns/source_terms/GeostrophicForcing.H Source File</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/_geostrophic_forcing_8_h_source.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="home-runner-work-amr-wind-amr-wind-amr-wind-equation-systems-icns-source-terms-geostrophicforcing-h-source-file">
+<h1>/home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/icns/source_terms/GeostrophicForcing.H Source File<a class="headerlink" href="#home-runner-work-amr-wind-amr-wind-amr-wind-equation-systems-icns-source-terms-geostrophicforcing-h-source-file" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/icns/source_terms/GeostrophicForcing.H Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="dir_d85575251dd712327fe3cf057fa568b4.html">amr-wind</a></li><li class="navelem"><a href="dir_212148f97b8bb53ebaebb3bf8a8b5de4.html">amr-wind</a></li><li class="navelem"><a href="dir_25ba3af7252fba93a50e7ef611ff43dd.html">equation_systems</a></li><li class="navelem"><a href="dir_dbb8931b96cba5208d070c0efd4d64a4.html">icns</a></li><li class="navelem"><a href="dir_4fe76208354ba539f52d35cb3808a7ba.html">source_terms</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="headertitle"><div class="title">GeostrophicForcing.H</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="_geostrophic_forcing_8_h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef GEOSTROPHICFORCING_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define GEOSTROPHICFORCING_H</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="_momentum_source_8_h.html">amr-wind/equation_systems/icns/MomentumSource.H</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="_sim_time_8_h.html">amr-wind/core/SimTime.H</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;AMReX_REAL.H&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">using namespace </span>amrex::literals;</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceamr__wind_1_1pde_1_1icns.html">amr_wind::pde::icns</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span></div>
+<div class="foldopen" id="foldopen00015" data-start="{" data-end="};">
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html">   15</a></span><span class="keyword">class </span><a class="code hl_function" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#aaa83057acbf60842c0cd073285376e01">GeostrophicForcing</a> : <span class="keyword">public</span> MomentumSource::Register&lt;GeostrophicForcing&gt;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>{</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#adecd22a6b731b38767f081607b958d0b">   18</a></span>    <span class="keyword">static</span> std::string <a class="code hl_function" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#adecd22a6b731b38767f081607b958d0b">identifier</a>() { <span class="keywordflow">return</span> <span class="stringliteral">&quot;GeostrophicForcing&quot;</span>; }</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#aaa83057acbf60842c0cd073285376e01">GeostrophicForcing</a>(<span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; <span class="comment">/*unused*/</span>);</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a24047890c7a05271366d1913acb34a67">   22</a></span>    <a class="code hl_function" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a24047890c7a05271366d1913acb34a67">~GeostrophicForcing</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a493370efb32e5b9b27965c67b13d4af6">operator()</a>(</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <span class="keywordtype">int</span> lev,</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <span class="keyword">const</span> amrex::MFIter&amp; mfi,</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        <span class="keyword">const</span> amrex::Box&amp; bx,</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        <a class="code hl_enumeration" href="group__fields.html#ga5251ec6b376231128a9647f3028dbac0">FieldState</a> fstate,</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keyword">const</span> amrex::Array4&lt;amrex::Real&gt;&amp; src_term) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a6207f8ef90aa30d7ab6127752ff5ec3d">   32</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_sim_time.html">SimTime</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a6207f8ef90aa30d7ab6127752ff5ec3d">m_time</a>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a2cc41fd37bd687b1e04561b40238d34e">   33</a></span>    <span class="keyword">const</span> amrex::AmrCore&amp; <a class="code hl_variable" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a2cc41fd37bd687b1e04561b40238d34e">m_mesh</a>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a78492a6971a5cd6cfe2e4cce1166eadc">   36</a></span>    std::string <a class="code hl_variable" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a78492a6971a5cd6cfe2e4cce1166eadc">m_vel_timetable</a>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a1cd6c28ffff97d7d92afffdea51e92a4">   39</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a1cd6c28ffff97d7d92afffdea51e92a4">m_time_table</a>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a85d666a697c019fe6e47a9d9886baa8f">   42</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a85d666a697c019fe6e47a9d9886baa8f">m_speed_table</a>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#ae64f22dc8e3f797b5e2d7a0ea04bfcfe">   45</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#ae64f22dc8e3f797b5e2d7a0ea04bfcfe">m_direction_table</a>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span></div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#afee15fdc2cc714bd14460cce8b5728fa">   48</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#afee15fdc2cc714bd14460cce8b5728fa">m_coriolis_factor</a>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a260afd76f0209b407bf68339622962fd">   51</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a260afd76f0209b407bf68339622962fd">m_use_phase_ramp</a>{<span class="keyword">false</span>};</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span></div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a30c4fe6c6686c4e2897573eb254ff840">   54</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a30c4fe6c6686c4e2897573eb254ff840">m_n_band</a>{2};</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span></div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#ace5f416d5f04ab7df2c89a86e9bcbb74">   57</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#ace5f416d5f04ab7df2c89a86e9bcbb74">m_target_vel</a>{0.0_rt, 0.0_rt, 0.0_rt};</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span></div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a87fc5303049745b9249e3375447741cc">   60</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a87fc5303049745b9249e3375447741cc">m_g_forcing</a>{0.0_rt, 0.0_rt, 0.0_rt};</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#ad6ca65ded6ce716c36248fa3d3ec14cf">   62</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#ad6ca65ded6ce716c36248fa3d3ec14cf">m_is_horizontal</a>{<span class="keyword">false</span>};</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span></div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a8da830b248bbbb464dc3080539438737">   65</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a8da830b248bbbb464dc3080539438737">m_forcing_mphase0</a>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a5b77778420991c72d15ecdc487f027de">   67</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a5b77778420991c72d15ecdc487f027de">m_forcing_mphase1</a>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span></div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a1ba3238641f73438842cad34aa4cfd75">   70</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a1ba3238641f73438842cad34aa4cfd75">m_water_level</a>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span></div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a0afc3637ce9528da649e05a9cdd83221">   73</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>* <a class="code hl_variable" href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a0afc3637ce9528da649e05a9cdd83221">m_vof</a>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>};</div>
+</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>} <span class="comment">// namespace amr_wind::pde::icns</span></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="preprocessor">#endif </span><span class="comment">/* GEOSTROPHICFORCING_H */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="a_momentum_source_8_h_html"><div class="ttname"><a href="_momentum_source_8_h.html">MomentumSource.H</a></div></div>
+<div class="ttc" id="a_sim_time_8_h_html"><div class="ttname"><a href="_sim_time_8_h.html">SimTime.H</a></div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html">amr_wind::CFDSim</a></div><div class="ttdef"><b>Definition</b> CFDSim.H:54</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_html"><div class="ttname"><a href="classamr__wind_1_1_field.html">amr_wind::Field</a></div><div class="ttdef"><b>Definition</b> Field.H:112</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_sim_time_html"><div class="ttname"><a href="classamr__wind_1_1_sim_time.html">amr_wind::SimTime</a></div><div class="ttdef"><b>Definition</b> SimTime.H:33</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing_html_a0afc3637ce9528da649e05a9cdd83221"><div class="ttname"><a href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a0afc3637ce9528da649e05a9cdd83221">amr_wind::pde::icns::GeostrophicForcing::m_vof</a></div><div class="ttdeci">const Field * m_vof</div><div class="ttdoc">VOF field, to avoid forcing on liquid above force-off height.</div><div class="ttdef"><b>Definition</b> GeostrophicForcing.H:73</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing_html_a1ba3238641f73438842cad34aa4cfd75"><div class="ttname"><a href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a1ba3238641f73438842cad34aa4cfd75">amr_wind::pde::icns::GeostrophicForcing::m_water_level</a></div><div class="ttdeci">amrex::Real m_water_level</div><div class="ttdoc">Local storage of interface location.</div><div class="ttdef"><b>Definition</b> GeostrophicForcing.H:70</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing_html_a1cd6c28ffff97d7d92afffdea51e92a4"><div class="ttname"><a href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a1cd6c28ffff97d7d92afffdea51e92a4">amr_wind::pde::icns::GeostrophicForcing::m_time_table</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_time_table</div><div class="ttdoc">Velocity forcing time table.</div><div class="ttdef"><b>Definition</b> GeostrophicForcing.H:39</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing_html_a24047890c7a05271366d1913acb34a67"><div class="ttname"><a href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a24047890c7a05271366d1913acb34a67">amr_wind::pde::icns::GeostrophicForcing::~GeostrophicForcing</a></div><div class="ttdeci">~GeostrophicForcing() override</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing_html_a260afd76f0209b407bf68339622962fd"><div class="ttname"><a href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a260afd76f0209b407bf68339622962fd">amr_wind::pde::icns::GeostrophicForcing::m_use_phase_ramp</a></div><div class="ttdeci">bool m_use_phase_ramp</div><div class="ttdoc">Activated when water is present in domain.</div><div class="ttdef"><b>Definition</b> GeostrophicForcing.H:51</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing_html_a2cc41fd37bd687b1e04561b40238d34e"><div class="ttname"><a href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a2cc41fd37bd687b1e04561b40238d34e">amr_wind::pde::icns::GeostrophicForcing::m_mesh</a></div><div class="ttdeci">const amrex::AmrCore &amp; m_mesh</div><div class="ttdef"><b>Definition</b> GeostrophicForcing.H:33</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing_html_a30c4fe6c6686c4e2897573eb254ff840"><div class="ttname"><a href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a30c4fe6c6686c4e2897573eb254ff840">amr_wind::pde::icns::GeostrophicForcing::m_n_band</a></div><div class="ttdeci">int m_n_band</div><div class="ttdoc">Number of cells in band to prevent forcing near liquid.</div><div class="ttdef"><b>Definition</b> GeostrophicForcing.H:54</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing_html_a493370efb32e5b9b27965c67b13d4af6"><div class="ttname"><a href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a493370efb32e5b9b27965c67b13d4af6">amr_wind::pde::icns::GeostrophicForcing::operator()</a></div><div class="ttdeci">void operator()(int lev, const amrex::MFIter &amp;mfi, const amrex::Box &amp;bx, FieldState fstate, const amrex::Array4&lt; amrex::Real &gt; &amp;src_term) const override</div><div class="ttdef"><b>Definition</b> GeostrophicForcing.cpp:102</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing_html_a5b77778420991c72d15ecdc487f027de"><div class="ttname"><a href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a5b77778420991c72d15ecdc487f027de">amr_wind::pde::icns::GeostrophicForcing::m_forcing_mphase1</a></div><div class="ttdeci">amrex::Real m_forcing_mphase1</div><div class="ttdoc">Height from water interface over which force is ramped.</div><div class="ttdef"><b>Definition</b> GeostrophicForcing.H:67</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing_html_a6207f8ef90aa30d7ab6127752ff5ec3d"><div class="ttname"><a href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a6207f8ef90aa30d7ab6127752ff5ec3d">amr_wind::pde::icns::GeostrophicForcing::m_time</a></div><div class="ttdeci">const SimTime &amp; m_time</div><div class="ttdef"><b>Definition</b> GeostrophicForcing.H:32</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing_html_a78492a6971a5cd6cfe2e4cce1166eadc"><div class="ttname"><a href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a78492a6971a5cd6cfe2e4cce1166eadc">amr_wind::pde::icns::GeostrophicForcing::m_vel_timetable</a></div><div class="ttdeci">std::string m_vel_timetable</div><div class="ttdoc">File name for target velocity time table.</div><div class="ttdef"><b>Definition</b> GeostrophicForcing.H:36</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing_html_a85d666a697c019fe6e47a9d9886baa8f"><div class="ttname"><a href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a85d666a697c019fe6e47a9d9886baa8f">amr_wind::pde::icns::GeostrophicForcing::m_speed_table</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_speed_table</div><div class="ttdoc">Velocity forcing speed table.</div><div class="ttdef"><b>Definition</b> GeostrophicForcing.H:42</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing_html_a87fc5303049745b9249e3375447741cc"><div class="ttname"><a href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a87fc5303049745b9249e3375447741cc">amr_wind::pde::icns::GeostrophicForcing::m_g_forcing</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_g_forcing</div><div class="ttdoc">Forcing source term (pressure gradient)</div><div class="ttdef"><b>Definition</b> GeostrophicForcing.H:60</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing_html_a8da830b248bbbb464dc3080539438737"><div class="ttname"><a href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#a8da830b248bbbb464dc3080539438737">amr_wind::pde::icns::GeostrophicForcing::m_forcing_mphase0</a></div><div class="ttdeci">amrex::Real m_forcing_mphase0</div><div class="ttdoc">Height from water interface where force is off.</div><div class="ttdef"><b>Definition</b> GeostrophicForcing.H:65</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing_html_aaa83057acbf60842c0cd073285376e01"><div class="ttname"><a href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#aaa83057acbf60842c0cd073285376e01">amr_wind::pde::icns::GeostrophicForcing::GeostrophicForcing</a></div><div class="ttdeci">GeostrophicForcing(const CFDSim &amp;)</div><div class="ttdef"><b>Definition</b> GeostrophicForcing.cpp:28</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing_html_ace5f416d5f04ab7df2c89a86e9bcbb74"><div class="ttname"><a href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#ace5f416d5f04ab7df2c89a86e9bcbb74">amr_wind::pde::icns::GeostrophicForcing::m_target_vel</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_target_vel</div><div class="ttdoc">Target velocity.</div><div class="ttdef"><b>Definition</b> GeostrophicForcing.H:57</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing_html_ad6ca65ded6ce716c36248fa3d3ec14cf"><div class="ttname"><a href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#ad6ca65ded6ce716c36248fa3d3ec14cf">amr_wind::pde::icns::GeostrophicForcing::m_is_horizontal</a></div><div class="ttdeci">bool m_is_horizontal</div><div class="ttdef"><b>Definition</b> GeostrophicForcing.H:62</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing_html_adecd22a6b731b38767f081607b958d0b"><div class="ttname"><a href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#adecd22a6b731b38767f081607b958d0b">amr_wind::pde::icns::GeostrophicForcing::identifier</a></div><div class="ttdeci">static std::string identifier()</div><div class="ttdef"><b>Definition</b> GeostrophicForcing.H:18</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing_html_ae64f22dc8e3f797b5e2d7a0ea04bfcfe"><div class="ttname"><a href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#ae64f22dc8e3f797b5e2d7a0ea04bfcfe">amr_wind::pde::icns::GeostrophicForcing::m_direction_table</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_direction_table</div><div class="ttdoc">Velocity forcing direction table.</div><div class="ttdef"><b>Definition</b> GeostrophicForcing.H:45</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing_html_afee15fdc2cc714bd14460cce8b5728fa"><div class="ttname"><a href="classamr__wind_1_1pde_1_1icns_1_1_geostrophic_forcing.html#afee15fdc2cc714bd14460cce8b5728fa">amr_wind::pde::icns::GeostrophicForcing::m_coriolis_factor</a></div><div class="ttdeci">amrex::Real m_coriolis_factor</div><div class="ttdoc">Coriolis factor.</div><div class="ttdef"><b>Definition</b> GeostrophicForcing.H:48</div></div>
+<div class="ttc" id="agroup__fields_html_ga5251ec6b376231128a9647f3028dbac0"><div class="ttname"><a href="group__fields.html#ga5251ec6b376231128a9647f3028dbac0">amr_wind::FieldState</a></div><div class="ttdeci">FieldState</div><div class="ttdef"><b>Definition</b> FieldDescTypes.H:16</div></div>
+<div class="ttc" id="anamespaceamr__wind_1_1pde_1_1icns_html"><div class="ttname"><a href="namespaceamr__wind_1_1pde_1_1icns.html">amr_wind::pde::icns</a></div><div class="ttdef"><b>Definition</b> ABLForcing.cpp:14</div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

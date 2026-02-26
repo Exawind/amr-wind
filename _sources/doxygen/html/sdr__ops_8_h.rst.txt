@@ -1,0 +1,14 @@
+.. meta::df3988e001b7560ee8e891e69dc858a8eb03a2ac1e6ec8623b39e0bdf64fc5709299fce85af9c3e0415337df7d0be3d727729ef921b557da1d9d7d554a968d2d
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/sdr/sdr_ops.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/equation\_systems/sdr/sdr\_ops.H File Reference
+============================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: sdr__ops_8_h.html

@@ -1,0 +1,14 @@
+.. meta::9495bf9e38b22c05da895b5fe5636029964863f1777400c50113b1caf54ddf75cc541ca554b4a6753bc0ce989a22d1bc789476601147ef028d0545e6c56e0d29
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/boundary_conditions/wall_models/MOSD.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/boundary\_conditions/wall\_models/MOSD.H File Reference
+====================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _m_o_s_d_8_h.html

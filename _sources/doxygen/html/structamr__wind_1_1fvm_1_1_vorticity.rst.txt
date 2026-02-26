@@ -1,0 +1,14 @@
+.. meta::547821ffde217e96ea665a3cb731294fc35e5407bc8eae6e2bf532959fae58d72d17c2bcf7da765419d2919acbc1143043619fd7dabd512809ea62ca6236af56
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::fvm::Vorticity&lt; FTypeIn, FTypeOut &gt; Struct Template Reference
+
+Vorticity&lt; FTypeIn, FTypeOut &gt; Struct Template Reference
+==============================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1fvm_1_1_vorticity.html

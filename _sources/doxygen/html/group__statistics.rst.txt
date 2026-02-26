@@ -1,0 +1,14 @@
+.. meta::f8eed623bc0d59b057041970c2d44dcc5d0991643a05c67e9dcf4fa2d1720ef61707ab8768f5ebc27fe892522aae2ed1fc4ee32845ce14e8b9fcbd26ffc366f0
+
+:orphan:
+
+.. title:: AMR-Wind API: Field statistics
+
+Field statistics
+================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: group__statistics.html

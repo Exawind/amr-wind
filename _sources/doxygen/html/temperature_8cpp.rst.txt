@@ -1,0 +1,14 @@
+.. meta::71b13b5d5b996fe8d5e9a927328c25d93ca51807c0c04083a837f845a6ed154bc6fb0e78aa0942d591ae0cef35bdb4e5b78cb0c03737dd395023391360f59ae5
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/temperature/temperature.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/equation\_systems/temperature/temperature.cpp File Reference
+=========================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: temperature_8cpp.html

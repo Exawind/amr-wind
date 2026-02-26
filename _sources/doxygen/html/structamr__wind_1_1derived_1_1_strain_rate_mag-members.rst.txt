@@ -1,0 +1,14 @@
+.. meta::a5b3e3777fceb6659d600b54b3b8c1bdb8ea04a8755f7efc2da528569b393e31965adbb1de37e91a1aba1b9123c8159962db3a29117d2f75f7d7f3f15ba37b9f
+
+:orphan:
+
+.. title:: AMR-Wind API: Member List
+
+Member List
+===========
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1derived_1_1_strain_rate_mag-members.html

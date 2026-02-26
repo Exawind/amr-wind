@@ -1,0 +1,788 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::ib::IB Class Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::ib::IB Class Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/classamr__wind_1_1ib_1_1_i_b.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ib-class-reference">
+<h1>IB Class Reference<a class="headerlink" href="#ib-class-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::ib::IB Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="namespaceamr__wind_1_1ib.html">ib</a></li><li class="navelem"><a href="classamr__wind_1_1ib_1_1_i_b.html">IB</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
+<a href="#pri-methods">Private Member Functions</a> &#124;
+<a href="#pri-static-methods">Static Private Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
+<a href="classamr__wind_1_1ib_1_1_i_b-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::ib::IB Class Reference<div class="ingroups"><a class="el" href="group__immersed__boundary.html">Immersed boundary module</a></div></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_i_b_8_h_source.html">IB.H</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for amr_wind::ib::IB:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1ib_1_1_i_b__inherit__graph.svg" width="175" height="139"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for amr_wind::ib::IB:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1ib_1_1_i_b__coll__graph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:af279cbd2d7c1b929c0028fc6eb13b318" id="r_af279cbd2d7c1b929c0028fc6eb13b318"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af279cbd2d7c1b929c0028fc6eb13b318">IB</a> (<a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;)</td></tr>
+<tr class="memitem:a1af0f37d9634ef187f7c236993c8cfb2" id="r_a1af0f37d9634ef187f7c236993c8cfb2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1af0f37d9634ef187f7c236993c8cfb2">~IB</a> () override</td></tr>
+<tr class="memitem:a736e2f525cd7604dd33d614635a9d3a4" id="r_a736e2f525cd7604dd33d614635a9d3a4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a736e2f525cd7604dd33d614635a9d3a4">initialize_fields</a> (int, const amrex::Geometry &amp;) override</td></tr>
+<tr class="memitem:a0017316bf503c46e6cd57b9030a6ee6b" id="r_a0017316bf503c46e6cd57b9030a6ee6b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0017316bf503c46e6cd57b9030a6ee6b">pre_init_actions</a> () override</td></tr>
+<tr class="memitem:af8b4a73d5e29e616685c4827556f8634" id="r_af8b4a73d5e29e616685c4827556f8634"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af8b4a73d5e29e616685c4827556f8634">post_init_actions</a> () override</td></tr>
+<tr class="memitem:a4b6c99b401484f5b2add0cc344a1520a" id="r_a4b6c99b401484f5b2add0cc344a1520a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4b6c99b401484f5b2add0cc344a1520a">post_regrid_actions</a> () override</td></tr>
+<tr class="memitem:a4098060f3d88e2669adc48c3bd3fa58b" id="r_a4098060f3d88e2669adc48c3bd3fa58b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4098060f3d88e2669adc48c3bd3fa58b">pre_advance_work</a> () override</td></tr>
+<tr class="memitem:a7e3510d2d6f56588174169778e275c09" id="r_a7e3510d2d6f56588174169778e275c09"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7e3510d2d6f56588174169778e275c09">post_advance_work</a> () override</td></tr>
+<tr class="memitem:af2f2e5d478994799740f9bf23c8b5858" id="r_af2f2e5d478994799740f9bf23c8b5858"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af2f2e5d478994799740f9bf23c8b5858">pre_pressure_correction_work</a> () override</td></tr>
+<tr class="memitem:a99fd21d06a2be85d671f167349a86d44" id="r_a99fd21d06a2be85d671f167349a86d44"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a99fd21d06a2be85d671f167349a86d44">post_pressure_correction_work</a> () override</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:aa85959f7ecf5507a6811fe206b3cb8cf" id="r_aa85959f7ecf5507a6811fe206b3cb8cf"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa85959f7ecf5507a6811fe206b3cb8cf">identifier</a> ()</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:aec32eb00ce70fe506ceacea225a31cce" id="r_aec32eb00ce70fe506ceacea225a31cce"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aec32eb00ce70fe506ceacea225a31cce">num_ibs</a> () const</td></tr>
+<tr class="memdesc:aec32eb00ce70fe506ceacea225a31cce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total number of immersed boundaries.  <br /></td></tr>
+<tr class="memitem:abe4822ba7db70f41cabb093d4bff2a43" id="r_abe4822ba7db70f41cabb093d4bff2a43"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abe4822ba7db70f41cabb093d4bff2a43">prepare_outputs</a> ()</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-methods" class="groupheader"><a id="pri-methods" name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:a6bd66d87b2b2966c5499a692217e5954" id="r_a6bd66d87b2b2966c5499a692217e5954"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6bd66d87b2b2966c5499a692217e5954">update_velocities</a> ()</td></tr>
+<tr class="memitem:a5c4afc8f5e2978b6edb33a0e00da1c8b" id="r_a5c4afc8f5e2978b6edb33a0e00da1c8b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5c4afc8f5e2978b6edb33a0e00da1c8b">compute_forces</a> ()</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-static-methods" class="groupheader"><a id="pri-static-methods" name="pri-static-methods"></a>
+Static Private Member Functions</h2></td></tr>
+<tr class="memitem:af8ef9a3111d0718169d20ce825005a94" id="r_af8ef9a3111d0718169d20ce825005a94"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af8ef9a3111d0718169d20ce825005a94">update_positions</a> ()</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:adf6b6534edb8d8a6f0285b524504e75a" id="r_adf6b6534edb8d8a6f0285b524504e75a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adf6b6534edb8d8a6f0285b524504e75a">m_sim</a></td></tr>
+<tr class="memitem:a9360419d65b07111f580ca1d9df4766e" id="r_a9360419d65b07111f580ca1d9df4766e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1ib_1_1_immersed_boundary_model.html">ImmersedBoundaryModel</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9360419d65b07111f580ca1d9df4766e">m_ibs</a></td></tr>
+<tr class="memitem:ab6e64312d0bd0ae2bd1d01730111b99a" id="r_ab6e64312d0bd0ae2bd1d01730111b99a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab6e64312d0bd0ae2bd1d01730111b99a">m_ib_levelset</a></td></tr>
+<tr class="memdesc:ab6e64312d0bd0ae2bd1d01730111b99a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immersed boundary levelset for cell-centers.  <br /></td></tr>
+<tr class="memitem:a9efbaaf5cab6ec236a9c9648578cbff3" id="r_a9efbaaf5cab6ec236a9c9648578cbff3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9efbaaf5cab6ec236a9c9648578cbff3">m_ib_normal</a></td></tr>
+<tr class="memdesc:a9efbaaf5cab6ec236a9c9648578cbff3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immersed boundary normal vector defined on cell-centers.  <br /></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Immersed boundary modeling for non-blade wind components and complex terrain</p>
+<p>This class provides an interface to model</p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classamr__wind_1_1ib_1_1_immersed_boundary_model.html">ImmersedBoundaryModel</a> </dd></dl>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="af279cbd2d7c1b929c0028fc6eb13b318" name="af279cbd2d7c1b929c0028fc6eb13b318"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af279cbd2d7c1b929c0028fc6eb13b318">&#9670;&#160;</a></span>IB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::ib::IB::IB </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>sim</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel explicit">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1af0f37d9634ef187f7c236993c8cfb2" name="a1af0f37d9634ef187f7c236993c8cfb2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1af0f37d9634ef187f7c236993c8cfb2">&#9670;&#160;</a></span>~IB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::ib::IB::~IB </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a5c4afc8f5e2978b6edb33a0e00da1c8b" name="a5c4afc8f5e2978b6edb33a0e00da1c8b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c4afc8f5e2978b6edb33a0e00da1c8b">&#9670;&#160;</a></span>compute_forces()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ib::IB::compute_forces </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Helper method to compute forces on all immersed boundary components </p>
+
+</div>
+</div>
+<a id="aa85959f7ecf5507a6811fe206b3cb8cf" name="aa85959f7ecf5507a6811fe206b3cb8cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa85959f7ecf5507a6811fe206b3cb8cf">&#9670;&#160;</a></span>identifier()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::ib::IB::identifier </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a736e2f525cd7604dd33d614635a9d3a4" name="a736e2f525cd7604dd33d614635a9d3a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a736e2f525cd7604dd33d614635a9d3a4">&#9670;&#160;</a></span>initialize_fields()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ib::IB::initialize_fields </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Geometry &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aec32eb00ce70fe506ceacea225a31cce" name="aec32eb00ce70fe506ceacea225a31cce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec32eb00ce70fe506ceacea225a31cce">&#9670;&#160;</a></span>num_ibs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::ib::IB::num_ibs </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Total number of immersed boundaries. </p>
+
+</div>
+</div>
+<a id="a7e3510d2d6f56588174169778e275c09" name="a7e3510d2d6f56588174169778e275c09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e3510d2d6f56588174169778e275c09">&#9670;&#160;</a></span>post_advance_work()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ib::IB::post_advance_work </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af8b4a73d5e29e616685c4827556f8634" name="af8b4a73d5e29e616685c4827556f8634"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8b4a73d5e29e616685c4827556f8634">&#9670;&#160;</a></span>post_init_actions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ib::IB::post_init_actions </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a99fd21d06a2be85d671f167349a86d44" name="a99fd21d06a2be85d671f167349a86d44"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99fd21d06a2be85d671f167349a86d44">&#9670;&#160;</a></span>post_pressure_correction_work()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ib::IB::post_pressure_correction_work </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4b6c99b401484f5b2add0cc344a1520a" name="a4b6c99b401484f5b2add0cc344a1520a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b6c99b401484f5b2add0cc344a1520a">&#9670;&#160;</a></span>post_regrid_actions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ib::IB::post_regrid_actions </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4098060f3d88e2669adc48c3bd3fa58b" name="a4098060f3d88e2669adc48c3bd3fa58b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4098060f3d88e2669adc48c3bd3fa58b">&#9670;&#160;</a></span>pre_advance_work()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ib::IB::pre_advance_work </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0017316bf503c46e6cd57b9030a6ee6b" name="a0017316bf503c46e6cd57b9030a6ee6b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0017316bf503c46e6cd57b9030a6ee6b">&#9670;&#160;</a></span>pre_init_actions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ib::IB::pre_init_actions </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af2f2e5d478994799740f9bf23c8b5858" name="af2f2e5d478994799740f9bf23c8b5858"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2f2e5d478994799740f9bf23c8b5858">&#9670;&#160;</a></span>pre_pressure_correction_work()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ib::IB::pre_pressure_correction_work </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abe4822ba7db70f41cabb093d4bff2a43" name="abe4822ba7db70f41cabb093d4bff2a43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe4822ba7db70f41cabb093d4bff2a43">&#9670;&#160;</a></span>prepare_outputs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ib::IB::prepare_outputs </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af8ef9a3111d0718169d20ce825005a94" name="af8ef9a3111d0718169d20ce825005a94"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8ef9a3111d0718169d20ce825005a94">&#9670;&#160;</a></span>update_positions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ib::IB::update_positions </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Update immersed boundary positions.</p>
+<p>This method loops over all immersed boundaries and updates their position. Their new location may be prescribed or computed</p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#a6bd66d87b2b2966c5499a692217e5954">IB::update_velocities</a> </dd></dl>
+
+</div>
+</div>
+<a id="a6bd66d87b2b2966c5499a692217e5954" name="a6bd66d87b2b2966c5499a692217e5954"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6bd66d87b2b2966c5499a692217e5954">&#9670;&#160;</a></span>update_velocities()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ib::IB::update_velocities </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Provide updated velocities to immersed boundary instances</p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#af8ef9a3111d0718169d20ce825005a94">IB::update_positions</a> </dd></dl>
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="ab6e64312d0bd0ae2bd1d01730111b99a" name="ab6e64312d0bd0ae2bd1d01730111b99a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6e64312d0bd0ae2bd1d01730111b99a">&#9670;&#160;</a></span>m_ib_levelset</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a>&amp; amr_wind::ib::IB::m_ib_levelset</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Immersed boundary levelset for cell-centers. </p>
+
+</div>
+</div>
+<a id="a9efbaaf5cab6ec236a9c9648578cbff3" name="a9efbaaf5cab6ec236a9c9648578cbff3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9efbaaf5cab6ec236a9c9648578cbff3">&#9670;&#160;</a></span>m_ib_normal</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a>&amp; amr_wind::ib::IB::m_ib_normal</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Immersed boundary normal vector defined on cell-centers. </p>
+
+</div>
+</div>
+<a id="a9360419d65b07111f580ca1d9df4766e" name="a9360419d65b07111f580ca1d9df4766e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9360419d65b07111f580ca1d9df4766e">&#9670;&#160;</a></span>m_ibs</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::unique_ptr&lt;<a class="el" href="classamr__wind_1_1ib_1_1_immersed_boundary_model.html">ImmersedBoundaryModel</a>&gt; &gt; amr_wind::ib::IB::m_ibs</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adf6b6534edb8d8a6f0285b524504e75a" name="adf6b6534edb8d8a6f0285b524504e75a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf6b6534edb8d8a6f0285b524504e75a">&#9670;&#160;</a></span>m_sim</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; amr_wind::ib::IB::m_sim</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/immersed_boundary/<a class="el" href="_i_b_8_h_source.html">IB.H</a></li>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/immersed_boundary/<a class="el" href="_i_b_8cpp.html">IB.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

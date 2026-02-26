@@ -1,0 +1,14 @@
+.. meta::54a8c3a25aa7132a1d322ccff24a753f989e0e82db0e43467b858e5412ef7e10d4de5fd64b4c9d01a62819f2faea00b4e3be1258d795c0897428ea4ebde7fb6d
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling -&gt; fvm Relation
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling -&gt; fvm Relation
+==================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: dir_000037_000020.html

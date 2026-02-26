@@ -1,0 +1,14 @@
+.. meta::f677d44c40ad0774b7555d629af5ef7d049c6c78a37a45e4aba87cacaefac81c09e21d366f2254fbff0f761d2b7b815c4452e761c0b98c61093b1bbe7dbb7b07
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::mms::MMS Class Reference
+
+MMS Class Reference
+===================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1mms_1_1_m_m_s.html

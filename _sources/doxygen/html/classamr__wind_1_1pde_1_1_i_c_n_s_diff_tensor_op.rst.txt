@@ -1,0 +1,14 @@
+.. meta::77b1a6bda9b7b6585abe1fbd332e59cc34bef4bdcc3e9f96d097f051726d027659c4de5382e98671c2082ff40be41495031dc602c207631a965e731eeb40612e
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::ICNSDiffTensorOp Class Reference
+
+ICNSDiffTensorOp Class Reference
+================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1pde_1_1_i_c_n_s_diff_tensor_op.html

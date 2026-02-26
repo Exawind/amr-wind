@@ -1,0 +1,413 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/ScalarAdvection.H Source File &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/ScalarAdvection.H Source File</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/_scalar_advection_8_h_source.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="home-runner-work-amr-wind-amr-wind-amr-wind-physics-scalaradvection-h-source-file">
+<h1>/home/runner/work/amr-wind/amr-wind/amr-wind/physics/ScalarAdvection.H Source File<a class="headerlink" href="#home-runner-work-amr-wind-amr-wind-amr-wind-physics-scalaradvection-h-source-file" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/ScalarAdvection.H Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="dir_d85575251dd712327fe3cf057fa568b4.html">amr-wind</a></li><li class="navelem"><a href="dir_212148f97b8bb53ebaebb3bf8a8b5de4.html">amr-wind</a></li><li class="navelem"><a href="dir_f00f788038d28a6de62e2305131ce6f9.html">physics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="headertitle"><div class="title">ScalarAdvection.H</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="_scalar_advection_8_h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef SCALARADVECTION_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define SCALARADVECTION_H</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;numbers&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="_physics_8_h.html">amr-wind/core/Physics.H</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="_field_8_h.html">amr-wind/core/Field.H</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="trig__ops_8_h.html">amr-wind/utilities/trig_ops.H</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;AMReX_REAL.H&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">using namespace </span>amrex::literals;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceamr__wind.html">amr_wind</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span></div>
+<div class="foldopen" id="foldopen00019" data-start="{" data-end="};">
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_scalar_advection.html">   19</a></span><span class="keyword">class </span><a class="code hl_function" href="classamr__wind_1_1_scalar_advection.html#ae952279f1dd3a12a651f34254a4621cc">ScalarAdvection</a> : <span class="keyword">public</span> Physics::Register&lt;ScalarAdvection&gt;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>{</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_scalar_advection.html#a990b5a1bf0b0a3de5cd45e8c79db2bd4">   22</a></span>    <span class="keyword">static</span> std::string <a class="code hl_function" href="classamr__wind_1_1_scalar_advection.html#a990b5a1bf0b0a3de5cd45e8c79db2bd4">identifier</a>() { <span class="keywordflow">return</span> <span class="stringliteral">&quot;ScalarAdvection&quot;</span>; }</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classamr__wind_1_1_scalar_advection.html#ae952279f1dd3a12a651f34254a4621cc">ScalarAdvection</a>(<a class="code hl_class" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; sim);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_scalar_advection.html#ae64f47028def67fa1b81c8cb0c46dce4">   26</a></span>    <a class="code hl_function" href="classamr__wind_1_1_scalar_advection.html#ae64f47028def67fa1b81c8cb0c46dce4">~ScalarAdvection</a>() <span class="keyword">override</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_scalar_advection.html#a7ed480b156972641e6734a2b23b0409e">initialize_fields</a>(<span class="keywordtype">int</span> level, <span class="keyword">const</span> amrex::Geometry&amp; geom) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> Shape&gt;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_function" href="classamr__wind_1_1_scalar_advection.html#a1eeb0794d51a1b63bd00f4369275930a">compute_error</a>(<span class="keyword">const</span> Shape&amp; scalar_function);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_scalar_advection.html#a7df2c1233950367f10b2e498259e44d1">post_init_actions</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_scalar_advection.html#a553eb4e3db745490aa8ed7c38b529490">   36</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_scalar_advection.html#a553eb4e3db745490aa8ed7c38b529490">post_regrid_actions</a>()<span class="keyword"> override </span>{}</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_scalar_advection.html#a4e0874286842cefb478072d610baa88f">   38</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_scalar_advection.html#a4e0874286842cefb478072d610baa88f">pre_advance_work</a>()<span class="keyword"> override </span>{}</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_scalar_advection.html#a101c0503e2e745bf0c6ea8bcb552ffa5">post_advance_work</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> Shape&gt;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_scalar_advection.html#ae5e5ef52fce57fd338ce810dd199e6e3">initialize_scalar</a>(<span class="keyword">const</span> Shape&amp; scalar_function);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_scalar_advection.html#a23353f0f7aed67f00048c20f18902906">   46</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_sim_time.html">SimTime</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1_scalar_advection.html#a23353f0f7aed67f00048c20f18902906">m_time</a>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_scalar_advection.html#a22bc706ba20304615e2d4f587db3f83b">   47</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_field_repo.html">FieldRepo</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1_scalar_advection.html#a22bc706ba20304615e2d4f587db3f83b">m_repo</a>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_scalar_advection.html#a328e548e4d407f40938af3bdf990cf71">   48</a></span>    <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1_scalar_advection.html#a328e548e4d407f40938af3bdf990cf71">m_velocity</a>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_scalar_advection.html#a757ecc7e348285a1a68bdfacd77b6446">   49</a></span>    <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1_scalar_advection.html#a757ecc7e348285a1a68bdfacd77b6446">m_density</a>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_scalar_advection.html#add5190898e062b98fce40eac3a0aa6d6">   50</a></span>    std::string <a class="code hl_variable" href="classamr__wind_1_1_scalar_advection.html#add5190898e062b98fce40eac3a0aa6d6">m_output_fname</a> = <span class="stringliteral">&quot;error.log&quot;</span>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_scalar_advection.html#a66c98dab124e5092d2bc0a445ea53209">   51</a></span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="classamr__wind_1_1_scalar_advection.html#a66c98dab124e5092d2bc0a445ea53209">m_w</a> = 20;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span></div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_scalar_advection.html#a3ecbec948044662aee71b588c12d0cfa">   54</a></span>    <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>* <a class="code hl_variable" href="classamr__wind_1_1_scalar_advection.html#a3ecbec948044662aee71b588c12d0cfa">m_scalar</a>{<span class="keyword">nullptr</span>};</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span></div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_scalar_advection.html#acdd2cd10e62a4ffcb27d06d95b52e402">   57</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_scalar_advection.html#acdd2cd10e62a4ffcb27d06d95b52e402">m_u</a>{1.0_rt};</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_scalar_advection.html#a209d7fad49de87bece6bc75d6cf5224b">   58</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_scalar_advection.html#a209d7fad49de87bece6bc75d6cf5224b">m_v</a>{0.0_rt};</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span></div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_scalar_advection.html#a56d7d6a1e4bb81533ca0aa98078801ff">   61</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_scalar_advection.html#a56d7d6a1e4bb81533ca0aa98078801ff">m_x0</a>{0.1_rt};</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_scalar_advection.html#a838dfe710e3c191f7c8352facd424bba">   62</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_scalar_advection.html#a838dfe710e3c191f7c8352facd424bba">m_y0</a>{0.1_rt};</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span></div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_scalar_advection.html#a9837a15c89f56741a2aa296363323175">   65</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_scalar_advection.html#a9837a15c89f56741a2aa296363323175">m_amplitude</a>{1.0_rt};</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_scalar_advection.html#a2130dac5038666e91cbf886070db4faa">   69</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_scalar_advection.html#a2130dac5038666e91cbf886070db4faa">m_x_width</a>{0.01_rt};</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_scalar_advection.html#a3748a0129e19fd18b4f5e39032ee75c0">   70</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_scalar_advection.html#a3748a0129e19fd18b4f5e39032ee75c0">m_y_width</a>{0.01_rt};</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span></div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_scalar_advection.html#a735c07b82a5632abf382790228b2ec6a">   73</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_scalar_advection.html#a735c07b82a5632abf382790228b2ec6a">m_x_wavenumber</a>{16.0_rt * std::numbers::pi_v&lt;amrex::Real&gt;};</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_scalar_advection.html#a345643e6a44a861214199cc71223a8fb">   74</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_scalar_advection.html#a345643e6a44a861214199cc71223a8fb">m_y_wavenumber</a>{16.0_rt * std::numbers::pi_v&lt;amrex::Real&gt;};</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_scalar_advection.html#ac005269c255123ce9b1c1c5172cc5069">   77</a></span>    std::string <a class="code hl_variable" href="classamr__wind_1_1_scalar_advection.html#ac005269c255123ce9b1c1c5172cc5069">m_shape</a>{<span class="stringliteral">&quot;gaussian&quot;</span>};</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span></div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_scalar_advection.html#aa257162e907fb5b1cfc1bcc59f45958c">   80</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_scalar_advection.html#aa257162e907fb5b1cfc1bcc59f45958c">m_rho</a>{1.0_rt};</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>};</div>
+</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="foldopen" id="foldopen00083" data-start="{" data-end="};">
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_gaussian_wave_packet.html">   83</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structamr__wind_1_1_gaussian_wave_packet.html">GaussianWavePacket</a></div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>{</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real <a class="code hl_function" href="structamr__wind_1_1_gaussian_wave_packet.html#accf1080b0f8238349246fcc7e12f93b6">operator()</a>(</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        amrex::Real <span class="comment">/*x*/</span>,</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        amrex::Real <span class="comment">/*x0*/</span>,</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        amrex::Real <span class="comment">/*amplitude*/</span>,</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        amrex::Real <span class="comment">/*x_width*/</span>,</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        amrex::Real <span class="comment">/*x_wavenumber*/</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>};</div>
+</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="foldopen" id="foldopen00093" data-start="{" data-end="};">
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_gaussian_pulse_f_v.html">   93</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structamr__wind_1_1_gaussian_pulse_f_v.html">GaussianPulseFV</a></div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>{</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real <a class="code hl_function" href="structamr__wind_1_1_gaussian_pulse_f_v.html#a06e931a64ab320f5662d27bbbb8997a4">operator()</a>(</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        amrex::Real <span class="comment">/*x*/</span>,</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        amrex::Real <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        amrex::Real <span class="comment">/*dx*/</span>,</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        amrex::Real <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        amrex::Real <span class="comment">/*x0*/</span>,</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        amrex::Real <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        amrex::Real <span class="comment">/*amplitude*/</span>,</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        amrex::Real <span class="comment">/*x_width*/</span>,</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        amrex::Real <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        amrex::Real <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        amrex::Real <span class="comment">/*unused*/</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>};</div>
+</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="foldopen" id="foldopen00109" data-start="{" data-end="};">
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_two_dim_gaussian_pulse_f_v.html">  109</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structamr__wind_1_1_two_dim_gaussian_pulse_f_v.html">TwoDimGaussianPulseFV</a></div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>{</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real <a class="code hl_function" href="structamr__wind_1_1_two_dim_gaussian_pulse_f_v.html#aba80369e4237bae16c2bf3502c1dcbdf">operator()</a>(</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        amrex::Real <span class="comment">/*x*/</span>,</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        amrex::Real <span class="comment">/*y*/</span>,</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        amrex::Real <span class="comment">/*dx*/</span>,</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        amrex::Real <span class="comment">/*dy*/</span>,</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        amrex::Real <span class="comment">/*x0*/</span>,</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>        amrex::Real <span class="comment">/*y0*/</span>,</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        amrex::Real <span class="comment">/*amplitude*/</span>,</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        amrex::Real <span class="comment">/*x_width*/</span>,</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        amrex::Real <span class="comment">/*y_width*/</span>,</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>        amrex::Real <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        amrex::Real <span class="comment">/*unused*/</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>};</div>
+</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
+<div class="foldopen" id="foldopen00125" data-start="{" data-end="};">
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_square_pulse_f_v.html">  125</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structamr__wind_1_1_square_pulse_f_v.html">SquarePulseFV</a></div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>{</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real <a class="code hl_function" href="structamr__wind_1_1_square_pulse_f_v.html#ac69b321be9770931d4cf4129d8177915">operator()</a>(</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>        amrex::Real <span class="comment">/*x*/</span>,</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>        amrex::Real <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>        amrex::Real <span class="comment">/*dx*/</span>,</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>        amrex::Real <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>        amrex::Real <span class="comment">/*x0*/</span>,</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>        amrex::Real <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        amrex::Real <span class="comment">/*amplitude*/</span>,</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>        amrex::Real <span class="comment">/*x_width*/</span>,</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>        amrex::Real <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        amrex::Real <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>        amrex::Real <span class="comment">/*unused*/</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>};</div>
+</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span> </div>
+<div class="foldopen" id="foldopen00141" data-start="{" data-end="};">
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_gaussian_wave_packet_f_v.html">  141</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structamr__wind_1_1_gaussian_wave_packet_f_v.html">GaussianWavePacketFV</a></div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>{</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real <a class="code hl_function" href="structamr__wind_1_1_gaussian_wave_packet_f_v.html#a483f39430e805024e9b480cdca70ac70">operator()</a>(</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>        amrex::Real <span class="comment">/*x*/</span>,</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>        amrex::Real <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>        amrex::Real <span class="comment">/*dx*/</span>,</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>        amrex::Real <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>        amrex::Real <span class="comment">/*x0*/</span>,</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>        amrex::Real <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>        amrex::Real <span class="comment">/*amplitude*/</span>,</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>        amrex::Real <span class="comment">/*x_width*/</span>,</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>        amrex::Real <span class="comment">/*unused*/</span>,</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>        amrex::Real <span class="comment">/*x_wavenumber*/</span>,</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        amrex::Real <span class="comment">/*unused*/</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>};</div>
+</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span> </div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>} <span class="comment">// namespace amr_wind</span></div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span> </div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span><span class="preprocessor">#endif </span><span class="comment">/* ScalarAdvection_H */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="a_field_8_h_html"><div class="ttname"><a href="_field_8_h.html">Field.H</a></div></div>
+<div class="ttc" id="a_physics_8_h_html"><div class="ttname"><a href="_physics_8_h.html">Physics.H</a></div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html">amr_wind::CFDSim</a></div><div class="ttdef"><b>Definition</b> CFDSim.H:54</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_html"><div class="ttname"><a href="classamr__wind_1_1_field.html">amr_wind::Field</a></div><div class="ttdef"><b>Definition</b> Field.H:112</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html">amr_wind::FieldRepo</a></div><div class="ttdef"><b>Definition</b> FieldRepo.H:86</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_scalar_advection_html_a101c0503e2e745bf0c6ea8bcb552ffa5"><div class="ttname"><a href="classamr__wind_1_1_scalar_advection.html#a101c0503e2e745bf0c6ea8bcb552ffa5">amr_wind::ScalarAdvection::post_advance_work</a></div><div class="ttdeci">void post_advance_work() override</div><div class="ttdef"><b>Definition</b> ScalarAdvection.cpp:314</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_scalar_advection_html_a1eeb0794d51a1b63bd00f4369275930a"><div class="ttname"><a href="classamr__wind_1_1_scalar_advection.html#a1eeb0794d51a1b63bd00f4369275930a">amr_wind::ScalarAdvection::compute_error</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; compute_error(const Shape &amp;scalar_function)</div><div class="ttdef"><b>Definition</b> ScalarAdvection.cpp:247</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_scalar_advection_html_a209d7fad49de87bece6bc75d6cf5224b"><div class="ttname"><a href="classamr__wind_1_1_scalar_advection.html#a209d7fad49de87bece6bc75d6cf5224b">amr_wind::ScalarAdvection::m_v</a></div><div class="ttdeci">amrex::Real m_v</div><div class="ttdef"><b>Definition</b> ScalarAdvection.H:58</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_scalar_advection_html_a2130dac5038666e91cbf886070db4faa"><div class="ttname"><a href="classamr__wind_1_1_scalar_advection.html#a2130dac5038666e91cbf886070db4faa">amr_wind::ScalarAdvection::m_x_width</a></div><div class="ttdeci">amrex::Real m_x_width</div><div class="ttdoc">Initial wave/pulse width (standard deviation for GaussianPulse and GaussianWavePacket)</div><div class="ttdef"><b>Definition</b> ScalarAdvection.H:69</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_scalar_advection_html_a22bc706ba20304615e2d4f587db3f83b"><div class="ttname"><a href="classamr__wind_1_1_scalar_advection.html#a22bc706ba20304615e2d4f587db3f83b">amr_wind::ScalarAdvection::m_repo</a></div><div class="ttdeci">const FieldRepo &amp; m_repo</div><div class="ttdef"><b>Definition</b> ScalarAdvection.H:47</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_scalar_advection_html_a23353f0f7aed67f00048c20f18902906"><div class="ttname"><a href="classamr__wind_1_1_scalar_advection.html#a23353f0f7aed67f00048c20f18902906">amr_wind::ScalarAdvection::m_time</a></div><div class="ttdeci">const SimTime &amp; m_time</div><div class="ttdef"><b>Definition</b> ScalarAdvection.H:46</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_scalar_advection_html_a328e548e4d407f40938af3bdf990cf71"><div class="ttname"><a href="classamr__wind_1_1_scalar_advection.html#a328e548e4d407f40938af3bdf990cf71">amr_wind::ScalarAdvection::m_velocity</a></div><div class="ttdeci">Field &amp; m_velocity</div><div class="ttdef"><b>Definition</b> ScalarAdvection.H:48</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_scalar_advection_html_a345643e6a44a861214199cc71223a8fb"><div class="ttname"><a href="classamr__wind_1_1_scalar_advection.html#a345643e6a44a861214199cc71223a8fb">amr_wind::ScalarAdvection::m_y_wavenumber</a></div><div class="ttdeci">amrex::Real m_y_wavenumber</div><div class="ttdef"><b>Definition</b> ScalarAdvection.H:74</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_scalar_advection_html_a3748a0129e19fd18b4f5e39032ee75c0"><div class="ttname"><a href="classamr__wind_1_1_scalar_advection.html#a3748a0129e19fd18b4f5e39032ee75c0">amr_wind::ScalarAdvection::m_y_width</a></div><div class="ttdeci">amrex::Real m_y_width</div><div class="ttdef"><b>Definition</b> ScalarAdvection.H:70</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_scalar_advection_html_a3ecbec948044662aee71b588c12d0cfa"><div class="ttname"><a href="classamr__wind_1_1_scalar_advection.html#a3ecbec948044662aee71b588c12d0cfa">amr_wind::ScalarAdvection::m_scalar</a></div><div class="ttdeci">Field * m_scalar</div><div class="ttdoc">Scalar field.</div><div class="ttdef"><b>Definition</b> ScalarAdvection.H:54</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_scalar_advection_html_a4e0874286842cefb478072d610baa88f"><div class="ttname"><a href="classamr__wind_1_1_scalar_advection.html#a4e0874286842cefb478072d610baa88f">amr_wind::ScalarAdvection::pre_advance_work</a></div><div class="ttdeci">void pre_advance_work() override</div><div class="ttdef"><b>Definition</b> ScalarAdvection.H:38</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_scalar_advection_html_a553eb4e3db745490aa8ed7c38b529490"><div class="ttname"><a href="classamr__wind_1_1_scalar_advection.html#a553eb4e3db745490aa8ed7c38b529490">amr_wind::ScalarAdvection::post_regrid_actions</a></div><div class="ttdeci">void post_regrid_actions() override</div><div class="ttdef"><b>Definition</b> ScalarAdvection.H:36</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_scalar_advection_html_a56d7d6a1e4bb81533ca0aa98078801ff"><div class="ttname"><a href="classamr__wind_1_1_scalar_advection.html#a56d7d6a1e4bb81533ca0aa98078801ff">amr_wind::ScalarAdvection::m_x0</a></div><div class="ttdeci">amrex::Real m_x0</div><div class="ttdoc">Initial wave/pulse packet location.</div><div class="ttdef"><b>Definition</b> ScalarAdvection.H:61</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_scalar_advection_html_a66c98dab124e5092d2bc0a445ea53209"><div class="ttname"><a href="classamr__wind_1_1_scalar_advection.html#a66c98dab124e5092d2bc0a445ea53209">amr_wind::ScalarAdvection::m_w</a></div><div class="ttdeci">const int m_w</div><div class="ttdef"><b>Definition</b> ScalarAdvection.H:51</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_scalar_advection_html_a735c07b82a5632abf382790228b2ec6a"><div class="ttname"><a href="classamr__wind_1_1_scalar_advection.html#a735c07b82a5632abf382790228b2ec6a">amr_wind::ScalarAdvection::m_x_wavenumber</a></div><div class="ttdeci">amrex::Real m_x_wavenumber</div><div class="ttdoc">Wave numbers.</div><div class="ttdef"><b>Definition</b> ScalarAdvection.H:73</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_scalar_advection_html_a757ecc7e348285a1a68bdfacd77b6446"><div class="ttname"><a href="classamr__wind_1_1_scalar_advection.html#a757ecc7e348285a1a68bdfacd77b6446">amr_wind::ScalarAdvection::m_density</a></div><div class="ttdeci">Field &amp; m_density</div><div class="ttdef"><b>Definition</b> ScalarAdvection.H:49</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_scalar_advection_html_a7df2c1233950367f10b2e498259e44d1"><div class="ttname"><a href="classamr__wind_1_1_scalar_advection.html#a7df2c1233950367f10b2e498259e44d1">amr_wind::ScalarAdvection::post_init_actions</a></div><div class="ttdeci">void post_init_actions() override</div><div class="ttdef"><b>Definition</b> ScalarAdvection.cpp:186</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_scalar_advection_html_a7ed480b156972641e6734a2b23b0409e"><div class="ttname"><a href="classamr__wind_1_1_scalar_advection.html#a7ed480b156972641e6734a2b23b0409e">amr_wind::ScalarAdvection::initialize_fields</a></div><div class="ttdeci">void initialize_fields(int level, const amrex::Geometry &amp;geom) override</div><div class="ttdoc">Initialize the fields for ScalarAdvection simulations.</div><div class="ttdef"><b>Definition</b> ScalarAdvection.cpp:166</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_scalar_advection_html_a838dfe710e3c191f7c8352facd424bba"><div class="ttname"><a href="classamr__wind_1_1_scalar_advection.html#a838dfe710e3c191f7c8352facd424bba">amr_wind::ScalarAdvection::m_y0</a></div><div class="ttdeci">amrex::Real m_y0</div><div class="ttdef"><b>Definition</b> ScalarAdvection.H:62</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_scalar_advection_html_a9837a15c89f56741a2aa296363323175"><div class="ttname"><a href="classamr__wind_1_1_scalar_advection.html#a9837a15c89f56741a2aa296363323175">amr_wind::ScalarAdvection::m_amplitude</a></div><div class="ttdeci">amrex::Real m_amplitude</div><div class="ttdoc">Initial wave/pulse amplitude.</div><div class="ttdef"><b>Definition</b> ScalarAdvection.H:65</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_scalar_advection_html_a990b5a1bf0b0a3de5cd45e8c79db2bd4"><div class="ttname"><a href="classamr__wind_1_1_scalar_advection.html#a990b5a1bf0b0a3de5cd45e8c79db2bd4">amr_wind::ScalarAdvection::identifier</a></div><div class="ttdeci">static std::string identifier()</div><div class="ttdef"><b>Definition</b> ScalarAdvection.H:22</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_scalar_advection_html_aa257162e907fb5b1cfc1bcc59f45958c"><div class="ttname"><a href="classamr__wind_1_1_scalar_advection.html#aa257162e907fb5b1cfc1bcc59f45958c">amr_wind::ScalarAdvection::m_rho</a></div><div class="ttdeci">amrex::Real m_rho</div><div class="ttdoc">Density.</div><div class="ttdef"><b>Definition</b> ScalarAdvection.H:80</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_scalar_advection_html_ac005269c255123ce9b1c1c5172cc5069"><div class="ttname"><a href="classamr__wind_1_1_scalar_advection.html#ac005269c255123ce9b1c1c5172cc5069">amr_wind::ScalarAdvection::m_shape</a></div><div class="ttdeci">std::string m_shape</div><div class="ttdoc">Initial wave/pulse shape.</div><div class="ttdef"><b>Definition</b> ScalarAdvection.H:77</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_scalar_advection_html_acdd2cd10e62a4ffcb27d06d95b52e402"><div class="ttname"><a href="classamr__wind_1_1_scalar_advection.html#acdd2cd10e62a4ffcb27d06d95b52e402">amr_wind::ScalarAdvection::m_u</a></div><div class="ttdeci">amrex::Real m_u</div><div class="ttdoc">Flow velocity in x-direction.</div><div class="ttdef"><b>Definition</b> ScalarAdvection.H:57</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_scalar_advection_html_add5190898e062b98fce40eac3a0aa6d6"><div class="ttname"><a href="classamr__wind_1_1_scalar_advection.html#add5190898e062b98fce40eac3a0aa6d6">amr_wind::ScalarAdvection::m_output_fname</a></div><div class="ttdeci">std::string m_output_fname</div><div class="ttdef"><b>Definition</b> ScalarAdvection.H:50</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_scalar_advection_html_ae5e5ef52fce57fd338ce810dd199e6e3"><div class="ttname"><a href="classamr__wind_1_1_scalar_advection.html#ae5e5ef52fce57fd338ce810dd199e6e3">amr_wind::ScalarAdvection::initialize_scalar</a></div><div class="ttdeci">void initialize_scalar(const Shape &amp;scalar_function)</div><div class="ttdef"><b>Definition</b> ScalarAdvection.cpp:211</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_scalar_advection_html_ae64f47028def67fa1b81c8cb0c46dce4"><div class="ttname"><a href="classamr__wind_1_1_scalar_advection.html#ae64f47028def67fa1b81c8cb0c46dce4">amr_wind::ScalarAdvection::~ScalarAdvection</a></div><div class="ttdeci">~ScalarAdvection() override=default</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_scalar_advection_html_ae952279f1dd3a12a651f34254a4621cc"><div class="ttname"><a href="classamr__wind_1_1_scalar_advection.html#ae952279f1dd3a12a651f34254a4621cc">amr_wind::ScalarAdvection::ScalarAdvection</a></div><div class="ttdeci">ScalarAdvection(CFDSim &amp;sim)</div><div class="ttdef"><b>Definition</b> ScalarAdvection.cpp:136</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_sim_time_html"><div class="ttname"><a href="classamr__wind_1_1_sim_time.html">amr_wind::SimTime</a></div><div class="ttdef"><b>Definition</b> SimTime.H:33</div></div>
+<div class="ttc" id="anamespaceamr__wind_html"><div class="ttname"><a href="namespaceamr__wind.html">amr_wind</a></div><div class="ttdoc">This test case is intended as an evaluation of the momentum advection scheme.</div><div class="ttdef"><b>Definition</b> BCInterface.cpp:10</div></div>
+<div class="ttc" id="astructamr__wind_1_1_gaussian_pulse_f_v_html"><div class="ttname"><a href="structamr__wind_1_1_gaussian_pulse_f_v.html">amr_wind::GaussianPulseFV</a></div><div class="ttdef"><b>Definition</b> ScalarAdvection.H:94</div></div>
+<div class="ttc" id="astructamr__wind_1_1_gaussian_pulse_f_v_html_a06e931a64ab320f5662d27bbbb8997a4"><div class="ttname"><a href="structamr__wind_1_1_gaussian_pulse_f_v.html#a06e931a64ab320f5662d27bbbb8997a4">amr_wind::GaussianPulseFV::operator()</a></div><div class="ttdeci">AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(amrex::Real, amrex::Real, amrex::Real, amrex::Real, amrex::Real, amrex::Real, amrex::Real, amrex::Real, amrex::Real, amrex::Real, amrex::Real) const</div><div class="ttdef"><b>Definition</b> ScalarAdvection.cpp:12</div></div>
+<div class="ttc" id="astructamr__wind_1_1_gaussian_wave_packet_f_v_html"><div class="ttname"><a href="structamr__wind_1_1_gaussian_wave_packet_f_v.html">amr_wind::GaussianWavePacketFV</a></div><div class="ttdef"><b>Definition</b> ScalarAdvection.H:142</div></div>
+<div class="ttc" id="astructamr__wind_1_1_gaussian_wave_packet_f_v_html_a483f39430e805024e9b480cdca70ac70"><div class="ttname"><a href="structamr__wind_1_1_gaussian_wave_packet_f_v.html#a483f39430e805024e9b480cdca70ac70">amr_wind::GaussianWavePacketFV::operator()</a></div><div class="ttdeci">AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(amrex::Real, amrex::Real, amrex::Real, amrex::Real, amrex::Real, amrex::Real, amrex::Real, amrex::Real, amrex::Real, amrex::Real, amrex::Real) const</div><div class="ttdef"><b>Definition</b> ScalarAdvection.cpp:90</div></div>
+<div class="ttc" id="astructamr__wind_1_1_gaussian_wave_packet_html"><div class="ttname"><a href="structamr__wind_1_1_gaussian_wave_packet.html">amr_wind::GaussianWavePacket</a></div><div class="ttdef"><b>Definition</b> ScalarAdvection.H:84</div></div>
+<div class="ttc" id="astructamr__wind_1_1_gaussian_wave_packet_html_accf1080b0f8238349246fcc7e12f93b6"><div class="ttname"><a href="structamr__wind_1_1_gaussian_wave_packet.html#accf1080b0f8238349246fcc7e12f93b6">amr_wind::GaussianWavePacket::operator()</a></div><div class="ttdeci">AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(amrex::Real, amrex::Real, amrex::Real, amrex::Real, amrex::Real) const</div><div class="ttdef"><b>Definition</b> ScalarAdvection.cpp:119</div></div>
+<div class="ttc" id="astructamr__wind_1_1_square_pulse_f_v_html"><div class="ttname"><a href="structamr__wind_1_1_square_pulse_f_v.html">amr_wind::SquarePulseFV</a></div><div class="ttdef"><b>Definition</b> ScalarAdvection.H:126</div></div>
+<div class="ttc" id="astructamr__wind_1_1_square_pulse_f_v_html_ac69b321be9770931d4cf4129d8177915"><div class="ttname"><a href="structamr__wind_1_1_square_pulse_f_v.html#ac69b321be9770931d4cf4129d8177915">amr_wind::SquarePulseFV::operator()</a></div><div class="ttdeci">AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(amrex::Real, amrex::Real, amrex::Real, amrex::Real, amrex::Real, amrex::Real, amrex::Real, amrex::Real, amrex::Real, amrex::Real, amrex::Real) const</div><div class="ttdef"><b>Definition</b> ScalarAdvection.cpp:66</div></div>
+<div class="ttc" id="astructamr__wind_1_1_two_dim_gaussian_pulse_f_v_html"><div class="ttname"><a href="structamr__wind_1_1_two_dim_gaussian_pulse_f_v.html">amr_wind::TwoDimGaussianPulseFV</a></div><div class="ttdef"><b>Definition</b> ScalarAdvection.H:110</div></div>
+<div class="ttc" id="astructamr__wind_1_1_two_dim_gaussian_pulse_f_v_html_aba80369e4237bae16c2bf3502c1dcbdf"><div class="ttname"><a href="structamr__wind_1_1_two_dim_gaussian_pulse_f_v.html#aba80369e4237bae16c2bf3502c1dcbdf">amr_wind::TwoDimGaussianPulseFV::operator()</a></div><div class="ttdeci">AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(amrex::Real, amrex::Real, amrex::Real, amrex::Real, amrex::Real, amrex::Real, amrex::Real, amrex::Real, amrex::Real, amrex::Real, amrex::Real) const</div><div class="ttdef"><b>Definition</b> ScalarAdvection.cpp:38</div></div>
+<div class="ttc" id="atrig__ops_8_h_html"><div class="ttname"><a href="trig__ops_8_h.html">trig_ops.H</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,14 @@
+.. meta::3f8e6797c162b779b234c9c737a1bc0e97891944587b616852b6cfeede0466ef25b461e4e14c3456591040c7636d1298f9adad09412241429190e4f3fcb4f177
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ocean_waves Namespace Reference
+
+ocean\_waves Namespace Reference
+================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: namespaceamr__wind_1_1ocean__waves.html

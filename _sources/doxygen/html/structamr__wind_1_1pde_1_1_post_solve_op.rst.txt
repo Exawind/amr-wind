@@ -1,0 +1,14 @@
+.. meta::7bb1c803e49f9be9b5a458bc6282d621697bb1dbb025d49c1f2da3d8f0859fb1a0c42d1bc3c72203d755f1c7957c5bada23cec2fcbc46b87ae619f04bbd545dc
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::PostSolveOp&lt; PDE &gt; Struct Template Reference
+
+PostSolveOp&lt; PDE &gt; Struct Template Reference
+==================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1pde_1_1_post_solve_op.html

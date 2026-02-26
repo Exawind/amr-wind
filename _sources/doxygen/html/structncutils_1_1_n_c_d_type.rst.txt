@@ -1,0 +1,14 @@
+.. meta::9abd5247f975b91fabce970d0a1da7ca5b956297e61fd199e92aa39f83c9377d7d18fcf221e47fb82ad40a2c90ace90a28a899b9e2422969c75e1a62ed8d2f8b
+
+:orphan:
+
+.. title:: AMR-Wind API: ncutils::NCDType Struct Reference
+
+NCDType Struct Reference
+========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structncutils_1_1_n_c_d_type.html

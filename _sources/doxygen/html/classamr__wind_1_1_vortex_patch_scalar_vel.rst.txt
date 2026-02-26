@@ -1,0 +1,14 @@
+.. meta::9b6f056900a32c8a32c7471fcb5c7675b342528613c81871452209b3c8eacced28ea003a2800d3eb3527dff9fd08cba55351fc649fc64db9aa9ca6e3d4bf8d74
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::VortexPatchScalarVel Class Reference
+
+VortexPatchScalarVel Class Reference
+====================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_vortex_patch_scalar_vel.html

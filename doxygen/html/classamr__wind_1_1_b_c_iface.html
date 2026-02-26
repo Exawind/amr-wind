@@ -1,0 +1,603 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::BCIface Class Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::BCIface Class Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/classamr__wind_1_1_b_c_iface.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="bciface-class-reference">
+<h1>BCIface Class Reference<a class="headerlink" href="#bciface-class-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::BCIface Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="classamr__wind_1_1_b_c_iface.html">BCIface</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a> &#124;
+<a href="classamr__wind_1_1_b_c_iface-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::BCIface Class Reference<span class="mlabels"><span class="mlabel abstract">abstract</span></span><div class="ingroups"><a class="el" href="group__core.html">AMR-Wind core</a> &raquo; <a class="el" href="group__fields.html">Field management</a> &raquo; <a class="el" href="group__field__bc.html">Boundary conditions management</a></div></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_b_c_interface_8_h_source.html">BCInterface.H</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for amr_wind::BCIface:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1_b_c_iface__inherit__graph.svg" width="627" height="283"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for amr_wind::BCIface:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1_b_c_iface__coll__graph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-types" class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a789bd60ac0b43b7719b1f4996753391f" id="r_a789bd60ac0b43b7719b1f4996753391f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a789bd60ac0b43b7719b1f4996753391f">IncfloBC</a> = amrex::GpuArray&lt;<a class="el" href="incflo__enums_8_h.html#a682a1815cce6afdf9ccb32fedc064292">BC</a>, AMREX_SPACEDIM * 2&gt;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a9c4dcba9672302d7bc123f98f6919cf6" id="r_a9c4dcba9672302d7bc123f98f6919cf6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9c4dcba9672302d7bc123f98f6919cf6">BCIface</a> (<a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;field)</td></tr>
+<tr class="memitem:a445d3e021836636ae7dbe1e4aeed2728" id="r_a445d3e021836636ae7dbe1e4aeed2728"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a445d3e021836636ae7dbe1e4aeed2728">~BCIface</a> ()=default</td></tr>
+<tr class="memitem:a6ea3f683352ed57783f83dc039362e57" id="r_a6ea3f683352ed57783f83dc039362e57"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6ea3f683352ed57783f83dc039362e57">operator()</a> (amrex::Real value=0.0_rt)</td></tr>
+<tr class="memdesc:a6ea3f683352ed57783f83dc039362e57"><td class="mdescLeft">&#160;</td><td class="mdescRight">Operator that performs init actions and syncs the <a class="el" href="incflo__enums_8_h.html#a682a1815cce6afdf9ccb32fedc064292">BC</a> data to device.  <br /></td></tr>
+<tr class="memitem:abe5ae1006e7bee9602b12516133f256e" id="r_abe5ae1006e7bee9602b12516133f256e"><td class="memItemLeft" align="right" valign="top">amrex::Array&lt; const std::string, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abe5ae1006e7bee9602b12516133f256e">get_dirichlet_udfs</a> ()</td></tr>
+<tr class="memdesc:abe5ae1006e7bee9602b12516133f256e"><td class="mdescLeft">&#160;</td><td class="mdescRight">User-defined functions for Dirichlet-type boundaries.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:a0d0cf5396070e29283fda493f8fa8ad9" id="r_a0d0cf5396070e29283fda493f8fa8ad9"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0d0cf5396070e29283fda493f8fa8ad9">set_bcrec</a> ()=0</td></tr>
+<tr class="memdesc:a0d0cf5396070e29283fda493f8fa8ad9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Setup AMReX mathematical <a class="el" href="incflo__enums_8_h.html#a682a1815cce6afdf9ccb32fedc064292">BC</a> types.  <br /></td></tr>
+<tr class="memitem:aa7c99c64af6d30fcc244bdfbe295be82" id="r_aa7c99c64af6d30fcc244bdfbe295be82"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa7c99c64af6d30fcc244bdfbe295be82">read_values</a> ()=0</td></tr>
+<tr class="memdesc:aa7c99c64af6d30fcc244bdfbe295be82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read input data for specific fields based on <a class="el" href="incflo__enums_8_h.html#a682a1815cce6afdf9ccb32fedc064292">BC</a> types.  <br /></td></tr>
+<tr class="memitem:acbfee584ae1766223410c357cda38b95" id="r_acbfee584ae1766223410c357cda38b95"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acbfee584ae1766223410c357cda38b95">read_bctype</a> ()</td></tr>
+<tr class="memdesc:acbfee584ae1766223410c357cda38b95"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse custom BCs specified for this field.  <br /></td></tr>
+<tr class="memitem:a1869820135e1b59b105d3ccd560afadb" id="r_a1869820135e1b59b105d3ccd560afadb"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1869820135e1b59b105d3ccd560afadb">set_bcfuncs</a> ()</td></tr>
+<tr class="memdesc:a1869820135e1b59b105d3ccd560afadb"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="incflo__enums_8_h.html#a682a1815cce6afdf9ccb32fedc064292">BC</a> functions for Neumann type boundaries.  <br /></td></tr>
+<tr class="memitem:a09bd388ee498038f924dda5c41c3cd2c" id="r_a09bd388ee498038f924dda5c41c3cd2c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a09bd388ee498038f924dda5c41c3cd2c">set_default_value</a> (amrex::Real value)</td></tr>
+<tr class="memdesc:a09bd388ee498038f924dda5c41c3cd2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set default <a class="el" href="incflo__enums_8_h.html#a682a1815cce6afdf9ccb32fedc064292">BC</a> values for the field.  <br /></td></tr>
+<tr class="memitem:a9430d923baac05823eb88ac8300446bd" id="r_a9430d923baac05823eb88ac8300446bd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9430d923baac05823eb88ac8300446bd">set_bcrec_lo</a> (int dir, amrex::BCType::mathematicalBndryTypes bcrec)</td></tr>
+<tr class="memdesc:a9430d923baac05823eb88ac8300446bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set AMReX mathematical boundary types for the lower boundaries.  <br /></td></tr>
+<tr class="memitem:aefc34d12de8d4339189a5367c2df9829" id="r_aefc34d12de8d4339189a5367c2df9829"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aefc34d12de8d4339189a5367c2df9829">set_bcrec_hi</a> (int dir, amrex::BCType::mathematicalBndryTypes bcrec)</td></tr>
+<tr class="memdesc:aefc34d12de8d4339189a5367c2df9829"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set AMReX mathematical boundary types for the upper boundaries.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:a716ebd5ea7895e5a6a8f506f91fb3d1b" id="r_a716ebd5ea7895e5a6a8f506f91fb3d1b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a716ebd5ea7895e5a6a8f506f91fb3d1b">m_field</a></td></tr>
+<tr class="memdesc:a716ebd5ea7895e5a6a8f506f91fb3d1b"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classamr__wind_1_1_field.html">Field</a> instance where <a class="el" href="incflo__enums_8_h.html#a682a1815cce6afdf9ccb32fedc064292">BC</a> is being set.  <br /></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Abstract class that defines the interface for processing BCs</p>
+<p>This class defines the infrastructure to read and initialize the boundary condition information from the input file and populate the necessary data in <a class="el" href="structamr__wind_1_1_field_info.html">FieldInfo</a> instance for a given <a class="el" href="classamr__wind_1_1_field.html">Field</a>. </p>
+</div><a name="doc-typedef-members" id="doc-typedef-members"></a><h2 id="header-doc-typedef-members" class="groupheader">Member Typedef Documentation</h2>
+<a id="a789bd60ac0b43b7719b1f4996753391f" name="a789bd60ac0b43b7719b1f4996753391f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a789bd60ac0b43b7719b1f4996753391f">&#9670;&#160;</a></span>IncfloBC</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#a789bd60ac0b43b7719b1f4996753391f">amr_wind::BCIface::IncfloBC</a> = amrex::GpuArray&lt;<a class="el" href="incflo__enums_8_h.html#a682a1815cce6afdf9ccb32fedc064292">BC</a>, AMREX_SPACEDIM * 2&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a9c4dcba9672302d7bc123f98f6919cf6" name="a9c4dcba9672302d7bc123f98f6919cf6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c4dcba9672302d7bc123f98f6919cf6">&#9670;&#160;</a></span>BCIface()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::BCIface::BCIface </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>field</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a445d3e021836636ae7dbe1e4aeed2728" name="a445d3e021836636ae7dbe1e4aeed2728"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a445d3e021836636ae7dbe1e4aeed2728">&#9670;&#160;</a></span>~BCIface()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual amr_wind::BCIface::~BCIface </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel virtual">virtual</span><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="abe5ae1006e7bee9602b12516133f256e" name="abe5ae1006e7bee9602b12516133f256e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe5ae1006e7bee9602b12516133f256e">&#9670;&#160;</a></span>get_dirichlet_udfs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Array&lt; const std::string, 3 &gt; amr_wind::BCIface::get_dirichlet_udfs </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>User-defined functions for Dirichlet-type boundaries. </p>
+
+</div>
+</div>
+<a id="a6ea3f683352ed57783f83dc039362e57" name="a6ea3f683352ed57783f83dc039362e57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ea3f683352ed57783f83dc039362e57">&#9670;&#160;</a></span>operator()()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::BCIface::operator() </td>
+          <td>(</td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>value</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0.0_rt</span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Operator that performs init actions and syncs the <a class="el" href="incflo__enums_8_h.html#a682a1815cce6afdf9ccb32fedc064292">BC</a> data to device. </p>
+
+</div>
+</div>
+<a id="acbfee584ae1766223410c357cda38b95" name="acbfee584ae1766223410c357cda38b95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acbfee584ae1766223410c357cda38b95">&#9670;&#160;</a></span>read_bctype()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::BCIface::read_bctype </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Parse custom BCs specified for this field. </p>
+
+</div>
+</div>
+<a id="aa7c99c64af6d30fcc244bdfbe295be82" name="aa7c99c64af6d30fcc244bdfbe295be82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7c99c64af6d30fcc244bdfbe295be82">&#9670;&#160;</a></span>read_values()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void amr_wind::BCIface::read_values </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span><span class="mlabel pure-virtual">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Read input data for specific fields based on <a class="el" href="incflo__enums_8_h.html#a682a1815cce6afdf9ccb32fedc064292">BC</a> types. </p>
+
+<p>Implemented in <a class="el" href="classamr__wind_1_1_b_c_density_mod.html#ab46abe8f6436d043db376a2421b2bfd1">amr_wind::BCDensityMod</a>, <a class="el" href="classamr__wind_1_1_b_c_fill_patch_extrap.html#a948290b5e63d974b9fe3b44061251ee9">amr_wind::BCFillPatchExtrap</a>, <a class="el" href="classamr__wind_1_1_b_c_pressure.html#a96d57b2feab45a788772df73718e8a3b">amr_wind::BCPressure</a>, <a class="el" href="classamr__wind_1_1_b_c_scalar.html#a8d224540467ba7bf883cef5284f869bd">amr_wind::BCScalar</a>, <a class="el" href="classamr__wind_1_1_b_c_src_term.html#a2b41f1f0758e946a2877025e4a064e09">amr_wind::BCSrcTerm</a>, <a class="el" href="classamr__wind_1_1_b_c_velocity.html#af1c1a7057d0a884af21c774d2ddb6965">amr_wind::BCVelocity</a>, and <a class="el" href="classamr__wind_1_1_b_c_v_o_f.html#a3d3b567109b9d9810ed1ed56980d3546">amr_wind::BCVOF</a>.</p>
+
+</div>
+</div>
+<a id="a1869820135e1b59b105d3ccd560afadb" name="a1869820135e1b59b105d3ccd560afadb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1869820135e1b59b105d3ccd560afadb">&#9670;&#160;</a></span>set_bcfuncs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::BCIface::set_bcfuncs </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="incflo__enums_8_h.html#a682a1815cce6afdf9ccb32fedc064292">BC</a> functions for Neumann type boundaries. </p>
+
+</div>
+</div>
+<a id="a0d0cf5396070e29283fda493f8fa8ad9" name="a0d0cf5396070e29283fda493f8fa8ad9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d0cf5396070e29283fda493f8fa8ad9">&#9670;&#160;</a></span>set_bcrec()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void amr_wind::BCIface::set_bcrec </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span><span class="mlabel pure-virtual">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Setup AMReX mathematical <a class="el" href="incflo__enums_8_h.html#a682a1815cce6afdf9ccb32fedc064292">BC</a> types. </p>
+
+<p>Implemented in <a class="el" href="classamr__wind_1_1_b_c_density_mod.html#ab61fe2098c4fddb4c3857df8feb95c0d">amr_wind::BCDensityMod</a>, <a class="el" href="classamr__wind_1_1_b_c_fill_patch_extrap.html#abd2fd9f255647d0fc60646ff9e86b786">amr_wind::BCFillPatchExtrap</a>, <a class="el" href="classamr__wind_1_1_b_c_scalar.html#ac6e64687edf06ad9b9754f5a97f75670">amr_wind::BCScalar</a>, <a class="el" href="classamr__wind_1_1_b_c_src_term.html#a0305962267c6991eec362648dd44a6fe">amr_wind::BCSrcTerm</a>, <a class="el" href="classamr__wind_1_1_b_c_velocity.html#a6e64aa2e18585393bf526c428af4c4b1">amr_wind::BCVelocity</a>, and <a class="el" href="classamr__wind_1_1_b_c_v_o_f.html#ac5f97e661d1b1d39dad7e8805950afe3">amr_wind::BCVOF</a>.</p>
+
+</div>
+</div>
+<a id="aefc34d12de8d4339189a5367c2df9829" name="aefc34d12de8d4339189a5367c2df9829"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aefc34d12de8d4339189a5367c2df9829">&#9670;&#160;</a></span>set_bcrec_hi()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::BCIface::set_bcrec_hi </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>dir</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::BCType::mathematicalBndryTypes</td>          <td class="paramname"><span class="paramname"><em>bcrec</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set AMReX mathematical boundary types for the upper boundaries. </p>
+
+</div>
+</div>
+<a id="a9430d923baac05823eb88ac8300446bd" name="a9430d923baac05823eb88ac8300446bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9430d923baac05823eb88ac8300446bd">&#9670;&#160;</a></span>set_bcrec_lo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::BCIface::set_bcrec_lo </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>dir</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::BCType::mathematicalBndryTypes</td>          <td class="paramname"><span class="paramname"><em>bcrec</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set AMReX mathematical boundary types for the lower boundaries. </p>
+
+</div>
+</div>
+<a id="a09bd388ee498038f924dda5c41c3cd2c" name="a09bd388ee498038f924dda5c41c3cd2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09bd388ee498038f924dda5c41c3cd2c">&#9670;&#160;</a></span>set_default_value()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::BCIface::set_default_value </td>
+          <td>(</td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>value</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set default <a class="el" href="incflo__enums_8_h.html#a682a1815cce6afdf9ccb32fedc064292">BC</a> values for the field. </p>
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a716ebd5ea7895e5a6a8f506f91fb3d1b" name="a716ebd5ea7895e5a6a8f506f91fb3d1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a716ebd5ea7895e5a6a8f506f91fb3d1b">&#9670;&#160;</a></span>m_field</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a>&amp; amr_wind::BCIface::m_field</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classamr__wind_1_1_field.html">Field</a> instance where <a class="el" href="incflo__enums_8_h.html#a682a1815cce6afdf9ccb32fedc064292">BC</a> is being set. </p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/boundary_conditions/<a class="el" href="_b_c_interface_8_h_source.html">BCInterface.H</a></li>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/boundary_conditions/<a class="el" href="_b_c_interface_8cpp.html">BCInterface.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

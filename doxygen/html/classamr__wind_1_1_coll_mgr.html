@@ -1,0 +1,706 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::CollMgr&amp;lt; Collection, Type, allow_duplicates &amp;gt; Class Template Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::CollMgr&amp;lt; Collection, Type, allow_duplicates &amp;gt; Class Template Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/classamr__wind_1_1_coll_mgr.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="collmgr-lt-collection-type-allow-duplicates-gt-class-template-reference">
+<h1>CollMgr&amp;lt; Collection, Type, allow_duplicates &amp;gt; Class Template Reference<a class="headerlink" href="#collmgr-lt-collection-type-allow-duplicates-gt-class-template-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::CollMgr&lt; Collection, Type, allow_duplicates &gt; Class Template Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="classamr__wind_1_1_coll_mgr.html">CollMgr</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a> &#124;
+<a href="#pri-methods">Private Member Functions</a> &#124;
+<a href="classamr__wind_1_1_coll_mgr-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::CollMgr&lt; Collection, Type, allow_duplicates &gt; Class Template Reference<div class="ingroups"><a class="el" href="group__core.html">AMR-Wind core</a></div></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_coll_mgr_8_h_source.html">CollMgr.H</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for amr_wind::CollMgr&lt; Collection, Type, allow_duplicates &gt;:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1_coll_mgr__inherit__graph.svg" width="100%" height="434"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for amr_wind::CollMgr&lt; Collection, Type, allow_duplicates &gt;:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1_coll_mgr__coll__graph.svg" width="328" height="398"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-types" class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a54ee65988a7653c55653024d05256656" id="r_a54ee65988a7653c55653024d05256656"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a54ee65988a7653c55653024d05256656">TypePtr</a> = std::unique_ptr&lt;Type&gt;</td></tr>
+<tr class="memitem:a42023c48d3e1fac30a08f8a49d63a96b" id="r_a42023c48d3e1fac30a08f8a49d63a96b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a42023c48d3e1fac30a08f8a49d63a96b">TypeVector</a> = amrex::Vector&lt;<a class="el" href="#a54ee65988a7653c55653024d05256656">TypePtr</a>&gt;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a02c0990d23b6c9696e1a76f84d1e43e0" id="r_a02c0990d23b6c9696e1a76f84d1e43e0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a02c0990d23b6c9696e1a76f84d1e43e0">~CollMgr</a> ()=default</td></tr>
+<tr class="memitem:a8def747e4546eb6e6b9651f8d356eabd" id="r_a8def747e4546eb6e6b9651f8d356eabd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8def747e4546eb6e6b9651f8d356eabd">CollMgr</a> (const <a class="el" href="classamr__wind_1_1_coll_mgr.html">CollMgr</a> &amp;)=delete</td></tr>
+<tr class="memitem:a6556a779d0a1cdf2abce54f5033d172c" id="r_a6556a779d0a1cdf2abce54f5033d172c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_coll_mgr.html">CollMgr</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6556a779d0a1cdf2abce54f5033d172c">operator=</a> (const <a class="el" href="classamr__wind_1_1_coll_mgr.html">CollMgr</a> &amp;)=delete</td></tr>
+<tr class="memitem:ac95f6acf65dd083fa174e49fa3df3842" id="r_ac95f6acf65dd083fa174e49fa3df3842"><td class="memTemplParams" colspan="2">template&lt;class... Args&gt; </td></tr>
+<tr class="memitem:ac95f6acf65dd083fa174e49fa3df3842 template"><td class="memItemLeft" align="right" valign="top">Type &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac95f6acf65dd083fa174e49fa3df3842">create</a> (const std::string &amp;key, Args &amp;&amp;... args)</td></tr>
+<tr class="memitem:a0aae77ab6589bba31382a4e7c3b7746d" id="r_a0aae77ab6589bba31382a4e7c3b7746d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#a42023c48d3e1fac30a08f8a49d63a96b">TypeVector</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0aae77ab6589bba31382a4e7c3b7746d">objects</a> ()</td></tr>
+<tr class="memdesc:a0aae77ab6589bba31382a4e7c3b7746d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a vector of the registered objects.  <br /></td></tr>
+<tr class="memitem:ab27ae8fd21400e12fb08af75296d3a0a" id="r_ab27ae8fd21400e12fb08af75296d3a0a"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="#a42023c48d3e1fac30a08f8a49d63a96b">TypeVector</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab27ae8fd21400e12fb08af75296d3a0a">objects</a> () const</td></tr>
+<tr class="memitem:a4b4859091190f9d5d43d5bb0503c48d9" id="r_a4b4859091190f9d5d43d5bb0503c48d9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4b4859091190f9d5d43d5bb0503c48d9">contains</a> (const std::string &amp;key) const</td></tr>
+<tr class="memdesc:a4b4859091190f9d5d43d5bb0503c48d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query if an object exists using the lookup key.  <br /></td></tr>
+<tr class="memitem:a273fffe84660244b049a6e41fb13f064" id="r_a273fffe84660244b049a6e41fb13f064"><td class="memItemLeft" align="right" valign="top">Type &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a273fffe84660244b049a6e41fb13f064">operator()</a> (const std::string &amp;key)</td></tr>
+<tr class="memdesc:a273fffe84660244b049a6e41fb13f064"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the object corresponding to a lookup key.  <br /></td></tr>
+<tr class="memitem:adbace71d3eec4561be60b3f6cb0d8f46" id="r_adbace71d3eec4561be60b3f6cb0d8f46"><td class="memItemLeft" align="right" valign="top">const Type &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adbace71d3eec4561be60b3f6cb0d8f46">operator()</a> (const std::string &amp;key) const</td></tr>
+<tr class="memitem:a80cfbed2f03cdc66b42f485569766f35" id="r_a80cfbed2f03cdc66b42f485569766f35"><td class="memTemplParams" colspan="2">template&lt;typename T&gt; </td></tr>
+<tr class="memitem:a80cfbed2f03cdc66b42f485569766f35 template"><td class="memItemLeft" align="right" valign="top">T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a80cfbed2f03cdc66b42f485569766f35">operator()</a> (const std::string &amp;key)</td></tr>
+<tr class="memdesc:a80cfbed2f03cdc66b42f485569766f35"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return object for a lookup key cast into its exact class definition.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:aad3c43e5811650178fb9642b581a4411" id="r_aad3c43e5811650178fb9642b581a4411"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#a42023c48d3e1fac30a08f8a49d63a96b">TypeVector</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aad3c43e5811650178fb9642b581a4411">m_obj_vec</a></td></tr>
+<tr class="memdesc:aad3c43e5811650178fb9642b581a4411"><td class="mdescLeft">&#160;</td><td class="mdescRight">Collection of objects registered so far.  <br /></td></tr>
+<tr class="memitem:ae802148b969b54ee9ddb59baeeb29b6c" id="r_ae802148b969b54ee9ddb59baeeb29b6c"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae802148b969b54ee9ddb59baeeb29b6c">m_obj_map</a></td></tr>
+<tr class="memdesc:ae802148b969b54ee9ddb59baeeb29b6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Key word based lookup.  <br /></td></tr>
+<tr class="memitem:a559dc692cdb4b65d3de50959b9fd0de4" id="r_a559dc692cdb4b65d3de50959b9fd0de4"><td class="memItemLeft" align="right" valign="top">friend&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a559dc692cdb4b65d3de50959b9fd0de4">Collection</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-methods" class="groupheader"><a id="pri-methods" name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:a226bb428c86542589db1ae58587b09b5" id="r_a226bb428c86542589db1ae58587b09b5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a226bb428c86542589db1ae58587b09b5">CollMgr</a> ()=default</td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename <a class="el" href="#a559dc692cdb4b65d3de50959b9fd0de4">Collection</a>, typename Type, bool allow_duplicates = false&gt;<br />
+class amr_wind::CollMgr&lt; Collection, Type, allow_duplicates &gt;</div><p>Interface to manage objects of sub-classes based on factory registration</p>
+<p>Provides boiler-plate code to register a collection and then query using lookup keywords</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Collection</td><td>Class holding instances of collection (e.g., <a class="el" href="classamr__wind_1_1_physics_mgr.html">PhysicsMgr</a>) </td></tr>
+    <tr><td class="paramname">Base</td><td>class of the collection (e.g., <a class="el" href="classamr__wind_1_1_physics.html">Physics</a>) </td></tr>
+  </table>
+  </dd>
+</dl>
+</div><a name="doc-typedef-members" id="doc-typedef-members"></a><h2 id="header-doc-typedef-members" class="groupheader">Member Typedef Documentation</h2>
+<a id="a54ee65988a7653c55653024d05256656" name="a54ee65988a7653c55653024d05256656"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54ee65988a7653c55653024d05256656">&#9670;&#160;</a></span>TypePtr</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename <a class="el" href="#a559dc692cdb4b65d3de50959b9fd0de4">Collection</a>, typename Type, bool allow_duplicates = false&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classamr__wind_1_1_coll_mgr.html">amr_wind::CollMgr</a>&lt; <a class="el" href="#a559dc692cdb4b65d3de50959b9fd0de4">Collection</a>, Type, allow_duplicates &gt;::TypePtr = std::unique_ptr&lt;Type&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a42023c48d3e1fac30a08f8a49d63a96b" name="a42023c48d3e1fac30a08f8a49d63a96b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42023c48d3e1fac30a08f8a49d63a96b">&#9670;&#160;</a></span>TypeVector</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename <a class="el" href="#a559dc692cdb4b65d3de50959b9fd0de4">Collection</a>, typename Type, bool allow_duplicates = false&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classamr__wind_1_1_coll_mgr.html">amr_wind::CollMgr</a>&lt; <a class="el" href="#a559dc692cdb4b65d3de50959b9fd0de4">Collection</a>, Type, allow_duplicates &gt;::TypeVector = amrex::Vector&lt;<a class="el" href="#a54ee65988a7653c55653024d05256656">TypePtr</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a226bb428c86542589db1ae58587b09b5" name="a226bb428c86542589db1ae58587b09b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a226bb428c86542589db1ae58587b09b5">&#9670;&#160;</a></span>CollMgr() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename <a class="el" href="#a559dc692cdb4b65d3de50959b9fd0de4">Collection</a>, typename Type, bool allow_duplicates = false&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_coll_mgr.html">amr_wind::CollMgr</a>&lt; <a class="el" href="#a559dc692cdb4b65d3de50959b9fd0de4">Collection</a>, Type, allow_duplicates &gt;::CollMgr </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a02c0990d23b6c9696e1a76f84d1e43e0" name="a02c0990d23b6c9696e1a76f84d1e43e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02c0990d23b6c9696e1a76f84d1e43e0">&#9670;&#160;</a></span>~CollMgr()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename <a class="el" href="#a559dc692cdb4b65d3de50959b9fd0de4">Collection</a>, typename Type, bool allow_duplicates = false&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_coll_mgr.html">amr_wind::CollMgr</a>&lt; <a class="el" href="#a559dc692cdb4b65d3de50959b9fd0de4">Collection</a>, Type, allow_duplicates &gt;::~<a class="el" href="classamr__wind_1_1_coll_mgr.html">CollMgr</a> </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8def747e4546eb6e6b9651f8d356eabd" name="a8def747e4546eb6e6b9651f8d356eabd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8def747e4546eb6e6b9651f8d356eabd">&#9670;&#160;</a></span>CollMgr() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename <a class="el" href="#a559dc692cdb4b65d3de50959b9fd0de4">Collection</a>, typename Type, bool allow_duplicates = false&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_coll_mgr.html">amr_wind::CollMgr</a>&lt; <a class="el" href="#a559dc692cdb4b65d3de50959b9fd0de4">Collection</a>, Type, allow_duplicates &gt;::CollMgr </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_coll_mgr.html">CollMgr</a>&lt; <a class="el" href="#a559dc692cdb4b65d3de50959b9fd0de4">Collection</a>, Type, allow_duplicates &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel delete">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a4b4859091190f9d5d43d5bb0503c48d9" name="a4b4859091190f9d5d43d5bb0503c48d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b4859091190f9d5d43d5bb0503c48d9">&#9670;&#160;</a></span>contains()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename <a class="el" href="#a559dc692cdb4b65d3de50959b9fd0de4">Collection</a>, typename Type, bool allow_duplicates = false&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classamr__wind_1_1_coll_mgr.html">amr_wind::CollMgr</a>&lt; <a class="el" href="#a559dc692cdb4b65d3de50959b9fd0de4">Collection</a>, Type, allow_duplicates &gt;::contains </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>key</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query if an object exists using the lookup key. </p>
+
+</div>
+</div>
+<a id="ac95f6acf65dd083fa174e49fa3df3842" name="ac95f6acf65dd083fa174e49fa3df3842"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac95f6acf65dd083fa174e49fa3df3842">&#9670;&#160;</a></span>create()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename <a class="el" href="#a559dc692cdb4b65d3de50959b9fd0de4">Collection</a>, typename Type, bool allow_duplicates = false&gt; </div>
+<div class="memtemplate">
+template&lt;class... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Type &amp; <a class="el" href="classamr__wind_1_1_coll_mgr.html">amr_wind::CollMgr</a>&lt; <a class="el" href="#a559dc692cdb4b65d3de50959b9fd0de4">Collection</a>, Type, allow_duplicates &gt;::create </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>key</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Args &amp;&amp;...</td>          <td class="paramname"><span class="paramname"><em>args</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Create a new object and register it in the vector and setup lookup options </p>
+
+</div>
+</div>
+<a id="a0aae77ab6589bba31382a4e7c3b7746d" name="a0aae77ab6589bba31382a4e7c3b7746d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0aae77ab6589bba31382a4e7c3b7746d">&#9670;&#160;</a></span>objects() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename <a class="el" href="#a559dc692cdb4b65d3de50959b9fd0de4">Collection</a>, typename Type, bool allow_duplicates = false&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a42023c48d3e1fac30a08f8a49d63a96b">TypeVector</a> &amp; <a class="el" href="classamr__wind_1_1_coll_mgr.html">amr_wind::CollMgr</a>&lt; <a class="el" href="#a559dc692cdb4b65d3de50959b9fd0de4">Collection</a>, Type, allow_duplicates &gt;::objects </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return a vector of the registered objects. </p>
+
+</div>
+</div>
+<a id="ab27ae8fd21400e12fb08af75296d3a0a" name="ab27ae8fd21400e12fb08af75296d3a0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab27ae8fd21400e12fb08af75296d3a0a">&#9670;&#160;</a></span>objects() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename <a class="el" href="#a559dc692cdb4b65d3de50959b9fd0de4">Collection</a>, typename Type, bool allow_duplicates = false&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="#a42023c48d3e1fac30a08f8a49d63a96b">TypeVector</a> &amp; <a class="el" href="classamr__wind_1_1_coll_mgr.html">amr_wind::CollMgr</a>&lt; <a class="el" href="#a559dc692cdb4b65d3de50959b9fd0de4">Collection</a>, Type, allow_duplicates &gt;::objects </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a273fffe84660244b049a6e41fb13f064" name="a273fffe84660244b049a6e41fb13f064"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a273fffe84660244b049a6e41fb13f064">&#9670;&#160;</a></span>operator()() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename <a class="el" href="#a559dc692cdb4b65d3de50959b9fd0de4">Collection</a>, typename Type, bool allow_duplicates = false&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Type &amp; <a class="el" href="classamr__wind_1_1_coll_mgr.html">amr_wind::CollMgr</a>&lt; <a class="el" href="#a559dc692cdb4b65d3de50959b9fd0de4">Collection</a>, Type, allow_duplicates &gt;::operator() </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>key</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the object corresponding to a lookup key. </p>
+
+</div>
+</div>
+<a id="a80cfbed2f03cdc66b42f485569766f35" name="a80cfbed2f03cdc66b42f485569766f35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80cfbed2f03cdc66b42f485569766f35">&#9670;&#160;</a></span>operator()() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename <a class="el" href="#a559dc692cdb4b65d3de50959b9fd0de4">Collection</a>, typename Type, bool allow_duplicates = false&gt; </div>
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">T &amp; <a class="el" href="classamr__wind_1_1_coll_mgr.html">amr_wind::CollMgr</a>&lt; <a class="el" href="#a559dc692cdb4b65d3de50959b9fd0de4">Collection</a>, Type, allow_duplicates &gt;::operator() </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>key</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return object for a lookup key cast into its exact class definition. </p>
+
+</div>
+</div>
+<a id="adbace71d3eec4561be60b3f6cb0d8f46" name="adbace71d3eec4561be60b3f6cb0d8f46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adbace71d3eec4561be60b3f6cb0d8f46">&#9670;&#160;</a></span>operator()() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename <a class="el" href="#a559dc692cdb4b65d3de50959b9fd0de4">Collection</a>, typename Type, bool allow_duplicates = false&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Type &amp; <a class="el" href="classamr__wind_1_1_coll_mgr.html">amr_wind::CollMgr</a>&lt; <a class="el" href="#a559dc692cdb4b65d3de50959b9fd0de4">Collection</a>, Type, allow_duplicates &gt;::operator() </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>key</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6556a779d0a1cdf2abce54f5033d172c" name="a6556a779d0a1cdf2abce54f5033d172c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6556a779d0a1cdf2abce54f5033d172c">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename <a class="el" href="#a559dc692cdb4b65d3de50959b9fd0de4">Collection</a>, typename Type, bool allow_duplicates = false&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_coll_mgr.html">CollMgr</a> &amp; <a class="el" href="classamr__wind_1_1_coll_mgr.html">amr_wind::CollMgr</a>&lt; <a class="el" href="#a559dc692cdb4b65d3de50959b9fd0de4">Collection</a>, Type, allow_duplicates &gt;::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_coll_mgr.html">CollMgr</a>&lt; <a class="el" href="#a559dc692cdb4b65d3de50959b9fd0de4">Collection</a>, Type, allow_duplicates &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel delete">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a559dc692cdb4b65d3de50959b9fd0de4" name="a559dc692cdb4b65d3de50959b9fd0de4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a559dc692cdb4b65d3de50959b9fd0de4">&#9670;&#160;</a></span>Collection</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Collection, typename Type, bool allow_duplicates = false&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend <a class="el" href="classamr__wind_1_1_coll_mgr.html">amr_wind::CollMgr</a>&lt; Collection, Type, allow_duplicates &gt;::Collection</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae802148b969b54ee9ddb59baeeb29b6c" name="ae802148b969b54ee9ddb59baeeb29b6c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae802148b969b54ee9ddb59baeeb29b6c">&#9670;&#160;</a></span>m_obj_map</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename <a class="el" href="#a559dc692cdb4b65d3de50959b9fd0de4">Collection</a>, typename Type, bool allow_duplicates = false&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;std::string, int&gt; <a class="el" href="classamr__wind_1_1_coll_mgr.html">amr_wind::CollMgr</a>&lt; <a class="el" href="#a559dc692cdb4b65d3de50959b9fd0de4">Collection</a>, Type, allow_duplicates &gt;::m_obj_map</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Key word based lookup. </p>
+
+</div>
+</div>
+<a id="aad3c43e5811650178fb9642b581a4411" name="aad3c43e5811650178fb9642b581a4411"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad3c43e5811650178fb9642b581a4411">&#9670;&#160;</a></span>m_obj_vec</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename <a class="el" href="#a559dc692cdb4b65d3de50959b9fd0de4">Collection</a>, typename Type, bool allow_duplicates = false&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a42023c48d3e1fac30a08f8a49d63a96b">TypeVector</a> <a class="el" href="classamr__wind_1_1_coll_mgr.html">amr_wind::CollMgr</a>&lt; <a class="el" href="#a559dc692cdb4b65d3de50959b9fd0de4">Collection</a>, Type, allow_duplicates &gt;::m_obj_vec</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Collection of objects registered so far. </p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/core/<a class="el" href="_coll_mgr_8_h_source.html">CollMgr.H</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

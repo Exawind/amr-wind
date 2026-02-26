@@ -1,0 +1,308 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/turbulence/RANS/KLAxell.H Source File &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/turbulence/RANS/KLAxell.H Source File</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/_k_l_axell_8_h_source.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="home-runner-work-amr-wind-amr-wind-amr-wind-turbulence-rans-klaxell-h-source-file">
+<h1>/home/runner/work/amr-wind/amr-wind/amr-wind/turbulence/RANS/KLAxell.H Source File<a class="headerlink" href="#home-runner-work-amr-wind-amr-wind-amr-wind-turbulence-rans-klaxell-h-source-file" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/turbulence/RANS/KLAxell.H Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="dir_d85575251dd712327fe3cf057fa568b4.html">amr-wind</a></li><li class="navelem"><a href="dir_212148f97b8bb53ebaebb3bf8a8b5de4.html">amr-wind</a></li><li class="navelem"><a href="dir_5460936bc36635a4924df5fb6ccd4a9f.html">turbulence</a></li><li class="navelem"><a href="dir_e9d02d7b3532cdb7ef30a77627909516.html">RANS</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="headertitle"><div class="title">KLAxell.H</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="_k_l_axell_8_h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef KLAXELL_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define KLAXELL_H</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="_turb_model_base_8_h.html">amr-wind/turbulence/TurbModelBase.H</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;AMReX_REAL.H&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">using namespace </span>amrex::literals;</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceamr__wind_1_1turbulence.html">amr_wind::turbulence</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Transport&gt;</div>
+<div class="foldopen" id="foldopen00016" data-start="{" data-end="};">
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html">   16</a></span><span class="keyword">class </span><a class="code hl_function" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#ad9a2b4b4fb91926e83f6696b18594351">KLAxell</a> : <span class="keyword">public</span> <a class="code hl_function" href="classamr__wind_1_1turbulence_1_1_turb_model_base.html#a8ec7868e5412b209ac0b1a89747e23e7">TurbModelBase</a>&lt;Transport&gt;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>{</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">public</span>:</div>
+<div class="foldopen" id="foldopen00019" data-start="{" data-end="}">
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#aef588fb503101d6dc55160489a955533">   19</a></span>    <span class="keyword">static</span> std::string <a class="code hl_function" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#aef588fb503101d6dc55160489a955533">identifier</a>()</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        <span class="keywordflow">return</span> <span class="stringliteral">&quot;KLAxell-&quot;</span> + Transport::identifier();</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    }</div>
+</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#ad9a2b4b4fb91926e83f6696b18594351">KLAxell</a>(<a class="code hl_class" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; sim);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#af4c84c3c2a76d128cca7ab921621d70b">   26</a></span>    [[nodiscard]] std::string <a class="code hl_function" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#af4c84c3c2a76d128cca7ab921621d70b">model_name</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> <span class="stringliteral">&quot;KLAxell&quot;</span>; }</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#a4fbd531e6dc60e94f56a425367558867">update_turbulent_viscosity</a>(</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <a class="code hl_enumeration" href="group__fields.html#ga5251ec6b376231128a9647f3028dbac0">FieldState</a> fstate, <a class="code hl_enumeration" href="incflo__enums_8_h.html#a85b1059d3f82fd0319fd63b07f3c1500">DiffusionType</a> <span class="comment">/*unused*/</span>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#a21a1337e0897375f3d3b8301a49df01e">post_advance_work</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#a4a5e545d513f2468b1a12c531a3f0f04">update_alphaeff</a>(<a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="code hl_function" href="classamr__wind_1_1turbulence_1_1_turb_model.html#ad0a36405a1ceb6b8a9754067822873f3">alphaeff</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#a687ba8ddfcb3d67a2a0eb3d4f4e63e5e">update_scalar_diff</a>(<a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; deff, <span class="keyword">const</span> std::string&amp; name) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#a67ffbd46ab7977420063d376174e989a">parse_model_coeffs</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    [[nodiscard]] <a class="code hl_typedef" href="classamr__wind_1_1turbulence_1_1_turbulence_model.html#aff9bb3a7eb48f42686b1175cc9fbd390">TurbulenceModel::CoeffsDictType</a> <a class="code hl_function" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#ac757519c6180df14461ce86d530a22ba">model_coeffs</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#a27eb200bfd0a3d6539e34a79f68cc3e3">   48</a></span>    <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#a27eb200bfd0a3d6539e34a79f68cc3e3">m_vel</a>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#a2c32b122574a7084817abe6ce8077633">   49</a></span>    <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#a2c32b122574a7084817abe6ce8077633">m_turb_lscale</a>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#a068a4e14f3f2cc68881356238a6a361a">   50</a></span>    <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#a068a4e14f3f2cc68881356238a6a361a">m_shear_prod</a>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#ac53524be4161edca10eba21627cddd20">   51</a></span>    <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#ac53524be4161edca10eba21627cddd20">m_buoy_prod</a>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#a5bb134f162296b6272a482c4656000df">   52</a></span>    <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#a5bb134f162296b6272a482c4656000df">m_dissip</a>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#ac417049d5d551374363988ddef0c7e25">   53</a></span>    <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#ac417049d5d551374363988ddef0c7e25">m_rho</a>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#ad5a34f5ecb79f573fbdf747a081a4b75">   54</a></span>    <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>* <a class="code hl_variable" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#ad5a34f5ecb79f573fbdf747a081a4b75">m_tke</a>{<span class="keyword">nullptr</span>};</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#aa2d9750dde6b05249fc96d4962785569">   56</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#aa2d9750dde6b05249fc96d4962785569">m_Cmu</a>{0.556_rt};</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#a3b6a811e0e39c9a53f233f0e9af6258f">   57</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#a3b6a811e0e39c9a53f233f0e9af6258f">m_Cmu_prime</a>{0.556_rt};</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#a4051aee7b8781898cafd9ba3e8057df8">   58</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#a4051aee7b8781898cafd9ba3e8057df8">m_Cb_stable</a>{0.25_rt};</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#af800904abbc22c8fac54f8907e248d1f">   59</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#af800904abbc22c8fac54f8907e248d1f">m_Cb_unstable</a>{0.35_rt};</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#aa07caae2f38b24d52b0aa6aaafe8d810">   60</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#aa07caae2f38b24d52b0aa6aaafe8d810">m_prandtl</a>{1.0_rt};</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#ad3862d07498a8be02265ebb770d77509">   61</a></span>    <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#ad3862d07498a8be02265ebb770d77509">m_temperature</a>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#a0f4baf7e02dffdfebd2ef0a7b82e1a7c">   63</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#a0f4baf7e02dffdfebd2ef0a7b82e1a7c">m_gravity</a>{0.0_rt, 0.0_rt, -9.81_rt};</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#a25522cfd1e2fbea7eaa3ab9233a5dcd1">   64</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#a25522cfd1e2fbea7eaa3ab9233a5dcd1">m_surf_flux</a>{0};</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#a5a2187889d8c600fe28d0f5b5380d4cb">   65</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#a5a2187889d8c600fe28d0f5b5380d4cb">m_meso_sponge_start</a>{2000};</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>};</div>
+</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>} <span class="comment">// namespace amr_wind::turbulence</span></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="preprocessor">#endif </span><span class="comment">/* KLAXELL_H */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="a_turb_model_base_8_h_html"><div class="ttname"><a href="_turb_model_base_8_h.html">TurbModelBase.H</a></div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html">amr_wind::CFDSim</a></div><div class="ttdef"><b>Definition</b> CFDSim.H:54</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_html"><div class="ttname"><a href="classamr__wind_1_1_field.html">amr_wind::Field</a></div><div class="ttdef"><b>Definition</b> Field.H:112</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_k_l_axell_html_a068a4e14f3f2cc68881356238a6a361a"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#a068a4e14f3f2cc68881356238a6a361a">amr_wind::turbulence::KLAxell::m_shear_prod</a></div><div class="ttdeci">Field &amp; m_shear_prod</div><div class="ttdef"><b>Definition</b> KLAxell.H:50</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_k_l_axell_html_a0f4baf7e02dffdfebd2ef0a7b82e1a7c"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#a0f4baf7e02dffdfebd2ef0a7b82e1a7c">amr_wind::turbulence::KLAxell::m_gravity</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_gravity</div><div class="ttdoc">Gravity vector (m/s^2)</div><div class="ttdef"><b>Definition</b> KLAxell.H:63</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_k_l_axell_html_a21a1337e0897375f3d3b8301a49df01e"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#a21a1337e0897375f3d3b8301a49df01e">amr_wind::turbulence::KLAxell::post_advance_work</a></div><div class="ttdeci">void post_advance_work() override</div><div class="ttdoc">Do any post advance work.</div><div class="ttdef"><b>Definition</b> KLAxell.cpp:358</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_k_l_axell_html_a25522cfd1e2fbea7eaa3ab9233a5dcd1"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#a25522cfd1e2fbea7eaa3ab9233a5dcd1">amr_wind::turbulence::KLAxell::m_surf_flux</a></div><div class="ttdeci">amrex::Real m_surf_flux</div><div class="ttdef"><b>Definition</b> KLAxell.H:64</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_k_l_axell_html_a27eb200bfd0a3d6539e34a79f68cc3e3"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#a27eb200bfd0a3d6539e34a79f68cc3e3">amr_wind::turbulence::KLAxell::m_vel</a></div><div class="ttdeci">Field &amp; m_vel</div><div class="ttdef"><b>Definition</b> KLAxell.H:48</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_k_l_axell_html_a2c32b122574a7084817abe6ce8077633"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#a2c32b122574a7084817abe6ce8077633">amr_wind::turbulence::KLAxell::m_turb_lscale</a></div><div class="ttdeci">Field &amp; m_turb_lscale</div><div class="ttdef"><b>Definition</b> KLAxell.H:49</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_k_l_axell_html_a3b6a811e0e39c9a53f233f0e9af6258f"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#a3b6a811e0e39c9a53f233f0e9af6258f">amr_wind::turbulence::KLAxell::m_Cmu_prime</a></div><div class="ttdeci">amrex::Real m_Cmu_prime</div><div class="ttdef"><b>Definition</b> KLAxell.H:57</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_k_l_axell_html_a4051aee7b8781898cafd9ba3e8057df8"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#a4051aee7b8781898cafd9ba3e8057df8">amr_wind::turbulence::KLAxell::m_Cb_stable</a></div><div class="ttdeci">amrex::Real m_Cb_stable</div><div class="ttdef"><b>Definition</b> KLAxell.H:58</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_k_l_axell_html_a4a5e545d513f2468b1a12c531a3f0f04"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#a4a5e545d513f2468b1a12c531a3f0f04">amr_wind::turbulence::KLAxell::update_alphaeff</a></div><div class="ttdeci">void update_alphaeff(Field &amp;alphaeff) override</div><div class="ttdoc">Update the effective thermal diffusivity field.</div><div class="ttdef"><b>Definition</b> KLAxell.cpp:287</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_k_l_axell_html_a4fbd531e6dc60e94f56a425367558867"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#a4fbd531e6dc60e94f56a425367558867">amr_wind::turbulence::KLAxell::update_turbulent_viscosity</a></div><div class="ttdeci">void update_turbulent_viscosity(FieldState fstate, DiffusionType) override</div><div class="ttdoc">Update the turbulent viscosity field.</div><div class="ttdef"><b>Definition</b> KLAxell.cpp:74</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_k_l_axell_html_a5a2187889d8c600fe28d0f5b5380d4cb"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#a5a2187889d8c600fe28d0f5b5380d4cb">amr_wind::turbulence::KLAxell::m_meso_sponge_start</a></div><div class="ttdeci">amrex::Real m_meso_sponge_start</div><div class="ttdef"><b>Definition</b> KLAxell.H:65</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_k_l_axell_html_a5bb134f162296b6272a482c4656000df"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#a5bb134f162296b6272a482c4656000df">amr_wind::turbulence::KLAxell::m_dissip</a></div><div class="ttdeci">Field &amp; m_dissip</div><div class="ttdef"><b>Definition</b> KLAxell.H:52</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_k_l_axell_html_a67ffbd46ab7977420063d376174e989a"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#a67ffbd46ab7977420063d376174e989a">amr_wind::turbulence::KLAxell::parse_model_coeffs</a></div><div class="ttdeci">void parse_model_coeffs() override</div><div class="ttdoc">Parse turbulence model coefficients.</div><div class="ttdef"><b>Definition</b> KLAxell.cpp:51</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_k_l_axell_html_a687ba8ddfcb3d67a2a0eb3d4f4e63e5e"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#a687ba8ddfcb3d67a2a0eb3d4f4e63e5e">amr_wind::turbulence::KLAxell::update_scalar_diff</a></div><div class="ttdeci">void update_scalar_diff(Field &amp;deff, const std::string &amp;name) override</div><div class="ttdoc">Update the effective scalar diffusivity field.</div><div class="ttdef"><b>Definition</b> KLAxell.cpp:341</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_k_l_axell_html_aa07caae2f38b24d52b0aa6aaafe8d810"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#aa07caae2f38b24d52b0aa6aaafe8d810">amr_wind::turbulence::KLAxell::m_prandtl</a></div><div class="ttdeci">amrex::Real m_prandtl</div><div class="ttdef"><b>Definition</b> KLAxell.H:60</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_k_l_axell_html_aa2d9750dde6b05249fc96d4962785569"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#aa2d9750dde6b05249fc96d4962785569">amr_wind::turbulence::KLAxell::m_Cmu</a></div><div class="ttdeci">amrex::Real m_Cmu</div><div class="ttdoc">Turbulence constant.</div><div class="ttdef"><b>Definition</b> KLAxell.H:56</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_k_l_axell_html_ac417049d5d551374363988ddef0c7e25"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#ac417049d5d551374363988ddef0c7e25">amr_wind::turbulence::KLAxell::m_rho</a></div><div class="ttdeci">Field &amp; m_rho</div><div class="ttdef"><b>Definition</b> KLAxell.H:53</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_k_l_axell_html_ac53524be4161edca10eba21627cddd20"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#ac53524be4161edca10eba21627cddd20">amr_wind::turbulence::KLAxell::m_buoy_prod</a></div><div class="ttdeci">Field &amp; m_buoy_prod</div><div class="ttdef"><b>Definition</b> KLAxell.H:51</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_k_l_axell_html_ac757519c6180df14461ce86d530a22ba"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#ac757519c6180df14461ce86d530a22ba">amr_wind::turbulence::KLAxell::model_coeffs</a></div><div class="ttdeci">TurbulenceModel::CoeffsDictType model_coeffs() const override</div><div class="ttdoc">Return turbulence model coefficients.</div><div class="ttdef"><b>Definition</b> KLAxell.cpp:63</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_k_l_axell_html_ad3862d07498a8be02265ebb770d77509"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#ad3862d07498a8be02265ebb770d77509">amr_wind::turbulence::KLAxell::m_temperature</a></div><div class="ttdeci">Field &amp; m_temperature</div><div class="ttdef"><b>Definition</b> KLAxell.H:61</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_k_l_axell_html_ad5a34f5ecb79f573fbdf747a081a4b75"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#ad5a34f5ecb79f573fbdf747a081a4b75">amr_wind::turbulence::KLAxell::m_tke</a></div><div class="ttdeci">Field * m_tke</div><div class="ttdef"><b>Definition</b> KLAxell.H:54</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_k_l_axell_html_ad9a2b4b4fb91926e83f6696b18594351"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#ad9a2b4b4fb91926e83f6696b18594351">amr_wind::turbulence::KLAxell::KLAxell</a></div><div class="ttdeci">KLAxell(CFDSim &amp;sim)</div><div class="ttdef"><b>Definition</b> KLAxell.cpp:17</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_k_l_axell_html_aef588fb503101d6dc55160489a955533"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#aef588fb503101d6dc55160489a955533">amr_wind::turbulence::KLAxell::identifier</a></div><div class="ttdeci">static std::string identifier()</div><div class="ttdef"><b>Definition</b> KLAxell.H:19</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_k_l_axell_html_af4c84c3c2a76d128cca7ab921621d70b"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#af4c84c3c2a76d128cca7ab921621d70b">amr_wind::turbulence::KLAxell::model_name</a></div><div class="ttdeci">std::string model_name() const override</div><div class="ttdoc">String representation of this turbulence model for I/O.</div><div class="ttdef"><b>Definition</b> KLAxell.H:26</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_k_l_axell_html_af800904abbc22c8fac54f8907e248d1f"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_k_l_axell.html#af800904abbc22c8fac54f8907e248d1f">amr_wind::turbulence::KLAxell::m_Cb_unstable</a></div><div class="ttdeci">amrex::Real m_Cb_unstable</div><div class="ttdef"><b>Definition</b> KLAxell.H:59</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_turb_model_base_html_a8ec7868e5412b209ac0b1a89747e23e7"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_turb_model_base.html#a8ec7868e5412b209ac0b1a89747e23e7">amr_wind::turbulence::TurbModelBase::TurbModelBase</a></div><div class="ttdeci">TurbModelBase(CFDSim &amp;sim)</div><div class="ttdef"><b>Definition</b> TurbModelBase.H:95</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_turb_model_html_ad0a36405a1ceb6b8a9754067822873f3"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_turb_model.html#ad0a36405a1ceb6b8a9754067822873f3">amr_wind::turbulence::TurbModel::alphaeff</a></div><div class="ttdeci">Field &amp; alphaeff() override</div><div class="ttdoc">Return the effective thermal diffusivity field.</div><div class="ttdef"><b>Definition</b> TurbModel.H:53</div></div>
+<div class="ttc" id="aclassamr__wind_1_1turbulence_1_1_turbulence_model_html_aff9bb3a7eb48f42686b1175cc9fbd390"><div class="ttname"><a href="classamr__wind_1_1turbulence_1_1_turbulence_model.html#aff9bb3a7eb48f42686b1175cc9fbd390">amr_wind::turbulence::TurbulenceModel::CoeffsDictType</a></div><div class="ttdeci">std::unordered_map&lt; std::string, amrex::Real &gt; CoeffsDictType</div><div class="ttdoc">Default identifier used by factor methods.</div><div class="ttdef"><b>Definition</b> TurbulenceModel.H:35</div></div>
+<div class="ttc" id="agroup__fields_html_ga5251ec6b376231128a9647f3028dbac0"><div class="ttname"><a href="group__fields.html#ga5251ec6b376231128a9647f3028dbac0">amr_wind::FieldState</a></div><div class="ttdeci">FieldState</div><div class="ttdef"><b>Definition</b> FieldDescTypes.H:16</div></div>
+<div class="ttc" id="aincflo__enums_8_h_html_a85b1059d3f82fd0319fd63b07f3c1500"><div class="ttname"><a href="incflo__enums_8_h.html#a85b1059d3f82fd0319fd63b07f3c1500">DiffusionType</a></div><div class="ttdeci">DiffusionType</div><div class="ttdef"><b>Definition</b> incflo_enums.H:6</div></div>
+<div class="ttc" id="anamespaceamr__wind_1_1turbulence_html"><div class="ttname"><a href="namespaceamr__wind_1_1turbulence.html">amr_wind::turbulence</a></div><div class="ttdef"><b>Definition</b> CFDSim.H:30</div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

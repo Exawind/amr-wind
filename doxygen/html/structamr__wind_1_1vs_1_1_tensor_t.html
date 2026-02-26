@@ -1,0 +1,1714 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::vs::TensorT&amp;lt; T &amp;gt; Struct Template Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::vs::TensorT&amp;lt; T &amp;gt; Struct Template Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/structamr__wind_1_1vs_1_1_tensor_t.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="tensort-lt-t-gt-struct-template-reference">
+<h1>TensorT&amp;lt; T &amp;gt; Struct Template Reference<a class="headerlink" href="#tensort-lt-t-gt-struct-template-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::vs::TensorT&lt; T &gt; Struct Template Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="namespaceamr__wind_1_1vs.html">vs</a></li><li class="navelem"><a href="structamr__wind_1_1vs_1_1_tensor_t.html">TensorT</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="#pub-static-attribs">Static Public Attributes</a> &#124;
+<a href="structamr__wind_1_1vs_1_1_tensor_t-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::vs::TensorT&lt; T &gt; Struct Template Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="tensor_8_h_source.html">tensor.H</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for amr_wind::vs::TensorT&lt; T &gt;:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="structamr__wind_1_1vs_1_1_tensor_t__inherit__graph.svg" width="231" height="147"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-types" class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a398bc78f7a44ba5458b48e5edd4cb13f" id="r_a398bc78f7a44ba5458b48e5edd4cb13f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a398bc78f7a44ba5458b48e5edd4cb13f">size_type</a> = int</td></tr>
+<tr class="memitem:af7c7adbcd7bef169fdd3acaa7e8b417b" id="r_af7c7adbcd7bef169fdd3acaa7e8b417b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af7c7adbcd7bef169fdd3acaa7e8b417b">value_type</a> = T</td></tr>
+<tr class="memitem:a4a47f3e954877b9634d7e0223ffc19a0" id="r_a4a47f3e954877b9634d7e0223ffc19a0"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4a47f3e954877b9634d7e0223ffc19a0">reference</a> = T&amp;</td></tr>
+<tr class="memitem:a82ac4f2b04bddbfff490adc04ca17352" id="r_a82ac4f2b04bddbfff490adc04ca17352"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a82ac4f2b04bddbfff490adc04ca17352">iterator</a> = T*</td></tr>
+<tr class="memitem:a129a3dd3ef2ac8eec13c8d73ee459e26" id="r_a129a3dd3ef2ac8eec13c8d73ee459e26"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a129a3dd3ef2ac8eec13c8d73ee459e26">const_iterator</a> = const T*</td></tr>
+<tr class="memitem:aa14ac2b22a42d382d239f908cc62e2db" id="r_aa14ac2b22a42d382d239f908cc62e2db"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa14ac2b22a42d382d239f908cc62e2db">Traits</a> = <a class="el" href="structamr__wind_1_1vs_1_1_d_traits.html">DTraits</a>&lt;T&gt;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a3cf76dc32997e5166e987e8cb345b280" id="r_a3cf76dc32997e5166e987e8cb345b280"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3cf76dc32997e5166e987e8cb345b280">TensorT</a> ()=default</td></tr>
+<tr class="memitem:a9f216bda94f32cacb6405ce0a66b1b88" id="r_a9f216bda94f32cacb6405ce0a66b1b88"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9f216bda94f32cacb6405ce0a66b1b88">TensorT</a> (const T &amp;<a class="el" href="#a8a0bbae2b2f5d651ee788b1fad3fd2a5">xx</a>, const T &amp;<a class="el" href="#aec190ec57e63c98e7eceb6c977b43822">xy</a>, const T &amp;<a class="el" href="#a48e169cba54cc863e0d606531eead2e5">xz</a>, const T &amp;<a class="el" href="#aa6942547f11786cbdc5a6bd723d6c569">yx</a>, const T &amp;<a class="el" href="#a5cc77e917dcfbfe14e2d85bda9445234">yy</a>, const T &amp;<a class="el" href="#ab19d91fc7faf1283e53f1d050aa17bf5">yz</a>, const T &amp;<a class="el" href="#a740f0e93d4f098944b84c96d79052b65">zx</a>, const T &amp;<a class="el" href="#a1987a98caa3b57635ef088314767bcf7">zy</a>, const T &amp;<a class="el" href="#a240b908414e335b81277ac27a3e49bc6">zz</a>)</td></tr>
+<tr class="memitem:a17a3174117de668b9f3fc803bbf165c3" id="r_a17a3174117de668b9f3fc803bbf165c3"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a17a3174117de668b9f3fc803bbf165c3">TensorT</a> (const <a class="el" href="structamr__wind_1_1vs_1_1_vector_t.html">VectorT</a>&lt; T &gt; &amp;<a class="el" href="#a34896e3f8caa2bda62d97a4b9e5d893f">x</a>, const <a class="el" href="structamr__wind_1_1vs_1_1_vector_t.html">VectorT</a>&lt; T &gt; &amp;<a class="el" href="#adeee833da7f5ddb86ffe08093066f12f">y</a>, const <a class="el" href="structamr__wind_1_1vs_1_1_vector_t.html">VectorT</a>&lt; T &gt; &amp;<a class="el" href="#a492915c289ce665b70db1350ccae9db1">z</a>, bool transpose=false)</td></tr>
+<tr class="memitem:ab1168055934f11b3e1ac1fc359ac5003" id="r_ab1168055934f11b3e1ac1fc359ac5003"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab1168055934f11b3e1ac1fc359ac5003">~TensorT</a> ()=default</td></tr>
+<tr class="memitem:a134ed3fee1154208d91f21e83735ae93" id="r_a134ed3fee1154208d91f21e83735ae93"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a134ed3fee1154208d91f21e83735ae93">TensorT</a> (const <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">TensorT</a> &amp;)=default</td></tr>
+<tr class="memitem:ab9181660ff06cfdf2d32be0384dc6da9" id="r_ab9181660ff06cfdf2d32be0384dc6da9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab9181660ff06cfdf2d32be0384dc6da9">TensorT</a> (<a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">TensorT</a> &amp;&amp;)=default</td></tr>
+<tr class="memitem:a91a38f3e0d328206dfed59afe44a3ac8" id="r_a91a38f3e0d328206dfed59afe44a3ac8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">TensorT</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a91a38f3e0d328206dfed59afe44a3ac8">operator=</a> (const <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">TensorT</a> &amp;) &amp;=default</td></tr>
+<tr class="memitem:a4fd97a92b50515ba99d9a58a1162f80e" id="r_a4fd97a92b50515ba99d9a58a1162f80e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">TensorT</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4fd97a92b50515ba99d9a58a1162f80e">operator=</a> (const <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">TensorT</a> &amp;) &amp;&amp;=delete</td></tr>
+<tr class="memitem:a32f3d1c8836161aee707df6c62f4738e" id="r_a32f3d1c8836161aee707df6c62f4738e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">TensorT</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a32f3d1c8836161aee707df6c62f4738e">operator=</a> (<a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">TensorT</a> &amp;&amp;) &amp;=default</td></tr>
+<tr class="memitem:a66f451edea0e1549812035068224954e" id="r_a66f451edea0e1549812035068224954e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">TensorT</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a66f451edea0e1549812035068224954e">operator=</a> (<a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">TensorT</a> &amp;&amp;) &amp;&amp;=delete</td></tr>
+<tr class="memitem:aaa88ffdf9bc8cd9b4d0acc8a82609635" id="r_aaa88ffdf9bc8cd9b4d0acc8a82609635"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaa88ffdf9bc8cd9b4d0acc8a82609635">rows</a> (const <a class="el" href="structamr__wind_1_1vs_1_1_vector_t.html">VectorT</a>&lt; T &gt; &amp;<a class="el" href="#a34896e3f8caa2bda62d97a4b9e5d893f">x</a>, const <a class="el" href="structamr__wind_1_1vs_1_1_vector_t.html">VectorT</a>&lt; T &gt; &amp;<a class="el" href="#adeee833da7f5ddb86ffe08093066f12f">y</a>, const <a class="el" href="structamr__wind_1_1vs_1_1_vector_t.html">VectorT</a>&lt; T &gt; &amp;<a class="el" href="#a492915c289ce665b70db1350ccae9db1">z</a>)</td></tr>
+<tr class="memitem:a54cdf10ef11c1844fb5d6895148dc520" id="r_a54cdf10ef11c1844fb5d6895148dc520"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a54cdf10ef11c1844fb5d6895148dc520">cols</a> (const <a class="el" href="structamr__wind_1_1vs_1_1_vector_t.html">VectorT</a>&lt; T &gt; &amp;<a class="el" href="#a34896e3f8caa2bda62d97a4b9e5d893f">x</a>, const <a class="el" href="structamr__wind_1_1vs_1_1_vector_t.html">VectorT</a>&lt; T &gt; &amp;<a class="el" href="#adeee833da7f5ddb86ffe08093066f12f">y</a>, const <a class="el" href="structamr__wind_1_1vs_1_1_vector_t.html">VectorT</a>&lt; T &gt; &amp;<a class="el" href="#a492915c289ce665b70db1350ccae9db1">z</a>)</td></tr>
+<tr class="memitem:a34896e3f8caa2bda62d97a4b9e5d893f" id="r_a34896e3f8caa2bda62d97a4b9e5d893f"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <a class="el" href="structamr__wind_1_1vs_1_1_vector_t.html">VectorT</a>&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a34896e3f8caa2bda62d97a4b9e5d893f">x</a> () const</td></tr>
+<tr class="memitem:adeee833da7f5ddb86ffe08093066f12f" id="r_adeee833da7f5ddb86ffe08093066f12f"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <a class="el" href="structamr__wind_1_1vs_1_1_vector_t.html">VectorT</a>&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adeee833da7f5ddb86ffe08093066f12f">y</a> () const</td></tr>
+<tr class="memitem:a492915c289ce665b70db1350ccae9db1" id="r_a492915c289ce665b70db1350ccae9db1"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <a class="el" href="structamr__wind_1_1vs_1_1_vector_t.html">VectorT</a>&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a492915c289ce665b70db1350ccae9db1">z</a> () const</td></tr>
+<tr class="memitem:aa32113daffeac77a3df6355665e5ad62" id="r_aa32113daffeac77a3df6355665e5ad62"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <a class="el" href="structamr__wind_1_1vs_1_1_vector_t.html">VectorT</a>&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa32113daffeac77a3df6355665e5ad62">cx</a> () const</td></tr>
+<tr class="memitem:a14c94d4d737dcaa138551db687a88abb" id="r_a14c94d4d737dcaa138551db687a88abb"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <a class="el" href="structamr__wind_1_1vs_1_1_vector_t.html">VectorT</a>&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a14c94d4d737dcaa138551db687a88abb">cy</a> () const</td></tr>
+<tr class="memitem:a279570d83d081abbaba2261b5007b09f" id="r_a279570d83d081abbaba2261b5007b09f"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <a class="el" href="structamr__wind_1_1vs_1_1_vector_t.html">VectorT</a>&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a279570d83d081abbaba2261b5007b09f">cz</a> () const</td></tr>
+<tr class="memitem:a8a0bbae2b2f5d651ee788b1fad3fd2a5" id="r_a8a0bbae2b2f5d651ee788b1fad3fd2a5"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8a0bbae2b2f5d651ee788b1fad3fd2a5">xx</a> () &amp;</td></tr>
+<tr class="memitem:aec190ec57e63c98e7eceb6c977b43822" id="r_aec190ec57e63c98e7eceb6c977b43822"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aec190ec57e63c98e7eceb6c977b43822">xy</a> () &amp;</td></tr>
+<tr class="memitem:a48e169cba54cc863e0d606531eead2e5" id="r_a48e169cba54cc863e0d606531eead2e5"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a48e169cba54cc863e0d606531eead2e5">xz</a> () &amp;</td></tr>
+<tr class="memitem:aa6942547f11786cbdc5a6bd723d6c569" id="r_aa6942547f11786cbdc5a6bd723d6c569"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa6942547f11786cbdc5a6bd723d6c569">yx</a> () &amp;</td></tr>
+<tr class="memitem:a5cc77e917dcfbfe14e2d85bda9445234" id="r_a5cc77e917dcfbfe14e2d85bda9445234"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5cc77e917dcfbfe14e2d85bda9445234">yy</a> () &amp;</td></tr>
+<tr class="memitem:ab19d91fc7faf1283e53f1d050aa17bf5" id="r_ab19d91fc7faf1283e53f1d050aa17bf5"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab19d91fc7faf1283e53f1d050aa17bf5">yz</a> () &amp;</td></tr>
+<tr class="memitem:a740f0e93d4f098944b84c96d79052b65" id="r_a740f0e93d4f098944b84c96d79052b65"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a740f0e93d4f098944b84c96d79052b65">zx</a> () &amp;</td></tr>
+<tr class="memitem:a1987a98caa3b57635ef088314767bcf7" id="r_a1987a98caa3b57635ef088314767bcf7"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1987a98caa3b57635ef088314767bcf7">zy</a> () &amp;</td></tr>
+<tr class="memitem:a240b908414e335b81277ac27a3e49bc6" id="r_a240b908414e335b81277ac27a3e49bc6"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a240b908414e335b81277ac27a3e49bc6">zz</a> () &amp;</td></tr>
+<tr class="memitem:ae8709801230cfdce992cbbdfd541cc62" id="r_ae8709801230cfdce992cbbdfd541cc62"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae8709801230cfdce992cbbdfd541cc62">xx</a> () const &amp;</td></tr>
+<tr class="memitem:ac153497d28c0f3425af15123f0c45bb4" id="r_ac153497d28c0f3425af15123f0c45bb4"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac153497d28c0f3425af15123f0c45bb4">xy</a> () const &amp;</td></tr>
+<tr class="memitem:a022bbd8e5c88bd5d540fa2c5e9b61970" id="r_a022bbd8e5c88bd5d540fa2c5e9b61970"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a022bbd8e5c88bd5d540fa2c5e9b61970">xz</a> () const &amp;</td></tr>
+<tr class="memitem:aa3c61a4151bb0aaabb396d69601e9872" id="r_aa3c61a4151bb0aaabb396d69601e9872"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa3c61a4151bb0aaabb396d69601e9872">yx</a> () const &amp;</td></tr>
+<tr class="memitem:a998c6fec9fc8de8baa896fb1ff543166" id="r_a998c6fec9fc8de8baa896fb1ff543166"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a998c6fec9fc8de8baa896fb1ff543166">yy</a> () const &amp;</td></tr>
+<tr class="memitem:a7f99e074ddcea8956690eb9002d7784b" id="r_a7f99e074ddcea8956690eb9002d7784b"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7f99e074ddcea8956690eb9002d7784b">yz</a> () const &amp;</td></tr>
+<tr class="memitem:ad7de3ff2655d5bb29f656480a1a2a37b" id="r_ad7de3ff2655d5bb29f656480a1a2a37b"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad7de3ff2655d5bb29f656480a1a2a37b">zx</a> () const &amp;</td></tr>
+<tr class="memitem:af0c7361c68025564b50418228fe9af97" id="r_af0c7361c68025564b50418228fe9af97"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af0c7361c68025564b50418228fe9af97">zy</a> () const &amp;</td></tr>
+<tr class="memitem:a104bbe359c0d445854c6957b40c9d28b" id="r_a104bbe359c0d445854c6957b40c9d28b"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a104bbe359c0d445854c6957b40c9d28b">zz</a> () const &amp;</td></tr>
+<tr class="memitem:ac271cd5063428519ecfb31a90bab198d" id="r_ac271cd5063428519ecfb31a90bab198d"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac271cd5063428519ecfb31a90bab198d">operator[]</a> (<a class="el" href="#a398bc78f7a44ba5458b48e5edd4cb13f">size_type</a> pos) &amp;</td></tr>
+<tr class="memitem:ab7a09992fdb05744a332fedb56305e41" id="r_ab7a09992fdb05744a332fedb56305e41"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab7a09992fdb05744a332fedb56305e41">operator[]</a> (<a class="el" href="#a398bc78f7a44ba5458b48e5edd4cb13f">size_type</a> pos) const &amp;</td></tr>
+<tr class="memitem:a0289fa6ed53ce5441402d283adf33e36" id="r_a0289fa6ed53ce5441402d283adf33e36"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0289fa6ed53ce5441402d283adf33e36">data</a> ()</td></tr>
+<tr class="memitem:a9aeecac0af22e82a46a37bcf3a0e12cf" id="r_a9aeecac0af22e82a46a37bcf3a0e12cf"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9aeecac0af22e82a46a37bcf3a0e12cf">data</a> () const</td></tr>
+<tr class="memitem:ae587c4da447ed794a4913adccebe41bb" id="r_ae587c4da447ed794a4913adccebe41bb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#a82ac4f2b04bddbfff490adc04ca17352">iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae587c4da447ed794a4913adccebe41bb">begin</a> ()</td></tr>
+<tr class="memitem:ae1b78bf9150e1e3afa6634b56595eaad" id="r_ae1b78bf9150e1e3afa6634b56595eaad"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#a82ac4f2b04bddbfff490adc04ca17352">iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae1b78bf9150e1e3afa6634b56595eaad">end</a> ()</td></tr>
+<tr class="memitem:af636c1bd4350589af6f9fa29e3ebaf95" id="r_af636c1bd4350589af6f9fa29e3ebaf95"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#a129a3dd3ef2ac8eec13c8d73ee459e26">const_iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af636c1bd4350589af6f9fa29e3ebaf95">cbegin</a> () const</td></tr>
+<tr class="memitem:af59d13a8f31dc32f16099be57579df68" id="r_af59d13a8f31dc32f16099be57579df68"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#a129a3dd3ef2ac8eec13c8d73ee459e26">const_iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af59d13a8f31dc32f16099be57579df68">cend</a> () const</td></tr>
+<tr class="memitem:a44dafcd653e7e674035ff4ff5ea90356" id="r_a44dafcd653e7e674035ff4ff5ea90356"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#a398bc78f7a44ba5458b48e5edd4cb13f">size_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a44dafcd653e7e674035ff4ff5ea90356">size</a> () const</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a08ce0d9b773a59b9672b27dddb6e83e9" id="r_a08ce0d9b773a59b9672b27dddb6e83e9"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE static AMREX_FORCE_INLINE constexpr <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">TensorT</a>&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a08ce0d9b773a59b9672b27dddb6e83e9">zero</a> ()</td></tr>
+<tr class="memitem:aa667987d827a19e052b08b56ab4aaf3e" id="r_aa667987d827a19e052b08b56ab4aaf3e"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE static AMREX_FORCE_INLINE constexpr <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">TensorT</a>&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa667987d827a19e052b08b56ab4aaf3e">identity</a> ()</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:aa342f835b12f229a1c37937be798ab2e" id="r_aa342f835b12f229a1c37937be798ab2e"><td class="memItemLeft" align="right" valign="top">amrex::GpuArray&lt; T, 9 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa342f835b12f229a1c37937be798ab2e">vv</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-attribs" class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+Static Public Attributes</h2></td></tr>
+<tr class="memitem:a3b264eec1f764efc9237c33ecc24fc34" id="r_a3b264eec1f764efc9237c33ecc24fc34"><td class="memItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3b264eec1f764efc9237c33ecc24fc34">ncomp</a> = 9</td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename T&gt;<br />
+struct amr_wind::vs::TensorT&lt; T &gt;</div><p><a class="el" href="namespaceamr__wind_1_1vs.html#add4ffb20497b62d4b485d7c483dcd80f">Tensor</a> in 3D vector space </p>
+</div><a name="doc-typedef-members" id="doc-typedef-members"></a><h2 id="header-doc-typedef-members" class="groupheader">Member Typedef Documentation</h2>
+<a id="a129a3dd3ef2ac8eec13c8d73ee459e26" name="a129a3dd3ef2ac8eec13c8d73ee459e26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a129a3dd3ef2ac8eec13c8d73ee459e26">&#9670;&#160;</a></span>const_iterator</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::const_iterator = const T*</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a82ac4f2b04bddbfff490adc04ca17352" name="a82ac4f2b04bddbfff490adc04ca17352"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82ac4f2b04bddbfff490adc04ca17352">&#9670;&#160;</a></span>iterator</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::iterator = T*</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4a47f3e954877b9634d7e0223ffc19a0" name="a4a47f3e954877b9634d7e0223ffc19a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a47f3e954877b9634d7e0223ffc19a0">&#9670;&#160;</a></span>reference</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::reference = T&amp;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a398bc78f7a44ba5458b48e5edd4cb13f" name="a398bc78f7a44ba5458b48e5edd4cb13f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a398bc78f7a44ba5458b48e5edd4cb13f">&#9670;&#160;</a></span>size_type</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::size_type = int</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa14ac2b22a42d382d239f908cc62e2db" name="aa14ac2b22a42d382d239f908cc62e2db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa14ac2b22a42d382d239f908cc62e2db">&#9670;&#160;</a></span>Traits</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::Traits = <a class="el" href="structamr__wind_1_1vs_1_1_d_traits.html">DTraits</a>&lt;T&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af7c7adbcd7bef169fdd3acaa7e8b417b" name="af7c7adbcd7bef169fdd3acaa7e8b417b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7c7adbcd7bef169fdd3acaa7e8b417b">&#9670;&#160;</a></span>value_type</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::value_type = T</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a3cf76dc32997e5166e987e8cb345b280" name="a3cf76dc32997e5166e987e8cb345b280"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3cf76dc32997e5166e987e8cb345b280">&#9670;&#160;</a></span>TensorT() <span class="overload">[1/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE constexpr <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::TensorT </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel constexpr">constexpr</span><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9f216bda94f32cacb6405ce0a66b1b88" name="a9f216bda94f32cacb6405ce0a66b1b88"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f216bda94f32cacb6405ce0a66b1b88">&#9670;&#160;</a></span>TensorT() <span class="overload">[2/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE constexpr <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::TensorT </td>
+          <td>(</td>
+          <td class="paramtype">const T &amp;</td>          <td class="paramname"><span class="paramname"><em>xx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const T &amp;</td>          <td class="paramname"><span class="paramname"><em>xy</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const T &amp;</td>          <td class="paramname"><span class="paramname"><em>xz</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const T &amp;</td>          <td class="paramname"><span class="paramname"><em>yx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const T &amp;</td>          <td class="paramname"><span class="paramname"><em>yy</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const T &amp;</td>          <td class="paramname"><span class="paramname"><em>yz</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const T &amp;</td>          <td class="paramname"><span class="paramname"><em>zx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const T &amp;</td>          <td class="paramname"><span class="paramname"><em>zy</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const T &amp;</td>          <td class="paramname"><span class="paramname"><em>zz</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a17a3174117de668b9f3fc803bbf165c3" name="a17a3174117de668b9f3fc803bbf165c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17a3174117de668b9f3fc803bbf165c3">&#9670;&#160;</a></span>TensorT() <span class="overload">[3/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::TensorT </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structamr__wind_1_1vs_1_1_vector_t.html">VectorT</a>&lt; T &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>x</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structamr__wind_1_1vs_1_1_vector_t.html">VectorT</a>&lt; T &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>y</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structamr__wind_1_1vs_1_1_vector_t.html">VectorT</a>&lt; T &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>z</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>transpose</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab1168055934f11b3e1ac1fc359ac5003" name="ab1168055934f11b3e1ac1fc359ac5003"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1168055934f11b3e1ac1fc359ac5003">&#9670;&#160;</a></span>~TensorT()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::~<a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">TensorT</a> </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a134ed3fee1154208d91f21e83735ae93" name="a134ed3fee1154208d91f21e83735ae93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a134ed3fee1154208d91f21e83735ae93">&#9670;&#160;</a></span>TensorT() <span class="overload">[4/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::TensorT </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">TensorT</a>&lt; T &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab9181660ff06cfdf2d32be0384dc6da9" name="ab9181660ff06cfdf2d32be0384dc6da9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9181660ff06cfdf2d32be0384dc6da9">&#9670;&#160;</a></span>TensorT() <span class="overload">[5/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::TensorT </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">TensorT</a>&lt; T &gt; &amp;&amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="ae587c4da447ed794a4913adccebe41bb" name="ae587c4da447ed794a4913adccebe41bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae587c4da447ed794a4913adccebe41bb">&#9670;&#160;</a></span>begin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a82ac4f2b04bddbfff490adc04ca17352">iterator</a> <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::begin </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af636c1bd4350589af6f9fa29e3ebaf95" name="af636c1bd4350589af6f9fa29e3ebaf95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af636c1bd4350589af6f9fa29e3ebaf95">&#9670;&#160;</a></span>cbegin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a129a3dd3ef2ac8eec13c8d73ee459e26">const_iterator</a> <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::cbegin </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af59d13a8f31dc32f16099be57579df68" name="af59d13a8f31dc32f16099be57579df68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af59d13a8f31dc32f16099be57579df68">&#9670;&#160;</a></span>cend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a129a3dd3ef2ac8eec13c8d73ee459e26">const_iterator</a> <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::cend </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a54cdf10ef11c1844fb5d6895148dc520" name="a54cdf10ef11c1844fb5d6895148dc520"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54cdf10ef11c1844fb5d6895148dc520">&#9670;&#160;</a></span>cols()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::cols </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structamr__wind_1_1vs_1_1_vector_t.html">VectorT</a>&lt; T &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>x</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structamr__wind_1_1vs_1_1_vector_t.html">VectorT</a>&lt; T &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>y</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structamr__wind_1_1vs_1_1_vector_t.html">VectorT</a>&lt; T &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>z</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa32113daffeac77a3df6355665e5ad62" name="aa32113daffeac77a3df6355665e5ad62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa32113daffeac77a3df6355665e5ad62">&#9670;&#160;</a></span>cx()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <a class="el" href="structamr__wind_1_1vs_1_1_vector_t.html">VectorT</a>&lt; T &gt; <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::cx </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a14c94d4d737dcaa138551db687a88abb" name="a14c94d4d737dcaa138551db687a88abb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14c94d4d737dcaa138551db687a88abb">&#9670;&#160;</a></span>cy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <a class="el" href="structamr__wind_1_1vs_1_1_vector_t.html">VectorT</a>&lt; T &gt; <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::cy </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a279570d83d081abbaba2261b5007b09f" name="a279570d83d081abbaba2261b5007b09f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a279570d83d081abbaba2261b5007b09f">&#9670;&#160;</a></span>cz()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <a class="el" href="structamr__wind_1_1vs_1_1_vector_t.html">VectorT</a>&lt; T &gt; <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::cz </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0289fa6ed53ce5441402d283adf33e36" name="a0289fa6ed53ce5441402d283adf33e36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0289fa6ed53ce5441402d283adf33e36">&#9670;&#160;</a></span>data() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T * <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::data </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9aeecac0af22e82a46a37bcf3a0e12cf" name="a9aeecac0af22e82a46a37bcf3a0e12cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9aeecac0af22e82a46a37bcf3a0e12cf">&#9670;&#160;</a></span>data() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T * <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::data </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae1b78bf9150e1e3afa6634b56595eaad" name="ae1b78bf9150e1e3afa6634b56595eaad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1b78bf9150e1e3afa6634b56595eaad">&#9670;&#160;</a></span>end()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a82ac4f2b04bddbfff490adc04ca17352">iterator</a> <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::end </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa667987d827a19e052b08b56ab4aaf3e" name="aa667987d827a19e052b08b56ab4aaf3e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa667987d827a19e052b08b56ab4aaf3e">&#9670;&#160;</a></span>identity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE static AMREX_FORCE_INLINE constexpr <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">TensorT</a>&lt; T &gt; <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::identity </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4fd97a92b50515ba99d9a58a1162f80e" name="a4fd97a92b50515ba99d9a58a1162f80e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4fd97a92b50515ba99d9a58a1162f80e">&#9670;&#160;</a></span>operator=() <span class="overload">[1/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">TensorT</a> &amp; <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">TensorT</a>&lt; T &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> &amp;&amp;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel delete">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a91a38f3e0d328206dfed59afe44a3ac8" name="a91a38f3e0d328206dfed59afe44a3ac8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91a38f3e0d328206dfed59afe44a3ac8">&#9670;&#160;</a></span>operator=() <span class="overload">[2/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">TensorT</a> &amp; <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">TensorT</a>&lt; T &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> &amp;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a66f451edea0e1549812035068224954e" name="a66f451edea0e1549812035068224954e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66f451edea0e1549812035068224954e">&#9670;&#160;</a></span>operator=() <span class="overload">[3/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">TensorT</a> &amp; <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">TensorT</a>&lt; T &gt; &amp;&amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> &amp;&amp;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel delete">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a32f3d1c8836161aee707df6c62f4738e" name="a32f3d1c8836161aee707df6c62f4738e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32f3d1c8836161aee707df6c62f4738e">&#9670;&#160;</a></span>operator=() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">TensorT</a> &amp; <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">TensorT</a>&lt; T &gt; &amp;&amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> &amp;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac271cd5063428519ecfb31a90bab198d" name="ac271cd5063428519ecfb31a90bab198d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac271cd5063428519ecfb31a90bab198d">&#9670;&#160;</a></span>operator[]() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T &amp; <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::operator[] </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a398bc78f7a44ba5458b48e5edd4cb13f">size_type</a></td>          <td class="paramname"><span class="paramname"><em>pos</em></span></td><td>)</td>
+          <td> &amp;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab7a09992fdb05744a332fedb56305e41" name="ab7a09992fdb05744a332fedb56305e41"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7a09992fdb05744a332fedb56305e41">&#9670;&#160;</a></span>operator[]() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T &amp; <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::operator[] </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a398bc78f7a44ba5458b48e5edd4cb13f">size_type</a></td>          <td class="paramname"><span class="paramname"><em>pos</em></span></td><td>)</td>
+          <td> const &amp;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aaa88ffdf9bc8cd9b4d0acc8a82609635" name="aaa88ffdf9bc8cd9b4d0acc8a82609635"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa88ffdf9bc8cd9b4d0acc8a82609635">&#9670;&#160;</a></span>rows()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::rows </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structamr__wind_1_1vs_1_1_vector_t.html">VectorT</a>&lt; T &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>x</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structamr__wind_1_1vs_1_1_vector_t.html">VectorT</a>&lt; T &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>y</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structamr__wind_1_1vs_1_1_vector_t.html">VectorT</a>&lt; T &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>z</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a44dafcd653e7e674035ff4ff5ea90356" name="a44dafcd653e7e674035ff4ff5ea90356"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44dafcd653e7e674035ff4ff5ea90356">&#9670;&#160;</a></span>size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a398bc78f7a44ba5458b48e5edd4cb13f">size_type</a> <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::size </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a34896e3f8caa2bda62d97a4b9e5d893f" name="a34896e3f8caa2bda62d97a4b9e5d893f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34896e3f8caa2bda62d97a4b9e5d893f">&#9670;&#160;</a></span>x()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <a class="el" href="structamr__wind_1_1vs_1_1_vector_t.html">VectorT</a>&lt; T &gt; <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::x </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8a0bbae2b2f5d651ee788b1fad3fd2a5" name="a8a0bbae2b2f5d651ee788b1fad3fd2a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a0bbae2b2f5d651ee788b1fad3fd2a5">&#9670;&#160;</a></span>xx() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T &amp; <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::xx </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> &amp;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae8709801230cfdce992cbbdfd541cc62" name="ae8709801230cfdce992cbbdfd541cc62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8709801230cfdce992cbbdfd541cc62">&#9670;&#160;</a></span>xx() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T &amp; <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::xx </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const &amp;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aec190ec57e63c98e7eceb6c977b43822" name="aec190ec57e63c98e7eceb6c977b43822"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec190ec57e63c98e7eceb6c977b43822">&#9670;&#160;</a></span>xy() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T &amp; <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::xy </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> &amp;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac153497d28c0f3425af15123f0c45bb4" name="ac153497d28c0f3425af15123f0c45bb4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac153497d28c0f3425af15123f0c45bb4">&#9670;&#160;</a></span>xy() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T &amp; <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::xy </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const &amp;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a48e169cba54cc863e0d606531eead2e5" name="a48e169cba54cc863e0d606531eead2e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48e169cba54cc863e0d606531eead2e5">&#9670;&#160;</a></span>xz() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T &amp; <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::xz </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> &amp;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a022bbd8e5c88bd5d540fa2c5e9b61970" name="a022bbd8e5c88bd5d540fa2c5e9b61970"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a022bbd8e5c88bd5d540fa2c5e9b61970">&#9670;&#160;</a></span>xz() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T &amp; <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::xz </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const &amp;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adeee833da7f5ddb86ffe08093066f12f" name="adeee833da7f5ddb86ffe08093066f12f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adeee833da7f5ddb86ffe08093066f12f">&#9670;&#160;</a></span>y()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <a class="el" href="structamr__wind_1_1vs_1_1_vector_t.html">VectorT</a>&lt; T &gt; <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::y </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa6942547f11786cbdc5a6bd723d6c569" name="aa6942547f11786cbdc5a6bd723d6c569"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6942547f11786cbdc5a6bd723d6c569">&#9670;&#160;</a></span>yx() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T &amp; <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::yx </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> &amp;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa3c61a4151bb0aaabb396d69601e9872" name="aa3c61a4151bb0aaabb396d69601e9872"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3c61a4151bb0aaabb396d69601e9872">&#9670;&#160;</a></span>yx() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T &amp; <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::yx </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const &amp;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5cc77e917dcfbfe14e2d85bda9445234" name="a5cc77e917dcfbfe14e2d85bda9445234"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5cc77e917dcfbfe14e2d85bda9445234">&#9670;&#160;</a></span>yy() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T &amp; <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::yy </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> &amp;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a998c6fec9fc8de8baa896fb1ff543166" name="a998c6fec9fc8de8baa896fb1ff543166"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a998c6fec9fc8de8baa896fb1ff543166">&#9670;&#160;</a></span>yy() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T &amp; <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::yy </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const &amp;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab19d91fc7faf1283e53f1d050aa17bf5" name="ab19d91fc7faf1283e53f1d050aa17bf5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab19d91fc7faf1283e53f1d050aa17bf5">&#9670;&#160;</a></span>yz() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T &amp; <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::yz </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> &amp;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7f99e074ddcea8956690eb9002d7784b" name="a7f99e074ddcea8956690eb9002d7784b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f99e074ddcea8956690eb9002d7784b">&#9670;&#160;</a></span>yz() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T &amp; <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::yz </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const &amp;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a492915c289ce665b70db1350ccae9db1" name="a492915c289ce665b70db1350ccae9db1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a492915c289ce665b70db1350ccae9db1">&#9670;&#160;</a></span>z()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <a class="el" href="structamr__wind_1_1vs_1_1_vector_t.html">VectorT</a>&lt; T &gt; <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::z </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a08ce0d9b773a59b9672b27dddb6e83e9" name="a08ce0d9b773a59b9672b27dddb6e83e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08ce0d9b773a59b9672b27dddb6e83e9">&#9670;&#160;</a></span>zero()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE static AMREX_FORCE_INLINE constexpr <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">TensorT</a>&lt; T &gt; <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::zero </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a740f0e93d4f098944b84c96d79052b65" name="a740f0e93d4f098944b84c96d79052b65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a740f0e93d4f098944b84c96d79052b65">&#9670;&#160;</a></span>zx() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T &amp; <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::zx </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> &amp;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad7de3ff2655d5bb29f656480a1a2a37b" name="ad7de3ff2655d5bb29f656480a1a2a37b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7de3ff2655d5bb29f656480a1a2a37b">&#9670;&#160;</a></span>zx() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T &amp; <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::zx </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const &amp;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1987a98caa3b57635ef088314767bcf7" name="a1987a98caa3b57635ef088314767bcf7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1987a98caa3b57635ef088314767bcf7">&#9670;&#160;</a></span>zy() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T &amp; <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::zy </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> &amp;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af0c7361c68025564b50418228fe9af97" name="af0c7361c68025564b50418228fe9af97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0c7361c68025564b50418228fe9af97">&#9670;&#160;</a></span>zy() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T &amp; <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::zy </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const &amp;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a240b908414e335b81277ac27a3e49bc6" name="a240b908414e335b81277ac27a3e49bc6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a240b908414e335b81277ac27a3e49bc6">&#9670;&#160;</a></span>zz() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T &amp; <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::zz </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> &amp;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a104bbe359c0d445854c6957b40c9d28b" name="a104bbe359c0d445854c6957b40c9d28b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a104bbe359c0d445854c6957b40c9d28b">&#9670;&#160;</a></span>zz() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T &amp; <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::zz </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const &amp;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a3b264eec1f764efc9237c33ecc24fc34" name="a3b264eec1f764efc9237c33ecc24fc34"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b264eec1f764efc9237c33ecc24fc34">&#9670;&#160;</a></span>ncomp</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::ncomp = 9</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa342f835b12f229a1c37937be798ab2e" name="aa342f835b12f229a1c37937be798ab2e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa342f835b12f229a1c37937be798ab2e">&#9670;&#160;</a></span>vv</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::GpuArray&lt;T, 9&gt; <a class="el" href="structamr__wind_1_1vs_1_1_tensor_t.html">amr_wind::vs::TensorT</a>&lt; T &gt;::vv</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">= {Traits::zero(), Traits::zero(), Traits::zero(),</div>
+<div class="line">                                Traits::zero(), Traits::zero(), Traits::zero(),</div>
+<div class="line">                                Traits::zero(), Traits::zero(), Traits::zero()}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following files:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/core/vs/<a class="el" href="tensor_8_h_source.html">tensor.H</a></li>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/core/vs/<a class="el" href="tensor_i_8_h_source.html">tensorI.H</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

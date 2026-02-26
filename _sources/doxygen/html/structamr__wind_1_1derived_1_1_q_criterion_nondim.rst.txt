@@ -1,0 +1,14 @@
+.. meta::485bf98f6f7b4f58f410037ff7d7947a2887ac00cac55984690b70b4560aa2fac0ee80a1a747ebae21b4412d25ade93454df778f840285044eb7ebba72e6b90a
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::derived::QCriterionNondim Struct Reference
+
+QCriterionNondim Struct Reference
+=================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1derived_1_1_q_criterion_nondim.html

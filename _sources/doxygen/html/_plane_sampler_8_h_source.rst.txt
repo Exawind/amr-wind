@@ -1,0 +1,14 @@
+.. meta::4c9ed791c06fd67ea59a2e9d8351d75f69d0d7473b440d9e8a263e3fead12253b34b533a3812da93222f5cb91c9882f998a5698a2b39aabac04dd2bb111295c1
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/PlaneSampler.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/PlaneSampler.H Source File
+==========================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _plane_sampler_8_h_source.html

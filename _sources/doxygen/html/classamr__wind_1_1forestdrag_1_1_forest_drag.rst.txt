@@ -1,0 +1,14 @@
+.. meta::cd665dc849314966d54a9ebbfd873545300d3766935819100ec8c9ce85d90c26090ed1a303023e9ed70f13a23e4b9a70cf9bd185c0e1229b2b86b61885b15ab3
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::forestdrag::ForestDrag Class Reference
+
+ForestDrag Class Reference
+==========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1forestdrag_1_1_forest_drag.html

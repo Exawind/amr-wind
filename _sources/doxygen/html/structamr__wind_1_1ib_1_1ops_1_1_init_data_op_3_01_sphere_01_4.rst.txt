@@ -1,0 +1,14 @@
+.. meta::c8d5d7ba2fe13561ce4e1686f74e529a25af3541ac12571a8fec45cac1fcdca0b03325af94ab4ca33c83c1800da5e522c9e7f19f0ad71a58f0cfeee3508495c4
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ib::ops::InitDataOp&lt; Sphere &gt; Struct Reference
+
+InitDataOp&lt; Sphere &gt; Struct Reference
+===========================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ib_1_1ops_1_1_init_data_op_3_01_sphere_01_4.html

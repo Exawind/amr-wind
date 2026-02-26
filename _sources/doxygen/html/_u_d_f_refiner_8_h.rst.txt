@@ -1,0 +1,14 @@
+.. meta::855b9e608d282ee90f227f199a909784c8a2b5515ef5a945ddd364ee3f74e97c6bd04125b615272348a8357471915ef2f93250579d82e9c1e14b9ff2369f5fb0
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/tagging/UDFRefiner.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/tagging/UDFRefiner.H File Reference
+==========================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _u_d_f_refiner_8_h.html

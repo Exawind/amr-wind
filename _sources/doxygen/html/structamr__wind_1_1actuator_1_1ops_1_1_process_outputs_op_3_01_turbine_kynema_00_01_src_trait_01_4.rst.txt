@@ -1,0 +1,14 @@
+.. meta::20c6075d311c4d1d6d388205ea865de6e5e168d215263411dca83ba6c003faffdb2a36b242b4cc3b62154ec9430d97db2f4e7244b4144c65b9032f4f9060f569
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::ProcessOutputsOp&lt; TurbineKynema, SrcTrait &gt; Struct Template Reference
+
+ProcessOutputsOp&lt; TurbineKynema, SrcTrait &gt; Struct Template Reference
+===========================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1ops_1_1_process_outputs_op_3_01_turbine_kynema_00_01_src_trait_01_4.html

@@ -1,0 +1,1434 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::multiphase Namespace Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::multiphase Namespace Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/namespaceamr__wind_1_1multiphase.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="multiphase-namespace-reference">
+<h1>multiphase Namespace Reference<a class="headerlink" href="#multiphase-namespace-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::multiphase Namespace Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="namespaceamr__wind_1_1multiphase.html">multiphase</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#func-members">Functions</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::multiphase Namespace Reference</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a7e04dca7ccbbe5e214b850c8da8ce0f9" id="r_a7e04dca7ccbbe5e214b850c8da8ce0f9"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_DEVICE AMREX_FORCE_INLINE void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7e04dca7ccbbe5e214b850c8da8ce0f9">eulerian_implicit</a> (const int i, const int j, const int k, const int dir, const amrex::Real dtdx, const amrex::Real velL, const amrex::Real velR, amrex::Array4&lt; amrex::Real const &gt; const &amp;volfrac, amrex::Array4&lt; amrex::Real &gt; const &amp;vofL, amrex::Array4&lt; amrex::Real &gt; const &amp;vofR)</td></tr>
+<tr class="memitem:a6d3eb12c62a7f3eefc9b232e183dbda2" id="r_a6d3eb12c62a7f3eefc9b232e183dbda2"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_DEVICE AMREX_FORCE_INLINE void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6d3eb12c62a7f3eefc9b232e183dbda2">balance_eulerian_fluxes</a> (const int i, const int j, const int k, const int dir, const amrex::Real dxi, const amrex::Real velL, const amrex::Real velR, amrex::Array4&lt; amrex::Real &gt; const &amp;volfrac, amrex::Array4&lt; amrex::Real const &gt; const &amp;fluxF, amrex::Array4&lt; amrex::Real const &gt; const &amp;fluxC)</td></tr>
+<tr class="memitem:ab6cb6f0b27c1fcd3e50168abb9a8bf0a" id="r_ab6cb6f0b27c1fcd3e50168abb9a8bf0a"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_DEVICE AMREX_FORCE_INLINE void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab6cb6f0b27c1fcd3e50168abb9a8bf0a">fluxes_bc_save</a> (const int i, const int j, const int k, const int dir, const amrex::Real disp, amrex::Array4&lt; amrex::Real &gt; const &amp;f_f, amrex::Array4&lt; amrex::Real &gt; const &amp;vofL, amrex::Array4&lt; amrex::Real &gt; const &amp;vofR, amrex::Array4&lt; amrex::Real &gt; const &amp;advalpha_f, amrex::GpuArray&lt; <a class="el" href="incflo__enums_8_h.html#a682a1815cce6afdf9ccb32fedc064292">BC</a>, AMREX_SPACEDIM *2 &gt; BCs, const int domlo, const int domhi)</td></tr>
+<tr class="memitem:a97ba085537038311281367e3a7fb1087" id="r_a97ba085537038311281367e3a7fb1087"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_DEVICE AMREX_FORCE_INLINE void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a97ba085537038311281367e3a7fb1087">c_mask</a> (const int i, const int j, const int k, amrex::Array4&lt; amrex::Real &gt; const &amp;volfrac, amrex::Array4&lt; amrex::Real &gt; const &amp;volfrac_masked)</td></tr>
+<tr class="memitem:ad36699476ebad0b49e5de94d43437df6" id="r_ad36699476ebad0b49e5de94d43437df6"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_DEVICE AMREX_FORCE_INLINE void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad36699476ebad0b49e5de94d43437df6">remove_vof_debris</a> (const int i, const int j, const int k, amrex::Array4&lt; amrex::Real &gt; const &amp;volfrac)</td></tr>
+<tr class="memitem:a1fa4f09e88779a5bc6c39ef674803378" id="r_a1fa4f09e88779a5bc6c39ef674803378"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1fa4f09e88779a5bc6c39ef674803378">split_advection_step</a> (int isweep, int iorder, int nlevels, <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;dof_field, amrex::Vector&lt; amrex::Array&lt; amrex::MultiFab *, AMREX_SPACEDIM &gt; &gt; const &amp;fluxes, <a class="el" href="classamr__wind_1_1_scratch_field.html">ScratchField</a> &amp;fluxC, amrex::Vector&lt; amrex::Array&lt; amrex::MultiFab *, AMREX_SPACEDIM &gt; &gt; const &amp;advas, <a class="el" href="classamr__wind_1_1_field.html">Field</a> const &amp;u_mac, <a class="el" href="classamr__wind_1_1_field.html">Field</a> const &amp;v_mac, <a class="el" href="classamr__wind_1_1_field.html">Field</a> const &amp;w_mac, amrex::GpuArray&lt; <a class="el" href="incflo__enums_8_h.html#a682a1815cce6afdf9ccb32fedc064292">BC</a>, AMREX_SPACEDIM *2 &gt; BCs, amrex::Vector&lt; amrex::Geometry &gt; geom, amrex::Real time, amrex::Real dt, bool rm_debris)</td></tr>
+<tr class="memitem:ab7821288014c52ecc54a247b90b602ea" id="r_ab7821288014c52ecc54a247b90b602ea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab7821288014c52ecc54a247b90b602ea">split_compute_fluxes</a> (int lev, amrex::Box const &amp;bx, int isweep, amrex::Array4&lt; amrex::Real const &gt; const &amp;volfrac, amrex::Array4&lt; amrex::Real const &gt; const &amp;umac, amrex::Array4&lt; amrex::Real const &gt; const &amp;vmac, amrex::Array4&lt; amrex::Real const &gt; const &amp;wmac, amrex::Array4&lt; amrex::Real &gt; const &amp;aax, amrex::Array4&lt; amrex::Real &gt; const &amp;aay, amrex::Array4&lt; amrex::Real &gt; const &amp;aaz, amrex::Array4&lt; amrex::Real &gt; const &amp;fx, amrex::Array4&lt; amrex::Real &gt; const &amp;fy, amrex::Array4&lt; amrex::Real &gt; const &amp;fz, amrex::GpuArray&lt; <a class="el" href="incflo__enums_8_h.html#a682a1815cce6afdf9ccb32fedc064292">BC</a>, AMREX_SPACEDIM *2 &gt; BCs, amrex::Real *p, amrex::Vector&lt; amrex::Geometry &gt; geom, amrex::Real dt)</td></tr>
+<tr class="memitem:a1b424e462b0f04065b21d3a22f1331cb" id="r_a1b424e462b0f04065b21d3a22f1331cb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1b424e462b0f04065b21d3a22f1331cb">split_compute_sum</a> (int lev, amrex::Box const &amp;bx, int isweep, amrex::Array4&lt; amrex::Real &gt; const &amp;volfrac, amrex::Array4&lt; amrex::Real const &gt; const &amp;fluxC, amrex::Array4&lt; amrex::Real const &gt; const &amp;umac, amrex::Array4&lt; amrex::Real const &gt; const &amp;vmac, amrex::Array4&lt; amrex::Real const &gt; const &amp;wmac, amrex::Array4&lt; amrex::Real const &gt; const &amp;fx, amrex::Array4&lt; amrex::Real const &gt; const &amp;fy, amrex::Array4&lt; amrex::Real const &gt; const &amp;fz, amrex::Vector&lt; amrex::Geometry &gt; geom, amrex::Real dt)</td></tr>
+<tr class="memitem:aee921cbc69e122b1a97021a7c025206d" id="r_aee921cbc69e122b1a97021a7c025206d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aee921cbc69e122b1a97021a7c025206d">cmask_loop</a> (amrex::Box const &amp;bx, amrex::Array4&lt; amrex::Real &gt; const &amp;volfrac, amrex::Array4&lt; amrex::Real &gt; const &amp;fluxC)</td></tr>
+<tr class="memitem:a1d698e4f503c7c93fa2fc1f66115e233" id="r_a1d698e4f503c7c93fa2fc1f66115e233"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1d698e4f503c7c93fa2fc1f66115e233">debris_loop</a> (amrex::Box const &amp;bx, amrex::Array4&lt; amrex::Real &gt; const &amp;volfrac)</td></tr>
+<tr class="memitem:aefc2808989d55a7d5f5ecf681a763be0" id="r_aefc2808989d55a7d5f5ecf681a763be0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aefc2808989d55a7d5f5ecf681a763be0">sweep_fluxes</a> (int dir, amrex::Box const &amp;bx, amrex::Real dtdx, amrex::Array4&lt; amrex::Real const &gt; const &amp;vel_mac, amrex::Array4&lt; amrex::Real const &gt; const &amp;volfrac, amrex::Array4&lt; amrex::Real &gt; const &amp;vofL, amrex::Array4&lt; amrex::Real &gt; const &amp;vofR)</td></tr>
+<tr class="memitem:aaacd06a0ce88d813904cf740ac2c67ec" id="r_aaacd06a0ce88d813904cf740ac2c67ec"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaacd06a0ce88d813904cf740ac2c67ec">sweep_balance</a> (int dir, amrex::Real dt, amrex::Real dxi, amrex::Box const &amp;bx, amrex::Array4&lt; amrex::Real const &gt; const &amp;vel_mac, amrex::Array4&lt; amrex::Real &gt; const &amp;volfrac, amrex::Array4&lt; amrex::Real const &gt; const &amp;fluxF, amrex::Array4&lt; amrex::Real const &gt; const &amp;fluxC)</td></tr>
+<tr class="memitem:ad9ca1f783d170a0f14fe52b354b641c2" id="r_ad9ca1f783d170a0f14fe52b354b641c2"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad9ca1f783d170a0f14fe52b354b641c2">replace_masked_vof</a> (const int nlevels, <a class="el" href="classamr__wind_1_1_int_field.html">amr_wind::IntField</a> &amp;f_iblank, <a class="el" href="classamr__wind_1_1_field.html">amr_wind::Field</a> &amp;f_vof, <a class="el" href="classamr__wind_1_1_field.html">amr_wind::Field</a> &amp;f_vof_new)</td></tr>
+<tr class="memitem:a9bb6b3f83a21f880a658226366ff09a7" id="r_a9bb6b3f83a21f880a658226366ff09a7"><td class="memItemLeft" align="right" valign="top">static AMREX_INLINE void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9bb6b3f83a21f880a658226366ff09a7">hybrid_fluxes</a> (const <a class="el" href="classamr__wind_1_1_field_repo.html">FieldRepo</a> &amp;repo, const int ncomp, const amrex::Gpu::DeviceVector&lt; int &gt; &amp;iconserv, <a class="el" href="classamr__wind_1_1_scratch_field.html">ScratchField</a> &amp;flux_x, <a class="el" href="classamr__wind_1_1_scratch_field.html">ScratchField</a> &amp;flux_y, <a class="el" href="classamr__wind_1_1_scratch_field.html">ScratchField</a> &amp;flux_z, const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;dof_field, const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;dof_nph, const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;src_term, const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;rho_o, const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;rho_nph, const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;u_mac, const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;v_mac, const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;w_mac, amrex::Vector&lt; amrex::BCRec &gt; const &amp;velbc, amrex::BCRec const *velbc_d, amrex::Vector&lt; amrex::BCRec &gt; const &amp;rhobc, amrex::BCRec const *rhobc_d, const amrex::Real dt, <a class="el" href="namespacegodunov.html#a0d48c9064caf98de3f1a76c4be1cb4a3">godunov::scheme</a> mflux_scheme, bool allow_inflow_on_outflow, bool use_forces_in_trans, bool pre_multiplied_src_term=false)</td></tr>
+<tr class="memitem:a751c023a2b3fea01ef9c117ab900c9ce" id="r_a751c023a2b3fea01ef9c117ab900c9ce"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a751c023a2b3fea01ef9c117ab900c9ce">youngs_finite_difference_normal</a> (const int i, const int j, const int k, amrex::Array4&lt; amrex::Real const &gt; const &amp;volfrac, amrex::Real &amp;mx, amrex::Real &amp;my, amrex::Real &amp;mz)</td></tr>
+<tr class="memitem:a4455aea95157d867c122d3e5b02a5c7d" id="r_a4455aea95157d867c122d3e5b02a5c7d"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4455aea95157d867c122d3e5b02a5c7d">youngs_finite_difference_normal_neumann</a> (const int i, const int j, const int k, const int ibdy, const int jbdy, const int kbdy, amrex::Array4&lt; amrex::Real const &gt; const &amp;volfrac, amrex::Real &amp;mx, amrex::Real &amp;my, amrex::Real &amp;mz)</td></tr>
+<tr class="memitem:ab38473203d1a4675e9eb640c07867b94" id="r_ab38473203d1a4675e9eb640c07867b94"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab38473203d1a4675e9eb640c07867b94">mixed_youngs_central_normal</a> (const int i, const int j, const int k, amrex::Array4&lt; amrex::Real const &gt; const &amp;volfrac, amrex::Real &amp;mx, amrex::Real &amp;my, amrex::Real &amp;mz)</td></tr>
+<tr class="memitem:aef8fe434535e0507a7795bb448d2eeba" id="r_aef8fe434535e0507a7795bb448d2eeba"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aef8fe434535e0507a7795bb448d2eeba">volume_intercept</a> (const amrex::Real b1, const amrex::Real b2, const amrex::Real b3, const amrex::Real volF)</td></tr>
+<tr class="memitem:a4f033bae2922764ac39c3c30093a51cc" id="r_a4f033bae2922764ac39c3c30093a51cc"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4f033bae2922764ac39c3c30093a51cc">cut_volume</a> (const amrex::Real m1, const amrex::Real m2, const amrex::Real m3, const amrex::Real alpha, const amrex::Real r0, const amrex::Real dr0)</td></tr>
+<tr class="memitem:a3dc6fef34aecafb0349c9a8f407eb726" id="r_a3dc6fef34aecafb0349c9a8f407eb726"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3dc6fef34aecafb0349c9a8f407eb726">fit_plane</a> (const int i, const int j, const int k, amrex::Array4&lt; amrex::Real const &gt; const &amp;volfrac, amrex::Real &amp;mx, amrex::Real &amp;my, amrex::Real &amp;mz, amrex::Real &amp;alpha)</td></tr>
+<tr class="memitem:a49b328713384726e82614d287fb6e63b" id="r_a49b328713384726e82614d287fb6e63b"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a49b328713384726e82614d287fb6e63b">interface_band</a> (const int i, const int j, const int k, amrex::Array4&lt; amrex::Real const &gt; const &amp;volfrac, const int n_band=1, const amrex::Real tiny=<a class="el" href="namespaceamr__wind_1_1constants.html#a0aee8a942fdb663d4cb5d169e94d9817">constants::TIGHT_TOL</a>)</td></tr>
+<tr class="memitem:a306a61f514dc9d21152f4b8de7e86bcf" id="r_a306a61f514dc9d21152f4b8de7e86bcf"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a306a61f514dc9d21152f4b8de7e86bcf">levelset_to_vof</a> (const int i, const int j, const int k, const amrex::Real eps, amrex::Array4&lt; amrex::Real const &gt; const &amp;phi)</td></tr>
+</table>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
+<a id="a6d3eb12c62a7f3eefc9b232e183dbda2" name="a6d3eb12c62a7f3eefc9b232e183dbda2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d3eb12c62a7f3eefc9b232e183dbda2">&#9670;&#160;</a></span>balance_eulerian_fluxes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_DEVICE AMREX_FORCE_INLINE void amr_wind::multiphase::balance_eulerian_fluxes </td>
+          <td>(</td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>i</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>j</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>k</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>dir</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>dxi</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>velL</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>velR</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>volfrac</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real const &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>fluxF</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real const &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>fluxC</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a97ba085537038311281367e3a7fb1087" name="a97ba085537038311281367e3a7fb1087"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97ba085537038311281367e3a7fb1087">&#9670;&#160;</a></span>c_mask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_DEVICE AMREX_FORCE_INLINE void amr_wind::multiphase::c_mask </td>
+          <td>(</td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>i</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>j</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>k</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>volfrac</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>volfrac_masked</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aee921cbc69e122b1a97021a7c025206d" name="aee921cbc69e122b1a97021a7c025206d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee921cbc69e122b1a97021a7c025206d">&#9670;&#160;</a></span>cmask_loop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::multiphase::cmask_loop </td>
+          <td>(</td>
+          <td class="paramtype">amrex::Box const &amp;</td>          <td class="paramname"><span class="paramname"><em>bx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>volfrac</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>fluxC</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4f033bae2922764ac39c3c30093a51cc" name="a4f033bae2922764ac39c3c30093a51cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f033bae2922764ac39c3c30093a51cc">&#9670;&#160;</a></span>cut_volume()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real amr_wind::multiphase::cut_volume </td>
+          <td>(</td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>m1</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>m2</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>m3</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>alpha</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>r0</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>dr0</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Computes the "CUT VOLUME" V0 given r0, dr0 and m_1*x_1 + m_2*x_2 + m_3*x_3 = alpha (1) move origin to r0 along r ; (2) reflect parallelepiped; (3) limit alpha (0&lt;= al0 &lt;=0.5_rt); (4) order coefficients: b1&lt;b2&lt;b3; (5) calculate volume (NOTE: it is assumed:s0=t0=0; ds0=dt0=1.) </p>
+
+</div>
+</div>
+<a id="a1d698e4f503c7c93fa2fc1f66115e233" name="a1d698e4f503c7c93fa2fc1f66115e233"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d698e4f503c7c93fa2fc1f66115e233">&#9670;&#160;</a></span>debris_loop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::multiphase::debris_loop </td>
+          <td>(</td>
+          <td class="paramtype">amrex::Box const &amp;</td>          <td class="paramname"><span class="paramname"><em>bx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>volfrac</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7e04dca7ccbbe5e214b850c8da8ce0f9" name="a7e04dca7ccbbe5e214b850c8da8ce0f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e04dca7ccbbe5e214b850c8da8ce0f9">&#9670;&#160;</a></span>eulerian_implicit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_DEVICE AMREX_FORCE_INLINE void amr_wind::multiphase::eulerian_implicit </td>
+          <td>(</td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>i</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>j</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>k</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>dir</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>dtdx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>velL</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>velR</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real const &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>volfrac</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>vofL</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>vofR</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3dc6fef34aecafb0349c9a8f407eb726" name="a3dc6fef34aecafb0349c9a8f407eb726"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3dc6fef34aecafb0349c9a8f407eb726">&#9670;&#160;</a></span>fit_plane()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void amr_wind::multiphase::fit_plane </td>
+          <td>(</td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>i</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>j</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>k</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real const &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>volfrac</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real &amp;</td>          <td class="paramname"><span class="paramname"><em>mx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real &amp;</td>          <td class="paramname"><span class="paramname"><em>my</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real &amp;</td>          <td class="paramname"><span class="paramname"><em>mz</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real &amp;</td>          <td class="paramname"><span class="paramname"><em>alpha</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab6cb6f0b27c1fcd3e50168abb9a8bf0a" name="ab6cb6f0b27c1fcd3e50168abb9a8bf0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6cb6f0b27c1fcd3e50168abb9a8bf0a">&#9670;&#160;</a></span>fluxes_bc_save()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_DEVICE AMREX_FORCE_INLINE void amr_wind::multiphase::fluxes_bc_save </td>
+          <td>(</td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>i</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>j</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>k</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>dir</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>disp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>f_f</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>vofL</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>vofR</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>advalpha_f</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::GpuArray&lt; <a class="el" href="incflo__enums_8_h.html#a682a1815cce6afdf9ccb32fedc064292">BC</a>, AMREX_SPACEDIM *2 &gt;</td>          <td class="paramname"><span class="paramname"><em>BCs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>domlo</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>domhi</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9bb6b3f83a21f880a658226366ff09a7" name="a9bb6b3f83a21f880a658226366ff09a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9bb6b3f83a21f880a658226366ff09a7">&#9670;&#160;</a></span>hybrid_fluxes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_INLINE void amr_wind::multiphase::hybrid_fluxes </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_field_repo.html">FieldRepo</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>repo</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>ncomp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Gpu::DeviceVector&lt; int &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>iconserv</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classamr__wind_1_1_scratch_field.html">ScratchField</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>flux_x</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classamr__wind_1_1_scratch_field.html">ScratchField</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>flux_y</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classamr__wind_1_1_scratch_field.html">ScratchField</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>flux_z</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>dof_field</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>dof_nph</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>src_term</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>rho_o</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>rho_nph</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>u_mac</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>v_mac</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>w_mac</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Vector&lt; amrex::BCRec &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>velbc</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::BCRec const *</td>          <td class="paramname"><span class="paramname"><em>velbc_d</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Vector&lt; amrex::BCRec &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>rhobc</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::BCRec const *</td>          <td class="paramname"><span class="paramname"><em>rhobc_d</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>dt</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacegodunov.html#a0d48c9064caf98de3f1a76c4be1cb4a3">godunov::scheme</a></td>          <td class="paramname"><span class="paramname"><em>mflux_scheme</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>allow_inflow_on_outflow</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>use_forces_in_trans</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>pre_multiplied_src_term</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a49b328713384726e82614d287fb6e63b" name="a49b328713384726e82614d287fb6e63b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49b328713384726e82614d287fb6e63b">&#9670;&#160;</a></span>interface_band()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool amr_wind::multiphase::interface_band </td>
+          <td>(</td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>i</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>j</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>k</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real const &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>volfrac</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>n_band</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>tiny</em></span><span class="paramdefsep"> = </span><span class="paramdefval"><a class="el" href="namespaceamr__wind_1_1constants.html#a0aee8a942fdb663d4cb5d169e94d9817">constants::TIGHT_TOL</a></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a306a61f514dc9d21152f4b8de7e86bcf" name="a306a61f514dc9d21152f4b8de7e86bcf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a306a61f514dc9d21152f4b8de7e86bcf">&#9670;&#160;</a></span>levelset_to_vof()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real amr_wind::multiphase::levelset_to_vof </td>
+          <td>(</td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>i</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>j</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>k</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>eps</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real const &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>phi</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab38473203d1a4675e9eb640c07867b94" name="ab38473203d1a4675e9eb640c07867b94"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab38473203d1a4675e9eb640c07867b94">&#9670;&#160;</a></span>mixed_youngs_central_normal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void amr_wind::multiphase::mixed_youngs_central_normal </td>
+          <td>(</td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>i</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>j</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>k</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real const &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>volfrac</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real &amp;</td>          <td class="paramname"><span class="paramname"><em>mx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real &amp;</td>          <td class="paramname"><span class="paramname"><em>my</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real &amp;</td>          <td class="paramname"><span class="paramname"><em>mz</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad36699476ebad0b49e5de94d43437df6" name="ad36699476ebad0b49e5de94d43437df6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad36699476ebad0b49e5de94d43437df6">&#9670;&#160;</a></span>remove_vof_debris()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_DEVICE AMREX_FORCE_INLINE void amr_wind::multiphase::remove_vof_debris </td>
+          <td>(</td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>i</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>j</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>k</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>volfrac</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad9ca1f783d170a0f14fe52b354b641c2" name="ad9ca1f783d170a0f14fe52b354b641c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9ca1f783d170a0f14fe52b354b641c2">&#9670;&#160;</a></span>replace_masked_vof()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::multiphase::replace_masked_vof </td>
+          <td>(</td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>nlevels</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classamr__wind_1_1_int_field.html">amr_wind::IntField</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>f_iblank</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classamr__wind_1_1_field.html">amr_wind::Field</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>f_vof</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classamr__wind_1_1_field.html">amr_wind::Field</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>f_vof_new</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1fa4f09e88779a5bc6c39ef674803378" name="a1fa4f09e88779a5bc6c39ef674803378"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1fa4f09e88779a5bc6c39ef674803378">&#9670;&#160;</a></span>split_advection_step()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::multiphase::split_advection_step </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>isweep</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>iorder</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>nlevels</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>dof_field</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Vector&lt; amrex::Array&lt; amrex::MultiFab *, AMREX_SPACEDIM &gt; &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>fluxes</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classamr__wind_1_1_scratch_field.html">ScratchField</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>fluxC</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Vector&lt; amrex::Array&lt; amrex::MultiFab *, AMREX_SPACEDIM &gt; &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>advas</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classamr__wind_1_1_field.html">Field</a> const &amp;</td>          <td class="paramname"><span class="paramname"><em>u_mac</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classamr__wind_1_1_field.html">Field</a> const &amp;</td>          <td class="paramname"><span class="paramname"><em>v_mac</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classamr__wind_1_1_field.html">Field</a> const &amp;</td>          <td class="paramname"><span class="paramname"><em>w_mac</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::GpuArray&lt; <a class="el" href="incflo__enums_8_h.html#a682a1815cce6afdf9ccb32fedc064292">BC</a>, AMREX_SPACEDIM *2 &gt;</td>          <td class="paramname"><span class="paramname"><em>BCs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Vector&lt; amrex::Geometry &gt;</td>          <td class="paramname"><span class="paramname"><em>geom</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>time</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>dt</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>rm_debris</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab7821288014c52ecc54a247b90b602ea" name="ab7821288014c52ecc54a247b90b602ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7821288014c52ecc54a247b90b602ea">&#9670;&#160;</a></span>split_compute_fluxes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::multiphase::split_compute_fluxes </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>lev</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Box const &amp;</td>          <td class="paramname"><span class="paramname"><em>bx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>isweep</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real const &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>volfrac</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real const &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>umac</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real const &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>vmac</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real const &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>wmac</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>aax</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>aay</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>aaz</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>fx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>fy</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>fz</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::GpuArray&lt; <a class="el" href="incflo__enums_8_h.html#a682a1815cce6afdf9ccb32fedc064292">BC</a>, AMREX_SPACEDIM *2 &gt;</td>          <td class="paramname"><span class="paramname"><em>BCs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real *</td>          <td class="paramname"><span class="paramname"><em>p</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Vector&lt; amrex::Geometry &gt;</td>          <td class="paramname"><span class="paramname"><em>geom</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>dt</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1b424e462b0f04065b21d3a22f1331cb" name="a1b424e462b0f04065b21d3a22f1331cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b424e462b0f04065b21d3a22f1331cb">&#9670;&#160;</a></span>split_compute_sum()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::multiphase::split_compute_sum </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>lev</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Box const &amp;</td>          <td class="paramname"><span class="paramname"><em>bx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>isweep</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>volfrac</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real const &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>fluxC</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real const &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>umac</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real const &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>vmac</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real const &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>wmac</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real const &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>fx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real const &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>fy</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real const &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>fz</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Vector&lt; amrex::Geometry &gt;</td>          <td class="paramname"><span class="paramname"><em>geom</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>dt</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aaacd06a0ce88d813904cf740ac2c67ec" name="aaacd06a0ce88d813904cf740ac2c67ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaacd06a0ce88d813904cf740ac2c67ec">&#9670;&#160;</a></span>sweep_balance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::multiphase::sweep_balance </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>dir</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>dt</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>dxi</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Box const &amp;</td>          <td class="paramname"><span class="paramname"><em>bx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real const &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>vel_mac</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>volfrac</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real const &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>fluxF</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real const &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>fluxC</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aefc2808989d55a7d5f5ecf681a763be0" name="aefc2808989d55a7d5f5ecf681a763be0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aefc2808989d55a7d5f5ecf681a763be0">&#9670;&#160;</a></span>sweep_fluxes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::multiphase::sweep_fluxes </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>dir</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Box const &amp;</td>          <td class="paramname"><span class="paramname"><em>bx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>dtdx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real const &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>vel_mac</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real const &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>volfrac</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>vofL</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>vofR</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aef8fe434535e0507a7795bb448d2eeba" name="aef8fe434535e0507a7795bb448d2eeba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef8fe434535e0507a7795bb448d2eeba">&#9670;&#160;</a></span>volume_intercept()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real amr_wind::multiphase::volume_intercept </td>
+          <td>(</td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>b1</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>b2</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>b3</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>volF</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a751c023a2b3fea01ef9c117ab900c9ce" name="a751c023a2b3fea01ef9c117ab900c9ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a751c023a2b3fea01ef9c117ab900c9ce">&#9670;&#160;</a></span>youngs_finite_difference_normal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void amr_wind::multiphase::youngs_finite_difference_normal </td>
+          <td>(</td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>i</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>j</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>k</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real const &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>volfrac</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real &amp;</td>          <td class="paramname"><span class="paramname"><em>mx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real &amp;</td>          <td class="paramname"><span class="paramname"><em>my</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real &amp;</td>          <td class="paramname"><span class="paramname"><em>mz</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Young's finite-difference gradient scheme.</p>
+<p>The gradient is computed with a multiplicative factor of -32: </p><p class="formulaDsp">
+\[ mm = - 32 * \grad (c) \]
+</p>
+<p>Known problems: the index (1,1,1), i.e. the central cell in the block, never occurs: Therefore an isolated droplet will have a normal with all components to zero. </p>
+
+</div>
+</div>
+<a id="a4455aea95157d867c122d3e5b02a5c7d" name="a4455aea95157d867c122d3e5b02a5c7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4455aea95157d867c122d3e5b02a5c7d">&#9670;&#160;</a></span>youngs_finite_difference_normal_neumann()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void amr_wind::multiphase::youngs_finite_difference_normal_neumann </td>
+          <td>(</td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>i</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>j</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>k</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>ibdy</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>jbdy</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>kbdy</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array4&lt; amrex::Real const &gt; const &amp;</td>          <td class="paramname"><span class="paramname"><em>volfrac</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real &amp;</td>          <td class="paramname"><span class="paramname"><em>mx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real &amp;</td>          <td class="paramname"><span class="paramname"><em>my</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real &amp;</td>          <td class="paramname"><span class="paramname"><em>mz</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

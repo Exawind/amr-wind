@@ -1,0 +1,14 @@
+.. meta::f0b45e42b85b1e60e8bfc8cd2bfd8fe3988fbcd2446d6470c37857e9c807e6a70f2fdf852fbcff017462486fb5d3c18bcc16be80a3ae79907b2131a556b81749
+
+:orphan:
+
+.. title:: AMR-Wind API: Actuator source terms
+
+Actuator source terms
+=====================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: group__actuator.html

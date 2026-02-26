@@ -1,0 +1,14 @@
+.. meta::3d8c9330d8f352de92f9aba70ff9efe31ef6ba6a4c21ee0797d2d414be973112fbeac8a2228d8ceb981050230f0c078f12f8db7a851a3942316452601da57e07
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::UpdatePosOp&lt; ActTrait, ActSrcLine, typename std::enable_if_t&lt; std::is_base_of_v&lt; WingType, ActTrait &gt; &amp;&amp;UseDefaultOp&lt; ActTrait, ActSrcLine &gt;::update_pos &gt; &gt; Struct Template Reference
+
+update\_pos &gt; &gt; Struct Template Reference
+===============================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1ops_1_1_update_pos_op_3_01_act_trait_00_01_act_src_line_00_01type8fdbb6ab34c3c2c1d509d0a19da209ed.html

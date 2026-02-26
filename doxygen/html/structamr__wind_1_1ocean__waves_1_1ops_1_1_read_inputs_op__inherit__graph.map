@@ -1,0 +1,9 @@
+<map id="amr_wind::ocean_waves::ops::ReadInputsOp&lt; WaveTheoryTrait, typename &gt;" name="amr_wind::ocean_waves::ops::ReadInputsOp&lt; WaveTheoryTrait, typename &gt;">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,84,229,139"/>
+<area shape="rect" id="Node000002" href="$structamr__wind_1_1ocean__waves_1_1ops_1_1_read_inputs_op_3_01_linear_waves_01_4.html" title=" " alt="" coords="403,5,585,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="242,83,402,49,403,54,243,88"/>
+<area shape="rect" id="Node000003" href="$structamr__wind_1_1ocean__waves_1_1ops_1_1_read_inputs_op_3_01_stokes_waves_01_4.html" title=" " alt="" coords="403,84,585,139"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="243,109,402,109,402,114,243,114"/>
+<area shape="rect" id="Node000004" href="$structamr__wind_1_1ocean__waves_1_1ops_1_1_read_inputs_op_3_01_w2_a_waves_01_4.html" title=" " alt="" coords="403,163,585,217"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="243,135,403,168,402,174,242,140"/>
+</map>

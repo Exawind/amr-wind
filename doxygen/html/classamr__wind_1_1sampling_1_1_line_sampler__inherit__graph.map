@@ -1,0 +1,9 @@
+<map id="amr_wind::sampling::LineSampler" name="amr_wind::sampling::LineSampler">
+<area shape="rect" id="Node000001" title=" " alt="" coords="13,93,168,133"/>
+<area shape="rect" id="Node000003" href="$classamr__wind_1_1sampling_1_1_lidar_sampler.html" title=" " alt="" coords="13,181,168,221"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="93,147,93,181,88,181,88,147"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,5,176,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="93,59,93,93,88,93,88,59"/>
+<area shape="rect" id="Node000004" href="$classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html" title=" " alt="" coords="10,269,171,309"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="93,235,93,269,88,269,88,235"/>
+</map>

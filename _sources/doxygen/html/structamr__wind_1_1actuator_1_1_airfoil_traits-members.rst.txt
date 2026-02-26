@@ -1,0 +1,14 @@
+.. meta::427931c22b9370bedd820917e49f00c9492d29912e351b8802a1c77606c8715c0e9c8add5c9579c1e776dd60c9ca8df48ada561f159b86458bd338b21a2cd872
+
+:orphan:
+
+.. title:: AMR-Wind API: Member List
+
+Member List
+===========
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1_airfoil_traits-members.html

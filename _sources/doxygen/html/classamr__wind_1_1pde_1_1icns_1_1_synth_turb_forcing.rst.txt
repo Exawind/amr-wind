@@ -1,0 +1,14 @@
+.. meta::a092cd0cca9eb39c2e51cce756e44f4d292fc8ad3de790f328fd247bd8b036813124dc1e98c0d41c0fadca0b90c7af198d630513c6ae173994cf2d30e7483993
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::icns::SynthTurbForcing Class Reference
+
+SynthTurbForcing Class Reference
+================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1pde_1_1icns_1_1_synth_turb_forcing.html

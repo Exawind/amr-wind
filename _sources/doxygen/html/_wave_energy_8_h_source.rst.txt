@@ -1,0 +1,14 @@
+.. meta::23c3d99d583c8bb1c3bb03c98f42d49d177fe310a802ed3d7324f404f6bea818a199ebe36215884ee52d8c0898f09e9a80847e603aac5dfc12985f849bbfb050
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/WaveEnergy.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/WaveEnergy.H Source File
+========================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _wave_energy_8_h_source.html

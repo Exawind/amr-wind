@@ -1,0 +1,14 @@
+.. meta::6ba03f11a226c2efe1a6b865b35926b2c679c0e878b2396afed76ad82778f17fd6c08d36f155dbca9174bccb288c9b8584b0b5900c60ebbcfafc47c974e17166
+
+:orphan:
+
+.. title:: AMR-Wind API: Data-sampling utilities
+
+Data-sampling utilities
+=======================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: group__sampling.html

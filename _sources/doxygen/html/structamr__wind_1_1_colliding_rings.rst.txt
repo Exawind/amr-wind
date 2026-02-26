@@ -1,0 +1,14 @@
+.. meta::c5a04c7416d13bf97e0c0b3eae763bc08d41c517feece83249185fd156bdb6b81b78b80002de3aecca2051646ab2d27bbeda1c0a7293da23cbf976401dc587f6
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::CollidingRings Struct Reference
+
+CollidingRings Struct Reference
+===============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1_colliding_rings.html

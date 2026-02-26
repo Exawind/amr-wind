@@ -1,0 +1,9 @@
+<map id="amr_wind::ib::BluffBodyBaseData" name="amr_wind::ib::BluffBodyBaseData">
+<area shape="rect" id="Node000001" title=" " alt="" coords="180,5,420,31"/>
+<area shape="rect" id="Node000002" href="$structamr__wind_1_1ib_1_1_box_data.html" title=" " alt="" coords="5,79,176,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="254,38,125,81,124,76,252,33"/>
+<area shape="rect" id="Node000003" href="$structamr__wind_1_1ib_1_1_cylinder_data.html" title=" " alt="" coords="201,79,399,104"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="303,44,303,79,297,79,297,44"/>
+<area shape="rect" id="Node000004" href="$structamr__wind_1_1ib_1_1_sphere_data.html" title=" " alt="" coords="423,79,614,104"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="349,32,484,76,482,81,347,37"/>
+</map>
