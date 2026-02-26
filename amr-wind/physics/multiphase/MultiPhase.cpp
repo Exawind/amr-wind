@@ -230,7 +230,7 @@ amrex::Real MultiPhase::volume_fraction_sum()
 
         total_volume_frac += amrex::ReduceSum(
             vof, level_mask, 0,
-            [=] AMREX_GPU_DEVICE(
+            [=] AMREX_GPU_HOST_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& volfrac,
                 amrex::Array4<int const> const& mask_arr) -> amrex::Real {
@@ -276,7 +276,7 @@ amrex::Real MultiPhase::momentum_sum(int n)
 
         total_momentum += amrex::ReduceSum(
             velocity, density, level_mask, 0,
-            [=] AMREX_GPU_DEVICE(
+            [=] AMREX_GPU_HOST_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& vel,
                 amrex::Array4<amrex::Real const> const& dens,
