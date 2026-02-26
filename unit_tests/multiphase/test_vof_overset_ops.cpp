@@ -460,7 +460,7 @@ amrex::Real check_alpha_flux_impl(amr_wind::Field& flux, const int& dir)
 
         error_total += amrex::ReduceSum(
             flux(lev), 0,
-            [=] AMREX_GPU_HOST_DEVICE(
+            [=] AMREX_GPU_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& f_arr) -> amrex::Real {
                 amrex::Real error = 0;
@@ -533,7 +533,7 @@ amrex::Real check_velocity_face_impl(amr_wind::Field& flux, const int& dir)
 
         error_total += amrex::ReduceSum(
             flux(lev), 0,
-            [=] AMREX_GPU_HOST_DEVICE(
+            [=] AMREX_GPU_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& f_arr) -> amrex::Real {
                 amrex::Real error = 0;
@@ -585,7 +585,7 @@ amrex::Real check_gp_rho_face_impl(
 
         error_total += amrex::ReduceSum(
             flux(lev), 0,
-            [=] AMREX_GPU_HOST_DEVICE(
+            [=] AMREX_GPU_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& f_arr) -> amrex::Real {
                 amrex::Real error = 0;
@@ -645,7 +645,7 @@ check_psrc_manual_impl(amr_wind::Field& psrc, amr_wind::Field& psrc_manual)
 
         error_total += amrex::ReduceSum(
             psrc(lev), psrc_manual(lev), 0,
-            [=] AMREX_GPU_HOST_DEVICE(
+            [=] AMREX_GPU_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& f_arr,
                 amrex::Array4<amrex::Real const> const& fm_arr) -> amrex::Real {
@@ -669,7 +669,7 @@ amrex::Real check_iblank_node_impl(amr_wind::IntField& mask_node)
 
         error_total += amrex::ReduceSum(
             mask_node(lev), 0,
-            [=] AMREX_GPU_HOST_DEVICE(
+            [=] AMREX_GPU_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<int const> const& i_arr) -> amrex::Real {
                 amrex::Real error = 0;
@@ -708,7 +708,7 @@ amrex::Real check_iblank_cell_impl(amr_wind::IntField& mask_cell)
 
         error_total += amrex::ReduceSum(
             mask_cell(lev), 0,
-            [=] AMREX_GPU_HOST_DEVICE(
+            [=] AMREX_GPU_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<int const> const& i_arr) -> amrex::Real {
                 amrex::Real error = 0;
@@ -747,7 +747,7 @@ amrex::Real check_iblank_cell_default_impl(amr_wind::IntField& mask_cell)
 
         error_total += amrex::ReduceSum(
             mask_cell(lev), 0,
-            [=] AMREX_GPU_HOST_DEVICE(
+            [=] AMREX_GPU_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<int const> const& i_arr) -> amrex::Real {
                 amrex::Real error = 0;

@@ -156,7 +156,7 @@ AMREX_INLINE T field_probe_impl(
     const amrex::IntVect iv_val = {i, j, k};
     T value = amrex::ReduceSum(
         field(lev), 0,
-        [=] AMREX_GPU_HOST_DEVICE(
+        [=] AMREX_GPU_DEVICE(
             amrex::Box const& bx,
             amrex::Array4<T const> const& field_arr) -> T {
             T val = 0.0;

@@ -205,7 +205,7 @@ amrex::Real normal_vector_test_impl(amr_wind::Field& vof, const int dir)
 
         error_total += amrex::ReduceSum(
             vof(lev), 0,
-            [=] AMREX_GPU_HOST_DEVICE(
+            [=] AMREX_GPU_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& vof_arr)
                 -> amrex::Real {
@@ -243,7 +243,7 @@ amrex::Real normal_vector_neumann_test_impl(
 
         error_total += amrex::ReduceSum(
             vof(lev), iblk_fld(lev), 0,
-            [=] AMREX_GPU_HOST_DEVICE(
+            [=] AMREX_GPU_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& vof_arr,
                 amrex::Array4<int const> const& iblank) -> amrex::Real {
@@ -307,7 +307,7 @@ amrex::Real normal_vector_neumann_test_impl(
 
         error_total += amrex::ReduceSum(
             vof(lev), iblk_fld(lev), 0,
-            [=] AMREX_GPU_HOST_DEVICE(
+            [=] AMREX_GPU_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& vof_arr,
                 amrex::Array4<int const> const& iblank) -> amrex::Real {
@@ -369,7 +369,7 @@ amrex::Real fit_plane_test_impl(amr_wind::Field& vof, const int dir)
 
         error_total += amrex::ReduceSum(
             vof(lev), 0,
-            [=] AMREX_GPU_HOST_DEVICE(
+            [=] AMREX_GPU_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& vof_arr)
                 -> amrex::Real {
@@ -410,7 +410,7 @@ amrex::Real fit_plane_test_impl_h(
 
         error_total += amrex::ReduceSum(
             vof(lev), 0,
-            [=] AMREX_GPU_HOST_DEVICE(
+            [=] AMREX_GPU_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& vof_arr)
                 -> amrex::Real {

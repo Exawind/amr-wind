@@ -125,7 +125,7 @@ levelset_to_vof_test_impl(const amrex::Real deltax, amr_wind::Field& levelset)
 
         error_total += amrex::ReduceSum(
             levelset(lev), 0,
-            [=] AMREX_GPU_HOST_DEVICE(
+            [=] AMREX_GPU_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& levelset_arr)
                 -> amrex::Real {
@@ -182,7 +182,7 @@ amrex::Real interface_band_test_impl(amr_wind::Field& vof)
 
         error_total += amrex::ReduceSum(
             vof(lev), 0,
-            [=] AMREX_GPU_HOST_DEVICE(
+            [=] AMREX_GPU_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& vof_arr)
                 -> amrex::Real {
@@ -225,7 +225,7 @@ amrex::Real initvof_test_impl(amr_wind::Field& vof)
 
         error_total += amrex::ReduceSum(
             vof(lev), 0,
-            [=] AMREX_GPU_HOST_DEVICE(
+            [=] AMREX_GPU_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& vof_arr)
                 -> amrex::Real {

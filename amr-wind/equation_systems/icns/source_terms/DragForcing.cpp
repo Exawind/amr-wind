@@ -12,7 +12,7 @@
 using namespace amrex::literals;
 
 namespace {
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real viscous_drag_calculations(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real viscous_drag_calculations(
     amrex::Real& Dxz,
     amrex::Real& Dyz,
     const amrex::Real ux1r,
@@ -39,7 +39,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real viscous_drag_calculations(
 }
 
 // Implementation comes from MOSD approach in boundary_conditions/wall_models/
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void form_drag_calculations(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE void form_drag_calculations(
     amrex::Real& Dxz,
     amrex::Real& Dyz,
     const int i,
