@@ -1,5 +1,5 @@
-#ifndef ACTSRCLINEOP_H_
-#define ACTSRCLINEOP_H_
+#ifndef ACTSRCLINEOP_H
+#define ACTSRCLINEOP_H
 
 #include "AMReX_REAL.H"
 #include "amr-wind/wind_energy/actuator/actuator_types.H"
@@ -148,4 +148,4 @@ void ActSrcOp<ActTrait, ActSrcLine>::operator()(
 }
 } // namespace amr_wind::actuator::ops
 
-#endif /* ACTSRCLINEOP_H_ */
+#endif /* ACTSRCLINEOP_H */

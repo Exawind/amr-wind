@@ -1,5 +1,5 @@
-#ifndef ShearStress_H
-#define ShearStress_H
+#ifndef SHEARSTRESS_H
+#define SHEARSTRESS_H
 
 #include "amr-wind/wind_energy/MOData.H"
 #include "AMReX_REAL.H"

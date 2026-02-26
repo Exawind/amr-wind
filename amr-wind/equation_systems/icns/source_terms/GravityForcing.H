@@ -1,5 +1,5 @@
-#ifndef GravityForcing_H
-#define GravityForcing_H
+#ifndef GRAVITYFORCING_H
+#define GRAVITYFORCING_H
 
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/equation_systems/icns/MomentumSource.H"

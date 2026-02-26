@@ -1,5 +1,5 @@
-#ifndef FLLC
-#define FLLC
+#ifndef FLLC_H
+#define FLLC_H
 
 #include <cstdint>
 #include "amr-wind/wind_energy/actuator/actuator_types.H"

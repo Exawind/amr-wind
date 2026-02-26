@@ -1,7 +1,3 @@
-/** \file test_utils.H
- *  Utilities for assertions
- */
-
 #ifndef TEST_UTILS_H
 #define TEST_UTILS_H
 

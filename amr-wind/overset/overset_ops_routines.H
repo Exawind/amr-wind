@@ -1,5 +1,5 @@
-#ifndef OVERSET_OPS_ROUTINES_H_
-#define OVERSET_OPS_ROUTINES_H_
+#ifndef OVERSET_OPS_ROUTINES_H
+#define OVERSET_OPS_ROUTINES_H
 
 #include "AMReX_iMultiFab.H"
 #include "AMReX_MultiFab.H"

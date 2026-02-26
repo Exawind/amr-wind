@@ -1,5 +1,5 @@
-#ifndef SplitAdvection_H
-#define SplitAdvection_H
+#ifndef SPLITADVECTION_H
+#define SPLITADVECTION_H
 
 #include "amr-wind/core/FieldRepo.H"
 

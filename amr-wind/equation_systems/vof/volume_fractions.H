@@ -1,5 +1,5 @@
-#ifndef VOLUME_FRACTIONS_H_
-#define VOLUME_FRACTIONS_H_
+#ifndef VOLUME_FRACTIONS_H
+#define VOLUME_FRACTIONS_H
 
 #include <AMReX_FArrayBox.H>
 #include <algorithm>

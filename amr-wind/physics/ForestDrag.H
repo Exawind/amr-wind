@@ -1,5 +1,5 @@
-#ifndef ForestDrag_H
-#define ForestDrag_H
+#ifndef FORESTDRAG_H
+#define FORESTDRAG_H
 
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/core/Field.H"

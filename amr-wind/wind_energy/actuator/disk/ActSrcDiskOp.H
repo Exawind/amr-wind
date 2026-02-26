@@ -1,5 +1,5 @@
-#ifndef ACTSRCDISKOP_H_
-#define ACTSRCDISKOP_H_
+#ifndef ACTSRCDISKOP_H
+#define ACTSRCDISKOP_H
 #include "amr-wind/wind_energy/actuator/actuator_ops.H"
 #include "amr-wind/wind_energy/actuator/actuator_utils.H"
 #include "amr-wind/core/FieldRepo.H"
@@ -94,4 +94,4 @@ void ActSrcOp<
 
 } // namespace amr_wind::actuator::ops
 
-#endif /* ACTSRCDISKOP_H_ */
+#endif /* ACTSRCDISKOP_H */

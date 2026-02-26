@@ -1,5 +1,5 @@
-#ifndef SecondMomentAveraging_H
-#define SecondMomentAveraging_H
+#ifndef SECONDMOMENTAVERAGING_H
+#define SECONDMOMENTAVERAGING_H
 
 #include <AMReX_AmrCore.H>
 #include "amr-wind/utilities/DirectionSelector.H"

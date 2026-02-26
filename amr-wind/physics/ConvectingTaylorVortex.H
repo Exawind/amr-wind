@@ -1,5 +1,5 @@
-#ifndef ConvectingTaylorVortex_H
-#define ConvectingTaylorVortex_H
+#ifndef CONVECTINGTAYLORVORTEX_H
+#define CONVECTINGTAYLORVORTEX_H
 
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/core/Field.H"

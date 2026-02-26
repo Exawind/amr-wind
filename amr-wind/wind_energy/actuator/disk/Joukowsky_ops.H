@@ -1,5 +1,5 @@
-#ifndef Joukowsky_OPS_H_
-#define Joukowsky_OPS_H_
+#ifndef JOUKOWSKY_OPS_H
+#define JOUKOWSKY_OPS_H
 
 #include <algorithm>
 
@@ -388,4 +388,4 @@ public:
 
 } // namespace amr_wind::actuator::ops
 
-#endif /* Joukowsky_OPS_H_ */
+#endif /* Joukowsky_OPS_H */

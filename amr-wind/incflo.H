@@ -1,5 +1,5 @@
-#ifndef INCFLO_H_
-#define INCFLO_H_
+#ifndef INCFLO_H
+#define INCFLO_H
 
 #include <AMReX_AmrCore.H>
 #include <AMReX_MultiFabUtil.H>
