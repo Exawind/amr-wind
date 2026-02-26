@@ -133,7 +133,6 @@ void EkmanSpiral::initialize_fields(int level, const amrex::Geometry& geom)
 template <typename T>
 amrex::Real EkmanSpiral::compute_error(const Field& field)
 {
-
     amrex::Real error = 0.0_rt;
     const auto v0 = m_vel;
     const auto a = 1.0_rt / m_DE;
@@ -163,7 +162,7 @@ amrex::Real EkmanSpiral::compute_error(const Field& field)
         const auto& fld = field(lev);
         error += amrex::ReduceSum(
             fld, level_mask, 0,
-            [=] AMREX_GPU_DEVICE(
+            [=] AMREX_GPU_HOST_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& fld_arr,
                 amrex::Array4<int const> const& mask_arr) -> amrex::Real {
