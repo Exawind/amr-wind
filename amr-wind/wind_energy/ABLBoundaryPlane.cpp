@@ -352,8 +352,9 @@ void ABLBoundaryPlane::post_init_actions()
     if (!m_is_initialized) {
         return;
     }
-    amrex::Print() << "Initializing ABL Boundary Plane IO\n"
-                   << m_read_frozen_data << std::endl;
+    amrex::Print() << "Initializing ABL Boundary Plane IO. "
+                   << "Read frozen boundary data: "
+                   << (m_read_frozen_data ? "true" : "false") << std::endl;
     initialize_data();
     write_header();
     write_file();
