@@ -53,7 +53,6 @@ ABL.bndry_file = "../abl_bndry_output_native/bndry_files"
 ABL.bndry_io_mode = 1
 ABL.bndry_var_names = velocity temperature tke
 ABL.bndry_output_format = native
-ABL.bndry_read_frozen_data = true
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
