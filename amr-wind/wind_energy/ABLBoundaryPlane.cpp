@@ -173,9 +173,11 @@ void InletData::read_data_native(
     const int idxp1 = idx + 1;
     auto ori = oit();
     if (frozen_data) {
-        // For frozen data, both tn and tnp1 are set to the same time
-        m_tn = times[0];
-        m_tnp1 = times[idx];
+        // For frozen data, use artificial times that bracket the current time
+        // while remaining distinct, to avoid division by zero during
+        // interpolation. The underlying data for tn and tnp1 is identical.
+        m_tn = time - 1.0;
+        m_tnp1 = time + 1.0;
     } else {
         m_tn = times[idx];
         m_tnp1 = times[idxp1];
