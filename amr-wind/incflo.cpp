@@ -1,5 +1,4 @@
 #include "amr-wind/incflo.H"
-
 #include "amr-wind/wind_energy/ABL.H"
 #include "amr-wind/utilities/tagging/RefinementCriteria.H"
 #include "amr-wind/equation_systems/PDEBase.H"
@@ -8,8 +7,10 @@
 #include "amr-wind/utilities/IOManager.H"
 #include "amr-wind/utilities/PostProcessing.H"
 #include "amr-wind/overset/OversetManager.H"
-
 #include "AMReX_ParmParse.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 incflo::incflo()
     : m_sim(*this)
@@ -61,9 +62,9 @@ void incflo::init_mesh()
         // with MakeNewLevelFromScratch.
         amrex::Print() << "Creating mesh... ";
         InitFromScratch(m_time.current_time());
-        amrex::Print() << "done" << std::endl;
+        amrex::Print() << "done" << '\n';
         if (amrex::ParallelDescriptor::IOProcessor()) {
-            amrex::Print() << "Grid summary: " << std::endl;
+            amrex::Print() << "Grid summary: " << '\n';
             printGridSummary(amrex::OutStream(), 0, finest_level);
         }
     } else {
@@ -81,7 +82,7 @@ void incflo::init_mesh()
         }
 
         if (amrex::ParallelDescriptor::IOProcessor()) {
-            amrex::Print() << "Grid summary: " << std::endl;
+            amrex::Print() << "Grid summary: " << '\n';
             printGridSummary(amrex::OutStream(), 0, finest_level);
         }
     }
@@ -186,12 +187,14 @@ bool incflo::regrid_and_update()
 
     if (m_time.do_regrid()) {
         amrex::Print() << "Regrid mesh ... ";
-        amrex::Real rstart = amrex::ParallelDescriptor::second();
+        auto rstart =
+            static_cast<amrex::Real>(amrex::ParallelDescriptor::second());
         regrid(0, m_time.current_time());
-        amrex::Real rend = amrex::ParallelDescriptor::second() - rstart;
-        amrex::Print() << "time elapsed = " << rend << std::endl;
+        auto rend = static_cast<amrex::Real>(
+            amrex::ParallelDescriptor::second() - rstart);
+        amrex::Print() << "time elapsed = " << rend << '\n';
         if (amrex::ParallelDescriptor::IOProcessor()) {
-            amrex::Print() << "Grid summary: " << std::endl;
+            amrex::Print() << "Grid summary: " << '\n';
             printGridSummary(amrex::OutStream(), 0, finest_level);
         }
 
@@ -205,7 +208,7 @@ bool incflo::regrid_and_update()
                 for (int lev = 0; lev <= finest_level; lev++) {
                     m_sim.mesh_mapping()->create_map(lev, Geom(lev));
                 }
-                amrex::Print() << "done" << std::endl;
+                amrex::Print() << "done" << '\n';
             }
         }
 
@@ -281,10 +284,12 @@ void incflo::Evolve()
 {
     BL_PROFILE("amr-wind::incflo::Evolve()");
 
-    const amrex::Real init_time = amrex::ParallelDescriptor::second();
+    const auto init_time =
+        static_cast<amrex::Real>(amrex::ParallelDescriptor::second());
 
     while (m_time.new_timestep()) {
-        const amrex::Real time0 = amrex::ParallelDescriptor::second();
+        const auto time0 =
+            static_cast<amrex::Real>(amrex::ParallelDescriptor::second());
 
         regrid_and_update();
 
@@ -298,7 +303,8 @@ void incflo::Evolve()
             pre_advance_stage2();
         }
 
-        const amrex::Real time1 = amrex::ParallelDescriptor::second();
+        const auto time1 =
+            static_cast<amrex::Real>(amrex::ParallelDescriptor::second());
         // Advance to time t + dt
         for (int fixed_point_iteration = 0;
              fixed_point_iteration < m_fixed_point_iterations;
@@ -306,10 +312,12 @@ void incflo::Evolve()
             do_advance(fixed_point_iteration);
         }
 
-        amrex::Print() << std::endl;
-        const amrex::Real time2 = amrex::ParallelDescriptor::second();
+        amrex::Print() << '\n';
+        const auto time2 =
+            static_cast<amrex::Real>(amrex::ParallelDescriptor::second());
         post_advance_work();
-        const amrex::Real time3 = amrex::ParallelDescriptor::second();
+        const auto time3 =
+            static_cast<amrex::Real>(amrex::ParallelDescriptor::second());
 
         amrex::Print() << "WallClockTime in Evolve() for step "
                        << m_time.time_index()
@@ -317,10 +325,9 @@ void incflo::Evolve()
                        << " Solve: " << std::setprecision(4) << (time2 - time1)
                        << " Post: " << std::setprecision(3) << (time3 - time2)
                        << " Total: " << std::setprecision(4) << (time3 - time0)
-                       << std::endl;
+                       << '\n';
         amrex::Print() << "Cumulative WallClockTime in Evolve(): "
-                       << std::setprecision(4) << (time3 - init_time)
-                       << std::endl;
+                       << std::setprecision(4) << (time3 - init_time) << '\n';
 
 #ifdef AMREX_TINY_PROFILING
         if (m_time.output_profiling_info()) {
@@ -331,7 +338,7 @@ void incflo::Evolve()
     }
     amrex::Print() << "\n======================================================"
                       "========================\n"
-                   << std::endl;
+                   << '\n';
 
     // Output at final time
     if (m_time.write_last_plot_file()) {
@@ -354,7 +361,7 @@ void incflo::do_advance(const int fixed_point_iteration)
     } else {
         if (m_fixed_point_iterations > 1) {
             amrex::Print() << "Fixed point iteration " << fixed_point_iteration
-                           << std::endl;
+                           << '\n';
         }
         advance(fixed_point_iteration);
     }
@@ -375,10 +382,9 @@ void incflo::MakeNewLevelFromScratch(
     BL_PROFILE("amr-wind::incflo::MakeNewLevelFromScratch()");
 
     if (m_verbose > 0) {
-        amrex::Print() << "Making new level " << lev << " from scratch"
-                       << std::endl;
+        amrex::Print() << "Making new level " << lev << " from scratch" << '\n';
         if (m_verbose > 2) {
-            amrex::Print() << "with BoxArray " << new_grids << std::endl;
+            amrex::Print() << "with BoxArray " << new_grids << '\n';
         }
     }
 

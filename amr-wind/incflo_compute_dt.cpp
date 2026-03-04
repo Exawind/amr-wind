@@ -3,6 +3,9 @@
 
 #include <cmath>
 #include <limits>
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 /** Estimate the new timestep for adaptive timestepping algorithm
  *
@@ -33,9 +36,9 @@ void incflo::compute_dt()
 
     bool explicit_diffusion = (m_diff_type == DiffusionType::Explicit);
 
-    amrex::Real conv_cfl = 0.0;
-    amrex::Real diff_cfl = 0.0;
-    amrex::Real force_cfl = 0.0;
+    amrex::Real conv_cfl = 0.0_rt;
+    amrex::Real diff_cfl = 0.0_rt;
+    amrex::Real force_cfl = 0.0_rt;
     const bool mesh_mapping = m_sim.has_mesh_mapping();
 
     const auto& den = density();
@@ -58,10 +61,10 @@ void incflo::compute_dt()
             mesh_mapping ? ((*mesh_fac)(lev).const_arrays())
                          : amrex::MultiArray4<amrex::Real const>();
 
-        amrex::Real conv_lev = 0.0;
-        amrex::Real mphase_conv_lev = 0.0;
-        amrex::Real diff_lev = 0.0;
-        amrex::Real force_lev = 0.0;
+        amrex::Real conv_lev = 0.0_rt;
+        amrex::Real mphase_conv_lev = 0.0_rt;
+        amrex::Real diff_lev = 0.0_rt;
+        amrex::Real force_lev = 0.0_rt;
 
         conv_lev += amrex::ParReduce(
             amrex::TypeList<amrex::ReduceOpMax>{},
@@ -71,11 +74,11 @@ void incflo::compute_dt()
                 auto const& v_bx = vel_arr[box_no];
 
                 const amrex::Real fac_x =
-                    mesh_mapping ? (fac_arr[box_no](i, j, k, 0)) : 1.0;
+                    mesh_mapping ? (fac_arr[box_no](i, j, k, 0)) : 1.0_rt;
                 const amrex::Real fac_y =
-                    mesh_mapping ? (fac_arr[box_no](i, j, k, 1)) : 1.0;
+                    mesh_mapping ? (fac_arr[box_no](i, j, k, 1)) : 1.0_rt;
                 const amrex::Real fac_z =
-                    mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0;
+                    mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0_rt;
 
                 const auto mask =
                     static_cast<amrex::Real>(mask_arr[box_no](i, j, k));
@@ -84,7 +87,7 @@ void incflo::compute_dt()
                     mask * std::abs(v_bx(i, j, k, 0)) * dxinv[0] / fac_x,
                     mask * std::abs(v_bx(i, j, k, 1)) * dxinv[1] / fac_y,
                     mask * std::abs(v_bx(i, j, k, 2)) * dxinv[2] / fac_z,
-                    static_cast<amrex::Real>(-1.0));
+                    static_cast<amrex::Real>(-1.0_rt));
             });
 
         if (m_sim.pde_manager().has_pde("VOF")) {
@@ -103,27 +106,31 @@ void incflo::compute_dt()
                         amr_wind::multiphase::interface_band(i, j, k, vof_bx);
 
                     // CFL calculation is not needed away from interface
-                    amrex::Real result = 0.0;
+                    amrex::Real result = 0.0_rt;
                     if (is_near) {
                         // Near interface, evaluate CFL by sum of velocities
                         const amrex::Real fac_x =
-                            mesh_mapping ? (fac_arr[box_no](i, j, k, 0)) : 1.0;
+                            mesh_mapping ? (fac_arr[box_no](i, j, k, 0))
+                                         : 1.0_rt;
                         const amrex::Real fac_y =
-                            mesh_mapping ? (fac_arr[box_no](i, j, k, 1)) : 1.0;
+                            mesh_mapping ? (fac_arr[box_no](i, j, k, 1))
+                                         : 1.0_rt;
                         const amrex::Real fac_z =
-                            mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0;
+                            mesh_mapping ? (fac_arr[box_no](i, j, k, 2))
+                                         : 1.0_rt;
 
-                        result = std::abs(v_bx(i, j, k, 0)) * dxinv[0] / fac_x +
-                                 std::abs(v_bx(i, j, k, 1)) * dxinv[1] / fac_y +
-                                 std::abs(v_bx(i, j, k, 2)) * dxinv[2] / fac_z;
+                        result =
+                            (std::abs(v_bx(i, j, k, 0)) * dxinv[0] / fac_x) +
+                            (std::abs(v_bx(i, j, k, 1)) * dxinv[1] / fac_y) +
+                            (std::abs(v_bx(i, j, k, 2)) * dxinv[2] / fac_z);
 
                         const auto mask =
                             static_cast<amrex::Real>(mask_arr[box_no](i, j, k));
 
                         // Multiply advective CFL by 2 when near interface
-                        result *= 2.0 * mask;
-                        // CFL requirement to ensure vof conservation is 0.5;
-                        // this is half the typical concept of a CFL (1.0)
+                        result *= 2.0_rt * mask;
+                        // CFL requirement to ensure vof conservation is 0.5_rt;
+                        // this is half the typical concept of a CFL (1.0_rt)
                     }
                     return result;
                 });
@@ -142,22 +149,23 @@ void incflo::compute_dt()
                     auto const& rho_bx = rho_arr[box_no];
 
                     const amrex::Real fac_x =
-                        mesh_mapping ? (fac_arr[box_no](i, j, k, 0)) : 1.0;
+                        mesh_mapping ? (fac_arr[box_no](i, j, k, 0)) : 1.0_rt;
                     const amrex::Real fac_y =
-                        mesh_mapping ? (fac_arr[box_no](i, j, k, 1)) : 1.0;
+                        mesh_mapping ? (fac_arr[box_no](i, j, k, 1)) : 1.0_rt;
                     const amrex::Real fac_z =
-                        mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0;
+                        mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0_rt;
 
                     const amrex::Real dxinv2 =
-                        2.0 * (dxinv[0] / fac_x * dxinv[0] / fac_x +
-                               dxinv[1] / fac_y * dxinv[1] / fac_y +
-                               dxinv[2] / fac_z * dxinv[2] / fac_z);
+                        2.0_rt * (dxinv[0] / fac_x * dxinv[0] / fac_x +
+                                  dxinv[1] / fac_y * dxinv[1] / fac_y +
+                                  dxinv[2] / fac_z * dxinv[2] / fac_z);
 
                     const auto mask =
                         static_cast<amrex::Real>(mask_arr[box_no](i, j, k));
 
                     return amrex::max<amrex::Real>(
-                        mask * mu_bx(i, j, k) * dxinv2 / rho_bx(i, j, k), -1.0);
+                        mask * mu_bx(i, j, k) * dxinv2 / rho_bx(i, j, k),
+                        -1.0_rt);
                 });
         }
 
@@ -173,11 +181,11 @@ void incflo::compute_dt()
                     auto const& rho_bx = rho_arr[box_no];
 
                     const amrex::Real fac_x =
-                        mesh_mapping ? (fac_arr[box_no](i, j, k, 0)) : 1.0;
+                        mesh_mapping ? (fac_arr[box_no](i, j, k, 0)) : 1.0_rt;
                     const amrex::Real fac_y =
-                        mesh_mapping ? (fac_arr[box_no](i, j, k, 1)) : 1.0;
+                        mesh_mapping ? (fac_arr[box_no](i, j, k, 1)) : 1.0_rt;
                     const amrex::Real fac_z =
-                        mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0;
+                        mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0_rt;
 
                     const auto mask =
                         static_cast<amrex::Real>(mask_arr[box_no](i, j, k));
@@ -189,7 +197,7 @@ void incflo::compute_dt()
                             rho_bx(i, j, k),
                         mask * std::abs(vf_bx(i, j, k, 2)) * dxinv[2] / fac_z /
                             rho_bx(i, j, k),
-                        static_cast<amrex::Real>(-1.0));
+                        static_cast<amrex::Real>(-1.0_rt));
                 });
         }
 
@@ -216,7 +224,7 @@ void incflo::compute_prescribe_dt()
 {
     BL_PROFILE("amr-wind::incflo::compute_prescribe_dt");
 
-    amrex::Real conv_cfl = 0.0;
+    amrex::Real conv_cfl = 0.0_rt;
     const bool mesh_mapping = m_sim.has_mesh_mapping();
 
     amr_wind::Field const* mesh_fac =
@@ -236,8 +244,8 @@ void incflo::compute_prescribe_dt()
             mesh_mapping ? ((*mesh_fac)(lev).const_arrays())
                          : amrex::MultiArray4<amrex::Real const>();
 
-        amrex::Real conv_lev = 0.0;
-        amrex::Real mphase_conv_lev = 0.0;
+        amrex::Real conv_lev = 0.0_rt;
+        amrex::Real mphase_conv_lev = 0.0_rt;
 
         conv_lev += amrex::ParReduce(
             amrex::TypeList<amrex::ReduceOpMax>{},
@@ -250,11 +258,11 @@ void incflo::compute_prescribe_dt()
                 auto const& wmac = wf_arr[box_no];
 
                 const amrex::Real fac_x =
-                    mesh_mapping ? (fac_arr[box_no](i, j, k, 0)) : 1.0;
+                    mesh_mapping ? (fac_arr[box_no](i, j, k, 0)) : 1.0_rt;
                 const amrex::Real fac_y =
-                    mesh_mapping ? (fac_arr[box_no](i, j, k, 1)) : 1.0;
+                    mesh_mapping ? (fac_arr[box_no](i, j, k, 1)) : 1.0_rt;
                 const amrex::Real fac_z =
-                    mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0;
+                    mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0_rt;
                 const auto mask =
                     static_cast<amrex::Real>(mask_arr[box_no](i, j, k));
 
@@ -268,7 +276,7 @@ void incflo::compute_prescribe_dt()
                     amrex::max<amrex::Real>(
                         std::abs(wmac(i, j, k)), std::abs(wmac(i, j, k + 1))) *
                         mask * dxinv[2] / fac_z,
-                    static_cast<amrex::Real>(-1.0));
+                    static_cast<amrex::Real>(-1.0_rt));
             });
 
         if (m_sim.pde_manager().has_pde("VOF")) {
@@ -290,15 +298,18 @@ void incflo::compute_prescribe_dt()
                         amr_wind::multiphase::interface_band(i, j, k, vof_bx);
 
                     // CFL calculation is not needed away from interface
-                    amrex::Real result = 0.0;
+                    amrex::Real result = 0.0_rt;
                     if (is_near) {
                         // Near interface, evaluate CFL by sum of velocities
                         const amrex::Real fac_x =
-                            mesh_mapping ? (fac_arr[box_no](i, j, k, 0)) : 1.0;
+                            mesh_mapping ? (fac_arr[box_no](i, j, k, 0))
+                                         : 1.0_rt;
                         const amrex::Real fac_y =
-                            mesh_mapping ? (fac_arr[box_no](i, j, k, 1)) : 1.0;
+                            mesh_mapping ? (fac_arr[box_no](i, j, k, 1))
+                                         : 1.0_rt;
                         const amrex::Real fac_z =
-                            mesh_mapping ? (fac_arr[box_no](i, j, k, 2)) : 1.0;
+                            mesh_mapping ? (fac_arr[box_no](i, j, k, 2))
+                                         : 1.0_rt;
                         const auto mask =
                             static_cast<amrex::Real>(mask_arr[box_no](i, j, k));
 
@@ -326,5 +337,5 @@ void incflo::compute_prescribe_dt()
     amrex::ParallelAllReduce::Max<amrex::Real>(
         conv_cfl, amrex::ParallelContext::CommunicatorSub());
 
-    m_time.set_current_cfl(conv_cfl, 0.0, 0.0);
+    m_time.set_current_cfl(conv_cfl, 0.0_rt, 0.0_rt);
 }

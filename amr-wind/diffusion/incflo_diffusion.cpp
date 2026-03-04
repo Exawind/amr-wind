@@ -1,11 +1,13 @@
 #include "amr-wind/incflo.H"
 #include "amr-wind/diffusion/diffusion.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace diffusion {
 
 amrex::Vector<amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM>>
-get_diffuse_tensor_bc(
-    amr_wind::Field& velocity, amrex::Orientation::Side side) noexcept
+get_diffuse_tensor_bc(amr_wind::Field& velocity, amrex::Orientation::Side side)
 {
     const auto& geom = velocity.repo().mesh().Geom(0);
     amrex::Vector<amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM>> r(3);
@@ -64,8 +66,8 @@ get_diffuse_tensor_bc(
     return r;
 }
 
-amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM> get_diffuse_scalar_bc(
-    amr_wind::Field& scalar, amrex::Orientation::Side side) noexcept
+amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM>
+get_diffuse_scalar_bc(amr_wind::Field& scalar, amrex::Orientation::Side side)
 {
     amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM> r;
     for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
@@ -148,14 +150,14 @@ void fixup_eta_on_domain_faces(
             if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
                 amrex::ParallelFor(
                     amrex::bdryLo(bx, idim),
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k) {
                         fca(i, j, k) = cca(i, j, k);
                     });
             }
             if (bx.bigEnd(idim) == domain.bigEnd(idim)) {
                 amrex::ParallelFor(
                     amrex::bdryHi(bx, idim),
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k) {
                         fca(i, j, k) = cca(i - 1, j, k);
                     });
             }
@@ -167,14 +169,14 @@ void fixup_eta_on_domain_faces(
             if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
                 amrex::ParallelFor(
                     amrex::bdryLo(bx, idim),
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k) {
                         fca(i, j, k) = cca(i, j, k);
                     });
             }
             if (bx.bigEnd(idim) == domain.bigEnd(idim)) {
                 amrex::ParallelFor(
                     amrex::bdryHi(bx, idim),
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k) {
                         fca(i, j, k) = cca(i, j - 1, k);
                     });
             }
@@ -186,14 +188,14 @@ void fixup_eta_on_domain_faces(
             if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
                 amrex::ParallelFor(
                     amrex::bdryLo(bx, idim),
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k) {
                         fca(i, j, k) = cca(i, j, k);
                     });
             }
             if (bx.bigEnd(idim) == domain.bigEnd(idim)) {
                 amrex::ParallelFor(
                     amrex::bdryHi(bx, idim),
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k) {
                         fca(i, j, k) = cca(i, j, k - 1);
                     });
             }
@@ -226,10 +228,10 @@ void viscosity_to_uniform_space(
         const auto& detJ_arrs = mesh_detJ_xf(lev).const_arrays();
 
         amrex::ParallelFor(
-            b[0], [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                mu_arrs[nbx](i, j, k) = mu_arrs[nbx](i, j, k) *
-                                        detJ_arrs[nbx](i, j, k) /
-                                        std::pow(fac_arrs[nbx](i, j, k, 0), 2);
+            b[0], [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
+                mu_arrs[nbx](i, j, k) =
+                    mu_arrs[nbx](i, j, k) * detJ_arrs[nbx](i, j, k) /
+                    std::pow(fac_arrs[nbx](i, j, k, 0), 2.0_rt);
             });
     }
     // beta accounted for mesh mapping (y-face) = J/fac^2 * mu
@@ -239,10 +241,10 @@ void viscosity_to_uniform_space(
         const auto& detJ_arrs = mesh_detJ_yf(lev).const_arrays();
 
         amrex::ParallelFor(
-            b[1], [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                mu_arrs[nbx](i, j, k) = mu_arrs[nbx](i, j, k) *
-                                        detJ_arrs[nbx](i, j, k) /
-                                        std::pow(fac_arrs[nbx](i, j, k, 1), 2);
+            b[1], [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
+                mu_arrs[nbx](i, j, k) =
+                    mu_arrs[nbx](i, j, k) * detJ_arrs[nbx](i, j, k) /
+                    std::pow(fac_arrs[nbx](i, j, k, 1), 2.0_rt);
             });
     }
     // beta accounted for mesh mapping (z-face) = J/fac^2 * mu
@@ -252,10 +254,10 @@ void viscosity_to_uniform_space(
         const auto& detJ_arrs = mesh_detJ_zf(lev).const_arrays();
 
         amrex::ParallelFor(
-            b[2], [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                mu_arrs[nbx](i, j, k) = mu_arrs[nbx](i, j, k) *
-                                        detJ_arrs[nbx](i, j, k) /
-                                        std::pow(fac_arrs[nbx](i, j, k, 2), 2);
+            b[2], [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
+                mu_arrs[nbx](i, j, k) =
+                    mu_arrs[nbx](i, j, k) * detJ_arrs[nbx](i, j, k) /
+                    std::pow(fac_arrs[nbx](i, j, k, 2), 2.0_rt);
             });
     }
     amrex::Gpu::streamSynchronize();
