@@ -3,3 +3,4 @@ target_sources(${amr_wind_lib_name} PRIVATE
   )
 
 add_subdirectory(fast)
+add_subdirectory(kynema)

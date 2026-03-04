@@ -12,6 +12,7 @@ Fortran
 Joukowsky
 Jupyter
 Karman
+Kynema
 Liungman
 MPI
 Menter 

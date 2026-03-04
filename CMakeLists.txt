@@ -45,13 +45,14 @@ option(AMR_WIND_ENABLE_MASA "Enable MASA library" OFF)
 option(AMR_WIND_ENABLE_HELICS "Enable HELICS library" OFF)
 option(AMR_WIND_ENABLE_HYPRE "Enable HYPRE integration" OFF)
 option(AMR_WIND_ENABLE_OPENFAST "Enable OpenFAST integration" OFF)
+option(AMR_WIND_ENABLE_KYNEMA "Enable Kynema integration" OFF)
 option(AMR_WIND_ENABLE_ASCENT "Enable Ascent visualization library" OFF)
 option(AMR_WIND_ENABLE_UMPIRE "Enable Umpire GPU memory pools" OFF)
 option(AMR_WIND_ENABLE_W2A "Enable Waves2AMR library" OFF)
 option(AMR_WIND_ENABLE_FFT "Enable FFT solver for MAC projection" OFF)
 
 #Options for C++
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -61,9 +62,9 @@ endif()
 
 if(AMR_WIND_ENABLE_CUDA)
   enable_language(CUDA)
-  if(CMAKE_CUDA_COMPILER_VERSION VERSION_LESS "10.0")
+  if(CMAKE_CUDA_COMPILER_VERSION VERSION_LESS "12.0")
     message(FATAL_ERROR "Your nvcc version is ${CMAKE_CUDA_COMPILER_VERSION} which is unsupported."
-      "Please use CUDA toolkit version 10.0 or newer.")
+      "Please use CUDA toolkit version 12.0 or newer.")
   endif()
 endif()
 
@@ -192,6 +193,13 @@ if(AMR_WIND_ENABLE_OPENFAST)
   endif()
   target_compile_definitions(${amr_wind_lib_name} PUBLIC OPENFAST_VERSION_MAJOR=${OPENFAST_VERSION_MAJOR})
   target_compile_definitions(${amr_wind_lib_name} PUBLIC OPENFAST_VERSION_MINOR=${OPENFAST_VERSION_MINOR})
+endif()
+
+if(AMR_WIND_ENABLE_KYNEMA)
+  set(CMAKE_PREFIX_PATH ${KYNEMA_DIR} ${CMAKE_PREFIX_PATH})
+  find_package(Kynema REQUIRED)
+  target_link_libraries(${amr_wind_lib_name} PUBLIC Kynema::kynema_library)
+  target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_USE_KYNEMA)
 endif()
 
 if(AMR_WIND_ENABLE_ASCENT)

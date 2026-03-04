@@ -7,14 +7,15 @@
 #include "amr-wind/physics/BoussinesqBubble.H"
 #include "amr-wind/utilities/tagging/RefinementCriteria.H"
 #include "amr-wind/utilities/tagging/CartBoxRefinement.H"
+#include "AMReX_REAL.H"
 
-using namespace amrex;
+using namespace amrex::literals;
 
 void incflo::CheckAndSetUpDryRun()
 {
     // Check if dry run is requested; exit if not
     {
-        ParmParse pp("incflo");
+        amrex::ParmParse pp("incflo");
         pp.query("dry_run", m_dry_run);
         if (!m_dry_run) {
             return;
@@ -22,20 +23,20 @@ void incflo::CheckAndSetUpDryRun()
     }
     // Disable additional computations associated with initialization
     {
-        ParmParse pp("incflo");
+        amrex::ParmParse pp("incflo");
         pp.add("initial_iterations", 0);
         pp.add("do_initial_proj", false);
     }
     // Zero time steps, write plotfile and not checkpoint
     {
-        ParmParse pp("time");
+        amrex::ParmParse pp("time");
         pp.add("max_step", 0);
         pp.add("plot_interval", 1);
         pp.add("checkpoint_inteval", (-1));
     }
     // Give prefix to plotfile
     {
-        ParmParse pp("io");
+        amrex::ParmParse pp("io");
         std::string current_plt{"plt"};
         pp.query("plot_file", current_plt);
         pp.add("plot_file", (std::string) "dry_run_" + current_plt);
@@ -48,7 +49,7 @@ void incflo::ReadParameters()
 {
 
     { // Prefix incflo
-        ParmParse pp("incflo");
+        amrex::ParmParse pp("incflo");
 
         pp.query("verbose", m_verbose);
 
@@ -74,14 +75,15 @@ void incflo::ReadParameters()
                 "Crank-Nicolson or 2 for implicit");
         }
 
-        if (!m_use_godunov && m_time.max_cfl() > 0.5) {
+        if (!m_use_godunov && m_time.max_cfl() > 0.5_rt) {
             amrex::Abort(
-                "We currently require cfl <= 0.5 when using the MOL advection "
+                "We currently require cfl <= 0.5_rt when using the MOL "
+                "advection "
                 "scheme");
         }
-        if (m_use_godunov && m_time.max_cfl() > 1.0) {
+        if (m_use_godunov && m_time.max_cfl() > 1.0_rt) {
             amrex::Abort(
-                "We currently require cfl <= 1.0 when using the Godunov "
+                "We currently require cfl <= 1.0_rt when using the Godunov "
                 "advection scheme");
         }
 
@@ -103,7 +105,7 @@ void incflo::InitialIterations()
 {
     BL_PROFILE("amr-wind::incflo::InitialIterations()");
     amrex::Print() << "Begin initial pressure iterations. Num. iters = "
-                   << m_initial_iterations << std::endl;
+                   << m_initial_iterations << '\n';
 
     compute_dt();
 
@@ -126,6 +128,24 @@ void incflo::InitialIterations()
                 amr_wind::FieldState::Old, amr_wind::FieldState::New);
             scal.state(amr_wind::FieldState::Old)
                 .fillpatch(m_time.current_time());
+        }
+    }
+
+    // Subtract initial pressure if initialized
+    // (primarily intended for two-phase overset)
+    if (m_reconstruct_true_pressure) {
+        auto& press = m_repo.get_field("p");
+        amrex::Real global_max_p =
+            amr_wind::field_ops::global_max_magnitude(press);
+        // If max pressure is different from 0, then infer that pressure has
+        // been initialized
+        bool init_p = std::abs(global_max_p) > amr_wind::constants::LOOSE_TOL;
+        if (init_p) {
+            const auto& p0 = m_repo.get_field("reference_pressure");
+            for (int lev = 0; lev <= finest_level; lev++) {
+                amrex::MultiFab::Subtract(
+                    press(lev), p0(lev), 0, 0, 1, p0.num_grow()[0]);
+            }
         }
     }
 
@@ -168,8 +188,7 @@ void incflo::InitialIterations()
                 press(lev), p0(lev), 0, 0, 1, p0.num_grow()[0]);
         }
     }
-    amrex::Print() << "Completed initial pressure iterations" << std::endl
-                   << std::endl;
+    amrex::Print() << "Completed initial pressure iterations" << '\n' << '\n';
 }
 
 /** Ensure initial velocity field is divergence-free.
@@ -183,23 +202,23 @@ void incflo::InitialProjection()
 {
     BL_PROFILE("amr-wind::incflo::InitialProjection()");
 
-    amrex::Print() << "Begin initial projection" << std::endl;
+    amrex::Print() << "Begin initial projection" << '\n';
     if (m_verbose != 0) {
         PrintMaxValues("before initial projection");
     }
 
-    Real dummy_dt = 1.0;
+    amrex::Real dummy_dt = 1.0_rt;
     bool incremental = false;
     ApplyProjection(
         density().vec_const_ptrs(), m_time.current_time(), dummy_dt,
         incremental);
 
     // We set p and gp back to zero (p0 may still be still non-zero)
-    pressure().setVal(0.0);
-    grad_p().setVal(0.0);
+    pressure().setVal(0.0_rt);
+    grad_p().setVal(0.0_rt);
 
     if (m_verbose != 0) {
         PrintMaxValues("after initial projection");
     }
-    amrex::Print() << "Completed initial projection" << std::endl << std::endl;
+    amrex::Print() << "Completed initial projection" << '\n' << '\n';
 }

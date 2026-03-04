@@ -1,9 +1,13 @@
 #include "aw_test_utils/MeshTest.H"
 #include "aw_test_utils/pp_utils.H"
 
-#include "amr-wind/wind_energy/actuator/turbine/fast/FastIface.H"
+#include "amr-wind/wind_energy/actuator/turbine/external/ExtTurbIface.H"
+#include "amr-wind/wind_energy/actuator/turbine/fast/fast_types.H"
 
 #include <algorithm>
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 #define AW_ENABLE_OPENFAST_UTEST 0
 
@@ -25,8 +29,8 @@ protected:
         }
         {
             amrex::ParmParse pp("geometry");
-            amrex::Vector<amrex::Real> problo{{0.0, 0.0, 0.0}};
-            amrex::Vector<amrex::Real> probhi{{128.0, 128.0, 256.0}};
+            amrex::Vector<amrex::Real> problo{{0.0_rt, 0.0_rt, 0.0_rt}};
+            amrex::Vector<amrex::Real> probhi{{128.0_rt, 128.0_rt, 256.0_rt}};
 
             pp.addarr("prob_lo", problo);
             pp.addarr("prob_hi", probhi);
@@ -42,12 +46,12 @@ TEST_F(FastIfaceTest, fast_init)
     pp_utils::default_time_inputs();
     {
         amrex::ParmParse pp("time");
-        pp.add("fixed_dt", 0.0625);
+        pp.add("fixed_dt", 0.0625_rt);
     }
     sim().time().parse_parameters();
 
     const int iproc = amrex::ParallelDescriptor::MyProc();
-    ::exw_fast::FastTurbine fi;
+    ::ext_turb::FastTurbine fi;
     fi.tlabel = "T001";
     fi.tid_local = -1;
     fi.tid_global = iproc;
@@ -57,11 +61,13 @@ TEST_F(FastIfaceTest, fast_init)
     fi.base_pos[1] = 64.0F;
     fi.base_pos[2] = 0.0F;
     fi.input_file = "./fast_inp/nrel5mw.fst";
-    fi.dt_cfd = 0.0625;
-    fi.start_time = 0.0;
-    fi.stop_time = 0.625;
+    fi.dt_cfd = 0.0625_rt;
+    fi.start_time = 0.0_rt;
+    fi.stop_time = 0.625_rt;
 
-    ::exw_fast::FastIface fast(sim());
+    ::ext_turb::ExtTurbIface<
+        ::ext_turb::FastTurbine, ::ext_turb::FastSolverData>
+        fast(sim());
     fast.parse_inputs(sim(), "OpenFAST");
     fast.register_turbine(fi);
 
@@ -69,14 +75,16 @@ TEST_F(FastIfaceTest, fast_init)
 
 #if AW_ENABLE_OPENFAST_UTEST
     fast.init_turbine(fi.tid_local);
-    EXPECT_NEAR(fi.dt_fast, 0.00625, 1.0e-12);
+    EXPECT_NEAR(
+        fi.dt_ext, 0.00625_rt,
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt);
     EXPECT_EQ(fi.num_substeps, 10);
     EXPECT_EQ(fi.num_blades, 3);
     EXPECT_TRUE(fi.is_solution0);
 
-    std::fill(fi.from_cfd.u, fi.from_cfd.u + fi.from_cfd.u_Len, 6.0);
-    std::fill(fi.from_cfd.v, fi.from_cfd.v + fi.from_cfd.v_Len, 0.0);
-    std::fill(fi.from_cfd.w, fi.from_cfd.w + fi.from_cfd.w_Len, 0.0);
+    std::fill(fi.from_cfd.u, fi.from_cfd.u + fi.from_cfd.u_Len, 6.0_rt);
+    std::fill(fi.from_cfd.v, fi.from_cfd.v + fi.from_cfd.v_Len, 0.0_rt);
+    std::fill(fi.from_cfd.w, fi.from_cfd.w + fi.from_cfd.w_Len, 0.0_rt);
     fast.init_solution(fi.tid_local);
     EXPECT_FALSE(fi.is_solution0);
 
@@ -95,12 +103,12 @@ TEST_F(FastIfaceTest, fast_replay)
     pp_utils::default_time_inputs();
     {
         amrex::ParmParse pp("time");
-        pp.add("fixed_dt", 0.0625);
+        pp.add("fixed_dt", 0.0625_rt);
     }
     sim().time().parse_parameters();
 
     const int iproc = amrex::ParallelDescriptor::MyProc();
-    ::exw_fast::FastTurbine fi;
+    ::ext_turb::FastTurbine fi;
     fi.tlabel = "T001";
     fi.tid_local = -1;
     fi.tid_global = iproc;
@@ -110,12 +118,14 @@ TEST_F(FastIfaceTest, fast_replay)
     fi.base_pos[1] = 64.0F;
     fi.base_pos[2] = 0.0F;
     fi.input_file = "./fast_inp/nrel5mw1.fst";
-    fi.start_time = 0.125;
-    fi.stop_time = 0.625;
-    fi.dt_cfd = 0.0625;
-    fi.sim_mode = ::exw_fast::SimMode::replay;
+    fi.start_time = 0.125_rt;
+    fi.stop_time = 0.625_rt;
+    fi.dt_cfd = 0.0625_rt;
+    fi.sim_mode = ::ext_turb::SimMode::replay;
 
-    ::exw_fast::FastIface fast(sim());
+    ::ext_turb::ExtTurbIface<
+        ::ext_turb::FastTurbine, ::ext_turb::FastSolverData>
+        fast(sim());
     fast.parse_inputs(sim(), "OpenFAST");
     fast.register_turbine(fi);
 

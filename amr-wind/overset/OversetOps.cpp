@@ -8,6 +8,9 @@
 #include <hydro_NodalProjector.H>
 #include "amr-wind/wind_energy/ABL.H"
 #include "amr-wind/wind_energy/ABLBoundaryPlane.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace amr_wind {
 
@@ -115,14 +118,14 @@ void OversetOps::update_gradp()
     // Velocity multifab is needed for proper initialization, but only the size
     // matters for the purpose of calculating gradp, the values do not matter
     int finest_level = m_sim_ptr->mesh().finestLevel();
-    Vector<MultiFab*> vel;
+    amrex::Vector<amrex::MultiFab*> vel;
     for (int lev = 0; lev <= finest_level; ++lev) {
         vel.push_back(&(velocity(lev)));
     }
     amr_wind::MLMGOptions options("nodal_proj");
     // Create nodal projector with unity scaling factor for simplicity
     nodal_projector = std::make_unique<Hydro::NodalProjector>(
-        vel, 1.0, m_sim_ptr->mesh().Geom(0, finest_level), options.lpinfo());
+        vel, 1.0_rt, m_sim_ptr->mesh().Geom(0, finest_level), options.lpinfo());
     // Set MLMG and NodalProjector options
     options(*nodal_projector);
     nodal_projector->setDomainBC(bclo, bchi);
@@ -136,7 +139,7 @@ void OversetOps::update_gradp()
         const auto& gp_proj_arrs = gradphi[lev]->const_arrays();
         amrex::ParallelFor(
             grad_p(lev), amrex::IntVect(0), AMREX_SPACEDIM,
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) {
                 gp_lev_arrs[nbx](i, j, k, n) = gp_proj_arrs[nbx](i, j, k, n);
             });
     }
@@ -164,28 +167,27 @@ void OversetOps::parameter_output() const
         // Important parameters
         amrex::Print() << "\nOverset Coupling Parameters: \n"
                        << "---- Replace overset pres grad: "
-                       << m_replace_gradp_postsolve << std::endl;
+                       << m_replace_gradp_postsolve << '\n';
         amrex::Print() << "---- Perturbational pressure  : "
-                       << m_mphase->perturb_pressure() << std::endl
+                       << m_mphase->perturb_pressure() << '\n'
                        << "---- Reconstruct true pressure: "
-                       << m_mphase->reconstruct_true_pressure() << std::endl;
+                       << m_mphase->reconstruct_true_pressure() << '\n';
         amrex::Print() << "Overset Reinitialization Parameters:\n"
                        << "---- Maximum iterations   : " << m_n_iterations
-                       << std::endl
-                       << "---- Convergence tolerance: " << m_convg_tol
-                       << std::endl
+                       << '\n'
+                       << "---- Convergence tolerance: " << m_convg_tol << '\n'
                        << "---- Relative length scale: "
-                       << m_relative_length_scale << std::endl
+                       << m_relative_length_scale << '\n'
                        << "---- Upwinding VOF margin : " << m_upw_margin
-                       << std::endl;
+                       << '\n';
         if (m_verbose > 1) {
             // Less important or less used parameters
             amrex::Print() << "---- Calc. conv. interval : "
-                           << m_calc_convg_interval << std::endl
+                           << m_calc_convg_interval << '\n'
                            << "---- Target field cutoff  : " << m_target_cutoff
-                           << std::endl;
+                           << '\n';
         }
-        amrex::Print() << std::endl;
+        amrex::Print() << '\n';
     }
 }
 
@@ -221,8 +223,8 @@ void OversetOps::sharpen_nalu_data()
 
     // Give initial max possible value of pseudo-velocity scale
     const auto dx_lev0 = (geom[0]).CellSizeArray();
-    const amrex::Real max_pvscale =
-        std::min(std::min(dx_lev0[0], dx_lev0[1]), dx_lev0[2]);
+    const amrex::Real max_pvscale = amrex::min<amrex::Real>(
+        amrex::min<amrex::Real>(dx_lev0[0], dx_lev0[1]), dx_lev0[2]);
     amrex::Real pvscale = max_pvscale;
 
     // Prep things that do not change with iterations
@@ -235,7 +237,7 @@ void OversetOps::sharpen_nalu_data()
         // Populate approximate signed distance function
         overset_ops::populate_psi(levelset(lev), vof(lev), i_th, m_asdf_tiny);
 
-        gp(lev).setVal(0.0);
+        gp(lev).setVal(0.0_rt);
         amrex::MultiFab::Copy(gp(lev), gp_noghost(lev), 0, 0, 3, 0);
         gp(lev).FillBoundary(geom[lev].periodicity());
 
@@ -243,7 +245,7 @@ void OversetOps::sharpen_nalu_data()
         const amrex::Real pvscale_lev =
             overset_ops::calculate_pseudo_velocity_scale(
                 iblank_cell(lev), dx, max_pvscale);
-        pvscale = std::min(pvscale, pvscale_lev);
+        pvscale = amrex::min<amrex::Real>(pvscale, pvscale_lev);
     }
     amrex::Gpu::streamSynchronize();
     amrex::ParallelDescriptor::ReduceRealMin(pvscale);
@@ -275,18 +277,18 @@ void OversetOps::sharpen_nalu_data()
     }
 
     // Pseudo-time loop
-    amrex::Real err = 100.0 * m_convg_tol;
+    amrex::Real err = 100.0_rt * m_convg_tol;
     int n = 0;
     while (n < m_n_iterations && err > m_convg_tol) {
         ++n;
         bool calc_convg = n % m_calc_convg_interval == 0;
         // Zero error if being calculated this step
-        err = calc_convg ? 0.0 : err;
+        err = calc_convg ? 0.0_rt : err;
 
         // Maximum possible value of pseudo time factor (dtau)
-        amrex::Real ptfac = 1.0;
-        // Maximum pseudoCFL, 0.5 seems to work well
-        const amrex::Real pCFL = 0.5;
+        amrex::Real ptfac = 1.0_rt;
+        // Maximum pseudoCFL, 0.5_rt seems to work well
+        const amrex::Real pCFL = 0.5_rt;
 
         for (int lev = 0; lev < nlevels; ++lev) {
             // Populate normal vector
@@ -365,7 +367,7 @@ void OversetOps::sharpen_nalu_data()
 
         if (m_verbose > 0) {
             amrex::Print() << "OversetOps: sharpen step " << n << "  conv. err "
-                           << err << "  tol " << m_convg_tol << std::endl;
+                           << err << "  tol " << m_convg_tol << '\n';
         }
     }
 
