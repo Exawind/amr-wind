@@ -27,7 +27,8 @@ WallFunction::WallFunction(CFDSim& sim)
         pp.getarr("magnitude", body_force);
         m_log_law.utau_mean = std::sqrt(
             std::sqrt(
-                body_force[0] * body_force[0] + body_force[1] * body_force[1]));
+                (body_force[0] * body_force[0]) +
+                (body_force[1] * body_force[1])));
     }
     {
         amrex::ParmParse pp("transport");
@@ -47,7 +48,7 @@ WallFunction::WallFunction(CFDSim& sim)
         const auto& geom = m_mesh.Geom(0);
         m_log_law.zref =
             (geom.ProbLo(m_direction) +
-             (m_log_law.ref_index + 0.5_rt) * geom.CellSize(m_direction));
+             ((m_log_law.ref_index + 0.5_rt) * geom.CellSize(m_direction)));
     }
     {
         amrex::ParmParse pp(
@@ -70,7 +71,7 @@ VelWallFunc::VelWallFunc(Field& /*unused*/, WallFunction& wall_func)
         m_wall_shear_stress_type == "schumann" ||
         m_wall_shear_stress_type == "mosd") {
         amrex::Print() << "Shear Stress model: " << m_wall_shear_stress_type
-                       << std::endl;
+                       << '\n';
     } else {
         amrex::Abort("Shear Stress wall model input mistake");
     }
@@ -125,14 +126,16 @@ void VelWallFunc::wall_model(
                 velocity.bc_type()[zlo] == BC::wall_model) {
                 amrex::ParallelFor(
                     amrex::bdryLo(bx, idim),
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k) {
                         const amrex::Real mu = eta(i, j, k);
                         const amrex::Real uu =
                             vold_arr(i, j, k + idx_offset, 0);
                         const amrex::Real vv =
                             vold_arr(i, j, k + idx_offset, 1);
-                        const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
-                        const amrex::Real xc = problo[0] + (i + 0.5_rt) * dx[0];
+                        const amrex::Real wspd =
+                            std::sqrt((uu * uu) + (vv * vv));
+                        const amrex::Real xc =
+                            problo[0] + ((i + 0.5_rt) * dx[0]);
 
                         if (dx[0] <= dx[2]) {
                             // Use the nearest cell value without interpolation
@@ -151,7 +154,7 @@ void VelWallFunc::wall_model(
                                 mu * den(i, j, k);
                         } else {
                             const int k_lo = static_cast<int>(
-                                std::floor(dx[0] / dx[2] - 0.5_rt));
+                                std::floor((dx[0] / dx[2]) - 0.5_rt));
                             const int k_hi = k_lo + 1;
 
                             if (bx.contains(amrex::IntVect(i, j, k_lo)) &&
@@ -176,9 +179,9 @@ void VelWallFunc::wall_model(
                                     vold_arr(i, j, k_hi, 1);
 
                                 const amrex::Real u_dx =
-                                    u_lo + (u_hi - u_lo) * weight;
+                                    u_lo + ((u_hi - u_lo) * weight);
                                 const amrex::Real v_dx =
-                                    v_lo + (v_hi - v_lo) * weight;
+                                    v_lo + ((v_hi - v_lo) * weight);
 
                                 varr(i, j, k - 1, 0) =
                                     tau.get_shear(uu, wspd, u_dx, v_dx, xc, 0) /
@@ -209,13 +212,14 @@ void VelWallFunc::wall_model(
                 velocity.bc_type()[zhi] == BC::wall_model) {
                 amrex::ParallelFor(
                     amrex::bdryHi(bx, idim),
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k) {
                         const amrex::Real mu = eta(i, j, k - 1);
                         const amrex::Real uu =
                             vold_arr(i, j, k - 1 - idx_offset, 0);
                         const amrex::Real vv =
                             vold_arr(i, j, k - 1 - idx_offset, 1);
-                        const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
+                        const amrex::Real wspd =
+                            std::sqrt((uu * uu) + (vv * vv));
                         // Dirichlet BC
                         varr(i, j, k, 2) = 0.0_rt;
 
@@ -274,7 +278,7 @@ void VelWallFunc::wall_model(
                 velocity.bc_type()[zlo] == BC::wall_model) {
                 amrex::ParallelFor(
                     amrex::bdryLo(bx, idim),
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k) {
                         const amrex::Real mu = eta(i, j, k);
 
                         // Dirichlet BC
@@ -290,7 +294,7 @@ void VelWallFunc::wall_model(
                 velocity.bc_type()[zhi] == BC::wall_model) {
                 amrex::ParallelFor(
                     amrex::bdryHi(bx, idim),
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k) {
                         const amrex::Real mu = eta(i, j, k - 1);
 
                         // Dirichlet BC

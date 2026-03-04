@@ -132,7 +132,7 @@ void KransAxell::operator()(
         if (k == 0) {
             const amrex::Real ux = vel(i, j, k + 1, 0);
             const amrex::Real uy = vel(i, j, k + 1, 1);
-            const amrex::Real m = std::sqrt(ux * ux + uy * uy);
+            const amrex::Real m = std::sqrt((ux * ux) + (uy * uy));
             const amrex::Real ustar =
                 m * kappa / (std::log(3 * z / cell_z0) - psi_m);
             const amrex::Real T0 = ref_theta_arr(i, j, k);
@@ -158,8 +158,8 @@ void KransAxell::operator()(
                               (tlscale_arr(i, j, k) + amr_wind::constants::EPS);
         src_term(i, j, k) += shear_prod_arr(i, j, k) + buoy_prod_arr(i, j, k) -
                              dissip_arr(i, j, k) -
-                             (1.0_rt - static_cast<int>(has_terrain)) *
-                                 (sponge_forcing - bcforcing);
+                             ((1.0_rt - static_cast<int>(has_terrain)) *
+                              (sponge_forcing - bcforcing));
     });
     if (has_terrain) {
         const auto* const m_terrain_blank =
@@ -237,56 +237,51 @@ void KransAxell::operator()(
             const int sponge_west = m_sponge_west;
             const int sponge_south = m_sponge_south;
             const int sponge_north = m_sponge_north;
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real x = problo[0] + (i + 0.5_rt) * dx[0];
-                    const amrex::Real y = problo[1] + (j + 0.5_rt) * dx[1];
-                    const amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
-                    amrex::Real xstart_damping = 0.0_rt;
-                    amrex::Real ystart_damping = 0.0_rt;
-                    amrex::Real xend_damping = 0.0_rt;
-                    amrex::Real yend_damping = 0.0_rt;
-                    amrex::Real xi_end =
-                        (x - start_east) / (probhi[0] - start_east);
-                    amrex::Real xi_start =
-                        (start_west - x) / (start_west - problo[0]);
-                    xi_start =
-                        sponge_west * amrex::max<amrex::Real>(xi_start, 0.0_rt);
-                    xi_end =
-                        sponge_east * amrex::max<amrex::Real>(xi_end, 0.0_rt);
-                    xi_start /= (xi_start + amr_wind::constants::EPS);
-                    xi_end /= (xi_end + amr_wind::constants::EPS);
-                    xstart_damping =
-                        sponge_west * sponge_strength * xi_start * xi_start;
-                    xend_damping =
-                        sponge_east * sponge_strength * xi_end * xi_end;
-                    amrex::Real yi_end =
-                        (y - start_north) / (probhi[1] - start_north);
-                    amrex::Real yi_start =
-                        (start_south - y) / (start_south - problo[1]);
-                    yi_start = sponge_south *
-                               amrex::max<amrex::Real>(yi_start, 0.0_rt);
-                    yi_end =
-                        sponge_north * amrex::max<amrex::Real>(yi_end, 0.0_rt);
-                    yi_start /= (yi_start + amr_wind::constants::EPS);
-                    yi_end /= (yi_end + amr_wind::constants::EPS);
-                    ystart_damping = sponge_strength * yi_start * yi_start;
-                    yend_damping = sponge_strength * yi_end * yi_end;
-                    const amrex::Real ref_tke =
-                        (vsize > 0)
-                            ? interp::linear(
-                                  wind_heights_d, wind_heights_d + vsize,
-                                  tke_values_d, z)
-                            : tke_arr(i, j, k, 0);
-                    const amrex::Real damping_sum =
-                        (xstart_damping + xend_damping + ystart_damping +
-                         yend_damping + amr_wind::constants::EPS);
-                    const amrex::Real sponge_forcing =
-                        (xstart_damping + xend_damping + ystart_damping +
-                         yend_damping) /
-                        (damping_sum * dt) * (tke_arr(i, j, k) - ref_tke);
-                    src_term(i, j, k, 0) -= sponge_forcing;
-                });
+            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+                const amrex::Real x = problo[0] + ((i + 0.5_rt) * dx[0]);
+                const amrex::Real y = problo[1] + ((j + 0.5_rt) * dx[1]);
+                const amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);
+                amrex::Real xstart_damping = 0.0_rt;
+                amrex::Real ystart_damping = 0.0_rt;
+                amrex::Real xend_damping = 0.0_rt;
+                amrex::Real yend_damping = 0.0_rt;
+                amrex::Real xi_end =
+                    (x - start_east) / (probhi[0] - start_east);
+                amrex::Real xi_start =
+                    (start_west - x) / (start_west - problo[0]);
+                xi_start =
+                    sponge_west * amrex::max<amrex::Real>(xi_start, 0.0_rt);
+                xi_end = sponge_east * amrex::max<amrex::Real>(xi_end, 0.0_rt);
+                xi_start /= (xi_start + amr_wind::constants::EPS);
+                xi_end /= (xi_end + amr_wind::constants::EPS);
+                xstart_damping =
+                    sponge_west * sponge_strength * xi_start * xi_start;
+                xend_damping = sponge_east * sponge_strength * xi_end * xi_end;
+                amrex::Real yi_end =
+                    (y - start_north) / (probhi[1] - start_north);
+                amrex::Real yi_start =
+                    (start_south - y) / (start_south - problo[1]);
+                yi_start =
+                    sponge_south * amrex::max<amrex::Real>(yi_start, 0.0_rt);
+                yi_end = sponge_north * amrex::max<amrex::Real>(yi_end, 0.0_rt);
+                yi_start /= (yi_start + amr_wind::constants::EPS);
+                yi_end /= (yi_end + amr_wind::constants::EPS);
+                ystart_damping = sponge_strength * yi_start * yi_start;
+                yend_damping = sponge_strength * yi_end * yi_end;
+                const amrex::Real ref_tke =
+                    (vsize > 0) ? interp::linear(
+                                      wind_heights_d, wind_heights_d + vsize,
+                                      tke_values_d, z)
+                                : tke_arr(i, j, k, 0);
+                const amrex::Real damping_sum =
+                    (xstart_damping + xend_damping + ystart_damping +
+                     yend_damping + amr_wind::constants::EPS);
+                const amrex::Real sponge_forcing =
+                    (xstart_damping + xend_damping + ystart_damping +
+                     yend_damping) /
+                    (damping_sum * dt) * (tke_arr(i, j, k) - ref_tke);
+                src_term(i, j, k, 0) -= sponge_forcing;
+            });
         }
     }
 }

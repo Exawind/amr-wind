@@ -118,9 +118,9 @@ TEST_F(FieldRepoTest, field_get)
     EXPECT_EQ(presf.field_location(), amr_wind::FieldLoc::NODE);
     EXPECT_EQ(vel_old.field_state(), amr_wind::FieldState::Old);
 
-    const amrex::Real vx = 30.0_rt + 5.0_rt * (amrex::Random() - 0.5_rt);
-    const amrex::Real vy = 30.0_rt + 5.0_rt * (amrex::Random() - 0.5_rt);
-    const amrex::Real vz = 30.0_rt + 5.0_rt * (amrex::Random() - 0.5_rt);
+    const amrex::Real vx = 30.0_rt + (5.0_rt * (amrex::Random() - 0.5_rt));
+    const amrex::Real vy = 30.0_rt + (5.0_rt * (amrex::Random() - 0.5_rt));
+    const amrex::Real vz = 30.0_rt + (5.0_rt * (amrex::Random() - 0.5_rt));
     velf.setVal(vx, 0);
     velf.setVal(vy, 1);
     velf.setVal(vz, 2);
@@ -150,13 +150,13 @@ TEST_F(FieldRepoTest, field_multiple_states)
     auto& vel_old = velocity.state(amr_wind::FieldState::Old);
     auto& veldiff = frepo.declare_field("vel_diff", 3, 0);
 
-    const amrex::Real vx = 30.0_rt + 5.0_rt * (amrex::Random() - 0.5_rt);
-    const amrex::Real vy = 30.0_rt + 5.0_rt * (amrex::Random() - 0.5_rt);
-    const amrex::Real vz = 30.0_rt + 5.0_rt * (amrex::Random() - 0.5_rt);
+    const amrex::Real vx = 30.0_rt + (5.0_rt * (amrex::Random() - 0.5_rt));
+    const amrex::Real vy = 30.0_rt + (5.0_rt * (amrex::Random() - 0.5_rt));
+    const amrex::Real vz = 30.0_rt + (5.0_rt * (amrex::Random() - 0.5_rt));
 
-    const amrex::Real vx_old = 20.0_rt + 5.0_rt * (amrex::Random() - 0.5_rt);
-    const amrex::Real vy_old = 20.0_rt + 5.0_rt * (amrex::Random() - 0.5_rt);
-    const amrex::Real vz_old = 20.0_rt + 5.0_rt * (amrex::Random() - 0.5_rt);
+    const amrex::Real vx_old = 20.0_rt + (5.0_rt * (amrex::Random() - 0.5_rt));
+    const amrex::Real vy_old = 20.0_rt + (5.0_rt * (amrex::Random() - 0.5_rt));
+    const amrex::Real vz_old = 20.0_rt + (5.0_rt * (amrex::Random() - 0.5_rt));
 
     velocity.setVal(amrex::Vector<amrex::Real>{vx, vy, vz});
     vel_old.setVal(amrex::Vector<amrex::Real>{vx_old, vy_old, vz_old});
@@ -226,9 +226,9 @@ TEST_F(FieldRepoTest, field_advance_states)
     auto& vel_old = velocity.state(amr_wind::FieldState::Old);
     EXPECT_EQ(velocity.num_states(), 2);
 
-    const amrex::Real vx = 30.0_rt + 5.0_rt * (amrex::Random() - 0.5_rt);
-    const amrex::Real vy = 30.0_rt + 5.0_rt * (amrex::Random() - 0.5_rt);
-    const amrex::Real vz = 30.0_rt + 5.0_rt * (amrex::Random() - 0.5_rt);
+    const amrex::Real vx = 30.0_rt + (5.0_rt * (amrex::Random() - 0.5_rt));
+    const amrex::Real vy = 30.0_rt + (5.0_rt * (amrex::Random() - 0.5_rt));
+    const amrex::Real vz = 30.0_rt + (5.0_rt * (amrex::Random() - 0.5_rt));
 
     velocity.setVal(amrex::Vector<amrex::Real>{vx, vy, vz});
     vel_old.setVal(std::numeric_limits<amrex::Real>::max());

@@ -30,19 +30,19 @@ void write_netcdf(
     const WingBaseData& /*meta*/,
     const ActInfo& /*info*/,
     const ActGrid& /*grid*/,
-    const amrex::Real /*time*/);
+    amrex::Real /*time*/);
 
-void refresh_wing_position(VecList& vpoints, VecList fpoints, const int npts);
+void refresh_wing_position(VecList& vpoints, VecList fpoints, int npts);
 
 void new_wing_position_velocity(
     VecList& points,
     vs::Vector& vtr,
-    const int npts,
-    const amrex::Real tn,
-    const amrex::Real tnp1,
+    int npts,
+    amrex::Real tn,
+    amrex::Real tnp1,
     const std::string& motion,
-    const amrex::Real period,
-    const vs::Vector svec);
+    amrex::Real period,
+    vs::Vector svec);
 
 template <typename T>
 ComponentView make_component_view(typename T::DataType& data)
@@ -203,7 +203,8 @@ struct ComputeForceOp<
                 qfac /= (amrex::Real)npts;
                 // Convert 3D Gaussian factor to 2D factor
                 constexpr amrex::Real G2D_from_3D =
-                    0.31830988618379067_rt / 0.17958712212516656_rt;
+                    std::numbers::inv_pi_v<amrex::Real> /
+                    0.17958712212516656_rt;
                 qfac *= G2D_from_3D;
                 // Get rid of epsilon in spanwise direction
                 const amrex::Real eps_span = grid.epsilon[ip][1];
@@ -219,11 +220,12 @@ struct ComputeForceOp<
 
             // Determine unit vector parallel and perpendicular to velocity
             const auto drag_dir =
-                (blade_x * windvector.x() + blade_z * windvector.z()).unit();
+                ((blade_x * windvector.x()) + (blade_z * windvector.z()))
+                    .unit();
             const auto lift_dir = (drag_dir ^ blade_y).unit();
 
             // Compute force on fluid from this section of wing
-            grid.force[ip] = -(lift_dir * lift + drag * drag_dir);
+            grid.force[ip] = -((lift_dir * lift) + (drag * drag_dir));
 
             // In global coords, zero disabled force components
             grid.force[ip] *= force_coord_flags_vec;

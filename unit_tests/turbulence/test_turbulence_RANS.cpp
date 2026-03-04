@@ -24,9 +24,9 @@ void init_strain_field(amr_wind::Field& fld, amrex::Real srate)
         amrex::ParallelFor(
             fld(lev), fld.num_grow(),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
-                const amrex::Real x = problo[0] + (i + offset) * dx[0];
-                const amrex::Real y = problo[1] + (j + offset) * dx[1];
-                const amrex::Real z = problo[2] + (k + offset) * dx[2];
+                const amrex::Real x = problo[0] + ((i + offset) * dx[0]);
+                const amrex::Real y = problo[1] + ((j + offset) * dx[1]);
+                const amrex::Real z = problo[2] + ((k + offset) * dx[2]);
 
                 farrs[nbx](i, j, k, 0) = x / std::sqrt(6.0_rt) * srate;
                 farrs[nbx](i, j, k, 1) = y / std::sqrt(6.0_rt) * srate;
@@ -52,7 +52,7 @@ void init_temperature_field(amr_wind::Field& fld, amrex::Real tgrad)
         amrex::ParallelFor(
             fld(lev), fld.num_grow(),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
-                const amrex::Real z = problo[2] + (k + offset) * dx[2];
+                const amrex::Real z = problo[2] + ((k + offset) * dx[2]);
 
                 farrs[nbx](i, j, k, 0) = z * tgrad;
             });

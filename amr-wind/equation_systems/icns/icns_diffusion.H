@@ -39,9 +39,8 @@ public:
     {
         this->setup_operator(*this->m_applier, 0.0_rt, -1.0_rt, fstate);
 
-        auto tau_state = std::is_same<Scheme, fvm::Godunov>::value
-                             ? FieldState::New
-                             : fstate;
+        auto tau_state =
+            std::is_same_v<Scheme, fvm::Godunov> ? FieldState::New : fstate;
         auto& divtau = this->m_pdefields.diff_term.state(tau_state);
 
         amrex::MLMG mlmg(*this->m_applier);
@@ -118,9 +117,8 @@ public:
     template <typename Scheme>
     void compute_diff_term(const FieldState fstate)
     {
-        auto tau_state = std::is_same<Scheme, fvm::Godunov>::value
-                             ? FieldState::New
-                             : fstate;
+        auto tau_state =
+            std::is_same_v<Scheme, fvm::Godunov> ? FieldState::New : fstate;
         const auto& repo = m_pdefields.repo;
         const int nlevels = repo.num_active_levels();
         const auto& geom = repo.mesh().Geom();
@@ -173,8 +171,8 @@ public:
                 const auto& rho_arrs = density(lev).const_arrays();
 
                 amrex::ParallelFor(
-                    divtau(lev), [=] AMREX_GPU_DEVICE(
-                                     int nbx, int i, int j, int k) noexcept {
+                    divtau(lev),
+                    [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                         amrex::Real rhoinv = 1.0_rt / rho_arrs[nbx](i, j, k);
                         divtau_arrs[nbx](i, j, k, 0) *= rhoinv;
                         divtau_arrs[nbx](i, j, k, 1) *= rhoinv;
@@ -241,8 +239,7 @@ public:
 
             amrex::ParallelFor(
                 rhs, amrex::IntVect(0), ndim,
-                [=] AMREX_GPU_DEVICE(
-                    int nbx, int i, int j, int k, int n) noexcept {
+                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) {
                     rhs_arrs[nbx](i, j, k, n) =
                         rho_arrs[nbx](i, j, k) * fld_arrs[nbx](i, j, k, n);
                 });
@@ -326,9 +323,8 @@ public:
     template <typename Scheme>
     void compute_diff_term(const FieldState fstate)
     {
-        auto tau_state = std::is_same<Scheme, fvm::Godunov>::value
-                             ? FieldState::New
-                             : fstate;
+        auto tau_state =
+            std::is_same_v<Scheme, fvm::Godunov> ? FieldState::New : fstate;
         const auto& repo = m_pdefields.repo;
         const int nlevels = repo.num_active_levels();
         const auto& geom = repo.mesh().Geom();
@@ -396,8 +392,8 @@ public:
                 const auto& rho_arrs = density(lev).const_arrays();
 
                 amrex::ParallelFor(
-                    divtau(lev), [=] AMREX_GPU_DEVICE(
-                                     int nbx, int i, int j, int k) noexcept {
+                    divtau(lev),
+                    [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                         amrex::Real rhoinv = 1.0_rt / rho_arrs[nbx](i, j, k);
                         divtau_arrs[nbx](i, j, k, 0) *= rhoinv;
                         divtau_arrs[nbx](i, j, k, 1) *= rhoinv;
@@ -475,8 +471,7 @@ public:
 
             amrex::ParallelFor(
                 rhs, amrex::IntVect(0), ndim,
-                [=] AMREX_GPU_DEVICE(
-                    int nbx, int i, int j, int k, int n) noexcept {
+                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) {
                     rhs_arrs[nbx](i, j, k, n) =
                         rho_arrs[nbx](i, j, k) * fld_arrs[nbx](i, j, k, n);
                 });

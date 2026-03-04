@@ -37,7 +37,7 @@ get_val_at_kindex(amr_wind::Field& field, const int comp, const int kref)
             amrex::Array4<amrex::Real const> const& f_arr) -> amrex::Real {
             amrex::Real error = 0;
 
-            amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
+            amrex::Loop(bx, [=, &error](int i, int j, int k) {
                 // Check if current cell is just above lower wall
                 if (k == kref) {
                     // Add field value to output
@@ -165,7 +165,7 @@ TEST_F(ABLMeshTest, abl_local_wall_model)
     const amrex::Real zref = 0.5_rt * dz;
     const amrex::Real utau = kappa * vval / (std::log(zref / z0));
     const amrex::Real tau_wall = std::pow(utau, 2.0_rt);
-    const amrex::Real vexpct = vval + dt * (0.0_rt - tau_wall) / dz;
+    const amrex::Real vexpct = vval + (dt * (0.0_rt - tau_wall) / dz);
     EXPECT_NEAR(vexpct, vbase, tol);
 }
 
@@ -266,7 +266,7 @@ TEST_F(ABLMeshTest, abl_donelan_wall_model)
     // Calculate expected velocity after one step
     const amrex::Real dz = sim().mesh().Geom(0).CellSizeArray()[2];
     const amrex::Real tau_wall = 0.0024_rt * std::pow(vval, 2.0_rt);
-    const amrex::Real vexpct = vval + dt * (0.0_rt - tau_wall) / dz;
+    const amrex::Real vexpct = vval + (dt * (0.0_rt - tau_wall) / dz);
     EXPECT_NEAR(vexpct, vbase, tol);
 }
 

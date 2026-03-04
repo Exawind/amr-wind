@@ -20,9 +20,8 @@ struct ComputeRHSOp<Density, Scheme>
     {
         // Field states for diffusion and advection terms. In Godunov scheme
         // these terms only have one state.
-        auto fstate = std::is_same<Scheme, fvm::Godunov>::value
-                          ? FieldState::New
-                          : FieldState::Old;
+        auto fstate = std::is_same_v<Scheme, fvm::Godunov> ? FieldState::New
+                                                           : FieldState::Old;
 
         const int nlevels = fields.repo.num_active_levels();
         auto& field = fields.field;
@@ -35,10 +34,9 @@ struct ComputeRHSOp<Density, Scheme>
             const auto& ddt_o_arrs = conv_term(lev).const_arrays();
 
             amrex::ParallelFor(
-                field(lev),
-                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                field(lev), [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                     rho_arrs[nbx](i, j, k) = rho_o_arrs[nbx](i, j, k) +
-                                             dt * ddt_o_arrs[nbx](i, j, k);
+                                             (dt * ddt_o_arrs[nbx](i, j, k));
                     // Defer n+1/2 update to the time-stepping algorithm
                     // rho_nph(i, j, k) = 0.5_rt * (rho(i, j, k) + rho_o(i, j,
                     // k));
@@ -65,12 +63,11 @@ struct ComputeRHSOp<Density, Scheme>
             const auto& ddt_o_arrs = conv_term_old(lev).const_arrays();
 
             amrex::ParallelFor(
-                field(lev),
-                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                field(lev), [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                     rho_arrs[nbx](i, j, k) =
                         rho_o_arrs[nbx](i, j, k) +
-                        dt * 0.5_rt *
-                            (ddt_o_arrs[nbx](i, j, k) + ddt_arrs[nbx](i, j, k));
+                        (dt * 0.5_rt *
+                         (ddt_o_arrs[nbx](i, j, k) + ddt_arrs[nbx](i, j, k)));
                     // Defer n+1/2 update to time-stepping algorithm
                     // rho_nph(i, j, k) =
                     //     0.5_rt * (rho(i, j, k) + rho_o(i, j, k));

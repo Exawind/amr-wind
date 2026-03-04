@@ -1,5 +1,5 @@
-#ifndef ChannelFlow_H
-#define ChannelFlow_H
+#ifndef CHANNELFLOW_H
+#define CHANNELFLOW_H
 
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/core/Field.H"
@@ -24,12 +24,12 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real analytical_smagorinsky_profile(
     const amrex::Real Cs2 = Cs * Cs;
     const amrex::Real dx2 = dx * dx;
     const amrex::Real Cs2dx2 = Cs2 * dx2;
-    return -mu / (rho * Cs2dx2) * h +
-           Cs2dx2 / (3 * dpdx) *
-               std::pow(
-                   (2.0_rt / Cs2dx2 * dpdx * h +
-                    (mu / (rho * Cs2dx2)) * (mu / (rho * Cs2dx2)) + C1),
-                   3.0_rt / 2.0_rt) +
+    return (-mu / (rho * Cs2dx2) * h) +
+           (Cs2dx2 / (3 * dpdx) *
+            std::pow(
+                ((2.0_rt / Cs2dx2 * dpdx * h) +
+                 ((mu / (rho * Cs2dx2)) * (mu / (rho * Cs2dx2))) + C1),
+                3.0_rt / 2.0_rt)) +
            C0;
 }
 
@@ -57,7 +57,7 @@ public:
         int level,
         const amrex::Geometry& geom,
         const IndexSelector& idxOp,
-        const int n_idx);
+        int n_idx);
 
     template <typename IndexSelector>
     amrex::Real compute_error(const IndexSelector& idxOp);

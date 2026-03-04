@@ -107,19 +107,20 @@ void ABLForcing::operator()(
     const auto& dx = m_mesh.Geom(lev).CellSizeArray();
 
     const auto& vof = (*m_vof)(lev).const_array(mfi);
-    amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+    amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
         amrex::Real fac = 1.0_rt;
         if (ph_ramp) {
-            const amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
+            const amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);
             if (z - wlev < wrht0 + wrht1) {
                 if (z - wlev < wrht0) {
                     // Apply no forcing within first interval
                     fac = 0.0_rt;
                 } else {
                     // Ramp from 0 to 1 over second interval
-                    fac = 0.5_rt - 0.5_rt * std::cos(
-                                                static_cast<amrex::Real>(M_PI) *
-                                                (z - wlev - wrht0) / wrht1);
+                    fac =
+                        0.5_rt - (0.5_rt * std::cos(
+                                               std::numbers::pi_v<amrex::Real> *
+                                               (z - wlev - wrht0) / wrht1));
                 }
             }
             // Check for presence of liquid (like a droplet)
@@ -127,8 +128,8 @@ void ABLForcing::operator()(
             // - need to also check for within liquid
             if (multiphase::interface_band(i, j, k, vof, n_band) ||
                 vof(i, j, k) >
-                    1.0_rt - std::numeric_limits<amrex::Real>::epsilon() *
-                                 1.0e4_rt) {
+                    1.0_rt - (std::numeric_limits<amrex::Real>::epsilon() *
+                              1.0e4_rt)) {
                 // Turn off forcing
                 fac = 0.0_rt;
             }

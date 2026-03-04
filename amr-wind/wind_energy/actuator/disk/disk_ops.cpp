@@ -104,9 +104,9 @@ namespace ops::base {
 
 AreaComputer::AreaComputer(
     const amrex::Real radius, const int num_r, const int num_theta)
-    : m_area(static_cast<amrex::Real>(M_PI) * radius * radius)
+    : m_area(std::numbers::pi_v<amrex::Real> * radius * radius)
     , m_geometry_factor(
-          radius * radius / num_r / num_r * static_cast<amrex::Real>(M_PI) /
+          radius * radius / num_r / num_r * std::numbers::pi_v<amrex::Real> /
           num_theta)
 {}
 
@@ -153,7 +153,7 @@ void collect_parse_conflicts(
     std::ostringstream& ss)
 {
     if (pp.contains(p1) && pp.contains(p2)) {
-        ss << "ActuatorDisk Conflict: " << p1 << " and " << p2 << std::endl;
+        ss << "ActuatorDisk Conflict: " << p1 << " and " << p2 << '\n';
     }
 }
 
@@ -165,7 +165,7 @@ void collect_parse_dependencies_one_way(
 {
     if (pp.contains(dependent) && !pp.contains(independent)) {
         ss << "ActuatorDisk Dependency Missing: " << independent
-           << " required with " << dependent << std::endl;
+           << " required with " << dependent << '\n';
     }
 }
 
@@ -300,7 +300,7 @@ std::ostringstream check_for_parse_conflicts(const utils::ActParser& pp)
             error_collector << "ActuatorDisk Dependency Missing: wind_speed is "
                                "required when "
                                "there is more than 1 entry for thrust_coeff"
-                            << std::endl;
+                            << '\n';
         }
     }
 
@@ -311,7 +311,7 @@ std::ostringstream check_for_parse_conflicts(const utils::ActParser& pp)
             error_collector << "ActuatorDisk Conflict: wind_speed and "
                                "thrust_coeff must have the same number of "
                                "values"
-                            << std::endl;
+                            << '\n';
         }
     }
 
@@ -356,8 +356,8 @@ amrex::RealBox compute_bounding_box(const DiskBaseData& meta)
 
     const auto& cc = meta.center;
     const amrex::Real nl = meta.epsilon * 3.0_rt; // length scale in normal dir
-    const amrex::Real dl = meta.diameter * 0.5_rt +
-                           meta.dr * 2.0_rt; // length scale in plane of disk
+    const amrex::Real dl = (meta.diameter * 0.5_rt) +
+                           (meta.dr * 2.0_rt); // length scale in plane of disk
     const auto dvec = norm * nl + cVec * dl + vs::Vector::khat() * dl;
     const auto p1 = cc - dvec; // front
     const auto p2 = cc + dvec; // back

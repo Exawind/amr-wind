@@ -19,8 +19,8 @@ AMREX_FORCE_INLINE amrex::Real get_enforced_dt_for_output(
 {
     // Tolerance for being slightly under is relative to requested interval
     return amrex::min<amrex::Real>(
-        dt,
-        (std::floor(cur_time / interval + tol) + 1.0_rt) * interval - cur_time);
+        dt, ((std::floor((cur_time / interval) + tol) + 1.0_rt) * interval) -
+                cur_time);
 }
 } // namespace
 
@@ -46,35 +46,33 @@ public:
 
     /** Return true if simulation should continue
      */
-    bool continue_simulation() const;
+    [[nodiscard]] bool continue_simulation() const;
 
     /** Return true if mesh refinement should be performed at this timestep
      */
-    bool do_regrid() const;
+    [[nodiscard]] bool do_regrid() const;
 
     /** Return true if plot files should be written at this timestep
      */
-    bool write_plot_file() const;
+    [[nodiscard]] bool write_plot_file() const;
 
     /** Return true if checkpoint files should be written at this timestep
      */
-    bool write_checkpoint() const;
+    [[nodiscard]] bool write_checkpoint() const;
 
     /** Return true if plot files should be written at this timestep
      */
-    bool write_last_plot_file() const;
+    [[nodiscard]] bool write_last_plot_file() const;
 
     /** Return true if checkpoint files should be written at this timestep
      */
-    bool write_last_checkpoint() const;
+    [[nodiscard]] bool write_last_checkpoint() const;
 
     /** Set current CFL and update timestep based on CFL components
      *
      */
     void set_current_cfl(
-        const amrex::Real conv_cfl,
-        const amrex::Real diff_cfl,
-        const amrex::Real src_cfl);
+        amrex::Real conv_cfl, amrex::Real diff_cfl, amrex::Real src_cfl);
 
     /** Use results of CFL and timestepping parameters to advance time to new,
      * output time information
@@ -183,7 +181,7 @@ public:
     /** Return true if TinyProfiler output should be sent to the log file at
      * this timestep
      */
-    bool output_profiling_info() const;
+    [[nodiscard]] bool output_profiling_info() const;
 
 private:
     //! Timestep sizes

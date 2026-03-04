@@ -1,3 +1,4 @@
+#include <numbers>
 #include "amr-wind/physics/multiphase/MultiPhase.H"
 #include "amr-wind/physics/multiphase/ZalesakDiskScalarVel.H"
 #include "amr-wind/CFDSim.H"
@@ -27,15 +28,15 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real SCexact::operator()(
     xc0 = xc0 - 0.5_rt;
     yc0 = yc0 - 0.5_rt;
     // Calculate new center based on time
-    amrex::Real xc = 0.5_rt + std::cos(alpha) * xc0 - std::sin(alpha) * yc0;
-    amrex::Real yc = 0.5_rt + std::sin(alpha) * xc0 + std::cos(alpha) * yc0;
+    amrex::Real xc = 0.5_rt + (std::cos(alpha) * xc0) - (std::sin(alpha) * yc0);
+    amrex::Real yc = 0.5_rt + (std::sin(alpha) * xc0) + (std::cos(alpha) * yc0);
     amrex::Real zc = zc0;
 
     // Normalized distance from current center
-    amrex::Real dnorm =
-        std::sqrt(
-            (x - xc) * (x - xc) + (y - yc) * (y - yc) + (z - zc) * (z - zc)) /
-        radius;
+    amrex::Real dnorm = std::sqrt(
+                            ((x - xc) * (x - xc)) + ((y - yc) * (y - yc)) +
+                            ((z - zc) * (z - zc))) /
+                        radius;
     // Scalar distribution
     return amrex::min<amrex::Real>(
         1.0_rt, amrex::max<amrex::Real>(0.0_rt, 1.5_rt - dnorm));
@@ -95,15 +96,15 @@ void ZalesakDiskScalarVel::initialize_fields(
     const auto& rho_arrs = density.arrays();
     amrex::ParallelFor(
         levelset, amrex::IntVect(1),
-        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-            const amrex::Real x = problo[0] + (i + 0.5_rt) * dx[0];
-            const amrex::Real y = problo[1] + (j + 0.5_rt) * dx[1];
-            const amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
+        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
+            const amrex::Real x = problo[0] + ((i + 0.5_rt) * dx[0]);
+            const amrex::Real y = problo[1] + ((j + 0.5_rt) * dx[1]);
+            const amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);
 
             uf_arrs[nbx](i, j, k) =
-                2.0_rt * static_cast<amrex::Real>(M_PI) / TT * (0.5_rt - y);
+                2.0_rt * std::numbers::pi_v<amrex::Real> / TT * (0.5_rt - y);
             vf_arrs[nbx](i, j, k) =
-                2.0_rt * static_cast<amrex::Real>(M_PI) / TT * (x - 0.5_rt);
+                2.0_rt * std::numbers::pi_v<amrex::Real> / TT * (x - 0.5_rt);
             wf_arrs[nbx](i, j, k) = 0.0_rt;
 
             vel_arrs[nbx](i, j, k, 1) = 0.0_rt;
@@ -111,8 +112,8 @@ void ZalesakDiskScalarVel::initialize_fields(
 
             // First define the sphere
             const amrex::Real r = std::sqrt(
-                (x - xc) * (x - xc) + (y - yc) * (y - yc) +
-                (z - zc) * (z - zc));
+                ((x - xc) * (x - xc)) + ((y - yc) * (y - yc)) +
+                ((z - zc) * (z - zc)));
             phi_arrs[nbx](i, j, k) = radius - r;
 
             // Then the slot
@@ -127,7 +128,7 @@ void ZalesakDiskScalarVel::initialize_fields(
 
             // Additional distance if past sphere (distance to corners)
             const amrex::Real reduced_radius =
-                std::sqrt(radius * radius - hwidth * hwidth);
+                std::sqrt((radius * radius) - (hwidth * hwidth));
             const amrex::Real r_2D =
                 std::sqrt(std::pow(y - yc, 2.0_rt) + std::pow(z - zc, 2.0_rt));
             const amrex::Real sd_r = -std::sqrt(
@@ -160,19 +161,19 @@ void ZalesakDiskScalarVel::initialize_fields(
             } else {
                 smooth_heaviside =
                     0.5_rt * (1.0_rt + phi_arrs[nbx](i, j, k) / eps +
-                              1.0_rt / static_cast<amrex::Real>(M_PI) *
+                              1.0_rt / std::numbers::pi_v<amrex::Real> *
                                   std::sin(
                                       phi_arrs[nbx](i, j, k) *
-                                      static_cast<amrex::Real>(M_PI) / eps));
+                                      std::numbers::pi_v<amrex::Real> / eps));
             }
-            rho_arrs[nbx](i, j, k) =
-                rho1 * smooth_heaviside + rho2 * (1.0_rt - smooth_heaviside);
+            rho_arrs[nbx](i, j, k) = (rho1 * smooth_heaviside) +
+                                     (rho2 * (1.0_rt - smooth_heaviside));
 
             // Set up scalar field with velocity in x
             const amrex::Real dnorm =
                 std::sqrt(
-                    (x - xc) * (x - xc) + (y - yc) * (y - yc) +
-                    (z - zc) * (z - zc)) /
+                    ((x - xc) * (x - xc)) + ((y - yc) * (y - yc)) +
+                    ((z - zc) * (z - zc))) /
                 radius;
             // Set up scalar field with u velocity
             vel_arrs[nbx](i, j, k, 0) = amrex::min<amrex::Real>(
@@ -204,14 +205,16 @@ void ZalesakDiskScalarVel::pre_advance_work()
         const auto& wf_arrs = w_mac.arrays();
         amrex::ParallelFor(
             m_velocity(lev), amrex::IntVect(1),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                const amrex::Real x = problo[0] + (i + 0.5_rt) * dx[0];
-                const amrex::Real y = problo[1] + (j + 0.5_rt) * dx[1];
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
+                const amrex::Real x = problo[0] + ((i + 0.5_rt) * dx[0]);
+                const amrex::Real y = problo[1] + ((j + 0.5_rt) * dx[1]);
 
-                uf_arrs[nbx](i, j, k) =
-                    2.0_rt * static_cast<amrex::Real>(M_PI) / TT * (0.5_rt - y);
-                vf_arrs[nbx](i, j, k) =
-                    2.0_rt * static_cast<amrex::Real>(M_PI) / TT * (x - 0.5_rt);
+                uf_arrs[nbx](i, j, k) = 2.0_rt *
+                                        std::numbers::pi_v<amrex::Real> / TT *
+                                        (0.5_rt - y);
+                vf_arrs[nbx](i, j, k) = 2.0_rt *
+                                        std::numbers::pi_v<amrex::Real> / TT *
+                                        (x - 0.5_rt);
                 wf_arrs[nbx](i, j, k) = 0.0_rt;
             });
         amrex::Gpu::streamSynchronize();
@@ -266,8 +269,7 @@ amrex::Real ZalesakDiskScalarVel::compute_error(const Field& field)
                 m_sim.repo().get_int_field("iblank_cell")(lev).arrays();
             const auto& imask_arrs = level_mask.arrays();
             amrex::ParallelFor(
-                field(lev),
-                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                field(lev), [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                     if (std::abs(iblank_arrs[nbx](i, j, k)) < 1) {
                         imask_arrs[nbx](i, j, k) = 0;
                     }
@@ -298,13 +300,13 @@ amrex::Real ZalesakDiskScalarVel::compute_error(const Field& field)
 
                 amrex::Real x = mesh_mapping
                                     ? (nu_cc[box_no](i, j, k, 0))
-                                    : (prob_lo[0] + (i + 0.5_rt) * dx[0]);
+                                    : (prob_lo[0] + ((i + 0.5_rt) * dx[0]));
                 amrex::Real y = mesh_mapping
                                     ? (nu_cc[box_no](i, j, k, 1))
-                                    : (prob_lo[1] + (j + 0.5_rt) * dx[1]);
+                                    : (prob_lo[1] + ((j + 0.5_rt) * dx[1]));
                 amrex::Real z = mesh_mapping
                                     ? (nu_cc[box_no](i, j, k, 2))
-                                    : (prob_lo[2] + (k + 0.5_rt) * dx[2]);
+                                    : (prob_lo[2] + ((k + 0.5_rt) * dx[2]));
                 amrex::Real fac_x =
                     mesh_mapping ? (fac_arr[box_no](i, j, k, 0)) : 1.0_rt;
                 amrex::Real fac_y =
@@ -315,7 +317,7 @@ amrex::Real ZalesakDiskScalarVel::compute_error(const Field& field)
                 const amrex::Real u = fld_bx(i, j, k, comp);
                 const amrex::Real u_exact = f_exact(
                     xc, yc, zc, x, y, z, radius,
-                    time * 2.0_rt * static_cast<amrex::Real>(M_PI) / TT);
+                    time * 2.0_rt * std::numbers::pi_v<amrex::Real> / TT);
                 const amrex::Real cell_vol =
                     dx[0] * fac_x * dx[1] * fac_y * dx[2] * fac_z;
 
@@ -339,7 +341,7 @@ void ZalesakDiskScalarVel::output_error()
         std::ofstream f;
         f.open(m_output_fname.c_str(), std::ios_base::app);
         f << std::setprecision(12) << std::setw(m_w) << m_sim.time().new_time()
-          << std::setw(m_w) << SC_err << std::endl;
+          << std::setw(m_w) << SC_err << '\n';
         f.close();
     }
 }

@@ -1,3 +1,4 @@
+#include <numbers>
 #include "amr-wind/physics/multiphase/MultiPhase.H"
 #include "amr-wind/physics/multiphase/DamBreak.H"
 #include "amr-wind/CFDSim.H"
@@ -50,9 +51,9 @@ void DamBreak::initialize_fields(int level, const amrex::Geometry& geom)
     const amrex::Real eps = std::cbrt(2.0_rt * dx[0] * dx[1] * dx[2]);
 
     amrex::ParallelFor(
-        levelset, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-            const amrex::Real x = problo[0] + (i + 0.5_rt) * dx[0];
-            const amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
+        levelset, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
+            const amrex::Real x = problo[0] + ((i + 0.5_rt) * dx[0]);
+            const amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);
 
             if (x - xc < width && z - zc < height) {
                 phi_arrs[nbx](i, j, k) = amrex::min(width - x, height - z);
@@ -72,13 +73,13 @@ void DamBreak::initialize_fields(int level, const amrex::Geometry& geom)
             } else {
                 smooth_heaviside =
                     0.5_rt * (1.0_rt + phi_arrs[nbx](i, j, k) / eps +
-                              1.0_rt / static_cast<amrex::Real>(M_PI) *
+                              1.0_rt / std::numbers::pi_v<amrex::Real> *
                                   std::sin(
                                       phi_arrs[nbx](i, j, k) *
-                                      static_cast<amrex::Real>(M_PI) / eps));
+                                      std::numbers::pi_v<amrex::Real> / eps));
             }
-            rho_arrs[nbx](i, j, k) =
-                rho1 * smooth_heaviside + rho2 * (1.0_rt - smooth_heaviside);
+            rho_arrs[nbx](i, j, k) = (rho1 * smooth_heaviside) +
+                                     (rho2 * (1.0_rt - smooth_heaviside));
         });
     amrex::Gpu::streamSynchronize();
 }

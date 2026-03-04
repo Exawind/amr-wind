@@ -47,8 +47,7 @@ struct PostSolveOp<TKE>
         for (int lev = 0; lev < nlevels; ++lev) {
             const auto& field_arrs = field(lev).arrays();
             amrex::ParallelFor(
-                field(lev),
-                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                field(lev), [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                     field_arrs[nbx](i, j, k) =
                         (field_arrs[nbx](i, j, k) < 0.0_rt)
                             ? clip_value
@@ -60,8 +59,8 @@ struct PostSolveOp<TKE>
                     repo.get_int_field("terrain_blank");
                 const auto& blank_arrs = m_terrain_blank(lev).arrays();
                 amrex::ParallelFor(
-                    field(lev), [=] AMREX_GPU_DEVICE(
-                                    int nbx, int i, int j, int k) noexcept {
+                    field(lev),
+                    [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                         field_arrs[nbx](i, j, k) =
                             (blank_arrs[nbx](i, j, k) == 1)
                                 ? clip_value
@@ -91,11 +90,11 @@ struct FieldRegOp<TKE, Scheme>
             m_itype = FieldInterpolator::PiecewiseConstant;
             amrex::Print()
                 << "using PiecewiseConstant interpolation for TKE fillpatch"
-                << std::endl;
+                << '\n';
         } else {
             amrex::Print() << "using default CellConsLinear interpolation for "
                               "TKE fillpatch"
-                           << std::endl;
+                           << '\n';
         }
     }
 
@@ -154,9 +153,8 @@ struct DiffusionOp<TKE, Scheme> : public DiffSolverIface<typename TKE::MLDiffOp>
     {
         this->setup_operator(*this->m_applier, 0.0_rt, -1.0_rt, fstate);
 
-        auto tau_state = std::is_same<Scheme, fvm::Godunov>::value
-                             ? FieldState::New
-                             : fstate;
+        auto tau_state =
+            std::is_same_v<Scheme, fvm::Godunov> ? FieldState::New : fstate;
         amrex::MLMG mlmg(*this->m_applier);
         mlmg.apply(
             this->m_pdefields.diff_term.state(tau_state).vec_ptrs(),

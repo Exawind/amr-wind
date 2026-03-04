@@ -22,8 +22,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE TensorT<T>::TensorT(
 }
 
 template <typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void TensorT<T>::rows(
-    const VectorT<T>& x, const VectorT<T>& y, const VectorT<T>& z) noexcept
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void
+TensorT<T>::rows(const VectorT<T>& x, const VectorT<T>& y, const VectorT<T>& z)
 {
     // clang-format off
     vv[0] = x.x(); vv[1] = x.y(); vv[2] = x.z();
@@ -33,8 +33,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void TensorT<T>::rows(
 }
 
 template <typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void TensorT<T>::cols(
-    const VectorT<T>& x, const VectorT<T>& y, const VectorT<T>& z) noexcept
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void
+TensorT<T>::cols(const VectorT<T>& x, const VectorT<T>& y, const VectorT<T>& z)
 {
     // clang-format off
     vv[0] = x.x(); vv[1] = y.x(); vv[2] = z.x();
@@ -46,42 +46,42 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void TensorT<T>::cols(
 // clang-format off
 template <typename T>
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-VectorT<T> TensorT<T>::x() const noexcept
+VectorT<T> TensorT<T>::x() const 
 {
     return VectorT<T>{vv[0], vv[1], vv[2]};
 }
 
 template <typename T>
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-VectorT<T> TensorT<T>::y() const noexcept
+VectorT<T> TensorT<T>::y() const 
 {
     return VectorT<T>{vv[3], vv[4], vv[5]};
 }
 
 template <typename T>
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-VectorT<T> TensorT<T>::z() const noexcept
+VectorT<T> TensorT<T>::z() const 
 {
     return VectorT<T>{vv[6], vv[7], vv[8]};
 }
 
 template <typename T>
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-VectorT<T> TensorT<T>::cx() const noexcept
+VectorT<T> TensorT<T>::cx() const 
 {
     return VectorT<T>{vv[0], vv[3], vv[6]};
 }
 
 template <typename T>
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-VectorT<T> TensorT<T>::cy() const noexcept
+VectorT<T> TensorT<T>::cy() const 
 {
     return VectorT<T>{vv[1], vv[4], vv[7]};
 }
 
 template <typename T>
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-VectorT<T> TensorT<T>::cz() const noexcept
+VectorT<T> TensorT<T>::cz() const 
 {
     return VectorT<T>{vv[2], vv[5], vv[8]};
 }
@@ -227,17 +227,17 @@ quaternion(const Vector& axis, const amrex::Real angle)
     const amrex::Real q3 = sval * axis.z() / vmag;
 
     Tensor t;
-    t.xx() = q0 * q0 + q1 * q1 - q2 * q2 - q3 * q3;
+    t.xx() = (q0 * q0) + (q1 * q1) - (q2 * q2) - (q3 * q3);
     t.xy() = 2.0_rt * (q1 * q2 - q0 * q3);
     t.xz() = 2.0_rt * (q0 * q2 + q1 * q3);
 
     t.yx() = 2.0_rt * (q1 * q2 + q0 * q3);
-    t.yy() = q0 * q0 - q1 * q1 + q2 * q2 - q3 * q3;
+    t.yy() = (q0 * q0) - (q1 * q1) + (q2 * q2) - (q3 * q3);
     t.yz() = 2.0_rt * (q2 * q3 - q0 * q1);
 
     t.zx() = 2.0_rt * (q1 * q3 - q0 * q2);
     t.zy() = 2.0_rt * (q0 * q1 + q2 * q3);
-    t.zz() = q0 * q0 - q1 * q1 - q2 * q2 + q3 * q3;
+    t.zz() = (q0 * q0) - (q1 * q1) - (q2 * q2) + (q3 * q3);
 
     return t;
 }

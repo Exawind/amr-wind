@@ -1,3 +1,4 @@
+#include <numbers>
 #include "amr-wind/physics/multiphase/MultiPhase.H"
 #include "amr-wind/physics/multiphase/BreakingWaves.H"
 #include "amr-wind/utilities/trig_ops.H"
@@ -77,19 +78,20 @@ void BreakingWaves::initialize_fields(int level, const amrex::Geometry& geom)
 
     amrex::ParallelFor(
         levelset, m_levelset.num_grow(),
-        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-            const amrex::Real x = problo[0] + (i + 0.5_rt) * dx[0];
-            const amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
-            const amrex::Real kappa = 2.0_rt * utils::pi() / lambda;
+        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
+            const amrex::Real x = problo[0] + ((i + 0.5_rt) * dx[0]);
+            const amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);
+            const amrex::Real kappa =
+                2.0_rt * std::numbers::pi_v<amrex::Real> / lambda;
             const amrex::Real epsilon = alpha * kappa;
             // Compute free surface amplitude
             const amrex::Real eta =
                 water_level +
-                alpha * ((1.0_rt - 1.0_rt / 16.0_rt * epsilon * epsilon) *
-                             std::cos(kappa * x) +
-                         0.5_rt * epsilon * std::cos(2.0_rt * kappa * x) +
-                         3.0_rt / 8.0_rt * epsilon * epsilon *
-                             std::cos(3.0_rt * kappa * x));
+                (alpha * ((1.0_rt - 1.0_rt / 16.0_rt * epsilon * epsilon) *
+                              std::cos(kappa * x) +
+                          0.5_rt * epsilon * std::cos(2.0_rt * kappa * x) +
+                          3.0_rt / 8.0_rt * epsilon * epsilon *
+                              std::cos(3.0_rt * kappa * x)));
             phi_arrs[nbx](i, j, k) = eta - z;
             // compute velocities
             const amrex::Real g = 9.81_rt;
@@ -112,13 +114,14 @@ void BreakingWaves::initialize_fields(int level, const amrex::Geometry& geom)
                 smooth_heaviside = 0.0_rt;
             } else {
                 smooth_heaviside =
-                    0.5_rt *
-                    (1.0_rt + phi_arrs[nbx](i, j, k) / eps +
-                     1.0_rt / utils::pi() *
-                         std::sin(phi_arrs[nbx](i, j, k) * utils::pi() / eps));
+                    0.5_rt * (1.0_rt + phi_arrs[nbx](i, j, k) / eps +
+                              1.0_rt / std::numbers::pi_v<amrex::Real> *
+                                  std::sin(
+                                      phi_arrs[nbx](i, j, k) *
+                                      std::numbers::pi_v<amrex::Real> / eps));
             }
-            rho_arrs[nbx](i, j, k) =
-                rho1 * smooth_heaviside + rho2 * (1.0_rt - smooth_heaviside);
+            rho_arrs[nbx](i, j, k) = (rho1 * smooth_heaviside) +
+                                     (rho2 * (1.0_rt - smooth_heaviside));
         });
     amrex::Gpu::streamSynchronize();
 }

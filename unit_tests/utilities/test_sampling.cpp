@@ -1,3 +1,4 @@
+#include <numbers>
 #include "aw_test_utils/MeshTest.H"
 #include "amr-wind/utilities/sampling/Sampling.H"
 #include "amr-wind/utilities/sampling/SamplingContainer.H"
@@ -36,10 +37,10 @@ void init_field(amr_wind::Field& fld)
 
         amrex::ParallelFor(
             fld(lev), fld.num_grow(), ncomp,
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
-                const amrex::Real x = problo[0] + (i + offset) * dx[0];
-                const amrex::Real y = problo[1] + (j + offset) * dx[1];
-                const amrex::Real z = problo[2] + (k + offset) * dx[2];
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) {
+                const amrex::Real x = problo[0] + ((i + offset) * dx[0]);
+                const amrex::Real y = problo[1] + ((j + offset) * dx[1]);
+                const amrex::Real z = problo[2] + ((k + offset) * dx[2]);
                 farrs[nbx](i, j, k, n) = x + y + z;
             });
     }
@@ -56,7 +57,7 @@ void init_int_field(amr_wind::IntField& fld)
 
         amrex::ParallelFor(
             fld(lev), fld.num_grow(), ncomp,
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) {
                 farrs[nbx](i, j, k, n) = i + j + k;
             });
     }
@@ -140,7 +141,7 @@ void test_scontainer_impl(
     const int id_start = static_cast<int>(PType::NextID());
     const int proc_id = amrex::ParallelDescriptor::MyProc();
 
-    amrex::ParallelFor(npts, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
+    amrex::ParallelFor(npts, [=] AMREX_GPU_DEVICE(const int ip) {
         auto& pp = pstruct[ip];
         pp.id() = id_start + ip;
         pp.cpu() = proc_id;
@@ -486,7 +487,7 @@ TEST_F(SamplingTest, quadrature)
     namespace vs = amr_wind::vs;
     namespace su = amr_wind::sampling::sampling_utils;
     int ntheta = 5;
-    amrex::Real gammav = 0.25_rt * static_cast<amrex::Real>(M_PI) / 180.0_rt;
+    amrex::Real gammav = 0.25_rt * std::numbers::pi_v<amrex::Real> / 180.0_rt;
     std::vector<amrex::Real> weights = {
         0.0_rt, 0.0_rt, 0.0_rt, 0.0_rt, 0.0_rt, 0.0_rt, 0.0_rt,
         0.0_rt, 0.0_rt, 0.0_rt, 0.0_rt, 0.0_rt, 0.0_rt, 0.0_rt,

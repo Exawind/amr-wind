@@ -1,3 +1,4 @@
+#include <numbers>
 #include "amr-wind/physics/ConvectingTaylorVortex.H"
 #include "amr-wind/CFDSim.H"
 #include "AMReX_iMultiFab.H"
@@ -21,9 +22,9 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real UExact::operator()(
     const amrex::Real y,
     const amrex::Real t) const
 {
-    return u0 - std::cos(utils::pi() * (x - u0 * t)) *
-                    std::sin(utils::pi() * (y - v0 * t)) *
-                    std::exp(-2.0_rt * omega * t);
+    return u0 - (std::cos(std::numbers::pi_v<amrex::Real> * (x - u0 * t)) *
+                 std::sin(std::numbers::pi_v<amrex::Real> * (y - v0 * t)) *
+                 std::exp(-2.0_rt * omega * t));
 }
 
 AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real VExact::operator()(
@@ -34,9 +35,9 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real VExact::operator()(
     const amrex::Real y,
     const amrex::Real t) const
 {
-    return v0 + std::sin(utils::pi() * (x - u0 * t)) *
-                    std::cos(utils::pi() * (y - v0 * t)) *
-                    std::exp(-2.0_rt * omega * t);
+    return v0 + (std::sin(std::numbers::pi_v<amrex::Real> * (x - u0 * t)) *
+                 std::cos(std::numbers::pi_v<amrex::Real> * (y - v0 * t)) *
+                 std::exp(-2.0_rt * omega * t));
 }
 
 AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real WExact::operator()(
@@ -58,8 +59,8 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real GpxExact::operator()(
     const amrex::Real /*unused*/,
     const amrex::Real t) const
 {
-    return 0.5_rt * amr_wind::utils::pi() *
-           std::sin(2.0_rt * amr_wind::utils::pi() * (x - u0 * t)) *
+    return 0.5_rt * std::numbers::pi_v<amrex::Real> *
+           std::sin(2.0_rt * std::numbers::pi_v<amrex::Real> * (x - u0 * t)) *
            std::exp(-4.0_rt * omega * t);
 }
 
@@ -71,8 +72,8 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real GpyExact::operator()(
     const amrex::Real y,
     const amrex::Real t) const
 {
-    return 0.5_rt * amr_wind::utils::pi() *
-           std::sin(2.0_rt * amr_wind::utils::pi() * (y - v0 * t)) *
+    return 0.5_rt * std::numbers::pi_v<amrex::Real> *
+           std::sin(2.0_rt * std::numbers::pi_v<amrex::Real> * (y - v0 * t)) *
            std::exp(-4.0_rt * omega * t);
 }
 
@@ -111,7 +112,8 @@ ConvectingTaylorVortex::ConvectingTaylorVortex(const CFDSim& sim)
         amrex::Real nu;
         amrex::ParmParse pp("transport");
         pp.query("viscosity", nu);
-        m_omega = utils::pi() * utils::pi() * nu;
+        m_omega = std::numbers::pi_v<amrex::Real> *
+                  std::numbers::pi_v<amrex::Real> * nu;
     }
     if (amrex::ParallelDescriptor::IOProcessor()) {
         std::ofstream f;
@@ -119,7 +121,7 @@ ConvectingTaylorVortex::ConvectingTaylorVortex(const CFDSim& sim)
         f << std::setw(m_w) << "time" << std::setw(m_w) << "L2_u"
           << std::setw(m_w) << "L2_v" << std::setw(m_w) << "L2_w"
           << std::setw(m_w) << "L2_gpx" << std::setw(m_w) << "L2_gpy"
-          << std::setw(m_w) << "L2_gpz" << std::endl;
+          << std::setw(m_w) << "L2_gpz" << '\n';
         f.close();
     }
 }
@@ -169,25 +171,24 @@ void ConvectingTaylorVortex::initialize_fields(
             mesh_mapping ? ((*nu_coord_cc)(level).const_array(mfi))
                          : amrex::Array4<amrex::Real const>();
 
-        amrex::ParallelFor(
-            vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                amrex::Real x = mesh_mapping
-                                    ? (nu_cc(i, j, k, 0))
-                                    : (prob_lo[0] + (i + 0.5_rt) * dx[0]);
-                amrex::Real y = mesh_mapping
-                                    ? (nu_cc(i, j, k, 1))
-                                    : (prob_lo[1] + (j + 0.5_rt) * dx[1]);
+        amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+            amrex::Real x = mesh_mapping
+                                ? (nu_cc(i, j, k, 0))
+                                : (prob_lo[0] + ((i + 0.5_rt) * dx[0]));
+            amrex::Real y = mesh_mapping
+                                ? (nu_cc(i, j, k, 1))
+                                : (prob_lo[1] + ((j + 0.5_rt) * dx[1]));
 
-                vel(i, j, k, 0) = u_exact(u0, v0, omega, x, y, 0.0_rt);
-                vel(i, j, k, 1) = v_exact(u0, v0, omega, x, y, 0.0_rt);
-                vel(i, j, k, 2) = w_exact(u0, v0, omega, x, y, 0.0_rt);
+            vel(i, j, k, 0) = u_exact(u0, v0, omega, x, y, 0.0_rt);
+            vel(i, j, k, 1) = v_exact(u0, v0, omega, x, y, 0.0_rt);
+            vel(i, j, k, 2) = w_exact(u0, v0, omega, x, y, 0.0_rt);
 
-                if (activate_pressure) {
-                    gp(i, j, k, 0) = gpx_exact(u0, v0, omega, x, y, 0.0_rt);
-                    gp(i, j, k, 1) = gpy_exact(u0, v0, omega, x, y, 0.0_rt);
-                    gp(i, j, k, 2) = gpz_exact(u0, v0, omega, x, y, 0.0_rt);
-                }
-            });
+            if (activate_pressure) {
+                gp(i, j, k, 0) = gpx_exact(u0, v0, omega, x, y, 0.0_rt);
+                gp(i, j, k, 1) = gpy_exact(u0, v0, omega, x, y, 0.0_rt);
+                gp(i, j, k, 2) = gpz_exact(u0, v0, omega, x, y, 0.0_rt);
+            }
+        });
 
         if (activate_pressure) {
             const auto& nbx = mfi.nodaltilebox();
@@ -196,17 +197,17 @@ void ConvectingTaylorVortex::initialize_fields(
                 mesh_mapping ? ((*nu_coord_nd)(level).const_array(mfi))
                              : amrex::Array4<amrex::Real const>();
 
-            amrex::ParallelFor(
-                nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    amrex::Real x = mesh_mapping ? (nu_nd(i, j, k, 0))
-                                                 : (prob_lo[0] + i * dx[0]);
-                    amrex::Real y = mesh_mapping ? (nu_nd(i, j, k, 1))
-                                                 : (prob_lo[1] + j * dx[1]);
+            amrex::ParallelFor(nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+                amrex::Real x = mesh_mapping ? (nu_nd(i, j, k, 0))
+                                             : (prob_lo[0] + (i * dx[0]));
+                amrex::Real y = mesh_mapping ? (nu_nd(i, j, k, 1))
+                                             : (prob_lo[1] + (j * dx[1]));
 
-                    pres(i, j, k, 0) =
-                        -0.25_rt * (std::cos(2.0_rt * utils::pi() * x) +
-                                    std::cos(2.0_rt * utils::pi() * y));
-                });
+                pres(i, j, k, 0) =
+                    -0.25_rt *
+                    (std::cos(2.0_rt * std::numbers::pi_v<amrex::Real> * x) +
+                     std::cos(2.0_rt * std::numbers::pi_v<amrex::Real> * y));
+            });
         }
     }
 }
@@ -251,8 +252,7 @@ amrex::Real ConvectingTaylorVortex::compute_error(const Field& field)
                 m_repo.get_int_field("iblank_cell")(lev).const_arrays();
             const auto& imask_arrs = level_mask.arrays();
             amrex::ParallelFor(
-                field(lev),
-                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                field(lev), [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                     if (std::abs(iblank_arrs[nbx](i, j, k)) < 1) {
                         imask_arrs[nbx](i, j, k) = 0;
                     }
@@ -283,10 +283,10 @@ amrex::Real ConvectingTaylorVortex::compute_error(const Field& field)
 
                 amrex::Real x = mesh_mapping
                                     ? (nu_cc[box_no](i, j, k, 0))
-                                    : (prob_lo[0] + (i + 0.5_rt) * dx[0]);
+                                    : (prob_lo[0] + ((i + 0.5_rt) * dx[0]));
                 amrex::Real y = mesh_mapping
                                     ? (nu_cc[box_no](i, j, k, 1))
-                                    : (prob_lo[1] + (j + 0.5_rt) * dx[1]);
+                                    : (prob_lo[1] + ((j + 0.5_rt) * dx[1]));
                 amrex::Real fac_x =
                     mesh_mapping ? (fac_arr[box_no](i, j, k, 0)) : 1.0_rt;
                 amrex::Real fac_y =
@@ -329,8 +329,7 @@ void ConvectingTaylorVortex::output_error()
         f << std::setprecision(12) << std::setw(m_w) << m_time.new_time()
           << std::setw(m_w) << u_err << std::setw(m_w) << v_err
           << std::setw(m_w) << w_err << std::setw(m_w) << gpx_err
-          << std::setw(m_w) << gpy_err << std::setw(m_w) << gpz_err
-          << std::endl;
+          << std::setw(m_w) << gpy_err << std::setw(m_w) << gpz_err << '\n';
         f.close();
     }
 }

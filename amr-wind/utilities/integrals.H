@@ -21,7 +21,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real trapz(
     amrex::Real sum = 0.5_rt * (f(xa) + f(xb));
 
     for (int i = 1; i < n; i++) {
-        sum += f(xa + i * dx);
+        sum += f(xa + (i * dx));
     }
     return dx * sum;
 }

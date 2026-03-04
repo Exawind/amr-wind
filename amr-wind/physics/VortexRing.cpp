@@ -1,3 +1,4 @@
+#include <numbers>
 #include "amr-wind/physics/VortexRing.H"
 #include "amr-wind/CFDSim.H"
 #include "AMReX_ParmParse.H"
@@ -50,26 +51,28 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real CollidingRings::operator()(
 {
     amrex::Real dr1 = 0.0_rt;
     for (int i = 0; i < num_modes; ++i) {
-        dr1 +=
-            perturbation_amplitude *
-            std::cos(perturbation_modes[i] * theta - perturbation_phases_1[i]);
+        dr1 += perturbation_amplitude *
+               std::cos(
+                   (perturbation_modes[i] * theta) - perturbation_phases_1[i]);
     }
     amrex::Real dr2 = 0.0_rt;
     for (int i = 0; i < num_modes; ++i) {
-        dr2 +=
-            perturbation_amplitude *
-            std::cos(perturbation_modes[i] * theta - perturbation_phases_2[i]);
+        dr2 += perturbation_amplitude *
+               std::cos(
+                   (perturbation_modes[i] * theta) - perturbation_phases_2[i]);
     }
-    amrex::Real vortheta_1 = -Gamma / (utils::pi() * std::pow(delta, 2.0_rt)) *
-                             std::exp(
-                                 -(std::pow(z + dz / 2.0_rt, 2.0_rt) +
-                                   std::pow((r * (1.0_rt + dr1) - R), 2.0_rt)) /
-                                 std::pow(delta, 2.0_rt));
-    amrex::Real vortheta_2 = Gamma / (utils::pi() * std::pow(delta, 2.0_rt)) *
-                             std::exp(
-                                 -(std::pow(z - dz / 2.0_rt, 2.0_rt) +
-                                   std::pow((r * (1.0_rt + dr2) - R), 2.0_rt)) /
-                                 std::pow(delta, 2.0_rt));
+    amrex::Real vortheta_1 =
+        -Gamma / (std::numbers::pi_v<amrex::Real> * std::pow(delta, 2.0_rt)) *
+        std::exp(
+            -(std::pow(z + (dz / 2.0_rt), 2.0_rt) +
+              std::pow(((r * (1.0_rt + dr1)) - R), 2.0_rt)) /
+            std::pow(delta, 2.0_rt));
+    amrex::Real vortheta_2 =
+        Gamma / (std::numbers::pi_v<amrex::Real> * std::pow(delta, 2.0_rt)) *
+        std::exp(
+            -(std::pow(z - (dz / 2.0_rt), 2.0_rt) +
+              std::pow(((r * (1.0_rt + dr2)) - R), 2.0_rt)) /
+            std::pow(delta, 2.0_rt));
     return vortheta_1 + vortheta_2;
 }
 
@@ -173,21 +176,20 @@ void VortexRing::initialize_velocity(const VortexRingType& vorticity_theta)
             const auto& nbx = mfi.nodaltilebox();
             auto minusvort = (*minusvorticity)(level).array(mfi);
 
-            amrex::ParallelFor(
-                nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real x = problo[0] + i * dx[0];
-                    const amrex::Real y = problo[1] + j * dx[1];
-                    const amrex::Real z = problo[2] + k * dx[2];
-                    const amrex::Real r =
-                        std::sqrt(std::pow(x, 2.0_rt) + std::pow(y, 2.0_rt));
-                    const amrex::Real theta = std::atan2(y, x);
-                    const amrex::Real vortheta = vorticity_theta(
-                        r, theta, z, R, Gamma, delta, dz,
-                        perturbation_amplitude, num_modes, pm, pp1, pp2);
-                    minusvort(i, j, k, 0) = std::sin(theta) * vortheta;
-                    minusvort(i, j, k, 1) = -std::cos(theta) * vortheta;
-                    minusvort(i, j, k, 2) = 0.0_rt;
-                });
+            amrex::ParallelFor(nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+                const amrex::Real x = problo[0] + (i * dx[0]);
+                const amrex::Real y = problo[1] + (j * dx[1]);
+                const amrex::Real z = problo[2] + (k * dx[2]);
+                const amrex::Real r =
+                    std::sqrt(std::pow(x, 2.0_rt) + std::pow(y, 2.0_rt));
+                const amrex::Real theta = std::atan2(y, x);
+                const amrex::Real vortheta = vorticity_theta(
+                    r, theta, z, R, Gamma, delta, dz, perturbation_amplitude,
+                    num_modes, pm, pp1, pp2);
+                minusvort(i, j, k, 0) = std::sin(theta) * vortheta;
+                minusvort(i, j, k, 1) = -std::cos(theta) * vortheta;
+                minusvort(i, j, k, 2) = 0.0_rt;
+            });
         }
     }
 
@@ -261,8 +263,7 @@ void VortexRing::initialize_velocity(const VortexRingType& vorticity_theta)
         const amrex::Real facz = 0.25_rt * dxinv[2];
 
         amrex::ParallelFor(
-            velocity,
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            velocity, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 const amrex::Real dpsix_dy =
                     facy * (-psi_arrs[nbx](i, j, k, 0) -
                             psi_arrs[nbx](i + 1, j, k, 0) +

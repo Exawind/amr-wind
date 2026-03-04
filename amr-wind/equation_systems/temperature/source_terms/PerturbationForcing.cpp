@@ -62,10 +62,10 @@ void PerturbationForcing::operator()(
                     (has_terrain) ? height_arr(i, j, k, 0) : 0.0_rt;
                 const amrex::Real blank_arr_cell =
                     (has_terrain) ? blank_arr(i, j, k, 0) : 0.0_rt;
-                const amrex::Real x = prob_lo[0] + (i + 0.5_rt) * dx[0];
-                const amrex::Real y = prob_lo[1] + (j + 0.5_rt) * dx[1];
+                const amrex::Real x = prob_lo[0] + ((i + 0.5_rt) * dx[0]);
+                const amrex::Real y = prob_lo[1] + ((j + 0.5_rt) * dx[1]);
                 const amrex::Real z = amrex::max<amrex::Real>(
-                    prob_lo[2] + (k + 0.5_rt) * dx[2] - height_arr_cell,
+                    prob_lo[2] + ((k + 0.5_rt) * dx[2]) - height_arr_cell,
                     0.5_rt * dx[2]);
                 const amrex::RealVect point{x, y, z};
                 if (pert_box.contains(point)) {

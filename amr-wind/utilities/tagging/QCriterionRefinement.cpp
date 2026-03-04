@@ -68,7 +68,7 @@ void QCriterionRefinement::operator()(
     const auto qc_val = m_qc_value[level];
 
     amrex::ParallelFor(
-        mfab, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+        mfab, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
             // TODO: ignoring wall stencils for now
             const auto ux = 0.5_rt *
                             (vel_arrs[nbx](i + 1, j, k, 0) -
@@ -109,14 +109,14 @@ void QCriterionRefinement::operator()(
                              vel_arrs[nbx](i, j, k - 1, 2)) *
                             idx[2];
 
-            const auto S2 = ux * ux + vy * vy + wz * wz +
-                            0.5_rt * std::pow(uy + vx, 2.0_rt) +
-                            0.5_rt * std::pow(vz + wy, 2.0_rt) +
-                            0.5_rt * std::pow(wx + uz, 2.0_rt);
+            const auto S2 = (ux * ux) + (vy * vy) + (wz * wz) +
+                            (0.5_rt * std::pow(uy + vx, 2.0_rt)) +
+                            (0.5_rt * std::pow(vz + wy, 2.0_rt)) +
+                            (0.5_rt * std::pow(wx + uz, 2.0_rt));
 
-            const auto W2 = 0.5_rt * std::pow(uy - vx, 2.0_rt) +
-                            0.5_rt * std::pow(vz - wy, 2.0_rt) +
-                            0.5_rt * std::pow(wx - uz, 2.0_rt);
+            const auto W2 = (0.5_rt * std::pow(uy - vx, 2.0_rt)) +
+                            (0.5_rt * std::pow(vz - wy, 2.0_rt)) +
+                            (0.5_rt * std::pow(wx - uz, 2.0_rt));
 
             const auto qc = 0.5_rt * (W2 - S2);
             const auto qc_nondim =

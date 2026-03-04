@@ -74,7 +74,7 @@ void amr_wind::nodal_projection::apply_dirichlet_vel(
 
     amrex::ParallelFor(
         mf_velocity, mf_velocity.n_grow, mf_velocity.n_comp,
-        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
+        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) {
             // Pure solid-body points
             if (iblank[nbx](i, j, k) == 0) {
                 // Set velocity to 0 for now
@@ -224,7 +224,7 @@ void incflo::ApplyProjection(
 
             amrex::ParallelFor(
                 velocity(lev),
-                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                     const amrex::Real soverrho =
                         scaling_factor / rho_arrs[nbx](i, j, k);
                     amrex::Real fac_x =
@@ -285,8 +285,7 @@ void incflo::ApplyProjection(
 
             amrex::ParallelFor(
                 sigma[lev], amrex::IntVect(0), ncomp,
-                [=] AMREX_GPU_DEVICE(
-                    int nbx, int i, int j, int k, int n) noexcept {
+                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) {
                     amrex::Real fac_cc =
                         mesh_mapping ? (fac_arrs[nbx](i, j, k, n)) : 1.0_rt;
                     amrex::Real det_j =
@@ -453,21 +452,21 @@ void incflo::ApplyProjection(
             if (incremental) {
                 amrex::ParallelFor(
                     tbx, AMREX_SPACEDIM,
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) {
                         gp_lev(i, j, k, n) += gp_proj(i, j, k, n);
                     });
                 amrex::ParallelFor(
-                    nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
                         p_lev(i, j, k) += p_proj(i, j, k);
                     });
             } else {
                 amrex::ParallelFor(
                     tbx, AMREX_SPACEDIM,
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) {
                         gp_lev(i, j, k, n) = gp_proj(i, j, k, n);
                     });
                 amrex::ParallelFor(
-                    nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
                         p_lev(i, j, k) = p_proj(i, j, k);
                     });
             }

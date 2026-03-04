@@ -20,7 +20,7 @@ struct BurggrafLid
         int idir{0};
 
         AMREX_GPU_DEVICE
-        inline void operator()(
+        void operator()(
             const amrex::IntVect& iv,
             amrex::Array4<amrex::Real> const& field,
             amrex::GeometryData const& geom,
@@ -32,7 +32,7 @@ struct BurggrafLid
         {
             const auto* problo = geom.ProbLo();
             const auto* dx = geom.CellSize();
-            const auto x = problo[idir] + (iv[idir] + 0.5_rt) * dx[idir];
+            const auto x = problo[idir] + ((iv[idir] + 0.5_rt) * dx[idir]);
             amrex::Real val =
                 16.0_rt * (std::pow(x, 4.0_rt) - 2.0_rt * std::pow(x, 3.0_rt) +
                            std::pow(x, 2.0_rt));
@@ -47,7 +47,7 @@ struct BurggrafLid
 
     explicit BurggrafLid(const Field& fld);
 
-    DeviceType device_instance() const { return m_op; }
+    [[nodiscard]] DeviceType device_instance() const { return m_op; }
 
     DeviceOp m_op;
 };

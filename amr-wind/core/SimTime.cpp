@@ -110,24 +110,23 @@ bool SimTime::new_timestep()
     bool continue_sim = continue_simulation();
 
     if (m_is_init && (m_verbose >= 0)) {
-        amrex::Print() << "\nBegin simulation: " << std::endl;
+        amrex::Print() << "\nBegin simulation: " << '\n';
         if ((m_stop_time > 0) && (m_stop_time_index >= 0)) {
             amrex::Print() << "  Run until " << m_stop_time << " sec. or "
-                           << m_stop_time_index << " timesteps" << std::endl;
+                           << m_stop_time_index << " timesteps" << '\n';
         } else if (m_stop_time > 0) {
             amrex::Print() << "  Run till " << m_stop_time << " seconds "
-                           << std::endl;
+                           << '\n';
         } else if (m_stop_time_index >= 0) {
             amrex::Print() << "  Run for " << m_stop_time_index << " timesteps"
-                           << std::endl;
+                           << '\n';
         }
         if (m_adaptive) {
             amrex::Print() << "  Adaptive timestepping with max. CFL = "
-                           << m_max_cfl << std::endl;
+                           << m_max_cfl << '\n';
         } else {
             amrex::Print() << "  Fixed timestepping with dt = " << m_fixed_dt
-                           << "; max. CFL from inputs = " << m_max_cfl
-                           << std::endl;
+                           << "; max. CFL from inputs = " << m_max_cfl << '\n';
         }
     }
 
@@ -163,7 +162,7 @@ void SimTime::set_current_cfl(
     bool use_init_dt{false};
     const amrex::Real cd_cfl = conv_cfl + diff_cfl;
     const amrex::Real cfl_unit_time =
-        cd_cfl + std::sqrt(cd_cfl * cd_cfl + 4.0_rt * src_cfl);
+        cd_cfl + std::sqrt((cd_cfl * cd_cfl) + (4.0_rt * src_cfl));
     if ((m_adaptive && !m_is_init) &&
         (cfl_unit_time < std::numeric_limits<amrex::Real>::epsilon())) {
         // First timestep, starting from t = 0, is special case
@@ -271,13 +270,12 @@ void SimTime::set_current_cfl(
 
     // Print statements for during initialization
     if (m_is_init && m_verbose >= 0) {
-        amrex::Print() << "dt: " << std::setprecision(6) << m_dt[0]
-                       << std::endl;
+        amrex::Print() << "dt: " << std::setprecision(6) << m_dt[0] << '\n';
         amrex::Print() << "CFL: " << std::setprecision(6) << m_current_cfl
                        << " (conv: " << std::setprecision(6) << m_conv_cfl
                        << " diff: " << std::setprecision(6) << m_diff_cfl
                        << " src: " << std::setprecision(6) << m_src_cfl << " )"
-                       << std::endl;
+                       << '\n';
     }
 }
 
@@ -290,7 +288,7 @@ void SimTime::advance_time()
     if (m_verbose >= 0) {
         amrex::Print() << "Step: " << m_time_index << " dt: " << m_dt[0]
                        << " Time: " << m_cur_time << " to " << m_new_time
-                       << std::endl;
+                       << '\n';
         amrex::Print() << "CFL: " << std::setprecision(6)
                        << m_current_cfl * factor
                        << " (conv: " << std::setprecision(6)
@@ -298,7 +296,7 @@ void SimTime::advance_time()
                        << " diff: " << std::setprecision(6)
                        << m_diff_cfl * factor
                        << " src: " << std::setprecision(6) << m_src_cfl * factor
-                       << " )" << std::endl;
+                       << " )" << '\n';
     }
     // If user has specified fixed delta_t then issue a warning if the timestep
     // is larger than the delta_t determined from max. CFL considerations.
@@ -310,7 +308,7 @@ void SimTime::advance_time()
         amrex::Print() << "WARNING: fixed_dt does not satisfy CFL condition.\n"
                        << "Max. CFL: " << m_max_cfl
                        << " => dt: " << std::setprecision(6) << m_dt_calc
-                       << "; dt_inp: " << m_fixed_dt << std::endl;
+                       << "; dt_inp: " << m_fixed_dt << '\n';
     }
 }
 
@@ -354,7 +352,7 @@ bool SimTime::write_plot_file() const
          ((m_time_index - m_plt_start_index) % m_plt_interval == 0)) ||
         ((m_plt_t_interval > 0.0_rt) &&
          (m_new_time + tol - m_plt_t_delay >= 0.0_rt) &&
-         ((m_new_time - m_plt_start_time + tol) / m_plt_t_interval -
+         (((m_new_time - m_plt_start_time + tol) / m_plt_t_interval) -
               std::floor(
                   (m_new_time - m_plt_start_time + tol) / m_plt_t_interval) <
           m_dt[0] / m_plt_t_interval)));
@@ -370,7 +368,7 @@ bool SimTime::write_checkpoint() const
          ((m_time_index - m_chkpt_start_index) % m_chkpt_interval == 0)) ||
         ((m_chkpt_t_interval > 0.0_rt) &&
          (m_new_time + tol - m_chkpt_t_delay >= 0.0_rt) &&
-         ((m_new_time - m_chkpt_start_time + tol) / m_chkpt_t_interval -
+         (((m_new_time - m_chkpt_start_time + tol) / m_chkpt_t_interval) -
               std::floor(
                   (m_new_time - m_chkpt_start_time + tol) /
                   m_chkpt_t_interval) <
@@ -385,7 +383,7 @@ bool SimTime::write_last_plot_file() const
         ((m_plt_interval > 0) &&
          ((m_time_index - m_plt_start_index) % m_plt_interval != 0)) ||
         ((m_plt_t_interval > 0.0_rt) &&
-         ((m_new_time - m_plt_start_time + tol) / m_plt_t_interval -
+         (((m_new_time - m_plt_start_time + tol) / m_plt_t_interval) -
               std::floor(
                   (m_new_time - m_plt_start_time + tol) / m_plt_t_interval) >=
           m_dt[0] / m_plt_t_interval)));
@@ -399,7 +397,7 @@ bool SimTime::write_last_checkpoint() const
         ((m_chkpt_interval > 0) &&
          ((m_time_index - m_chkpt_start_index) % m_chkpt_interval != 0)) ||
         ((m_chkpt_t_interval > 0.0_rt) &&
-         ((m_new_time - m_chkpt_start_time + tol) / m_chkpt_t_interval -
+         (((m_new_time - m_chkpt_start_time + tol) / m_chkpt_t_interval) -
               std::floor(
                   (m_new_time - m_chkpt_start_time + tol) /
                   m_chkpt_t_interval) >=

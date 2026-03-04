@@ -1,3 +1,4 @@
+#include <numbers>
 #include "amr-wind/immersed_boundary/bluff_body/bluff_body_ops.H"
 #include "amr-wind/core/MultiParser.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
@@ -54,19 +55,25 @@ void apply_mms_vel(CFDSim& sim)
         const auto& varrs = velocity(lev).arrays();
         amrex::ParallelFor(
             levelset(lev), levelset.num_grow(),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                const amrex::Real x = problo[0] + (i + 0.5_rt) * dx[0];
-                const amrex::Real y = problo[1] + (j + 0.5_rt) * dx[1];
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
+                const amrex::Real x = problo[0] + ((i + 0.5_rt) * dx[0]);
+                const amrex::Real y = problo[1] + ((j + 0.5_rt) * dx[1]);
 
                 if (phi_arrs[nbx](i, j, k) <= 0) {
                     varrs[nbx](i, j, k, 0) =
-                        u0 - std::cos(utils::pi() * (x - u0 * t)) *
-                                 std::sin(utils::pi() * (y - v0 * t)) *
-                                 std::exp(-2.0_rt * omega * t);
+                        u0 -
+                        (std::cos(
+                             std::numbers::pi_v<amrex::Real> * (x - u0 * t)) *
+                         std::sin(
+                             std::numbers::pi_v<amrex::Real> * (y - v0 * t)) *
+                         std::exp(-2.0_rt * omega * t));
                     varrs[nbx](i, j, k, 1) =
-                        v0 + std::sin(utils::pi() * (x - u0 * t)) *
-                                 std::cos(utils::pi() * (y - v0 * t)) *
-                                 std::exp(-2.0_rt * omega * t);
+                        v0 +
+                        (std::sin(
+                             std::numbers::pi_v<amrex::Real> * (x - u0 * t)) *
+                         std::cos(
+                             std::numbers::pi_v<amrex::Real> * (y - v0 * t)) *
+                         std::exp(-2.0_rt * omega * t));
                     varrs[nbx](i, j, k, 2) = 0.0_rt;
                 }
             });
@@ -101,8 +108,7 @@ void apply_dirichlet_vel(CFDSim& sim, const amrex::Vector<amrex::Real>& vel_bc)
         const amrex::Real velz = vel_bc[2];
 
         amrex::ParallelFor(
-            levelset(lev),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            levelset(lev), [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 // Pure solid-body points
                 if (phi_arrs[nbx](i, j, k) < -phi_b) {
                     varrs[nbx](i, j, k, 0) = velx;

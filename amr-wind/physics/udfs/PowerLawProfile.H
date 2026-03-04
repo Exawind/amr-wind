@@ -27,7 +27,7 @@ struct PowerLawProfile
         amrex::RealArray uvec;
 
         AMREX_GPU_DEVICE
-        inline void operator()(
+        void operator()(
             const amrex::IntVect& iv,
             amrex::Array4<amrex::Real> const& field,
             amrex::GeometryData const& geom,
@@ -39,7 +39,7 @@ struct PowerLawProfile
         {
             const auto* problo = geom.ProbLo();
             const auto* dx = geom.CellSize();
-            const auto zco = problo[idir] + (iv[idir] + 0.5_rt) * dx[idir];
+            const auto zco = problo[idir] + ((iv[idir] + 0.5_rt) * dx[idir]);
 
             const amrex::Real zeff = zco - zoffset;
             amrex::Real pfac =
@@ -57,7 +57,7 @@ struct PowerLawProfile
 
     explicit PowerLawProfile(const Field& fld);
 
-    DeviceType device_instance() const { return m_op; }
+    [[nodiscard]] DeviceType device_instance() const { return m_op; }
 
     DeviceOp m_op;
 

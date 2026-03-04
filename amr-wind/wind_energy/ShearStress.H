@@ -1,5 +1,5 @@
-#ifndef ShearStress_H
-#define ShearStress_H
+#ifndef SHEARSTRESS_H
+#define SHEARSTRESS_H
 
 #include "amr-wind/wind_energy/MOData.H"
 #include "AMReX_REAL.H"
@@ -163,7 +163,7 @@ struct ShearStressMoeng
     amrex::Real wspd_mean;
     amrex::Real theta_surface;
     amrex::Real theta_mean;
-    amrex::Real term1;
+    amrex::Real term1; // NOLINT(modernize-use-default-member-init)
 };
 
 struct ShearStressDonelan
@@ -184,7 +184,7 @@ struct ShearStressDonelan
         if (wspd_mean <= 5.0_rt) {
             Cd = 0.001_rt;
         } else if (wspd_mean < 25.0_rt && wspd_mean > 5.0_rt) {
-            Cd = 0.001_rt + c * (wspd_mean - 5.0_rt);
+            Cd = 0.001_rt + (c * (wspd_mean - 5.0_rt));
         } else {
             Cd = 0.0024_rt;
         }
@@ -200,7 +200,7 @@ struct ShearStressDonelan
         if (wspd_mean <= 5) {
             Cd = 0.001_rt;
         } else if (wspd_mean < 25.0_rt && wspd_mean > 5.0_rt) {
-            Cd = 0.001_rt + c * (wspd_mean - 5.0_rt);
+            Cd = 0.001_rt + (c * (wspd_mean - 5.0_rt));
         } else {
             Cd = 0.0024_rt;
         }

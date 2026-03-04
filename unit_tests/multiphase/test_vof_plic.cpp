@@ -104,9 +104,9 @@ void initialize_volume_fractions(
 {
     amrex::ParallelFor(grow(bx, 1), [=] AMREX_GPU_DEVICE(int i, int j, int k) {
         vof_arr(i, j, k) =
-            0.13_rt * (static_cast<amrex::Real>(i) - 1.5_rt) +
-            0.04_rt * std::pow(static_cast<amrex::Real>(j) - 1.0_rt, 2.0_rt) +
-            0.01_rt * std::pow(static_cast<amrex::Real>(k) - 2.0_rt, 3.0_rt) +
+            (0.13_rt * (static_cast<amrex::Real>(i) - 1.5_rt)) +
+            (0.04_rt * std::pow(static_cast<amrex::Real>(j) - 1.0_rt, 2.0_rt)) +
+            (0.01_rt * std::pow(static_cast<amrex::Real>(k) - 2.0_rt, 3.0_rt)) +
             0.5_rt;
     });
 }
@@ -211,7 +211,7 @@ amrex::Real normal_vector_test_impl(amr_wind::Field& vof, const int dir)
                 -> amrex::Real {
                 amrex::Real error = 0.0_rt;
 
-                amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
+                amrex::Loop(bx, [=, &error](int i, int j, int k) {
                     amrex::Real mx, my, mz;
                     amr_wind::multiphase::mixed_youngs_central_normal(
                         i, j, k, vof_arr, mx, my, mz);
@@ -249,7 +249,7 @@ amrex::Real normal_vector_neumann_test_impl(
                 amrex::Array4<int const> const& iblank) -> amrex::Real {
                 amrex::Real error = 0.0_rt;
 
-                amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
+                amrex::Loop(bx, [=, &error](int i, int j, int k) {
                     int ibdy =
                         (iblank(i, j, k) != iblank(i - 1, j, k)) ? -1 : 0;
                     int jbdy =
@@ -313,7 +313,7 @@ amrex::Real normal_vector_neumann_test_impl(
                 amrex::Array4<int const> const& iblank) -> amrex::Real {
                 amrex::Real error = 0.0_rt;
 
-                amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
+                amrex::Loop(bx, [=, &error](int i, int j, int k) {
                     int ibdy =
                         (iblank(i, j, k) != iblank(i - 1, j, k)) ? -1 : 0;
                     int jbdy =
@@ -375,7 +375,7 @@ amrex::Real fit_plane_test_impl(amr_wind::Field& vof, const int dir)
                 -> amrex::Real {
                 amrex::Real error = 0.0_rt;
 
-                amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
+                amrex::Loop(bx, [=, &error](int i, int j, int k) {
                     int ii = (dir != 0 ? i : 0);
                     int jj = (dir != 1 ? j : 0);
                     int kk = (dir != 2 ? k : 0);
@@ -416,7 +416,7 @@ amrex::Real fit_plane_test_impl_h(
                 -> amrex::Real {
                 amrex::Real error = 0.0_rt;
 
-                amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
+                amrex::Loop(bx, [=, &error](int i, int j, int k) {
                     int ii = (dir == 0 ? i : (dir == 1 ? j : k));
                     // Check multiphase cells
                     if (ii == 1) {
@@ -459,7 +459,8 @@ TEST_F(VOFOpTest, volume_intercept)
         vof = amrex::max<amrex::Real>(
             std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt,
             amrex::min<amrex::Real>(
-                1.0_rt - std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt,
+                1.0_rt -
+                    (std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt),
                 vof));
         // Get intercept value and check for nan
         amrex::Real alpha =
@@ -578,7 +579,8 @@ TEST_F(VOFOpTest, interface_plane)
         vof_val = amrex::max<amrex::Real>(
             std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt,
             amrex::min<amrex::Real>(
-                1.0_rt - std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt,
+                1.0_rt -
+                    (std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt),
                 vof_val));
         // in x
         init_vof_h(vof, vof_val, 0);

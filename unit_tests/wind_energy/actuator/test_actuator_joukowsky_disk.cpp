@@ -182,9 +182,7 @@ struct ComputeForceOp<::amr_wind_tests::Joukowsky, ActSrcDisk>
 template <>
 struct ProcessOutputsOp<::amr_wind_tests::Joukowsky, ActSrcDisk>
 {
-    ProcessOutputsOp<::amr_wind_tests::Joukowsky, ActSrcDisk>(
-        ::amr_wind_tests::Joukowsky::DataType& /**/)
-    {}
+    ProcessOutputsOp(::amr_wind_tests::Joukowsky::DataType& /**/) {}
     void operator()(::amr_wind_tests::Joukowsky::DataType& /*data*/) {}
     void read_io_options(const utils::ActParser& /**/) {}
     void prepare_outputs(const std::string& /**/) {}

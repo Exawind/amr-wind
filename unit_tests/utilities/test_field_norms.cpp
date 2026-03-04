@@ -27,7 +27,7 @@ void init_velocity(
 
         amrex::ParallelFor(
             vel_fld(lev), vel_fld.num_grow(), vel_fld.num_comp(),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) {
                 // Mix positive and negative as check on L2 norm
                 farrs[nbx](i, j, k, n) =
                     fac * (i % 2 == 0 ? vels[n] : -vels[n]);
@@ -51,7 +51,7 @@ void init_velocity(
 
         amrex::ParallelFor(
             vel_fld(lev), vel_fld.num_grow(), vel_fld.num_comp(),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) {
                 // Mix positive and negative as check on L2 norm
                 farrs[nbx](i, j, k, n) =
                     (i % 2 == 0 ? 1.0_rt - var_f : 1.0_rt + var_f) * vels[n];
@@ -694,7 +694,7 @@ TEST_F(FieldNormsTest, norm_vector_magnitude)
     const amrex::Real l2_factor = std::sqrt(
         0.5_rt * ((1.0_rt - factor) * (1.0_rt - factor) +
                   (1.0_rt + factor) * (1.0_rt + factor)));
-    const amrex::Real vmag = std::sqrt(m_u * m_u + m_v * m_v + m_w * m_w);
+    const amrex::Real vmag = std::sqrt((m_u * m_u) + (m_v * m_v) + (m_w * m_w));
     amrex::Real vmag_norm = vmag * l2_factor;
     tool_l2.check_output(vmag_norm);
 

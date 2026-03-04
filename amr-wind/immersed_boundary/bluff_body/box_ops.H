@@ -76,40 +76,46 @@ struct InitDataOp<Box>
                 const amrex::Real w = wdata.width;
                 const amrex::Real h = wdata.height;
                 amrex::ParallelFor(
-                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        const amrex::Real x = problo[0] + (i + 0.5_rt) * dx[0];
-                        const amrex::Real y = problo[1] + (j + 0.5_rt) * dx[1];
-                        const amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
+                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+                        const amrex::Real x =
+                            problo[0] + ((i + 0.5_rt) * dx[0]);
+                        const amrex::Real y =
+                            problo[1] + ((j + 0.5_rt) * dx[1]);
+                        const amrex::Real z =
+                            problo[2] + ((k + 0.5_rt) * dx[2]);
 
                         amrex::Real phi_loc = 0;
                         if ((std::abs(x - x0) <= 0.5_rt * l) &&
                             (std::abs(y - y0) <= 0.5_rt * w) &&
                             (std::abs(z - z0) <= 0.5_rt * h)) {
                             phi_loc = amrex::max<amrex::Real>(
-                                std::abs(x - x0) - 0.5_rt * l,
+                                std::abs(x - x0) - (0.5_rt * l),
                                 amrex::max<amrex::Real>(
-                                    std::abs(y - y0) - 0.5_rt * w,
-                                    std::abs(z - z0) - 0.5_rt * h));
+                                    std::abs(y - y0) - (0.5_rt * w),
+                                    std::abs(z - z0) - (0.5_rt * h)));
                         } else {
                             phi_loc = amrex::min<amrex::Real>(
-                                std::abs(std::abs(x - x0) - 0.5_rt * l),
+                                std::abs(std::abs(x - x0) - (0.5_rt * l)),
                                 amrex::min<amrex::Real>(
-                                    std::abs(std::abs(y - y0) - 0.5_rt * w),
-                                    std::abs(std::abs(z - z0) - 0.5_rt * h)));
+                                    std::abs(std::abs(y - y0) - (0.5_rt * w)),
+                                    std::abs(std::abs(z - z0) - (0.5_rt * h))));
                         }
                         phi(i, j, k) =
                             amrex::min<amrex::Real>(phi_loc, phi(i, j, k));
                     });
                 const auto& nbx = mfi.nodaltilebox();
                 amrex::ParallelFor(
-                    nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        const amrex::Real x = problo[0] + i * dx[0];
-                        const amrex::Real y = problo[1] + j * dx[1];
-                        const amrex::Real z = problo[2] + k * dx[2];
+                    nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+                        const amrex::Real x = problo[0] + (i * dx[0]);
+                        const amrex::Real y = problo[1] + (j * dx[1]);
+                        const amrex::Real z = problo[2] + (k * dx[2]);
 
-                        if ((std::abs(x - x0) <= 0.5_rt * l + 0.5_rt * dx[0]) &&
-                            (std::abs(y - y0) <= 0.5_rt * w + 0.5_rt * dx[1]) &&
-                            (std::abs(z - z0) <= 0.5_rt * h + 0.5_rt * dx[2])) {
+                        if ((std::abs(x - x0) <=
+                             (0.5_rt * l) + (0.5_rt * dx[0])) &&
+                            (std::abs(y - y0) <=
+                             (0.5_rt * w) + (0.5_rt * dx[1])) &&
+                            (std::abs(z - z0) <=
+                             (0.5_rt * h) + (0.5_rt * dx[2]))) {
                             epsilon_node(i, j, k) = 0;
                         }
                     });

@@ -125,7 +125,7 @@ public:
     }
 
     //! Determine if output will happen this time step
-    bool do_output_now(
+    [[nodiscard]] bool do_output_now(
         const int ntime,
         const amrex::Real time,
         const amrex::Real dt,
@@ -141,17 +141,26 @@ public:
             (m_out_time_interval > 0.0_rt) &&
             ((time + tol - m_out_time_delay >= 0.0_rt) &&
              (time + tol -
-                  std::floor((time + tol) / m_out_time_interval) *
-                      m_out_time_interval <
+                  (std::floor((time + tol) / m_out_time_interval) *
+                   m_out_time_interval) <
               dt));
 
         return (step_based || time_based);
     }
 
-    amrex::Real output_time_interval() const { return m_out_time_interval; }
-    amrex::Real output_time_delay() const { return m_out_time_delay; }
-    amrex::Real enforce_dt_tolerance() const { return m_enforce_dt_tol; }
-    bool enforce_dt() const { return m_enforce_dt; }
+    [[nodiscard]] amrex::Real output_time_interval() const
+    {
+        return m_out_time_interval;
+    }
+    [[nodiscard]] amrex::Real output_time_delay() const
+    {
+        return m_out_time_delay;
+    }
+    [[nodiscard]] amrex::Real enforce_dt_tolerance() const
+    {
+        return m_enforce_dt_tol;
+    }
+    [[nodiscard]] bool enforce_dt() const { return m_enforce_dt; }
 
 protected:
     //! Time step interval for output

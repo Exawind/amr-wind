@@ -24,7 +24,7 @@ struct TwoLayer
         amrex::Real init_perturb{1.0_rt}; // initial perturbation for testing
 
         AMREX_GPU_DEVICE
-        inline void operator()(
+        void operator()(
             const amrex::IntVect& iv,
             amrex::Array4<amrex::Real> const& field,
             amrex::GeometryData const& geom,
@@ -36,7 +36,7 @@ struct TwoLayer
         {
             const auto* problo = geom.ProbLo();
             const auto* dx = geom.CellSize();
-            const auto z = problo[2] + (iv[2] + 0.5_rt) * dx[2];
+            const auto z = problo[2] + ((iv[2] + 0.5_rt) * dx[2]);
 
             amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> vel;
             if (z >= z_part) {
@@ -59,7 +59,7 @@ struct TwoLayer
 
     explicit TwoLayer(const Field& fld);
 
-    DeviceType device_instance() const { return m_op; }
+    [[nodiscard]] DeviceType device_instance() const { return m_op; }
 
     DeviceOp m_op;
 };

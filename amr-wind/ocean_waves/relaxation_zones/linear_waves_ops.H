@@ -33,7 +33,7 @@ struct ReadInputsOp<LinearWaves>
         if (!pp.contains("wave_phase_offset_radians")) {
             pp.query("wave_phase_offset_degrees", wdata.wave_phase_offset);
             wdata.wave_phase_offset *=
-                static_cast<amrex::Real>(M_PI) / 180.0_rt;
+                std::numbers::pi_v<amrex::Real> / 180.0_rt;
         } else if (pp.contains("wave_phase_offset_degrees")) {
             amrex::Abort(
                 "ReadInputsOp<LinearWaves> : wave phase offset is specified in "
@@ -86,20 +86,20 @@ struct InitDataOp<LinearWaves>
 
         amrex::ParallelFor(
             velocity(level), amrex::IntVect(3),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                const amrex::Real x = problo[0] + (i + 0.5_rt) * dx[0];
-                const amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
+                const amrex::Real x = problo[0] + ((i + 0.5_rt) * dx[0]);
+                const amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);
 
                 const amrex::Real wave_number =
-                    2.0_rt * static_cast<amrex::Real>(M_PI) / wave_length;
+                    2.0_rt * std::numbers::pi_v<amrex::Real> / wave_length;
                 const amrex::Real omega = std::pow(
                     wave_number * g * std::tanh(wave_number * water_depth),
                     0.5_rt);
-                const amrex::Real phase = wave_number * x - phase_offset;
+                const amrex::Real phase = (wave_number * x) - phase_offset;
 
                 // Wave profile
                 const amrex::Real eta_w =
-                    wave_height / 2.0_rt * std::cos(phase) + zero_sea_level;
+                    (wave_height / 2.0_rt * std::cos(phase)) + zero_sea_level;
                 const amrex::Real u_w =
                     omega * wave_height / 2.0_rt *
                     std::cosh(
@@ -127,7 +127,7 @@ struct InitDataOp<LinearWaves>
 
                 const amrex::Real phi = local_profile[3] - z;
                 const amrex::Real cell_length_2D =
-                    std::sqrt(dx[0] * dx[0] + dx[2] * dx[2]);
+                    std::sqrt((dx[0] * dx[0]) + (dx[2] * dx[2]));
 
                 if (phi + cell_length_2D >= 0) {
                     vel[nbx](i, j, k, 0) = current + local_profile[0];
@@ -176,35 +176,36 @@ struct UpdateTargetFieldsOp<LinearWaves>
 
             amrex::ParallelFor(
                 ow_velocity(lev), amrex::IntVect(3),
-                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                     const amrex::Real x = amrex::max<amrex::Real>(
-                        problo[0], problo[0] + (i + 0.5_rt) * dx[0]);
-                    const amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
+                        problo[0], problo[0] + ((i + 0.5_rt) * dx[0]));
+                    const amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);
 
                     const amrex::Real wave_number =
-                        2.0_rt * static_cast<amrex::Real>(M_PI) / wave_length;
+                        2.0_rt * std::numbers::pi_v<amrex::Real> / wave_length;
                     const amrex::Real omega = std::pow(
                         wave_number * g * std::tanh(wave_number * water_depth),
                         0.5_rt);
                     const amrex::Real phase =
-                        wave_number * (x - current * time) - omega * time -
+                        (wave_number * (x - current * time)) - (omega * time) -
                         phase_offset;
 
                     const amrex::Real eta =
-                        wave_height / 2.0_rt * std::cos(phase) + zero_sea_level;
+                        (wave_height / 2.0_rt * std::cos(phase)) +
+                        zero_sea_level;
 
                     phi[nbx](i, j, k) = eta - z;
 
                     const amrex::Real cell_length_2D =
-                        std::sqrt(dx[0] * dx[0] + dx[2] * dx[2]);
+                        std::sqrt((dx[0] * dx[0]) + (dx[2] * dx[2]));
                     if (phi[nbx](i, j, k) + cell_length_2D >= 0) {
                         vel[nbx](i, j, k, 0) =
-                            omega * wave_height / 2.0_rt *
-                                std::cosh(
-                                    wave_number *
-                                    (z - zero_sea_level + water_depth)) /
-                                std::sinh(wave_number * water_depth) *
-                                std::cos(phase) +
+                            (omega * wave_height / 2.0_rt *
+                             std::cosh(
+                                 wave_number *
+                                 (z - zero_sea_level + water_depth)) /
+                             std::sinh(wave_number * water_depth) *
+                             std::cos(phase)) +
                             current;
                         vel[nbx](i, j, k, 1) = 0.0_rt;
                         vel[nbx](i, j, k, 2) =

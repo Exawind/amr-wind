@@ -73,9 +73,9 @@ void initialize_relaxation_zone_field(
     amrex::Real gen_length)
 {
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-        const amrex::Real x = xlo + (i + 0.5_rt) * dx;
+        const amrex::Real x = xlo + ((i + 0.5_rt) * dx);
         amrex::Real xtilde = amrex::max<amrex::Real>(
-            amrex::min<amrex::Real>(1.0_rt - x / gen_length, 1.0_rt), 0.0_rt);
+            amrex::min<amrex::Real>(1.0_rt - (x / gen_length), 1.0_rt), 0.0_rt);
         theor_farr(i, j, k) =
             std::expm1(std::pow(xtilde, 3.5_rt)) / std::expm1(1.0_rt);
     });
@@ -109,18 +109,18 @@ void apply_relaxation_zone_field(
 
         amrex::ParallelFor(
             comp(lev), amrex::IntVect(2),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 const amrex::Real x = amrex::min<amrex::Real>(
                     amrex::max<amrex::Real>(
-                        problo[0] + (i + 0.5_rt) * dx[0], problo[0]),
+                        problo[0] + ((i + 0.5_rt) * dx[0]), problo[0]),
                     probhi[0]);
                 if (x <= problo[0] + gen_length) {
                     const amrex::Real Gamma =
                         amr_wind::ocean_waves::utils::gamma_generate(
                             x - problo[0], gen_length);
                     comp_arrs[nbx](i, j, k) =
-                        targ_arrs[nbx](i, j, k) * (1.0_rt - Gamma) +
-                        comp_arrs[nbx](i, j, k) * Gamma;
+                        (targ_arrs[nbx](i, j, k) * (1.0_rt - Gamma)) +
+                        (comp_arrs[nbx](i, j, k) * Gamma);
                 }
             });
     }
@@ -142,11 +142,10 @@ amrex::Real field_error(amr_wind::Field& comp, amr_wind::Field& targ, int ncomp)
                 -> amrex::Real {
                 amrex::Real error = 0.0_rt;
 
-                amrex::Loop(
-                    bx, nc, [=, &error](int i, int j, int k, int n) noexcept {
-                        error += std::abs(
-                            comp_arr(i, j, k, n) - targ_arr(i, j, k, n));
-                    });
+                amrex::Loop(bx, nc, [=, &error](int i, int j, int k, int n) {
+                    error +=
+                        std::abs(comp_arr(i, j, k, n) - targ_arr(i, j, k, n));
+                });
 
                 return error;
             });
@@ -177,15 +176,14 @@ amrex::Real gas_velocity_error(
                 -> amrex::Real {
                 amrex::Real error = 0.0_rt;
 
-                amrex::Loop(
-                    bx, nc, [=, &error](int i, int j, int k, int n) noexcept {
-                        error +=
-                            (vof_arr(i, j, k) < std::numeric_limits<
-                                                    amrex::Real>::epsilon() *
-                                                    1.0e4_rt
-                                 ? std::abs(vel_arr(i, j, k, n) - gvel)
-                                 : 0.0_rt);
-                    });
+                amrex::Loop(bx, nc, [=, &error](int i, int j, int k, int n) {
+                    error +=
+                        (vof_arr(i, j, k) <
+                                 std::numeric_limits<amrex::Real>::epsilon() *
+                                     1.0e4_rt
+                             ? std::abs(vel_arr(i, j, k, n) - gvel)
+                             : 0.0_rt);
+                });
 
                 return error;
             });
@@ -205,7 +203,7 @@ void make_target_velocity(
         const auto& ow_vof_arrs = ow_vof(lev).const_arrays();
         amrex::ParallelFor(
             ow_vof(lev), amrex::IntVect(2), velocity.num_comp(),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) noexcept {
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) {
                 if (ow_vof_arrs[nbx](i, j, k) <=
                     amr_wind::constants::TIGHT_TOL) {
                     ow_vel_arrs[nbx](i, j, k, n) = vel_arrs[nbx](i, j, k, n);
@@ -222,10 +220,10 @@ void make_target_density(
         const auto& ow_vof_arrs = ow_vof(lev).arrays();
         amrex::ParallelFor(
             ow_vof(lev), amrex::IntVect(2),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 ow_vof_arrs[nbx](i, j, k) =
-                    rho1 * ow_vof_arrs[nbx](i, j, k) +
-                    rho2 * (1.0_rt - ow_vof_arrs[nbx](i, j, k));
+                    (rho1 * ow_vof_arrs[nbx](i, j, k)) +
+                    (rho2 * (1.0_rt - ow_vof_arrs[nbx](i, j, k)));
             });
     }
     amrex::Gpu::streamSynchronize();
@@ -246,14 +244,13 @@ amrex::Real bdy_error(amr_wind::Field& comp, amr_wind::Field& targ, int ncomp)
                 -> amrex::Real {
                 amrex::Real error = 0.0_rt;
 
-                amrex::Loop(
-                    bx, nc, [=, &error](int i, int j, int k, int n) noexcept {
-                        if (i == 0) {
-                            error += std::abs(
-                                comp_arr(i - 1, j, k, n) -
-                                targ_arr(i - 1, j, k, n));
-                        }
-                    });
+                amrex::Loop(bx, nc, [=, &error](int i, int j, int k, int n) {
+                    if (i == 0) {
+                        error += std::abs(
+                            comp_arr(i - 1, j, k, n) -
+                            targ_arr(i - 1, j, k, n));
+                    }
+                });
 
                 return error;
             });
@@ -281,7 +278,7 @@ amrex::Real uface_bdy_error(amr_wind::Field& comp, amr_wind::Field& targ)
                 -> amrex::Real {
                 amrex::Real error = 0.0_rt;
 
-                amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
+                amrex::Loop(bx, [=, &error](int i, int j, int k) {
                     if (i == 0) {
                         error += std::abs(
                             comp_arr(i, j, k, 0) - targ_arr(i - 1, j, k, 0));

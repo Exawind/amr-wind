@@ -1,5 +1,5 @@
-#ifndef ForestDrag_H
-#define ForestDrag_H
+#ifndef FORESTDRAG_H
+#define FORESTDRAG_H
 
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/core/Field.H"
@@ -29,13 +29,15 @@ struct Forest
     {
         amrex::Real treelaimax = 0.0_rt;
         if (m_type_forest == 2) {
-            const amrex::Real treeZm = m_laimax_forest * m_height_forest;
+            const amrex::Real captured_height_forest = m_height_forest;
+            const amrex::Real treeZm = m_laimax_forest * captured_height_forest;
             const int n = 100;
             const amrex::Real int_0_fh = amr_wind::utils::trapz(
-                0, m_height_forest - constants::TIGHT_TOL, n,
-                [=](const amrex::Real x) noexcept {
+                0, captured_height_forest - constants::TIGHT_TOL, n,
+                [=](const amrex::Real x) {
                     const amrex::Real ratio =
-                        (m_height_forest - treeZm) / (m_height_forest - x);
+                        (captured_height_forest - treeZm) /
+                        (captured_height_forest - x);
                     const auto exponent = (x < treeZm) ? 6.0_rt : 0.5_rt;
                     return std::pow(ratio, exponent) *
                            std::exp(exponent * (1 - ratio));
@@ -77,7 +79,7 @@ struct Forest
         return {x0, y0, z0, x1, y1, z1};
     }
 
-    amrex::Box bounding_box(const amrex::Geometry& geom) const
+    [[nodiscard]] amrex::Box bounding_box(const amrex::Geometry& geom) const
     {
         return utils::realbox_to_box(
             real_bounding_box(geom.ProbLoArray()), geom);
@@ -110,7 +112,7 @@ public:
 
     void post_advance_work() override {}
 
-    amrex::Vector<Forest> read_forest(const int level) const;
+    [[nodiscard]] amrex::Vector<Forest> read_forest(int level) const;
 
 private:
     CFDSim& m_sim;

@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "aw_test_utils/MeshTest.H"
 #include "test_act_utils.H"
 
@@ -91,8 +93,7 @@ struct ReadInputsOp<::amr_wind_tests::FlatPlate, SrcTrait>
         pp.get_either("epsilon", wdata.eps_inp);
         pp.get("pitch", wdata.pitch);
 
-        amrex::Real max_eps =
-            *std::max_element(wdata.eps_inp.begin(), wdata.eps_inp.end());
+        amrex::Real max_eps = *std::ranges::max_element(wdata.eps_inp);
         amrex::Real search_radius = max_eps * 3.0_rt;
         const auto& p1 = wdata.start;
         const auto& p2 = wdata.end;
@@ -276,7 +277,7 @@ TEST_F(ActFlatPlateTest, actuator_init)
     }
     {
         for (int i = 0; i < 2; ++i) {
-            amrex::Real zloc = 8.0_rt + 16.0_rt * i;
+            amrex::Real zloc = 8.0_rt + (16.0_rt * i);
             amrex::ParmParse pp("Actuator." + actuators[i]);
             pp.addarr(
                 "start", amrex::Vector<amrex::Real>{16.0_rt, 12.0_rt, zloc});
@@ -314,7 +315,7 @@ TEST_F(ActFlatPlateTest, flat_plate_init)
     }
     {
         for (int i = 0; i < 2; ++i) {
-            amrex::Real zloc = 8.0_rt + 16.0_rt * i;
+            amrex::Real zloc = 8.0_rt + (16.0_rt * i);
             amrex::ParmParse pp("Actuator." + actuators[i]);
             pp.addarr(
                 "start", amrex::Vector<amrex::Real>{16.0_rt, 12.0_rt, zloc});

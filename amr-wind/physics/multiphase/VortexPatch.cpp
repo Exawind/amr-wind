@@ -1,3 +1,4 @@
+#include <numbers>
 #include "amr-wind/physics/multiphase/MultiPhase.H"
 #include "amr-wind/physics/multiphase/VortexPatch.H"
 #include "amr-wind/CFDSim.H"
@@ -57,49 +58,49 @@ void VortexPatch::initialize_fields(int level, const amrex::Geometry& geom)
     const amrex::Real eps = std::cbrt(2.0_rt * dx[0] * dx[1] * dx[2]);
 
     amrex::ParallelFor(
-        velocity, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-            const amrex::Real x = problo[0] + (i + 0.5_rt) * dx[0];
-            const amrex::Real y = problo[1] + (j + 0.5_rt) * dx[1];
-            const amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
-            const amrex::Real xf = problo[0] + i * dx[0];
-            const amrex::Real yf = problo[1] + j * dx[1];
-            const amrex::Real zf = problo[2] + k * dx[2];
+        velocity, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
+            const amrex::Real x = problo[0] + ((i + 0.5_rt) * dx[0]);
+            const amrex::Real y = problo[1] + ((j + 0.5_rt) * dx[1]);
+            const amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);
+            const amrex::Real xf = problo[0] + (i * dx[0]);
+            const amrex::Real yf = problo[1] + (j * dx[1]);
+            const amrex::Real zf = problo[2] + (k * dx[2]);
             uf_arrs[nbx](i, j, k) =
-                2.0_rt * std::sin(static_cast<amrex::Real>(M_PI) * xf) *
-                std::sin(static_cast<amrex::Real>(M_PI) * xf) *
-                std::sin(2.0_rt * static_cast<amrex::Real>(M_PI) * y) *
-                std::sin(2.0_rt * static_cast<amrex::Real>(M_PI) * z);
+                2.0_rt * std::sin(std::numbers::pi_v<amrex::Real> * xf) *
+                std::sin(std::numbers::pi_v<amrex::Real> * xf) *
+                std::sin(2.0_rt * std::numbers::pi_v<amrex::Real> * y) *
+                std::sin(2.0_rt * std::numbers::pi_v<amrex::Real> * z);
             vf_arrs[nbx](i, j, k) =
-                -std::sin(static_cast<amrex::Real>(M_PI) * yf) *
-                std::sin(static_cast<amrex::Real>(M_PI) * yf) *
-                std::sin(2.0_rt * static_cast<amrex::Real>(M_PI) * x) *
-                std::sin(2.0_rt * static_cast<amrex::Real>(M_PI) * z);
+                -std::sin(std::numbers::pi_v<amrex::Real> * yf) *
+                std::sin(std::numbers::pi_v<amrex::Real> * yf) *
+                std::sin(2.0_rt * std::numbers::pi_v<amrex::Real> * x) *
+                std::sin(2.0_rt * std::numbers::pi_v<amrex::Real> * z);
             wf_arrs[nbx](i, j, k) =
-                -std::sin(static_cast<amrex::Real>(M_PI) * zf) *
-                std::sin(static_cast<amrex::Real>(M_PI) * zf) *
-                std::sin(2.0_rt * static_cast<amrex::Real>(M_PI) * x) *
-                std::sin(2.0_rt * static_cast<amrex::Real>(M_PI) * y);
+                -std::sin(std::numbers::pi_v<amrex::Real> * zf) *
+                std::sin(std::numbers::pi_v<amrex::Real> * zf) *
+                std::sin(2.0_rt * std::numbers::pi_v<amrex::Real> * x) *
+                std::sin(2.0_rt * std::numbers::pi_v<amrex::Real> * y);
 
             vel_arrs[nbx](i, j, k, 0) =
-                2.0_rt * std::sin(static_cast<amrex::Real>(M_PI) * x) *
-                std::sin(static_cast<amrex::Real>(M_PI) * x) *
-                std::sin(2.0_rt * static_cast<amrex::Real>(M_PI) * y) *
-                std::sin(2.0_rt * static_cast<amrex::Real>(M_PI) * z);
+                2.0_rt * std::sin(std::numbers::pi_v<amrex::Real> * x) *
+                std::sin(std::numbers::pi_v<amrex::Real> * x) *
+                std::sin(2.0_rt * std::numbers::pi_v<amrex::Real> * y) *
+                std::sin(2.0_rt * std::numbers::pi_v<amrex::Real> * z);
             vel_arrs[nbx](i, j, k, 1) =
-                -std::sin(static_cast<amrex::Real>(M_PI) * y) *
-                std::sin(static_cast<amrex::Real>(M_PI) * y) *
-                std::sin(2.0_rt * static_cast<amrex::Real>(M_PI) * x) *
-                std::sin(2.0_rt * static_cast<amrex::Real>(M_PI) * z);
+                -std::sin(std::numbers::pi_v<amrex::Real> * y) *
+                std::sin(std::numbers::pi_v<amrex::Real> * y) *
+                std::sin(2.0_rt * std::numbers::pi_v<amrex::Real> * x) *
+                std::sin(2.0_rt * std::numbers::pi_v<amrex::Real> * z);
             vel_arrs[nbx](i, j, k, 2) =
-                -std::sin(static_cast<amrex::Real>(M_PI) * z) *
-                std::sin(static_cast<amrex::Real>(M_PI) * z) *
-                std::sin(2.0_rt * static_cast<amrex::Real>(M_PI) * x) *
-                std::sin(2.0_rt * static_cast<amrex::Real>(M_PI) * y);
+                -std::sin(std::numbers::pi_v<amrex::Real> * z) *
+                std::sin(std::numbers::pi_v<amrex::Real> * z) *
+                std::sin(2.0_rt * std::numbers::pi_v<amrex::Real> * x) *
+                std::sin(2.0_rt * std::numbers::pi_v<amrex::Real> * y);
 
             phi_arrs[nbx](i, j, k) =
                 radius - std::sqrt(
-                             (x - xc) * (x - xc) + (y - yc) * (y - yc) +
-                             (z - zc) * (z - zc));
+                             ((x - xc) * (x - xc)) + ((y - yc) * (y - yc)) +
+                             ((z - zc) * (z - zc)));
             amrex::Real smooth_heaviside;
             if (phi_arrs[nbx](i, j, k) > eps) {
                 smooth_heaviside = 1.0_rt;
@@ -108,13 +109,13 @@ void VortexPatch::initialize_fields(int level, const amrex::Geometry& geom)
             } else {
                 smooth_heaviside =
                     0.5_rt * (1.0_rt + phi_arrs[nbx](i, j, k) / eps +
-                              1.0_rt / static_cast<amrex::Real>(M_PI) *
+                              1.0_rt / std::numbers::pi_v<amrex::Real> *
                                   std::sin(
                                       phi_arrs[nbx](i, j, k) *
-                                      static_cast<amrex::Real>(M_PI) / eps));
+                                      std::numbers::pi_v<amrex::Real> / eps));
             }
-            rho_arrs[nbx](i, j, k) =
-                rho1 * smooth_heaviside + rho2 * (1.0_rt - smooth_heaviside);
+            rho_arrs[nbx](i, j, k) = (rho1 * smooth_heaviside) +
+                                     (rho2 * (1.0_rt - smooth_heaviside));
         });
     amrex::Gpu::streamSynchronize();
 }
@@ -122,7 +123,7 @@ void VortexPatch::initialize_fields(int level, const amrex::Geometry& geom)
 void VortexPatch::pre_advance_work()
 {
     const auto& time =
-        m_sim.time().current_time() + 0.5_rt * m_sim.time().delta_t();
+        m_sim.time().current_time() + (0.5_rt * m_sim.time().delta_t());
 
     const int nlevels = m_sim.repo().num_active_levels();
     const auto& geom = m_sim.mesh().Geom();
@@ -140,31 +141,31 @@ void VortexPatch::pre_advance_work()
         const auto& wf_arrs = w_mac.arrays();
         amrex::ParallelFor(
             m_velocity(lev), amrex::IntVect(1),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                const amrex::Real x = problo[0] + (i + 0.5_rt) * dx[0];
-                const amrex::Real y = problo[1] + (j + 0.5_rt) * dx[1];
-                const amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
-                const amrex::Real xf = problo[0] + i * dx[0];
-                const amrex::Real yf = problo[1] + j * dx[1];
-                const amrex::Real zf = problo[2] + k * dx[2];
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
+                const amrex::Real x = problo[0] + ((i + 0.5_rt) * dx[0]);
+                const amrex::Real y = problo[1] + ((j + 0.5_rt) * dx[1]);
+                const amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);
+                const amrex::Real xf = problo[0] + (i * dx[0]);
+                const amrex::Real yf = problo[1] + (j * dx[1]);
+                const amrex::Real zf = problo[2] + (k * dx[2]);
                 uf_arrs[nbx](i, j, k) =
-                    2.0_rt * std::sin(static_cast<amrex::Real>(M_PI) * xf) *
-                    std::sin(static_cast<amrex::Real>(M_PI) * xf) *
-                    std::sin(2.0_rt * static_cast<amrex::Real>(M_PI) * y) *
-                    std::sin(2.0_rt * static_cast<amrex::Real>(M_PI) * z) *
-                    std::cos(static_cast<amrex::Real>(M_PI) * time / TT);
+                    2.0_rt * std::sin(std::numbers::pi_v<amrex::Real> * xf) *
+                    std::sin(std::numbers::pi_v<amrex::Real> * xf) *
+                    std::sin(2.0_rt * std::numbers::pi_v<amrex::Real> * y) *
+                    std::sin(2.0_rt * std::numbers::pi_v<amrex::Real> * z) *
+                    std::cos(std::numbers::pi_v<amrex::Real> * time / TT);
                 vf_arrs[nbx](i, j, k) =
-                    -std::sin(static_cast<amrex::Real>(M_PI) * yf) *
-                    std::sin(static_cast<amrex::Real>(M_PI) * yf) *
-                    std::sin(2.0_rt * static_cast<amrex::Real>(M_PI) * x) *
-                    std::sin(2.0_rt * static_cast<amrex::Real>(M_PI) * z) *
-                    std::cos(static_cast<amrex::Real>(M_PI) * time / TT);
+                    -std::sin(std::numbers::pi_v<amrex::Real> * yf) *
+                    std::sin(std::numbers::pi_v<amrex::Real> * yf) *
+                    std::sin(2.0_rt * std::numbers::pi_v<amrex::Real> * x) *
+                    std::sin(2.0_rt * std::numbers::pi_v<amrex::Real> * z) *
+                    std::cos(std::numbers::pi_v<amrex::Real> * time / TT);
                 wf_arrs[nbx](i, j, k) =
-                    -std::sin(static_cast<amrex::Real>(M_PI) * zf) *
-                    std::sin(static_cast<amrex::Real>(M_PI) * zf) *
-                    std::sin(2.0_rt * static_cast<amrex::Real>(M_PI) * x) *
-                    std::sin(2.0_rt * static_cast<amrex::Real>(M_PI) * y) *
-                    std::cos(static_cast<amrex::Real>(M_PI) * time / TT);
+                    -std::sin(std::numbers::pi_v<amrex::Real> * zf) *
+                    std::sin(std::numbers::pi_v<amrex::Real> * zf) *
+                    std::sin(2.0_rt * std::numbers::pi_v<amrex::Real> * x) *
+                    std::sin(2.0_rt * std::numbers::pi_v<amrex::Real> * y) *
+                    std::cos(std::numbers::pi_v<amrex::Real> * time / TT);
             });
         amrex::Gpu::streamSynchronize();
         u_mac.FillBoundary(geom[lev].periodicity());
@@ -188,28 +189,28 @@ void VortexPatch::post_advance_work()
         const auto& vel_arrs = m_velocity(lev).arrays();
         amrex::ParallelFor(
             m_velocity(lev), amrex::IntVect(1),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                const amrex::Real x = problo[0] + (i + 0.5_rt) * dx[0];
-                const amrex::Real y = problo[1] + (j + 0.5_rt) * dx[1];
-                const amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
+                const amrex::Real x = problo[0] + ((i + 0.5_rt) * dx[0]);
+                const amrex::Real y = problo[1] + ((j + 0.5_rt) * dx[1]);
+                const amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);
                 vel_arrs[nbx](i, j, k, 0) =
-                    2.0_rt * std::sin(static_cast<amrex::Real>(M_PI) * x) *
-                    std::sin(static_cast<amrex::Real>(M_PI) * x) *
-                    std::sin(2.0_rt * static_cast<amrex::Real>(M_PI) * y) *
-                    std::sin(2.0_rt * static_cast<amrex::Real>(M_PI) * z) *
-                    std::cos(static_cast<amrex::Real>(M_PI) * time / TT);
+                    2.0_rt * std::sin(std::numbers::pi_v<amrex::Real> * x) *
+                    std::sin(std::numbers::pi_v<amrex::Real> * x) *
+                    std::sin(2.0_rt * std::numbers::pi_v<amrex::Real> * y) *
+                    std::sin(2.0_rt * std::numbers::pi_v<amrex::Real> * z) *
+                    std::cos(std::numbers::pi_v<amrex::Real> * time / TT);
                 vel_arrs[nbx](i, j, k, 1) =
-                    -std::sin(static_cast<amrex::Real>(M_PI) * y) *
-                    std::sin(static_cast<amrex::Real>(M_PI) * y) *
-                    std::sin(2.0_rt * static_cast<amrex::Real>(M_PI) * x) *
-                    std::sin(2.0_rt * static_cast<amrex::Real>(M_PI) * z) *
-                    std::cos(static_cast<amrex::Real>(M_PI) * time / TT);
+                    -std::sin(std::numbers::pi_v<amrex::Real> * y) *
+                    std::sin(std::numbers::pi_v<amrex::Real> * y) *
+                    std::sin(2.0_rt * std::numbers::pi_v<amrex::Real> * x) *
+                    std::sin(2.0_rt * std::numbers::pi_v<amrex::Real> * z) *
+                    std::cos(std::numbers::pi_v<amrex::Real> * time / TT);
                 vel_arrs[nbx](i, j, k, 2) =
-                    -std::sin(static_cast<amrex::Real>(M_PI) * z) *
-                    std::sin(static_cast<amrex::Real>(M_PI) * z) *
-                    std::sin(2.0_rt * static_cast<amrex::Real>(M_PI) * x) *
-                    std::sin(2.0_rt * static_cast<amrex::Real>(M_PI) * y) *
-                    std::cos(static_cast<amrex::Real>(M_PI) * time / TT);
+                    -std::sin(std::numbers::pi_v<amrex::Real> * z) *
+                    std::sin(std::numbers::pi_v<amrex::Real> * z) *
+                    std::sin(2.0_rt * std::numbers::pi_v<amrex::Real> * x) *
+                    std::sin(2.0_rt * std::numbers::pi_v<amrex::Real> * y) *
+                    std::cos(std::numbers::pi_v<amrex::Real> * time / TT);
             });
     }
     amrex::Gpu::streamSynchronize();

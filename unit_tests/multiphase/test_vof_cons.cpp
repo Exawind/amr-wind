@@ -33,10 +33,10 @@ void initialize_volume_fractions(
                 }
             } else {
                 const int icheck = (dir == 0) ? i : ((dir == 1) ? j : k);
-                if (2 * icheck + 1 == nx) {
+                if ((2 * icheck) + 1 == nx) {
                     vof_arr(i, j, k) = 0.5_rt;
                 } else {
-                    if (2 * icheck + 1 < nx) {
+                    if ((2 * icheck) + 1 < nx) {
                         vof_arr(i, j, k) = 1.0_rt;
                     } else {
                         vof_arr(i, j, k) = 0.0_rt;
@@ -61,12 +61,11 @@ void initialize_adv_velocities(
         auto vm = vmac(lev).array(mfi);
         auto wm = wmac(lev).array(mfi);
         const auto& gbx = mfi.growntilebox(1);
-        amrex::ParallelFor(
-            gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                um(i, j, k) = varr[0];
-                vm(i, j, k) = varr[1];
-                wm(i, j, k) = varr[2];
-            });
+        amrex::ParallelFor(gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+            um(i, j, k) = varr[0];
+            vm(i, j, k) = varr[1];
+            wm(i, j, k) = varr[2];
+        });
     });
 }
 
@@ -80,10 +79,10 @@ void get_accuracy(
         amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
             const int icheck = (dir == 0) ? i : ((dir == 1) ? j : k);
             // Check if current solution matches initial solution
-            if (2 * icheck + 1 == nx) {
+            if ((2 * icheck) + 1 == nx) {
                 err_arr(i, j, k) = std::abs(vof_arr(i, j, k) - 0.5_rt);
             } else {
-                if (2 * icheck + 1 < nx) {
+                if ((2 * icheck) + 1 < nx) {
                     err_arr(i, j, k) = std::abs(vof_arr(i, j, k) - 1.0_rt);
                 } else {
                     err_arr(i, j, k) = std::abs(vof_arr(i, j, k) - 0.0_rt);
@@ -170,9 +169,9 @@ protected:
             }
             // Create the "input file"
             std::stringstream ss;
-            ss << "1 // Number of levels" << std::endl;
-            ss << "1 // Number of boxes at this level" << std::endl;
-            ss << "0.8 0.5 0.5 0.9 0.5 0.5" << std::endl;
+            ss << "1 // Number of levels" << '\n';
+            ss << "1 // Number of boxes at this level" << '\n';
+            ss << "0.8 0.5 0.5 0.9 0.5 0.5" << '\n';
 
             create_mesh_instance<RefineMesh>();
             std::unique_ptr<amr_wind::CartBoxRefinement> box_refine(

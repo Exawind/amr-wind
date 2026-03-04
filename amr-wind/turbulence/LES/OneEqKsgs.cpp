@@ -129,12 +129,11 @@ void OneEqKsgsM84<Transport>::update_turbulent_viscosity(
         const auto& beta_arrs = (*beta)(lev).const_arrays();
 
         amrex::ParallelFor(
-            mu_turb(lev),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            mu_turb(lev), [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 amrex::Real stratification =
-                    -(gradT_arrs[nbx](i, j, k, 0) * gravity[0] +
-                      gradT_arrs[nbx](i, j, k, 1) * gravity[1] +
-                      gradT_arrs[nbx](i, j, k, 2) * gravity[2]) *
+                    -((gradT_arrs[nbx](i, j, k, 0) * gravity[0]) +
+                      (gradT_arrs[nbx](i, j, k, 1) * gravity[1]) +
+                      (gradT_arrs[nbx](i, j, k, 2) * gravity[2])) *
                     beta_arrs[nbx](i, j, k);
                 if (stratification >
                     std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt) {
@@ -190,12 +189,11 @@ void OneEqKsgsM84<Transport>::update_alphaeff(Field& alphaeff)
         const auto& lam_diff_arrs = (*lam_alpha)(lev).const_arrays();
 
         amrex::ParallelFor(
-            mu_turb(lev),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            mu_turb(lev), [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 alphaeff_arrs[nbx](i, j, k) =
                     lam_diff_arrs[nbx](i, j, k) +
-                    muturb_arrs[nbx](i, j, k) *
-                        (1.0_rt + 2.0_rt * tlscale_arrs[nbx](i, j, k) / ds);
+                    (muturb_arrs[nbx](i, j, k) *
+                     (1.0_rt + 2.0_rt * tlscale_arrs[nbx](i, j, k) / ds));
             });
     }
     amrex::Gpu::streamSynchronize();
@@ -253,8 +251,7 @@ void OneEqKsgsM84<Transport>::post_advance_work()
         const auto& sdr_arrs = sdr(lev).arrays();
 
         amrex::ParallelFor(
-            tke(lev),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            tke(lev), [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 sdr_arrs[nbx](i, j, k) =
                     std::sqrt(tke_arrs[nbx](i, j, k)) / (Ce * ds);
             });

@@ -65,7 +65,7 @@ void VorticityMagRefinement::operator()(
     const auto vort_val = m_vort_value[level];
 
     amrex::ParallelFor(
-        mfab, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+        mfab, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
             // TODO: ignoring wall stencils for now
             const auto vx = 0.5_rt *
                             (vel_arrs[nbx](i + 1, j, k, 1) -

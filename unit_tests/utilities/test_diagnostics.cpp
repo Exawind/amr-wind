@@ -20,10 +20,10 @@ void init_velocity(amr_wind::Field& velocity)
 
         amrex::ParallelFor(
             velocity(lev), velocity.num_grow(),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                const amrex::Real xc = problo[0] + (i + 0.5_rt) * dx[0];
-                const amrex::Real yc = problo[1] + (j + 0.5_rt) * dx[1];
-                const amrex::Real zc = problo[2] + (k + 0.5_rt) * dx[2];
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
+                const amrex::Real xc = problo[0] + ((i + 0.5_rt) * dx[0]);
+                const amrex::Real yc = problo[1] + ((j + 0.5_rt) * dx[1]);
+                const amrex::Real zc = problo[2] + ((k + 0.5_rt) * dx[2]);
 
                 farrs[nbx](i, j, k, 0) = 1.0_rt - std::pow(xc, 2.0_rt);
                 farrs[nbx](i, j, k, 1) = -1.0_rt + std::pow(zc, 2.0_rt);
@@ -58,10 +58,10 @@ void init_mac_velocity(
 
         amrex::ParallelFor(
             cc(lev), cc.num_grow(),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
-                const amrex::Real x = problo[0] + i * dx[0];
-                const amrex::Real yc = problo[1] + (j + 0.5_rt) * dx[1];
-                const amrex::Real zc = problo[2] + (k + 0.5_rt) * dx[2];
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
+                const amrex::Real x = problo[0] + (i * dx[0]);
+                const amrex::Real yc = problo[1] + ((j + 0.5_rt) * dx[1]);
+                const amrex::Real zc = problo[2] + ((k + 0.5_rt) * dx[2]);
 
                 uarrs[nbx](i, j, k) = 1.0_rt - std::pow(x, 2.0_rt);
                 varrs[nbx](i, j, k) = -1.0_rt + std::pow(zc, 2.0_rt);
@@ -91,7 +91,7 @@ void init_vof(amr_wind::Field& vof, bool bounded)
 
         amrex::ParallelFor(
             vof(lev), vof.num_grow(),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 const amrex::Real xc_rel = (i + 0.5_rt) * dx[0];
                 const amrex::Real yc_rel = (j + 0.5_rt) * dx[1];
                 const amrex::Real zc_rel = (k + 0.5_rt) * dx[2];
@@ -100,7 +100,8 @@ void init_vof(amr_wind::Field& vof, bool bounded)
                 const amrex::Real Ly = probhi[1] - problo[1];
                 const amrex::Real Lz = probhi[2] - problo[2];
 
-                farrs[nbx](i, j, k) = xc_rel / Lx + yc_rel / Ly + zc_rel / Lz;
+                farrs[nbx](i, j, k) =
+                    (xc_rel / Lx) + (yc_rel / Ly) + (zc_rel / Lz);
 
                 if (bounded) {
                     farrs[nbx](i, j, k) = amrex::min<amrex::Real>(
@@ -124,7 +125,7 @@ void modify_vof(amr_wind::Field& vof, amrex::Vector<int> ncell)
 
         amrex::ParallelFor(
             vof(lev), vof.num_grow(),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 if (i == 0 || j == 0 || k == 0) {
                     farrs[nbx](i, j, k) = 0;
                 } else if (i == nx - 1 || j == ny - 1 || k == nz - 1) {
@@ -257,9 +258,9 @@ TEST_F(DiagnosticsTest, Max_Vel_MultiLevel)
     // Create the refinement input file
     // Cover the whole domain for easier testing
     std::stringstream ss;
-    ss << "1 // Number of levels" << std::endl;
-    ss << "1 // Number of boxes at this level" << std::endl;
-    ss << "-5 -5 -2 5 5 2" << std::endl;
+    ss << "1 // Number of levels" << '\n';
+    ss << "1 // Number of boxes at this level" << '\n';
+    ss << "-5 -5 -2 5 5 2" << '\n';
     create_mesh_instance<RefineMesh>();
     auto& ref_vec = mesh<RefineMesh>()->refine_criteria_vec();
     ref_vec.emplace_back(std::make_unique<amr_wind::CartBoxRefinement>(sim()));
@@ -316,9 +317,9 @@ TEST_F(DiagnosticsTest, Max_MACvel_MultiLevel)
     // Create the refinement input file
     // Cover the whole domain for easier testing
     std::stringstream ss;
-    ss << "1 // Number of levels" << std::endl;
-    ss << "1 // Number of boxes at this level" << std::endl;
-    ss << "-5 -5 -2 5 5 2" << std::endl;
+    ss << "1 // Number of levels" << '\n';
+    ss << "1 // Number of boxes at this level" << '\n';
+    ss << "-5 -5 -2 5 5 2" << '\n';
     create_mesh_instance<RefineMesh>();
     auto& ref_vec = mesh<RefineMesh>()->refine_criteria_vec();
     ref_vec.emplace_back(std::make_unique<amr_wind::CartBoxRefinement>(sim()));
@@ -384,8 +385,8 @@ TEST_F(DiagnosticsTest, Field_Extrema)
         -0.5_rt *
         (1.0_rt / m_ncell[0] + 1.0_rt / m_ncell[1] + 1.0_rt / m_ncell[2]);
     const amrex::Real gold_fmax =
-        3.0_rt + 0.5_rt * (1.0_rt / m_ncell[0] + 1.0_rt / m_ncell[1] +
-                           1.0_rt / m_ncell[2]);
+        3.0_rt + (0.5_rt * (1.0_rt / m_ncell[0] + 1.0_rt / m_ncell[1] +
+                            1.0_rt / m_ncell[2]));
 
     constexpr amrex::Real tol =
         std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt;

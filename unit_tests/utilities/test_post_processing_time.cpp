@@ -142,7 +142,7 @@ TEST_F(PostProcTimeTest, enforce_time_interval)
 
     EXPECT_EQ(out_counter, 3);
     EXPECT_NEAR(
-        out_time_sum, 0.0_rt + 0.45_rt + 2.0_rt * 0.45_rt,
+        out_time_sum, 0.0_rt + 0.45_rt + (2.0_rt * 0.45_rt),
         std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt);
     EXPECT_EQ(out_step_sum, 2 + 9);
 

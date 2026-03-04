@@ -1,3 +1,4 @@
+#include <numbers>
 #include "aw_test_utils/MeshTest.H"
 #include "aw_test_utils/iter_tools.H"
 #include "aw_test_utils/test_utils.H"
@@ -83,7 +84,7 @@ TEST_F(WaveTheoriesTest, StokesWavesFreeSurfaceProfile)
     amrex::Real wavenumber = 2.0_rt;
     amrex::Real water_depth = 0.376991_rt;
     amrex::Real wavelength =
-        2.0_rt * static_cast<amrex::Real>(M_PI) / wavenumber;
+        2.0_rt * std::numbers::pi_v<amrex::Real> / wavenumber;
     amrex::Real wave_height = 0.1_rt;
     amrex::Real zsl = 0.0_rt;
     amrex::Real x = 0.0_rt;
@@ -128,20 +129,20 @@ TEST_F(WaveTheoriesTest, StokesWavesFreeSurfaceProfile)
         std::sqrt(g / wavenumber);
 
     amrex::Real omega = wave_speed * wavenumber;
-    amrex::Real phase = wavenumber * x - omega * time - phase_offset;
+    amrex::Real phase = (wavenumber * x) - (omega * time) - phase_offset;
 
     // Check against Eq. (14) from Fenton 1985
     amrex::Real eta_theory =
-        (eps * std::cos(phase) +
-         std::pow(eps, 2.0_rt) * B22 * std::cos(2.0_rt * phase) +
-         std::pow(eps, 3.0_rt) * B31 *
-             (std::cos(phase) - std::cos(3.0_rt * phase)) +
-         std::pow(eps, 4.0_rt) *
-             (B42 * std::cos(2.0_rt * phase) + B44 * std::cos(4.0_rt * phase)) +
-         std::pow(eps, 5.0_rt) *
-             (-(B53 + B55) * std::cos(phase) + B53 * std::cos(3.0_rt * phase) +
-              B55 * std::cos(5.0_rt * phase))) /
-            wavenumber +
+        ((eps * std::cos(phase) +
+          std::pow(eps, 2.0_rt) * B22 * std::cos(2.0_rt * phase) +
+          std::pow(eps, 3.0_rt) * B31 *
+              (std::cos(phase) - std::cos(3.0_rt * phase)) +
+          std::pow(eps, 4.0_rt) * (B42 * std::cos(2.0_rt * phase) +
+                                   B44 * std::cos(4.0_rt * phase)) +
+          std::pow(eps, 5.0_rt) *
+              (-(B53 + B55) * std::cos(phase) + B53 * std::cos(3.0_rt * phase) +
+               B55 * std::cos(5.0_rt * phase))) /
+         wavenumber) +
         zsl;
 
     EXPECT_NEAR(eta, eta_theory, tol);
@@ -151,11 +152,11 @@ TEST_F(WaveTheoriesTest, StokesWavesFreeSurfaceProfile)
     water_depth = 100.0_rt;
     wave_height = 0.16_rt;
     wavenumber = 0.156_rt;
-    wavelength = 2.0_rt * static_cast<amrex::Real>(M_PI) / wavenumber;
+    wavelength = 2.0_rt * std::numbers::pi_v<amrex::Real> / wavenumber;
     zsl = 0.0_rt;
     x = 4.0_rt;
     z = 0.0_rt;
-    phase_offset = static_cast<amrex::Real>(M_PI);
+    phase_offset = std::numbers::pi_v<amrex::Real>;
     time = 2.7_rt;
     eta = 0.0_rt;
     u_w = 0.0_rt;
@@ -189,19 +190,19 @@ TEST_F(WaveTheoriesTest, StokesWavesFreeSurfaceProfile)
         std::sqrt(g / wavenumber);
 
     omega = wave_speed * wavenumber;
-    phase = wavenumber * x - omega * time - phase_offset;
+    phase = (wavenumber * x) - (omega * time) - phase_offset;
 
     // Matches Eq. (18) from Fenton 1985
-    eta_theory = (eps * std::cos(phase) +
-                  std::pow(eps, 2.0_rt) * B22 * std::cos(2.0_rt * phase) +
-                  std::pow(eps, 3.0_rt) * B31 *
-                      (std::cos(phase) - std::cos(3.0_rt * phase)) +
-                  std::pow(eps, 4.0_rt) * (B42 * std::cos(2.0_rt * phase) +
-                                           B44 * std::cos(4.0_rt * phase)) +
-                  std::pow(eps, 5.0_rt) * (-(B53 + B55) * std::cos(phase) +
-                                           B53 * std::cos(3.0_rt * phase) +
-                                           B55 * std::cos(5.0_rt * phase))) /
-                     wavenumber +
+    eta_theory = ((eps * std::cos(phase) +
+                   std::pow(eps, 2.0_rt) * B22 * std::cos(2.0_rt * phase) +
+                   std::pow(eps, 3.0_rt) * B31 *
+                       (std::cos(phase) - std::cos(3.0_rt * phase)) +
+                   std::pow(eps, 4.0_rt) * (B42 * std::cos(2.0_rt * phase) +
+                                            B44 * std::cos(4.0_rt * phase)) +
+                   std::pow(eps, 5.0_rt) * (-(B53 + B55) * std::cos(phase) +
+                                            B53 * std::cos(3.0_rt * phase) +
+                                            B55 * std::cos(5.0_rt * phase))) /
+                  wavenumber) +
                  zsl;
 
     EXPECT_NEAR(eta, eta_theory, tol);
@@ -221,7 +222,7 @@ TEST_F(WaveTheoriesTest, StokesWavesVelocityComponents)
     constexpr amrex::Real wavenumber = 2.0_rt;
     constexpr amrex::Real water_depth = 0.376991_rt;
     constexpr amrex::Real wavelength =
-        2.0_rt * static_cast<amrex::Real>(M_PI) / wavenumber;
+        2.0_rt * std::numbers::pi_v<amrex::Real> / wavenumber;
     constexpr amrex::Real wave_height = 0.1_rt;
     constexpr amrex::Real zsl = 0.0_rt;
     constexpr amrex::Real x = 0.0_rt;
@@ -270,15 +271,15 @@ TEST_F(WaveTheoriesTest, StokesWavesVelocityComponents)
         std::sqrt(g / wavenumber);
 
     const amrex::Real omega = wave_speed * wavenumber;
-    const amrex::Real phase = wavenumber * x - omega * time - phase_offset;
+    const amrex::Real phase = (wavenumber * x) - (omega * time) - phase_offset;
 
     // Compare with theoretical Results from Kinnas
     // https://www.sciencedirect.com/science/article/pii/S0029801817306066
     // Define coefficients using Eq.(19)
     amrex::Vector<amrex::Real> a(stokes_order);
-    a[0] = A11 + (eps * eps) * A31 + std::pow(eps, 4.0_rt) * A51;
-    a[1] = A22 + (eps * eps) * A42;
-    a[2] = A33 + (eps * eps) * A53;
+    a[0] = A11 + ((eps * eps) * A31) + (std::pow(eps, 4.0_rt) * A51);
+    a[1] = A22 + ((eps * eps) * A42);
+    a[2] = A33 + ((eps * eps) * A53);
     a[3] = A44;
     a[4] = A55;
 
@@ -330,13 +331,13 @@ TEST_F(WaveTheoriesTest, StokesWaveLength)
             iter_max);
 
     const amrex::Real k_newton =
-        2.0_rt * static_cast<amrex::Real>(M_PI) / lambda;
+        2.0_rt * std::numbers::pi_v<amrex::Real> / lambda;
 
     // Compare with expected wavenumber from theory k = omega^2/g, where omega =
     // 2Pi/wave_period
     const amrex::Real k_theory =
-        (2.0_rt * static_cast<amrex::Real>(M_PI) / wave_period) *
-        (2.0_rt * static_cast<amrex::Real>(M_PI) / wave_period) / g;
+        (2.0_rt * std::numbers::pi_v<amrex::Real> / wave_period) *
+        (2.0_rt * std::numbers::pi_v<amrex::Real> / wave_period) / g;
 
     EXPECT_NEAR(
         k_newton, k_theory, std::numeric_limits<float>::epsilon() * 1.0e1_rt);
@@ -354,8 +355,8 @@ TEST_F(WaveTheoriesTest, StokesWaveLength)
 
     // Relation to check is Eq.(24) from course notes:
     // https://www.caee.utexas.edu/prof/kinnas/ce358/oenotes/kinnas_stokes11.pdf
-    amrex::Real k = 2.0_rt * static_cast<amrex::Real>(M_PI) / lambda;
-    const amrex::Real RHS1 = 2.0_rt * static_cast<amrex::Real>(M_PI) /
+    amrex::Real k = 2.0_rt * std::numbers::pi_v<amrex::Real> / lambda;
+    const amrex::Real RHS1 = 2.0_rt * std::numbers::pi_v<amrex::Real> /
                              (wave_period * std::sqrt(g * k));
 
     amrex::Real S = 1.0_rt / std::cosh(2.0_rt * k * water_depth);
@@ -371,7 +372,7 @@ TEST_F(WaveTheoriesTest, StokesWaveLength)
          146.0_rt * std::pow(S, 5.0_rt)) /
         (32.0_rt * std::pow(C, 5.0_rt));
     const amrex::Real LHS1 =
-        C0 + std::pow(eps, 2.0_rt) * C2 + std::pow(eps, 4.0_rt) * C4;
+        C0 + (std::pow(eps, 2.0_rt) * C2) + (std::pow(eps, 4.0_rt) * C4);
     EXPECT_NEAR(
         LHS1, RHS1, std::numeric_limits<amrex::Real>::epsilon() * 1.0e8_rt);
 
@@ -385,8 +386,8 @@ TEST_F(WaveTheoriesTest, StokesWaveLength)
         wave_period, water_depth, wave_height, wave_order, g, tol_lambda,
         iter_max);
 
-    k = 2.0_rt * static_cast<amrex::Real>(M_PI) / lambda;
-    const amrex::Real RHS2 = 2.0_rt * static_cast<amrex::Real>(M_PI) /
+    k = 2.0_rt * std::numbers::pi_v<amrex::Real> / lambda;
+    const amrex::Real RHS2 = 2.0_rt * std::numbers::pi_v<amrex::Real> /
                              (wave_period * std::sqrt(g * k));
 
     S = 1.0_rt / std::cosh(2.0_rt * k * water_depth);
@@ -395,7 +396,7 @@ TEST_F(WaveTheoriesTest, StokesWaveLength)
 
     C0 = std::sqrt(std::tanh(k * water_depth));
     C2 = C0 * (2.0_rt + 7.0_rt * S * S) / (4.0_rt * C * C);
-    const amrex::Real LHS2 = C0 + std::pow(eps, 2.0_rt) * C2;
+    const amrex::Real LHS2 = C0 + (std::pow(eps, 2.0_rt) * C2);
     EXPECT_NEAR(
         LHS2, RHS2, std::numeric_limits<amrex::Real>::epsilon() * 1.0e8_rt);
 }

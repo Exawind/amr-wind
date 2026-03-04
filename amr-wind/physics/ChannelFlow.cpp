@@ -89,7 +89,7 @@ ChannelFlow::ChannelFlow(CFDSim& sim)
         (m_laminar || m_analytical_smagorinsky_test)) {
         std::ofstream f;
         f.open(m_output_fname.c_str());
-        f << std::setw(m_w) << "time" << std::setw(m_w) << "L2_u" << std::endl;
+        f << std::setw(m_w) << "time" << std::setw(m_w) << "L2_u" << '\n';
         f.close();
     }
 
@@ -136,7 +136,7 @@ void ChannelFlow::initialize_fields(
     const auto perturb_vel = m_perturb_vel;
     const auto perturb_fac = m_perturb_fac;
     const auto perturb_amp = perturb_fac * m_utau;
-    const auto pi = static_cast<amrex::Real>(M_PI);
+    const auto pi = std::numbers::pi_v<amrex::Real>;
     const auto& problo = geom.ProbLoArray();
     const auto& probhi = geom.ProbHiArray();
     const auto& dx = geom.CellSizeArray();
@@ -157,11 +157,10 @@ void ChannelFlow::initialize_fields(
             const auto& vel_arrs = velocity.arrays();
 
             amrex::ParallelFor(
-                velocity,
-                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                velocity, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                     const int n_ind = idxOp(i, j, k);
                     amrex::Real h =
-                        problo[n_idx] + (n_ind + 0.5_rt) * dx[n_idx];
+                        problo[n_idx] + ((n_ind + 0.5_rt) * dx[n_idx]);
                     if (h > 1.0_rt) {
                         h = 2.0_rt - h;
                     }
@@ -190,11 +189,10 @@ void ChannelFlow::initialize_fields(
             const auto& wd_arrs = walldist.arrays();
 
             amrex::ParallelFor(
-                velocity,
-                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+                velocity, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                     const int n_ind = idxOp(i, j, k);
                     amrex::Real h =
-                        problo[n_idx] + (n_ind + 0.5_rt) * dx[n_idx];
+                        problo[n_idx] + ((n_ind + 0.5_rt) * dx[n_idx]);
                     if (h > 1.0_rt) {
                         h = 2.0_rt - h;
                     }
@@ -206,8 +204,8 @@ void ChannelFlow::initialize_fields(
                          7.8_rt * (1.0_rt - std::exp(-hp / 11.0_rt) -
                                    (hp / 11.0_rt) * std::exp(-hp / 3.0_rt)));
 
-                    const amrex::Real y = problo[1] + (j + 0.5_rt) * dx[1];
-                    const amrex::Real z = problo[2] + (k + 0.5_rt) * dx[2];
+                    const amrex::Real y = problo[1] + ((j + 0.5_rt) * dx[1]);
+                    const amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);
                     const amrex::Real perty = z_perturb * perturb_amp *
                                               std::sin(y_perturb * y) *
                                               std::cos(z_perturb * z);
@@ -312,7 +310,7 @@ amrex::Real ChannelFlow::compute_error(const IndexSelector& idxOp)
                 amrex::Real y =
                     mesh_mapping ? (nu_cc[box_no](i, j, k, norm_dir))
                                  : (prob_lo[norm_dir] +
-                                    (idxOp(i, j, k) + 0.5_rt) * dx[norm_dir]);
+                                    ((idxOp(i, j, k) + 0.5_rt) * dx[norm_dir]));
                 amrex::Real fac_x =
                     mesh_mapping ? (fac_arr[box_no](i, j, k, 0)) : 1.0_rt;
                 amrex::Real fac_y =
@@ -382,7 +380,7 @@ amrex::Real ChannelFlow::compute_analytical_smagorinsky_error()
                 auto const& mask_bx = mask_arr[box_no];
 
                 const int n_idx = 2;
-                amrex::Real h = prob_lo[n_idx] + (k + 0.5_rt) * dx[n_idx];
+                amrex::Real h = prob_lo[n_idx] + ((k + 0.5_rt) * dx[n_idx]);
                 if (h > 1.0_rt) {
                     h = 2.0_rt - h;
                 }
@@ -430,7 +428,7 @@ void ChannelFlow::output_error()
         std::ofstream f;
         f.open(m_output_fname.c_str(), std::ios_base::app);
         f << std::setprecision(12) << std::setw(m_w) << m_time.new_time()
-          << std::setw(m_w) << u_err << std::endl;
+          << std::setw(m_w) << u_err << '\n';
         f.close();
     }
 }

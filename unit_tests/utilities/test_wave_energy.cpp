@@ -17,7 +17,7 @@ void init_velocity(amr_wind::Field& fld)
         const auto& farrs = fld(lev).arrays();
         amrex::ParallelFor(
             fld(lev), amrex::IntVect(0),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 farrs[nbx](i, j, k, 0) = j;
                 farrs[nbx](i, j, k, 1) = k;
                 farrs[nbx](i, j, k, 2) = i;
@@ -36,7 +36,7 @@ void init_vof(amr_wind::Field& fld)
         // fully liquid and half liquid
         amrex::ParallelFor(
             fld(lev), amrex::IntVect(0),
-            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
+            [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                 if (k < 2) {
                     vof_arrs[nbx](i, j, k) = 1.0_rt;
                 } else {
@@ -157,11 +157,11 @@ TEST_F(WaveEnergyTest, checkoutput)
           2.0_rt * (1.0_rt + 4.0_rt + 9.0_rt + 16.0_rt)));
     EXPECT_NEAR(ke, ke_ref, m_tol);
     // Formula has been integrated in z, and uses exact interface locations
-    amrex::Real pe_exact = dx * dx * (-m_g) * 0.5_rt /
-                               (m_wlev * 2.0_rt * 2.0_rt) *
-                               (15.0_rt * std::pow(2.5_rt * dz, 2.0_rt) +
-                                10.0_rt * std::pow(3.0_rt * dz, 2.0_rt)) +
-                           0.5_rt * (-m_g) * m_wlev;
+    amrex::Real pe_exact =
+        (dx * dx * (-m_g) * 0.5_rt / (m_wlev * 2.0_rt * 2.0_rt) *
+         (15.0_rt * std::pow(2.5_rt * dz, 2.0_rt) +
+          10.0_rt * std::pow(3.0_rt * dz, 2.0_rt))) +
+        (0.5_rt * (-m_g) * m_wlev);
     EXPECT_NEAR(pe, pe_exact, m_tol);
 }
 
