@@ -38,7 +38,7 @@ void RectangularSubvolume::evaluate_inputs()
                 amrex::Print()
                     << "RectangularSubvolume " + m_label +
                            ": Resolution specified matches that of level "
-                    << i << std::endl;
+                    << i << "\n";
                 found = true;
                 m_lev_for_sub = i;
             }
@@ -81,7 +81,7 @@ void RectangularSubvolume::evaluate_inputs()
         amrex::Print()
             << "RectangularSubvolume " + m_label +
                    ": Specified origin is the lower left corner of cell "
-            << amrex::IntVect(i0, j0, k0) << std::endl;
+            << amrex::IntVect(i0, j0, k0) << "\n";
         found = true;
     }
 
@@ -99,7 +99,7 @@ void RectangularSubvolume::evaluate_inputs()
             i0 + m_npts_vec[0] - 1, j0 + m_npts_vec[1] - 1,
             k0 + m_npts_vec[2] - 1));
     amrex::Print() << "RectangularSubvolume " + m_label + ": Box requested is "
-                   << bx << std::endl;
+                   << bx << "\n";
 
     if (!domain.contains(bx)) {
         amrex::Abort(
@@ -114,7 +114,7 @@ void RectangularSubvolume::evaluate_inputs()
     ba.maxSize(chunk_size);
 
     amrex::Print() << "RectangularSubvolume " + m_label + ": BoxArray is " << ba
-                   << std::endl;
+                   << "\n";
 
     m_ba = ba;
 }

@@ -67,10 +67,8 @@ void Subvolume::initialize()
             amrex::Print()
                 << "WARNING: Subvolume: Non-existent field requested: " << fname
                 << ". This is a mistake or the requested field is a int field "
-                   "or a derived "
-                   "field and should be added to the int_fields/derived_fields "
-                   "parameter"
-                << std::endl;
+                   "or a derived field and should be added to the "
+                   "int_fields/derived_fields parameter.\n";
             continue;
         }
 
@@ -88,9 +86,8 @@ void Subvolume::initialize()
                 << "WARNING: Subvolume: Non-existent int_field requested: "
                 << fname
                 << ". This is a mistake or the requested int_field is a "
-                   "derived "
-                   "field and should be added to the derived_fields parameter"
-                << std::endl;
+                   "derived field and should be added to the derived_fields "
+                   "parameter\n";
             continue;
         }
 
@@ -206,8 +203,7 @@ void Subvolume::output_actions()
             amrex::Concatenate(sv_label, m_sim.time().time_index(), 5);
         ;
 
-        amrex::Print() << "Writing subvolume into " << subvol_filename
-                       << std::endl;
+        amrex::Print() << "Writing subvolume into " << subvol_filename << "\n";
         WriteSingleLevelPlotfile(
             subvol_filename, mf_sv, m_var_names, m_sim.mesh().Geom(lev), time,
             itime);

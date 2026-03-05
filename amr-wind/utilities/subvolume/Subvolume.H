@@ -49,7 +49,7 @@ public:
     //! Actions to do at end of every time step
     void post_advance_work() override {};
 
-    const amrex::Vector<std::string>& var_names() const { return m_var_names; }
+    [[nodiscard]] const amrex::Vector<std::string>& var_names() const { return m_var_names; }
 
 protected:
 private:

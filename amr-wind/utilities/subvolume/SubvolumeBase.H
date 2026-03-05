@@ -25,11 +25,11 @@ public:
     ~SubvolumeBase() override = default;
 
     //! Name used to refer to this sampler (e.g., myline1)
-    virtual std::string label() const = 0;
+    [[nodiscard]] virtual std::string label() const = 0;
     virtual std::string& label() = 0;
 
     //! Class name of this sampler (e.g., Rectangular)
-    virtual std::string subvolumetype() const = 0;
+    [[nodiscard]] virtual std::string subvolumetype() const = 0;
 
     //! Read inputs
     virtual void initialize(const std::string& key) = 0;
@@ -44,10 +44,13 @@ public:
     virtual void post_regrid_actions() { evaluate_inputs(); }
 
     //! Level that the subvolume corresponds to
-    virtual int lev() const { return 0; }
+    [[nodiscard]] virtual int lev() const { return 0; }
 
     //! BoxArray that the subvolume corresponds to
-    virtual amrex::BoxArray box_array() const { return amrex::BoxArray(0); }
+    [[nodiscard]] virtual amrex::BoxArray box_array() const
+    {
+        return amrex::BoxArray(0);
+    }
 };
 
 } // namespace subvolume
