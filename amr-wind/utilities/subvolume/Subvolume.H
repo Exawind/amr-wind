@@ -49,7 +49,10 @@ public:
     //! Actions to do at end of every time step
     void post_advance_work() override {};
 
-    [[nodiscard]] const amrex::Vector<std::string>& var_names() const { return m_var_names; }
+    [[nodiscard]] const amrex::Vector<std::string>& var_names() const
+    {
+        return m_var_names;
+    }
 
 protected:
 private:
@@ -76,7 +79,7 @@ private:
      */
     const std::string m_label;
 
-     /** Name of this subvolume object when writing outputs.
+    /** Name of this subvolume object when writing outputs.
      *
      *  This label can be specified to manually override the true label
      *  of this subvolume instance. Intended for unified top-level naming
