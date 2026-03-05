@@ -47,6 +47,16 @@ void Subvolume::initialize()
             ioutils::all_distinct(int_field_names),
             "Duplicates in " + m_label + ".int_fields");
         pp.queryarr("derived_fields", derived_field_names);
+        // Label can be renamed for the sake of output
+        m_label_out = m_label;
+        pp.query("output_rename", m_label_out);
+        if (m_label_out != m_label) {
+            amrex::Print()
+                << "WARNING: Subvolume top-level label " << m_label
+                << " renamed to " << m_label_out
+                << " for output. User must ensure that bottom-level labels are "
+                   "not redundant across different subvolume instances.\n";
+        }
     }
 
     // Process field information
@@ -129,7 +139,7 @@ void Subvolume::output_actions()
     BL_PROFILE("amr-wind::Subvolume::output_actions");
 
     const std::string post_dir = m_sim.io_manager().post_processing_directory();
-    const std::string name(post_dir + "/" + m_label);
+    const std::string name(post_dir + "/" + m_label_out);
 
     const auto time = m_sim.time().new_time();
     const auto itime = m_sim.time().time_index();

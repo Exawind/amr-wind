@@ -76,6 +76,15 @@ private:
      */
     const std::string m_label;
 
+     /** Name of this subvolume object when writing outputs.
+     *
+     *  This label can be specified to manually override the true label
+     *  of this subvolume instance. Intended for unified top-level naming
+     *  of different subvolume instances, but it is up to the user to
+     *  ensure that the bottom-level names are distinct when this is used.
+     */
+    std::string m_label_out{""};
+
     // number of field components
     int m_ncomp{0};
 
