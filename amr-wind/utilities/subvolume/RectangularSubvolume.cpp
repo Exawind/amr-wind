@@ -16,7 +16,7 @@ void RectangularSubvolume::initialize(const std::string& key)
 
     pp.getarr("origin", m_origin);
     pp.getarr("num_points", m_npts_vec);
-    pp.getarr("dx_vec", m_dx_vec);
+    pp.getarr("dx", m_dx_vec);
 
     m_chunk_size_vec.resize(AMREX_SPACEDIM);
     m_chunk_size_vec[0] = m_sim.mesh().maxGridSize(0)[0];

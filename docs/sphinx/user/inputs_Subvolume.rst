@@ -73,7 +73,7 @@ The prefix is the label set in ``incflo.post_processing``. For example
 
    Number of points (more accurately, cells) in each direction to include in the rectangular subvolume.
 
-.. input_param:: subvol1.chunk1.dx_vec
+.. input_param:: subvol1.chunk1.dx
 
    **type:** Vector<Real>, mandatory
 
