@@ -33,6 +33,7 @@ void Subvolume::initialize()
 
     {
         amrex::ParmParse pp(m_label);
+        populate_output_parameters(pp);
         pp.getarr("labels", labels);
         ioutils::assert_with_message(
             ioutils::all_distinct(labels),
