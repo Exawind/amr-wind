@@ -86,7 +86,7 @@ private:
      *  of different subvolume instances, but it is up to the user to
      *  ensure that the bottom-level names are distinct when this is used.
      */
-    std::string m_label_out{""};
+    std::string m_label_out;
 
     // number of field components
     int m_ncomp{0};
