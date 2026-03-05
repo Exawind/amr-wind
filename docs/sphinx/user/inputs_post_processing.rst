@@ -4,7 +4,7 @@ Section: Post-processing
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 This section controls post-processing routines supported within
-AMR-wind, which include Sampling, Reynolds Averaging (ReAveraging),
+AMR-wind, which include Sampling, Subvolume, Reynolds Averaging (ReAveraging),
 ReynoldsStress, TimeAveraging, Enstrophy, FieldNorms, KineticEnergy, and WaveEnergy.
 
 Note that while the input parameters use the keyword ``postproc``, the
