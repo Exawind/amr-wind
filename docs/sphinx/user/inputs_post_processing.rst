@@ -86,7 +86,7 @@ of the output timing parameters.
 
    **type:** Integer, optional
 
-   When :input_param:`output_interval` is active, outputs will take place when the difference
+   When :input_param:`postproc.output_interval` is active, outputs will take place when the difference
    between the current time step and the initial time step matches up with the specified interval.
    By default, the initial time step used in this calculation is the
    time step at the start of the current simulation. When starting a simulation
@@ -99,7 +99,7 @@ of the output timing parameters.
 
    **type:** Real number, optional
 
-   When :input_param:`output_time_interval` is active, outputs will take place when the difference
+   When :input_param:`postproc.output_time_interval` is active, outputs will take place when the difference
    between the current time and the initial time matches up with the specified time interval.
    By default, the initial time used in this calculation is the
    time at the start of the current simulation. When starting a simulation
