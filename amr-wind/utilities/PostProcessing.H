@@ -62,6 +62,8 @@ public:
         pp.query("output_time_interval", m_out_time_interval);
         pp.query("output_delay", m_out_delay);
         pp.query("output_time_delay", m_out_time_delay);
+        pp.query("output_start", m_out_start_index);
+        pp.query("output_start_time", m_out_start_time);
         pp.query("enforce_output_time_dt", m_enforce_dt);
         pp.query("enforce_output_time_dt_reltol", m_enforce_dt_tol);
 
@@ -127,21 +129,28 @@ public:
     //! Determine if output will happen this time step
     [[nodiscard]] bool do_output_now(
         const int ntime,
+        const int ntime0_in,
         const amrex::Real time,
+        const amrex::Real time0_in,
         const amrex::Real dt,
         amrex::Real tol) const
     {
         // Choose smallest tolerance between incoming and local
         tol = amrex::min<amrex::Real>(tol, m_out_time_tol * dt);
 
+        const int ntime0 =
+            m_out_start_index > 0 ? m_out_start_index : ntime0_in;
+        const amrex::Real time0 =
+            m_out_start_time > 0. ? m_out_start_time : time0_in;
+
         const bool step_based =
-            (m_out_interval > 0) &&
-            ((ntime - m_out_delay >= 0) && (ntime % m_out_interval == 0));
+            (m_out_interval > 0) && ((ntime - m_out_delay >= 0) &&
+                                     ((ntime - ntime0) % m_out_interval == 0));
         const bool time_based =
             (m_out_time_interval > 0.0_rt) &&
             ((time + tol - m_out_time_delay >= 0.0_rt) &&
-             (time + tol -
-                  (std::floor((time + tol) / m_out_time_interval) *
+             (time - time0 + tol -
+                  (std::floor((time - time0 + tol) / m_out_time_interval) *
                    m_out_time_interval) <
               dt));
 
@@ -171,6 +180,10 @@ protected:
     int m_out_delay{0};
     //! Time delay for output
     amrex::Real m_out_time_delay{0.0_rt};
+    //! Time step start for calculating step interval (restarts)
+    int m_out_start_index{-1};
+    //! Time start for calculating time interval (restarts)
+    int m_out_start_time{-1};
     //! Relative (to dt) tolerance for time interval output
     amrex::Real m_out_time_tol{
         std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt};
