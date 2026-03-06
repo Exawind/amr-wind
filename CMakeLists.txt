@@ -85,7 +85,7 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
   message(WARNING "Disabling FPE trapping for tests when using AppleClang.")
 endif()
 
-if(AMR_WIND_ENABLE_KYNEMA AND (NOT AMR_WIND_ENABLE_MPI)
+if(AMR_WIND_ENABLE_KYNEMA AND (NOT AMR_WIND_ENABLE_MPI))
   message(FATAL_ERROR "Enabling Kyenma currently requires MPI to be enabled.")
 endif
 
