@@ -87,7 +87,7 @@ void PostProcessManager::final_output()
     auto tol = m_sim.time().get_minimum_enforce_dt_abs_tol();
     for (auto& post : m_post) {
         // Avoid doing output if already taken place on final time step
-        if (!post->do_output_now(
+        if (post->do_final_output() && !post->do_output_now(
                 m_sim.time().time_index(), m_sim.time().start_time_index(),
                 m_sim.time().new_time(), m_sim.time().start_time(),
                 m_sim.time().delta_t(), tol)) {

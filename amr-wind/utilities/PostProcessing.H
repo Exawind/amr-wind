@@ -66,6 +66,7 @@ public:
         pp.query("output_start_time", m_out_start_time);
         pp.query("enforce_output_time_dt", m_enforce_dt);
         pp.query("enforce_output_time_dt_reltol", m_enforce_dt_tol);
+        pp.query("output_after_final_step", m_do_final_output);
 
         // Check for presence of arguments
         const bool has_interval = pp.contains("output_interval");
@@ -170,6 +171,7 @@ public:
         return m_enforce_dt_tol;
     }
     [[nodiscard]] bool enforce_dt() const { return m_enforce_dt; }
+    [[nodiscard]] bool do_final_output() const {return m_do_final_output; }
 
 protected:
     //! Time step interval for output
@@ -191,6 +193,8 @@ protected:
     amrex::Real m_enforce_dt_tol{1.0e-3_rt};
     //! Flag for enforcing time step based on output time
     bool m_enforce_dt{false};
+    //! Flag for automatic output at simulation end - on by default
+    bool m_do_final_output{true};
 };
 
 /** A collection of post-processing instances that are active during a
