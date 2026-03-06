@@ -144,7 +144,6 @@ DragForcing::DragForcing(const CFDSim& sim)
         amrex::Gpu::copy(
             amrex::Gpu::hostToDevice, m_w_values.begin(), m_w_values.end(),
             m_prof_w_d.begin());
-        //	    amrex::Print()<<"$$:"<<m_u_values<<std::endl;
     } else {
         amrex::Abort("Cannot find 1-D RANS profile file " + m_1d_rans);
     }
