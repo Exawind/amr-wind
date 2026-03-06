@@ -171,7 +171,7 @@ public:
         return m_enforce_dt_tol;
     }
     [[nodiscard]] bool enforce_dt() const { return m_enforce_dt; }
-    [[nodiscard]] bool do_final_output() const {return m_do_final_output; }
+    [[nodiscard]] bool do_final_output() const { return m_do_final_output; }
 
 protected:
     //! Time step interval for output
