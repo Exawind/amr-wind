@@ -87,7 +87,7 @@ endif()
 
 if(AMR_WIND_ENABLE_KYNEMA AND (NOT AMR_WIND_ENABLE_MPI))
   message(FATAL_ERROR "Enabling Kyenma currently requires MPI to be enabled.")
-endif
+endif()
 
 if(AMR_WIND_ENABLE_OPENFAST)
   if(NOT AMR_WIND_ENABLE_MPI)
