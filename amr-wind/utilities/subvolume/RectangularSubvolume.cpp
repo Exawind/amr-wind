@@ -16,13 +16,22 @@ void RectangularSubvolume::initialize(const std::string& key)
 
     pp.getarr("origin", m_origin);
     pp.getarr("num_points", m_npts_vec);
-    pp.getarr("dx", m_dx_vec);
+    amrex::Real dx{1.0_rt};
+    pp.query("dx", dx);
+    if (pp.contains("dx")) {
+        m_dx_vec.resize(AMREX_SPACEDIM);
+        m_dx_vec[0] = dx;
+        m_dx_vec[1] = dx;
+        m_dx_vec[2] = dx;
+    } else {
+        pp.getarr("dx_vec", m_dx_vec);
+    }
 
     m_chunk_size_vec.resize(AMREX_SPACEDIM);
     m_chunk_size_vec[0] = m_sim.mesh().maxGridSize(0)[0];
     m_chunk_size_vec[1] = m_sim.mesh().maxGridSize(0)[1];
     m_chunk_size_vec[2] = m_sim.mesh().maxGridSize(0)[2];
-    pp.queryarr("chunk_size", m_chunk_size_vec);
+    pp.queryarr("chunk_size_vec", m_chunk_size_vec);
 }
 
 void RectangularSubvolume::evaluate_inputs()

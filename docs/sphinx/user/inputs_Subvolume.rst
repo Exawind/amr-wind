@@ -73,15 +73,24 @@ The prefix is the label set in ``incflo.post_processing``. For example
 
    Number of points (more accurately, cells) in each direction to include in the rectangular subvolume.
 
-.. input_param:: subvol1.chunk1.dx
+.. input_param:: subvol1.chunk1.dx_vec
 
    **type:** Vector<Real>, mandatory
 
    Cell size, in each direction, for the rectangular subvolume. This is used to determine which mesh level
    should be used for the subvolume, and, as a result, this input argument must correspond to the resolution
-   of one of the mesh levels in the spatial extent of the subvolume.
+   of one of the mesh levels in the spatial extent of the subvolume. If a single cell size is specified through
+   the :input_param:`subvol1.chunk1.dx` argument below, then this argument (:input_param:`subvol1.chunk1.dx_vec`) is not required.
 
-.. input_param:: subvol1.chunk1.chunk_size
+.. input_param:: subvol1.chunk1.dx
+
+   **type:** Real, optional
+
+   Cell size for the rectangular subvolume. This optional argument can be used in place of
+   :input_param:`subvol1.chunk1.dx_vec` to specify a single cell size, representing the
+   cell size in all three directions.
+
+.. input_param:: subvol1.chunk1.chunk_size_vec
 
    **type:** Vector<Int>, optional
 
