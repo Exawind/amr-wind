@@ -140,9 +140,9 @@ public:
         tol = amrex::min<amrex::Real>(tol, m_out_time_tol * dt);
 
         const int ntime0 =
-            m_out_start_index > 0 ? m_out_start_index : ntime0_in;
+            m_out_start_index >= 0 ? m_out_start_index : ntime0_in;
         const amrex::Real time0 =
-            m_out_start_time > 0. ? m_out_start_time : time0_in;
+            m_out_start_time > -0.5 ? m_out_start_time : time0_in;
 
         const bool step_based =
             (m_out_interval > 0) && ((ntime - m_out_delay >= 0) &&
