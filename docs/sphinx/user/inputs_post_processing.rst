@@ -81,3 +81,38 @@ of the output timing parameters.
    When :input_param:`postproc.enforce_output_time_dt` is true, a tolerance is needed to determine when
    it is necessary to shrink the time step size. This tolerance is relative to the output time interval.
    In most cases, this parameter need not be modified, but it can be changed by the user.
+
+.. input_param:: postproc.output_start
+
+   **type:** Integer, optional
+
+   When :input_param:`output_interval` is active, outputs will take place when the difference
+   between the current time step and the initial time step matches up with the specified interval.
+   By default, the initial time step used in this calculation is the
+   time step at the start of the current simulation. When starting a simulation
+   from scratch, the start is 0, and for a simulation starting from a checkpoint file,
+   the start is the time step of the checkpoint file. This input argument
+   allows the user to override the default behavior by manually specifying
+   the initial time step to consider.
+
+.. input_param:: postproc.output_start_time
+
+   **type:** Real number, optional
+
+   When :input_param:`output_time_interval` is active, outputs will take place when the difference
+   between the current time and the initial time matches up with the specified time interval.
+   By default, the initial time used in this calculation is the
+   time at the start of the current simulation. When starting a simulation
+   from scratch, the start is 0, and for a simulation starting from a checkpoint file,
+   the start is the time of the checkpoint file. This input argument
+   allows the user to override the default behavior by manually specifying
+   the initial time to consider.
+
+.. input_param:: postproc.output_after_final_step
+
+   **type:** Bool, optional, default = true
+
+   Similar to checkpoint and plot files, the code will automatically write post-processing
+   outputs at the conclusion of a simulation, i.e., after its final step. This input
+   argument allows the user to override the default behavior by specifying false,
+   which turns off the final output.
