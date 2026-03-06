@@ -60,8 +60,9 @@ public:
         amrex::BndryRegister& bndry_np1,
         int lev,
         const Field* /*fld*/,
-        amrex::Real time,
-        const amrex::Vector<amrex::Real>& /*times*/);
+        const amrex::Real time,
+        const amrex::Vector<amrex::Real>& /*times*/,
+        const bool frozen_data);
 
     void interpolate(amrex::Real /*time*/);
     [[nodiscard]] bool is_populated(amrex::Orientation /*ori*/) const;
@@ -142,7 +143,8 @@ public:
     [[nodiscard]] amrex::Vector<amrex::BoxArray> read_bndry_native_boxarrays(
         const std::string& chkname, const Field& field) const;
 
-    void read_file(bool /* nph_target_time*/);
+    void read_file(const bool /* nph_target_time*/);
+    void read_frozen_file();
 
     void populate_data(
         int /*lev*/,
@@ -262,6 +264,9 @@ private:
 
     //! output format for bndry output
     std::string m_out_fmt{"native"};
+
+    //! Read frozen data
+    bool m_read_frozen_data{false};
 };
 
 } // namespace amr_wind
