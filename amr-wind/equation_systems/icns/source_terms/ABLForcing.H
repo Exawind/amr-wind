@@ -34,8 +34,8 @@ public:
 
     void set_target_velocities(amrex::Real ux, amrex::Real uy)
     {
-        m_target_vel[0] = 1e3 * ux;
-        m_target_vel[1] = 1e3 * uy;
+        m_target_vel[0] = ux;
+        m_target_vel[1] = uy;
     }
 
     void set_mean_velocities(amrex::Real ux, amrex::Real uy)
@@ -63,8 +63,8 @@ public:
             m_target_vel[1] = new_spd * std::sin(new_dir);
         }
 
-        m_abl_forcing[0] = (m_target_vel[0] - m_mean_vel[0]) / dt;
-        m_abl_forcing[1] = (m_target_vel[1] - m_mean_vel[1]) / dt;
+        m_abl_forcing[0] = (1e3_rt * m_target_vel[0] - m_mean_vel[0]) / dt;
+        m_abl_forcing[1] = (1e3_rt * m_target_vel[1] - m_mean_vel[1]) / dt;
 
         if (m_write_force_timetable &&
             amrex::ParallelDescriptor::IOProcessor() &&
