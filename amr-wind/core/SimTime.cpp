@@ -254,18 +254,18 @@ void SimTime::set_current_cfl(
             dt_new = amrex::min(dt_new, m_initial_dt);
         }
 
-        m_dt[0] = (m_cur_time <
-                   (m_delay_time - std::numeric_limits<float>::epsilon() * 1e1))
-                      ? m_initial_dt
-                      : dt_new;
+        m_dt[0] =
+            (m_cur_time < (m_delay_time - 0.1 * amrex::max(m_initial_dt, 0.0)))
+                ? m_initial_dt
+                : dt_new;
 
     } else {
         // Ensure that we use user-specified dt. Checkpoint restart might have
         // overridden this
-        m_dt[0] = (m_cur_time <
-                   (m_delay_time - std::numeric_limits<float>::epsilon() * 1e1))
-                      ? m_initial_dt
-                      : m_fixed_dt;
+        m_dt[0] =
+            (m_cur_time < (m_delay_time - 0.1 * amrex::max(m_initial_dt, 0.0)))
+                ? m_initial_dt
+                : m_fixed_dt;
     }
 
     m_current_cfl = 0.5_rt * cfl_unit_time * m_dt[0];
