@@ -164,6 +164,7 @@ TEST_F(PostProcTimeTest, output_end)
     {
         amrex::ParmParse pp("fnorm");
         pp.add("output_delay", 1000);
+        pp.add("output_after_final_step", true);
     }
     initialize_mesh();
 
@@ -224,6 +225,7 @@ TEST_F(PostProcTimeTest, time_output_end)
         amrex::ParmParse pp("fnorm");
         pp.add("output_time_interval", 1.0_rt);
         pp.add("output_time_delay", 1000.0_rt);
+        pp.add("output_after_final_step", true);
     }
     initialize_mesh();
 
@@ -283,7 +285,6 @@ TEST_F(PostProcTimeTest, no_output_end)
     {
         amrex::ParmParse pp("fnorm");
         pp.add("output_delay", 1000);
-        pp.add("output_after_final_step", false);
     }
     initialize_mesh();
 

@@ -110,9 +110,9 @@ of the output timing parameters.
 
 .. input_param:: postproc.output_after_final_step
 
-   **type:** Bool, optional, default = true
+   **type:** Bool, optional, default = false
 
-   Similar to checkpoint and plot files, the code will automatically write post-processing
-   outputs at the conclusion of a simulation, i.e., after its final step. This input
-   argument allows the user to override the default behavior by specifying false,
-   which turns off the final output.
+   Similar to checkpoint and plot files, the code can write post-processing
+   outputs at the conclusion of a simulation, i.e., after its final step. 
+   However, unlike checkpoint and plot files, this behavior is off by default.
+   To turn on the final output, the user must specify this input as true.

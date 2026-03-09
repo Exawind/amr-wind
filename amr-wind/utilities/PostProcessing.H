@@ -193,8 +193,8 @@ protected:
     amrex::Real m_enforce_dt_tol{1.0e-3_rt};
     //! Flag for enforcing time step based on output time
     bool m_enforce_dt{false};
-    //! Flag for automatic output at simulation end - on by default
-    bool m_do_final_output{true};
+    //! Flag for output at simulation end - off by default
+    bool m_do_final_output{false};
 };
 
 /** A collection of post-processing instances that are active during a
