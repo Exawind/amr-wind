@@ -194,7 +194,7 @@ void SimTime::set_current_cfl(
     }
 
     // Limit timestep growth to % per timestep
-    if (m_dt[0] > 0.0_rt) {
+    if (m_dt[0] > 0.0_rt && m_adaptive) {
         dt_new =
             amrex::min<amrex::Real>(dt_new, (1.0_rt + m_dt_growth) * m_dt[0]);
     }
