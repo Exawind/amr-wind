@@ -34,8 +34,8 @@ public:
 
     void set_target_velocities(amrex::Real ux, amrex::Real uy)
     {
-        m_target_vel[0] = ux;
-        m_target_vel[1] = uy;
+        m_target_vel[0] = 1e3 * ux;
+        m_target_vel[1] = 1e3 * uy;
     }
 
     void set_mean_velocities(amrex::Real ux, amrex::Real uy)
