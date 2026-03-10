@@ -196,7 +196,7 @@ void Subvolume::output_actions()
                 mf_all_samelev, (*scr_ptr)(lev), 0, icomp, m_ndcomp, 0);
         }
 
-        mf_sv.ParallelCopy(mf_all_samelev, 0, 0, AMREX_SPACEDIM, 0, 0);
+        mf_sv.ParallelCopy(mf_all_samelev, 0, 0, n_out, 0, 0);
 
         std::string sv_label = name + "_" + sv->label();
         std::string subvol_filename =
