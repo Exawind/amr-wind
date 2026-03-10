@@ -54,6 +54,8 @@ protected:
     int m_lev_for_sub{0};
     int m_verbose{0};
 
+    bool m_chunk_size_present;
+
     amrex::BoxArray m_ba;
 
     std::string m_label;

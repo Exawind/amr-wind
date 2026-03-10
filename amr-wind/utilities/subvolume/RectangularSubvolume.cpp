@@ -27,11 +27,8 @@ void RectangularSubvolume::initialize(const std::string& key)
         pp.getarr("dx_vec", m_dx_vec);
     }
 
-    m_chunk_size_vec.resize(AMREX_SPACEDIM);
-    m_chunk_size_vec[0] = m_sim.mesh().maxGridSize(0)[0];
-    m_chunk_size_vec[1] = m_sim.mesh().maxGridSize(0)[1];
-    m_chunk_size_vec[2] = m_sim.mesh().maxGridSize(0)[2];
     pp.queryarr("chunk_size_vec", m_chunk_size_vec);
+    m_chunk_size_present = pp.contains("chunk_size_vec");
 
     pp.query("verbose", m_verbose);
 }
@@ -116,6 +113,13 @@ void RectangularSubvolume::evaluate_inputs()
         amrex::Abort(
             "RectangularSubvolume " + m_label +
             ": Box requested is larger than the existing domain");
+    }
+
+    if (!m_chunk_size_present && m_chunk_size_vec.empty()) {
+        m_chunk_size_vec.resize(AMREX_SPACEDIM);
+        m_chunk_size_vec[0] = m_sim.mesh().maxGridSize(m_lev_for_sub)[0];
+        m_chunk_size_vec[1] = m_sim.mesh().maxGridSize(m_lev_for_sub)[1];
+        m_chunk_size_vec[2] = m_sim.mesh().maxGridSize(m_lev_for_sub)[2];
     }
 
     amrex::IntVect chunk_size(
