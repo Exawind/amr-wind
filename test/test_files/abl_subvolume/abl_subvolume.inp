@@ -85,7 +85,7 @@ incflo.verbose          =   0          # incflo_level
 #               SAMPLING                #
 #.......................................#
 incflo.post_processing    = subvol1 subvol2
-subvol1.output_frequency  = 1
+subvol1.output_interval  = 1
 subvol1.fields            = velocity
 subvol1.int_fields        = mask_cell
 subvol1.derived_fields    = mag_vorticity "components(velocity,0,1)" "grad(temperature)" "grad(density)"
@@ -101,7 +101,7 @@ subvol1.2_.origin         = 447.9167 447.9167 447.9167
 subvol1.2_.num_points     = 2 2 4
 subvol1.2_.dx_vec         = 10.4167 10.4167 10.4167
 
-subvol2.output_frequency  = 2
+subvol2.output_interval  = 2
 subvol2.fields            = velocity
 subvol2.int_fields        = mask_cell
 subvol2.derived_fields    = q_criterion_nondim
