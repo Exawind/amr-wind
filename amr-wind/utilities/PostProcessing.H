@@ -62,6 +62,7 @@ public:
         pp.query("output_time_interval", m_out_time_interval);
         pp.query("output_delay", m_out_delay);
         pp.query("output_time_delay", m_out_time_delay);
+        pp.query("output_from_restart", m_out_from_restart);
         pp.query("output_start", m_out_start_index);
         pp.query("output_start_time", m_out_start_time);
         pp.query("enforce_output_time_dt", m_enforce_dt);
@@ -87,6 +88,16 @@ public:
                        "the new input argument of output_interval is "
                        "preferred.\n";
             }
+        }
+
+        if (m_out_from_restart &&
+            (pp.contains("output_start") || pp.contains("output_start_time"))) {
+            amrex::Abort(
+                "Conflict in output parameters. output_from_restart is true, "
+                "designating that output timing calculations consider the "
+                "restart time or time step, but the output_start or "
+                "output_start_time is specified, which manually overwrites the "
+                "stored restart time or time step.\n");
         }
 
         // Because of default, interval is valid unless turned off;
@@ -139,10 +150,12 @@ public:
         // Choose smallest tolerance between incoming and local
         tol = amrex::min<amrex::Real>(tol, m_out_time_tol * dt);
 
-        const int ntime0 =
-            m_out_start_index >= 0 ? m_out_start_index : ntime0_in;
-        const amrex::Real time0 =
-            m_out_start_time > -0.5 ? m_out_start_time : time0_in;
+        // Should the restart time always be used
+        int ntime0 = m_out_from_restart ? ntime0_in : 0;
+        amrex::Real time0 = m_out_from_restart ? time0_in : 0_rt;
+        // Has the manual start been specified
+        ntime0 = m_out_start_index >= 0 ? m_out_start_index : ntime0;
+        time0 = m_out_start_time > -0.5 ? m_out_start_time : time0;
 
         const bool step_based =
             (m_out_interval > 0) && ((ntime - m_out_delay >= 0) &&
@@ -182,6 +195,8 @@ protected:
     int m_out_delay{0};
     //! Time delay for output
     amrex::Real m_out_time_delay{0.0_rt};
+    //! Always consider restart time for calculating output
+    bool m_out_from_restart{false};
     //! Time step start for calculating step interval (restarts)
     int m_out_start_index{-1};
     //! Time start for calculating time interval (restarts)
