@@ -58,8 +58,7 @@ void RectangularSubvolume::evaluate_inputs()
         amrex::Abort(
             "RectangularSubvolume " + m_label +
             ": Resolution specified for subvolume does not match the "
-            "resolution "
-            "of any of the mesh levels.");
+            "resolution of any of the mesh levels.");
     }
 
     // **************************************************************
