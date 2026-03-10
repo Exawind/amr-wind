@@ -176,7 +176,9 @@ void Subvolume::output_actions()
             mf_sv.ParallelCopy((*fld)(lev), 0, icomp, fld->num_comp(), 0, 0);
         }
         for (auto* fld : m_int_fields) {
-            mf_sv.ParallelCopy(amrex::ToMultiFab((*fld)(lev)), 0, icomp, fld->num_comp(), 0, 0);
+            mf_sv.ParallelCopy(
+                amrex::ToMultiFab((*fld)(lev)), 0, icomp, fld->num_comp(), 0,
+                0);
             icomp += fld->num_comp();
         }
         if (m_ndcomp > 0) {
