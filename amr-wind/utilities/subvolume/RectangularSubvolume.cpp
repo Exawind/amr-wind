@@ -40,9 +40,9 @@ void RectangularSubvolume::evaluate_inputs()
     const auto& geom = m_sim.mesh().Geom();
     for (int i = 0; i < m_sim.repo().num_active_levels(); i++) {
         if (!found) {
-            if (amrex::almostEqual(m_dx_vec[0], geom[i].CellSize(0), 10) &&
-                amrex::almostEqual(m_dx_vec[1], geom[i].CellSize(1), 10) &&
-                amrex::almostEqual(m_dx_vec[2], geom[i].CellSize(2), 10)) {
+            if (std::abs(m_dx_vec[0] - geom[i].CellSize(0)) < 1e-4 &&
+                std::abs(m_dx_vec[1] - geom[i].CellSize(1)) < 1e-4 &&
+                std::abs(m_dx_vec[2] - geom[i].CellSize(2)) < 1e-4) {
 
                 amrex::Print()
                     << "RectangularSubvolume " + m_label +
