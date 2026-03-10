@@ -114,7 +114,6 @@ void Subvolume::initialize()
         pp1.query("type", stype);
         auto obj = SubvolumeBase::create(stype, m_sim);
         obj->label() = lbl;
-        obj->subvolumetype() = stype;
         obj->initialize(key);
         obj->post_init_actions();
 
