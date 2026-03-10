@@ -65,15 +65,15 @@ void RectangularSubvolume::evaluate_inputs()
     // the origin corresponds to Note we use 1.0001 as a fudge factor since the
     // division of two reals --> integer will do a floor
     // **************************************************************
-    int i0 = std::lround(
+    int i0 = static_cast<int>(std::lround(
         (m_origin[0] - geom[m_lev_for_sub].ProbLo(0)) /
-        geom[m_lev_for_sub].CellSize(0));
-    int j0 = std::lround(
+        geom[m_lev_for_sub].CellSize(0)));
+    int j0 = static_cast<int>(std::lround(
         (m_origin[1] - geom[m_lev_for_sub].ProbLo(1)) /
-        geom[m_lev_for_sub].CellSize(1));
-    int k0 = std::lround(
+        geom[m_lev_for_sub].CellSize(1)));
+    int k0 = static_cast<int>(std::lround(
         (m_origin[2] - geom[m_lev_for_sub].ProbLo(2)) /
-        geom[m_lev_for_sub].CellSize(2));
+        geom[m_lev_for_sub].CellSize(2)));
 
     found = false;
     if (std::abs(
