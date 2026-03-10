@@ -52,6 +52,7 @@ protected:
     amrex::Vector<int> m_chunk_size_vec;
 
     int m_lev_for_sub{0};
+    int m_verbose{0};
 
     amrex::BoxArray m_ba;
 

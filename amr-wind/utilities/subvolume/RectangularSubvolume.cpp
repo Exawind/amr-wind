@@ -32,6 +32,8 @@ void RectangularSubvolume::initialize(const std::string& key)
     m_chunk_size_vec[1] = m_sim.mesh().maxGridSize(0)[1];
     m_chunk_size_vec[2] = m_sim.mesh().maxGridSize(0)[2];
     pp.queryarr("chunk_size_vec", m_chunk_size_vec);
+
+    pp.query("verbose", m_verbose);
 }
 
 void RectangularSubvolume::evaluate_inputs()
@@ -66,14 +68,14 @@ void RectangularSubvolume::evaluate_inputs()
     // the origin corresponds to Note we use 1.0001 as a fudge factor since the
     // division of two reals --> integer will do a floor
     // **************************************************************
-    int i0 = static_cast<int>(
-        (m_origin[0] - geom[m_lev_for_sub].ProbLo(0)) * 1.0001 /
+    int i0 = std::lround(
+        (m_origin[0] - geom[m_lev_for_sub].ProbLo(0)) /
         geom[m_lev_for_sub].CellSize(0));
-    int j0 = static_cast<int>(
-        (m_origin[1] - geom[m_lev_for_sub].ProbLo(1)) * 1.0001 /
+    int j0 = std::lround(
+        (m_origin[1] - geom[m_lev_for_sub].ProbLo(1)) /
         geom[m_lev_for_sub].CellSize(1));
-    int k0 = static_cast<int>(
-        (m_origin[2] - geom[m_lev_for_sub].ProbLo(2)) * 1.0001 /
+    int k0 = std::lround(
+        (m_origin[2] - geom[m_lev_for_sub].ProbLo(2)) /
         geom[m_lev_for_sub].CellSize(2));
 
     found = false;
@@ -104,8 +106,11 @@ void RectangularSubvolume::evaluate_inputs()
         amrex::IntVect(
             i0 + m_npts_vec[0] - 1, j0 + m_npts_vec[1] - 1,
             k0 + m_npts_vec[2] - 1));
-    amrex::Print() << "RectangularSubvolume " + m_label + ": Box requested is "
-                   << bx << "\n";
+    if (m_verbose > 0) {
+        amrex::Print() << "RectangularSubvolume " + m_label +
+                              ": Box requested is "
+                       << bx << "\n";
+    }
 
     if (!m_sim.mesh().boxArray()[m_lev_for_sub].contains(bx)) {
         amrex::Abort(
@@ -119,8 +124,10 @@ void RectangularSubvolume::evaluate_inputs()
     amrex::BoxArray ba(bx);
     ba.maxSize(chunk_size);
 
-    amrex::Print() << "RectangularSubvolume " + m_label + ": BoxArray is " << ba
-                   << "\n";
+    if (m_verbose > 0) {
+        amrex::Print() << "RectangularSubvolume " + m_label + ": BoxArray is "
+                       << ba << "\n";
+    }
 
     m_ba = ba;
 }
