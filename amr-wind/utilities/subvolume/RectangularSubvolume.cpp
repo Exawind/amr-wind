@@ -40,9 +40,9 @@ void RectangularSubvolume::evaluate_inputs()
     const auto& geom = m_sim.mesh().Geom();
     for (int i = 0; i < m_sim.repo().num_active_levels(); i++) {
         if (!found) {
-            if (std::abs(m_dx_vec[0] - geom[i].CellSize(0)) < 1e-4 &&
-                std::abs(m_dx_vec[1] - geom[i].CellSize(1)) < 1e-4 &&
-                std::abs(m_dx_vec[2] - geom[i].CellSize(2)) < 1e-4) {
+            if (amrex::almostEqual(m_dx_vec[0], geom[i].CellSize(0), 10) &&
+                amrex::almostEqual(m_dx_vec[1], geom[i].CellSize(1), 10) &&
+                amrex::almostEqual(m_dx_vec[2], geom[i].CellSize(2), 10)) {
 
                 amrex::Print()
                     << "RectangularSubvolume " + m_label +
@@ -100,8 +100,6 @@ void RectangularSubvolume::evaluate_inputs()
             ": Origin specified does not correspond to a node at this level.");
     }
 
-    amrex::Box domain(geom[m_lev_for_sub].Domain());
-
     amrex::Box bx(
         amrex::IntVect(i0, j0, k0),
         amrex::IntVect(
@@ -110,7 +108,7 @@ void RectangularSubvolume::evaluate_inputs()
     amrex::Print() << "RectangularSubvolume " + m_label + ": Box requested is "
                    << bx << "\n";
 
-    if (!domain.contains(bx)) {
+    if (!m_sim.mesh().boxArray()[m_lev_for_sub].contains(bx)) {
         amrex::Abort(
             "RectangularSubvolume " + m_label +
             ": Box requested is larger than the existing domain");
