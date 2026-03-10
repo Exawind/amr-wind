@@ -202,7 +202,6 @@ void Subvolume::output_actions()
         std::string subvol_filename =
             amrex::Concatenate(sv_label, m_sim.time().time_index(), 5);
 
-
         amrex::Print() << "Writing subvolume into " << subvol_filename << "\n";
         WriteSingleLevelPlotfile(
             subvol_filename, mf_sv, m_var_names, m_sim.mesh().Geom(lev), time,
