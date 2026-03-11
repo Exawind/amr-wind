@@ -260,6 +260,8 @@ private:
     amrex::Real m_force_plt_tol{1.0e-3_rt};
 
     //! Smallest absolute tolerance for enforcing dt, considering all
+    //! tolerance criteria. This is simply a high initial value; the code
+    //! calculates the actual tolerance with min() operations
     amrex::Real m_force_dt_abs_tol{1.0e8_rt};
 
     //! Initial starting time for generating checkpoint files (time-based)
