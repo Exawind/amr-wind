@@ -155,7 +155,7 @@ public:
         amrex::Real time0 = m_out_from_restart ? time0_in : 0_rt;
         // Has the manual start been specified
         ntime0 = m_out_start_index >= 0 ? m_out_start_index : ntime0;
-        time0 = m_out_start_time > -0.5 ? m_out_start_time : time0;
+        time0 = m_out_start_time > -0.5_rt ? m_out_start_time : time0;
 
         const bool step_based =
             (m_out_interval > 0) && ((ntime - m_out_delay >= 0) &&
