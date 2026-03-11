@@ -155,7 +155,7 @@ public:
         amrex::Real time0 = m_out_from_restart ? time0_in : 0_rt;
         // Has the manual start been specified
         ntime0 = m_out_start_index >= 0 ? m_out_start_index : ntime0;
-        time0 = m_out_start_time > -0.5 ? m_out_start_time : time0;
+        time0 = m_out_start_time > -0.5_rt ? m_out_start_time : time0;
 
         const bool step_based =
             (m_out_interval > 0) && ((ntime - m_out_delay >= 0) &&
@@ -200,10 +200,9 @@ protected:
     //! Time step start for calculating step interval (restarts)
     int m_out_start_index{-1};
     //! Time start for calculating time interval (restarts)
-    int m_out_start_time{-1};
+    amrex::Real m_out_start_time{-1.0_rt};
     //! Relative (to dt) tolerance for time interval output
-    amrex::Real m_out_time_tol{
-        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt};
+    amrex::Real m_out_time_tol{1.0e-2_rt};
     //! Relative (to m_out_time_interval) tolerance for enforcing dt
     amrex::Real m_enforce_dt_tol{1.0e-3_rt};
     //! Flag for enforcing time step based on output time
