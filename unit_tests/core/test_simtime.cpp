@@ -218,8 +218,8 @@ TEST_F(SimTimeTest, plt_chk_timeinterval_loop_perturb)
         pp.add("stop_time", 5.0_rt);
         pp.add("max_step", 100);
         // Perturb start time - like floating point error present on a restart
-        pp.add("checkpoint_start_time", 1e-6_rt);
-        pp.add("plot_start_time", 1e-6_rt);
+        pp.add("checkpoint_start_time", 1.0e-6_rt);
+        pp.add("plot_start_time", 1.0e-6_rt);
     }
     amr_wind::SimTime time;
     time.parse_parameters();

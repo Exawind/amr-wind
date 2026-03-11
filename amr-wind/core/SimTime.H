@@ -254,7 +254,7 @@ private:
     amrex::Real m_plt_t_delay{0.0_rt};
 
     //! Relative (to dt) tolerance for plot time interval output
-    amrex::Real m_plt_t_tol{1e-2_rt};
+    amrex::Real m_plt_t_tol{1.0e-2_rt};
 
     //! Relative (to plt_t_interval) tolerance for enforcing dt
     amrex::Real m_force_plt_tol{1.0e-3_rt};
