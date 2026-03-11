@@ -200,7 +200,7 @@ protected:
     //! Time step start for calculating step interval (restarts)
     int m_out_start_index{-1};
     //! Time start for calculating time interval (restarts)
-    int m_out_start_time{-1};
+    amrex::Real m_out_start_time{-1.0_rt};
     //! Relative (to dt) tolerance for time interval output
     amrex::Real m_out_time_tol{
         std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt};
