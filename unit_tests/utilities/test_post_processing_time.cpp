@@ -105,7 +105,7 @@ TEST_F(PostProcTimeTest, time_interval_perturb)
         amrex::ParmParse pp("fnorm");
         pp.add("output_time_interval", 1.0_rt);
         // Perturb start time - like floating point error present on a restart
-        pp.add("output_start_time", 1.0e-8_rt);
+        pp.add("output_start_time", 1.0e-6_rt);
     }
     initialize_mesh();
 
