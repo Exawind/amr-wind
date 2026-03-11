@@ -202,8 +202,7 @@ protected:
     //! Time start for calculating time interval (restarts)
     amrex::Real m_out_start_time{-1.0_rt};
     //! Relative (to dt) tolerance for time interval output
-    amrex::Real m_out_time_tol{
-        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt};
+    amrex::Real m_out_time_tol{1e-2_rt};
     //! Relative (to m_out_time_interval) tolerance for enforcing dt
     amrex::Real m_enforce_dt_tol{1.0e-3_rt};
     //! Flag for enforcing time step based on output time
