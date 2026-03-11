@@ -1,0 +1,726 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::OceanWavesBoundary Class Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::OceanWavesBoundary Class Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/classamr__wind_1_1_ocean_waves_boundary.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="oceanwavesboundary-class-reference">
+<h1>OceanWavesBoundary Class Reference<a class="headerlink" href="#oceanwavesboundary-class-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::OceanWavesBoundary Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="classamr__wind_1_1_ocean_waves_boundary.html">OceanWavesBoundary</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
+<a href="classamr__wind_1_1_ocean_waves_boundary-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::OceanWavesBoundary Class Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_ocean_waves_boundary_8_h_source.html">OceanWavesBoundary.H</a>&gt;</code></p>
+<div class="dynheader">
+Collaboration diagram for amr_wind::OceanWavesBoundary:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1_ocean_waves_boundary__coll__graph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a08e7bba0831a9f6538172e1681524d86" id="r_a08e7bba0831a9f6538172e1681524d86"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a08e7bba0831a9f6538172e1681524d86">OceanWavesBoundary</a> (<a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;)</td></tr>
+<tr class="memitem:a13069cdc18ca5f574951edf9de0441e8" id="r_a13069cdc18ca5f574951edf9de0441e8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a13069cdc18ca5f574951edf9de0441e8">post_init_actions</a> ()</td></tr>
+<tr class="memitem:a5a221889b4fc7044bd36c8239fa4f6d0" id="r_a5a221889b4fc7044bd36c8239fa4f6d0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5a221889b4fc7044bd36c8239fa4f6d0">set_velocity</a> (int lev, amrex::Real time, const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;fld, amrex::MultiFab &amp;mfab, int dcomp=0, int orig_comp=0) const</td></tr>
+<tr class="memitem:a1c33297524d0d544496d35693bf40c9b" id="r_a1c33297524d0d544496d35693bf40c9b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1c33297524d0d544496d35693bf40c9b">set_vof</a> (int lev, amrex::Real time, const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;fld, amrex::MultiFab &amp;mfab) const</td></tr>
+<tr class="memitem:a16f1ee49a2eca3cfb9e4d7c1f0c6daba" id="r_a16f1ee49a2eca3cfb9e4d7c1f0c6daba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a16f1ee49a2eca3cfb9e4d7c1f0c6daba">set_density</a> (int lev, amrex::Real time, const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;fld, amrex::MultiFab &amp;mfab) const</td></tr>
+<tr class="memitem:a36c66c4cfd47095ef9e5b074b690e7d1" id="r_a36c66c4cfd47095ef9e5b074b690e7d1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a36c66c4cfd47095ef9e5b074b690e7d1">set_inflow_sibling_velocity</a> (int lev, amrex::Real time, const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;fld, amrex::Array&lt; amrex::MultiFab *, AMREX_SPACEDIM &gt; mfabs) const</td></tr>
+<tr class="memitem:a71c4cd3cc8fabd210803848e71758e94" id="r_a71c4cd3cc8fabd210803848e71758e94"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a71c4cd3cc8fabd210803848e71758e94">record_boundary_data_time</a> (const amrex::Real time)</td></tr>
+<tr class="memitem:a8f1c5c9877cae8d19d2964a02d018d6a" id="r_a8f1c5c9877cae8d19d2964a02d018d6a"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8f1c5c9877cae8d19d2964a02d018d6a">get_boundary_data_time</a> () const</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a1ac8a1e07760be19223a7e03c785b525" id="r_a1ac8a1e07760be19223a7e03c785b525"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_sim_time.html">amr_wind::SimTime</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1ac8a1e07760be19223a7e03c785b525">m_time</a></td></tr>
+<tr class="memitem:a6f64e6df8f81bade82eb9428bd20c8d9" id="r_a6f64e6df8f81bade82eb9428bd20c8d9"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_field_repo.html">FieldRepo</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6f64e6df8f81bade82eb9428bd20c8d9">m_repo</a></td></tr>
+<tr class="memitem:a60616d0a4ad7fe5cf85ebad19d1bbca3" id="r_a60616d0a4ad7fe5cf85ebad19d1bbca3"><td class="memItemLeft" align="right" valign="top">const amrex::AmrCore &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a60616d0a4ad7fe5cf85ebad19d1bbca3">m_mesh</a></td></tr>
+<tr class="memitem:a49b092cc036d80738f6710511f7bce3b" id="r_a49b092cc036d80738f6710511f7bce3b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a49b092cc036d80738f6710511f7bce3b">m_ow_velocity</a></td></tr>
+<tr class="memitem:a3ce8f2867e50bddc3f9c10f9d03549fe" id="r_a3ce8f2867e50bddc3f9c10f9d03549fe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3ce8f2867e50bddc3f9c10f9d03549fe">m_ow_vof</a></td></tr>
+<tr class="memitem:a14e3ac2ee975c0a915bfdb6c30a87f49" id="r_a14e3ac2ee975c0a915bfdb6c30a87f49"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_int_field.html">IntField</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a14e3ac2ee975c0a915bfdb6c30a87f49">m_terrain_blank_ptr</a> {nullptr}</td></tr>
+<tr class="memitem:a2762ac343d23aad9840e85270c753973" id="r_a2762ac343d23aad9840e85270c753973"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2762ac343d23aad9840e85270c753973">m_activate_ow_bndry</a> {true}</td></tr>
+<tr class="memitem:aacea593039dc141b478f775e154727ea" id="r_aacea593039dc141b478f775e154727ea"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aacea593039dc141b478f775e154727ea">m_vof_exists</a> {true}</td></tr>
+<tr class="memitem:a3256ab6e6db2b46c298f63b0f025a765" id="r_a3256ab6e6db2b46c298f63b0f025a765"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3256ab6e6db2b46c298f63b0f025a765">m_terrain_exists</a> {false}</td></tr>
+<tr class="memitem:a474b86e794673afe4365a1e1d798a008" id="r_a474b86e794673afe4365a1e1d798a008"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a474b86e794673afe4365a1e1d798a008">m_bndry_time</a> {0.0_rt}</td></tr>
+<tr class="memitem:a2b3d896cae2b1276167607700b6d43f7" id="r_a2b3d896cae2b1276167607700b6d43f7"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2b3d896cae2b1276167607700b6d43f7">m_rho1</a> {-1.0_rt}</td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Interface for Ocean Waves boundary data</p>
+<p>This class performs the necessary field operations to provide available wave data at the boundaries </p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a08e7bba0831a9f6538172e1681524d86" name="a08e7bba0831a9f6538172e1681524d86"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08e7bba0831a9f6538172e1681524d86">&#9670;&#160;</a></span>OceanWavesBoundary()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::OceanWavesBoundary::OceanWavesBoundary </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>sim</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel explicit">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a8f1c5c9877cae8d19d2964a02d018d6a" name="a8f1c5c9877cae8d19d2964a02d018d6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f1c5c9877cae8d19d2964a02d018d6a">&#9670;&#160;</a></span>get_boundary_data_time()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::OceanWavesBoundary::get_boundary_data_time </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a13069cdc18ca5f574951edf9de0441e8" name="a13069cdc18ca5f574951edf9de0441e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13069cdc18ca5f574951edf9de0441e8">&#9670;&#160;</a></span>post_init_actions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::OceanWavesBoundary::post_init_actions </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a71c4cd3cc8fabd210803848e71758e94" name="a71c4cd3cc8fabd210803848e71758e94"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71c4cd3cc8fabd210803848e71758e94">&#9670;&#160;</a></span>record_boundary_data_time()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::OceanWavesBoundary::record_boundary_data_time </td>
+          <td>(</td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>time</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a16f1ee49a2eca3cfb9e4d7c1f0c6daba" name="a16f1ee49a2eca3cfb9e4d7c1f0c6daba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16f1ee49a2eca3cfb9e4d7c1f0c6daba">&#9670;&#160;</a></span>set_density()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::OceanWavesBoundary::set_density </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>lev</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>time</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>fld</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::MultiFab &amp;</td>          <td class="paramname"><span class="paramname"><em>mfab</em></span>&#160;) const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a36c66c4cfd47095ef9e5b074b690e7d1" name="a36c66c4cfd47095ef9e5b074b690e7d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36c66c4cfd47095ef9e5b074b690e7d1">&#9670;&#160;</a></span>set_inflow_sibling_velocity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::OceanWavesBoundary::set_inflow_sibling_velocity </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>lev</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>time</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>fld</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Array&lt; amrex::MultiFab *, AMREX_SPACEDIM &gt;</td>          <td class="paramname"><span class="paramname"><em>mfabs</em></span>&#160;) const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5a221889b4fc7044bd36c8239fa4f6d0" name="a5a221889b4fc7044bd36c8239fa4f6d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a221889b4fc7044bd36c8239fa4f6d0">&#9670;&#160;</a></span>set_velocity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::OceanWavesBoundary::set_velocity </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>lev</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>time</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>fld</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::MultiFab &amp;</td>          <td class="paramname"><span class="paramname"><em>mfab</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>dcomp</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>orig_comp</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>&#160;) const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1c33297524d0d544496d35693bf40c9b" name="a1c33297524d0d544496d35693bf40c9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c33297524d0d544496d35693bf40c9b">&#9670;&#160;</a></span>set_vof()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::OceanWavesBoundary::set_vof </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>lev</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>time</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>fld</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::MultiFab &amp;</td>          <td class="paramname"><span class="paramname"><em>mfab</em></span>&#160;) const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a2762ac343d23aad9840e85270c753973" name="a2762ac343d23aad9840e85270c753973"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2762ac343d23aad9840e85270c753973">&#9670;&#160;</a></span>m_activate_ow_bndry</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::OceanWavesBoundary::m_activate_ow_bndry {true}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a474b86e794673afe4365a1e1d798a008" name="a474b86e794673afe4365a1e1d798a008"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a474b86e794673afe4365a1e1d798a008">&#9670;&#160;</a></span>m_bndry_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::OceanWavesBoundary::m_bndry_time {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a60616d0a4ad7fe5cf85ebad19d1bbca3" name="a60616d0a4ad7fe5cf85ebad19d1bbca3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a60616d0a4ad7fe5cf85ebad19d1bbca3">&#9670;&#160;</a></span>m_mesh</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const amrex::AmrCore&amp; amr_wind::OceanWavesBoundary::m_mesh</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a49b092cc036d80738f6710511f7bce3b" name="a49b092cc036d80738f6710511f7bce3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49b092cc036d80738f6710511f7bce3b">&#9670;&#160;</a></span>m_ow_velocity</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a>&amp; amr_wind::OceanWavesBoundary::m_ow_velocity</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3ce8f2867e50bddc3f9c10f9d03549fe" name="a3ce8f2867e50bddc3f9c10f9d03549fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ce8f2867e50bddc3f9c10f9d03549fe">&#9670;&#160;</a></span>m_ow_vof</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_field.html">Field</a>&amp; amr_wind::OceanWavesBoundary::m_ow_vof</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6f64e6df8f81bade82eb9428bd20c8d9" name="a6f64e6df8f81bade82eb9428bd20c8d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f64e6df8f81bade82eb9428bd20c8d9">&#9670;&#160;</a></span>m_repo</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_field_repo.html">FieldRepo</a>&amp; amr_wind::OceanWavesBoundary::m_repo</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2b3d896cae2b1276167607700b6d43f7" name="a2b3d896cae2b1276167607700b6d43f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b3d896cae2b1276167607700b6d43f7">&#9670;&#160;</a></span>m_rho1</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::OceanWavesBoundary::m_rho1 {-1.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a14e3ac2ee975c0a915bfdb6c30a87f49" name="a14e3ac2ee975c0a915bfdb6c30a87f49"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14e3ac2ee975c0a915bfdb6c30a87f49">&#9670;&#160;</a></span>m_terrain_blank_ptr</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_int_field.html">IntField</a>* amr_wind::OceanWavesBoundary::m_terrain_blank_ptr {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3256ab6e6db2b46c298f63b0f025a765" name="a3256ab6e6db2b46c298f63b0f025a765"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3256ab6e6db2b46c298f63b0f025a765">&#9670;&#160;</a></span>m_terrain_exists</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::OceanWavesBoundary::m_terrain_exists {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1ac8a1e07760be19223a7e03c785b525" name="a1ac8a1e07760be19223a7e03c785b525"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ac8a1e07760be19223a7e03c785b525">&#9670;&#160;</a></span>m_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_sim_time.html">amr_wind::SimTime</a>&amp; amr_wind::OceanWavesBoundary::m_time</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aacea593039dc141b478f775e154727ea" name="aacea593039dc141b478f775e154727ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aacea593039dc141b478f775e154727ea">&#9670;&#160;</a></span>m_vof_exists</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::OceanWavesBoundary::m_vof_exists {true}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/ocean_waves/boundary_ops/<a class="el" href="_ocean_waves_boundary_8_h_source.html">OceanWavesBoundary.H</a></li>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/ocean_waves/boundary_ops/<a class="el" href="_ocean_waves_boundary_8cpp.html">OceanWavesBoundary.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

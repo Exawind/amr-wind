@@ -1,0 +1,1300 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::FPlaneAveragingFine&amp;lt; FType &amp;gt; Class Template Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::FPlaneAveragingFine&amp;lt; FType &amp;gt; Class Template Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/classamr__wind_1_1_f_plane_averaging_fine.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="fplaneaveragingfine-lt-ftype-gt-class-template-reference">
+<h1>FPlaneAveragingFine&amp;lt; FType &amp;gt; Class Template Reference<a class="headerlink" href="#fplaneaveragingfine-lt-ftype-gt-class-template-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::FPlaneAveragingFine&lt; FType &gt; Class Template Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="classamr__wind_1_1_f_plane_averaging_fine.html">FPlaneAveragingFine</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a> &#124;
+<a href="classamr__wind_1_1_f_plane_averaging_fine-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::FPlaneAveragingFine&lt; FType &gt; Class Template Reference<div class="ingroups"><a class="el" href="group__utilities.html">Utilities</a> &raquo; <a class="el" href="group__statistics.html">Field statistics</a> &#124; <a class="el" href="group__physics.html">Physics models</a> &raquo; <a class="el" href="group__wind.html">Wind energy modeling</a> &raquo; <a class="el" href="group__we__abl.html">ABL</a></div></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_field_plane_averaging_fine_8_h_source.html">FieldPlaneAveragingFine.H</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for amr_wind::FPlaneAveragingFine&lt; FType &gt;:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1_f_plane_averaging_fine__inherit__graph.svg" width="100%" height="386"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for amr_wind::FPlaneAveragingFine&lt; FType &gt;:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1_f_plane_averaging_fine__coll__graph.svg" width="295" height="435"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:ab0a751cf0cc24bd6b6950b4abe134616" id="r_ab0a751cf0cc24bd6b6950b4abe134616"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab0a751cf0cc24bd6b6950b4abe134616">FPlaneAveragingFine</a> (const FType &amp;field_in, const <a class="el" href="classamr__wind_1_1_sim_time.html">amr_wind::SimTime</a> &amp;time, int axis_in, bool compute_deriv=false)</td></tr>
+<tr class="memitem:a78b70d0679e5638798c778c8aa271517" id="r_a78b70d0679e5638798c778c8aa271517"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a78b70d0679e5638798c778c8aa271517">~FPlaneAveragingFine</a> ()=default</td></tr>
+<tr class="memitem:a8179ef6431ac2b342f5d041541c2e48e" id="r_a8179ef6431ac2b342f5d041541c2e48e"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8179ef6431ac2b342f5d041541c2e48e">operator()</a> ()</td></tr>
+<tr class="memitem:a5d47010b617bd95a976e9ba170100b2d" id="r_a5d47010b617bd95a976e9ba170100b2d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5d47010b617bd95a976e9ba170100b2d">convert_x_to_ind</a> (amrex::Real x, int &amp;ind, amrex::Real &amp;c) const</td></tr>
+<tr class="memitem:a483a3db0519d86746951730a4bd61a99" id="r_a483a3db0519d86746951730a4bd61a99"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a483a3db0519d86746951730a4bd61a99">line_average_interpolated</a> (amrex::Real x, int comp) const</td></tr>
+<tr class="memitem:a4d84afbd9c018530cb06b3f0b3725f6e" id="r_a4d84afbd9c018530cb06b3f0b3725f6e"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4d84afbd9c018530cb06b3f0b3725f6e">line_average_cell</a> (int ind, int comp) const</td></tr>
+<tr class="memitem:a1f027157ec81616cd01f853bf64935d0" id="r_a1f027157ec81616cd01f853bf64935d0"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1f027157ec81616cd01f853bf64935d0">line_derivative_interpolated</a> (amrex::Real x, int comp) const</td></tr>
+<tr class="memitem:a39452879aefcb5e8891b30b39921c985" id="r_a39452879aefcb5e8891b30b39921c985"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a39452879aefcb5e8891b30b39921c985">line_derivative_of_average_cell</a> (int ind, int comp) const</td></tr>
+<tr class="memitem:a97f596cf9eb0ad2923c5b2714297ba26" id="r_a97f596cf9eb0ad2923c5b2714297ba26"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a97f596cf9eb0ad2923c5b2714297ba26">output_line_average_ascii</a> (const std::string &amp;filename, int step, amrex::Real time)</td></tr>
+<tr class="memitem:a59f0f330235dfa3bcfb44bf22918587d" id="r_a59f0f330235dfa3bcfb44bf22918587d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a59f0f330235dfa3bcfb44bf22918587d">output_line_average_ascii</a> (int step, amrex::Real time)</td></tr>
+<tr class="memitem:a7102df463d287b617c4a100246c5feaa" id="r_a7102df463d287b617c4a100246c5feaa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7102df463d287b617c4a100246c5feaa">set_precision</a> (int p)</td></tr>
+<tr class="memitem:adfab5c259cc812f708463cf7d3691b19" id="r_adfab5c259cc812f708463cf7d3691b19"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adfab5c259cc812f708463cf7d3691b19">dx</a> () const</td></tr>
+<tr class="memitem:a13d756e181f9185554c466cba7924a2c" id="r_a13d756e181f9185554c466cba7924a2c"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a13d756e181f9185554c466cba7924a2c">xlo</a> () const</td></tr>
+<tr class="memitem:a4c0599caccde9c6956232f1cc7e3a229" id="r_a4c0599caccde9c6956232f1cc7e3a229"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4c0599caccde9c6956232f1cc7e3a229">axis</a> () const</td></tr>
+<tr class="memitem:a23f1d82593158fc50492df8693203f86" id="r_a23f1d82593158fc50492df8693203f86"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a23f1d82593158fc50492df8693203f86">ncomp</a> () const</td></tr>
+<tr class="memitem:ae1b2923161bb3a6884e73fd36fc02446" id="r_ae1b2923161bb3a6884e73fd36fc02446"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae1b2923161bb3a6884e73fd36fc02446">ncell_line</a> () const</td></tr>
+<tr class="memitem:a9402c08a04f69872be14d60c3f4b051d" id="r_a9402c08a04f69872be14d60c3f4b051d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9402c08a04f69872be14d60c3f4b051d">last_updated_index</a> () const</td></tr>
+<tr class="memitem:a4442677e6a76ca911f46e81389b81045" id="r_a4442677e6a76ca911f46e81389b81045"><td class="memItemLeft" align="right" valign="top">const amrex::Vector&lt; amrex::Real &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4442677e6a76ca911f46e81389b81045">line_average</a> () const</td></tr>
+<tr class="memitem:a626b71ef8a9759d188e2f207ecd3b5d2" id="r_a626b71ef8a9759d188e2f207ecd3b5d2"><td class="memItemLeft" align="right" valign="top">const amrex::Vector&lt; amrex::Real &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a626b71ef8a9759d188e2f207ecd3b5d2">line_deriv</a> () const</td></tr>
+<tr class="memitem:ae7e3bb55d88dcbc5a528b7b6f3b25e93" id="r_ae7e3bb55d88dcbc5a528b7b6f3b25e93"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae7e3bb55d88dcbc5a528b7b6f3b25e93">line_average</a> (int comp, amrex::Vector&lt; amrex::Real &gt; &amp;l_vec)</td></tr>
+<tr class="memitem:a77cbb21b4997af15ebb5af8cefe4fe9e" id="r_a77cbb21b4997af15ebb5af8cefe4fe9e"><td class="memItemLeft" align="right" valign="top">const amrex::Vector&lt; amrex::Real &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a77cbb21b4997af15ebb5af8cefe4fe9e">line_centroids</a> () const</td></tr>
+<tr class="memitem:a650f65b35b1b00094de54ed82bf5c607" id="r_a650f65b35b1b00094de54ed82bf5c607"><td class="memItemLeft" align="right" valign="top">const FType &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a650f65b35b1b00094de54ed82bf5c607">field</a> () const</td></tr>
+<tr class="memitem:a8b445183fe1daf949a8f776544fb6716" id="r_a8b445183fe1daf949a8f776544fb6716"><td class="memTemplParams" colspan="2">template&lt;typename IndexSelector&gt; </td></tr>
+<tr class="memitem:a8b445183fe1daf949a8f776544fb6716 template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8b445183fe1daf949a8f776544fb6716">compute_averages</a> (const IndexSelector &amp;idxOp)</td></tr>
+<tr class="memitem:a07cb56085d14f2f1b05005af8b9f0f60" id="r_a07cb56085d14f2f1b05005af8b9f0f60"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a07cb56085d14f2f1b05005af8b9f0f60">compute_line_derivatives</a> ()</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:a3c1bea5b3593d103cae0254d7bbd4f11" id="r_a3c1bea5b3593d103cae0254d7bbd4f11"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3c1bea5b3593d103cae0254d7bbd4f11">m_ncomp</a></td></tr>
+<tr class="memitem:a795f88e43233ad508d49375525dadf08" id="r_a795f88e43233ad508d49375525dadf08"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a795f88e43233ad508d49375525dadf08">m_line_average</a></td></tr>
+<tr class="memitem:a002e69ec7d067b1e15de1d48f74050db" id="r_a002e69ec7d067b1e15de1d48f74050db"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a002e69ec7d067b1e15de1d48f74050db">m_line_deriv</a></td></tr>
+<tr class="memdesc:a002e69ec7d067b1e15de1d48f74050db"><td class="mdescLeft">&#160;</td><td class="mdescRight">line storage for the derivative of average field  <br /></td></tr>
+<tr class="memitem:a28762c50bc346edffeeb3cf52c7bf9a0" id="r_a28762c50bc346edffeeb3cf52c7bf9a0"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a28762c50bc346edffeeb3cf52c7bf9a0">m_line_xcentroid</a></td></tr>
+<tr class="memitem:aa3c126c7d46c2019a52c3c29de2e279b" id="r_aa3c126c7d46c2019a52c3c29de2e279b"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa3c126c7d46c2019a52c3c29de2e279b">m_dx</a></td></tr>
+<tr class="memitem:a5994c995fb05118e64b7766182b1b190" id="r_a5994c995fb05118e64b7766182b1b190"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5994c995fb05118e64b7766182b1b190">m_xlo</a></td></tr>
+<tr class="memitem:a4a27f55c35f986ad47863bd3dc7e060c" id="r_a4a27f55c35f986ad47863bd3dc7e060c"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4a27f55c35f986ad47863bd3dc7e060c">m_xhi</a></td></tr>
+<tr class="memitem:af33542598be3617a17f1de91b6b71023" id="r_af33542598be3617a17f1de91b6b71023"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af33542598be3617a17f1de91b6b71023">m_ncell_line</a></td></tr>
+<tr class="memitem:a398a3950ac5656df13d45cfad7fb65f4" id="r_a398a3950ac5656df13d45cfad7fb65f4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a398a3950ac5656df13d45cfad7fb65f4">m_precision</a> = 6</td></tr>
+<tr class="memitem:a14552d3444ccd8cd218e12d5b57f421a" id="r_a14552d3444ccd8cd218e12d5b57f421a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a14552d3444ccd8cd218e12d5b57f421a">m_last_updated_index</a> = -1</td></tr>
+<tr class="memitem:a9665edea8185f860dce9b43d8612c35c" id="r_a9665edea8185f860dce9b43d8612c35c"><td class="memItemLeft" align="right" valign="top">const FType &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9665edea8185f860dce9b43d8612c35c">m_field</a></td></tr>
+<tr class="memitem:a73c18763ec207e836a015c51eb1c57e4" id="r_a73c18763ec207e836a015c51eb1c57e4"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_sim_time.html">SimTime</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a73c18763ec207e836a015c51eb1c57e4">m_time</a></td></tr>
+<tr class="memitem:a3f3a9965b3a44bc2d6f67f7a177c38ef" id="r_a3f3a9965b3a44bc2d6f67f7a177c38ef"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3f3a9965b3a44bc2d6f67f7a177c38ef">m_axis</a></td></tr>
+<tr class="memitem:a80937ed781e8a43beeb258007d250aad" id="r_a80937ed781e8a43beeb258007d250aad"><td class="memItemLeft" align="right" valign="top">const bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a80937ed781e8a43beeb258007d250aad">m_comp_deriv</a></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename FType&gt;<br />
+class amr_wind::FPlaneAveragingFine&lt; FType &gt;</div><p>Output average of a field on planes normal to a given direction</p>
+<p>The user can choose a direction (x, y, or z), the default value is the z-direction. The field is then averaged on planes at the cell-centers at level 0 (coarsest level) along the specified direction. </p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="ab0a751cf0cc24bd6b6950b4abe134616" name="ab0a751cf0cc24bd6b6950b4abe134616"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0a751cf0cc24bd6b6950b4abe134616">&#9670;&#160;</a></span>FPlaneAveragingFine()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine</a>&lt; FType &gt;::FPlaneAveragingFine </td>
+          <td>(</td>
+          <td class="paramtype">const FType &amp;</td>          <td class="paramname"><span class="paramname"><em>field_in</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_sim_time.html">amr_wind::SimTime</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>time</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>axis_in</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>compute_deriv</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">field_in</td><td>[in] <a class="el" href="classamr__wind_1_1_field.html">Field</a> to be averaged </td></tr>
+    <tr><td class="paramname">time</td><td>[in] Time instance to determine output frequencies </td></tr>
+    <tr><td class="paramname">axis_in</td><td>[in] Direction along which planes are computed </td></tr>
+    <tr><td class="paramname">compute_deriv</td><td>[in] Should the derivative of the averages be computed </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a78b70d0679e5638798c778c8aa271517" name="a78b70d0679e5638798c778c8aa271517"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78b70d0679e5638798c778c8aa271517">&#9670;&#160;</a></span>~FPlaneAveragingFine()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine</a>&lt; FType &gt;::~<a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">FPlaneAveragingFine</a> </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel virtual">virtual</span><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a4c0599caccde9c6956232f1cc7e3a229" name="a4c0599caccde9c6956232f1cc7e3a229"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c0599caccde9c6956232f1cc7e3a229">&#9670;&#160;</a></span>axis()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine</a>&lt; FType &gt;::axis </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8b445183fe1daf949a8f776544fb6716" name="a8b445183fe1daf949a8f776544fb6716"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b445183fe1daf949a8f776544fb6716">&#9670;&#160;</a></span>compute_averages()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+<div class="memtemplate">
+template&lt;typename IndexSelector&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine</a>&lt; FType &gt;::compute_averages </td>
+          <td>(</td>
+          <td class="paramtype">const IndexSelector &amp;</td>          <td class="paramname"><span class="paramname"><em>idxOp</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>fill line storage with averages </p>
+
+</div>
+</div>
+<a id="a07cb56085d14f2f1b05005af8b9f0f60" name="a07cb56085d14f2f1b05005af8b9f0f60"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07cb56085d14f2f1b05005af8b9f0f60">&#9670;&#160;</a></span>compute_line_derivatives()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine</a>&lt; FType &gt;::compute_line_derivatives </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>fill derivatives of line storage </p>
+
+</div>
+</div>
+<a id="a5d47010b617bd95a976e9ba170100b2d" name="a5d47010b617bd95a976e9ba170100b2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d47010b617bd95a976e9ba170100b2d">&#9670;&#160;</a></span>convert_x_to_ind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine</a>&lt; FType &gt;::convert_x_to_ind </td>
+          <td>(</td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>x</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;</td>          <td class="paramname"><span class="paramname"><em>ind</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real &amp;</td>          <td class="paramname"><span class="paramname"><em>c</em></span>&#160;) const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adfab5c259cc812f708463cf7d3691b19" name="adfab5c259cc812f708463cf7d3691b19"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adfab5c259cc812f708463cf7d3691b19">&#9670;&#160;</a></span>dx()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real <a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine</a>&lt; FType &gt;::dx </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a650f65b35b1b00094de54ed82bf5c607" name="a650f65b35b1b00094de54ed82bf5c607"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a650f65b35b1b00094de54ed82bf5c607">&#9670;&#160;</a></span>field()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const FType &amp; <a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine</a>&lt; FType &gt;::field </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9402c08a04f69872be14d60c3f4b051d" name="a9402c08a04f69872be14d60c3f4b051d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9402c08a04f69872be14d60c3f4b051d">&#9670;&#160;</a></span>last_updated_index()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine</a>&lt; FType &gt;::last_updated_index </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4442677e6a76ca911f46e81389b81045" name="a4442677e6a76ca911f46e81389b81045"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4442677e6a76ca911f46e81389b81045">&#9670;&#160;</a></span>line_average() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const amrex::Vector&lt; amrex::Real &gt; &amp; <a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine</a>&lt; FType &gt;::line_average </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae7e3bb55d88dcbc5a528b7b6f3b25e93" name="ae7e3bb55d88dcbc5a528b7b6f3b25e93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7e3bb55d88dcbc5a528b7b6f3b25e93">&#9670;&#160;</a></span>line_average() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine</a>&lt; FType &gt;::line_average </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>comp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Vector&lt; amrex::Real &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>l_vec</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4d84afbd9c018530cb06b3f0b3725f6e" name="a4d84afbd9c018530cb06b3f0b3725f6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d84afbd9c018530cb06b3f0b3725f6e">&#9670;&#160;</a></span>line_average_cell()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real <a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine</a>&lt; FType &gt;::line_average_cell </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>ind</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>comp</em></span>&#160;) const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>evaluate line average at specific cell for any average component </p>
+
+</div>
+</div>
+<a id="a483a3db0519d86746951730a4bd61a99" name="a483a3db0519d86746951730a4bd61a99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a483a3db0519d86746951730a4bd61a99">&#9670;&#160;</a></span>line_average_interpolated()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real <a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine</a>&lt; FType &gt;::line_average_interpolated </td>
+          <td>(</td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>x</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>comp</em></span>&#160;) const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>evaluate line average at specific location for any average component </p>
+
+</div>
+</div>
+<a id="a77cbb21b4997af15ebb5af8cefe4fe9e" name="a77cbb21b4997af15ebb5af8cefe4fe9e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77cbb21b4997af15ebb5af8cefe4fe9e">&#9670;&#160;</a></span>line_centroids()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const amrex::Vector&lt; amrex::Real &gt; &amp; <a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine</a>&lt; FType &gt;::line_centroids </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a626b71ef8a9759d188e2f207ecd3b5d2" name="a626b71ef8a9759d188e2f207ecd3b5d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a626b71ef8a9759d188e2f207ecd3b5d2">&#9670;&#160;</a></span>line_deriv()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const amrex::Vector&lt; amrex::Real &gt; &amp; <a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine</a>&lt; FType &gt;::line_deriv </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1f027157ec81616cd01f853bf64935d0" name="a1f027157ec81616cd01f853bf64935d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f027157ec81616cd01f853bf64935d0">&#9670;&#160;</a></span>line_derivative_interpolated()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real <a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine</a>&lt; FType &gt;::line_derivative_interpolated </td>
+          <td>(</td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>x</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>comp</em></span>&#160;) const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>evaluate line average derivative at specific location for any average component </p>
+
+</div>
+</div>
+<a id="a39452879aefcb5e8891b30b39921c985" name="a39452879aefcb5e8891b30b39921c985"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39452879aefcb5e8891b30b39921c985">&#9670;&#160;</a></span>line_derivative_of_average_cell()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real <a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine</a>&lt; FType &gt;::line_derivative_of_average_cell </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>ind</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>comp</em></span>&#160;) const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>evaluate derivative of a line average at specific cell for any component </p>
+
+</div>
+</div>
+<a id="ae1b2923161bb3a6884e73fd36fc02446" name="ae1b2923161bb3a6884e73fd36fc02446"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1b2923161bb3a6884e73fd36fc02446">&#9670;&#160;</a></span>ncell_line()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine</a>&lt; FType &gt;::ncell_line </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a23f1d82593158fc50492df8693203f86" name="a23f1d82593158fc50492df8693203f86"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23f1d82593158fc50492df8693203f86">&#9670;&#160;</a></span>ncomp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine</a>&lt; FType &gt;::ncomp </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8179ef6431ac2b342f5d041541c2e48e" name="a8179ef6431ac2b342f5d041541c2e48e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8179ef6431ac2b342f5d041541c2e48e">&#9670;&#160;</a></span>operator()()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine</a>&lt; FType &gt;::operator() </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented in <a class="el" href="classamr__wind_1_1_vel_plane_averaging_fine.html#aefead0afeb3681f841343356ac656fd8">amr_wind::VelPlaneAveragingFine</a>.</p>
+
+</div>
+</div>
+<a id="a97f596cf9eb0ad2923c5b2714297ba26" name="a97f596cf9eb0ad2923c5b2714297ba26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97f596cf9eb0ad2923c5b2714297ba26">&#9670;&#160;</a></span>output_line_average_ascii() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine</a>&lt; FType &gt;::output_line_average_ascii </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>filename</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>step</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>time</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a59f0f330235dfa3bcfb44bf22918587d" name="a59f0f330235dfa3bcfb44bf22918587d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59f0f330235dfa3bcfb44bf22918587d">&#9670;&#160;</a></span>output_line_average_ascii() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine</a>&lt; FType &gt;::output_line_average_ascii </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>step</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>time</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7102df463d287b617c4a100246c5feaa" name="a7102df463d287b617c4a100246c5feaa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7102df463d287b617c4a100246c5feaa">&#9670;&#160;</a></span>set_precision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine</a>&lt; FType &gt;::set_precision </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>change precision of text file output </p>
+
+</div>
+</div>
+<a id="a13d756e181f9185554c466cba7924a2c" name="a13d756e181f9185554c466cba7924a2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13d756e181f9185554c466cba7924a2c">&#9670;&#160;</a></span>xlo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real <a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine</a>&lt; FType &gt;::xlo </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a3f3a9965b3a44bc2d6f67f7a177c38ef" name="a3f3a9965b3a44bc2d6f67f7a177c38ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f3a9965b3a44bc2d6f67f7a177c38ef">&#9670;&#160;</a></span>m_axis</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const int <a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine</a>&lt; FType &gt;::m_axis</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a80937ed781e8a43beeb258007d250aad" name="a80937ed781e8a43beeb258007d250aad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80937ed781e8a43beeb258007d250aad">&#9670;&#160;</a></span>m_comp_deriv</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const bool <a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine</a>&lt; FType &gt;::m_comp_deriv</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa3c126c7d46c2019a52c3c29de2e279b" name="aa3c126c7d46c2019a52c3c29de2e279b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3c126c7d46c2019a52c3c29de2e279b">&#9670;&#160;</a></span>m_dx</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real <a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine</a>&lt; FType &gt;::m_dx</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>line storage for centroids of each cell along a line </p>
+
+</div>
+</div>
+<a id="a9665edea8185f860dce9b43d8612c35c" name="a9665edea8185f860dce9b43d8612c35c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9665edea8185f860dce9b43d8612c35c">&#9670;&#160;</a></span>m_field</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const FType&amp; <a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine</a>&lt; FType &gt;::m_field</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>keep track of the last time index that the operator was called </p>
+
+</div>
+</div>
+<a id="a14552d3444ccd8cd218e12d5b57f421a" name="a14552d3444ccd8cd218e12d5b57f421a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14552d3444ccd8cd218e12d5b57f421a">&#9670;&#160;</a></span>m_last_updated_index</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine</a>&lt; FType &gt;::m_last_updated_index = -1</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>precision for line plot text file </p>
+
+</div>
+</div>
+<a id="a795f88e43233ad508d49375525dadf08" name="a795f88e43233ad508d49375525dadf08"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a795f88e43233ad508d49375525dadf08">&#9670;&#160;</a></span>m_line_average</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Real&gt; <a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine</a>&lt; FType &gt;::m_line_average</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>number of average components </p>
+
+</div>
+</div>
+<a id="a002e69ec7d067b1e15de1d48f74050db" name="a002e69ec7d067b1e15de1d48f74050db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a002e69ec7d067b1e15de1d48f74050db">&#9670;&#160;</a></span>m_line_deriv</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Real&gt; <a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine</a>&lt; FType &gt;::m_line_deriv</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>line storage for the derivative of average field </p>
+<p>line storage for the average velocity and tracer variables </p>
+
+</div>
+</div>
+<a id="a28762c50bc346edffeeb3cf52c7bf9a0" name="a28762c50bc346edffeeb3cf52c7bf9a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28762c50bc346edffeeb3cf52c7bf9a0">&#9670;&#160;</a></span>m_line_xcentroid</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Real&gt; <a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine</a>&lt; FType &gt;::m_line_xcentroid</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af33542598be3617a17f1de91b6b71023" name="af33542598be3617a17f1de91b6b71023"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af33542598be3617a17f1de91b6b71023">&#9670;&#160;</a></span>m_ncell_line</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine</a>&lt; FType &gt;::m_ncell_line</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>top of line </p>
+
+</div>
+</div>
+<a id="a3c1bea5b3593d103cae0254d7bbd4f11" name="a3c1bea5b3593d103cae0254d7bbd4f11"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c1bea5b3593d103cae0254d7bbd4f11">&#9670;&#160;</a></span>m_ncomp</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine</a>&lt; FType &gt;::m_ncomp</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a398a3950ac5656df13d45cfad7fb65f4" name="a398a3950ac5656df13d45cfad7fb65f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a398a3950ac5656df13d45cfad7fb65f4">&#9670;&#160;</a></span>m_precision</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine</a>&lt; FType &gt;::m_precision = 6</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>number of cells along line </p>
+
+</div>
+</div>
+<a id="a73c18763ec207e836a015c51eb1c57e4" name="a73c18763ec207e836a015c51eb1c57e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a73c18763ec207e836a015c51eb1c57e4">&#9670;&#160;</a></span>m_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_sim_time.html">SimTime</a>&amp; <a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine</a>&lt; FType &gt;::m_time</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4a27f55c35f986ad47863bd3dc7e060c" name="a4a27f55c35f986ad47863bd3dc7e060c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a27f55c35f986ad47863bd3dc7e060c">&#9670;&#160;</a></span>m_xhi</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real <a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine</a>&lt; FType &gt;::m_xhi</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>bottom of line </p>
+
+</div>
+</div>
+<a id="a5994c995fb05118e64b7766182b1b190" name="a5994c995fb05118e64b7766182b1b190"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5994c995fb05118e64b7766182b1b190">&#9670;&#160;</a></span>m_xlo</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real <a class="el" href="classamr__wind_1_1_f_plane_averaging_fine.html">amr_wind::FPlaneAveragingFine</a>&lt; FType &gt;::m_xlo</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>mesh spacing in axis direction </p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/<a class="el" href="_field_plane_averaging_fine_8_h_source.html">FieldPlaneAveragingFine.H</a></li>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/<a class="el" href="_field_plane_averaging_fine_8cpp.html">FieldPlaneAveragingFine.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

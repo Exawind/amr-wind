@@ -1,0 +1,14 @@
+.. meta::45e93e8299f9dc3d3522be01cd5bc39d8cc37db8e3a697461bde0fd51c2438e0f9f3e125697017cc1669f66feba035f8f06fab1fea45f5c4832dc7c25f6db98e
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/icns/source_terms/ActuatorForcing.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/equation\_systems/icns/source\_terms/ActuatorForcing.H Source File
+===============================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _actuator_forcing_8_h_source.html

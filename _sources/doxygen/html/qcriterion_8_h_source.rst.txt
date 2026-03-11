@@ -1,0 +1,14 @@
+.. meta::548ae27d61827f29207c3ad1aa217b85be3387589723997bcb5abb20d80b6e7bf769ff7fe09a759eb32ef3c3b63cab7efd42bc0e19ce93a23ae6b8d3a3dec2f2
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/fvm/qcriterion.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/fvm/qcriterion.H Source File
+=========================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: qcriterion_8_h_source.html

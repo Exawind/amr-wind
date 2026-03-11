@@ -1,0 +1,14 @@
+.. meta::c2e02378ff32d14ce2e32890c3b1e9228d1c20e07cf13902f96d6d44b58f0793aa119cc50b87b47d81cac6b444bb54ad815d75585c5a82abd814419e31b02a40
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::FatCore Struct Reference
+
+FatCore Struct Reference
+========================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1_fat_core.html

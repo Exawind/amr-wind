@@ -1,0 +1,14 @@
+.. meta::a657d1bd084daf74caf52d17f3ab6b465bd44cc0d15a1e5f472a42ba2d7c5481f9762f15aa27321ef3ed60fe51547a1c821e86cf674912c41532ecc7f40399a7
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/DerivedQuantity.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/DerivedQuantity.H Source File
+====================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _derived_quantity_8_h_source.html

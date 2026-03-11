@@ -1,0 +1,385 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/ForestDrag.H Source File &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/ForestDrag.H Source File</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/_forest_drag_8_h_source.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="home-runner-work-amr-wind-amr-wind-amr-wind-physics-forestdrag-h-source-file">
+<h1>/home/runner/work/amr-wind/amr-wind/amr-wind/physics/ForestDrag.H Source File<a class="headerlink" href="#home-runner-work-amr-wind-amr-wind-amr-wind-physics-forestdrag-h-source-file" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/ForestDrag.H Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="dir_d85575251dd712327fe3cf057fa568b4.html">amr-wind</a></li><li class="navelem"><a href="dir_212148f97b8bb53ebaebb3bf8a8b5de4.html">amr-wind</a></li><li class="navelem"><a href="dir_f00f788038d28a6de62e2305131ce6f9.html">physics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="headertitle"><div class="title">ForestDrag.H</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="_forest_drag_8_h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef FORESTDRAG_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define FORESTDRAG_H</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="_physics_8_h.html">amr-wind/core/Physics.H</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="_field_8_h.html">amr-wind/core/Field.H</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="_c_f_d_sim_8_h.html">amr-wind/CFDSim.H</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="index__operations_8_h.html">amr-wind/utilities/index_operations.H</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="integrals_8_h.html">amr-wind/utilities/integrals.H</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="constants_8_h.html">amr-wind/utilities/constants.H</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;AMReX_REAL.H&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">using namespace </span>amrex::literals;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceamr__wind_1_1forestdrag.html">amr_wind::forestdrag</a> {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="foldopen" id="foldopen00016" data-start="{" data-end="};">
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structamr__wind_1_1forestdrag_1_1_forest.html">   16</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structamr__wind_1_1forestdrag_1_1_forest.html">Forest</a></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>{</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structamr__wind_1_1forestdrag_1_1_forest.html#a663ccf0e9661373a2cbfd21125b79f18">   18</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structamr__wind_1_1forestdrag_1_1_forest.html#a663ccf0e9661373a2cbfd21125b79f18">m_id</a>{-1};</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structamr__wind_1_1forestdrag_1_1_forest.html#abe859bc76e8d055e65b22fcc63ba2b99">   19</a></span>    amrex::Real <a class="code hl_variable" href="structamr__wind_1_1forestdrag_1_1_forest.html#abe859bc76e8d055e65b22fcc63ba2b99">m_type_forest</a>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structamr__wind_1_1forestdrag_1_1_forest.html#a840965cc5031a6889524c932120e9259">   20</a></span>    amrex::Real <a class="code hl_variable" href="structamr__wind_1_1forestdrag_1_1_forest.html#a840965cc5031a6889524c932120e9259">m_x_forest</a>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structamr__wind_1_1forestdrag_1_1_forest.html#a17c5138db1ae35ff577af72dfb40e16d">   21</a></span>    amrex::Real <a class="code hl_variable" href="structamr__wind_1_1forestdrag_1_1_forest.html#a17c5138db1ae35ff577af72dfb40e16d">m_y_forest</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structamr__wind_1_1forestdrag_1_1_forest.html#afdb99754f705f4b263718e058bc72622">   22</a></span>    amrex::Real <a class="code hl_variable" href="structamr__wind_1_1forestdrag_1_1_forest.html#afdb99754f705f4b263718e058bc72622">m_height_forest</a>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structamr__wind_1_1forestdrag_1_1_forest.html#aa437c1ebd204c562763a854da37f44ee">   23</a></span>    amrex::Real <a class="code hl_variable" href="structamr__wind_1_1forestdrag_1_1_forest.html#aa437c1ebd204c562763a854da37f44ee">m_diameter_forest</a>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structamr__wind_1_1forestdrag_1_1_forest.html#ad63119c7433cb6c59bae85977602e7de">   24</a></span>    amrex::Real <a class="code hl_variable" href="structamr__wind_1_1forestdrag_1_1_forest.html#ad63119c7433cb6c59bae85977602e7de">m_cd_forest</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structamr__wind_1_1forestdrag_1_1_forest.html#adb5a0471ed7910cff20810629b4a11a0">   25</a></span>    amrex::Real <a class="code hl_variable" href="structamr__wind_1_1forestdrag_1_1_forest.html#adb5a0471ed7910cff20810629b4a11a0">m_lai_forest</a>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structamr__wind_1_1forestdrag_1_1_forest.html#ab7aa8f3d4d7d22ea809243697fc8e672">   26</a></span>    amrex::Real <a class="code hl_variable" href="structamr__wind_1_1forestdrag_1_1_forest.html#ab7aa8f3d4d7d22ea809243697fc8e672">m_laimax_forest</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="foldopen" id="foldopen00028" data-start="{" data-end="}">
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structamr__wind_1_1forestdrag_1_1_forest.html#a435a43d2021a9ac422b96b3ff7e2b59b">   28</a></span>    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real <a class="code hl_function" href="structamr__wind_1_1forestdrag_1_1_forest.html#a435a43d2021a9ac422b96b3ff7e2b59b">lm</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        amrex::Real treelaimax = 0.0_rt;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="structamr__wind_1_1forestdrag_1_1_forest.html#abe859bc76e8d055e65b22fcc63ba2b99">m_type_forest</a> == 2) {</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>            <span class="keyword">const</span> amrex::Real captured_height_forest = <a class="code hl_variable" href="structamr__wind_1_1forestdrag_1_1_forest.html#afdb99754f705f4b263718e058bc72622">m_height_forest</a>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>            <span class="keyword">const</span> amrex::Real treeZm = <a class="code hl_variable" href="structamr__wind_1_1forestdrag_1_1_forest.html#ab7aa8f3d4d7d22ea809243697fc8e672">m_laimax_forest</a> * captured_height_forest;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>            <span class="keyword">const</span> <span class="keywordtype">int</span> n = 100;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>            <span class="keyword">const</span> amrex::Real int_0_fh = <a class="code hl_function" href="namespaceamr__wind_1_1utils.html#a644ae83d8e9966b6d23228585440a7d3">amr_wind::utils::trapz</a>(</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>                0, captured_height_forest - <a class="code hl_variable" href="namespaceamr__wind_1_1constants.html#a0aee8a942fdb663d4cb5d169e94d9817">constants::TIGHT_TOL</a>, n,</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>                [=](<span class="keyword">const</span> amrex::Real x) {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>                    <span class="keyword">const</span> amrex::Real ratio =</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>                        (captured_height_forest - treeZm) /</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>                        (captured_height_forest - x);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>                    <span class="keyword">const</span> <span class="keyword">auto</span> exponent = (x &lt; treeZm) ? 6.0_rt : 0.5_rt;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>                    <span class="keywordflow">return</span> std::pow(ratio, exponent) *</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>                           std::exp(exponent * (1 - ratio));</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>                });</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            treelaimax = <a class="code hl_variable" href="structamr__wind_1_1forestdrag_1_1_forest.html#adb5a0471ed7910cff20810629b4a11a0">m_lai_forest</a> / int_0_fh;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        }</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keywordflow">return</span> treelaimax;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    }</div>
+</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real</div>
+<div class="foldopen" id="foldopen00051" data-start="{" data-end="}">
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structamr__wind_1_1forestdrag_1_1_forest.html#ae5390a436373814789ec6b58b842d048">   51</a></span>    <a class="code hl_function" href="structamr__wind_1_1forestdrag_1_1_forest.html#ae5390a436373814789ec6b58b842d048">area_fraction</a>(<span class="keyword">const</span> amrex::Real z, <span class="keyword">const</span> amrex::Real treelaimax)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        amrex::Real af = 0.0_rt;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="structamr__wind_1_1forestdrag_1_1_forest.html#abe859bc76e8d055e65b22fcc63ba2b99">m_type_forest</a> == 1) {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>            af = <a class="code hl_variable" href="structamr__wind_1_1forestdrag_1_1_forest.html#adb5a0471ed7910cff20810629b4a11a0">m_lai_forest</a> / <a class="code hl_variable" href="structamr__wind_1_1forestdrag_1_1_forest.html#afdb99754f705f4b263718e058bc72622">m_height_forest</a>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="structamr__wind_1_1forestdrag_1_1_forest.html#abe859bc76e8d055e65b22fcc63ba2b99">m_type_forest</a> == 2) {</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            <span class="keyword">const</span> <span class="keyword">auto</span> treeZm = <a class="code hl_variable" href="structamr__wind_1_1forestdrag_1_1_forest.html#ab7aa8f3d4d7d22ea809243697fc8e672">m_laimax_forest</a> * <a class="code hl_variable" href="structamr__wind_1_1forestdrag_1_1_forest.html#afdb99754f705f4b263718e058bc72622">m_height_forest</a>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>            <span class="keyword">const</span> <span class="keyword">auto</span> ratio =</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>                (<a class="code hl_variable" href="structamr__wind_1_1forestdrag_1_1_forest.html#afdb99754f705f4b263718e058bc72622">m_height_forest</a> - treeZm) / (<a class="code hl_variable" href="structamr__wind_1_1forestdrag_1_1_forest.html#afdb99754f705f4b263718e058bc72622">m_height_forest</a> - z);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            <span class="keyword">const</span> <span class="keyword">auto</span> exponent = (z &lt; treeZm) ? 6.0_rt : 0.5_rt;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>            af = treelaimax * std::pow(ratio, exponent) *</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                 std::exp(exponent * (1 - ratio));</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        }</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        <span class="keywordflow">return</span> af;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    }</div>
+</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="foldopen" id="foldopen00067" data-start="{" data-end="}">
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="structamr__wind_1_1forestdrag_1_1_forest.html#a033292ecf2b299fc075050835c9ed452">   67</a></span>    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::RealBox <a class="code hl_function" href="structamr__wind_1_1forestdrag_1_1_forest.html#a033292ecf2b299fc075050835c9ed452">real_bounding_box</a>(</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        <span class="keyword">const</span> amrex::GpuArray&lt;amrex::Real, AMREX_SPACEDIM&gt;&amp; prob_lo)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="keyword">const</span> amrex::Real search_tol = 1.1_rt;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="keyword">const</span> amrex::Real search_radius =</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>            0.5_rt * search_tol * <a class="code hl_variable" href="structamr__wind_1_1forestdrag_1_1_forest.html#aa437c1ebd204c562763a854da37f44ee">m_diameter_forest</a>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        <span class="keyword">const</span> <span class="keyword">auto</span> x0 = <a class="code hl_variable" href="structamr__wind_1_1forestdrag_1_1_forest.html#a840965cc5031a6889524c932120e9259">m_x_forest</a> - search_radius;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <span class="keyword">const</span> <span class="keyword">auto</span> y0 = <a class="code hl_variable" href="structamr__wind_1_1forestdrag_1_1_forest.html#a17c5138db1ae35ff577af72dfb40e16d">m_y_forest</a> - search_radius;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <span class="keyword">const</span> <span class="keyword">auto</span> z0 = prob_lo[2];</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="keyword">const</span> <span class="keyword">auto</span> x1 = <a class="code hl_variable" href="structamr__wind_1_1forestdrag_1_1_forest.html#a840965cc5031a6889524c932120e9259">m_x_forest</a> + search_radius;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <span class="keyword">const</span> <span class="keyword">auto</span> y1 = <a class="code hl_variable" href="structamr__wind_1_1forestdrag_1_1_forest.html#a17c5138db1ae35ff577af72dfb40e16d">m_y_forest</a> + search_radius;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        <span class="keyword">const</span> <span class="keyword">auto</span> z1 = <a class="code hl_variable" href="structamr__wind_1_1forestdrag_1_1_forest.html#afdb99754f705f4b263718e058bc72622">m_height_forest</a>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        <span class="keywordflow">return</span> {x0, y0, z0, x1, y1, z1};</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    }</div>
+</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="foldopen" id="foldopen00082" data-start="{" data-end="}">
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="structamr__wind_1_1forestdrag_1_1_forest.html#a59051c2010f40f0446ac04268b6fecd3">   82</a></span>    [[nodiscard]] amrex::Box <a class="code hl_function" href="structamr__wind_1_1forestdrag_1_1_forest.html#a59051c2010f40f0446ac04268b6fecd3">bounding_box</a>(<span class="keyword">const</span> amrex::Geometry&amp; geom)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceamr__wind_1_1utils.html#adf401a4293ae138ed1e9d24ce4e06955">utils::realbox_to_box</a>(</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>            <a class="code hl_function" href="structamr__wind_1_1forestdrag_1_1_forest.html#a033292ecf2b299fc075050835c9ed452">real_bounding_box</a>(geom.ProbLoArray()), geom);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    }</div>
+</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>};</div>
+</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span></div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="foldopen" id="foldopen00093" data-start="{" data-end="};">
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="classamr__wind_1_1forestdrag_1_1_forest_drag.html">   93</a></span><span class="keyword">class </span><a class="code hl_function" href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#a7ab3569d0c887c0af0c45f931a03e8d9">ForestDrag</a> : <span class="keyword">public</span> Physics::Register&lt;ForestDrag&gt;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>{</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#a66b93bbd5412bf76569f74afe0a75ef3">   96</a></span>    <span class="keyword">static</span> std::string <a class="code hl_function" href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#a66b93bbd5412bf76569f74afe0a75ef3">identifier</a>() { <span class="keywordflow">return</span> <span class="stringliteral">&quot;ForestDrag&quot;</span>; }</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#a7ab3569d0c887c0af0c45f931a03e8d9">ForestDrag</a>(<a class="code hl_class" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; sim);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno"><a class="line" href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#ae54250f3c9a741b496dd0d4f46246de4">  100</a></span>    <a class="code hl_function" href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#ae54250f3c9a741b496dd0d4f46246de4">~ForestDrag</a>() <span class="keyword">override</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keywordtype">void</span></div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <a class="code hl_function" href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#a5ebf281212ec2b1b2eab9ce437184f0c">initialize_fields</a>(<span class="keywordtype">int</span> <span class="comment">/*level*/</span>, <span class="keyword">const</span> amrex::Geometry&amp; <span class="comment">/*geom*/</span>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno"><a class="line" href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#ad143292ad1e0339c5d0be419cf22654f">  105</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#ad143292ad1e0339c5d0be419cf22654f">pre_init_actions</a>()<span class="keyword"> override </span>{}</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno"><a class="line" href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#a97ff07c69b04bde8702a43a6dd28ac2f">  107</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#a97ff07c69b04bde8702a43a6dd28ac2f">post_init_actions</a>()<span class="keyword"> override </span>{}</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#aef95c963b9a8f217d12bb70aafc8ab99">post_regrid_actions</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno"><a class="line" href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#a761646b86303bd65df09ae8e7f13c1c5">  111</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#a761646b86303bd65df09ae8e7f13c1c5">pre_advance_work</a>()<span class="keyword"> override </span>{}</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno"><a class="line" href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#aaff0b025cb5e032fff57e802449ca0ff">  113</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#aaff0b025cb5e032fff57e802449ca0ff">post_advance_work</a>()<span class="keyword"> override </span>{}</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    [[nodiscard]] amrex::Vector&lt;Forest&gt; <a class="code hl_function" href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#ae7882ee2e228ed8196cb6d11fc6f5e86">read_forest</a>(<span class="keywordtype">int</span> level) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno"><a class="line" href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#a293eb10c5977473930863ce81c7fb500">  118</a></span>    <a class="code hl_class" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#a293eb10c5977473930863ce81c7fb500">m_sim</a>;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno"><a class="line" href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#ae9332d675a0243760c45885a724c5041">  119</a></span>    <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#ae9332d675a0243760c45885a724c5041">m_forest_drag</a>;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno"><a class="line" href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#a0290f2e057fbae42536326c802516adc">  120</a></span>    <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#a0290f2e057fbae42536326c802516adc">m_forest_id</a>;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno"><a class="line" href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#a1b5d8fdda67f4111bd6623488a0de8c6">  121</a></span>    std::string <a class="code hl_variable" href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#a1b5d8fdda67f4111bd6623488a0de8c6">m_forest_file</a>{<span class="stringliteral">&quot;forest.amrwind&quot;</span>};</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>};</div>
+</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>} <span class="comment">// namespace amr_wind::forestdrag</span></div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="a_c_f_d_sim_8_h_html"><div class="ttname"><a href="_c_f_d_sim_8_h.html">CFDSim.H</a></div></div>
+<div class="ttc" id="a_field_8_h_html"><div class="ttname"><a href="_field_8_h.html">Field.H</a></div></div>
+<div class="ttc" id="a_physics_8_h_html"><div class="ttname"><a href="_physics_8_h.html">Physics.H</a></div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html">amr_wind::CFDSim</a></div><div class="ttdef"><b>Definition</b> CFDSim.H:54</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_html"><div class="ttname"><a href="classamr__wind_1_1_field.html">amr_wind::Field</a></div><div class="ttdef"><b>Definition</b> Field.H:112</div></div>
+<div class="ttc" id="aclassamr__wind_1_1forestdrag_1_1_forest_drag_html_a0290f2e057fbae42536326c802516adc"><div class="ttname"><a href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#a0290f2e057fbae42536326c802516adc">amr_wind::forestdrag::ForestDrag::m_forest_id</a></div><div class="ttdeci">Field &amp; m_forest_id</div><div class="ttdef"><b>Definition</b> ForestDrag.H:120</div></div>
+<div class="ttc" id="aclassamr__wind_1_1forestdrag_1_1_forest_drag_html_a1b5d8fdda67f4111bd6623488a0de8c6"><div class="ttname"><a href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#a1b5d8fdda67f4111bd6623488a0de8c6">amr_wind::forestdrag::ForestDrag::m_forest_file</a></div><div class="ttdeci">std::string m_forest_file</div><div class="ttdef"><b>Definition</b> ForestDrag.H:121</div></div>
+<div class="ttc" id="aclassamr__wind_1_1forestdrag_1_1_forest_drag_html_a293eb10c5977473930863ce81c7fb500"><div class="ttname"><a href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#a293eb10c5977473930863ce81c7fb500">amr_wind::forestdrag::ForestDrag::m_sim</a></div><div class="ttdeci">CFDSim &amp; m_sim</div><div class="ttdef"><b>Definition</b> ForestDrag.H:118</div></div>
+<div class="ttc" id="aclassamr__wind_1_1forestdrag_1_1_forest_drag_html_a5ebf281212ec2b1b2eab9ce437184f0c"><div class="ttname"><a href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#a5ebf281212ec2b1b2eab9ce437184f0c">amr_wind::forestdrag::ForestDrag::initialize_fields</a></div><div class="ttdeci">void initialize_fields(int, const amrex::Geometry &amp;) override</div><div class="ttdef"><b>Definition</b> ForestDrag.cpp:33</div></div>
+<div class="ttc" id="aclassamr__wind_1_1forestdrag_1_1_forest_drag_html_a66b93bbd5412bf76569f74afe0a75ef3"><div class="ttname"><a href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#a66b93bbd5412bf76569f74afe0a75ef3">amr_wind::forestdrag::ForestDrag::identifier</a></div><div class="ttdeci">static std::string identifier()</div><div class="ttdef"><b>Definition</b> ForestDrag.H:96</div></div>
+<div class="ttc" id="aclassamr__wind_1_1forestdrag_1_1_forest_drag_html_a761646b86303bd65df09ae8e7f13c1c5"><div class="ttname"><a href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#a761646b86303bd65df09ae8e7f13c1c5">amr_wind::forestdrag::ForestDrag::pre_advance_work</a></div><div class="ttdeci">void pre_advance_work() override</div><div class="ttdef"><b>Definition</b> ForestDrag.H:111</div></div>
+<div class="ttc" id="aclassamr__wind_1_1forestdrag_1_1_forest_drag_html_a7ab3569d0c887c0af0c45f931a03e8d9"><div class="ttname"><a href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#a7ab3569d0c887c0af0c45f931a03e8d9">amr_wind::forestdrag::ForestDrag::ForestDrag</a></div><div class="ttdeci">ForestDrag(CFDSim &amp;sim)</div><div class="ttdef"><b>Definition</b> ForestDrag.cpp:15</div></div>
+<div class="ttc" id="aclassamr__wind_1_1forestdrag_1_1_forest_drag_html_a97ff07c69b04bde8702a43a6dd28ac2f"><div class="ttname"><a href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#a97ff07c69b04bde8702a43a6dd28ac2f">amr_wind::forestdrag::ForestDrag::post_init_actions</a></div><div class="ttdeci">void post_init_actions() override</div><div class="ttdef"><b>Definition</b> ForestDrag.H:107</div></div>
+<div class="ttc" id="aclassamr__wind_1_1forestdrag_1_1_forest_drag_html_aaff0b025cb5e032fff57e802449ca0ff"><div class="ttname"><a href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#aaff0b025cb5e032fff57e802449ca0ff">amr_wind::forestdrag::ForestDrag::post_advance_work</a></div><div class="ttdeci">void post_advance_work() override</div><div class="ttdef"><b>Definition</b> ForestDrag.H:113</div></div>
+<div class="ttc" id="aclassamr__wind_1_1forestdrag_1_1_forest_drag_html_ad143292ad1e0339c5d0be419cf22654f"><div class="ttname"><a href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#ad143292ad1e0339c5d0be419cf22654f">amr_wind::forestdrag::ForestDrag::pre_init_actions</a></div><div class="ttdeci">void pre_init_actions() override</div><div class="ttdef"><b>Definition</b> ForestDrag.H:105</div></div>
+<div class="ttc" id="aclassamr__wind_1_1forestdrag_1_1_forest_drag_html_ae54250f3c9a741b496dd0d4f46246de4"><div class="ttname"><a href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#ae54250f3c9a741b496dd0d4f46246de4">amr_wind::forestdrag::ForestDrag::~ForestDrag</a></div><div class="ttdeci">~ForestDrag() override=default</div></div>
+<div class="ttc" id="aclassamr__wind_1_1forestdrag_1_1_forest_drag_html_ae7882ee2e228ed8196cb6d11fc6f5e86"><div class="ttname"><a href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#ae7882ee2e228ed8196cb6d11fc6f5e86">amr_wind::forestdrag::ForestDrag::read_forest</a></div><div class="ttdeci">amrex::Vector&lt; Forest &gt; read_forest(int level) const</div><div class="ttdef"><b>Definition</b> ForestDrag.cpp:91</div></div>
+<div class="ttc" id="aclassamr__wind_1_1forestdrag_1_1_forest_drag_html_ae9332d675a0243760c45885a724c5041"><div class="ttname"><a href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#ae9332d675a0243760c45885a724c5041">amr_wind::forestdrag::ForestDrag::m_forest_drag</a></div><div class="ttdeci">Field &amp; m_forest_drag</div><div class="ttdef"><b>Definition</b> ForestDrag.H:119</div></div>
+<div class="ttc" id="aclassamr__wind_1_1forestdrag_1_1_forest_drag_html_aef95c963b9a8f217d12bb70aafc8ab99"><div class="ttname"><a href="classamr__wind_1_1forestdrag_1_1_forest_drag.html#aef95c963b9a8f217d12bb70aafc8ab99">amr_wind::forestdrag::ForestDrag::post_regrid_actions</a></div><div class="ttdeci">void post_regrid_actions() override</div><div class="ttdef"><b>Definition</b> ForestDrag.cpp:83</div></div>
+<div class="ttc" id="aconstants_8_h_html"><div class="ttname"><a href="constants_8_h.html">constants.H</a></div></div>
+<div class="ttc" id="aindex__operations_8_h_html"><div class="ttname"><a href="index__operations_8_h.html">index_operations.H</a></div></div>
+<div class="ttc" id="aintegrals_8_h_html"><div class="ttname"><a href="integrals_8_h.html">integrals.H</a></div></div>
+<div class="ttc" id="anamespaceamr__wind_1_1constants_html_a0aee8a942fdb663d4cb5d169e94d9817"><div class="ttname"><a href="namespaceamr__wind_1_1constants.html#a0aee8a942fdb663d4cb5d169e94d9817">amr_wind::constants::TIGHT_TOL</a></div><div class="ttdeci">static constexpr amrex::Real TIGHT_TOL</div><div class="ttdoc">A tight tolerance.</div><div class="ttdef"><b>Definition</b> constants.H:17</div></div>
+<div class="ttc" id="anamespaceamr__wind_1_1forestdrag_html"><div class="ttname"><a href="namespaceamr__wind_1_1forestdrag.html">amr_wind::forestdrag</a></div><div class="ttdef"><b>Definition</b> ForestDrag.cpp:13</div></div>
+<div class="ttc" id="anamespaceamr__wind_1_1utils_html_a644ae83d8e9966b6d23228585440a7d3"><div class="ttname"><a href="namespaceamr__wind_1_1utils.html#a644ae83d8e9966b6d23228585440a7d3">amr_wind::utils::trapz</a></div><div class="ttdeci">AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real trapz(const amrex::Real xa, const amrex::Real xb, const int n, const Function &amp;f)</div><div class="ttdef"><b>Definition</b> integrals.H:14</div></div>
+<div class="ttc" id="anamespaceamr__wind_1_1utils_html_adf401a4293ae138ed1e9d24ce4e06955"><div class="ttname"><a href="namespaceamr__wind_1_1utils.html#adf401a4293ae138ed1e9d24ce4e06955">amr_wind::utils::realbox_to_box</a></div><div class="ttdeci">amrex::Box realbox_to_box(const amrex::RealBox &amp;rbx, const amrex::Geometry &amp;geom)</div><div class="ttdef"><b>Definition</b> index_operations.cpp:5</div></div>
+<div class="ttc" id="astructamr__wind_1_1forestdrag_1_1_forest_html"><div class="ttname"><a href="structamr__wind_1_1forestdrag_1_1_forest.html">amr_wind::forestdrag::Forest</a></div><div class="ttdef"><b>Definition</b> ForestDrag.H:17</div></div>
+<div class="ttc" id="astructamr__wind_1_1forestdrag_1_1_forest_html_a033292ecf2b299fc075050835c9ed452"><div class="ttname"><a href="structamr__wind_1_1forestdrag_1_1_forest.html#a033292ecf2b299fc075050835c9ed452">amr_wind::forestdrag::Forest::real_bounding_box</a></div><div class="ttdeci">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::RealBox real_bounding_box(const amrex::GpuArray&lt; amrex::Real, AMREX_SPACEDIM &gt; &amp;prob_lo) const</div><div class="ttdef"><b>Definition</b> ForestDrag.H:67</div></div>
+<div class="ttc" id="astructamr__wind_1_1forestdrag_1_1_forest_html_a17c5138db1ae35ff577af72dfb40e16d"><div class="ttname"><a href="structamr__wind_1_1forestdrag_1_1_forest.html#a17c5138db1ae35ff577af72dfb40e16d">amr_wind::forestdrag::Forest::m_y_forest</a></div><div class="ttdeci">amrex::Real m_y_forest</div><div class="ttdef"><b>Definition</b> ForestDrag.H:21</div></div>
+<div class="ttc" id="astructamr__wind_1_1forestdrag_1_1_forest_html_a435a43d2021a9ac422b96b3ff7e2b59b"><div class="ttname"><a href="structamr__wind_1_1forestdrag_1_1_forest.html#a435a43d2021a9ac422b96b3ff7e2b59b">amr_wind::forestdrag::Forest::lm</a></div><div class="ttdeci">AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real lm() const</div><div class="ttdef"><b>Definition</b> ForestDrag.H:28</div></div>
+<div class="ttc" id="astructamr__wind_1_1forestdrag_1_1_forest_html_a59051c2010f40f0446ac04268b6fecd3"><div class="ttname"><a href="structamr__wind_1_1forestdrag_1_1_forest.html#a59051c2010f40f0446ac04268b6fecd3">amr_wind::forestdrag::Forest::bounding_box</a></div><div class="ttdeci">amrex::Box bounding_box(const amrex::Geometry &amp;geom) const</div><div class="ttdef"><b>Definition</b> ForestDrag.H:82</div></div>
+<div class="ttc" id="astructamr__wind_1_1forestdrag_1_1_forest_html_a663ccf0e9661373a2cbfd21125b79f18"><div class="ttname"><a href="structamr__wind_1_1forestdrag_1_1_forest.html#a663ccf0e9661373a2cbfd21125b79f18">amr_wind::forestdrag::Forest::m_id</a></div><div class="ttdeci">int m_id</div><div class="ttdef"><b>Definition</b> ForestDrag.H:18</div></div>
+<div class="ttc" id="astructamr__wind_1_1forestdrag_1_1_forest_html_a840965cc5031a6889524c932120e9259"><div class="ttname"><a href="structamr__wind_1_1forestdrag_1_1_forest.html#a840965cc5031a6889524c932120e9259">amr_wind::forestdrag::Forest::m_x_forest</a></div><div class="ttdeci">amrex::Real m_x_forest</div><div class="ttdef"><b>Definition</b> ForestDrag.H:20</div></div>
+<div class="ttc" id="astructamr__wind_1_1forestdrag_1_1_forest_html_aa437c1ebd204c562763a854da37f44ee"><div class="ttname"><a href="structamr__wind_1_1forestdrag_1_1_forest.html#aa437c1ebd204c562763a854da37f44ee">amr_wind::forestdrag::Forest::m_diameter_forest</a></div><div class="ttdeci">amrex::Real m_diameter_forest</div><div class="ttdef"><b>Definition</b> ForestDrag.H:23</div></div>
+<div class="ttc" id="astructamr__wind_1_1forestdrag_1_1_forest_html_ab7aa8f3d4d7d22ea809243697fc8e672"><div class="ttname"><a href="structamr__wind_1_1forestdrag_1_1_forest.html#ab7aa8f3d4d7d22ea809243697fc8e672">amr_wind::forestdrag::Forest::m_laimax_forest</a></div><div class="ttdeci">amrex::Real m_laimax_forest</div><div class="ttdef"><b>Definition</b> ForestDrag.H:26</div></div>
+<div class="ttc" id="astructamr__wind_1_1forestdrag_1_1_forest_html_abe859bc76e8d055e65b22fcc63ba2b99"><div class="ttname"><a href="structamr__wind_1_1forestdrag_1_1_forest.html#abe859bc76e8d055e65b22fcc63ba2b99">amr_wind::forestdrag::Forest::m_type_forest</a></div><div class="ttdeci">amrex::Real m_type_forest</div><div class="ttdef"><b>Definition</b> ForestDrag.H:19</div></div>
+<div class="ttc" id="astructamr__wind_1_1forestdrag_1_1_forest_html_ad63119c7433cb6c59bae85977602e7de"><div class="ttname"><a href="structamr__wind_1_1forestdrag_1_1_forest.html#ad63119c7433cb6c59bae85977602e7de">amr_wind::forestdrag::Forest::m_cd_forest</a></div><div class="ttdeci">amrex::Real m_cd_forest</div><div class="ttdef"><b>Definition</b> ForestDrag.H:24</div></div>
+<div class="ttc" id="astructamr__wind_1_1forestdrag_1_1_forest_html_adb5a0471ed7910cff20810629b4a11a0"><div class="ttname"><a href="structamr__wind_1_1forestdrag_1_1_forest.html#adb5a0471ed7910cff20810629b4a11a0">amr_wind::forestdrag::Forest::m_lai_forest</a></div><div class="ttdeci">amrex::Real m_lai_forest</div><div class="ttdef"><b>Definition</b> ForestDrag.H:25</div></div>
+<div class="ttc" id="astructamr__wind_1_1forestdrag_1_1_forest_html_ae5390a436373814789ec6b58b842d048"><div class="ttname"><a href="structamr__wind_1_1forestdrag_1_1_forest.html#ae5390a436373814789ec6b58b842d048">amr_wind::forestdrag::Forest::area_fraction</a></div><div class="ttdeci">AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real area_fraction(const amrex::Real z, const amrex::Real treelaimax) const</div><div class="ttdef"><b>Definition</b> ForestDrag.H:51</div></div>
+<div class="ttc" id="astructamr__wind_1_1forestdrag_1_1_forest_html_afdb99754f705f4b263718e058bc72622"><div class="ttname"><a href="structamr__wind_1_1forestdrag_1_1_forest.html#afdb99754f705f4b263718e058bc72622">amr_wind::forestdrag::Forest::m_height_forest</a></div><div class="ttdeci">amrex::Real m_height_forest</div><div class="ttdef"><b>Definition</b> ForestDrag.H:22</div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

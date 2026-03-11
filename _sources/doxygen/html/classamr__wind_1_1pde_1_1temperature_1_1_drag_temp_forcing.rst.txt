@@ -1,0 +1,14 @@
+.. meta::16fa5191d34c58d6b8f992925ceb4e6f726d70a03d56d957653f1283327b80550364b72af7c3bd265e99a4129f0e64b8e3e9713f4b95f64cda630ea976d74346
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::temperature::DragTempForcing Class Reference
+
+DragTempForcing Class Reference
+===============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1pde_1_1temperature_1_1_drag_temp_forcing.html

@@ -1,0 +1,14 @@
+.. meta::f72f3202040b4e1eba8d729dc31735426c58c4279bc4e0e3ab8f21666fe5881616b53d7e261f141bdbb17c1ee57ce170f0e2d46a515f6eab3d4946fc4c5bc2b0
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::turbulence::KLAxell&lt; Transport &gt; Class Template Reference
+
+KLAxell&lt; Transport &gt; Class Template Reference
+===================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1turbulence_1_1_k_l_axell.html

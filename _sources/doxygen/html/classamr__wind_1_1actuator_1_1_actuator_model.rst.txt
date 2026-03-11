@@ -1,0 +1,14 @@
+.. meta::26a939a62c600b959f8a447c39861e6d8b22104d426a07d8c8552eb7160f95e3941ed5f152ae94ee457b4c9eaad098993371924010506a065e67ac47249e248b
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ActuatorModel Class Reference
+
+ActuatorModel Class Reference
+=============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1actuator_1_1_actuator_model.html

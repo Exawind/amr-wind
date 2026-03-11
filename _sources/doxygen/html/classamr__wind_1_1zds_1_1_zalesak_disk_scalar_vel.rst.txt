@@ -1,0 +1,14 @@
+.. meta::910e7438f216128c4b72bd2b883df4b83ffaca54d94b94653a4dd02624d500327e0767137fae20b343ca9c65f66537ae3e38c1a7ee52243deb72beb2704edb7d
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::zds::ZalesakDiskScalarVel Class Reference
+
+ZalesakDiskScalarVel Class Reference
+====================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1zds_1_1_zalesak_disk_scalar_vel.html

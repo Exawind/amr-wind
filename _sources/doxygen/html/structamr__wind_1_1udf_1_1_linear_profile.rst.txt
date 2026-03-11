@@ -1,0 +1,14 @@
+.. meta::d4de2f3629d8d319ff32e0c942ed370179921c03d071dc253bf63c59414b7176c82ef515f0e813364113e2512ebdf068052814a019272e874cc17b162f00caef
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::udf::LinearProfile Struct Reference
+
+LinearProfile Struct Reference
+==============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1udf_1_1_linear_profile.html

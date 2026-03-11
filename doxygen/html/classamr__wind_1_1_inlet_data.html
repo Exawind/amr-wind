@@ -1,0 +1,848 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::InletData Class Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::InletData Class Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/classamr__wind_1_1_inlet_data.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="inletdata-class-reference">
+<h1>InletData Class Reference<a class="headerlink" href="#inletdata-class-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::InletData Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="classamr__wind_1_1_inlet_data.html">InletData</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pri-types">Private Types</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
+<a href="classamr__wind_1_1_inlet_data-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::InletData Class Reference<div class="ingroups"><a class="el" href="group__physics.html">Physics models</a> &raquo; <a class="el" href="group__wind.html">Wind energy modeling</a> &raquo; <a class="el" href="group__we__abl.html">ABL</a></div></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_a_b_l_boundary_plane_8_h_source.html">ABLBoundaryPlane.H</a>&gt;</code></p>
+<div class="dynheader">
+Collaboration diagram for amr_wind::InletData:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1_inlet_data__coll__graph.svg" width="198" height="354"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a57ec63e3ee56f196e38fc2e0afb1f19f" id="r_a57ec63e3ee56f196e38fc2e0afb1f19f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a57ec63e3ee56f196e38fc2e0afb1f19f">InletData</a> ()=default</td></tr>
+<tr class="memitem:a4b4e6eb43325e5f14fa056637e98589e" id="r_a4b4e6eb43325e5f14fa056637e98589e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4b4e6eb43325e5f14fa056637e98589e">resize</a> (int)</td></tr>
+<tr class="memitem:ae0088a2d3ec4ec4a43c041532ef10f76" id="r_ae0088a2d3ec4ec4a43c041532ef10f76"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae0088a2d3ec4ec4a43c041532ef10f76">define_plane</a> (amrex::Orientation)</td></tr>
+<tr class="memitem:a51ebcd0e2230df38d68cbf55e67d303d" id="r_a51ebcd0e2230df38d68cbf55e67d303d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a51ebcd0e2230df38d68cbf55e67d303d">define_level_data</a> (amrex::Orientation, const amrex::Box &amp;, size_t)</td></tr>
+<tr class="memitem:a0cab51080178567404ed3bc5bc193eb6" id="r_a0cab51080178567404ed3bc5bc193eb6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0cab51080178567404ed3bc5bc193eb6">read_data</a> (<a class="el" href="classncutils_1_1_n_c_group.html">ncutils::NCGroup</a> &amp;, const amrex::Orientation, const int, const <a class="el" href="classamr__wind_1_1_field.html">Field</a> *, const amrex::Real, const amrex::Vector&lt; amrex::Real &gt; &amp;)</td></tr>
+<tr class="memitem:a4cc0a87e5a87acfa3a4bcb61801236ee" id="r_a4cc0a87e5a87acfa3a4bcb61801236ee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4cc0a87e5a87acfa3a4bcb61801236ee">read_data_native</a> (amrex::OrientationIter oit, amrex::BndryRegister &amp;bndry_n, amrex::BndryRegister &amp;bndry_np1, int lev, const <a class="el" href="classamr__wind_1_1_field.html">Field</a> *, amrex::Real time, const amrex::Vector&lt; amrex::Real &gt; &amp;)</td></tr>
+<tr class="memitem:aa5f6de9fd8e6f7114d3a2038143006f1" id="r_aa5f6de9fd8e6f7114d3a2038143006f1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa5f6de9fd8e6f7114d3a2038143006f1">interpolate</a> (amrex::Real)</td></tr>
+<tr class="memitem:a1b44f09c46f17e9840ef9bbf20c847a5" id="r_a1b44f09c46f17e9840ef9bbf20c847a5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1b44f09c46f17e9840ef9bbf20c847a5">is_populated</a> (amrex::Orientation) const</td></tr>
+<tr class="memitem:a4a3cf1213b785e02958a8fd12b556f4c" id="r_a4a3cf1213b785e02958a8fd12b556f4c"><td class="memItemLeft" align="right" valign="top">const amrex::FArrayBox &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4a3cf1213b785e02958a8fd12b556f4c">interpolate_data</a> (const amrex::Orientation ori, const int lev) const</td></tr>
+<tr class="memitem:a3237ce4e0959bee1bdbe1830e8110e45" id="r_a3237ce4e0959bee1bdbe1830e8110e45"><td class="memItemLeft" align="right" valign="top">int &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3237ce4e0959bee1bdbe1830e8110e45">component</a> (const int id)</td></tr>
+<tr class="memitem:a54c88c22b89d3ae777d8104c91d886b3" id="r_a54c88c22b89d3ae777d8104c91d886b3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a54c88c22b89d3ae777d8104c91d886b3">component</a> (const int id) const</td></tr>
+<tr class="memitem:ad6a621d49801eaa88d74a60609a31115" id="r_ad6a621d49801eaa88d74a60609a31115"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad6a621d49801eaa88d74a60609a31115">nlevels</a> (const amrex::Orientation ori) const</td></tr>
+<tr class="memitem:a3dbd3fd8eeadbe05282cf6cbf213d94e" id="r_a3dbd3fd8eeadbe05282cf6cbf213d94e"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3dbd3fd8eeadbe05282cf6cbf213d94e">tn</a> () const</td></tr>
+<tr class="memitem:a49ffb474b7b2c77b6a43923f211daf0b" id="r_a49ffb474b7b2c77b6a43923f211daf0b"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a49ffb474b7b2c77b6a43923f211daf0b">tnp1</a> () const</td></tr>
+<tr class="memitem:a7fb173d6b9e33786ea604bbb02f9ce02" id="r_a7fb173d6b9e33786ea604bbb02f9ce02"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7fb173d6b9e33786ea604bbb02f9ce02">tinterp</a> () const</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-types" class="groupheader"><a id="pri-types" name="pri-types"></a>
+Private Types</h2></td></tr>
+<tr class="memitem:ab6245c2d02476b7c1980935a7a05de3c" id="r_ab6245c2d02476b7c1980935a7a05de3c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab6245c2d02476b7c1980935a7a05de3c">PlaneVector</a> = amrex::Vector&lt;amrex::FArrayBox&gt;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:aec5c531b04ae30a1bf0105ccca3479e1" id="r_aec5c531b04ae30a1bf0105ccca3479e1"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; std::unique_ptr&lt; <a class="el" href="#ab6245c2d02476b7c1980935a7a05de3c">PlaneVector</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aec5c531b04ae30a1bf0105ccca3479e1">m_data_n</a></td></tr>
+<tr class="memitem:af7dfaa0095a9e94f5d9043c2718e6f12" id="r_af7dfaa0095a9e94f5d9043c2718e6f12"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; std::unique_ptr&lt; <a class="el" href="#ab6245c2d02476b7c1980935a7a05de3c">PlaneVector</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af7dfaa0095a9e94f5d9043c2718e6f12">m_data_np1</a></td></tr>
+<tr class="memitem:a2bf9b4e3c7795899c19bc18970998456" id="r_a2bf9b4e3c7795899c19bc18970998456"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; std::unique_ptr&lt; <a class="el" href="#ab6245c2d02476b7c1980935a7a05de3c">PlaneVector</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2bf9b4e3c7795899c19bc18970998456">m_data_interp</a></td></tr>
+<tr class="memitem:ab53c927133ec198fb40fcf02b8f0a820" id="r_ab53c927133ec198fb40fcf02b8f0a820"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab53c927133ec198fb40fcf02b8f0a820">m_tn</a> {-1.0_rt}</td></tr>
+<tr class="memdesc:ab53c927133ec198fb40fcf02b8f0a820"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time for plane at n.  <br /></td></tr>
+<tr class="memitem:a47582c007fc5a9c3cef2a4d32a6dbf67" id="r_a47582c007fc5a9c3cef2a4d32a6dbf67"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a47582c007fc5a9c3cef2a4d32a6dbf67">m_tnp1</a> {-1.0_rt}</td></tr>
+<tr class="memdesc:a47582c007fc5a9c3cef2a4d32a6dbf67"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time for plane at n + 1.  <br /></td></tr>
+<tr class="memitem:a4e8e77b99841f723f3889fa9aeace769" id="r_a4e8e77b99841f723f3889fa9aeace769"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4e8e77b99841f723f3889fa9aeace769">m_tinterp</a> {-1.0_rt}</td></tr>
+<tr class="memdesc:a4e8e77b99841f723f3889fa9aeace769"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time for plane at interpolation.  <br /></td></tr>
+<tr class="memitem:aac3b6ae185d31db73bc708708f277900" id="r_aac3b6ae185d31db73bc708708f277900"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; int, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aac3b6ae185d31db73bc708708f277900">m_components</a></td></tr>
+<tr class="memdesc:aac3b6ae185d31db73bc708708f277900"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map of <span class="tt">{variableId : component}</span>  <br /></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Collection of data structures and operations for reading data</p>
+<p>This class contains the inlet data structures and operations to read and interpolate inflow data. </p>
+</div><a name="doc-typedef-members" id="doc-typedef-members"></a><h2 id="header-doc-typedef-members" class="groupheader">Member Typedef Documentation</h2>
+<a id="ab6245c2d02476b7c1980935a7a05de3c" name="ab6245c2d02476b7c1980935a7a05de3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6245c2d02476b7c1980935a7a05de3c">&#9670;&#160;</a></span>PlaneVector</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#ab6245c2d02476b7c1980935a7a05de3c">amr_wind::InletData::PlaneVector</a> = amrex::Vector&lt;amrex::FArrayBox&gt;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a57ec63e3ee56f196e38fc2e0afb1f19f" name="a57ec63e3ee56f196e38fc2e0afb1f19f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57ec63e3ee56f196e38fc2e0afb1f19f">&#9670;&#160;</a></span>InletData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::InletData::InletData </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a3237ce4e0959bee1bdbe1830e8110e45" name="a3237ce4e0959bee1bdbe1830e8110e45"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3237ce4e0959bee1bdbe1830e8110e45">&#9670;&#160;</a></span>component() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int &amp; amr_wind::InletData::component </td>
+          <td>(</td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>id</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a54c88c22b89d3ae777d8104c91d886b3" name="a54c88c22b89d3ae777d8104c91d886b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54c88c22b89d3ae777d8104c91d886b3">&#9670;&#160;</a></span>component() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::InletData::component </td>
+          <td>(</td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>id</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a51ebcd0e2230df38d68cbf55e67d303d" name="a51ebcd0e2230df38d68cbf55e67d303d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51ebcd0e2230df38d68cbf55e67d303d">&#9670;&#160;</a></span>define_level_data()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::InletData::define_level_data </td>
+          <td>(</td>
+          <td class="paramtype">amrex::Orientation</td>          <td class="paramname"><span class="paramname"><em>ori</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Box &amp;</td>          <td class="paramname"><span class="paramname"><em>bx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>nc</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae0088a2d3ec4ec4a43c041532ef10f76" name="ae0088a2d3ec4ec4a43c041532ef10f76"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0088a2d3ec4ec4a43c041532ef10f76">&#9670;&#160;</a></span>define_plane()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::InletData::define_plane </td>
+          <td>(</td>
+          <td class="paramtype">amrex::Orientation</td>          <td class="paramname"><span class="paramname"><em>ori</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa5f6de9fd8e6f7114d3a2038143006f1" name="aa5f6de9fd8e6f7114d3a2038143006f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5f6de9fd8e6f7114d3a2038143006f1">&#9670;&#160;</a></span>interpolate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::InletData::interpolate </td>
+          <td>(</td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>time</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4a3cf1213b785e02958a8fd12b556f4c" name="a4a3cf1213b785e02958a8fd12b556f4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a3cf1213b785e02958a8fd12b556f4c">&#9670;&#160;</a></span>interpolate_data()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const amrex::FArrayBox &amp; amr_wind::InletData::interpolate_data </td>
+          <td>(</td>
+          <td class="paramtype">const amrex::Orientation</td>          <td class="paramname"><span class="paramname"><em>ori</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>lev</em></span>&#160;) const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1b44f09c46f17e9840ef9bbf20c847a5" name="a1b44f09c46f17e9840ef9bbf20c847a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b44f09c46f17e9840ef9bbf20c847a5">&#9670;&#160;</a></span>is_populated()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::InletData::is_populated </td>
+          <td>(</td>
+          <td class="paramtype">amrex::Orientation</td>          <td class="paramname"><span class="paramname"><em>ori</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad6a621d49801eaa88d74a60609a31115" name="ad6a621d49801eaa88d74a60609a31115"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6a621d49801eaa88d74a60609a31115">&#9670;&#160;</a></span>nlevels()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::InletData::nlevels </td>
+          <td>(</td>
+          <td class="paramtype">const amrex::Orientation</td>          <td class="paramname"><span class="paramname"><em>ori</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0cab51080178567404ed3bc5bc193eb6" name="a0cab51080178567404ed3bc5bc193eb6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0cab51080178567404ed3bc5bc193eb6">&#9670;&#160;</a></span>read_data()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::InletData::read_data </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classncutils_1_1_n_c_group.html">ncutils::NCGroup</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>grp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Orientation</td>          <td class="paramname"><span class="paramname"><em>ori</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>lev</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_field.html">Field</a> *</td>          <td class="paramname"><span class="paramname"><em>fld</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>time</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Vector&lt; amrex::Real &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>times</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4cc0a87e5a87acfa3a4bcb61801236ee" name="a4cc0a87e5a87acfa3a4bcb61801236ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cc0a87e5a87acfa3a4bcb61801236ee">&#9670;&#160;</a></span>read_data_native()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::InletData::read_data_native </td>
+          <td>(</td>
+          <td class="paramtype">amrex::OrientationIter</td>          <td class="paramname"><span class="paramname"><em>oit</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::BndryRegister &amp;</td>          <td class="paramname"><span class="paramname"><em>bndry_n</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::BndryRegister &amp;</td>          <td class="paramname"><span class="paramname"><em>bndry_np1</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>lev</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_field.html">Field</a> *</td>          <td class="paramname"><span class="paramname"><em>fld</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>time</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Vector&lt; amrex::Real &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>times</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4b4e6eb43325e5f14fa056637e98589e" name="a4b4e6eb43325e5f14fa056637e98589e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b4e6eb43325e5f14fa056637e98589e">&#9670;&#160;</a></span>resize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::InletData::resize </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>size</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7fb173d6b9e33786ea604bbb02f9ce02" name="a7fb173d6b9e33786ea604bbb02f9ce02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7fb173d6b9e33786ea604bbb02f9ce02">&#9670;&#160;</a></span>tinterp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::InletData::tinterp </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3dbd3fd8eeadbe05282cf6cbf213d94e" name="a3dbd3fd8eeadbe05282cf6cbf213d94e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3dbd3fd8eeadbe05282cf6cbf213d94e">&#9670;&#160;</a></span>tn()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::InletData::tn </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a49ffb474b7b2c77b6a43923f211daf0b" name="a49ffb474b7b2c77b6a43923f211daf0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49ffb474b7b2c77b6a43923f211daf0b">&#9670;&#160;</a></span>tnp1()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::InletData::tnp1 </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="aac3b6ae185d31db73bc708708f277900" name="aac3b6ae185d31db73bc708708f277900"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac3b6ae185d31db73bc708708f277900">&#9670;&#160;</a></span>m_components</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;int, int&gt; amr_wind::InletData::m_components</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Map of <span class="tt">{variableId : component}</span> </p>
+
+</div>
+</div>
+<a id="a2bf9b4e3c7795899c19bc18970998456" name="a2bf9b4e3c7795899c19bc18970998456"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2bf9b4e3c7795899c19bc18970998456">&#9670;&#160;</a></span>m_data_interp</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;std::unique_ptr&lt;<a class="el" href="#ab6245c2d02476b7c1980935a7a05de3c">PlaneVector</a>&gt; &gt; amr_wind::InletData::m_data_interp</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aec5c531b04ae30a1bf0105ccca3479e1" name="aec5c531b04ae30a1bf0105ccca3479e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec5c531b04ae30a1bf0105ccca3479e1">&#9670;&#160;</a></span>m_data_n</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;std::unique_ptr&lt;<a class="el" href="#ab6245c2d02476b7c1980935a7a05de3c">PlaneVector</a>&gt; &gt; amr_wind::InletData::m_data_n</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af7dfaa0095a9e94f5d9043c2718e6f12" name="af7dfaa0095a9e94f5d9043c2718e6f12"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7dfaa0095a9e94f5d9043c2718e6f12">&#9670;&#160;</a></span>m_data_np1</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;std::unique_ptr&lt;<a class="el" href="#ab6245c2d02476b7c1980935a7a05de3c">PlaneVector</a>&gt; &gt; amr_wind::InletData::m_data_np1</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4e8e77b99841f723f3889fa9aeace769" name="a4e8e77b99841f723f3889fa9aeace769"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e8e77b99841f723f3889fa9aeace769">&#9670;&#160;</a></span>m_tinterp</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::InletData::m_tinterp {-1.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Time for plane at interpolation. </p>
+
+</div>
+</div>
+<a id="ab53c927133ec198fb40fcf02b8f0a820" name="ab53c927133ec198fb40fcf02b8f0a820"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab53c927133ec198fb40fcf02b8f0a820">&#9670;&#160;</a></span>m_tn</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::InletData::m_tn {-1.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Time for plane at n. </p>
+
+</div>
+</div>
+<a id="a47582c007fc5a9c3cef2a4d32a6dbf67" name="a47582c007fc5a9c3cef2a4d32a6dbf67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47582c007fc5a9c3cef2a4d32a6dbf67">&#9670;&#160;</a></span>m_tnp1</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::InletData::m_tnp1 {-1.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Time for plane at n + 1. </p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/<a class="el" href="_a_b_l_boundary_plane_8_h_source.html">ABLBoundaryPlane.H</a></li>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/<a class="el" href="_a_b_l_boundary_plane_8cpp.html">ABLBoundaryPlane.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

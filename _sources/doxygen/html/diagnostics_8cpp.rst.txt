@@ -1,0 +1,14 @@
+.. meta::09cec43404575a029556b390ed216351c8668c937a3797ba84eb2b9a2456893eabf9656dcf9d39b94bdd72e6e3ae83f3deefc64fd8954b1514c208f30f40dbd4
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/diagnostics.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/diagnostics.cpp File Reference
+=====================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: diagnostics_8cpp.html

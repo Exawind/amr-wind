@@ -1,0 +1,14 @@
+.. meta::93381cb2371c2c65a133efc6bc5933866952e9bab81e4f746da7fbaca46c92ee22a13f4bf96d4e532c67a1c5db1e6ce345b64a2175e4f38a971fd43e4fe7bc79
+
+:orphan:
+
+.. title:: AMR-Wind API: ext_turb::ExternalTurbine Struct Reference
+
+ExternalTurbine Struct Reference
+================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structext__turb_1_1_external_turbine.html

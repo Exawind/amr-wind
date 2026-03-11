@@ -1,0 +1,1195 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::IOManager Class Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::IOManager Class Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/classamr__wind_1_1_i_o_manager.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="iomanager-class-reference">
+<h1>IOManager Class Reference<a class="headerlink" href="#iomanager-class-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::IOManager Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="classamr__wind_1_1_i_o_manager.html">IOManager</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pri-methods">Private Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
+<a href="classamr__wind_1_1_i_o_manager-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::IOManager Class Reference<div class="ingroups"><a class="el" href="group__utilities.html">Utilities</a></div></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_i_o_manager_8_h_source.html">IOManager.H</a>&gt;</code></p>
+<div class="dynheader">
+Collaboration diagram for amr_wind::IOManager:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1_i_o_manager__coll__graph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a3906da07991d8d8b513cf5b98d07170c" id="r_a3906da07991d8d8b513cf5b98d07170c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3906da07991d8d8b513cf5b98d07170c">IOManager</a> (<a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;)</td></tr>
+<tr class="memitem:abab7bbe9278dc344a6b0235158ed58ee" id="r_abab7bbe9278dc344a6b0235158ed58ee"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abab7bbe9278dc344a6b0235158ed58ee">~IOManager</a> ()</td></tr>
+<tr class="memitem:a253c90a972891712dc61182ec514195f" id="r_a253c90a972891712dc61182ec514195f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a253c90a972891712dc61182ec514195f">IOManager</a> (const <a class="el" href="classamr__wind_1_1_i_o_manager.html">IOManager</a> &amp;)=delete</td></tr>
+<tr class="memitem:af293a9b2903e7cd8bd1bd88f6891d443" id="r_af293a9b2903e7cd8bd1bd88f6891d443"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_i_o_manager.html">IOManager</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af293a9b2903e7cd8bd1bd88f6891d443">operator=</a> (const <a class="el" href="classamr__wind_1_1_i_o_manager.html">IOManager</a> &amp;)=delete</td></tr>
+<tr class="memitem:a644bd09c74256f0a99492a1120b63d7c" id="r_a644bd09c74256f0a99492a1120b63d7c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a644bd09c74256f0a99492a1120b63d7c">initialize_io</a> ()</td></tr>
+<tr class="memdesc:a644bd09c74256f0a99492a1120b63d7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Process user inputs and perform one-time initialization tasks.  <br /></td></tr>
+<tr class="memitem:a2751c61d7bc0b302032db0ebef39e57f" id="r_a2751c61d7bc0b302032db0ebef39e57f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2751c61d7bc0b302032db0ebef39e57f">write_plot_file</a> ()</td></tr>
+<tr class="memdesc:a2751c61d7bc0b302032db0ebef39e57f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write all user-requested fields to disk.  <br /></td></tr>
+<tr class="memitem:a030035b88ef1d73cf0a39c09003d2e2b" id="r_a030035b88ef1d73cf0a39c09003d2e2b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a030035b88ef1d73cf0a39c09003d2e2b">write_checkpoint_file</a> (int start_level=0, int end_level=-1)</td></tr>
+<tr class="memdesc:a030035b88ef1d73cf0a39c09003d2e2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write all necessary fields for restart.  <br /></td></tr>
+<tr class="memitem:aa8e9184a24d6f9272f0b2ca1fe6cbcf6" id="r_aa8e9184a24d6f9272f0b2ca1fe6cbcf6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa8e9184a24d6f9272f0b2ca1fe6cbcf6">read_checkpoint_fields</a> (const std::string &amp;<a class="el" href="#aad0561af1d371c2cfd161be67e782d38">restart_file</a>, const amrex::Vector&lt; amrex::BoxArray &gt; &amp;ba_chk, const amrex::Vector&lt; amrex::DistributionMapping &gt; &amp;dm_chk, const amrex::IntVect &amp;rep)</td></tr>
+<tr class="memdesc:aa8e9184a24d6f9272f0b2ca1fe6cbcf6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read all necessary fields for a restart.  <br /></td></tr>
+<tr class="memitem:a6c4fce412069a3362b0695e1723986e6" id="r_a6c4fce412069a3362b0695e1723986e6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6c4fce412069a3362b0695e1723986e6">register_output_var</a> (const std::string &amp;fname)</td></tr>
+<tr class="memdesc:a6c4fce412069a3362b0695e1723986e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register a variable for output.  <br /></td></tr>
+<tr class="memitem:a95331ca7ae6a864bd6095ce92b6e4418" id="r_a95331ca7ae6a864bd6095ce92b6e4418"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a95331ca7ae6a864bd6095ce92b6e4418">register_output_int_var</a> (const std::string &amp;fname)</td></tr>
+<tr class="memitem:aff0a3c6bc63b4edfb0c8d4c76a837fc3" id="r_aff0a3c6bc63b4edfb0c8d4c76a837fc3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aff0a3c6bc63b4edfb0c8d4c76a837fc3">register_restart_var</a> (const std::string &amp;fname)</td></tr>
+<tr class="memdesc:aff0a3c6bc63b4edfb0c8d4c76a837fc3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register a variable for restart file.  <br /></td></tr>
+<tr class="memitem:ac31999a428baec6d606849a78dedb551" id="r_ac31999a428baec6d606849a78dedb551"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac31999a428baec6d606849a78dedb551">register_io_var</a> (const std::string &amp;fname)</td></tr>
+<tr class="memdesc:ac31999a428baec6d606849a78dedb551"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience function to register a variable for both output and restart.  <br /></td></tr>
+<tr class="memitem:aad0561af1d371c2cfd161be67e782d38" id="r_aad0561af1d371c2cfd161be67e782d38"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aad0561af1d371c2cfd161be67e782d38">restart_file</a> ()</td></tr>
+<tr class="memdesc:aad0561af1d371c2cfd161be67e782d38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Name of the checkpoint file to be read during a restart.  <br /></td></tr>
+<tr class="memitem:ae3ee849fb27e2b62faca835e6bda4361" id="r_ae3ee849fb27e2b62faca835e6bda4361"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae3ee849fb27e2b62faca835e6bda4361">is_restart</a> () const</td></tr>
+<tr class="memitem:aedef912edad760be8e62f54019927ce1" id="r_aedef912edad760be8e62f54019927ce1"><td class="memItemLeft" align="right" valign="top">const amrex::Vector&lt; <a class="el" href="classamr__wind_1_1_field.html">Field</a> * &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aedef912edad760be8e62f54019927ce1">plot_fields</a> () const</td></tr>
+<tr class="memitem:a11f833bc16d2b77e8aa6afd3dfa40988" id="r_a11f833bc16d2b77e8aa6afd3dfa40988"><td class="memItemLeft" align="right" valign="top">const amrex::Vector&lt; <a class="el" href="classamr__wind_1_1_field.html">Field</a> * &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a11f833bc16d2b77e8aa6afd3dfa40988">checkpoint_fields</a> () const</td></tr>
+<tr class="memitem:aa4c7bc59088213adf1cd6f790e4dc19f" id="r_aa4c7bc59088213adf1cd6f790e4dc19f"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa4c7bc59088213adf1cd6f790e4dc19f">post_processing_directory</a> ()</td></tr>
+<tr class="memdesc:aa4c7bc59088213adf1cd6f790e4dc19f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Name of the post processing directory.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-methods" class="groupheader"><a id="pri-methods" name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:a9d652d8bed3f80a19f4605d0327d94a3" id="r_a9d652d8bed3f80a19f4605d0327d94a3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9d652d8bed3f80a19f4605d0327d94a3">write_header</a> (const std::string &amp;, int start_level, int end_level)</td></tr>
+<tr class="memitem:a4ea57909d46d12b709864ddf387498e6" id="r_a4ea57909d46d12b709864ddf387498e6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4ea57909d46d12b709864ddf387498e6">write_info_file</a> (const std::string &amp;)</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:af78cba133e0529f0135eab5a60f099b8" id="r_af78cba133e0529f0135eab5a60f099b8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af78cba133e0529f0135eab5a60f099b8">m_sim</a></td></tr>
+<tr class="memitem:a660ac23589f8d5be793d6be353cb70e1" id="r_a660ac23589f8d5be793d6be353cb70e1"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1_derived_qty_mgr.html">DerivedQtyMgr</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a660ac23589f8d5be793d6be353cb70e1">m_derived_mgr</a></td></tr>
+<tr class="memitem:a2e36ccc0361755d1ee0cb6f0d3dc9acd" id="r_a2e36ccc0361755d1ee0cb6f0d3dc9acd"><td class="memItemLeft" align="right" valign="top">std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2e36ccc0361755d1ee0cb6f0d3dc9acd">m_pltvars_default</a></td></tr>
+<tr class="memdesc:a2e36ccc0361755d1ee0cb6f0d3dc9acd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default output variables registered automatically in the code.  <br /></td></tr>
+<tr class="memitem:aaaf6cbd33e738c9e8fd6a323fd8117ba" id="r_aaaf6cbd33e738c9e8fd6a323fd8117ba"><td class="memItemLeft" align="right" valign="top">std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaaf6cbd33e738c9e8fd6a323fd8117ba">m_int_pltvars_default</a></td></tr>
+<tr class="memdesc:aaaf6cbd33e738c9e8fd6a323fd8117ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default output integer variables registered automatically in the code.  <br /></td></tr>
+<tr class="memitem:aee1a93cfe0fd398dc49078ddfd87c927" id="r_aee1a93cfe0fd398dc49078ddfd87c927"><td class="memItemLeft" align="right" valign="top">std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aee1a93cfe0fd398dc49078ddfd87c927">m_chkvars</a></td></tr>
+<tr class="memdesc:aee1a93cfe0fd398dc49078ddfd87c927"><td class="mdescLeft">&#160;</td><td class="mdescRight">Variables for output in checkpoint/restart files.  <br /></td></tr>
+<tr class="memitem:aac0bdde5b91859e6c2b74a57df966190" id="r_aac0bdde5b91859e6c2b74a57df966190"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; <a class="el" href="classamr__wind_1_1_field.html">Field</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aac0bdde5b91859e6c2b74a57df966190">m_plt_fields</a></td></tr>
+<tr class="memdesc:aac0bdde5b91859e6c2b74a57df966190"><td class="mdescLeft">&#160;</td><td class="mdescRight">Final list of fields to be output.  <br /></td></tr>
+<tr class="memitem:a571fff9aa158fd1780a85c88d8d14153" id="r_a571fff9aa158fd1780a85c88d8d14153"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; <a class="el" href="classamr__wind_1_1_int_field.html">IntField</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a571fff9aa158fd1780a85c88d8d14153">m_int_plt_fields</a></td></tr>
+<tr class="memdesc:a571fff9aa158fd1780a85c88d8d14153"><td class="mdescLeft">&#160;</td><td class="mdescRight">Final list of integer fields to be output.  <br /></td></tr>
+<tr class="memitem:add69ed908f8c226ace9c511faf03a46f" id="r_add69ed908f8c226ace9c511faf03a46f"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; <a class="el" href="classamr__wind_1_1_field.html">Field</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#add69ed908f8c226ace9c511faf03a46f">m_chk_fields</a></td></tr>
+<tr class="memdesc:add69ed908f8c226ace9c511faf03a46f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Final list of fields for restart.  <br /></td></tr>
+<tr class="memitem:af554b99345739e8031c5a112c0b08c34" id="r_af554b99345739e8031c5a112c0b08c34"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af554b99345739e8031c5a112c0b08c34">m_plt_var_names</a></td></tr>
+<tr class="memdesc:af554b99345739e8031c5a112c0b08c34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Variable names (including components) for output.  <br /></td></tr>
+<tr class="memitem:a72c737a6d353db0f1814671db1d101a5" id="r_a72c737a6d353db0f1814671db1d101a5"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a72c737a6d353db0f1814671db1d101a5">m_plt_prefix</a> {&quot;plt&quot;}</td></tr>
+<tr class="memdesc:a72c737a6d353db0f1814671db1d101a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prefix used for the plot file directories.  <br /></td></tr>
+<tr class="memitem:a4278a19c230847844fba9d44b285db40" id="r_a4278a19c230847844fba9d44b285db40"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4278a19c230847844fba9d44b285db40">m_chk_prefix</a> {&quot;chk&quot;}</td></tr>
+<tr class="memdesc:a4278a19c230847844fba9d44b285db40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prefix used for the restart file directories.  <br /></td></tr>
+<tr class="memitem:a608b997e76b39c0fc058293807a54669" id="r_a608b997e76b39c0fc058293807a54669"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a608b997e76b39c0fc058293807a54669">m_post_dir</a> {&quot;post_processing&quot;}</td></tr>
+<tr class="memdesc:a608b997e76b39c0fc058293807a54669"><td class="mdescLeft">&#160;</td><td class="mdescRight">Name for the post_processing directory.  <br /></td></tr>
+<tr class="memitem:a5f4a4c580a0e2de83260d4546137fbf4" id="r_a5f4a4c580a0e2de83260d4546137fbf4"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5f4a4c580a0e2de83260d4546137fbf4">m_restart_file</a></td></tr>
+<tr class="memdesc:a5f4a4c580a0e2de83260d4546137fbf4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restart file name.  <br /></td></tr>
+<tr class="memitem:aef4d3da2027f0c5997321b5ac8f9f367" id="r_aef4d3da2027f0c5997321b5ac8f9f367"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aef4d3da2027f0c5997321b5ac8f9f367">m_plt_num_comp</a> {0}</td></tr>
+<tr class="memdesc:aef4d3da2027f0c5997321b5ac8f9f367"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total number of variables (including components) output to plot file.  <br /></td></tr>
+<tr class="memitem:a0df30482e87b80ea62832fb70a155f0a" id="r_a0df30482e87b80ea62832fb70a155f0a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0df30482e87b80ea62832fb70a155f0a">m_output_default_vars</a> {true}</td></tr>
+<tr class="memdesc:a0df30482e87b80ea62832fb70a155f0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flag indicating whether default fields should be output.  <br /></td></tr>
+<tr class="memitem:a472308e2bc2b7f2694b0b07305cfac2f" id="r_a472308e2bc2b7f2694b0b07305cfac2f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a472308e2bc2b7f2694b0b07305cfac2f">m_allow_missing_restart_fields</a> {true}</td></tr>
+<tr class="memdesc:a472308e2bc2b7f2694b0b07305cfac2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flag indicating whether we should allow missing restart fields.  <br /></td></tr>
+<tr class="memitem:abe5c04e3899064888cff695b58191029" id="r_abe5c04e3899064888cff695b58191029"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abe5c04e3899064888cff695b58191029">m_nfiles</a> {256}</td></tr>
+<tr class="memdesc:abe5c04e3899064888cff695b58191029"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of plot and checkpoint data files per write.  <br /></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Input/Output manager</p>
+<p>This class contains infrastructure to output solution fields during the simulation as well as code that reads a checkpoint file during a restarted simulation. By default the <a class="el" href="group__eqsys.html">Equation Systems</a> register the necessary fields during initialization and these fields are output into plot-file and checkpoint file formats based on output frequencies managed by <a class="el" href="classamr__wind_1_1_sim_time.html">SimTime</a>. The user can request additional fields be output by setting appropriate parameters in the input file. The class also provides the ability to override output of the default fields and output a subset of those fields. </p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a3906da07991d8d8b513cf5b98d07170c" name="a3906da07991d8d8b513cf5b98d07170c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3906da07991d8d8b513cf5b98d07170c">&#9670;&#160;</a></span>IOManager() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::IOManager::IOManager </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>sim</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel explicit">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abab7bbe9278dc344a6b0235158ed58ee" name="abab7bbe9278dc344a6b0235158ed58ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abab7bbe9278dc344a6b0235158ed58ee">&#9670;&#160;</a></span>~IOManager()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::IOManager::~IOManager </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a253c90a972891712dc61182ec514195f" name="a253c90a972891712dc61182ec514195f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a253c90a972891712dc61182ec514195f">&#9670;&#160;</a></span>IOManager() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::IOManager::IOManager </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_i_o_manager.html">IOManager</a> &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel delete">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a11f833bc16d2b77e8aa6afd3dfa40988" name="a11f833bc16d2b77e8aa6afd3dfa40988"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11f833bc16d2b77e8aa6afd3dfa40988">&#9670;&#160;</a></span>checkpoint_fields()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const amrex::Vector&lt; <a class="el" href="classamr__wind_1_1_field.html">Field</a> * &gt; &amp; amr_wind::IOManager::checkpoint_fields </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a644bd09c74256f0a99492a1120b63d7c" name="a644bd09c74256f0a99492a1120b63d7c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a644bd09c74256f0a99492a1120b63d7c">&#9670;&#160;</a></span>initialize_io()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::IOManager::initialize_io </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Process user inputs and perform one-time initialization tasks. </p>
+
+</div>
+</div>
+<a id="ae3ee849fb27e2b62faca835e6bda4361" name="ae3ee849fb27e2b62faca835e6bda4361"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3ee849fb27e2b62faca835e6bda4361">&#9670;&#160;</a></span>is_restart()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::IOManager::is_restart </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af293a9b2903e7cd8bd1bd88f6891d443" name="af293a9b2903e7cd8bd1bd88f6891d443"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af293a9b2903e7cd8bd1bd88f6891d443">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_i_o_manager.html">IOManager</a> &amp; amr_wind::IOManager::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_i_o_manager.html">IOManager</a> &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel delete">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aedef912edad760be8e62f54019927ce1" name="aedef912edad760be8e62f54019927ce1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aedef912edad760be8e62f54019927ce1">&#9670;&#160;</a></span>plot_fields()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const amrex::Vector&lt; <a class="el" href="classamr__wind_1_1_field.html">Field</a> * &gt; &amp; amr_wind::IOManager::plot_fields </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa4c7bc59088213adf1cd6f790e4dc19f" name="aa4c7bc59088213adf1cd6f790e4dc19f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4c7bc59088213adf1cd6f790e4dc19f">&#9670;&#160;</a></span>post_processing_directory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; amr_wind::IOManager::post_processing_directory </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Name of the post processing directory. </p>
+
+</div>
+</div>
+<a id="aa8e9184a24d6f9272f0b2ca1fe6cbcf6" name="aa8e9184a24d6f9272f0b2ca1fe6cbcf6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8e9184a24d6f9272f0b2ca1fe6cbcf6">&#9670;&#160;</a></span>read_checkpoint_fields()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::IOManager::read_checkpoint_fields </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>restart_file</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Vector&lt; amrex::BoxArray &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>ba_chk</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Vector&lt; amrex::DistributionMapping &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>dm_chk</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::IntVect &amp;</td>          <td class="paramname"><span class="paramname"><em>rep</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read all necessary fields for a restart. </p>
+
+</div>
+</div>
+<a id="ac31999a428baec6d606849a78dedb551" name="ac31999a428baec6d606849a78dedb551"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac31999a428baec6d606849a78dedb551">&#9670;&#160;</a></span>register_io_var()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::IOManager::register_io_var </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>fname</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Convenience function to register a variable for both output and restart. </p>
+
+</div>
+</div>
+<a id="a95331ca7ae6a864bd6095ce92b6e4418" name="a95331ca7ae6a864bd6095ce92b6e4418"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95331ca7ae6a864bd6095ce92b6e4418">&#9670;&#160;</a></span>register_output_int_var()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::IOManager::register_output_int_var </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>fname</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6c4fce412069a3362b0695e1723986e6" name="a6c4fce412069a3362b0695e1723986e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c4fce412069a3362b0695e1723986e6">&#9670;&#160;</a></span>register_output_var()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::IOManager::register_output_var </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>fname</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Register a variable for output. </p>
+
+</div>
+</div>
+<a id="aff0a3c6bc63b4edfb0c8d4c76a837fc3" name="aff0a3c6bc63b4edfb0c8d4c76a837fc3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff0a3c6bc63b4edfb0c8d4c76a837fc3">&#9670;&#160;</a></span>register_restart_var()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::IOManager::register_restart_var </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>fname</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Register a variable for restart file. </p>
+
+</div>
+</div>
+<a id="aad0561af1d371c2cfd161be67e782d38" name="aad0561af1d371c2cfd161be67e782d38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad0561af1d371c2cfd161be67e782d38">&#9670;&#160;</a></span>restart_file()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; amr_wind::IOManager::restart_file </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Name of the checkpoint file to be read during a restart. </p>
+
+</div>
+</div>
+<a id="a030035b88ef1d73cf0a39c09003d2e2b" name="a030035b88ef1d73cf0a39c09003d2e2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a030035b88ef1d73cf0a39c09003d2e2b">&#9670;&#160;</a></span>write_checkpoint_file()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::IOManager::write_checkpoint_file </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>start_level</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>end_level</em></span><span class="paramdefsep"> = </span><span class="paramdefval">-1</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Write all necessary fields for restart. </p>
+
+</div>
+</div>
+<a id="a9d652d8bed3f80a19f4605d0327d94a3" name="a9d652d8bed3f80a19f4605d0327d94a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d652d8bed3f80a19f4605d0327d94a3">&#9670;&#160;</a></span>write_header()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::IOManager::write_header </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>chkname</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>start_level</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>end_level</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4ea57909d46d12b709864ddf387498e6" name="a4ea57909d46d12b709864ddf387498e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ea57909d46d12b709864ddf387498e6">&#9670;&#160;</a></span>write_info_file()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::IOManager::write_info_file </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>path</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2751c61d7bc0b302032db0ebef39e57f" name="a2751c61d7bc0b302032db0ebef39e57f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2751c61d7bc0b302032db0ebef39e57f">&#9670;&#160;</a></span>write_plot_file()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::IOManager::write_plot_file </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Write all user-requested fields to disk. </p>
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a472308e2bc2b7f2694b0b07305cfac2f" name="a472308e2bc2b7f2694b0b07305cfac2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a472308e2bc2b7f2694b0b07305cfac2f">&#9670;&#160;</a></span>m_allow_missing_restart_fields</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::IOManager::m_allow_missing_restart_fields {true}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Flag indicating whether we should allow missing restart fields. </p>
+
+</div>
+</div>
+<a id="add69ed908f8c226ace9c511faf03a46f" name="add69ed908f8c226ace9c511faf03a46f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add69ed908f8c226ace9c511faf03a46f">&#9670;&#160;</a></span>m_chk_fields</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;<a class="el" href="classamr__wind_1_1_field.html">Field</a>*&gt; amr_wind::IOManager::m_chk_fields</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Final list of fields for restart. </p>
+
+</div>
+</div>
+<a id="a4278a19c230847844fba9d44b285db40" name="a4278a19c230847844fba9d44b285db40"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4278a19c230847844fba9d44b285db40">&#9670;&#160;</a></span>m_chk_prefix</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::IOManager::m_chk_prefix {&quot;chk&quot;}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Prefix used for the restart file directories. </p>
+
+</div>
+</div>
+<a id="aee1a93cfe0fd398dc49078ddfd87c927" name="aee1a93cfe0fd398dc49078ddfd87c927"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee1a93cfe0fd398dc49078ddfd87c927">&#9670;&#160;</a></span>m_chkvars</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::set&lt;std::string&gt; amr_wind::IOManager::m_chkvars</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Variables for output in checkpoint/restart files. </p>
+
+</div>
+</div>
+<a id="a660ac23589f8d5be793d6be353cb70e1" name="a660ac23589f8d5be793d6be353cb70e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a660ac23589f8d5be793d6be353cb70e1">&#9670;&#160;</a></span>m_derived_mgr</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classamr__wind_1_1_derived_qty_mgr.html">DerivedQtyMgr</a>&gt; amr_wind::IOManager::m_derived_mgr</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a571fff9aa158fd1780a85c88d8d14153" name="a571fff9aa158fd1780a85c88d8d14153"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a571fff9aa158fd1780a85c88d8d14153">&#9670;&#160;</a></span>m_int_plt_fields</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;<a class="el" href="classamr__wind_1_1_int_field.html">IntField</a>*&gt; amr_wind::IOManager::m_int_plt_fields</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Final list of integer fields to be output. </p>
+
+</div>
+</div>
+<a id="aaaf6cbd33e738c9e8fd6a323fd8117ba" name="aaaf6cbd33e738c9e8fd6a323fd8117ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaaf6cbd33e738c9e8fd6a323fd8117ba">&#9670;&#160;</a></span>m_int_pltvars_default</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::set&lt;std::string&gt; amr_wind::IOManager::m_int_pltvars_default</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Default output integer variables registered automatically in the code. </p>
+
+</div>
+</div>
+<a id="abe5c04e3899064888cff695b58191029" name="abe5c04e3899064888cff695b58191029"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe5c04e3899064888cff695b58191029">&#9670;&#160;</a></span>m_nfiles</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::IOManager::m_nfiles {256}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of plot and checkpoint data files per write. </p>
+
+</div>
+</div>
+<a id="a0df30482e87b80ea62832fb70a155f0a" name="a0df30482e87b80ea62832fb70a155f0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0df30482e87b80ea62832fb70a155f0a">&#9670;&#160;</a></span>m_output_default_vars</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::IOManager::m_output_default_vars {true}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Flag indicating whether default fields should be output. </p>
+
+</div>
+</div>
+<a id="aac0bdde5b91859e6c2b74a57df966190" name="aac0bdde5b91859e6c2b74a57df966190"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac0bdde5b91859e6c2b74a57df966190">&#9670;&#160;</a></span>m_plt_fields</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;<a class="el" href="classamr__wind_1_1_field.html">Field</a>*&gt; amr_wind::IOManager::m_plt_fields</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Final list of fields to be output. </p>
+
+</div>
+</div>
+<a id="aef4d3da2027f0c5997321b5ac8f9f367" name="aef4d3da2027f0c5997321b5ac8f9f367"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef4d3da2027f0c5997321b5ac8f9f367">&#9670;&#160;</a></span>m_plt_num_comp</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::IOManager::m_plt_num_comp {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Total number of variables (including components) output to plot file. </p>
+
+</div>
+</div>
+<a id="a72c737a6d353db0f1814671db1d101a5" name="a72c737a6d353db0f1814671db1d101a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72c737a6d353db0f1814671db1d101a5">&#9670;&#160;</a></span>m_plt_prefix</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::IOManager::m_plt_prefix {&quot;plt&quot;}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Prefix used for the plot file directories. </p>
+
+</div>
+</div>
+<a id="af554b99345739e8031c5a112c0b08c34" name="af554b99345739e8031c5a112c0b08c34"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af554b99345739e8031c5a112c0b08c34">&#9670;&#160;</a></span>m_plt_var_names</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;std::string&gt; amr_wind::IOManager::m_plt_var_names</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Variable names (including components) for output. </p>
+
+</div>
+</div>
+<a id="a2e36ccc0361755d1ee0cb6f0d3dc9acd" name="a2e36ccc0361755d1ee0cb6f0d3dc9acd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e36ccc0361755d1ee0cb6f0d3dc9acd">&#9670;&#160;</a></span>m_pltvars_default</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::set&lt;std::string&gt; amr_wind::IOManager::m_pltvars_default</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Default output variables registered automatically in the code. </p>
+
+</div>
+</div>
+<a id="a608b997e76b39c0fc058293807a54669" name="a608b997e76b39c0fc058293807a54669"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a608b997e76b39c0fc058293807a54669">&#9670;&#160;</a></span>m_post_dir</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::IOManager::m_post_dir {&quot;post_processing&quot;}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Name for the post_processing directory. </p>
+
+</div>
+</div>
+<a id="a5f4a4c580a0e2de83260d4546137fbf4" name="a5f4a4c580a0e2de83260d4546137fbf4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f4a4c580a0e2de83260d4546137fbf4">&#9670;&#160;</a></span>m_restart_file</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::IOManager::m_restart_file</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Restart file name. </p>
+
+</div>
+</div>
+<a id="af78cba133e0529f0135eab5a60f099b8" name="af78cba133e0529f0135eab5a60f099b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af78cba133e0529f0135eab5a60f099b8">&#9670;&#160;</a></span>m_sim</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; amr_wind::IOManager::m_sim</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/<a class="el" href="_i_o_manager_8_h_source.html">IOManager.H</a></li>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/<a class="el" href="_i_o_manager_8cpp.html">IOManager.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,14 @@
+.. meta::d60c085d071dc234e9d62382666887ce1dbdeba01a4ad05677cdd3bd86a769b60b2ab40ab8968260a60f75e25f77ec01d5d30f5c11aae0e1a1ab7ccdf006a3a1
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::UpdatePosOp&lt; TurbineFast, SrcTrait &gt; Struct Template Reference
+
+UpdatePosOp&lt; TurbineFast, SrcTrait &gt; Struct Template Reference
+====================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1ops_1_1_update_pos_op_3_01_turbine_fast_00_01_src_trait_01_4.html

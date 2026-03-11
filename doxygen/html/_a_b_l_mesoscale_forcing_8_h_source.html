@@ -1,0 +1,374 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/ABLMesoscaleForcing.H Source File &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/ABLMesoscaleForcing.H Source File</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/_a_b_l_mesoscale_forcing_8_h_source.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="home-runner-work-amr-wind-amr-wind-amr-wind-wind-energy-ablmesoscaleforcing-h-source-file">
+<h1>/home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/ABLMesoscaleForcing.H Source File<a class="headerlink" href="#home-runner-work-amr-wind-amr-wind-amr-wind-wind-energy-ablmesoscaleforcing-h-source-file" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/ABLMesoscaleForcing.H Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="dir_d85575251dd712327fe3cf057fa568b4.html">amr-wind</a></li><li class="navelem"><a href="dir_212148f97b8bb53ebaebb3bf8a8b5de4.html">amr-wind</a></li><li class="navelem"><a href="dir_b33158d99c61436f71711cd504567082.html">wind_energy</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="headertitle"><div class="title">ABLMesoscaleForcing.H</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="_a_b_l_mesoscale_forcing_8_h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef ABLMESOSCALEFORCING_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define ABLMESOSCALEFORCING_H</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;AMReX_REAL.H&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;AMReX_Array.H&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;AMReX_Vector.H&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="_c_f_d_sim_8_h.html">amr-wind/CFDSim.H</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">using namespace </span>amrex::literals;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceamr__wind.html">amr_wind</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="foldopen" id="foldopen00014" data-start="{" data-end="};">
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html">   14</a></span><span class="keyword">class </span><a class="code hl_function" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a2f111a56eaa38a0972bb08793bdf3982">ABLMesoscaleForcing</a></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>{</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <a class="code hl_function" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a2f111a56eaa38a0972bb08793bdf3982">ABLMesoscaleForcing</a>(<span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; sim, <span class="keyword">const</span> std::string&amp; identifier);</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a66f67f4d2010884976e79d53770ccd14">indirect_forcing_init</a>();</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#af341168767e3a68bc06042a1eb463569">invert_mat</a>(</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        <span class="keyword">const</span> amrex::Array2D&lt;amrex::Real, 0, 3, 0, 3&gt;&amp; m,</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        amrex::Array2D&lt;amrex::Real, 0, 3, 0, 3&gt;&amp; im);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">protected</span>:</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a24e42c66d085ac8f5d5faee04272128a">   27</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_sim_time.html">SimTime</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a24e42c66d085ac8f5d5faee04272128a">m_time</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#aafe283c3efc00a3abc26bf7cbace5611">   28</a></span>    <span class="keyword">const</span> amrex::AmrCore&amp; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#aafe283c3efc00a3abc26bf7cbace5611">m_mesh</a>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#ac9345c0ae27166dc9a4b10aa9fcc1239">   30</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#ac9345c0ae27166dc9a4b10aa9fcc1239">m_idx_time</a>{0};</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a85bae77483880c3d24588cd67ec646e7">   31</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a85bae77483880c3d24588cd67ec646e7">m_axis</a>{2};</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="comment">// inputs</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a7964ba51367fb71029b2eacb7064b3ff">   34</a></span>    std::string <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a7964ba51367fb71029b2eacb7064b3ff">m_forcing_scheme</a>;</div>
+<div class="foldopen" id="foldopen00035" data-start="{" data-end="};">
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#ab1b2a31e6a00d1675fb3315dd8f0c41d">   35</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#ab1b2a31e6a00d1675fb3315dd8f0c41d">m_gain_coeff</a>{</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        0.2_rt};            <span class="comment">// relaxation factor for all forcing schemes</span></div>
+</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a59006b3dd6d3ac9cac990be497c82d31">   37</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a59006b3dd6d3ac9cac990be497c82d31">m_debug</a>{<span class="keyword">false</span>};    <span class="comment">// print out profiles for debugging</span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a8769b1a783ebe89bdf3f5062835dc75b">   38</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a8769b1a783ebe89bdf3f5062835dc75b">m_tendency</a>{<span class="keyword">false</span>}; <span class="comment">// check if tendency forcing</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="comment">// planar averaging heights</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a2255688d4b7caa7cde36acce8738955c">   41</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a2255688d4b7caa7cde36acce8738955c">m_zht</a>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a4df54637a16ffd77da6bfed980f4359c">   42</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a4df54637a16ffd77da6bfed980f4359c">m_nht</a>{0}; <span class="comment">// set by derived ABLMesoForcing[Mom|Temp] class</span></div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="comment">//</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="comment">// regression vars for indirect forcing</span></div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="comment">//</span></div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="comment">// int m_ind_polyOrder;</span></div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a8bcaa8576b4c2442a0594c76851b2eee">   48</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a8bcaa8576b4c2442a0594c76851b2eee">m_norm_zmax</a> = 0;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a4bc0a067ab09a08f05c031a23c09e084">   49</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a4bc0a067ab09a08f05c031a23c09e084">m_scaleFact</a> =</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        1.0e-3_rt; <span class="comment">// to improve conditioning of regression matrix</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#ac57b8b2517fb46663164483c18deb28e">   52</a></span>    amrex::Array2D&lt;amrex::Real, 0, 3, 0, 3&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#ac57b8b2517fb46663164483c18deb28e">m_im_zTz</a>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="comment">// - regression weighting profile inputs (these may be constant or the</span></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="comment">// instantaneous value, if forcing_transition is specified)</span></div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a26371fd8736ad1095d47f53bfc10fa93">   56</a></span>    std::string <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a26371fd8736ad1095d47f53bfc10fa93">m_forcing_transition</a>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a35c7e372acb32d20e4f8a2c2d270ba05">   57</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a35c7e372acb32d20e4f8a2c2d270ba05">m_transition_height</a>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a09127c1fdd0a7779ae6e10331c738735">   58</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a09127c1fdd0a7779ae6e10331c738735">m_update_transition_height</a>{<span class="keyword">false</span>};</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#aff87b3719eb06f8023a0244f71f4465a">   59</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#aff87b3719eb06f8023a0244f71f4465a">m_transition_thickness</a>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a45aaf17fefeb7c8fdaeac41658768976">   61</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a45aaf17fefeb7c8fdaeac41658768976">m_weighting_heights</a>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#afb2d74902558325b3142e279373085e1">   62</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#afb2d74902558325b3142e279373085e1">m_weighting_values</a>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a7d0b954f52442bb7b440bb8818034d8c">   63</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a7d0b954f52442bb7b440bb8818034d8c">m_user_specified_weighting</a>{<span class="keyword">false</span>};</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="comment">// - W(z) at planar averaging heights, for regression</span></div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#af26cd91381fde28d5bf4505efdd5a03b">   66</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#af26cd91381fde28d5bf4505efdd5a03b">m_W</a>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="comment">// - blending heights (constant over time if the transition height is also</span></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="comment">// constant)</span></div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#af9640589ed849f649194232649c9c168">   70</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#af9640589ed849f649194232649c9c168">m_blending_heights</a>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a81c32019c5131f0a38bc66b923e644e6">   71</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a81c32019c5131f0a38bc66b923e644e6">m_blending_values</a>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="comment">// - weights at planar averaging heights, for blending indirect-direct</span></div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="comment">// forcing profiles</span></div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a5a9c3dec44c5ceee3080fd6f513d77d8">   75</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a5a9c3dec44c5ceee3080fd6f513d77d8">m_blend</a>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="comment">//</span></div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="comment">// weighting profile manipulation</span></div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="comment">//</span></div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a30a096803c3467416c82fbef6bac5adb">set_transition_weighting</a>(); <span class="comment">// will override weighting profile</span></div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordtype">void</span></div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <a class="code hl_function" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#acf509970c0fe0010b358071e292a6dc2">update_weights</a>(); <span class="comment">// interpolate current profile to planar averaging heights</span></div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="comment">//</span></div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="comment">// forcing profile manipulation</span></div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="comment">//</span></div>
+<div class="foldopen" id="foldopen00087" data-start="{" data-end="}">
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a23b2e25e49e37c40a07403bbe8651af3">   87</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a23b2e25e49e37c40a07403bbe8651af3">have_forcing_transition</a>()</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    {</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        <span class="keywordflow">return</span> (amrex::toLower(<a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a26371fd8736ad1095d47f53bfc10fa93">m_forcing_transition</a>) != <span class="stringliteral">&quot;none&quot;</span>);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    }</div>
+</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="foldopen" id="foldopen00092" data-start="{" data-end="}">
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a319240fccf7ad28201984d4dbf2f162d">   92</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a319240fccf7ad28201984d4dbf2f162d">forcing_to_constant</a>()</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    {</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        <span class="comment">// - check if m_forcing_transition ends with &quot;Constant&quot;</span></div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a26371fd8736ad1095d47f53bfc10fa93">m_forcing_transition</a>.length() &lt; 8) {</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        }</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        <span class="keywordflow">return</span> (<a class="code hl_variable" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a26371fd8736ad1095d47f53bfc10fa93">m_forcing_transition</a>.ends_with(<span class="stringliteral">&quot;Constant&quot;</span>));</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    }</div>
+</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="comment">// - slope varies linearly from the actual gradient of the forcing profile</span></div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="comment">// at m_transition_height</span></div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="comment">//   to 0 at (m_transition_height + m_transition_thicnkess)</span></div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#afe348445873484cb296bf12c68838e69">constant_forcing_transition</a>(amrex::Vector&lt;amrex::Real&gt;&amp; error);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="comment">// - blend between a lower and upper forcing profile; the blending fraction</span></div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="comment">// is assumed to be</span></div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="comment">//   equal to W(z), but this is not a requirement; W=1 and W=0 correspond to</span></div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="comment">//   the lower and upper profiles, respectively</span></div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a1a961f82890d89b5fdaf66b434da4728">blend_forcings</a>(</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        <span class="keyword">const</span> amrex::Vector&lt;amrex::Real&gt;&amp; lower,</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <span class="keyword">const</span> amrex::Vector&lt;amrex::Real&gt;&amp; upper,</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        amrex::Vector&lt;amrex::Real&gt;&amp; error);</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>};</div>
+</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>} <span class="comment">// namespace amr_wind</span></div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="a_c_f_d_sim_8_h_html"><div class="ttname"><a href="_c_f_d_sim_8_h.html">CFDSim.H</a></div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_forcing_html_a09127c1fdd0a7779ae6e10331c738735"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a09127c1fdd0a7779ae6e10331c738735">amr_wind::ABLMesoscaleForcing::m_update_transition_height</a></div><div class="ttdeci">bool m_update_transition_height</div><div class="ttdef"><b>Definition</b> ABLMesoscaleForcing.H:58</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_forcing_html_a1a961f82890d89b5fdaf66b434da4728"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a1a961f82890d89b5fdaf66b434da4728">amr_wind::ABLMesoscaleForcing::blend_forcings</a></div><div class="ttdeci">void blend_forcings(const amrex::Vector&lt; amrex::Real &gt; &amp;lower, const amrex::Vector&lt; amrex::Real &gt; &amp;upper, amrex::Vector&lt; amrex::Real &gt; &amp;error)</div><div class="ttdef"><b>Definition</b> ABLMesoscaleForcing.cpp:287</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_forcing_html_a2255688d4b7caa7cde36acce8738955c"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a2255688d4b7caa7cde36acce8738955c">amr_wind::ABLMesoscaleForcing::m_zht</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_zht</div><div class="ttdef"><b>Definition</b> ABLMesoscaleForcing.H:41</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_forcing_html_a23b2e25e49e37c40a07403bbe8651af3"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a23b2e25e49e37c40a07403bbe8651af3">amr_wind::ABLMesoscaleForcing::have_forcing_transition</a></div><div class="ttdeci">bool have_forcing_transition()</div><div class="ttdef"><b>Definition</b> ABLMesoscaleForcing.H:87</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_forcing_html_a24e42c66d085ac8f5d5faee04272128a"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a24e42c66d085ac8f5d5faee04272128a">amr_wind::ABLMesoscaleForcing::m_time</a></div><div class="ttdeci">const SimTime &amp; m_time</div><div class="ttdef"><b>Definition</b> ABLMesoscaleForcing.H:27</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_forcing_html_a26371fd8736ad1095d47f53bfc10fa93"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a26371fd8736ad1095d47f53bfc10fa93">amr_wind::ABLMesoscaleForcing::m_forcing_transition</a></div><div class="ttdeci">std::string m_forcing_transition</div><div class="ttdef"><b>Definition</b> ABLMesoscaleForcing.H:56</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_forcing_html_a2f111a56eaa38a0972bb08793bdf3982"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a2f111a56eaa38a0972bb08793bdf3982">amr_wind::ABLMesoscaleForcing::ABLMesoscaleForcing</a></div><div class="ttdeci">ABLMesoscaleForcing(const CFDSim &amp;sim, const std::string &amp;identifier)</div><div class="ttdef"><b>Definition</b> ABLMesoscaleForcing.cpp:14</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_forcing_html_a30a096803c3467416c82fbef6bac5adb"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a30a096803c3467416c82fbef6bac5adb">amr_wind::ABLMesoscaleForcing::set_transition_weighting</a></div><div class="ttdeci">void set_transition_weighting()</div><div class="ttdef"><b>Definition</b> ABLMesoscaleForcing.cpp:88</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_forcing_html_a319240fccf7ad28201984d4dbf2f162d"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a319240fccf7ad28201984d4dbf2f162d">amr_wind::ABLMesoscaleForcing::forcing_to_constant</a></div><div class="ttdeci">bool forcing_to_constant()</div><div class="ttdef"><b>Definition</b> ABLMesoscaleForcing.H:92</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_forcing_html_a35c7e372acb32d20e4f8a2c2d270ba05"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a35c7e372acb32d20e4f8a2c2d270ba05">amr_wind::ABLMesoscaleForcing::m_transition_height</a></div><div class="ttdeci">amrex::Real m_transition_height</div><div class="ttdef"><b>Definition</b> ABLMesoscaleForcing.H:57</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_forcing_html_a45aaf17fefeb7c8fdaeac41658768976"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a45aaf17fefeb7c8fdaeac41658768976">amr_wind::ABLMesoscaleForcing::m_weighting_heights</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_weighting_heights</div><div class="ttdef"><b>Definition</b> ABLMesoscaleForcing.H:61</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_forcing_html_a4bc0a067ab09a08f05c031a23c09e084"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a4bc0a067ab09a08f05c031a23c09e084">amr_wind::ABLMesoscaleForcing::m_scaleFact</a></div><div class="ttdeci">amrex::Real m_scaleFact</div><div class="ttdef"><b>Definition</b> ABLMesoscaleForcing.H:49</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_forcing_html_a4df54637a16ffd77da6bfed980f4359c"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a4df54637a16ffd77da6bfed980f4359c">amr_wind::ABLMesoscaleForcing::m_nht</a></div><div class="ttdeci">int m_nht</div><div class="ttdef"><b>Definition</b> ABLMesoscaleForcing.H:42</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_forcing_html_a59006b3dd6d3ac9cac990be497c82d31"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a59006b3dd6d3ac9cac990be497c82d31">amr_wind::ABLMesoscaleForcing::m_debug</a></div><div class="ttdeci">bool m_debug</div><div class="ttdef"><b>Definition</b> ABLMesoscaleForcing.H:37</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_forcing_html_a5a9c3dec44c5ceee3080fd6f513d77d8"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a5a9c3dec44c5ceee3080fd6f513d77d8">amr_wind::ABLMesoscaleForcing::m_blend</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_blend</div><div class="ttdef"><b>Definition</b> ABLMesoscaleForcing.H:75</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_forcing_html_a66f67f4d2010884976e79d53770ccd14"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a66f67f4d2010884976e79d53770ccd14">amr_wind::ABLMesoscaleForcing::indirect_forcing_init</a></div><div class="ttdeci">void indirect_forcing_init()</div><div class="ttdef"><b>Definition</b> ABLMesoscaleForcing.cpp:129</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_forcing_html_a7964ba51367fb71029b2eacb7064b3ff"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a7964ba51367fb71029b2eacb7064b3ff">amr_wind::ABLMesoscaleForcing::m_forcing_scheme</a></div><div class="ttdeci">std::string m_forcing_scheme</div><div class="ttdef"><b>Definition</b> ABLMesoscaleForcing.H:34</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_forcing_html_a7d0b954f52442bb7b440bb8818034d8c"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a7d0b954f52442bb7b440bb8818034d8c">amr_wind::ABLMesoscaleForcing::m_user_specified_weighting</a></div><div class="ttdeci">bool m_user_specified_weighting</div><div class="ttdef"><b>Definition</b> ABLMesoscaleForcing.H:63</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_forcing_html_a81c32019c5131f0a38bc66b923e644e6"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a81c32019c5131f0a38bc66b923e644e6">amr_wind::ABLMesoscaleForcing::m_blending_values</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_blending_values</div><div class="ttdef"><b>Definition</b> ABLMesoscaleForcing.H:71</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_forcing_html_a85bae77483880c3d24588cd67ec646e7"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a85bae77483880c3d24588cd67ec646e7">amr_wind::ABLMesoscaleForcing::m_axis</a></div><div class="ttdeci">int m_axis</div><div class="ttdef"><b>Definition</b> ABLMesoscaleForcing.H:31</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_forcing_html_a8769b1a783ebe89bdf3f5062835dc75b"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a8769b1a783ebe89bdf3f5062835dc75b">amr_wind::ABLMesoscaleForcing::m_tendency</a></div><div class="ttdeci">bool m_tendency</div><div class="ttdef"><b>Definition</b> ABLMesoscaleForcing.H:38</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_forcing_html_a8bcaa8576b4c2442a0594c76851b2eee"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#a8bcaa8576b4c2442a0594c76851b2eee">amr_wind::ABLMesoscaleForcing::m_norm_zmax</a></div><div class="ttdeci">int m_norm_zmax</div><div class="ttdef"><b>Definition</b> ABLMesoscaleForcing.H:48</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_forcing_html_aafe283c3efc00a3abc26bf7cbace5611"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#aafe283c3efc00a3abc26bf7cbace5611">amr_wind::ABLMesoscaleForcing::m_mesh</a></div><div class="ttdeci">const amrex::AmrCore &amp; m_mesh</div><div class="ttdef"><b>Definition</b> ABLMesoscaleForcing.H:28</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_forcing_html_ab1b2a31e6a00d1675fb3315dd8f0c41d"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#ab1b2a31e6a00d1675fb3315dd8f0c41d">amr_wind::ABLMesoscaleForcing::m_gain_coeff</a></div><div class="ttdeci">amrex::Real m_gain_coeff</div><div class="ttdef"><b>Definition</b> ABLMesoscaleForcing.H:35</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_forcing_html_ac57b8b2517fb46663164483c18deb28e"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#ac57b8b2517fb46663164483c18deb28e">amr_wind::ABLMesoscaleForcing::m_im_zTz</a></div><div class="ttdeci">amrex::Array2D&lt; amrex::Real, 0, 3, 0, 3 &gt; m_im_zTz</div><div class="ttdef"><b>Definition</b> ABLMesoscaleForcing.H:52</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_forcing_html_ac9345c0ae27166dc9a4b10aa9fcc1239"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#ac9345c0ae27166dc9a4b10aa9fcc1239">amr_wind::ABLMesoscaleForcing::m_idx_time</a></div><div class="ttdeci">int m_idx_time</div><div class="ttdef"><b>Definition</b> ABLMesoscaleForcing.H:30</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_forcing_html_acf509970c0fe0010b358071e292a6dc2"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#acf509970c0fe0010b358071e292a6dc2">amr_wind::ABLMesoscaleForcing::update_weights</a></div><div class="ttdeci">void update_weights()</div><div class="ttdef"><b>Definition</b> ABLMesoscaleForcing.cpp:110</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_forcing_html_af26cd91381fde28d5bf4505efdd5a03b"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#af26cd91381fde28d5bf4505efdd5a03b">amr_wind::ABLMesoscaleForcing::m_W</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_W</div><div class="ttdef"><b>Definition</b> ABLMesoscaleForcing.H:66</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_forcing_html_af341168767e3a68bc06042a1eb463569"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#af341168767e3a68bc06042a1eb463569">amr_wind::ABLMesoscaleForcing::invert_mat</a></div><div class="ttdeci">static void invert_mat(const amrex::Array2D&lt; amrex::Real, 0, 3, 0, 3 &gt; &amp;m, amrex::Array2D&lt; amrex::Real, 0, 3, 0, 3 &gt; &amp;im)</div><div class="ttdef"><b>Definition</b> ABLMesoscaleForcing.cpp:174</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_forcing_html_af9640589ed849f649194232649c9c168"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#af9640589ed849f649194232649c9c168">amr_wind::ABLMesoscaleForcing::m_blending_heights</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_blending_heights</div><div class="ttdef"><b>Definition</b> ABLMesoscaleForcing.H:70</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_forcing_html_afb2d74902558325b3142e279373085e1"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#afb2d74902558325b3142e279373085e1">amr_wind::ABLMesoscaleForcing::m_weighting_values</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_weighting_values</div><div class="ttdef"><b>Definition</b> ABLMesoscaleForcing.H:62</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_forcing_html_afe348445873484cb296bf12c68838e69"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#afe348445873484cb296bf12c68838e69">amr_wind::ABLMesoscaleForcing::constant_forcing_transition</a></div><div class="ttdeci">void constant_forcing_transition(amrex::Vector&lt; amrex::Real &gt; &amp;error)</div><div class="ttdef"><b>Definition</b> ABLMesoscaleForcing.cpp:231</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_mesoscale_forcing_html_aff87b3719eb06f8023a0244f71f4465a"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_mesoscale_forcing.html#aff87b3719eb06f8023a0244f71f4465a">amr_wind::ABLMesoscaleForcing::m_transition_thickness</a></div><div class="ttdeci">amrex::Real m_transition_thickness</div><div class="ttdef"><b>Definition</b> ABLMesoscaleForcing.H:59</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html">amr_wind::CFDSim</a></div><div class="ttdef"><b>Definition</b> CFDSim.H:54</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_sim_time_html"><div class="ttname"><a href="classamr__wind_1_1_sim_time.html">amr_wind::SimTime</a></div><div class="ttdef"><b>Definition</b> SimTime.H:33</div></div>
+<div class="ttc" id="anamespaceamr__wind_html"><div class="ttname"><a href="namespaceamr__wind.html">amr_wind</a></div><div class="ttdoc">This test case is intended as an evaluation of the momentum advection scheme.</div><div class="ttdef"><b>Definition</b> BCInterface.cpp:10</div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

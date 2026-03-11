@@ -1,0 +1,14 @@
+.. meta::961576f66081d71c9e7293158e6a61f1e830980496466c4e58413b89e27acb3a669bed9dd54d2bccfb00663d337f8f8f8b2652c764fc80e09511c202da1c40b4
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/SourceTerm.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/equation\_systems/SourceTerm.H File Reference
+==========================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _source_term_8_h.html

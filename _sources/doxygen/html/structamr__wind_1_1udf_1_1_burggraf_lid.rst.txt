@@ -1,0 +1,14 @@
+.. meta::5bb084ce8a0db25e76090f1b7e9e2518b7d4673cfb6e6c773b0ec64537e6372dcad75212a41d9889da54b66e6f08bcbd6d6769160f454e06f3a9be2f5cccead4
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::udf::BurggrafLid Struct Reference
+
+BurggrafLid Struct Reference
+============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1udf_1_1_burggraf_lid.html

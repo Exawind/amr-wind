@@ -1,0 +1,14 @@
+.. meta::90a77a83a1744c04e7b1c775ec5fa8bfae062720a975bc1c3d20c49fd80499f6c2ef1927da9a69b9141eddff5437e7bd033f6e64f259eadb3dd0b29283f15370
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::DiffusionOp&lt; PDE, Scheme, std::enable_if_t&lt; std::is_base_of_v&lt; ScalarTransport, PDE &gt; &gt; &gt; Struct Template Reference
+
+is\_base\_of\_v&lt; ScalarTransport, PDE &gt; &gt; &gt; Struct Template Reference
+=================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1pde_1_1_diffusion_op_3_01_p_d_e_00_01_scheme_00_01std_1_1enable__if__t_3_01st927f6c10f00e60faa776b8287d8b9959.html

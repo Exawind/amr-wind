@@ -1,0 +1,14 @@
+.. meta::b7be87b3f7f2c6e0b77dd62d719188167c1800475d94d9b2d3ba5531400286c99385ff642d0ba6faebe7bc046c0ee07410255a5933af96a76216e79391efad92
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::sampling::PrismParameters Struct Reference
+
+PrismParameters Struct Reference
+================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1sampling_1_1_prism_parameters.html

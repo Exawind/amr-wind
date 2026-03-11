@@ -1,0 +1,14 @@
+.. meta::f12aaa21afe0d962ea26c4c1a271aadcd600461095fb6ee6b944819331c59262382bbf9f4bdb72a987875734f2b368e4927ff9857efd7646b85b98f00a1790a1
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::SrcTermOpBase&lt; PDE &gt; Struct Template Reference
+
+SrcTermOpBase&lt; PDE &gt; Struct Template Reference
+====================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1pde_1_1_src_term_op_base.html

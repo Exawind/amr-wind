@@ -1,0 +1,19 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" title=" " alt="" coords="5,215,201,284"/>
+<area shape="rect" id="Node000001" href="$classamr__wind_1_1ascent__int_1_1_ascent_post_process.html" title=" " alt="" coords="264,5,425,45"/>
+<area shape="poly" id="edge112_Node000000_Node000001" title=" " alt="" coords="127,201,176,127,210,88,248,55,268,43,271,48,251,60,213,92,181,130,131,204"/>
+<area shape="rect" id="Node000002" href="$classamr__wind_1_1averaging_1_1_time_averaging.html" title=" " alt="" coords="265,69,424,109"/>
+<area shape="poly" id="edge113_Node000000_Node000002" title=" " alt="" coords="144,203,192,159,248,119,273,107,275,112,251,124,195,163,147,207"/>
+<area shape="rect" id="Node000003" href="$classamr__wind_1_1enstrophy_1_1_enstrophy.html" title=" " alt="" coords="265,133,424,173"/>
+<area shape="poly" id="edge114_Node000000_Node000003" title=" " alt="" coords="192,206,248,183,281,171,283,176,250,188,194,211"/>
+<area shape="rect" id="Node000004" href="$classamr__wind_1_1field__norms_1_1_field_norms.html" title=" " alt="" coords="259,197,430,237"/>
+<area shape="poly" id="edge115_Node000000_Node000004" title=" " alt="" coords="215,232,259,226,259,231,215,237"/>
+<area shape="rect" id="Node000005" href="$classamr__wind_1_1kinetic__energy_1_1_kinetic_energy.html" title=" " alt="" coords="249,261,440,301"/>
+<area shape="poly" id="edge116_Node000000_Node000005" title=" " alt="" coords="215,261,250,266,249,271,214,267"/>
+<area shape="rect" id="Node000006" href="$classamr__wind_1_1sampling_1_1_sampling.html" title=" " alt="" coords="267,325,422,365"/>
+<area shape="poly" id="edge117_Node000000_Node000006" title=" " alt="" coords="194,287,250,311,283,323,281,328,248,316,192,292"/>
+<area shape="rect" id="Node000007" href="$classamr__wind_1_1subvolume_1_1_subvolume.html" title=" " alt="" coords="261,389,428,429"/>
+<area shape="poly" id="edge118_Node000000_Node000007" title=" " alt="" coords="147,292,195,335,251,375,275,387,273,392,248,380,192,339,144,296"/>
+<area shape="rect" id="Node000008" href="$classamr__wind_1_1wave__energy_1_1_wave_energy.html" title=" " alt="" coords="254,453,435,493"/>
+<area shape="poly" id="edge119_Node000000_Node000008" title=" " alt="" coords="131,294,181,369,213,407,251,439,271,451,268,456,248,444,210,410,176,372,127,297"/>
+</map>

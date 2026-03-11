@@ -1,0 +1,14 @@
+.. meta::ddeb3e3c97bd7752f33d1aca6b3db66a845ebc0df5b163d34918dd65108374c7abdfba2fdfccd56bac595be0689ec8d90845c2b2fe41b46b6cf2b959ad405b43
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::AirfoilTable Class Reference
+
+AirfoilTable Class Reference
+============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1actuator_1_1_airfoil_table.html

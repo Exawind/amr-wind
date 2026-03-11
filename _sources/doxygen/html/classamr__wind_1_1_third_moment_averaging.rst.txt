@@ -1,0 +1,14 @@
+.. meta::e247068b042991fb3cffd69f56f9afe64fcf5d83945b2fca28de929742119207c0e0da995b7d96811106d448ad6cf27775765a5c9d3e5501bac26899d4f8a803
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ThirdMomentAveraging Class Reference
+
+ThirdMomentAveraging Class Reference
+====================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_third_moment_averaging.html

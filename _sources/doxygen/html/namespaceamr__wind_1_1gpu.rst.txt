@@ -1,0 +1,14 @@
+.. meta::2763c6fffb229c240977c1eeb15f15474418824940b70b131afb334b613326c39adaceb5b2e3b73eda590ecd88dd55b8b3d6c9bfad55e52d648da1ea67e2bc5c
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::gpu Namespace Reference
+
+gpu Namespace Reference
+=======================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: namespaceamr__wind_1_1gpu.html

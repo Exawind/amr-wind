@@ -1,0 +1,775 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::IntScratchField Class Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::IntScratchField Class Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/classamr__wind_1_1_int_scratch_field.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="intscratchfield-class-reference">
+<h1>IntScratchField Class Reference<a class="headerlink" href="#intscratchfield-class-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::IntScratchField Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="classamr__wind_1_1_int_scratch_field.html">IntScratchField</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a> &#124;
+<a href="#friends">Friends</a> &#124;
+<a href="classamr__wind_1_1_int_scratch_field-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::IntScratchField Class Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_int_scratch_field_8_h_source.html">IntScratchField.H</a>&gt;</code></p>
+<div class="dynheader">
+Collaboration diagram for amr_wind::IntScratchField:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1_int_scratch_field__coll__graph.svg" width="370" height="484"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:afb6f76c961b27356356231085b1db524" id="r_afb6f76c961b27356356231085b1db524"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afb6f76c961b27356356231085b1db524">IntScratchField</a> (const <a class="el" href="classamr__wind_1_1_int_scratch_field.html">IntScratchField</a> &amp;)=delete</td></tr>
+<tr class="memitem:adc5f44cb13a71584ab05ab90b01c71aa" id="r_adc5f44cb13a71584ab05ab90b01c71aa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_int_scratch_field.html">IntScratchField</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adc5f44cb13a71584ab05ab90b01c71aa">operator=</a> (const <a class="el" href="classamr__wind_1_1_int_scratch_field.html">IntScratchField</a> &amp;)=delete</td></tr>
+<tr class="memitem:ac027ac40135727cc8f36d45b62fa8fdd" id="r_ac027ac40135727cc8f36d45b62fa8fdd"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac027ac40135727cc8f36d45b62fa8fdd">name</a> () const</td></tr>
+<tr class="memdesc:ac027ac40135727cc8f36d45b62fa8fdd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Name if available for this scratch field.  <br /></td></tr>
+<tr class="memitem:a6ec9b6fe3b5cf3a862c8b878ed719c19" id="r_a6ec9b6fe3b5cf3a862c8b878ed719c19"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6ec9b6fe3b5cf3a862c8b878ed719c19">num_comp</a> () const</td></tr>
+<tr class="memdesc:a6ec9b6fe3b5cf3a862c8b878ed719c19"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of components for this field.  <br /></td></tr>
+<tr class="memitem:a629b8e8b83bcbff506e87e916b399ced" id="r_a629b8e8b83bcbff506e87e916b399ced"><td class="memItemLeft" align="right" valign="top">const amrex::IntVect &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a629b8e8b83bcbff506e87e916b399ced">num_grow</a> () const</td></tr>
+<tr class="memdesc:a629b8e8b83bcbff506e87e916b399ced"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ghost cells.  <br /></td></tr>
+<tr class="memitem:a3f63c2fbb3d07318a7b05de6009e5e08" id="r_a3f63c2fbb3d07318a7b05de6009e5e08"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3f63c2fbb3d07318a7b05de6009e5e08">field_location</a> () const</td></tr>
+<tr class="memdesc:a3f63c2fbb3d07318a7b05de6009e5e08"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cell, node, face where the field is stored.  <br /></td></tr>
+<tr class="memitem:a3a3a6aa20b58ea094f03ee4811e10768" id="r_a3a3a6aa20b58ea094f03ee4811e10768"><td class="memItemLeft" align="right" valign="top">amrex::iMultiFab &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3a3a6aa20b58ea094f03ee4811e10768">operator()</a> (int lev)</td></tr>
+<tr class="memdesc:a3a3a6aa20b58ea094f03ee4811e10768"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the field data for a given level.  <br /></td></tr>
+<tr class="memitem:adcc65b757ac5629a43736b484c6e6c4e" id="r_adcc65b757ac5629a43736b484c6e6c4e"><td class="memItemLeft" align="right" valign="top">const amrex::iMultiFab &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adcc65b757ac5629a43736b484c6e6c4e">operator()</a> (int lev) const</td></tr>
+<tr class="memitem:ab731919b9f77de85c7a1d938bdb0de57" id="r_ab731919b9f77de85c7a1d938bdb0de57"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::iMultiFab * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab731919b9f77de85c7a1d938bdb0de57">vec_ptrs</a> ()</td></tr>
+<tr class="memitem:a70496e065a3c9ff087fcd24854ea8dcd" id="r_a70496e065a3c9ff087fcd24854ea8dcd"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; const amrex::iMultiFab * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a70496e065a3c9ff087fcd24854ea8dcd">vec_const_ptrs</a> () const</td></tr>
+<tr class="memitem:a87a5c2e4cb8aff60373186d63e22b80b" id="r_a87a5c2e4cb8aff60373186d63e22b80b"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_field_repo.html">FieldRepo</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a87a5c2e4cb8aff60373186d63e22b80b">repo</a> () const</td></tr>
+<tr class="memdesc:a87a5c2e4cb8aff60373186d63e22b80b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a reference to the field repository that created this field.  <br /></td></tr>
+<tr class="memitem:a7d6c7b0f6277e30ff77d233273dd81dd" id="r_a7d6c7b0f6277e30ff77d233273dd81dd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7d6c7b0f6277e30ff77d233273dd81dd">setVal</a> (int value)</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:a97837adc33725f38a89151f4bb062939" id="r_a97837adc33725f38a89151f4bb062939"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a97837adc33725f38a89151f4bb062939">IntScratchField</a> (const <a class="el" href="classamr__wind_1_1_field_repo.html">FieldRepo</a> &amp;<a class="el" href="#a87a5c2e4cb8aff60373186d63e22b80b">repo</a>, std::string <a class="el" href="#ac027ac40135727cc8f36d45b62fa8fdd">name</a>, const int ncomp=1, const int ngrow=1, const <a class="el" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a> floc=<a class="el" href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aadeaa44e5e872be992b4109cf1fbfe41e">FieldLoc::CELL</a>)</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:ad21713896f261ed037486275ef2a3951" id="r_ad21713896f261ed037486275ef2a3951"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_field_repo.html">FieldRepo</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad21713896f261ed037486275ef2a3951">m_repo</a></td></tr>
+<tr class="memitem:a78798750fb3beb13858cd6365f9c3e2a" id="r_a78798750fb3beb13858cd6365f9c3e2a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a78798750fb3beb13858cd6365f9c3e2a">m_name</a></td></tr>
+<tr class="memitem:a13eb0918267d2b3c2aa44be3498ee7dd" id="r_a13eb0918267d2b3c2aa44be3498ee7dd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a13eb0918267d2b3c2aa44be3498ee7dd">m_ncomp</a></td></tr>
+<tr class="memitem:ac3b54dbfdef23eebf678c93a730d6491" id="r_ac3b54dbfdef23eebf678c93a730d6491"><td class="memItemLeft" align="right" valign="top">amrex::IntVect&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac3b54dbfdef23eebf678c93a730d6491">m_ngrow</a></td></tr>
+<tr class="memitem:a4b1ae665f30d911c8f90211e8b6594e1" id="r_a4b1ae665f30d911c8f90211e8b6594e1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4b1ae665f30d911c8f90211e8b6594e1">m_floc</a></td></tr>
+<tr class="memitem:a1c488ecb49dd93f99990a908db278d0f" id="r_a1c488ecb49dd93f99990a908db278d0f"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::iMultiFab &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1c488ecb49dd93f99990a908db278d0f">m_data</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-friends" class="groupheader"><a id="friends" name="friends"></a>
+Friends</h2></td></tr>
+<tr class="memitem:a966868e1abbfd5558376d359c07c6611" id="r_a966868e1abbfd5558376d359c07c6611"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a966868e1abbfd5558376d359c07c6611">FieldRepo</a></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Integer version of <a class="el" href="classamr__wind_1_1_scratch_field.html">ScratchField</a> that works with iMultiFab </p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="afb6f76c961b27356356231085b1db524" name="afb6f76c961b27356356231085b1db524"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb6f76c961b27356356231085b1db524">&#9670;&#160;</a></span>IntScratchField() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::IntScratchField::IntScratchField </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_int_scratch_field.html">IntScratchField</a> &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel delete">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a97837adc33725f38a89151f4bb062939" name="a97837adc33725f38a89151f4bb062939"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97837adc33725f38a89151f4bb062939">&#9670;&#160;</a></span>IntScratchField() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::IntScratchField::IntScratchField </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_field_repo.html">FieldRepo</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>repo</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>name</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>ncomp</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>ngrow</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a></td>          <td class="paramname"><span class="paramname"><em>floc</em></span><span class="paramdefsep"> = </span><span class="paramdefval"><a class="el" href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aadeaa44e5e872be992b4109cf1fbfe41e">FieldLoc::CELL</a></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a3f63c2fbb3d07318a7b05de6009e5e08" name="a3f63c2fbb3d07318a7b05de6009e5e08"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f63c2fbb3d07318a7b05de6009e5e08">&#9670;&#160;</a></span>field_location()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a> amr_wind::IntScratchField::field_location </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Cell, node, face where the field is stored. </p>
+
+</div>
+</div>
+<a id="ac027ac40135727cc8f36d45b62fa8fdd" name="ac027ac40135727cc8f36d45b62fa8fdd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac027ac40135727cc8f36d45b62fa8fdd">&#9670;&#160;</a></span>name()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; amr_wind::IntScratchField::name </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Name if available for this scratch field. </p>
+
+</div>
+</div>
+<a id="a6ec9b6fe3b5cf3a862c8b878ed719c19" name="a6ec9b6fe3b5cf3a862c8b878ed719c19"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ec9b6fe3b5cf3a862c8b878ed719c19">&#9670;&#160;</a></span>num_comp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::IntScratchField::num_comp </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of components for this field. </p>
+
+</div>
+</div>
+<a id="a629b8e8b83bcbff506e87e916b399ced" name="a629b8e8b83bcbff506e87e916b399ced"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a629b8e8b83bcbff506e87e916b399ced">&#9670;&#160;</a></span>num_grow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const amrex::IntVect &amp; amr_wind::IntScratchField::num_grow </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Ghost cells. </p>
+
+</div>
+</div>
+<a id="a3a3a6aa20b58ea094f03ee4811e10768" name="a3a3a6aa20b58ea094f03ee4811e10768"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a3a6aa20b58ea094f03ee4811e10768">&#9670;&#160;</a></span>operator()() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::iMultiFab &amp; amr_wind::IntScratchField::operator() </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>lev</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the field data for a given level. </p>
+
+</div>
+</div>
+<a id="adcc65b757ac5629a43736b484c6e6c4e" name="adcc65b757ac5629a43736b484c6e6c4e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adcc65b757ac5629a43736b484c6e6c4e">&#9670;&#160;</a></span>operator()() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const amrex::iMultiFab &amp; amr_wind::IntScratchField::operator() </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>lev</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adc5f44cb13a71584ab05ab90b01c71aa" name="adc5f44cb13a71584ab05ab90b01c71aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc5f44cb13a71584ab05ab90b01c71aa">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_int_scratch_field.html">IntScratchField</a> &amp; amr_wind::IntScratchField::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_int_scratch_field.html">IntScratchField</a> &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel delete">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a87a5c2e4cb8aff60373186d63e22b80b" name="a87a5c2e4cb8aff60373186d63e22b80b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87a5c2e4cb8aff60373186d63e22b80b">&#9670;&#160;</a></span>repo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_field_repo.html">FieldRepo</a> &amp; amr_wind::IntScratchField::repo </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return a reference to the field repository that created this field. </p>
+
+</div>
+</div>
+<a id="a7d6c7b0f6277e30ff77d233273dd81dd" name="a7d6c7b0f6277e30ff77d233273dd81dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d6c7b0f6277e30ff77d233273dd81dd">&#9670;&#160;</a></span>setVal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::IntScratchField::setVal </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>value</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a70496e065a3c9ff087fcd24854ea8dcd" name="a70496e065a3c9ff087fcd24854ea8dcd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70496e065a3c9ff087fcd24854ea8dcd">&#9670;&#160;</a></span>vec_const_ptrs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt; const amrex::iMultiFab * &gt; amr_wind::IntScratchField::vec_const_ptrs </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab731919b9f77de85c7a1d938bdb0de57" name="ab731919b9f77de85c7a1d938bdb0de57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab731919b9f77de85c7a1d938bdb0de57">&#9670;&#160;</a></span>vec_ptrs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt; amrex::iMultiFab * &gt; amr_wind::IntScratchField::vec_ptrs </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-related-members" id="doc-related-members"></a><h2 id="header-doc-related-members" class="groupheader">Friends And Related Symbol Documentation</h2>
+<a id="a966868e1abbfd5558376d359c07c6611" name="a966868e1abbfd5558376d359c07c6611"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a966868e1abbfd5558376d359c07c6611">&#9670;&#160;</a></span>FieldRepo</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classamr__wind_1_1_field_repo.html">FieldRepo</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel friend">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a1c488ecb49dd93f99990a908db278d0f" name="a1c488ecb49dd93f99990a908db278d0f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c488ecb49dd93f99990a908db278d0f">&#9670;&#160;</a></span>m_data</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::iMultiFab&gt; amr_wind::IntScratchField::m_data</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4b1ae665f30d911c8f90211e8b6594e1" name="a4b1ae665f30d911c8f90211e8b6594e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b1ae665f30d911c8f90211e8b6594e1">&#9670;&#160;</a></span>m_floc</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a> amr_wind::IntScratchField::m_floc</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a78798750fb3beb13858cd6365f9c3e2a" name="a78798750fb3beb13858cd6365f9c3e2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78798750fb3beb13858cd6365f9c3e2a">&#9670;&#160;</a></span>m_name</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::IntScratchField::m_name</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a13eb0918267d2b3c2aa44be3498ee7dd" name="a13eb0918267d2b3c2aa44be3498ee7dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13eb0918267d2b3c2aa44be3498ee7dd">&#9670;&#160;</a></span>m_ncomp</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::IntScratchField::m_ncomp</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac3b54dbfdef23eebf678c93a730d6491" name="ac3b54dbfdef23eebf678c93a730d6491"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3b54dbfdef23eebf678c93a730d6491">&#9670;&#160;</a></span>m_ngrow</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::IntVect amr_wind::IntScratchField::m_ngrow</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad21713896f261ed037486275ef2a3951" name="ad21713896f261ed037486275ef2a3951"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad21713896f261ed037486275ef2a3951">&#9670;&#160;</a></span>m_repo</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_field_repo.html">FieldRepo</a>&amp; amr_wind::IntScratchField::m_repo</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/core/<a class="el" href="_int_scratch_field_8_h_source.html">IntScratchField.H</a></li>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/core/<a class="el" href="_int_scratch_field_8cpp.html">IntScratchField.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

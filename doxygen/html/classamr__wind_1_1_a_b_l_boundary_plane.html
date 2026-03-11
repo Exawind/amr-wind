@@ -1,0 +1,1391 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::ABLBoundaryPlane Class Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::ABLBoundaryPlane Class Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/classamr__wind_1_1_a_b_l_boundary_plane.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ablboundaryplane-class-reference">
+<h1>ABLBoundaryPlane Class Reference<a class="headerlink" href="#ablboundaryplane-class-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::ABLBoundaryPlane Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html">ABLBoundaryPlane</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pri-methods">Private Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
+<a href="classamr__wind_1_1_a_b_l_boundary_plane-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::ABLBoundaryPlane Class Reference<div class="ingroups"><a class="el" href="group__physics.html">Physics models</a> &raquo; <a class="el" href="group__wind.html">Wind energy modeling</a> &raquo; <a class="el" href="group__we__abl.html">ABL</a></div></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_a_b_l_boundary_plane_8_h_source.html">ABLBoundaryPlane.H</a>&gt;</code></p>
+<div class="dynheader">
+Collaboration diagram for amr_wind::ABLBoundaryPlane:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1_a_b_l_boundary_plane__coll__graph.svg" width="100%" height="503"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:aa6dea8c1056d5e584de2d34eb161b6af" id="r_aa6dea8c1056d5e584de2d34eb161b6af"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa6dea8c1056d5e584de2d34eb161b6af">ABLBoundaryPlane</a> (<a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;)</td></tr>
+<tr class="memitem:a3fa43f754585ba1bd5fecfedc96abf96" id="r_a3fa43f754585ba1bd5fecfedc96abf96"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3fa43f754585ba1bd5fecfedc96abf96">post_init_actions</a> ()</td></tr>
+<tr class="memdesc:a3fa43f754585ba1bd5fecfedc96abf96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute initialization actions after mesh has been fully generated.  <br /></td></tr>
+<tr class="memitem:a63527a5c485c4a238074a0f5b22a68cf" id="r_a63527a5c485c4a238074a0f5b22a68cf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a63527a5c485c4a238074a0f5b22a68cf">pre_advance_work</a> ()</td></tr>
+<tr class="memitem:aa741d21b1b5de30a64a1ee614642b4f5" id="r_aa741d21b1b5de30a64a1ee614642b4f5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa741d21b1b5de30a64a1ee614642b4f5">pre_predictor_work</a> ()</td></tr>
+<tr class="memitem:a835b09b5a1468f9aa51c4dd51cda9434" id="r_a835b09b5a1468f9aa51c4dd51cda9434"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a835b09b5a1468f9aa51c4dd51cda9434">post_advance_work</a> ()</td></tr>
+<tr class="memitem:ad6597825083f7863faa302a7629a8158" id="r_ad6597825083f7863faa302a7629a8158"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad6597825083f7863faa302a7629a8158">initialize_data</a> ()</td></tr>
+<tr class="memitem:ad328a165909b235425ecd41d95dd7f3b" id="r_ad328a165909b235425ecd41d95dd7f3b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad328a165909b235425ecd41d95dd7f3b">write_header</a> ()</td></tr>
+<tr class="memitem:a144c2d90f69352e431a29579e9c290c6" id="r_a144c2d90f69352e431a29579e9c290c6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a144c2d90f69352e431a29579e9c290c6">write_bndry_native_header</a> (const std::string &amp;chkname)</td></tr>
+<tr class="memitem:acabc440725180b3fe3fa8189c4b8050b" id="r_acabc440725180b3fe3fa8189c4b8050b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acabc440725180b3fe3fa8189c4b8050b">write_file</a> ()</td></tr>
+<tr class="memitem:a0ed1deadf7ff7510dddc8260915a1c86" id="r_a0ed1deadf7ff7510dddc8260915a1c86"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0ed1deadf7ff7510dddc8260915a1c86">read_header</a> ()</td></tr>
+<tr class="memitem:ab41a0d800659f029c1b79c0f93e934c9" id="r_ab41a0d800659f029c1b79c0f93e934c9"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::BoxArray &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab41a0d800659f029c1b79c0f93e934c9">read_bndry_native_boxarrays</a> (const std::string &amp;chkname, const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;field) const</td></tr>
+<tr class="memitem:a82ca9549d343641199a513d9b2355955" id="r_a82ca9549d343641199a513d9b2355955"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a82ca9549d343641199a513d9b2355955">read_file</a> (bool)</td></tr>
+<tr class="memitem:ac05675f8f4a4988743dbfd07b2c5aa39" id="r_ac05675f8f4a4988743dbfd07b2c5aa39"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac05675f8f4a4988743dbfd07b2c5aa39">populate_data</a> (int, amrex::Real, <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;, amrex::MultiFab &amp;, int dcomp=0, int orig_comp=0) const</td></tr>
+<tr class="memitem:a855a7416474113f9fcad68d7e1848572" id="r_a855a7416474113f9fcad68d7e1848572"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a855a7416474113f9fcad68d7e1848572">is_initialized</a> () const</td></tr>
+<tr class="memitem:afa9ccd482a897cdaf227ae9a621a8cf2" id="r_afa9ccd482a897cdaf227ae9a621a8cf2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afa9ccd482a897cdaf227ae9a621a8cf2">box_intersects_boundary</a> (const amrex::Box &amp;, int, amrex::Orientation) const</td></tr>
+<tr class="memdesc:afa9ccd482a897cdaf227ae9a621a8cf2"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if box intersects the boundary.  <br /></td></tr>
+<tr class="memitem:af84c1f0100f1733e97740742762cbcf8" id="r_af84c1f0100f1733e97740742762cbcf8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af84c1f0100f1733e97740742762cbcf8">is_data_newer_than</a> (const amrex::Real time) const</td></tr>
+<tr class="memitem:a28afae8297a793363dee326d8cfcbc6e" id="r_a28afae8297a793363dee326d8cfcbc6e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceamr__wind.html#a136f281868b6f61a99eb7b377c2eeea6">io_mode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a28afae8297a793363dee326d8cfcbc6e">mode</a> () const</td></tr>
+<tr class="memitem:ad5f75e13da5dc38f7917cb0a2c41c04b" id="r_ad5f75e13da5dc38f7917cb0a2c41c04b"><td class="memItemLeft" align="right" valign="top">MultiBlockContainer *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad5f75e13da5dc38f7917cb0a2c41c04b">mbc</a> ()</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a9d4ab863a8be3d56d4c4f2b36287e670" id="r_a9d4ab863a8be3d56d4c4f2b36287e670"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9d4ab863a8be3d56d4c4f2b36287e670">impl_buffer_field</a> (const amrex::Box &amp;, const int, const int, const amrex::GpuArray&lt; int, 2 &gt; &amp;, const amrex::IntVect &amp;, const amrex::Array4&lt; const amrex::Real &gt; &amp;, amrex::Gpu::ManagedVector&lt; amrex::Real &gt; &amp;)</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-methods" class="groupheader"><a id="pri-methods" name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:a9be986140cd673c2629ba4364c3faff8" id="r_a9be986140cd673c2629ba4364c3faff8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9be986140cd673c2629ba4364c3faff8">write_data</a> (const <a class="el" href="classncutils_1_1_n_c_group.html">ncutils::NCGroup</a> &amp;grp, const amrex::Orientation, const int, const <a class="el" href="classamr__wind_1_1_field.html">Field</a> *)</td></tr>
+<tr class="memitem:a9fe55706e708f6d8ab6bba8b2be4958d" id="r_a9fe55706e708f6d8ab6bba8b2be4958d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9fe55706e708f6d8ab6bba8b2be4958d">boundary_native_file_levels</a> () const</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:acadf281b25565598a9c01af995152be0" id="r_acadf281b25565598a9c01af995152be0"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_sim_time.html">amr_wind::SimTime</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acadf281b25565598a9c01af995152be0">m_time</a></td></tr>
+<tr class="memitem:ac6edd0e191c236693d0cf2e9b9a6a4d8" id="r_ac6edd0e191c236693d0cf2e9b9a6a4d8"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_field_repo.html">FieldRepo</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac6edd0e191c236693d0cf2e9b9a6a4d8">m_repo</a></td></tr>
+<tr class="memitem:abe4872544b96ca2191234327d0465fb1" id="r_abe4872544b96ca2191234327d0465fb1"><td class="memItemLeft" align="right" valign="top">const amrex::AmrCore &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abe4872544b96ca2191234327d0465fb1">m_mesh</a></td></tr>
+<tr class="memitem:a5bc4c52e470763a9ffd6903bb5805731" id="r_a5bc4c52e470763a9ffd6903bb5805731"><td class="memItemLeft" align="right" valign="top">MultiBlockContainer **&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5bc4c52e470763a9ffd6903bb5805731">m_mbc</a></td></tr>
+<tr class="memitem:abb872ba774d55a721dd75fa79abe0cd3" id="r_abb872ba774d55a721dd75fa79abe0cd3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_a_b_l_read_e_r_f_function_8_h.html#a60bde95e8ae1fed3798c17458998ef53">ReadERFFunction</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abb872ba774d55a721dd75fa79abe0cd3">m_read_erf</a> {nullptr}</td></tr>
+<tr class="memitem:aecd010b8862dc8b204427718c532a14b" id="r_aecd010b8862dc8b204427718c532a14b"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aecd010b8862dc8b204427718c532a14b">m_title</a> {&quot;ABL boundary planes&quot;}</td></tr>
+<tr class="memitem:a7b41c9eb1ab5f14901e38f8c7f4c6cfd" id="r_a7b41c9eb1ab5f14901e38f8c7f4c6cfd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7b41c9eb1ab5f14901e38f8c7f4c6cfd">m_write_frequency</a> {1}</td></tr>
+<tr class="memdesc:a7b41c9eb1ab5f14901e38f8c7f4c6cfd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Normal direction for the boundary plane.  <br /></td></tr>
+<tr class="memitem:ae50a80926cbbfdd25c147b98b4f33eea" id="r_ae50a80926cbbfdd25c147b98b4f33eea"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae50a80926cbbfdd25c147b98b4f33eea">m_plane_names</a></td></tr>
+<tr class="memdesc:ae50a80926cbbfdd25c147b98b4f33eea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plane names.  <br /></td></tr>
+<tr class="memitem:a97805a98832b65f3d278512a605242bc" id="r_a97805a98832b65f3d278512a605242bc"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a97805a98832b65f3d278512a605242bc">m_planes</a></td></tr>
+<tr class="memdesc:a97805a98832b65f3d278512a605242bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">IO boundary planes.  <br /></td></tr>
+<tr class="memitem:adeff53311144a380b7f26e79acd2f921" id="r_adeff53311144a380b7f26e79acd2f921"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adeff53311144a380b7f26e79acd2f921">m_out_start_time</a> {0.0_rt}</td></tr>
+<tr class="memdesc:adeff53311144a380b7f26e79acd2f921"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start outputting after this time.  <br /></td></tr>
+<tr class="memitem:a6d1efe9a1022ba019bfc1104ef05975b" id="r_a6d1efe9a1022ba019bfc1104ef05975b"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6d1efe9a1022ba019bfc1104ef05975b">m_out_counter</a> {0}</td></tr>
+<tr class="memdesc:a6d1efe9a1022ba019bfc1104ef05975b"><td class="mdescLeft">&#160;</td><td class="mdescRight">NetCDF time output counter.  <br /></td></tr>
+<tr class="memitem:ad25f980915dcdadb2609fc89dfe2726e" id="r_ad25f980915dcdadb2609fc89dfe2726e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad25f980915dcdadb2609fc89dfe2726e">m_filename</a></td></tr>
+<tr class="memdesc:ad25f980915dcdadb2609fc89dfe2726e"><td class="mdescLeft">&#160;</td><td class="mdescRight">File name for IO.  <br /></td></tr>
+<tr class="memitem:a33edc53ecd829f34d9b71920887aa88c" id="r_a33edc53ecd829f34d9b71920887aa88c"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a33edc53ecd829f34d9b71920887aa88c">m_time_file</a></td></tr>
+<tr class="memdesc:a33edc53ecd829f34d9b71920887aa88c"><td class="mdescLeft">&#160;</td><td class="mdescRight">File name for Native time file.  <br /></td></tr>
+<tr class="memitem:a2a9ce3a1ba556a8b55703292d93975ed" id="r_a2a9ce3a1ba556a8b55703292d93975ed"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2a9ce3a1ba556a8b55703292d93975ed">m_var_names</a></td></tr>
+<tr class="memdesc:a2a9ce3a1ba556a8b55703292d93975ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Variables for IO.  <br /></td></tr>
+<tr class="memitem:a745c0e57c94741469ea15e4ba700ee60" id="r_a745c0e57c94741469ea15e4ba700ee60"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; <a class="el" href="classamr__wind_1_1_field.html">Field</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a745c0e57c94741469ea15e4ba700ee60">m_fields</a></td></tr>
+<tr class="memdesc:a745c0e57c94741469ea15e4ba700ee60"><td class="mdescLeft">&#160;</td><td class="mdescRight">List of fields for IO.  <br /></td></tr>
+<tr class="memitem:aadcd08a22d4ec942e5b6fa75391dfa6c" id="r_aadcd08a22d4ec942e5b6fa75391dfa6c"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aadcd08a22d4ec942e5b6fa75391dfa6c">m_in_times</a></td></tr>
+<tr class="memdesc:aadcd08a22d4ec942e5b6fa75391dfa6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">NetCDF input level time.  <br /></td></tr>
+<tr class="memitem:aab068a18a7d3a2e88b3c6a4c11ff070a" id="r_aab068a18a7d3a2e88b3c6a4c11ff070a"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aab068a18a7d3a2e88b3c6a4c11ff070a">m_in_timesteps</a></td></tr>
+<tr class="memitem:a443d6c66daa9a296a92c9c52312a9bbd" id="r_a443d6c66daa9a296a92c9c52312a9bbd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_inlet_data.html">InletData</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a443d6c66daa9a296a92c9c52312a9bbd">m_in_data</a></td></tr>
+<tr class="memdesc:a443d6c66daa9a296a92c9c52312a9bbd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inlet data.  <br /></td></tr>
+<tr class="memitem:a900706911dfb73e8ecbb0c335386556d" id="r_a900706911dfb73e8ecbb0c335386556d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceamr__wind.html#a136f281868b6f61a99eb7b377c2eeea6">io_mode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a900706911dfb73e8ecbb0c335386556d">m_io_mode</a> {<a class="el" href="namespaceamr__wind.html#a136f281868b6f61a99eb7b377c2eeea6a5e543256c480ac577d30f76f9120eb74">io_mode::undefined</a>}</td></tr>
+<tr class="memdesc:a900706911dfb73e8ecbb0c335386556d"><td class="mdescLeft">&#160;</td><td class="mdescRight">IO mode.  <br /></td></tr>
+<tr class="memitem:af3ba28177e805f58b8f26da51b84624c" id="r_af3ba28177e805f58b8f26da51b84624c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af3ba28177e805f58b8f26da51b84624c">m_is_initialized</a> {false}</td></tr>
+<tr class="memdesc:af3ba28177e805f58b8f26da51b84624c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flag indicating if this capability is available.  <br /></td></tr>
+<tr class="memitem:a3dbb008988aba4df41bc15d63574c302" id="r_a3dbb008988aba4df41bc15d63574c302"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3dbb008988aba4df41bc15d63574c302">m_in_rad</a> = 1</td></tr>
+<tr class="memdesc:a3dbb008988aba4df41bc15d63574c302"><td class="mdescLeft">&#160;</td><td class="mdescRight">controls extents on native bndry output  <br /></td></tr>
+<tr class="memitem:a96ed2cb7343ef544f1eaf86192b79911" id="r_a96ed2cb7343ef544f1eaf86192b79911"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a96ed2cb7343ef544f1eaf86192b79911">m_out_rad</a> = 1</td></tr>
+<tr class="memitem:a0d5a221c59b659735b706a79ea71e5f5" id="r_a0d5a221c59b659735b706a79ea71e5f5"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0d5a221c59b659735b706a79ea71e5f5">m_extent_rad</a> = 0</td></tr>
+<tr class="memitem:a4263db4736fb83fc84e22fc83a9201ed" id="r_a4263db4736fb83fc84e22fc83a9201ed"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4263db4736fb83fc84e22fc83a9201ed">m_out_fmt</a> {&quot;native&quot;}</td></tr>
+<tr class="memdesc:a4263db4736fb83fc84e22fc83a9201ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">output format for bndry output  <br /></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Interface for <a class="el" href="classamr__wind_1_1_a_b_l.html">ABL</a> boundary plane I/O</p>
+<p>This class performs the necessary file operations to read and write boundary planes.</p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classamr__wind_1_1_a_b_l_fill_inflow.html">ABLFillInflow</a> </dd></dl>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="aa6dea8c1056d5e584de2d34eb161b6af" name="aa6dea8c1056d5e584de2d34eb161b6af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6dea8c1056d5e584de2d34eb161b6af">&#9670;&#160;</a></span>ABLBoundaryPlane()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::ABLBoundaryPlane::ABLBoundaryPlane </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>sim</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel explicit">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a9fe55706e708f6d8ab6bba8b2be4958d" name="a9fe55706e708f6d8ab6bba8b2be4958d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9fe55706e708f6d8ab6bba8b2be4958d">&#9670;&#160;</a></span>boundary_native_file_levels()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::ABLBoundaryPlane::boundary_native_file_levels </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afa9ccd482a897cdaf227ae9a621a8cf2" name="afa9ccd482a897cdaf227ae9a621a8cf2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa9ccd482a897cdaf227ae9a621a8cf2">&#9670;&#160;</a></span>box_intersects_boundary()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::ABLBoundaryPlane::box_intersects_boundary </td>
+          <td>(</td>
+          <td class="paramtype">const amrex::Box &amp;</td>          <td class="paramname"><span class="paramname"><em>bx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>lev</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Orientation</td>          <td class="paramname"><span class="paramname"><em>ori</em></span>&#160;) const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True if box intersects the boundary. </p>
+
+</div>
+</div>
+<a id="a9d4ab863a8be3d56d4c4f2b36287e670" name="a9d4ab863a8be3d56d4c4f2b36287e670"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d4ab863a8be3d56d4c4f2b36287e670">&#9670;&#160;</a></span>impl_buffer_field()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ABLBoundaryPlane::impl_buffer_field </td>
+          <td>(</td>
+          <td class="paramtype">const amrex::Box &amp;</td>          <td class="paramname"><span class="paramname"><em>bx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>n1</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>nc</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::GpuArray&lt; int, 2 &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>perp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::IntVect &amp;</td>          <td class="paramname"><span class="paramname"><em>v_offset</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Array4&lt; const amrex::Real &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>fld</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Gpu::ManagedVector&lt; amrex::Real &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>buffer</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad6597825083f7863faa302a7629a8158" name="ad6597825083f7863faa302a7629a8158"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6597825083f7863faa302a7629a8158">&#9670;&#160;</a></span>initialize_data()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ABLBoundaryPlane::initialize_data </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af84c1f0100f1733e97740742762cbcf8" name="af84c1f0100f1733e97740742762cbcf8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af84c1f0100f1733e97740742762cbcf8">&#9670;&#160;</a></span>is_data_newer_than()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::ABLBoundaryPlane::is_data_newer_than </td>
+          <td>(</td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>time</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a855a7416474113f9fcad68d7e1848572" name="a855a7416474113f9fcad68d7e1848572"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a855a7416474113f9fcad68d7e1848572">&#9670;&#160;</a></span>is_initialized()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::ABLBoundaryPlane::is_initialized </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad5f75e13da5dc38f7917cb0a2c41c04b" name="ad5f75e13da5dc38f7917cb0a2c41c04b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5f75e13da5dc38f7917cb0a2c41c04b">&#9670;&#160;</a></span>mbc()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">MultiBlockContainer * amr_wind::ABLBoundaryPlane::mbc </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a28afae8297a793363dee326d8cfcbc6e" name="a28afae8297a793363dee326d8cfcbc6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28afae8297a793363dee326d8cfcbc6e">&#9670;&#160;</a></span>mode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceamr__wind.html#a136f281868b6f61a99eb7b377c2eeea6">io_mode</a> amr_wind::ABLBoundaryPlane::mode </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac05675f8f4a4988743dbfd07b2c5aa39" name="ac05675f8f4a4988743dbfd07b2c5aa39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac05675f8f4a4988743dbfd07b2c5aa39">&#9670;&#160;</a></span>populate_data()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ABLBoundaryPlane::populate_data </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>lev</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>time</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>fld</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::MultiFab &amp;</td>          <td class="paramname"><span class="paramname"><em>mfab</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>dcomp</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>orig_comp</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>&#160;) const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a835b09b5a1468f9aa51c4dd51cda9434" name="a835b09b5a1468f9aa51c4dd51cda9434"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a835b09b5a1468f9aa51c4dd51cda9434">&#9670;&#160;</a></span>post_advance_work()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ABLBoundaryPlane::post_advance_work </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3fa43f754585ba1bd5fecfedc96abf96" name="a3fa43f754585ba1bd5fecfedc96abf96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3fa43f754585ba1bd5fecfedc96abf96">&#9670;&#160;</a></span>post_init_actions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ABLBoundaryPlane::post_init_actions </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Execute initialization actions after mesh has been fully generated. </p>
+
+</div>
+</div>
+<a id="a63527a5c485c4a238074a0f5b22a68cf" name="a63527a5c485c4a238074a0f5b22a68cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63527a5c485c4a238074a0f5b22a68cf">&#9670;&#160;</a></span>pre_advance_work()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ABLBoundaryPlane::pre_advance_work </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa741d21b1b5de30a64a1ee614642b4f5" name="aa741d21b1b5de30a64a1ee614642b4f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa741d21b1b5de30a64a1ee614642b4f5">&#9670;&#160;</a></span>pre_predictor_work()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ABLBoundaryPlane::pre_predictor_work </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab41a0d800659f029c1b79c0f93e934c9" name="ab41a0d800659f029c1b79c0f93e934c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab41a0d800659f029c1b79c0f93e934c9">&#9670;&#160;</a></span>read_bndry_native_boxarrays()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt; amrex::BoxArray &gt; amr_wind::ABLBoundaryPlane::read_bndry_native_boxarrays </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>chkname</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>field</em></span>&#160;) const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a82ca9549d343641199a513d9b2355955" name="a82ca9549d343641199a513d9b2355955"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82ca9549d343641199a513d9b2355955">&#9670;&#160;</a></span>read_file()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ABLBoundaryPlane::read_file </td>
+          <td>(</td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>nph_target_time</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0ed1deadf7ff7510dddc8260915a1c86" name="a0ed1deadf7ff7510dddc8260915a1c86"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ed1deadf7ff7510dddc8260915a1c86">&#9670;&#160;</a></span>read_header()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ABLBoundaryPlane::read_header </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a144c2d90f69352e431a29579e9c290c6" name="a144c2d90f69352e431a29579e9c290c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a144c2d90f69352e431a29579e9c290c6">&#9670;&#160;</a></span>write_bndry_native_header()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ABLBoundaryPlane::write_bndry_native_header </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>chkname</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9be986140cd673c2629ba4364c3faff8" name="a9be986140cd673c2629ba4364c3faff8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9be986140cd673c2629ba4364c3faff8">&#9670;&#160;</a></span>write_data()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ABLBoundaryPlane::write_data </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classncutils_1_1_n_c_group.html">ncutils::NCGroup</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>grp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Orientation</td>          <td class="paramname"><span class="paramname"><em>ori</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>lev</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_field.html">Field</a> *</td>          <td class="paramname"><span class="paramname"><em>fld</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acabc440725180b3fe3fa8189c4b8050b" name="acabc440725180b3fe3fa8189c4b8050b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acabc440725180b3fe3fa8189c4b8050b">&#9670;&#160;</a></span>write_file()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ABLBoundaryPlane::write_file </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad328a165909b235425ecd41d95dd7f3b" name="ad328a165909b235425ecd41d95dd7f3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad328a165909b235425ecd41d95dd7f3b">&#9670;&#160;</a></span>write_header()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::ABLBoundaryPlane::write_header </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a0d5a221c59b659735b706a79ea71e5f5" name="a0d5a221c59b659735b706a79ea71e5f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d5a221c59b659735b706a79ea71e5f5">&#9670;&#160;</a></span>m_extent_rad</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const int amr_wind::ABLBoundaryPlane::m_extent_rad = 0</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a745c0e57c94741469ea15e4ba700ee60" name="a745c0e57c94741469ea15e4ba700ee60"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a745c0e57c94741469ea15e4ba700ee60">&#9670;&#160;</a></span>m_fields</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;<a class="el" href="classamr__wind_1_1_field.html">Field</a>*&gt; amr_wind::ABLBoundaryPlane::m_fields</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>List of fields for IO. </p>
+
+</div>
+</div>
+<a id="ad25f980915dcdadb2609fc89dfe2726e" name="ad25f980915dcdadb2609fc89dfe2726e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad25f980915dcdadb2609fc89dfe2726e">&#9670;&#160;</a></span>m_filename</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::ABLBoundaryPlane::m_filename</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>File name for IO. </p>
+
+</div>
+</div>
+<a id="a443d6c66daa9a296a92c9c52312a9bbd" name="a443d6c66daa9a296a92c9c52312a9bbd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a443d6c66daa9a296a92c9c52312a9bbd">&#9670;&#160;</a></span>m_in_data</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_inlet_data.html">InletData</a> amr_wind::ABLBoundaryPlane::m_in_data</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Inlet data. </p>
+
+</div>
+</div>
+<a id="a3dbb008988aba4df41bc15d63574c302" name="a3dbb008988aba4df41bc15d63574c302"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3dbb008988aba4df41bc15d63574c302">&#9670;&#160;</a></span>m_in_rad</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const int amr_wind::ABLBoundaryPlane::m_in_rad = 1</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>controls extents on native bndry output </p>
+
+</div>
+</div>
+<a id="aadcd08a22d4ec942e5b6fa75391dfa6c" name="aadcd08a22d4ec942e5b6fa75391dfa6c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aadcd08a22d4ec942e5b6fa75391dfa6c">&#9670;&#160;</a></span>m_in_times</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Real&gt; amr_wind::ABLBoundaryPlane::m_in_times</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>NetCDF input level time. </p>
+
+</div>
+</div>
+<a id="aab068a18a7d3a2e88b3c6a4c11ff070a" name="aab068a18a7d3a2e88b3c6a4c11ff070a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab068a18a7d3a2e88b3c6a4c11ff070a">&#9670;&#160;</a></span>m_in_timesteps</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;int&gt; amr_wind::ABLBoundaryPlane::m_in_timesteps</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a900706911dfb73e8ecbb0c335386556d" name="a900706911dfb73e8ecbb0c335386556d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a900706911dfb73e8ecbb0c335386556d">&#9670;&#160;</a></span>m_io_mode</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceamr__wind.html#a136f281868b6f61a99eb7b377c2eeea6">io_mode</a> amr_wind::ABLBoundaryPlane::m_io_mode {<a class="el" href="namespaceamr__wind.html#a136f281868b6f61a99eb7b377c2eeea6a5e543256c480ac577d30f76f9120eb74">io_mode::undefined</a>}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>IO mode. </p>
+
+</div>
+</div>
+<a id="af3ba28177e805f58b8f26da51b84624c" name="af3ba28177e805f58b8f26da51b84624c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3ba28177e805f58b8f26da51b84624c">&#9670;&#160;</a></span>m_is_initialized</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::ABLBoundaryPlane::m_is_initialized {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Flag indicating if this capability is available. </p>
+
+</div>
+</div>
+<a id="a5bc4c52e470763a9ffd6903bb5805731" name="a5bc4c52e470763a9ffd6903bb5805731"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5bc4c52e470763a9ffd6903bb5805731">&#9670;&#160;</a></span>m_mbc</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">MultiBlockContainer** amr_wind::ABLBoundaryPlane::m_mbc</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abe4872544b96ca2191234327d0465fb1" name="abe4872544b96ca2191234327d0465fb1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe4872544b96ca2191234327d0465fb1">&#9670;&#160;</a></span>m_mesh</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const amrex::AmrCore&amp; amr_wind::ABLBoundaryPlane::m_mesh</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6d1efe9a1022ba019bfc1104ef05975b" name="a6d1efe9a1022ba019bfc1104ef05975b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d1efe9a1022ba019bfc1104ef05975b">&#9670;&#160;</a></span>m_out_counter</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t amr_wind::ABLBoundaryPlane::m_out_counter {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>NetCDF time output counter. </p>
+
+</div>
+</div>
+<a id="a4263db4736fb83fc84e22fc83a9201ed" name="a4263db4736fb83fc84e22fc83a9201ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4263db4736fb83fc84e22fc83a9201ed">&#9670;&#160;</a></span>m_out_fmt</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::ABLBoundaryPlane::m_out_fmt {&quot;native&quot;}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>output format for bndry output </p>
+
+</div>
+</div>
+<a id="a96ed2cb7343ef544f1eaf86192b79911" name="a96ed2cb7343ef544f1eaf86192b79911"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96ed2cb7343ef544f1eaf86192b79911">&#9670;&#160;</a></span>m_out_rad</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const int amr_wind::ABLBoundaryPlane::m_out_rad = 1</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adeff53311144a380b7f26e79acd2f921" name="adeff53311144a380b7f26e79acd2f921"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adeff53311144a380b7f26e79acd2f921">&#9670;&#160;</a></span>m_out_start_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::ABLBoundaryPlane::m_out_start_time {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Start outputting after this time. </p>
+
+</div>
+</div>
+<a id="ae50a80926cbbfdd25c147b98b4f33eea" name="ae50a80926cbbfdd25c147b98b4f33eea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae50a80926cbbfdd25c147b98b4f33eea">&#9670;&#160;</a></span>m_plane_names</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;std::string&gt; amr_wind::ABLBoundaryPlane::m_plane_names</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">{<span class="stringliteral">&quot;xlo&quot;</span>, <span class="stringliteral">&quot;ylo&quot;</span>, <span class="stringliteral">&quot;zlo&quot;</span>,</div>
+<div class="line">                                             <span class="stringliteral">&quot;xhi&quot;</span>, <span class="stringliteral">&quot;yhi&quot;</span>, <span class="stringliteral">&quot;zhi&quot;</span>}</div>
+</div><!-- fragment -->
+<p>Plane names. </p>
+
+</div>
+</div>
+<a id="a97805a98832b65f3d278512a605242bc" name="a97805a98832b65f3d278512a605242bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97805a98832b65f3d278512a605242bc">&#9670;&#160;</a></span>m_planes</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;std::string&gt; amr_wind::ABLBoundaryPlane::m_planes</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>IO boundary planes. </p>
+
+</div>
+</div>
+<a id="abb872ba774d55a721dd75fa79abe0cd3" name="abb872ba774d55a721dd75fa79abe0cd3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb872ba774d55a721dd75fa79abe0cd3">&#9670;&#160;</a></span>m_read_erf</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="_a_b_l_read_e_r_f_function_8_h.html#a60bde95e8ae1fed3798c17458998ef53">ReadERFFunction</a>* amr_wind::ABLBoundaryPlane::m_read_erf {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac6edd0e191c236693d0cf2e9b9a6a4d8" name="ac6edd0e191c236693d0cf2e9b9a6a4d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6edd0e191c236693d0cf2e9b9a6a4d8">&#9670;&#160;</a></span>m_repo</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_field_repo.html">FieldRepo</a>&amp; amr_wind::ABLBoundaryPlane::m_repo</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acadf281b25565598a9c01af995152be0" name="acadf281b25565598a9c01af995152be0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acadf281b25565598a9c01af995152be0">&#9670;&#160;</a></span>m_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_sim_time.html">amr_wind::SimTime</a>&amp; amr_wind::ABLBoundaryPlane::m_time</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a33edc53ecd829f34d9b71920887aa88c" name="a33edc53ecd829f34d9b71920887aa88c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33edc53ecd829f34d9b71920887aa88c">&#9670;&#160;</a></span>m_time_file</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::ABLBoundaryPlane::m_time_file</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>File name for Native time file. </p>
+
+</div>
+</div>
+<a id="aecd010b8862dc8b204427718c532a14b" name="aecd010b8862dc8b204427718c532a14b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aecd010b8862dc8b204427718c532a14b">&#9670;&#160;</a></span>m_title</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::ABLBoundaryPlane::m_title {&quot;ABL boundary planes&quot;}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2a9ce3a1ba556a8b55703292d93975ed" name="a2a9ce3a1ba556a8b55703292d93975ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a9ce3a1ba556a8b55703292d93975ed">&#9670;&#160;</a></span>m_var_names</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;std::string&gt; amr_wind::ABLBoundaryPlane::m_var_names</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Variables for IO. </p>
+
+</div>
+</div>
+<a id="a7b41c9eb1ab5f14901e38f8c7f4c6cfd" name="a7b41c9eb1ab5f14901e38f8c7f4c6cfd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b41c9eb1ab5f14901e38f8c7f4c6cfd">&#9670;&#160;</a></span>m_write_frequency</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::ABLBoundaryPlane::m_write_frequency {1}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Normal direction for the boundary plane. </p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/<a class="el" href="_a_b_l_boundary_plane_8_h_source.html">ABLBoundaryPlane.H</a></li>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/<a class="el" href="_a_b_l_boundary_plane_8cpp.html">ABLBoundaryPlane.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

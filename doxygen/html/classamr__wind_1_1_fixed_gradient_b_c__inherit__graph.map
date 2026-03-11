@@ -1,0 +1,5 @@
+<map id="amr_wind::FixedGradientBC" name="amr_wind::FixedGradientBC">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,79,208,104"/>
+<area shape="rect" id="Node000002" href="$classamr__wind_1_1_field_b_c_iface.html" title=" " alt="" coords="19,5,194,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="109,44,109,79,104,79,104,44"/>
+</map>

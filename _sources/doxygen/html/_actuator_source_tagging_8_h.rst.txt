@@ -1,0 +1,14 @@
+.. meta::c062bdd08a79fe1231c6472011fb14ef7a26c280e3963d099270246bc14c5c78717a154c41437dc1e5b339a4cd1a592c682f1a6bea22cf975424111c4b7409d9
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/ActuatorSourceTagging.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/physics/ActuatorSourceTagging.H File Reference
+===========================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _actuator_source_tagging_8_h.html

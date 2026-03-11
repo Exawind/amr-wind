@@ -1,0 +1,688 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::actuator Namespace Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::actuator Namespace Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/namespaceamr__wind_1_1actuator.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="actuator-namespace-reference">
+<h1>actuator Namespace Reference<a class="headerlink" href="#actuator-namespace-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::actuator Namespace Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="namespaceamr__wind_1_1actuator.html">actuator</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">Namespaces</a> &#124;
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#typedef-members">Typedefs</a> &#124;
+<a href="#enum-members">Enumerations</a> &#124;
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::actuator Namespace Reference</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-namespaces" class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:disk" id="r_disk"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceamr__wind_1_1actuator_1_1disk.html">disk</a></td></tr>
+<tr class="memitem:external" id="r_external"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceamr__wind_1_1actuator_1_1external.html">external</a></td></tr>
+<tr class="memitem:ops" id="r_ops"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceamr__wind_1_1actuator_1_1ops.html">ops</a></td></tr>
+<tr class="memitem:utils" id="r_utils"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceamr__wind_1_1actuator_1_1utils.html">utils</a></td></tr>
+<tr class="memitem:wing" id="r_wing"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceamr__wind_1_1actuator_1_1wing.html">wing</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:ActDataHolder" id="r_ActDataHolder"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1actuator_1_1_act_data_holder.html">ActDataHolder</a></td></tr>
+<tr class="memitem:ActGrid" id="r_ActGrid"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1actuator_1_1_act_grid.html">ActGrid</a></td></tr>
+<tr class="memitem:ActInfo" id="r_ActInfo"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1actuator_1_1_act_info.html">ActInfo</a></td></tr>
+<tr class="memitem:ActModel" id="r_ActModel"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1actuator_1_1_act_model.html">ActModel</a></td></tr>
+<tr class="memitem:ActSrcDisk" id="r_ActSrcDisk"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1actuator_1_1_act_src_disk.html">ActSrcDisk</a></td></tr>
+<tr class="memitem:ActSrcLine" id="r_ActSrcLine"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1actuator_1_1_act_src_line.html">ActSrcLine</a></td></tr>
+<tr class="memitem:ActSrcType" id="r_ActSrcType"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1actuator_1_1_act_src_type.html">ActSrcType</a></td></tr>
+<tr class="memitem:Actuator" id="r_Actuator"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1actuator_1_1_actuator.html">Actuator</a></td></tr>
+<tr class="memitem:ActuatorCloud" id="r_ActuatorCloud"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1actuator_1_1_actuator_cloud.html">ActuatorCloud</a></td></tr>
+<tr class="memitem:ActuatorContainer" id="r_ActuatorContainer"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1actuator_1_1_actuator_container.html">ActuatorContainer</a></td></tr>
+<tr class="memitem:ActuatorModel" id="r_ActuatorModel"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1actuator_1_1_actuator_model.html">ActuatorModel</a></td></tr>
+<tr class="memitem:ActuatorType" id="r_ActuatorType"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1actuator_1_1_actuator_type.html">ActuatorType</a></td></tr>
+<tr class="memitem:AirfoilLoader" id="r_AirfoilLoader"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1actuator_1_1_airfoil_loader.html">AirfoilLoader</a></td></tr>
+<tr class="memitem:AirfoilTable" id="r_AirfoilTable"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1actuator_1_1_airfoil_table.html">AirfoilTable</a></td></tr>
+<tr class="memitem:AirfoilTraits" id="r_AirfoilTraits"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1actuator_1_1_airfoil_traits.html">AirfoilTraits</a></td></tr>
+<tr class="memitem:AirfoilTraits_3C_20FlatPlate_20_3E" id="r_AirfoilTraits_3C_20FlatPlate_20_3E"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1actuator_1_1_airfoil_traits_3_01_flat_plate_01_4.html">AirfoilTraits&lt; FlatPlate &gt;</a></td></tr>
+<tr class="memitem:ComponentView" id="r_ComponentView"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1actuator_1_1_component_view.html">ComponentView</a></td></tr>
+<tr class="memitem:DiskBaseData" id="r_DiskBaseData"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1actuator_1_1_disk_base_data.html">DiskBaseData</a></td></tr>
+<tr class="memitem:DiskType" id="r_DiskType"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1actuator_1_1_disk_type.html">DiskType</a></td></tr>
+<tr class="memitem:FixedWing" id="r_FixedWing"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1actuator_1_1_fixed_wing.html">FixedWing</a></td></tr>
+<tr class="memitem:FixedWingData" id="r_FixedWingData"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1actuator_1_1_fixed_wing_data.html">FixedWingData</a></td></tr>
+<tr class="memitem:FlatPlate" id="r_FlatPlate"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1actuator_1_1_flat_plate.html">FlatPlate</a></td></tr>
+<tr class="memitem:FlatPlateData" id="r_FlatPlateData"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1actuator_1_1_flat_plate_data.html">FlatPlateData</a></td></tr>
+<tr class="memitem:FLLCData" id="r_FLLCData"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1actuator_1_1_f_l_l_c_data.html">FLLCData</a></td></tr>
+<tr class="memitem:FLLCOp" id="r_FLLCOp"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1actuator_1_1_f_l_l_c_op.html">FLLCOp</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This struct will operate on a blade/wing. The velocity from the simulation is corrected using the Filtered Lifting Line Theory Correction from Martinez and Meneveau 2019.  <a href="structamr__wind_1_1actuator_1_1_f_l_l_c_op.html#details">More...</a><br /></td></tr>
+<tr class="memitem:Joukowsky" id="r_Joukowsky"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1actuator_1_1_joukowsky.html">Joukowsky</a></td></tr>
+<tr class="memitem:JoukowskyData" id="r_JoukowskyData"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1actuator_1_1_joukowsky_data.html">JoukowskyData</a></td></tr>
+<tr class="memitem:ThinAirfoil" id="r_ThinAirfoil"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1actuator_1_1_thin_airfoil.html">ThinAirfoil</a></td></tr>
+<tr class="memitem:TurbineBaseData" id="r_TurbineBaseData"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1actuator_1_1_turbine_base_data.html">TurbineBaseData</a></td></tr>
+<tr class="memitem:TurbineExternalData" id="r_TurbineExternalData"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1actuator_1_1_turbine_external_data.html">TurbineExternalData</a></td></tr>
+<tr class="memitem:TurbineFromExtSolver" id="r_TurbineFromExtSolver"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1actuator_1_1_turbine_from_ext_solver.html">TurbineFromExtSolver</a></td></tr>
+<tr class="memitem:TurbineInfo" id="r_TurbineInfo"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1actuator_1_1_turbine_info.html">TurbineInfo</a></td></tr>
+<tr class="memitem:TurbineType" id="r_TurbineType"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1actuator_1_1_turbine_type.html">TurbineType</a></td></tr>
+<tr class="memitem:UniformCt" id="r_UniformCt"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1actuator_1_1_uniform_ct.html">UniformCt</a></td></tr>
+<tr class="memitem:UniformCtData" id="r_UniformCtData"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1actuator_1_1_uniform_ct_data.html">UniformCtData</a></td></tr>
+<tr class="memitem:WingBaseData" id="r_WingBaseData"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1actuator_1_1_wing_base_data.html">WingBaseData</a></td></tr>
+<tr class="memitem:WingType" id="r_WingType"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1actuator_1_1_wing_type.html">WingType</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-typedef-members" class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:a65bb909186e26668097bcd7d116b5b4b" id="r_a65bb909186e26668097bcd7d116b5b4b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a65bb909186e26668097bcd7d116b5b4b">RealList</a> = amrex::Vector&lt;amrex::Real&gt;</td></tr>
+<tr class="memitem:a450c9755debfa3f609f40f9f210f34bf" id="r_a450c9755debfa3f609f40f9f210f34bf"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a450c9755debfa3f609f40f9f210f34bf">RealSlice</a> = <a class="el" href="structamr__wind_1_1utils_1_1_slice.html">::amr_wind::utils::Slice</a>&lt;amrex::Real&gt;</td></tr>
+<tr class="memitem:ac6340491778a658b25350f43042d5d6a" id="r_ac6340491778a658b25350f43042d5d6a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac6340491778a658b25350f43042d5d6a">VecList</a> = amrex::Vector&lt;<a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">amr_wind::vs::Vector</a>&gt;</td></tr>
+<tr class="memitem:aeb6dfa49700b527746abf44350c4a2f4" id="r_aeb6dfa49700b527746abf44350c4a2f4"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeb6dfa49700b527746abf44350c4a2f4">VecSlice</a> = <a class="el" href="structamr__wind_1_1utils_1_1_slice.html">::amr_wind::utils::Slice</a>&lt;<a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">amr_wind::vs::Vector</a>&gt;</td></tr>
+<tr class="memitem:aabffbba39bbb5a7342d744375bbd154d" id="r_aabffbba39bbb5a7342d744375bbd154d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aabffbba39bbb5a7342d744375bbd154d">TensorList</a> = amrex::Vector&lt;<a class="el" href="namespaceamr__wind_1_1vs.html#add4ffb20497b62d4b485d7c483dcd80f">amr_wind::vs::Tensor</a>&gt;</td></tr>
+<tr class="memitem:a3721a2860ef2e449eb59cc082b964df4" id="r_a3721a2860ef2e449eb59cc082b964df4"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3721a2860ef2e449eb59cc082b964df4">TensorSlice</a> = <a class="el" href="structamr__wind_1_1utils_1_1_slice.html">::amr_wind::utils::Slice</a>&lt;<a class="el" href="namespaceamr__wind_1_1vs.html#add4ffb20497b62d4b485d7c483dcd80f">amr_wind::vs::Tensor</a>&gt;</td></tr>
+<tr class="memitem:afeb49cfabafb461250d627cef38adc6f" id="r_afeb49cfabafb461250d627cef38adc6f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afeb49cfabafb461250d627cef38adc6f">DeviceVecList</a> = amrex::Gpu::DeviceVector&lt;<a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">amr_wind::vs::Vector</a>&gt;</td></tr>
+<tr class="memitem:a0775e8e0cedf36d8c4932767a72f4070" id="r_a0775e8e0cedf36d8c4932767a72f4070"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0775e8e0cedf36d8c4932767a72f4070">DeviceTensorList</a> = amrex::Gpu::DeviceVector&lt;<a class="el" href="namespaceamr__wind_1_1vs.html#add4ffb20497b62d4b485d7c483dcd80f">amr_wind::vs::Tensor</a>&gt;</td></tr>
+<tr class="memitem:ae84b21076dbf386e0b8b78ac787c752f" id="r_ae84b21076dbf386e0b8b78ac787c752f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae84b21076dbf386e0b8b78ac787c752f">TurbineFast</a></td></tr>
+<tr class="memitem:a09548affaaf33116c00fbba88da3dc60" id="r_a09548affaaf33116c00fbba88da3dc60"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a09548affaaf33116c00fbba88da3dc60">TurbineKynema</a></td></tr>
+<tr class="memitem:a3e7842ddf31274b242781f84739a1ac9" id="r_a3e7842ddf31274b242781f84739a1ac9"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3e7842ddf31274b242781f84739a1ac9">DeviceVecComponent</a> = amrex::Gpu::DeviceVector&lt;<a class="el" href="structamr__wind_1_1actuator_1_1_component_view.html">ComponentView</a>&gt;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-enum-members" class="groupheader"><a id="enum-members" name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:a934b3c2177c031745b7306a9b8ffcd4a" id="r_a934b3c2177c031745b7306a9b8ffcd4a"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a934b3c2177c031745b7306a9b8ffcd4a">FLLCType</a> : std::uint8_t { <a class="el" href="#a934b3c2177c031745b7306a9b8ffcd4aa07713f35cdad163003e1ddcbeb41ab35">ConstantChord</a>
+, <a class="el" href="#a934b3c2177c031745b7306a9b8ffcd4aa19c52e472009dc14176e5f3db8d40bca">VariableChord</a>
+ }</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:ab555ff8dde782a90e6afaac9302a8278" id="r_ab555ff8dde782a90e6afaac9302a8278"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab555ff8dde782a90e6afaac9302a8278">fllc_init</a> (<a class="el" href="structamr__wind_1_1actuator_1_1_f_l_l_c_data.html">FLLCData</a> &amp;data, const <a class="el" href="structamr__wind_1_1actuator_1_1_component_view.html">ComponentView</a> &amp;view, amrex::Real eps_chord)</td></tr>
+<tr class="memdesc:ab555ff8dde782a90e6afaac9302a8278"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize FLLC data structure. This should be called at the end of the first ComputeForceOp to ensure the data is fully populated.  <br /></td></tr>
+<tr class="memitem:a4aeb5661ec90b87ecb3c2d16de0bbcec" id="r_a4aeb5661ec90b87ecb3c2d16de0bbcec"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4aeb5661ec90b87ecb3c2d16de0bbcec">fllc_parse</a> (const <a class="el" href="namespaceamr__wind_1_1actuator_1_1utils.html#adc87a85feb601daddd89208677ce75e5">utils::ActParser</a> &amp;pp, <a class="el" href="structamr__wind_1_1actuator_1_1_f_l_l_c_data.html">FLLCData</a> &amp;data)</td></tr>
+<tr class="memdesc:a4aeb5661ec90b87ecb3c2d16de0bbcec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function to capture common parsing requirements for the filtered lifting line correction.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-var-members" class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:a88a737385c4fa7a3595ff6bf96562c8d" id="r_a88a737385c4fa7a3595ff6bf96562c8d"><td class="memItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a88a737385c4fa7a3595ff6bf96562c8d">NumPStructReal</a> = AMREX_SPACEDIM + 1</td></tr>
+<tr class="memdesc:a88a737385c4fa7a3595ff6bf96562c8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number or real entries in Array of Structs (AOS)  <br /></td></tr>
+<tr class="memitem:a2eaa193e677df01371fc3e392c182756" id="r_a2eaa193e677df01371fc3e392c182756"><td class="memItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2eaa193e677df01371fc3e392c182756">NumPStructInt</a> = 1</td></tr>
+<tr class="memdesc:a2eaa193e677df01371fc3e392c182756"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of integer entries in Array of Structs (AOS)  <br /></td></tr>
+<tr class="memitem:a02e87e558ce8dc4fd7bc8ceb131f2aaf" id="r_a02e87e558ce8dc4fd7bc8ceb131f2aaf"><td class="memItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a02e87e558ce8dc4fd7bc8ceb131f2aaf">NumPArrayReal</a> = 0</td></tr>
+<tr class="memdesc:a02e87e558ce8dc4fd7bc8ceb131f2aaf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of real entries in Struct of Arrays (SOA)  <br /></td></tr>
+<tr class="memitem:adb29357827a53173c37497329cd33a24" id="r_adb29357827a53173c37497329cd33a24"><td class="memItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adb29357827a53173c37497329cd33a24">NumPArrayInt</a> = 0</td></tr>
+<tr class="memdesc:adb29357827a53173c37497329cd33a24"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of int entries in Struct of Arrays (SOA)  <br /></td></tr>
+<tr class="memitem:ac9d3e9692dab20eb7994f84a718d0fe1" id="r_ac9d3e9692dab20eb7994f84a718d0fe1"><td class="memItemLeft" align="right" valign="top">static std::map&lt; std::string, <a class="el" href="#a934b3c2177c031745b7306a9b8ffcd4a">FLLCType</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac9d3e9692dab20eb7994f84a718d0fe1">FLLCTypeMap</a></td></tr>
+</table>
+<a name="doc-typedef-members" id="doc-typedef-members"></a><h2 id="header-doc-typedef-members" class="groupheader">Typedef Documentation</h2>
+<a id="a0775e8e0cedf36d8c4932767a72f4070" name="a0775e8e0cedf36d8c4932767a72f4070"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0775e8e0cedf36d8c4932767a72f4070">&#9670;&#160;</a></span>DeviceTensorList</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#a0775e8e0cedf36d8c4932767a72f4070">amr_wind::actuator::DeviceTensorList</a> = amrex::Gpu::DeviceVector&lt;<a class="el" href="namespaceamr__wind_1_1vs.html#add4ffb20497b62d4b485d7c483dcd80f">amr_wind::vs::Tensor</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3e7842ddf31274b242781f84739a1ac9" name="a3e7842ddf31274b242781f84739a1ac9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e7842ddf31274b242781f84739a1ac9">&#9670;&#160;</a></span>DeviceVecComponent</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#a3e7842ddf31274b242781f84739a1ac9">amr_wind::actuator::DeviceVecComponent</a> = amrex::Gpu::DeviceVector&lt;<a class="el" href="structamr__wind_1_1actuator_1_1_component_view.html">ComponentView</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afeb49cfabafb461250d627cef38adc6f" name="afeb49cfabafb461250d627cef38adc6f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afeb49cfabafb461250d627cef38adc6f">&#9670;&#160;</a></span>DeviceVecList</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#afeb49cfabafb461250d627cef38adc6f">amr_wind::actuator::DeviceVecList</a> = amrex::Gpu::DeviceVector&lt;<a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">amr_wind::vs::Vector</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a65bb909186e26668097bcd7d116b5b4b" name="a65bb909186e26668097bcd7d116b5b4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65bb909186e26668097bcd7d116b5b4b">&#9670;&#160;</a></span>RealList</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#a65bb909186e26668097bcd7d116b5b4b">amr_wind::actuator::RealList</a> = amrex::Vector&lt;amrex::Real&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a450c9755debfa3f609f40f9f210f34bf" name="a450c9755debfa3f609f40f9f210f34bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a450c9755debfa3f609f40f9f210f34bf">&#9670;&#160;</a></span>RealSlice</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#a450c9755debfa3f609f40f9f210f34bf">amr_wind::actuator::RealSlice</a> = <a class="el" href="structamr__wind_1_1utils_1_1_slice.html">::amr_wind::utils::Slice</a>&lt;amrex::Real&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aabffbba39bbb5a7342d744375bbd154d" name="aabffbba39bbb5a7342d744375bbd154d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabffbba39bbb5a7342d744375bbd154d">&#9670;&#160;</a></span>TensorList</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#aabffbba39bbb5a7342d744375bbd154d">amr_wind::actuator::TensorList</a> = amrex::Vector&lt;<a class="el" href="namespaceamr__wind_1_1vs.html#add4ffb20497b62d4b485d7c483dcd80f">amr_wind::vs::Tensor</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3721a2860ef2e449eb59cc082b964df4" name="a3721a2860ef2e449eb59cc082b964df4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3721a2860ef2e449eb59cc082b964df4">&#9670;&#160;</a></span>TensorSlice</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#a3721a2860ef2e449eb59cc082b964df4">amr_wind::actuator::TensorSlice</a> = <a class="el" href="structamr__wind_1_1utils_1_1_slice.html">::amr_wind::utils::Slice</a>&lt;<a class="el" href="namespaceamr__wind_1_1vs.html#add4ffb20497b62d4b485d7c483dcd80f">amr_wind::vs::Tensor</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae84b21076dbf386e0b8b78ac787c752f" name="ae84b21076dbf386e0b8b78ac787c752f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae84b21076dbf386e0b8b78ac787c752f">&#9670;&#160;</a></span>TurbineFast</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#ae84b21076dbf386e0b8b78ac787c752f">amr_wind::actuator::TurbineFast</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line"> </div>
+<div class="line">    <a class="code hl_struct" href="structamr__wind_1_1actuator_1_1_turbine_from_ext_solver.html">TurbineFromExtSolver&lt;::ext_turb::FastTurbine, ::ext_turb::FastSolverData&gt;</a></div>
+<div class="ttc" id="astructamr__wind_1_1actuator_1_1_turbine_from_ext_solver_html"><div class="ttname"><a href="structamr__wind_1_1actuator_1_1_turbine_from_ext_solver.html">amr_wind::actuator::TurbineFromExtSolver</a></div><div class="ttdef"><b>Definition</b> TurbineExternal.H:26</div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a09548affaaf33116c00fbba88da3dc60" name="a09548affaaf33116c00fbba88da3dc60"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09548affaaf33116c00fbba88da3dc60">&#9670;&#160;</a></span>TurbineKynema</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#a09548affaaf33116c00fbba88da3dc60">amr_wind::actuator::TurbineKynema</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line"> <a class="code hl_struct" href="structamr__wind_1_1actuator_1_1_turbine_from_ext_solver.html">TurbineFromExtSolver</a>&lt;</div>
+<div class="line">    <a class="code hl_struct" href="structext__turb_1_1_kynema_turbine.html">::ext_turb::KynemaTurbine</a>,</div>
+<div class="line">    <a class="code hl_struct" href="structext__turb_1_1_kynema_solver_data.html">::ext_turb::KynemaSolverData</a>&gt;</div>
+<div class="ttc" id="astructext__turb_1_1_kynema_solver_data_html"><div class="ttname"><a href="structext__turb_1_1_kynema_solver_data.html">ext_turb::KynemaSolverData</a></div><div class="ttdef"><b>Definition</b> kynema_types.H:274</div></div>
+<div class="ttc" id="astructext__turb_1_1_kynema_turbine_html"><div class="ttname"><a href="structext__turb_1_1_kynema_turbine.html">ext_turb::KynemaTurbine</a></div><div class="ttdef"><b>Definition</b> kynema_types.H:16</div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ac6340491778a658b25350f43042d5d6a" name="ac6340491778a658b25350f43042d5d6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6340491778a658b25350f43042d5d6a">&#9670;&#160;</a></span>VecList</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#ac6340491778a658b25350f43042d5d6a">amr_wind::actuator::VecList</a> = amrex::Vector&lt;<a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">amr_wind::vs::Vector</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aeb6dfa49700b527746abf44350c4a2f4" name="aeb6dfa49700b527746abf44350c4a2f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb6dfa49700b527746abf44350c4a2f4">&#9670;&#160;</a></span>VecSlice</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#aeb6dfa49700b527746abf44350c4a2f4">amr_wind::actuator::VecSlice</a> = <a class="el" href="structamr__wind_1_1utils_1_1_slice.html">::amr_wind::utils::Slice</a>&lt;<a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">amr_wind::vs::Vector</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Enumeration Type Documentation</h2>
+<a id="a934b3c2177c031745b7306a9b8ffcd4a" name="a934b3c2177c031745b7306a9b8ffcd4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a934b3c2177c031745b7306a9b8ffcd4a">&#9670;&#160;</a></span>FLLCType</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="#a934b3c2177c031745b7306a9b8ffcd4a">amr_wind::actuator::FLLCType</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel strong">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a934b3c2177c031745b7306a9b8ffcd4aa07713f35cdad163003e1ddcbeb41ab35" name="a934b3c2177c031745b7306a9b8ffcd4aa07713f35cdad163003e1ddcbeb41ab35"></a>ConstantChord&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a934b3c2177c031745b7306a9b8ffcd4aa19c52e472009dc14176e5f3db8d40bca" name="a934b3c2177c031745b7306a9b8ffcd4aa19c52e472009dc14176e5f3db8d40bca"></a>VariableChord&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
+<a id="ab555ff8dde782a90e6afaac9302a8278" name="ab555ff8dde782a90e6afaac9302a8278"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab555ff8dde782a90e6afaac9302a8278">&#9670;&#160;</a></span>fllc_init()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::actuator::fllc_init </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structamr__wind_1_1actuator_1_1_f_l_l_c_data.html">FLLCData</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structamr__wind_1_1actuator_1_1_component_view.html">ComponentView</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>view</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>eps_chord</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Initialize FLLC data structure. This should be called at the end of the first ComputeForceOp to ensure the data is fully populated. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">data</td><td>FLLC specific data and scratch fields </td></tr>
+    <tr><td class="paramname">view</td><td>Component view that has references to the grid data </td></tr>
+    <tr><td class="paramname">eps_chord</td><td>epsilon chord </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a4aeb5661ec90b87ecb3c2d16de0bbcec" name="a4aeb5661ec90b87ecb3c2d16de0bbcec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4aeb5661ec90b87ecb3c2d16de0bbcec">&#9670;&#160;</a></span>fllc_parse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::actuator::fllc_parse </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceamr__wind_1_1actuator_1_1utils.html#adc87a85feb601daddd89208677ce75e5">utils::ActParser</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>pp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structamr__wind_1_1actuator_1_1_f_l_l_c_data.html">FLLCData</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Function to capture common parsing requirements for the filtered lifting line correction. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pp</td><td>Parser </td></tr>
+    <tr><td class="paramname">data</td><td>Data to be populated from parser </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a name="doc-var-members" id="doc-var-members"></a><h2 id="header-doc-var-members" class="groupheader">Variable Documentation</h2>
+<a id="ac9d3e9692dab20eb7994f84a718d0fe1" name="ac9d3e9692dab20eb7994f84a718d0fe1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9d3e9692dab20eb7994f84a718d0fe1">&#9670;&#160;</a></span>FLLCTypeMap</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::map&lt;std::string, <a class="el" href="#a934b3c2177c031745b7306a9b8ffcd4a">FLLCType</a>&gt; amr_wind::actuator::FLLCTypeMap</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">{</div>
+<div class="line">    {<span class="stringliteral">&quot;constant_chord&quot;</span>, <a class="code hl_enumvalue" href="#a934b3c2177c031745b7306a9b8ffcd4aa07713f35cdad163003e1ddcbeb41ab35">FLLCType::ConstantChord</a>},</div>
+<div class="line">    {<span class="stringliteral">&quot;variable_chord&quot;</span>, <a class="code hl_enumvalue" href="#a934b3c2177c031745b7306a9b8ffcd4aa19c52e472009dc14176e5f3db8d40bca">FLLCType::VariableChord</a>}}</div>
+<div class="ttc" id="anamespaceamr__wind_1_1actuator_html_a934b3c2177c031745b7306a9b8ffcd4aa07713f35cdad163003e1ddcbeb41ab35"><div class="ttname"><a href="#a934b3c2177c031745b7306a9b8ffcd4aa07713f35cdad163003e1ddcbeb41ab35">amr_wind::actuator::FLLCType::ConstantChord</a></div><div class="ttdeci">@ ConstantChord</div><div class="ttdef"><b>Definition</b> FLLC.H:13</div></div>
+<div class="ttc" id="anamespaceamr__wind_1_1actuator_html_a934b3c2177c031745b7306a9b8ffcd4aa19c52e472009dc14176e5f3db8d40bca"><div class="ttname"><a href="#a934b3c2177c031745b7306a9b8ffcd4aa19c52e472009dc14176e5f3db8d40bca">amr_wind::actuator::FLLCType::VariableChord</a></div><div class="ttdeci">@ VariableChord</div><div class="ttdef"><b>Definition</b> FLLC.H:13</div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="adb29357827a53173c37497329cd33a24" name="adb29357827a53173c37497329cd33a24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb29357827a53173c37497329cd33a24">&#9670;&#160;</a></span>NumPArrayInt</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::actuator::NumPArrayInt = 0</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of int entries in Struct of Arrays (SOA) </p>
+
+</div>
+</div>
+<a id="a02e87e558ce8dc4fd7bc8ceb131f2aaf" name="a02e87e558ce8dc4fd7bc8ceb131f2aaf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02e87e558ce8dc4fd7bc8ceb131f2aaf">&#9670;&#160;</a></span>NumPArrayReal</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::actuator::NumPArrayReal = 0</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of real entries in Struct of Arrays (SOA) </p>
+
+</div>
+</div>
+<a id="a2eaa193e677df01371fc3e392c182756" name="a2eaa193e677df01371fc3e392c182756"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2eaa193e677df01371fc3e392c182756">&#9670;&#160;</a></span>NumPStructInt</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::actuator::NumPStructInt = 1</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of integer entries in Array of Structs (AOS) </p>
+
+</div>
+</div>
+<a id="a88a737385c4fa7a3595ff6bf96562c8d" name="a88a737385c4fa7a3595ff6bf96562c8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88a737385c4fa7a3595ff6bf96562c8d">&#9670;&#160;</a></span>NumPStructReal</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::actuator::NumPStructReal = AMREX_SPACEDIM + 1</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number or real entries in Array of Structs (AOS) </p>
+
+</div>
+</div>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

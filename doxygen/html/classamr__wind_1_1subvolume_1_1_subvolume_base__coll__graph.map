@@ -1,0 +1,7 @@
+<map id="amr_wind::subvolume::SubvolumeBase" name="amr_wind::subvolume::SubvolumeBase">
+<area shape="rect" id="Node000001" title=" " alt="" coords="32,205,199,245"/>
+<area shape="rect" id="Node000002" href="$structamr__wind_1_1_factory.html" title=" " alt="" coords="5,116,225,156"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="118,170,118,205,113,205,113,170"/>
+<area shape="rect" id="Node000003" href="$structamr__wind_1_1_factory.html" title=" " alt="" coords="39,5,191,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="118,59,118,116,113,116,113,59"/>
+</map>

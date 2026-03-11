@@ -1,0 +1,652 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::sampling::SamplingContainer Class Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::sampling::SamplingContainer Class Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/classamr__wind_1_1sampling_1_1_sampling_container.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="samplingcontainer-class-reference">
+<h1>SamplingContainer Class Reference<a class="headerlink" href="#samplingcontainer-class-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::sampling::SamplingContainer Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="namespaceamr__wind_1_1sampling.html">sampling</a></li><li class="navelem"><a href="classamr__wind_1_1sampling_1_1_sampling_container.html">SamplingContainer</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pri-methods">Private Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
+<a href="classamr__wind_1_1sampling_1_1_sampling_container-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::sampling::SamplingContainer Class Reference<div class="ingroups"><a class="el" href="group__utilities.html">Utilities</a> &raquo; <a class="el" href="group__sampling.html">Data-sampling utilities</a></div></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_sampling_container_8_h_source.html">SamplingContainer.H</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for amr_wind::sampling::SamplingContainer:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1sampling_1_1_sampling_container__inherit__graph.svg" width="424" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for amr_wind::sampling::SamplingContainer:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1sampling_1_1_sampling_container__coll__graph.svg" width="424" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a558429c4948e128c6cdb26672be7b8de" id="r_a558429c4948e128c6cdb26672be7b8de"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a558429c4948e128c6cdb26672be7b8de">SamplingContainer</a> (amrex::AmrCore &amp;mesh)</td></tr>
+<tr class="memitem:a1d784041c1721659fa92ba716720ef8f" id="r_a1d784041c1721659fa92ba716720ef8f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1d784041c1721659fa92ba716720ef8f">setup_container</a> (int num_real_components, int num_int_components=0)</td></tr>
+<tr class="memitem:a982959f3df8ace68bc362f725ae2d78a" id="r_a982959f3df8ace68bc362f725ae2d78a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a982959f3df8ace68bc362f725ae2d78a">initialize_particles</a> (const amrex::Vector&lt; std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1sampling_1_1_sampler_base.html">SamplerBase</a> &gt; &gt; &amp;)</td></tr>
+<tr class="memitem:a50b75c7c9c32099b09410cb48083d2b9" id="r_a50b75c7c9c32099b09410cb48083d2b9"><td class="memTemplParams" colspan="2">template&lt;typename FType&gt; </td></tr>
+<tr class="memitem:a50b75c7c9c32099b09410cb48083d2b9 template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a50b75c7c9c32099b09410cb48083d2b9">interpolate_fields</a> (const amrex::Vector&lt; FType &gt; &amp;fields, const int scomp)</td></tr>
+<tr class="memdesc:a50b75c7c9c32099b09410cb48083d2b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform field interpolation to sampling locations.  <br /></td></tr>
+<tr class="memitem:a75079cf68d497188c36c44c50ff646c1" id="r_a75079cf68d497188c36c44c50ff646c1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a75079cf68d497188c36c44c50ff646c1">interpolate_derived_fields</a> (const <a class="el" href="classamr__wind_1_1_derived_qty_mgr.html">DerivedQtyMgr</a> &amp;derived_mgr, const <a class="el" href="classamr__wind_1_1_field_repo.html">FieldRepo</a> &amp;repo, int scomp)</td></tr>
+<tr class="memdesc:a75079cf68d497188c36c44c50ff646c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform derived field interpolation to sampling locations.  <br /></td></tr>
+<tr class="memitem:a2baf56fdfe522421476b87d6ddebb93d" id="r_a2baf56fdfe522421476b87d6ddebb93d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2baf56fdfe522421476b87d6ddebb93d">populate_buffer</a> (std::vector&lt; amrex::Real &gt; &amp;buf)</td></tr>
+<tr class="memdesc:a2baf56fdfe522421476b87d6ddebb93d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Populate the buffer with data for all the particles.  <br /></td></tr>
+<tr class="memitem:a6ea58b222d204ded878d128305ec36d8" id="r_a6ea58b222d204ded878d128305ec36d8"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6ea58b222d204ded878d128305ec36d8">num_sampling_particles</a> () const</td></tr>
+<tr class="memitem:a6c671335b17d85f732aae12f1fe10936" id="r_a6c671335b17d85f732aae12f1fe10936"><td class="memItemLeft" align="right" valign="top">long &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6c671335b17d85f732aae12f1fe10936">num_sampling_particles</a> ()</td></tr>
+<tr class="memitem:ae6c9f1ce8b43d2b48aaa315975ae41d0" id="r_ae6c9f1ce8b43d2b48aaa315975ae41d0"><td class="memTemplParams" colspan="2">template&lt;typename FType&gt; </td></tr>
+<tr class="memitem:ae6c9f1ce8b43d2b48aaa315975ae41d0 template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae6c9f1ce8b43d2b48aaa315975ae41d0">sample_field</a> (const int np, const int ic, SamplingContainer::ParticleVector &amp;pvec, SamplingContainer::RealVector &amp;pavec, const FType &amp;farr, const amrex::GpuArray&lt; amrex::Real, AMREX_SPACEDIM &gt; &amp;problo, const amrex::GpuArray&lt; amrex::Real, AMREX_SPACEDIM &gt; &amp;dxi, const amrex::GpuArray&lt; amrex::Real, AMREX_SPACEDIM &gt; &amp;dx, const amrex::GpuArray&lt; amrex::Real, AMREX_SPACEDIM &gt; &amp;offset)</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-methods" class="groupheader"><a id="pri-methods" name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:a45fa10cf0a112a3f39951dc38ee5de79" id="r_a45fa10cf0a112a3f39951dc38ee5de79"><td class="memTemplParams" colspan="2">template&lt;typename FType&gt; </td></tr>
+<tr class="memitem:a45fa10cf0a112a3f39951dc38ee5de79 template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a45fa10cf0a112a3f39951dc38ee5de79">interpolate</a> (const ParIterType &amp;pti, const FType &amp;farr, const int lev, const <a class="el" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a> floc, const int ncomp, const int scomp)</td></tr>
+<tr class="memdesc:a45fa10cf0a112a3f39951dc38ee5de79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolate from an array4 onto particles.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a209dde0c353b0957cb2ceaf298f8104c" id="r_a209dde0c353b0957cb2ceaf298f8104c"><td class="memItemLeft" align="right" valign="top">const amrex::AmrCore &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a209dde0c353b0957cb2ceaf298f8104c">m_mesh</a></td></tr>
+<tr class="memitem:a16d77aa6aec6ce60e284db9d1152dc15" id="r_a16d77aa6aec6ce60e284db9d1152dc15"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a16d77aa6aec6ce60e284db9d1152dc15">m_total_particles</a> {0}</td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Specialization of the AMReX ParticleContainer object for sampling data</p>
+<p>Represents the data probes as a collection of particles that are uniquely identified by three integer identifiers:</p>
+<ul>
+<li>a universal identifier (UID) that is unique to each particle,</li>
+<li>a set identifier that represents a group (e.g., line, plane) of particles</li>
+<li>a node identifier that represents indexing of this particle within the group</li>
+</ul>
+<p>The quantities of interest are themselves stored as runtime components based on user-defined inputs.</p>
+<p>Notes:</p>
+<ul>
+<li>The implementation uses linear interpolation in three directions to determine the data at a given probe location</li>
+<li>For non-nodal fields, the current implementation requires at-least one ghost cell to allow linear interpolation.</li>
+<li>Interpolation near domain boundaries does not currently handle <span class="tt">hoextrap</span> </li>
+</ul>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a558429c4948e128c6cdb26672be7b8de" name="a558429c4948e128c6cdb26672be7b8de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a558429c4948e128c6cdb26672be7b8de">&#9670;&#160;</a></span>SamplingContainer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::sampling::SamplingContainer::SamplingContainer </td>
+          <td>(</td>
+          <td class="paramtype">amrex::AmrCore &amp;</td>          <td class="paramname"><span class="paramname"><em>mesh</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel explicit">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a982959f3df8ace68bc362f725ae2d78a" name="a982959f3df8ace68bc362f725ae2d78a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a982959f3df8ace68bc362f725ae2d78a">&#9670;&#160;</a></span>initialize_particles()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::sampling::SamplingContainer::initialize_particles </td>
+          <td>(</td>
+          <td class="paramtype">const amrex::Vector&lt; std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1sampling_1_1_sampler_base.html">SamplerBase</a> &gt; &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>samplers</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Create particle information for all the sampling locations </p>
+
+</div>
+</div>
+<a id="a45fa10cf0a112a3f39951dc38ee5de79" name="a45fa10cf0a112a3f39951dc38ee5de79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45fa10cf0a112a3f39951dc38ee5de79">&#9670;&#160;</a></span>interpolate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::sampling::SamplingContainer::interpolate </td>
+          <td>(</td>
+          <td class="paramtype">const ParIterType &amp;</td>          <td class="paramname"><span class="paramname"><em>pti</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const FType &amp;</td>          <td class="paramname"><span class="paramname"><em>farr</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>lev</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a></td>          <td class="paramname"><span class="paramname"><em>floc</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>ncomp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>scomp</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Interpolate from an array4 onto particles. </p>
+
+</div>
+</div>
+<a id="a75079cf68d497188c36c44c50ff646c1" name="a75079cf68d497188c36c44c50ff646c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75079cf68d497188c36c44c50ff646c1">&#9670;&#160;</a></span>interpolate_derived_fields()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::sampling::SamplingContainer::interpolate_derived_fields </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_derived_qty_mgr.html">DerivedQtyMgr</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>derived_mgr</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_field_repo.html">FieldRepo</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>repo</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>scomp</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Perform derived field interpolation to sampling locations. </p>
+
+</div>
+</div>
+<a id="a50b75c7c9c32099b09410cb48083d2b9" name="a50b75c7c9c32099b09410cb48083d2b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50b75c7c9c32099b09410cb48083d2b9">&#9670;&#160;</a></span>interpolate_fields()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::sampling::SamplingContainer::interpolate_fields </td>
+          <td>(</td>
+          <td class="paramtype">const amrex::Vector&lt; FType &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>fields</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>scomp</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Perform field interpolation to sampling locations. </p>
+
+</div>
+</div>
+<a id="a6c671335b17d85f732aae12f1fe10936" name="a6c671335b17d85f732aae12f1fe10936"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c671335b17d85f732aae12f1fe10936">&#9670;&#160;</a></span>num_sampling_particles() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long &amp; amr_wind::sampling::SamplingContainer::num_sampling_particles </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6ea58b222d204ded878d128305ec36d8" name="a6ea58b222d204ded878d128305ec36d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ea58b222d204ded878d128305ec36d8">&#9670;&#160;</a></span>num_sampling_particles() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long amr_wind::sampling::SamplingContainer::num_sampling_particles </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2baf56fdfe522421476b87d6ddebb93d" name="a2baf56fdfe522421476b87d6ddebb93d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2baf56fdfe522421476b87d6ddebb93d">&#9670;&#160;</a></span>populate_buffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::sampling::SamplingContainer::populate_buffer </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; amrex::Real &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>buf</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Populate the buffer with data for all the particles. </p>
+
+</div>
+</div>
+<a id="ae6c9f1ce8b43d2b48aaa315975ae41d0" name="ae6c9f1ce8b43d2b48aaa315975ae41d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6c9f1ce8b43d2b48aaa315975ae41d0">&#9670;&#160;</a></span>sample_field()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::sampling::SamplingContainer::sample_field </td>
+          <td>(</td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>np</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>ic</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">SamplingContainer::ParticleVector &amp;</td>          <td class="paramname"><span class="paramname"><em>pvec</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">SamplingContainer::RealVector &amp;</td>          <td class="paramname"><span class="paramname"><em>pavec</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const FType &amp;</td>          <td class="paramname"><span class="paramname"><em>farr</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::GpuArray&lt; amrex::Real, AMREX_SPACEDIM &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>problo</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::GpuArray&lt; amrex::Real, AMREX_SPACEDIM &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>dxi</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::GpuArray&lt; amrex::Real, AMREX_SPACEDIM &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>dx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::GpuArray&lt; amrex::Real, AMREX_SPACEDIM &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>offset</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Interpolate a field to the sampling locations</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">np</td><td>Number of particles in the container </td></tr>
+    <tr><td class="paramname">ic</td><td>Component of the field to be interpolated </td></tr>
+    <tr><td class="paramname">pvec</td><td>Vector containing particle info </td></tr>
+    <tr><td class="paramname">pavec</td><td>Array information for the real component data </td></tr>
+    <tr><td class="paramname">farr</td><td>Array of field data for this multifab </td></tr>
+    <tr><td class="paramname">problo</td><td>Problem low values </td></tr>
+    <tr><td class="paramname">dxi</td><td>Inverse cell size array </td></tr>
+    <tr><td class="paramname">dx</td><td>Cell size array </td></tr>
+    <tr><td class="paramname">offset</td><td>Offsets for cell/node/face fields </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a1d784041c1721659fa92ba716720ef8f" name="a1d784041c1721659fa92ba716720ef8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d784041c1721659fa92ba716720ef8f">&#9670;&#160;</a></span>setup_container()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::sampling::SamplingContainer::setup_container </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>num_real_components</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>num_int_components</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Define the container and allocate memory for runtime components </p>
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a209dde0c353b0957cb2ceaf298f8104c" name="a209dde0c353b0957cb2ceaf298f8104c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a209dde0c353b0957cb2ceaf298f8104c">&#9670;&#160;</a></span>m_mesh</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const amrex::AmrCore&amp; amr_wind::sampling::SamplingContainer::m_mesh</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a16d77aa6aec6ce60e284db9d1152dc15" name="a16d77aa6aec6ce60e284db9d1152dc15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16d77aa6aec6ce60e284db9d1152dc15">&#9670;&#160;</a></span>m_total_particles</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long amr_wind::sampling::SamplingContainer::m_total_particles {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/<a class="el" href="_sampling_container_8_h_source.html">SamplingContainer.H</a></li>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/<a class="el" href="_sampling_container_8cpp.html">SamplingContainer.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

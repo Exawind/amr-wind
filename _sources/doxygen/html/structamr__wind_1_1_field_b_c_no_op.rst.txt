@@ -1,0 +1,14 @@
+.. meta::db9476fa6c83ba677c38b8c349e4932188bbf5776f184b37c42837dadb63d457fb7cf9d975608e68103447dbaf10ff4aca2dd451237b294d32dccfcc866aa6d7
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::FieldBCNoOp Struct Reference
+
+FieldBCNoOp Struct Reference
+============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1_field_b_c_no_op.html

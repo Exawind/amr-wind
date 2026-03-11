@@ -1,0 +1,864 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::interp Namespace Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::interp Namespace Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/namespaceamr__wind_1_1interp.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="interp-namespace-reference">
+<h1>interp Namespace Reference<a class="headerlink" href="#interp-namespace-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::interp Namespace Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="namespaceamr__wind_1_1interp.html">interp</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#enum-members">Enumerations</a> &#124;
+<a href="#func-members">Functions</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::interp Namespace Reference</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:Index" id="r_Index"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1interp_1_1_index.html">Index</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-enum-members" class="groupheader"><a id="enum-members" name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:abd52c50f35fabb017cb708778321ede5" id="r_abd52c50f35fabb017cb708778321ede5"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abd52c50f35fabb017cb708778321ede5">Limits</a> : int { <a class="el" href="#abd52c50f35fabb017cb708778321ede5aee3e9e533a2530a35ae6092ff5ac6f16">LOWLIM</a> = -2
+, <a class="el" href="#abd52c50f35fabb017cb708778321ede5a26c3945e7c9cf7dc79efc95e8f3a118d">UPLIM</a> = -1
+, <a class="el" href="#abd52c50f35fabb017cb708778321ede5ac9f1a6384b1c466d4612f513bd8e13ea">VALID</a> = 0
+ }</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a4d24b363221ea83b60e7712e5dd29ef8" id="r_a4d24b363221ea83b60e7712e5dd29ef8"><td class="memTemplParams" colspan="2">template&lt;typename It, typename T&gt; </td></tr>
+<tr class="memitem:a4d24b363221ea83b60e7712e5dd29ef8 template"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <a class="el" href="structamr__wind_1_1interp_1_1_index.html">Index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4d24b363221ea83b60e7712e5dd29ef8">check_bounds</a> (const It begin, const It end, const T &amp;x)</td></tr>
+<tr class="memitem:a62063f7f0cbbf77b3d297900dd24d282" id="r_a62063f7f0cbbf77b3d297900dd24d282"><td class="memTemplParams" colspan="2">template&lt;typename It, typename T&gt; </td></tr>
+<tr class="memitem:a62063f7f0cbbf77b3d297900dd24d282 template"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <a class="el" href="structamr__wind_1_1interp_1_1_index.html">Index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a62063f7f0cbbf77b3d297900dd24d282">bisection_search</a> (const It begin, const It end, const T &amp;x)</td></tr>
+<tr class="memitem:ae2c8b7de60c61f86e4c5c5aab80f8221" id="r_ae2c8b7de60c61f86e4c5c5aab80f8221"><td class="memTemplParams" colspan="2">template&lt;typename It, typename T&gt; </td></tr>
+<tr class="memitem:ae2c8b7de60c61f86e4c5c5aab80f8221 template"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <a class="el" href="structamr__wind_1_1interp_1_1_index.html">Index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae2c8b7de60c61f86e4c5c5aab80f8221">nearest_search</a> (const It begin, const It end, const T &amp;x)</td></tr>
+<tr class="memitem:a1caf55521ce007f49422cb6bfe32f135" id="r_a1caf55521ce007f49422cb6bfe32f135"><td class="memTemplParams" colspan="2">template&lt;typename It, typename T&gt; </td></tr>
+<tr class="memitem:a1caf55521ce007f49422cb6bfe32f135 template"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <a class="el" href="structamr__wind_1_1interp_1_1_index.html">Index</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1caf55521ce007f49422cb6bfe32f135">find_index</a> (const It begin, const It end, const T &amp;x, const int hint=1)</td></tr>
+<tr class="memitem:ae7273df0dd4eafa5df10a7961ed37aec" id="r_ae7273df0dd4eafa5df10a7961ed37aec"><td class="memTemplParams" colspan="2">template&lt;typename C1, typename C2&gt; </td></tr>
+<tr class="memitem:ae7273df0dd4eafa5df10a7961ed37aec template"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE std::iterator_traits&lt; C2 &gt;::value_type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae7273df0dd4eafa5df10a7961ed37aec">linear_impl</a> (const C1 xbegin, const C2 yinp, const typename std::iterator_traits&lt; C1 &gt;::value_type &amp;xout, const <a class="el" href="structamr__wind_1_1interp_1_1_index.html">Index</a> &amp;idx, const int ncomp=1, const int comp=0)</td></tr>
+<tr class="memitem:ae4cff076be2b6498f1b003779319207a" id="r_ae4cff076be2b6498f1b003779319207a"><td class="memTemplParams" colspan="2">template&lt;typename C1, typename C2&gt; </td></tr>
+<tr class="memitem:ae4cff076be2b6498f1b003779319207a template"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE std::iterator_traits&lt; C2 &gt;::value_type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae4cff076be2b6498f1b003779319207a">linear</a> (const C1 xbegin, const C1 xend, const C2 yinp, const typename std::iterator_traits&lt; C1 &gt;::value_type &amp;xout, const int ncomp=1, const int comp=0)</td></tr>
+<tr class="memitem:aab8d53d96236456ccb31402c96cea85e" id="r_aab8d53d96236456ccb31402c96cea85e"><td class="memTemplParams" colspan="2">template&lt;typename C1, typename C2&gt; </td></tr>
+<tr class="memitem:aab8d53d96236456ccb31402c96cea85e template"><td class="memItemLeft" align="right" valign="top">C2::value_type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aab8d53d96236456ccb31402c96cea85e">linear</a> (const C1 &amp;xinp, const C2 &amp;yinp, const typename C1::value_type &amp;xout, const int ncomp=1, const int comp=0)</td></tr>
+<tr class="memitem:ad934b8278c2006cfb2781501564bb59a" id="r_ad934b8278c2006cfb2781501564bb59a"><td class="memTemplParams" colspan="2">template&lt;typename C1, typename C2&gt; </td></tr>
+<tr class="memitem:ad934b8278c2006cfb2781501564bb59a template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad934b8278c2006cfb2781501564bb59a">linear_monotonic</a> (const C1 &amp;xinp, const C2 &amp;yinp, const C1 &amp;xout, C2 &amp;yout, const int ncomp=1, const int comp=0)</td></tr>
+<tr class="memitem:a242bcce248fb8e89b8b89c317e2b61e5" id="r_a242bcce248fb8e89b8b89c317e2b61e5"><td class="memTemplParams" colspan="2">template&lt;typename C1, typename C2&gt; </td></tr>
+<tr class="memitem:a242bcce248fb8e89b8b89c317e2b61e5 template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a242bcce248fb8e89b8b89c317e2b61e5">linear</a> (const C1 &amp;xinp, const C2 &amp;yinp, const C1 &amp;xout, C2 &amp;yout, const int ncomp=1, const int comp=0)</td></tr>
+<tr class="memitem:a936eba82bf2b93e8bfa50f7b061e99f1" id="r_a936eba82bf2b93e8bfa50f7b061e99f1"><td class="memTemplParams" colspan="2">template&lt;typename C1, typename C2&gt; </td></tr>
+<tr class="memitem:a936eba82bf2b93e8bfa50f7b061e99f1 template"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE std::iterator_traits&lt; C2 &gt;::value_type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a936eba82bf2b93e8bfa50f7b061e99f1">linear_angle</a> (const C1 xbegin, const C1 xend, const C2 yinp, const typename std::iterator_traits&lt; C1 &gt;::value_type &amp;xout, const typename std::iterator_traits&lt; C1 &gt;::value_type &amp;upper_bound)</td></tr>
+<tr class="memitem:adcb7b1c5e75a9b51f872d9cda3e04304" id="r_adcb7b1c5e75a9b51f872d9cda3e04304"><td class="memTemplParams" colspan="2">template&lt;typename C1, typename C2&gt; </td></tr>
+<tr class="memitem:adcb7b1c5e75a9b51f872d9cda3e04304 template"><td class="memItemLeft" align="right" valign="top">C2::value_type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adcb7b1c5e75a9b51f872d9cda3e04304">linear_angle</a> (const C1 &amp;xinp, const C2 &amp;yinp, const typename C1::value_type &amp;xout, const typename C1::value_type &amp;upper_bound)</td></tr>
+<tr class="memitem:a27d75d263de38fc9da1022dd09901f3a" id="r_a27d75d263de38fc9da1022dd09901f3a"><td class="memTemplParams" colspan="2">template&lt;typename C1, typename C2&gt; </td></tr>
+<tr class="memitem:a27d75d263de38fc9da1022dd09901f3a template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a27d75d263de38fc9da1022dd09901f3a">linear_angle</a> (const C1 &amp;xinp, const C2 &amp;yinp, const C1 &amp;xout, C2 &amp;yout, const typename C1::value_type &amp;upper_bound)</td></tr>
+<tr class="memitem:af8db5f57cb7dfab82e887d11579cce00" id="r_af8db5f57cb7dfab82e887d11579cce00"><td class="memTemplParams" colspan="2">template&lt;typename C1, typename C2&gt; </td></tr>
+<tr class="memitem:af8db5f57cb7dfab82e887d11579cce00 template"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE std::iterator_traits&lt; C2 &gt;::value_type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af8db5f57cb7dfab82e887d11579cce00">bilinear_impl</a> (const C1 xbegin, const C1 ybegin, const int ny, const C2 zinp, const typename std::iterator_traits&lt; C1 &gt;::value_type &amp;xout, const typename std::iterator_traits&lt; C1 &gt;::value_type &amp;yout, const <a class="el" href="structamr__wind_1_1interp_1_1_index.html">Index</a> &amp;xidx, const <a class="el" href="structamr__wind_1_1interp_1_1_index.html">Index</a> &amp;yidx)</td></tr>
+<tr class="memitem:acec324a8e8fff4491d72eb0f34602add" id="r_acec324a8e8fff4491d72eb0f34602add"><td class="memTemplParams" colspan="2">template&lt;typename C1, typename C2&gt; </td></tr>
+<tr class="memitem:acec324a8e8fff4491d72eb0f34602add template"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE std::iterator_traits&lt; C2 &gt;::value_type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acec324a8e8fff4491d72eb0f34602add">bilinear</a> (const C1 xbegin, const C1 xend, const C1 ybegin, const C1 yend, const C2 zinp, const typename std::iterator_traits&lt; C1 &gt;::value_type &amp;xout, const typename std::iterator_traits&lt; C1 &gt;::value_type &amp;yout)</td></tr>
+<tr class="memitem:adec479ac62a206a49ecc5dd70e555d38" id="r_adec479ac62a206a49ecc5dd70e555d38"><td class="memTemplParams" colspan="2">template&lt;typename C1, typename C2&gt; </td></tr>
+<tr class="memitem:adec479ac62a206a49ecc5dd70e555d38 template"><td class="memItemLeft" align="right" valign="top">C2::value_type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adec479ac62a206a49ecc5dd70e555d38">bilinear</a> (const C1 &amp;xinp, const C1 &amp;yinp, const C2 &amp;zinp, const typename C1::value_type &amp;xout, const typename C1::value_type &amp;yout)</td></tr>
+</table>
+<a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Enumeration Type Documentation</h2>
+<a id="abd52c50f35fabb017cb708778321ede5" name="abd52c50f35fabb017cb708778321ede5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd52c50f35fabb017cb708778321ede5">&#9670;&#160;</a></span>Limits</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="#abd52c50f35fabb017cb708778321ede5">amr_wind::interp::Limits</a> : int</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel strong">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="abd52c50f35fabb017cb708778321ede5aee3e9e533a2530a35ae6092ff5ac6f16" name="abd52c50f35fabb017cb708778321ede5aee3e9e533a2530a35ae6092ff5ac6f16"></a>LOWLIM&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="abd52c50f35fabb017cb708778321ede5a26c3945e7c9cf7dc79efc95e8f3a118d" name="abd52c50f35fabb017cb708778321ede5a26c3945e7c9cf7dc79efc95e8f3a118d"></a>UPLIM&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="abd52c50f35fabb017cb708778321ede5ac9f1a6384b1c466d4612f513bd8e13ea" name="abd52c50f35fabb017cb708778321ede5ac9f1a6384b1c466d4612f513bd8e13ea"></a>VALID&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
+<a id="adec479ac62a206a49ecc5dd70e555d38" name="adec479ac62a206a49ecc5dd70e555d38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adec479ac62a206a49ecc5dd70e555d38">&#9670;&#160;</a></span>bilinear() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename C1, typename C2&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">C2::value_type amr_wind::interp::bilinear </td>
+          <td>(</td>
+          <td class="paramtype">const C1 &amp;</td>          <td class="paramname"><span class="paramname"><em>xinp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const C1 &amp;</td>          <td class="paramname"><span class="paramname"><em>yinp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const C2 &amp;</td>          <td class="paramname"><span class="paramname"><em>zinp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const typename C1::value_type &amp;</td>          <td class="paramname"><span class="paramname"><em>xout</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const typename C1::value_type &amp;</td>          <td class="paramname"><span class="paramname"><em>yout</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acec324a8e8fff4491d72eb0f34602add" name="acec324a8e8fff4491d72eb0f34602add"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acec324a8e8fff4491d72eb0f34602add">&#9670;&#160;</a></span>bilinear() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename C1, typename C2&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE std::iterator_traits&lt; C2 &gt;::value_type amr_wind::interp::bilinear </td>
+          <td>(</td>
+          <td class="paramtype">const C1</td>          <td class="paramname"><span class="paramname"><em>xbegin</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const C1</td>          <td class="paramname"><span class="paramname"><em>xend</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const C1</td>          <td class="paramname"><span class="paramname"><em>ybegin</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const C1</td>          <td class="paramname"><span class="paramname"><em>yend</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const C2</td>          <td class="paramname"><span class="paramname"><em>zinp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const typename std::iterator_traits&lt; C1 &gt;::value_type &amp;</td>          <td class="paramname"><span class="paramname"><em>xout</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const typename std::iterator_traits&lt; C1 &gt;::value_type &amp;</td>          <td class="paramname"><span class="paramname"><em>yout</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af8db5f57cb7dfab82e887d11579cce00" name="af8db5f57cb7dfab82e887d11579cce00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8db5f57cb7dfab82e887d11579cce00">&#9670;&#160;</a></span>bilinear_impl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename C1, typename C2&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE std::iterator_traits&lt; C2 &gt;::value_type amr_wind::interp::bilinear_impl </td>
+          <td>(</td>
+          <td class="paramtype">const C1</td>          <td class="paramname"><span class="paramname"><em>xbegin</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const C1</td>          <td class="paramname"><span class="paramname"><em>ybegin</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>ny</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const C2</td>          <td class="paramname"><span class="paramname"><em>zinp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const typename std::iterator_traits&lt; C1 &gt;::value_type &amp;</td>          <td class="paramname"><span class="paramname"><em>xout</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const typename std::iterator_traits&lt; C1 &gt;::value_type &amp;</td>          <td class="paramname"><span class="paramname"><em>yout</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structamr__wind_1_1interp_1_1_index.html">Index</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>xidx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structamr__wind_1_1interp_1_1_index.html">Index</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>yidx</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a62063f7f0cbbf77b3d297900dd24d282" name="a62063f7f0cbbf77b3d297900dd24d282"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62063f7f0cbbf77b3d297900dd24d282">&#9670;&#160;</a></span>bisection_search()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename It, typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <a class="el" href="structamr__wind_1_1interp_1_1_index.html">Index</a> amr_wind::interp::bisection_search </td>
+          <td>(</td>
+          <td class="paramtype">const It</td>          <td class="paramname"><span class="paramname"><em>begin</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const It</td>          <td class="paramname"><span class="paramname"><em>end</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const T &amp;</td>          <td class="paramname"><span class="paramname"><em>x</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4d24b363221ea83b60e7712e5dd29ef8" name="a4d24b363221ea83b60e7712e5dd29ef8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d24b363221ea83b60e7712e5dd29ef8">&#9670;&#160;</a></span>check_bounds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename It, typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <a class="el" href="structamr__wind_1_1interp_1_1_index.html">Index</a> amr_wind::interp::check_bounds </td>
+          <td>(</td>
+          <td class="paramtype">const It</td>          <td class="paramname"><span class="paramname"><em>begin</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const It</td>          <td class="paramname"><span class="paramname"><em>end</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const T &amp;</td>          <td class="paramname"><span class="paramname"><em>x</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1caf55521ce007f49422cb6bfe32f135" name="a1caf55521ce007f49422cb6bfe32f135"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1caf55521ce007f49422cb6bfe32f135">&#9670;&#160;</a></span>find_index()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename It, typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <a class="el" href="structamr__wind_1_1interp_1_1_index.html">Index</a> amr_wind::interp::find_index </td>
+          <td>(</td>
+          <td class="paramtype">const It</td>          <td class="paramname"><span class="paramname"><em>begin</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const It</td>          <td class="paramname"><span class="paramname"><em>end</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const T &amp;</td>          <td class="paramname"><span class="paramname"><em>x</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>hint</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a242bcce248fb8e89b8b89c317e2b61e5" name="a242bcce248fb8e89b8b89c317e2b61e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a242bcce248fb8e89b8b89c317e2b61e5">&#9670;&#160;</a></span>linear() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename C1, typename C2&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::interp::linear </td>
+          <td>(</td>
+          <td class="paramtype">const C1 &amp;</td>          <td class="paramname"><span class="paramname"><em>xinp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const C2 &amp;</td>          <td class="paramname"><span class="paramname"><em>yinp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const C1 &amp;</td>          <td class="paramname"><span class="paramname"><em>xout</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">C2 &amp;</td>          <td class="paramname"><span class="paramname"><em>yout</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>ncomp</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>comp</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aab8d53d96236456ccb31402c96cea85e" name="aab8d53d96236456ccb31402c96cea85e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab8d53d96236456ccb31402c96cea85e">&#9670;&#160;</a></span>linear() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename C1, typename C2&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">C2::value_type amr_wind::interp::linear </td>
+          <td>(</td>
+          <td class="paramtype">const C1 &amp;</td>          <td class="paramname"><span class="paramname"><em>xinp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const C2 &amp;</td>          <td class="paramname"><span class="paramname"><em>yinp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const typename C1::value_type &amp;</td>          <td class="paramname"><span class="paramname"><em>xout</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>ncomp</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>comp</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae4cff076be2b6498f1b003779319207a" name="ae4cff076be2b6498f1b003779319207a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4cff076be2b6498f1b003779319207a">&#9670;&#160;</a></span>linear() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename C1, typename C2&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE std::iterator_traits&lt; C2 &gt;::value_type amr_wind::interp::linear </td>
+          <td>(</td>
+          <td class="paramtype">const C1</td>          <td class="paramname"><span class="paramname"><em>xbegin</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const C1</td>          <td class="paramname"><span class="paramname"><em>xend</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const C2</td>          <td class="paramname"><span class="paramname"><em>yinp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const typename std::iterator_traits&lt; C1 &gt;::value_type &amp;</td>          <td class="paramname"><span class="paramname"><em>xout</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>ncomp</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>comp</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a27d75d263de38fc9da1022dd09901f3a" name="a27d75d263de38fc9da1022dd09901f3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27d75d263de38fc9da1022dd09901f3a">&#9670;&#160;</a></span>linear_angle() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename C1, typename C2&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::interp::linear_angle </td>
+          <td>(</td>
+          <td class="paramtype">const C1 &amp;</td>          <td class="paramname"><span class="paramname"><em>xinp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const C2 &amp;</td>          <td class="paramname"><span class="paramname"><em>yinp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const C1 &amp;</td>          <td class="paramname"><span class="paramname"><em>xout</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">C2 &amp;</td>          <td class="paramname"><span class="paramname"><em>yout</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const typename C1::value_type &amp;</td>          <td class="paramname"><span class="paramname"><em>upper_bound</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adcb7b1c5e75a9b51f872d9cda3e04304" name="adcb7b1c5e75a9b51f872d9cda3e04304"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adcb7b1c5e75a9b51f872d9cda3e04304">&#9670;&#160;</a></span>linear_angle() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename C1, typename C2&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">C2::value_type amr_wind::interp::linear_angle </td>
+          <td>(</td>
+          <td class="paramtype">const C1 &amp;</td>          <td class="paramname"><span class="paramname"><em>xinp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const C2 &amp;</td>          <td class="paramname"><span class="paramname"><em>yinp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const typename C1::value_type &amp;</td>          <td class="paramname"><span class="paramname"><em>xout</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const typename C1::value_type &amp;</td>          <td class="paramname"><span class="paramname"><em>upper_bound</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a936eba82bf2b93e8bfa50f7b061e99f1" name="a936eba82bf2b93e8bfa50f7b061e99f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a936eba82bf2b93e8bfa50f7b061e99f1">&#9670;&#160;</a></span>linear_angle() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename C1, typename C2&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE std::iterator_traits&lt; C2 &gt;::value_type amr_wind::interp::linear_angle </td>
+          <td>(</td>
+          <td class="paramtype">const C1</td>          <td class="paramname"><span class="paramname"><em>xbegin</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const C1</td>          <td class="paramname"><span class="paramname"><em>xend</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const C2</td>          <td class="paramname"><span class="paramname"><em>yinp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const typename std::iterator_traits&lt; C1 &gt;::value_type &amp;</td>          <td class="paramname"><span class="paramname"><em>xout</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const typename std::iterator_traits&lt; C1 &gt;::value_type &amp;</td>          <td class="paramname"><span class="paramname"><em>upper_bound</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae7273df0dd4eafa5df10a7961ed37aec" name="ae7273df0dd4eafa5df10a7961ed37aec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7273df0dd4eafa5df10a7961ed37aec">&#9670;&#160;</a></span>linear_impl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename C1, typename C2&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE std::iterator_traits&lt; C2 &gt;::value_type amr_wind::interp::linear_impl </td>
+          <td>(</td>
+          <td class="paramtype">const C1</td>          <td class="paramname"><span class="paramname"><em>xbegin</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const C2</td>          <td class="paramname"><span class="paramname"><em>yinp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const typename std::iterator_traits&lt; C1 &gt;::value_type &amp;</td>          <td class="paramname"><span class="paramname"><em>xout</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structamr__wind_1_1interp_1_1_index.html">Index</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>idx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>ncomp</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>comp</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad934b8278c2006cfb2781501564bb59a" name="ad934b8278c2006cfb2781501564bb59a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad934b8278c2006cfb2781501564bb59a">&#9670;&#160;</a></span>linear_monotonic()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename C1, typename C2&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::interp::linear_monotonic </td>
+          <td>(</td>
+          <td class="paramtype">const C1 &amp;</td>          <td class="paramname"><span class="paramname"><em>xinp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const C2 &amp;</td>          <td class="paramname"><span class="paramname"><em>yinp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const C1 &amp;</td>          <td class="paramname"><span class="paramname"><em>xout</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">C2 &amp;</td>          <td class="paramname"><span class="paramname"><em>yout</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>ncomp</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>comp</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae2c8b7de60c61f86e4c5c5aab80f8221" name="ae2c8b7de60c61f86e4c5c5aab80f8221"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2c8b7de60c61f86e4c5c5aab80f8221">&#9670;&#160;</a></span>nearest_search()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename It, typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <a class="el" href="structamr__wind_1_1interp_1_1_index.html">Index</a> amr_wind::interp::nearest_search </td>
+          <td>(</td>
+          <td class="paramtype">const It</td>          <td class="paramname"><span class="paramname"><em>begin</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const It</td>          <td class="paramname"><span class="paramname"><em>end</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const T &amp;</td>          <td class="paramname"><span class="paramname"><em>x</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,14 @@
+.. meta::c40b9503dd99173597e190f6ca3c6ecb1016f78948dc3f316dab53c917ccfea47fa2a8ded9c7423bd59ebc1252ffd27665785325165b9dd06355273bcdc41724
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::ops::ComputeForceOp&lt; Joukowsky, ActSrcDisk &gt; Struct Reference
+
+ComputeForceOp&lt; Joukowsky, ActSrcDisk &gt; Struct Reference
+==============================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1ops_1_1_compute_force_op_3_01_joukowsky_00_01_act_src_disk_01_4.html

@@ -1,0 +1,393 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/boundary_conditions/BCInterface.H Source File &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/boundary_conditions/BCInterface.H Source File</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/_b_c_interface_8_h_source.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="home-runner-work-amr-wind-amr-wind-amr-wind-boundary-conditions-bcinterface-h-source-file">
+<h1>/home/runner/work/amr-wind/amr-wind/amr-wind/boundary_conditions/BCInterface.H Source File<a class="headerlink" href="#home-runner-work-amr-wind-amr-wind-amr-wind-boundary-conditions-bcinterface-h-source-file" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/boundary_conditions/BCInterface.H Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="dir_d85575251dd712327fe3cf057fa568b4.html">amr-wind</a></li><li class="navelem"><a href="dir_212148f97b8bb53ebaebb3bf8a8b5de4.html">amr-wind</a></li><li class="navelem"><a href="dir_e91b3eef7c0d8abdbe8ee43dc3688a49.html">boundary_conditions</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="headertitle"><div class="title">BCInterface.H</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="_b_c_interface_8_h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef BCINTERFACE_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define BCINTERFACE_H</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="_field_8_h.html">amr-wind/core/Field.H</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="incflo__enums_8_h.html">amr-wind/incflo_enums.H</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;AMReX_BC_TYPES.H&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;AMReX_REAL.H&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">using namespace </span>amrex::literals;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceamr__wind.html">amr_wind</a> {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>amrex::Vector&lt;std::string&gt; bcnames = {<span class="stringliteral">&quot;xlo&quot;</span>, <span class="stringliteral">&quot;ylo&quot;</span>, <span class="stringliteral">&quot;zlo&quot;</span>, <span class="stringliteral">&quot;xhi&quot;</span>, <span class="stringliteral">&quot;yhi&quot;</span>, <span class="stringliteral">&quot;zhi&quot;</span>};</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>}</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span></div>
+<div class="foldopen" id="foldopen00042" data-start="{" data-end="};">
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_b_c_iface.html">   42</a></span><span class="keyword">class </span><a class="code hl_function" href="classamr__wind_1_1_b_c_iface.html#a9c4dcba9672302d7bc123f98f6919cf6">BCIface</a></div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>{</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_b_c_iface.html#a789bd60ac0b43b7719b1f4996753391f">   45</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classamr__wind_1_1_b_c_iface.html#a789bd60ac0b43b7719b1f4996753391f">IncfloBC</a> = amrex::GpuArray&lt;BC, AMREX_SPACEDIM * 2&gt;;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <a class="code hl_function" href="classamr__wind_1_1_b_c_iface.html#a9c4dcba9672302d7bc123f98f6919cf6">BCIface</a>(<a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; field);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_b_c_iface.html#a445d3e021836636ae7dbe1e4aeed2728">   49</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classamr__wind_1_1_b_c_iface.html#a445d3e021836636ae7dbe1e4aeed2728">~BCIface</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_b_c_iface.html#a6ea3f683352ed57783f83dc039362e57">operator()</a>(amrex::Real value = 0.0_rt);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    amrex::Array&lt;const std::string, 3&gt; <a class="code hl_function" href="classamr__wind_1_1_b_c_iface.html#abe5ae1006e7bee9602b12516133f256e">get_dirichlet_udfs</a>();</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="keyword">protected</span>:</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_b_c_iface.html#a0d0cf5396070e29283fda493f8fa8ad9">   59</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_b_c_iface.html#a0d0cf5396070e29283fda493f8fa8ad9">set_bcrec</a>() = 0;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span></div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_b_c_iface.html#aa7c99c64af6d30fcc244bdfbe295be82">   62</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_b_c_iface.html#aa7c99c64af6d30fcc244bdfbe295be82">read_values</a>() = 0;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span></div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_b_c_iface.html#acbfee584ae1766223410c357cda38b95">read_bctype</a>();</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span></div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_b_c_iface.html#a1869820135e1b59b105d3ccd560afadb">set_bcfuncs</a>();</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span></div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_b_c_iface.html#a09bd388ee498038f924dda5c41c3cd2c">set_default_value</a>(amrex::Real value);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span></div>
+<div class="foldopen" id="foldopen00074" data-start="{" data-end="}">
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_b_c_iface.html#a9430d923baac05823eb88ac8300446bd">   74</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_b_c_iface.html#a9430d923baac05823eb88ac8300446bd">set_bcrec_lo</a>(<span class="keywordtype">int</span> dir, amrex::BCType::mathematicalBndryTypes bcrec)</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    {</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="keyword">auto</span>&amp; fbcrec = <a class="code hl_variable" href="classamr__wind_1_1_b_c_iface.html#a716ebd5ea7895e5a6a8f506f91fb3d1b">m_field</a>.bcrec();</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="classamr__wind_1_1_b_c_iface.html#a716ebd5ea7895e5a6a8f506f91fb3d1b">m_field</a>.num_comp(); ++i) {</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>            fbcrec[i].setLo(dir, bcrec);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        }</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    }</div>
+</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span></div>
+<div class="foldopen" id="foldopen00083" data-start="{" data-end="}">
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_b_c_iface.html#aefc34d12de8d4339189a5367c2df9829">   83</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_b_c_iface.html#aefc34d12de8d4339189a5367c2df9829">set_bcrec_hi</a>(<span class="keywordtype">int</span> dir, amrex::BCType::mathematicalBndryTypes bcrec)</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    {</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        <span class="keyword">auto</span>&amp; fbcrec = <a class="code hl_variable" href="classamr__wind_1_1_b_c_iface.html#a716ebd5ea7895e5a6a8f506f91fb3d1b">m_field</a>.bcrec();</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="classamr__wind_1_1_b_c_iface.html#a716ebd5ea7895e5a6a8f506f91fb3d1b">m_field</a>.num_comp(); ++i) {</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            fbcrec[i].setHi(dir, bcrec);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        }</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    }</div>
+</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span></div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_b_c_iface.html#a716ebd5ea7895e5a6a8f506f91fb3d1b">   92</a></span>    <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1_b_c_iface.html#a716ebd5ea7895e5a6a8f506f91fb3d1b">m_field</a>;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>};</div>
+</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span></div>
+<div class="foldopen" id="foldopen00098" data-start="{" data-end="};">
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_b_c_velocity.html">   98</a></span><span class="keyword">class </span><a class="code hl_function" href="classamr__wind_1_1_b_c_velocity.html#a33929dacaaa75146795d37c291ba9223">BCVelocity</a> : <span class="keyword">public</span> <a class="code hl_function" href="classamr__wind_1_1_b_c_iface.html#a9c4dcba9672302d7bc123f98f6919cf6">BCIface</a></div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>{</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_b_c_velocity.html#a33929dacaaa75146795d37c291ba9223">  101</a></span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classamr__wind_1_1_b_c_velocity.html#a33929dacaaa75146795d37c291ba9223">BCVelocity</a>(<a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; field) : <a class="code hl_function" href="classamr__wind_1_1_b_c_iface.html#a9c4dcba9672302d7bc123f98f6919cf6">BCIface</a>(field) {}</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span><span class="keyword">protected</span>:</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_b_c_velocity.html#a6e64aa2e18585393bf526c428af4c4b1">set_bcrec</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_b_c_velocity.html#af1c1a7057d0a884af21c774d2ddb6965">read_values</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>};</div>
+</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span></div>
+<div class="foldopen" id="foldopen00111" data-start="{" data-end="};">
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_b_c_scalar.html">  111</a></span><span class="keyword">class </span><a class="code hl_function" href="classamr__wind_1_1_b_c_scalar.html#a86e1a8745d0886eb676e235b7750eab2">BCScalar</a> : <span class="keyword">public</span> <a class="code hl_function" href="classamr__wind_1_1_b_c_iface.html#a9c4dcba9672302d7bc123f98f6919cf6">BCIface</a></div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>{</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_b_c_scalar.html#a86e1a8745d0886eb676e235b7750eab2">  114</a></span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classamr__wind_1_1_b_c_scalar.html#a86e1a8745d0886eb676e235b7750eab2">BCScalar</a>(<a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; field) : <a class="code hl_function" href="classamr__wind_1_1_b_c_iface.html#a9c4dcba9672302d7bc123f98f6919cf6">BCIface</a>(field) {}</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span><span class="keyword">protected</span>:</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_b_c_scalar.html#ac6e64687edf06ad9b9754f5a97f75670">set_bcrec</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_b_c_scalar.html#a8d224540467ba7bf883cef5284f869bd">read_values</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>};</div>
+</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span></div>
+<div class="foldopen" id="foldopen00126" data-start="{" data-end="};">
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_b_c_pressure.html">  126</a></span><span class="keyword">class </span><a class="code hl_function" href="classamr__wind_1_1_b_c_pressure.html#a23ede706b51b2be975c6217734a0f97f">BCPressure</a> : <span class="keyword">public</span> <a class="code hl_function" href="classamr__wind_1_1_b_c_scalar.html#a86e1a8745d0886eb676e235b7750eab2">BCScalar</a></div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>{</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_b_c_pressure.html#a23ede706b51b2be975c6217734a0f97f">  129</a></span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classamr__wind_1_1_b_c_pressure.html#a23ede706b51b2be975c6217734a0f97f">BCPressure</a>(<a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; field) : <a class="code hl_function" href="classamr__wind_1_1_b_c_scalar.html#a86e1a8745d0886eb676e235b7750eab2">BCScalar</a>(field) {}</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span> </div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span><span class="keyword">protected</span>:</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_b_c_pressure.html#a96d57b2feab45a788772df73718e8a3b">read_values</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>};</div>
+</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span></div>
+<div class="foldopen" id="foldopen00141" data-start="{" data-end="};">
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_b_c_src_term.html">  141</a></span><span class="keyword">class </span><a class="code hl_function" href="classamr__wind_1_1_b_c_src_term.html#acaae2b4fe53458a3bda6e0889de075bf">BCSrcTerm</a> : <span class="keyword">public</span> <a class="code hl_function" href="classamr__wind_1_1_b_c_iface.html#a9c4dcba9672302d7bc123f98f6919cf6">BCIface</a></div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>{</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_b_c_src_term.html#acaae2b4fe53458a3bda6e0889de075bf">  144</a></span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classamr__wind_1_1_b_c_src_term.html#acaae2b4fe53458a3bda6e0889de075bf">BCSrcTerm</a>(<a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; field) : <a class="code hl_function" href="classamr__wind_1_1_b_c_iface.html#a9c4dcba9672302d7bc123f98f6919cf6">BCIface</a>(field) {}</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span> </div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span><span class="keyword">protected</span>:</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_b_c_src_term.html#a0305962267c6991eec362648dd44a6fe">set_bcrec</a>() <span class="keyword">override</span>;</div>
+<div class="foldopen" id="foldopen00148" data-start="{" data-end="}">
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_b_c_src_term.html#a2b41f1f0758e946a2877025e4a064e09">  148</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_b_c_src_term.html#a2b41f1f0758e946a2877025e4a064e09">read_values</a>()<span class="keyword"> override</span></div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>        <span class="comment">// No values specified for source terms. empty method to satisfy</span></div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>        <span class="comment">// inheritance</span></div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    }</div>
+</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>};</div>
+</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span></div>
+<div class="foldopen" id="foldopen00162" data-start="{" data-end="};">
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_b_c_fill_patch_extrap.html">  162</a></span><span class="keyword">class </span><a class="code hl_function" href="classamr__wind_1_1_b_c_fill_patch_extrap.html#ab655871c5ad513f4acec18027d8fdfd0">BCFillPatchExtrap</a> : <span class="keyword">public</span> <a class="code hl_function" href="classamr__wind_1_1_b_c_iface.html#a9c4dcba9672302d7bc123f98f6919cf6">BCIface</a></div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>{</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span><span class="keyword">public</span>:</div>
+<div class="foldopen" id="foldopen00165" data-start="{" data-end="}">
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_b_c_fill_patch_extrap.html#ab655871c5ad513f4acec18027d8fdfd0">  165</a></span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classamr__wind_1_1_b_c_fill_patch_extrap.html#ab655871c5ad513f4acec18027d8fdfd0">BCFillPatchExtrap</a>(</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>        <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; field,</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>        amrex::BCType::mathematicalBndryTypes bctype = amrex::BCType::hoextrap)</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>        : <a class="code hl_function" href="classamr__wind_1_1_b_c_iface.html#a9c4dcba9672302d7bc123f98f6919cf6">BCIface</a>(field), <a class="code hl_variable" href="classamr__wind_1_1_b_c_fill_patch_extrap.html#aedc2f4f8baefb1ca0dd2a8b7c58a7f3a">m_extrap_type</a>(bctype)</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    {}</div>
+</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span> </div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span><span class="keyword">protected</span>:</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_b_c_fill_patch_extrap.html#abd2fd9f255647d0fc60646ff9e86b786">set_bcrec</a>() <span class="keyword">override</span>;</div>
+<div class="foldopen" id="foldopen00173" data-start="{" data-end="}">
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_b_c_fill_patch_extrap.html#a948290b5e63d974b9fe3b44061251ee9">  173</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_b_c_fill_patch_extrap.html#a948290b5e63d974b9fe3b44061251ee9">read_values</a>()<span class="keyword"> override</span></div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>        <span class="comment">// No values specified for source terms. empty method to satisfy</span></div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        <span class="comment">// inheritance</span></div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    }</div>
+</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span> </div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_b_c_fill_patch_extrap.html#aedc2f4f8baefb1ca0dd2a8b7c58a7f3a">  179</a></span>    amrex::BCType::mathematicalBndryTypes <a class="code hl_variable" href="classamr__wind_1_1_b_c_fill_patch_extrap.html#aedc2f4f8baefb1ca0dd2a8b7c58a7f3a">m_extrap_type</a>;</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>};</div>
+</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span> </div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>} <span class="comment">// namespace amr_wind</span></div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span> </div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span><span class="preprocessor">#endif </span><span class="comment">/* BCINTERFACE_H */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="a_field_8_h_html"><div class="ttname"><a href="_field_8_h.html">Field.H</a></div></div>
+<div class="ttc" id="aclassamr__wind_1_1_b_c_fill_patch_extrap_html_a948290b5e63d974b9fe3b44061251ee9"><div class="ttname"><a href="classamr__wind_1_1_b_c_fill_patch_extrap.html#a948290b5e63d974b9fe3b44061251ee9">amr_wind::BCFillPatchExtrap::read_values</a></div><div class="ttdeci">void read_values() override</div><div class="ttdoc">Read input data for specific fields based on BC types.</div><div class="ttdef"><b>Definition</b> BCInterface.H:173</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_b_c_fill_patch_extrap_html_ab655871c5ad513f4acec18027d8fdfd0"><div class="ttname"><a href="classamr__wind_1_1_b_c_fill_patch_extrap.html#ab655871c5ad513f4acec18027d8fdfd0">amr_wind::BCFillPatchExtrap::BCFillPatchExtrap</a></div><div class="ttdeci">BCFillPatchExtrap(Field &amp;field, amrex::BCType::mathematicalBndryTypes bctype=amrex::BCType::hoextrap)</div><div class="ttdef"><b>Definition</b> BCInterface.H:165</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_b_c_fill_patch_extrap_html_abd2fd9f255647d0fc60646ff9e86b786"><div class="ttname"><a href="classamr__wind_1_1_b_c_fill_patch_extrap.html#abd2fd9f255647d0fc60646ff9e86b786">amr_wind::BCFillPatchExtrap::set_bcrec</a></div><div class="ttdeci">void set_bcrec() override</div><div class="ttdoc">Setup AMReX mathematical BC types.</div><div class="ttdef"><b>Definition</b> BCInterface.cpp:422</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_b_c_fill_patch_extrap_html_aedc2f4f8baefb1ca0dd2a8b7c58a7f3a"><div class="ttname"><a href="classamr__wind_1_1_b_c_fill_patch_extrap.html#aedc2f4f8baefb1ca0dd2a8b7c58a7f3a">amr_wind::BCFillPatchExtrap::m_extrap_type</a></div><div class="ttdeci">amrex::BCType::mathematicalBndryTypes m_extrap_type</div><div class="ttdef"><b>Definition</b> BCInterface.H:179</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_b_c_iface_html_a09bd388ee498038f924dda5c41c3cd2c"><div class="ttname"><a href="classamr__wind_1_1_b_c_iface.html#a09bd388ee498038f924dda5c41c3cd2c">amr_wind::BCIface::set_default_value</a></div><div class="ttdeci">void set_default_value(amrex::Real value)</div><div class="ttdoc">Set default BC values for the field.</div><div class="ttdef"><b>Definition</b> BCInterface.cpp:26</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_b_c_iface_html_a0d0cf5396070e29283fda493f8fa8ad9"><div class="ttname"><a href="classamr__wind_1_1_b_c_iface.html#a0d0cf5396070e29283fda493f8fa8ad9">amr_wind::BCIface::set_bcrec</a></div><div class="ttdeci">virtual void set_bcrec()=0</div><div class="ttdoc">Setup AMReX mathematical BC types.</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_b_c_iface_html_a1869820135e1b59b105d3ccd560afadb"><div class="ttname"><a href="classamr__wind_1_1_b_c_iface.html#a1869820135e1b59b105d3ccd560afadb">amr_wind::BCIface::set_bcfuncs</a></div><div class="ttdeci">virtual void set_bcfuncs()</div><div class="ttdoc">BC functions for Neumann type boundaries.</div><div class="ttdef"><b>Definition</b> BCInterface.cpp:98</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_b_c_iface_html_a445d3e021836636ae7dbe1e4aeed2728"><div class="ttname"><a href="classamr__wind_1_1_b_c_iface.html#a445d3e021836636ae7dbe1e4aeed2728">amr_wind::BCIface::~BCIface</a></div><div class="ttdeci">virtual ~BCIface()=default</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_b_c_iface_html_a6ea3f683352ed57783f83dc039362e57"><div class="ttname"><a href="classamr__wind_1_1_b_c_iface.html#a6ea3f683352ed57783f83dc039362e57">amr_wind::BCIface::operator()</a></div><div class="ttdeci">virtual void operator()(amrex::Real value=0.0_rt)</div><div class="ttdoc">Operator that performs init actions and syncs the BC data to device.</div><div class="ttdef"><b>Definition</b> BCInterface.cpp:14</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_b_c_iface_html_a716ebd5ea7895e5a6a8f506f91fb3d1b"><div class="ttname"><a href="classamr__wind_1_1_b_c_iface.html#a716ebd5ea7895e5a6a8f506f91fb3d1b">amr_wind::BCIface::m_field</a></div><div class="ttdeci">Field &amp; m_field</div><div class="ttdoc">Field instance where BC is being set.</div><div class="ttdef"><b>Definition</b> BCInterface.H:92</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_b_c_iface_html_a789bd60ac0b43b7719b1f4996753391f"><div class="ttname"><a href="classamr__wind_1_1_b_c_iface.html#a789bd60ac0b43b7719b1f4996753391f">amr_wind::BCIface::IncfloBC</a></div><div class="ttdeci">amrex::GpuArray&lt; BC, AMREX_SPACEDIM *2 &gt; IncfloBC</div><div class="ttdef"><b>Definition</b> BCInterface.H:45</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_b_c_iface_html_a9430d923baac05823eb88ac8300446bd"><div class="ttname"><a href="classamr__wind_1_1_b_c_iface.html#a9430d923baac05823eb88ac8300446bd">amr_wind::BCIface::set_bcrec_lo</a></div><div class="ttdeci">void set_bcrec_lo(int dir, amrex::BCType::mathematicalBndryTypes bcrec)</div><div class="ttdoc">Set AMReX mathematical boundary types for the lower boundaries.</div><div class="ttdef"><b>Definition</b> BCInterface.H:74</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_b_c_iface_html_a9c4dcba9672302d7bc123f98f6919cf6"><div class="ttname"><a href="classamr__wind_1_1_b_c_iface.html#a9c4dcba9672302d7bc123f98f6919cf6">amr_wind::BCIface::BCIface</a></div><div class="ttdeci">BCIface(Field &amp;field)</div><div class="ttdef"><b>Definition</b> BCInterface.cpp:12</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_b_c_iface_html_aa7c99c64af6d30fcc244bdfbe295be82"><div class="ttname"><a href="classamr__wind_1_1_b_c_iface.html#aa7c99c64af6d30fcc244bdfbe295be82">amr_wind::BCIface::read_values</a></div><div class="ttdeci">virtual void read_values()=0</div><div class="ttdoc">Read input data for specific fields based on BC types.</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_b_c_iface_html_abe5ae1006e7bee9602b12516133f256e"><div class="ttname"><a href="classamr__wind_1_1_b_c_iface.html#abe5ae1006e7bee9602b12516133f256e">amr_wind::BCIface::get_dirichlet_udfs</a></div><div class="ttdeci">amrex::Array&lt; const std::string, 3 &gt; get_dirichlet_udfs()</div><div class="ttdoc">User-defined functions for Dirichlet-type boundaries.</div><div class="ttdef"><b>Definition</b> BCInterface.cpp:118</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_b_c_iface_html_acbfee584ae1766223410c357cda38b95"><div class="ttname"><a href="classamr__wind_1_1_b_c_iface.html#acbfee584ae1766223410c357cda38b95">amr_wind::BCIface::read_bctype</a></div><div class="ttdeci">virtual void read_bctype()</div><div class="ttdoc">Parse custom BCs specified for this field.</div><div class="ttdef"><b>Definition</b> BCInterface.cpp:37</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_b_c_iface_html_aefc34d12de8d4339189a5367c2df9829"><div class="ttname"><a href="classamr__wind_1_1_b_c_iface.html#aefc34d12de8d4339189a5367c2df9829">amr_wind::BCIface::set_bcrec_hi</a></div><div class="ttdeci">void set_bcrec_hi(int dir, amrex::BCType::mathematicalBndryTypes bcrec)</div><div class="ttdoc">Set AMReX mathematical boundary types for the upper boundaries.</div><div class="ttdef"><b>Definition</b> BCInterface.H:83</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_b_c_pressure_html_a23ede706b51b2be975c6217734a0f97f"><div class="ttname"><a href="classamr__wind_1_1_b_c_pressure.html#a23ede706b51b2be975c6217734a0f97f">amr_wind::BCPressure::BCPressure</a></div><div class="ttdeci">BCPressure(Field &amp;field)</div><div class="ttdef"><b>Definition</b> BCInterface.H:129</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_b_c_pressure_html_a96d57b2feab45a788772df73718e8a3b"><div class="ttname"><a href="classamr__wind_1_1_b_c_pressure.html#a96d57b2feab45a788772df73718e8a3b">amr_wind::BCPressure::read_values</a></div><div class="ttdeci">void read_values() override</div><div class="ttdoc">Read input data for specific fields based on BC types.</div><div class="ttdef"><b>Definition</b> BCInterface.cpp:379</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_b_c_scalar_html_a86e1a8745d0886eb676e235b7750eab2"><div class="ttname"><a href="classamr__wind_1_1_b_c_scalar.html#a86e1a8745d0886eb676e235b7750eab2">amr_wind::BCScalar::BCScalar</a></div><div class="ttdeci">BCScalar(Field &amp;field)</div><div class="ttdef"><b>Definition</b> BCInterface.H:114</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_b_c_scalar_html_a8d224540467ba7bf883cef5284f869bd"><div class="ttname"><a href="classamr__wind_1_1_b_c_scalar.html#a8d224540467ba7bf883cef5284f869bd">amr_wind::BCScalar::read_values</a></div><div class="ttdeci">void read_values() override</div><div class="ttdoc">Read input data for specific fields based on BC types.</div><div class="ttdef"><b>Definition</b> BCInterface.cpp:353</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_b_c_scalar_html_ac6e64687edf06ad9b9754f5a97f75670"><div class="ttname"><a href="classamr__wind_1_1_b_c_scalar.html#ac6e64687edf06ad9b9754f5a97f75670">amr_wind::BCScalar::set_bcrec</a></div><div class="ttdeci">void set_bcrec() override</div><div class="ttdoc">Setup AMReX mathematical BC types.</div><div class="ttdef"><b>Definition</b> BCInterface.cpp:290</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_b_c_src_term_html_a0305962267c6991eec362648dd44a6fe"><div class="ttname"><a href="classamr__wind_1_1_b_c_src_term.html#a0305962267c6991eec362648dd44a6fe">amr_wind::BCSrcTerm::set_bcrec</a></div><div class="ttdeci">void set_bcrec() override</div><div class="ttdoc">Setup AMReX mathematical BC types.</div><div class="ttdef"><b>Definition</b> BCInterface.cpp:397</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_b_c_src_term_html_a2b41f1f0758e946a2877025e4a064e09"><div class="ttname"><a href="classamr__wind_1_1_b_c_src_term.html#a2b41f1f0758e946a2877025e4a064e09">amr_wind::BCSrcTerm::read_values</a></div><div class="ttdeci">void read_values() override</div><div class="ttdoc">Read input data for specific fields based on BC types.</div><div class="ttdef"><b>Definition</b> BCInterface.H:148</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_b_c_src_term_html_acaae2b4fe53458a3bda6e0889de075bf"><div class="ttname"><a href="classamr__wind_1_1_b_c_src_term.html#acaae2b4fe53458a3bda6e0889de075bf">amr_wind::BCSrcTerm::BCSrcTerm</a></div><div class="ttdeci">BCSrcTerm(Field &amp;field)</div><div class="ttdef"><b>Definition</b> BCInterface.H:144</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_b_c_velocity_html_a33929dacaaa75146795d37c291ba9223"><div class="ttname"><a href="classamr__wind_1_1_b_c_velocity.html#a33929dacaaa75146795d37c291ba9223">amr_wind::BCVelocity::BCVelocity</a></div><div class="ttdeci">BCVelocity(Field &amp;field)</div><div class="ttdef"><b>Definition</b> BCInterface.H:101</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_b_c_velocity_html_a6e64aa2e18585393bf526c428af4c4b1"><div class="ttname"><a href="classamr__wind_1_1_b_c_velocity.html#a6e64aa2e18585393bf526c428af4c4b1">amr_wind::BCVelocity::set_bcrec</a></div><div class="ttdeci">void set_bcrec() override</div><div class="ttdoc">Setup AMReX mathematical BC types.</div><div class="ttdef"><b>Definition</b> BCInterface.cpp:188</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_b_c_velocity_html_af1c1a7057d0a884af21c774d2ddb6965"><div class="ttname"><a href="classamr__wind_1_1_b_c_velocity.html#af1c1a7057d0a884af21c774d2ddb6965">amr_wind::BCVelocity::read_values</a></div><div class="ttdeci">void read_values() override</div><div class="ttdoc">Read input data for specific fields based on BC types.</div><div class="ttdef"><b>Definition</b> BCInterface.cpp:270</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_html"><div class="ttname"><a href="classamr__wind_1_1_field.html">amr_wind::Field</a></div><div class="ttdef"><b>Definition</b> Field.H:112</div></div>
+<div class="ttc" id="aincflo__enums_8_h_html"><div class="ttname"><a href="incflo__enums_8_h.html">incflo_enums.H</a></div></div>
+<div class="ttc" id="anamespaceamr__wind_html"><div class="ttname"><a href="namespaceamr__wind.html">amr_wind</a></div><div class="ttdoc">This test case is intended as an evaluation of the momentum advection scheme.</div><div class="ttdef"><b>Definition</b> BCInterface.cpp:10</div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

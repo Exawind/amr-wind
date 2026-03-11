@@ -1,0 +1,14 @@
+.. meta::837ed200e908acc8248004ee177c5b0e4c38092bc91a10f7a5618d877f04579b513a92e67e230bd9258f52fa2d98e61f6f443363b06349d437953ddeb4dcb10f
+
+:orphan:
+
+.. title:: AMR-Wind API: ext_turb Namespace Reference
+
+ext\_turb Namespace Reference
+=============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: namespaceext__turb.html

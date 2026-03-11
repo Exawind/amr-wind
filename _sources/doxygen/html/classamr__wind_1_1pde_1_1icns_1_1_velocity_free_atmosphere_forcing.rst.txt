@@ -1,0 +1,14 @@
+.. meta::49499e3a8600bff4371cd0ef7e54cbf7beb97c19f243aee1489da97edf3f9a71c1b8700d1385adf93c25330d078564e26f5d0b8cebeeefbc19380726dac13eca
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::icns::VelocityFreeAtmosphereForcing Class Reference
+
+VelocityFreeAtmosphereForcing Class Reference
+=============================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1pde_1_1icns_1_1_velocity_free_atmosphere_forcing.html

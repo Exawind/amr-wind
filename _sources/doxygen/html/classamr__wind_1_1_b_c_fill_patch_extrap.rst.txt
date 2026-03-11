@@ -1,0 +1,14 @@
+.. meta::4a8d50d5acffce4e04677f318f6dc9bd323dfa868a939345cf7d65413c5965743296f74b0a986371850bed402dffe11fded8a452764f8c94f0f8f7e48f496a7d
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::BCFillPatchExtrap Class Reference
+
+BCFillPatchExtrap Class Reference
+=================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_b_c_fill_patch_extrap.html

@@ -1,0 +1,14 @@
+.. meta::6e1c18b477b55f7e20b735113c18078cd0acc7e918b6a027dde40136569e3c546b8a2cca7132fdbd6cbd2da173d5769c40c3aabcd7451d36afe0997d03c4e5d4
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::actuator::UniformCtData Struct Reference
+
+UniformCtData Struct Reference
+==============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1actuator_1_1_uniform_ct_data.html

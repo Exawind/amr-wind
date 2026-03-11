@@ -1,0 +1,14 @@
+.. meta::af4847688c95d9cc167ea912c17a6a937420ffead6206f426d9c95739f5f81a41b0490dea29e22fbbe4edbbaf5ca2eb3f7f52a097eb68363dc31f97778727144
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ib::ops::ReadInputsOp&lt; GeomTrait, typename &gt; Struct Template Reference
+
+ReadInputsOp&lt; GeomTrait, typename &gt; Struct Template Reference
+===================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1ib_1_1ops_1_1_read_inputs_op.html

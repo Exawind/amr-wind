@@ -1,0 +1,553 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/ABLBoundaryPlane.H Source File &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/ABLBoundaryPlane.H Source File</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/_a_b_l_boundary_plane_8_h_source.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="home-runner-work-amr-wind-amr-wind-amr-wind-wind-energy-ablboundaryplane-h-source-file">
+<h1>/home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/ABLBoundaryPlane.H Source File<a class="headerlink" href="#home-runner-work-amr-wind-amr-wind-amr-wind-wind-energy-ablboundaryplane-h-source-file" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/ABLBoundaryPlane.H Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="dir_d85575251dd712327fe3cf057fa568b4.html">amr-wind</a></li><li class="navelem"><a href="dir_212148f97b8bb53ebaebb3bf8a8b5de4.html">amr-wind</a></li><li class="navelem"><a href="dir_b33158d99c61436f71711cd504567082.html">wind_energy</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="headertitle"><div class="title">ABLBoundaryPlane.H</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="_a_b_l_boundary_plane_8_h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef ABLBOUNDARYPLANE_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define ABLBOUNDARYPLANE_H</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="_field_8_h.html">amr-wind/core/Field.H</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="_c_f_d_sim_8_h.html">amr-wind/CFDSim.H</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="nc__interface_8_h.html">amr-wind/utilities/ncutils/nc_interface.H</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="io__utils_8_h.html">amr-wind/utilities/io_utils.H</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="_a_b_l_read_e_r_f_function_8_h.html">amr-wind/wind_energy/ABLReadERFFunction.H</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;AMReX_Gpu.H&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;AMReX_BndryRegister.H&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;AMReX_REAL.H&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">using namespace </span>amrex::literals;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">class </span>MultiBlockContainer;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceamr__wind.html">amr_wind</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="namespaceamr__wind.html#a136f281868b6f61a99eb7b377c2eeea6aa43c1b0aa53a0c908810c06ab1ff3967">   18</a></span><span class="keyword">enum struct</span> <a class="code hl_enumeration" href="namespaceamr__wind.html#a136f281868b6f61a99eb7b377c2eeea6">io_mode</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceamr__wind.html#a136f281868b6f61a99eb7b377c2eeea6a78e6221f6393d1356681db398f14ce6d">output</a>, <a class="code hl_enumvalue" href="namespaceamr__wind.html#a136f281868b6f61a99eb7b377c2eeea6aa43c1b0aa53a0c908810c06ab1ff3967">input</a>, <a class="code hl_enumvalue" href="namespaceamr__wind.html#a136f281868b6f61a99eb7b377c2eeea6a5e543256c480ac577d30f76f9120eb74">undefined</a> };</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="foldopen" id="foldopen00020" data-start="{" data-end="};">
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_buffer_data.html">   20</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structamr__wind_1_1_buffer_data.html">BufferData</a></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>{</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_buffer_data.html#a21b998cd43f59aaf149b766ad3f0565c">   22</a></span>    amrex::Gpu::ManagedVector&lt;amrex::Real&gt; <a class="code hl_variable" href="structamr__wind_1_1_buffer_data.html#a21b998cd43f59aaf149b766ad3f0565c">data</a>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_buffer_data.html#a63f7779565e8bfc1c0246ddf809454dc">   23</a></span>    amrex::Vector&lt;size_t&gt; <a class="code hl_variable" href="structamr__wind_1_1_buffer_data.html#a63f7779565e8bfc1c0246ddf809454dc">start</a>{0, 0, 0, 0};</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_buffer_data.html#adfe6300e7d400b6d65483422b942b8ad">   24</a></span>    amrex::Vector&lt;size_t&gt; <a class="code hl_variable" href="structamr__wind_1_1_buffer_data.html#adfe6300e7d400b6d65483422b942b8ad">count</a>{0, 0, 0, 0};</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>};</div>
+</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span></div>
+<div class="foldopen" id="foldopen00033" data-start="{" data-end="};">
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_inlet_data.html">   33</a></span><span class="keyword">class </span><a class="code hl_function" href="classamr__wind_1_1_inlet_data.html#a57ec63e3ee56f196e38fc2e0afb1f19f">InletData</a></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>{</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_inlet_data.html#ab6245c2d02476b7c1980935a7a05de3c">   35</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classamr__wind_1_1_inlet_data.html#ab6245c2d02476b7c1980935a7a05de3c">PlaneVector</a> = amrex::Vector&lt;amrex::FArrayBox&gt;;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_inlet_data.html#a57ec63e3ee56f196e38fc2e0afb1f19f">   38</a></span>    <a class="code hl_function" href="classamr__wind_1_1_inlet_data.html#a57ec63e3ee56f196e38fc2e0afb1f19f">InletData</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_inlet_data.html#a4b4e6eb43325e5f14fa056637e98589e">resize</a>(<span class="keywordtype">int</span> <span class="comment">/*size*/</span>);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_inlet_data.html#ae0088a2d3ec4ec4a43c041532ef10f76">define_plane</a>(amrex::Orientation <span class="comment">/*ori*/</span>);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_inlet_data.html#a51ebcd0e2230df38d68cbf55e67d303d">define_level_data</a>(</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        amrex::Orientation <span class="comment">/*ori*/</span>, <span class="keyword">const</span> amrex::Box&amp; <span class="comment">/*bx*/</span>, <span class="keywordtype">size_t</span> <span class="comment">/*nc*/</span>);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="preprocessor">#ifdef AMR_WIND_USE_NETCDF</span></div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_inlet_data.html#a0cab51080178567404ed3bc5bc193eb6">read_data</a>(</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <a class="code hl_class" href="classncutils_1_1_n_c_group.html">ncutils::NCGroup</a>&amp; <span class="comment">/*grp*/</span>,</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keyword">const</span> amrex::Orientation <span class="comment">/*ori*/</span>,</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> <span class="comment">/*lev*/</span>,</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>* <span class="comment">/*fld*/</span>,</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keyword">const</span> amrex::Real <span class="comment">/*time*/</span>,</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="keyword">const</span> amrex::Vector&lt;amrex::Real&gt;&amp; <span class="comment">/*times*/</span>);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_inlet_data.html#a4cc0a87e5a87acfa3a4bcb61801236ee">read_data_native</a>(</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        amrex::OrientationIter oit,</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        amrex::BndryRegister&amp; bndry_n,</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        amrex::BndryRegister&amp; bndry_np1,</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <span class="keywordtype">int</span> lev,</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>* <span class="comment">/*fld*/</span>,</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        amrex::Real time,</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        <span class="keyword">const</span> amrex::Vector&lt;amrex::Real&gt;&amp; <span class="comment">/*times*/</span>);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_inlet_data.html#aa5f6de9fd8e6f7114d3a2038143006f1">interpolate</a>(amrex::Real <span class="comment">/*time*/</span>);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classamr__wind_1_1_inlet_data.html#a1b44f09c46f17e9840ef9bbf20c847a5">is_populated</a>(amrex::Orientation <span class="comment">/*ori*/</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    [[nodiscard]] <span class="keyword">const</span> amrex::FArrayBox&amp;</div>
+<div class="foldopen" id="foldopen00069" data-start="{" data-end="}">
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_inlet_data.html#a4a3cf1213b785e02958a8fd12b556f4c">   69</a></span>    <a class="code hl_function" href="classamr__wind_1_1_inlet_data.html#a4a3cf1213b785e02958a8fd12b556f4c">interpolate_data</a>(<span class="keyword">const</span> amrex::Orientation ori, <span class="keyword">const</span> <span class="keywordtype">int</span> lev)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="keywordflow">return</span> (*<a class="code hl_variable" href="classamr__wind_1_1_inlet_data.html#a2bf9b4e3c7795899c19bc18970998456">m_data_interp</a>[ori])[lev];</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    }</div>
+</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_inlet_data.html#a3237ce4e0959bee1bdbe1830e8110e45">   74</a></span>    <span class="keywordtype">int</span>&amp; <a class="code hl_function" href="classamr__wind_1_1_inlet_data.html#a3237ce4e0959bee1bdbe1830e8110e45">component</a>(<span class="keyword">const</span> <span class="keywordtype">int</span> <span class="keywordtype">id</span>) { <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_inlet_data.html#aac3b6ae185d31db73bc708708f277900">m_components</a>[id]; }</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="foldopen" id="foldopen00076" data-start="{" data-end="}">
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_inlet_data.html#a54c88c22b89d3ae777d8104c91d886b3">   76</a></span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classamr__wind_1_1_inlet_data.html#a54c88c22b89d3ae777d8104c91d886b3">component</a>(<span class="keyword">const</span> <span class="keywordtype">int</span> <span class="keywordtype">id</span>)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_inlet_data.html#aac3b6ae185d31db73bc708708f277900">m_components</a>.at(<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    }</div>
+</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="foldopen" id="foldopen00081" data-start="{" data-end="}">
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_inlet_data.html#ad6a621d49801eaa88d74a60609a31115">   81</a></span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classamr__wind_1_1_inlet_data.html#ad6a621d49801eaa88d74a60609a31115">nlevels</a>(<span class="keyword">const</span> amrex::Orientation ori)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>((*<a class="code hl_variable" href="classamr__wind_1_1_inlet_data.html#a2bf9b4e3c7795899c19bc18970998456">m_data_interp</a>[ori]).size());</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    }</div>
+</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_inlet_data.html#a3dbd3fd8eeadbe05282cf6cbf213d94e">   86</a></span>    [[nodiscard]] amrex::Real <a class="code hl_function" href="classamr__wind_1_1_inlet_data.html#a3dbd3fd8eeadbe05282cf6cbf213d94e">tn</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_inlet_data.html#ab53c927133ec198fb40fcf02b8f0a820">m_tn</a>; }</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_inlet_data.html#a49ffb474b7b2c77b6a43923f211daf0b">   87</a></span>    [[nodiscard]] amrex::Real <a class="code hl_function" href="classamr__wind_1_1_inlet_data.html#a49ffb474b7b2c77b6a43923f211daf0b">tnp1</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_inlet_data.html#a47582c007fc5a9c3cef2a4d32a6dbf67">m_tnp1</a>; }</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_inlet_data.html#a7fb173d6b9e33786ea604bbb02f9ce02">   88</a></span>    [[nodiscard]] amrex::Real <a class="code hl_function" href="classamr__wind_1_1_inlet_data.html#a7fb173d6b9e33786ea604bbb02f9ce02">tinterp</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_inlet_data.html#a4e8e77b99841f723f3889fa9aeace769">m_tinterp</a>; }</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_inlet_data.html#aec5c531b04ae30a1bf0105ccca3479e1">   91</a></span>    amrex::Vector&lt;std::unique_ptr&lt;PlaneVector&gt;&gt; <a class="code hl_variable" href="classamr__wind_1_1_inlet_data.html#aec5c531b04ae30a1bf0105ccca3479e1">m_data_n</a>;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_inlet_data.html#af7dfaa0095a9e94f5d9043c2718e6f12">   92</a></span>    amrex::Vector&lt;std::unique_ptr&lt;PlaneVector&gt;&gt; <a class="code hl_variable" href="classamr__wind_1_1_inlet_data.html#af7dfaa0095a9e94f5d9043c2718e6f12">m_data_np1</a>;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_inlet_data.html#a2bf9b4e3c7795899c19bc18970998456">   93</a></span>    amrex::Vector&lt;std::unique_ptr&lt;PlaneVector&gt;&gt; <a class="code hl_variable" href="classamr__wind_1_1_inlet_data.html#a2bf9b4e3c7795899c19bc18970998456">m_data_interp</a>;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span></div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_inlet_data.html#ab53c927133ec198fb40fcf02b8f0a820">   96</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_inlet_data.html#ab53c927133ec198fb40fcf02b8f0a820">m_tn</a>{-1.0_rt};</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span></div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_inlet_data.html#a47582c007fc5a9c3cef2a4d32a6dbf67">   99</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_inlet_data.html#a47582c007fc5a9c3cef2a4d32a6dbf67">m_tnp1</a>{-1.0_rt};</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span></div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_inlet_data.html#a4e8e77b99841f723f3889fa9aeace769">  102</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_inlet_data.html#a4e8e77b99841f723f3889fa9aeace769">m_tinterp</a>{-1.0_rt};</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span></div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_inlet_data.html#aac3b6ae185d31db73bc708708f277900">  105</a></span>    std::unordered_map&lt;int, int&gt; <a class="code hl_variable" href="classamr__wind_1_1_inlet_data.html#aac3b6ae185d31db73bc708708f277900">m_components</a>;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>};</div>
+</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span></div>
+<div class="foldopen" id="foldopen00116" data-start="{" data-end="};">
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_boundary_plane.html">  116</a></span><span class="keyword">class </span><a class="code hl_function" href="classamr__wind_1_1_a_b_l_boundary_plane.html#aa6dea8c1056d5e584de2d34eb161b6af">ABLBoundaryPlane</a></div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>{</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keyword">static_assert</span>(AMREX_SPACEDIM == 3, <span class="stringliteral">&quot;ABL requires 3 dimensional mesh&quot;</span>);</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_boundary_plane.html#aa6dea8c1056d5e584de2d34eb161b6af">ABLBoundaryPlane</a>(<a class="code hl_class" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; <span class="comment">/*sim*/</span>);</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span></div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a3fa43f754585ba1bd5fecfedc96abf96">post_init_actions</a>();</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a63527a5c485c4a238074a0f5b22a68cf">pre_advance_work</a>();</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_boundary_plane.html#aa741d21b1b5de30a64a1ee614642b4f5">pre_predictor_work</a>();</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span> </div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a835b09b5a1468f9aa51c4dd51cda9434">post_advance_work</a>();</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span> </div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_boundary_plane.html#ad6597825083f7863faa302a7629a8158">initialize_data</a>();</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span> </div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_boundary_plane.html#ad328a165909b235425ecd41d95dd7f3b">write_header</a>();</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span> </div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a144c2d90f69352e431a29579e9c290c6">write_bndry_native_header</a>(<span class="keyword">const</span> std::string&amp; chkname);</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_boundary_plane.html#acabc440725180b3fe3fa8189c4b8050b">write_file</a>();</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span> </div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a0ed1deadf7ff7510dddc8260915a1c86">read_header</a>();</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span> </div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    [[nodiscard]] amrex::Vector&lt;amrex::BoxArray&gt; <a class="code hl_function" href="classamr__wind_1_1_a_b_l_boundary_plane.html#ab41a0d800659f029c1b79c0f93e934c9">read_bndry_native_boxarrays</a>(</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>        <span class="keyword">const</span> std::string&amp; chkname, <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; field) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span> </div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a82ca9549d343641199a513d9b2355955">read_file</a>(<span class="keywordtype">bool</span> <span class="comment">/* nph_target_time*/</span>);</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span> </div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_boundary_plane.html#ac05675f8f4a4988743dbfd07b2c5aa39">populate_data</a>(</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>        <span class="keywordtype">int</span> <span class="comment">/*lev*/</span>,</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>        amrex::Real <span class="comment">/*time*/</span>,</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>        <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; <span class="comment">/*fld*/</span>,</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>        amrex::MultiFab&amp; <span class="comment">/*mfab*/</span>,</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>        <span class="keywordtype">int</span> dcomp = 0,</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>        <span class="keywordtype">int</span> orig_comp = 0) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span> </div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span><span class="preprocessor">#ifdef AMR_WIND_USE_NETCDF</span></div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a9d4ab863a8be3d56d4c4f2b36287e670">impl_buffer_field</a>(</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>        <span class="keyword">const</span> amrex::Box&amp; <span class="comment">/*bx*/</span>,</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> <span class="comment">/*n1*/</span>,</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> <span class="comment">/*nc*/</span>,</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>        <span class="keyword">const</span> amrex::GpuArray&lt;int, 2&gt;&amp; <span class="comment">/*perp*/</span>,</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>        <span class="keyword">const</span> amrex::IntVect&amp; <span class="comment">/*v_offset*/</span>,</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>        <span class="keyword">const</span> amrex::Array4&lt;const amrex::Real&gt;&amp; <span class="comment">/*fld*/</span>,</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>        amrex::Gpu::ManagedVector&lt;amrex::Real&gt;&amp; <span class="comment">/*buffer*/</span>);</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span> </div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a855a7416474113f9fcad68d7e1848572">  166</a></span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a855a7416474113f9fcad68d7e1848572">is_initialized</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_boundary_plane.html#af3ba28177e805f58b8f26da51b84624c">m_is_initialized</a>; }</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span> </div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_boundary_plane.html#afa9ccd482a897cdaf227ae9a621a8cf2">box_intersects_boundary</a>(</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>        <span class="keyword">const</span> amrex::Box&amp; <span class="comment">/*bx*/</span>,</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>        <span class="keywordtype">int</span> <span class="comment">/*lev*/</span>,</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>        amrex::Orientation <span class="comment">/*ori*/</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span> </div>
+<div class="foldopen" id="foldopen00173" data-start="{" data-end="}">
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_boundary_plane.html#af84c1f0100f1733e97740742762cbcf8">  173</a></span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_boundary_plane.html#af84c1f0100f1733e97740742762cbcf8">is_data_newer_than</a>(<span class="keyword">const</span> amrex::Real time)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>        <span class="keywordflow">return</span> (</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>            <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a443d6c66daa9a296a92c9c52312a9bbd">m_in_data</a>.tinterp() - time &gt;</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>            std::numeric_limits&lt;amrex::Real&gt;::epsilon() * 1.0e4_rt);</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    }</div>
+</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span> </div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a28afae8297a793363dee326d8cfcbc6e">  180</a></span>    [[nodiscard]] <a class="code hl_enumeration" href="namespaceamr__wind.html#a136f281868b6f61a99eb7b377c2eeea6">io_mode</a> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a28afae8297a793363dee326d8cfcbc6e">mode</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a900706911dfb73e8ecbb0c335386556d">m_io_mode</a>; }</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span> </div>
+<div class="foldopen" id="foldopen00182" data-start="{" data-end="}">
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_boundary_plane.html#ad5f75e13da5dc38f7917cb0a2c41c04b">  182</a></span>    MultiBlockContainer* <a class="code hl_function" href="classamr__wind_1_1_a_b_l_boundary_plane.html#ad5f75e13da5dc38f7917cb0a2c41c04b">mbc</a>()</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    {</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>        <span class="comment">// Make sure that the double pointer m_mbc</span></div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>        <span class="comment">// does not point to a nullptr</span></div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>        <span class="comment">// before passing *m_mbc for use</span></div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        <span class="keywordflow">if</span> ((*<a class="code hl_variable" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a5bc4c52e470763a9ffd6903bb5805731">m_mbc</a>) == <span class="keyword">nullptr</span>) {</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>            amrex::Abort(<span class="stringliteral">&quot;Passing a null pointer for use!&quot;</span>);</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        }</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>        <span class="keywordflow">return</span> *<a class="code hl_variable" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a5bc4c52e470763a9ffd6903bb5805731">m_mbc</a>;</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    }</div>
+</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span> </div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_boundary_plane.html#acadf281b25565598a9c01af995152be0">  194</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_sim_time.html">amr_wind::SimTime</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_boundary_plane.html#acadf281b25565598a9c01af995152be0">m_time</a>;</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_boundary_plane.html#ac6edd0e191c236693d0cf2e9b9a6a4d8">  195</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_field_repo.html">FieldRepo</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_boundary_plane.html#ac6edd0e191c236693d0cf2e9b9a6a4d8">m_repo</a>;</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_boundary_plane.html#abe4872544b96ca2191234327d0465fb1">  196</a></span>    <span class="keyword">const</span> amrex::AmrCore&amp; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_boundary_plane.html#abe4872544b96ca2191234327d0465fb1">m_mesh</a>;</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span> </div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    <span class="comment">// pointer to pointer : when ABL boundary plane gets initialized, amr-wind</span></div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    <span class="comment">// CFDsim does not yet have the up to date pointer to the mbc or the</span></div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    <span class="comment">// read_erf function, hence the use of double pointers</span></div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a5bc4c52e470763a9ffd6903bb5805731">  201</a></span>    MultiBlockContainer** <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a5bc4c52e470763a9ffd6903bb5805731">m_mbc</a>;</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_boundary_plane.html#abb872ba774d55a721dd75fa79abe0cd3">  202</a></span>    <a class="code hl_typedef" href="_a_b_l_read_e_r_f_function_8_h.html#a60bde95e8ae1fed3798c17458998ef53">ReadERFFunction</a>* <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_boundary_plane.html#abb872ba774d55a721dd75fa79abe0cd3">m_read_erf</a>{<span class="keyword">nullptr</span>};</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span> </div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span><span class="preprocessor">#ifdef AMR_WIND_USE_NETCDF</span></div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a9be986140cd673c2629ba4364c3faff8">write_data</a>(</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>        <span class="keyword">const</span> <a class="code hl_class" href="classncutils_1_1_n_c_group.html">ncutils::NCGroup</a>&amp; grp,</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>        <span class="keyword">const</span> amrex::Orientation <span class="comment">/*ori*/</span>,</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> <span class="comment">/*lev*/</span>,</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>        <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>* <span class="comment">/*fld*/</span>);</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a9fe55706e708f6d8ab6bba8b2be4958d">boundary_native_file_levels</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span> </div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_boundary_plane.html#aecd010b8862dc8b204427718c532a14b">  213</a></span>    std::string <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_boundary_plane.html#aecd010b8862dc8b204427718c532a14b">m_title</a>{<span class="stringliteral">&quot;ABL boundary planes&quot;</span>};</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span></div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a7b41c9eb1ab5f14901e38f8c7f4c6cfd">  216</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a7b41c9eb1ab5f14901e38f8c7f4c6cfd">m_write_frequency</a>{1};</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span></div>
+<div class="foldopen" id="foldopen00219" data-start="{" data-end="};">
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_boundary_plane.html#ae50a80926cbbfdd25c147b98b4f33eea">  219</a></span>    amrex::Vector&lt;std::string&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_boundary_plane.html#ae50a80926cbbfdd25c147b98b4f33eea">m_plane_names</a>{<span class="stringliteral">&quot;xlo&quot;</span>, <span class="stringliteral">&quot;ylo&quot;</span>, <span class="stringliteral">&quot;zlo&quot;</span>,</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>                                             <span class="stringliteral">&quot;xhi&quot;</span>, <span class="stringliteral">&quot;yhi&quot;</span>, <span class="stringliteral">&quot;zhi&quot;</span>};</div>
+</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span></div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a97805a98832b65f3d278512a605242bc">  223</a></span>    amrex::Vector&lt;std::string&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a97805a98832b65f3d278512a605242bc">m_planes</a>;</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span></div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_boundary_plane.html#adeff53311144a380b7f26e79acd2f921">  226</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_boundary_plane.html#adeff53311144a380b7f26e79acd2f921">m_out_start_time</a>{0.0_rt};</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span> </div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span><span class="preprocessor">#ifdef AMR_WIND_USE_NETCDF</span></div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a6d1efe9a1022ba019bfc1104ef05975b">  230</a></span>    <span class="keywordtype">size_t</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a6d1efe9a1022ba019bfc1104ef05975b">m_out_counter</a>{0};</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span></div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_boundary_plane.html#ad25f980915dcdadb2609fc89dfe2726e">  234</a></span>    std::string <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_boundary_plane.html#ad25f980915dcdadb2609fc89dfe2726e">m_filename</a>;</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span></div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a33edc53ecd829f34d9b71920887aa88c">  237</a></span>    std::string <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a33edc53ecd829f34d9b71920887aa88c">m_time_file</a>;</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span></div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a2a9ce3a1ba556a8b55703292d93975ed">  240</a></span>    amrex::Vector&lt;std::string&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a2a9ce3a1ba556a8b55703292d93975ed">m_var_names</a>;</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span></div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a745c0e57c94741469ea15e4ba700ee60">  243</a></span>    amrex::Vector&lt;Field*&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a745c0e57c94741469ea15e4ba700ee60">m_fields</a>;</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span></div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_boundary_plane.html#aadcd08a22d4ec942e5b6fa75391dfa6c">  246</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_boundary_plane.html#aadcd08a22d4ec942e5b6fa75391dfa6c">m_in_times</a>;</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_boundary_plane.html#aab068a18a7d3a2e88b3c6a4c11ff070a">  247</a></span>    amrex::Vector&lt;int&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_boundary_plane.html#aab068a18a7d3a2e88b3c6a4c11ff070a">m_in_timesteps</a>;</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span></div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a443d6c66daa9a296a92c9c52312a9bbd">  250</a></span>    <a class="code hl_class" href="classamr__wind_1_1_inlet_data.html">InletData</a> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a443d6c66daa9a296a92c9c52312a9bbd">m_in_data</a>;</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span></div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a900706911dfb73e8ecbb0c335386556d">  253</a></span>    <a class="code hl_enumeration" href="namespaceamr__wind.html#a136f281868b6f61a99eb7b377c2eeea6">io_mode</a> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a900706911dfb73e8ecbb0c335386556d">m_io_mode</a>{<a class="code hl_enumvalue" href="namespaceamr__wind.html#a136f281868b6f61a99eb7b377c2eeea6a5e543256c480ac577d30f76f9120eb74">io_mode::undefined</a>};</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span></div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_boundary_plane.html#af3ba28177e805f58b8f26da51b84624c">  256</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_boundary_plane.html#af3ba28177e805f58b8f26da51b84624c">m_is_initialized</a>{<span class="keyword">false</span>};</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span></div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a3dbb008988aba4df41bc15d63574c302">  259</a></span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a3dbb008988aba4df41bc15d63574c302">m_in_rad</a> = 1;</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a96ed2cb7343ef544f1eaf86192b79911">  260</a></span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a96ed2cb7343ef544f1eaf86192b79911">m_out_rad</a> = 1;</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a0d5a221c59b659735b706a79ea71e5f5">  261</a></span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a0d5a221c59b659735b706a79ea71e5f5">m_extent_rad</a> = 0;</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span></div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a4263db4736fb83fc84e22fc83a9201ed">  264</a></span>    std::string <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_boundary_plane.html#a4263db4736fb83fc84e22fc83a9201ed">m_out_fmt</a>{<span class="stringliteral">&quot;native&quot;</span>};</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>};</div>
+</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span> </div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>} <span class="comment">// namespace amr_wind</span></div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span> </div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span><span class="preprocessor">#endif </span><span class="comment">/* ABLBOUNDARYPLANE_H */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="a_a_b_l_read_e_r_f_function_8_h_html"><div class="ttname"><a href="_a_b_l_read_e_r_f_function_8_h.html">ABLReadERFFunction.H</a></div></div>
+<div class="ttc" id="a_a_b_l_read_e_r_f_function_8_h_html_a60bde95e8ae1fed3798c17458998ef53"><div class="ttname"><a href="_a_b_l_read_e_r_f_function_8_h.html#a60bde95e8ae1fed3798c17458998ef53">ReadERFFunction</a></div><div class="ttdeci">std::function&lt; void( const amrex::Real time, amrex::Vector&lt; amrex::Real &gt; &amp;, amr_wind::InletData &amp;, const amrex::Vector&lt; amr_wind::Field * &gt; &amp;, MultiBlockContainer *)&gt; ReadERFFunction</div><div class="ttdef"><b>Definition</b> ABLReadERFFunction.H:10</div></div>
+<div class="ttc" id="a_c_f_d_sim_8_h_html"><div class="ttname"><a href="_c_f_d_sim_8_h.html">CFDSim.H</a></div></div>
+<div class="ttc" id="a_field_8_h_html"><div class="ttname"><a href="_field_8_h.html">Field.H</a></div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_a0d5a221c59b659735b706a79ea71e5f5"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#a0d5a221c59b659735b706a79ea71e5f5">amr_wind::ABLBoundaryPlane::m_extent_rad</a></div><div class="ttdeci">const int m_extent_rad</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:261</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_a0ed1deadf7ff7510dddc8260915a1c86"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#a0ed1deadf7ff7510dddc8260915a1c86">amr_wind::ABLBoundaryPlane::read_header</a></div><div class="ttdeci">void read_header()</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.cpp:737</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_a144c2d90f69352e431a29579e9c290c6"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#a144c2d90f69352e431a29579e9c290c6">amr_wind::ABLBoundaryPlane::write_bndry_native_header</a></div><div class="ttdeci">void write_bndry_native_header(const std::string &amp;chkname)</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.cpp:531</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_a28afae8297a793363dee326d8cfcbc6e"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#a28afae8297a793363dee326d8cfcbc6e">amr_wind::ABLBoundaryPlane::mode</a></div><div class="ttdeci">io_mode mode() const</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:180</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_a2a9ce3a1ba556a8b55703292d93975ed"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#a2a9ce3a1ba556a8b55703292d93975ed">amr_wind::ABLBoundaryPlane::m_var_names</a></div><div class="ttdeci">amrex::Vector&lt; std::string &gt; m_var_names</div><div class="ttdoc">Variables for IO.</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:240</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_a33edc53ecd829f34d9b71920887aa88c"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#a33edc53ecd829f34d9b71920887aa88c">amr_wind::ABLBoundaryPlane::m_time_file</a></div><div class="ttdeci">std::string m_time_file</div><div class="ttdoc">File name for Native time file.</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:237</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_a3dbb008988aba4df41bc15d63574c302"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#a3dbb008988aba4df41bc15d63574c302">amr_wind::ABLBoundaryPlane::m_in_rad</a></div><div class="ttdeci">const int m_in_rad</div><div class="ttdoc">controls extents on native bndry output</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:259</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_a3fa43f754585ba1bd5fecfedc96abf96"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#a3fa43f754585ba1bd5fecfedc96abf96">amr_wind::ABLBoundaryPlane::post_init_actions</a></div><div class="ttdeci">void post_init_actions()</div><div class="ttdoc">Execute initialization actions after mesh has been fully generated.</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.cpp:341</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_a4263db4736fb83fc84e22fc83a9201ed"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#a4263db4736fb83fc84e22fc83a9201ed">amr_wind::ABLBoundaryPlane::m_out_fmt</a></div><div class="ttdeci">std::string m_out_fmt</div><div class="ttdoc">output format for bndry output</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:264</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_a443d6c66daa9a296a92c9c52312a9bbd"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#a443d6c66daa9a296a92c9c52312a9bbd">amr_wind::ABLBoundaryPlane::m_in_data</a></div><div class="ttdeci">InletData m_in_data</div><div class="ttdoc">Inlet data.</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:250</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_a5bc4c52e470763a9ffd6903bb5805731"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#a5bc4c52e470763a9ffd6903bb5805731">amr_wind::ABLBoundaryPlane::m_mbc</a></div><div class="ttdeci">MultiBlockContainer ** m_mbc</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:201</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_a63527a5c485c4a238074a0f5b22a68cf"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#a63527a5c485c4a238074a0f5b22a68cf">amr_wind::ABLBoundaryPlane::pre_advance_work</a></div><div class="ttdeci">void pre_advance_work()</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.cpp:353</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_a6d1efe9a1022ba019bfc1104ef05975b"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#a6d1efe9a1022ba019bfc1104ef05975b">amr_wind::ABLBoundaryPlane::m_out_counter</a></div><div class="ttdeci">size_t m_out_counter</div><div class="ttdoc">NetCDF time output counter.</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:230</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_a745c0e57c94741469ea15e4ba700ee60"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#a745c0e57c94741469ea15e4ba700ee60">amr_wind::ABLBoundaryPlane::m_fields</a></div><div class="ttdeci">amrex::Vector&lt; Field * &gt; m_fields</div><div class="ttdoc">List of fields for IO.</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:243</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_a7b41c9eb1ab5f14901e38f8c7f4c6cfd"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#a7b41c9eb1ab5f14901e38f8c7f4c6cfd">amr_wind::ABLBoundaryPlane::m_write_frequency</a></div><div class="ttdeci">int m_write_frequency</div><div class="ttdoc">Normal direction for the boundary plane.</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:216</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_a82ca9549d343641199a513d9b2355955"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#a82ca9549d343641199a513d9b2355955">amr_wind::ABLBoundaryPlane::read_file</a></div><div class="ttdeci">void read_file(bool)</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.cpp:1147</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_a835b09b5a1468f9aa51c4dd51cda9434"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#a835b09b5a1468f9aa51c4dd51cda9434">amr_wind::ABLBoundaryPlane::post_advance_work</a></div><div class="ttdeci">void post_advance_work()</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.cpp:369</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_a855a7416474113f9fcad68d7e1848572"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#a855a7416474113f9fcad68d7e1848572">amr_wind::ABLBoundaryPlane::is_initialized</a></div><div class="ttdeci">bool is_initialized() const</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:166</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_a900706911dfb73e8ecbb0c335386556d"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#a900706911dfb73e8ecbb0c335386556d">amr_wind::ABLBoundaryPlane::m_io_mode</a></div><div class="ttdeci">io_mode m_io_mode</div><div class="ttdoc">IO mode.</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:253</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_a96ed2cb7343ef544f1eaf86192b79911"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#a96ed2cb7343ef544f1eaf86192b79911">amr_wind::ABLBoundaryPlane::m_out_rad</a></div><div class="ttdeci">const int m_out_rad</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:260</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_a97805a98832b65f3d278512a605242bc"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#a97805a98832b65f3d278512a605242bc">amr_wind::ABLBoundaryPlane::m_planes</a></div><div class="ttdeci">amrex::Vector&lt; std::string &gt; m_planes</div><div class="ttdoc">IO boundary planes.</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:223</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_a9be986140cd673c2629ba4364c3faff8"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#a9be986140cd673c2629ba4364c3faff8">amr_wind::ABLBoundaryPlane::write_data</a></div><div class="ttdeci">void write_data(const ncutils::NCGroup &amp;grp, const amrex::Orientation, const int, const Field *)</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.cpp:1404</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_a9d4ab863a8be3d56d4c4f2b36287e670"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#a9d4ab863a8be3d56d4c4f2b36287e670">amr_wind::ABLBoundaryPlane::impl_buffer_field</a></div><div class="ttdeci">static void impl_buffer_field(const amrex::Box &amp;, const int, const int, const amrex::GpuArray&lt; int, 2 &gt; &amp;, const amrex::IntVect &amp;, const amrex::Array4&lt; const amrex::Real &gt; &amp;, amrex::Gpu::ManagedVector&lt; amrex::Real &gt; &amp;)</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.cpp:1523</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_a9fe55706e708f6d8ab6bba8b2be4958d"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#a9fe55706e708f6d8ab6bba8b2be4958d">amr_wind::ABLBoundaryPlane::boundary_native_file_levels</a></div><div class="ttdeci">int boundary_native_file_levels() const</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.cpp:1547</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_aa6dea8c1056d5e584de2d34eb161b6af"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#aa6dea8c1056d5e584de2d34eb161b6af">amr_wind::ABLBoundaryPlane::ABLBoundaryPlane</a></div><div class="ttdeci">ABLBoundaryPlane(CFDSim &amp;)</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.cpp:287</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_aa741d21b1b5de30a64a1ee614642b4f5"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#aa741d21b1b5de30a64a1ee614642b4f5">amr_wind::ABLBoundaryPlane::pre_predictor_work</a></div><div class="ttdeci">void pre_predictor_work()</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.cpp:361</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_aab068a18a7d3a2e88b3c6a4c11ff070a"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#aab068a18a7d3a2e88b3c6a4c11ff070a">amr_wind::ABLBoundaryPlane::m_in_timesteps</a></div><div class="ttdeci">amrex::Vector&lt; int &gt; m_in_timesteps</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:247</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_aadcd08a22d4ec942e5b6fa75391dfa6c"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#aadcd08a22d4ec942e5b6fa75391dfa6c">amr_wind::ABLBoundaryPlane::m_in_times</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_in_times</div><div class="ttdoc">NetCDF input level time.</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:246</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_ab41a0d800659f029c1b79c0f93e934c9"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#ab41a0d800659f029c1b79c0f93e934c9">amr_wind::ABLBoundaryPlane::read_bndry_native_boxarrays</a></div><div class="ttdeci">amrex::Vector&lt; amrex::BoxArray &gt; read_bndry_native_boxarrays(const std::string &amp;chkname, const Field &amp;field) const</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.cpp:951</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_abb872ba774d55a721dd75fa79abe0cd3"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#abb872ba774d55a721dd75fa79abe0cd3">amr_wind::ABLBoundaryPlane::m_read_erf</a></div><div class="ttdeci">ReadERFFunction * m_read_erf</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:202</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_abe4872544b96ca2191234327d0465fb1"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#abe4872544b96ca2191234327d0465fb1">amr_wind::ABLBoundaryPlane::m_mesh</a></div><div class="ttdeci">const amrex::AmrCore &amp; m_mesh</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:196</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_ac05675f8f4a4988743dbfd07b2c5aa39"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#ac05675f8f4a4988743dbfd07b2c5aa39">amr_wind::ABLBoundaryPlane::populate_data</a></div><div class="ttdeci">void populate_data(int, amrex::Real, Field &amp;, amrex::MultiFab &amp;, int dcomp=0, int orig_comp=0) const</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.cpp:1304</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_ac6edd0e191c236693d0cf2e9b9a6a4d8"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#ac6edd0e191c236693d0cf2e9b9a6a4d8">amr_wind::ABLBoundaryPlane::m_repo</a></div><div class="ttdeci">const FieldRepo &amp; m_repo</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:195</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_acabc440725180b3fe3fa8189c4b8050b"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#acabc440725180b3fe3fa8189c4b8050b">amr_wind::ABLBoundaryPlane::write_file</a></div><div class="ttdeci">void write_file()</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.cpp:621</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_acadf281b25565598a9c01af995152be0"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#acadf281b25565598a9c01af995152be0">amr_wind::ABLBoundaryPlane::m_time</a></div><div class="ttdeci">const amr_wind::SimTime &amp; m_time</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:194</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_ad25f980915dcdadb2609fc89dfe2726e"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#ad25f980915dcdadb2609fc89dfe2726e">amr_wind::ABLBoundaryPlane::m_filename</a></div><div class="ttdeci">std::string m_filename</div><div class="ttdoc">File name for IO.</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:234</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_ad328a165909b235425ecd41d95dd7f3b"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#ad328a165909b235425ecd41d95dd7f3b">amr_wind::ABLBoundaryPlane::write_header</a></div><div class="ttdeci">void write_header()</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.cpp:399</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_ad5f75e13da5dc38f7917cb0a2c41c04b"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#ad5f75e13da5dc38f7917cb0a2c41c04b">amr_wind::ABLBoundaryPlane::mbc</a></div><div class="ttdeci">MultiBlockContainer * mbc()</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:182</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_ad6597825083f7863faa302a7629a8158"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#ad6597825083f7863faa302a7629a8158">amr_wind::ABLBoundaryPlane::initialize_data</a></div><div class="ttdeci">void initialize_data()</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.cpp:377</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_adeff53311144a380b7f26e79acd2f921"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#adeff53311144a380b7f26e79acd2f921">amr_wind::ABLBoundaryPlane::m_out_start_time</a></div><div class="ttdeci">amrex::Real m_out_start_time</div><div class="ttdoc">Start outputting after this time.</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:226</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_ae50a80926cbbfdd25c147b98b4f33eea"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#ae50a80926cbbfdd25c147b98b4f33eea">amr_wind::ABLBoundaryPlane::m_plane_names</a></div><div class="ttdeci">amrex::Vector&lt; std::string &gt; m_plane_names</div><div class="ttdoc">Plane names.</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:219</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_aecd010b8862dc8b204427718c532a14b"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#aecd010b8862dc8b204427718c532a14b">amr_wind::ABLBoundaryPlane::m_title</a></div><div class="ttdeci">std::string m_title</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:213</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_af3ba28177e805f58b8f26da51b84624c"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#af3ba28177e805f58b8f26da51b84624c">amr_wind::ABLBoundaryPlane::m_is_initialized</a></div><div class="ttdeci">bool m_is_initialized</div><div class="ttdoc">Flag indicating if this capability is available.</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:256</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_af84c1f0100f1733e97740742762cbcf8"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#af84c1f0100f1733e97740742762cbcf8">amr_wind::ABLBoundaryPlane::is_data_newer_than</a></div><div class="ttdeci">bool is_data_newer_than(const amrex::Real time) const</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:173</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_boundary_plane_html_afa9ccd482a897cdaf227ae9a621a8cf2"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_boundary_plane.html#afa9ccd482a897cdaf227ae9a621a8cf2">amr_wind::ABLBoundaryPlane::box_intersects_boundary</a></div><div class="ttdeci">bool box_intersects_boundary(const amrex::Box &amp;, int, amrex::Orientation) const</div><div class="ttdoc">True if box intersects the boundary.</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.cpp:1564</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html">amr_wind::CFDSim</a></div><div class="ttdef"><b>Definition</b> CFDSim.H:54</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_html"><div class="ttname"><a href="classamr__wind_1_1_field.html">amr_wind::Field</a></div><div class="ttdef"><b>Definition</b> Field.H:112</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html">amr_wind::FieldRepo</a></div><div class="ttdef"><b>Definition</b> FieldRepo.H:86</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_inlet_data_html"><div class="ttname"><a href="classamr__wind_1_1_inlet_data.html">amr_wind::InletData</a></div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:34</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_inlet_data_html_a0cab51080178567404ed3bc5bc193eb6"><div class="ttname"><a href="classamr__wind_1_1_inlet_data.html#a0cab51080178567404ed3bc5bc193eb6">amr_wind::InletData::read_data</a></div><div class="ttdeci">void read_data(ncutils::NCGroup &amp;, const amrex::Orientation, const int, const Field *, const amrex::Real, const amrex::Vector&lt; amrex::Real &gt; &amp;)</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.cpp:74</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_inlet_data_html_a1b44f09c46f17e9840ef9bbf20c847a5"><div class="ttname"><a href="classamr__wind_1_1_inlet_data.html#a1b44f09c46f17e9840ef9bbf20c847a5">amr_wind::InletData::is_populated</a></div><div class="ttdeci">bool is_populated(amrex::Orientation) const</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.cpp:282</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_inlet_data_html_a2bf9b4e3c7795899c19bc18970998456"><div class="ttname"><a href="classamr__wind_1_1_inlet_data.html#a2bf9b4e3c7795899c19bc18970998456">amr_wind::InletData::m_data_interp</a></div><div class="ttdeci">amrex::Vector&lt; std::unique_ptr&lt; PlaneVector &gt; &gt; m_data_interp</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:93</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_inlet_data_html_a3237ce4e0959bee1bdbe1830e8110e45"><div class="ttname"><a href="classamr__wind_1_1_inlet_data.html#a3237ce4e0959bee1bdbe1830e8110e45">amr_wind::InletData::component</a></div><div class="ttdeci">int &amp; component(const int id)</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:74</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_inlet_data_html_a3dbd3fd8eeadbe05282cf6cbf213d94e"><div class="ttname"><a href="classamr__wind_1_1_inlet_data.html#a3dbd3fd8eeadbe05282cf6cbf213d94e">amr_wind::InletData::tn</a></div><div class="ttdeci">amrex::Real tn() const</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:86</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_inlet_data_html_a47582c007fc5a9c3cef2a4d32a6dbf67"><div class="ttname"><a href="classamr__wind_1_1_inlet_data.html#a47582c007fc5a9c3cef2a4d32a6dbf67">amr_wind::InletData::m_tnp1</a></div><div class="ttdeci">amrex::Real m_tnp1</div><div class="ttdoc">Time for plane at n + 1.</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:99</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_inlet_data_html_a49ffb474b7b2c77b6a43923f211daf0b"><div class="ttname"><a href="classamr__wind_1_1_inlet_data.html#a49ffb474b7b2c77b6a43923f211daf0b">amr_wind::InletData::tnp1</a></div><div class="ttdeci">amrex::Real tnp1() const</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:87</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_inlet_data_html_a4a3cf1213b785e02958a8fd12b556f4c"><div class="ttname"><a href="classamr__wind_1_1_inlet_data.html#a4a3cf1213b785e02958a8fd12b556f4c">amr_wind::InletData::interpolate_data</a></div><div class="ttdeci">const amrex::FArrayBox &amp; interpolate_data(const amrex::Orientation ori, const int lev) const</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:69</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_inlet_data_html_a4b4e6eb43325e5f14fa056637e98589e"><div class="ttname"><a href="classamr__wind_1_1_inlet_data.html#a4b4e6eb43325e5f14fa056637e98589e">amr_wind::InletData::resize</a></div><div class="ttdeci">void resize(int)</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.cpp:48</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_inlet_data_html_a4cc0a87e5a87acfa3a4bcb61801236ee"><div class="ttname"><a href="classamr__wind_1_1_inlet_data.html#a4cc0a87e5a87acfa3a4bcb61801236ee">amr_wind::InletData::read_data_native</a></div><div class="ttdeci">void read_data_native(amrex::OrientationIter oit, amrex::BndryRegister &amp;bndry_n, amrex::BndryRegister &amp;bndry_np1, int lev, const Field *, amrex::Real time, const amrex::Vector&lt; amrex::Real &gt; &amp;)</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.cpp:158</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_inlet_data_html_a4e8e77b99841f723f3889fa9aeace769"><div class="ttname"><a href="classamr__wind_1_1_inlet_data.html#a4e8e77b99841f723f3889fa9aeace769">amr_wind::InletData::m_tinterp</a></div><div class="ttdeci">amrex::Real m_tinterp</div><div class="ttdoc">Time for plane at interpolation.</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:102</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_inlet_data_html_a51ebcd0e2230df38d68cbf55e67d303d"><div class="ttname"><a href="classamr__wind_1_1_inlet_data.html#a51ebcd0e2230df38d68cbf55e67d303d">amr_wind::InletData::define_level_data</a></div><div class="ttdeci">void define_level_data(amrex::Orientation, const amrex::Box &amp;, size_t)</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.cpp:62</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_inlet_data_html_a54c88c22b89d3ae777d8104c91d886b3"><div class="ttname"><a href="classamr__wind_1_1_inlet_data.html#a54c88c22b89d3ae777d8104c91d886b3">amr_wind::InletData::component</a></div><div class="ttdeci">int component(const int id) const</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:76</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_inlet_data_html_a57ec63e3ee56f196e38fc2e0afb1f19f"><div class="ttname"><a href="classamr__wind_1_1_inlet_data.html#a57ec63e3ee56f196e38fc2e0afb1f19f">amr_wind::InletData::InletData</a></div><div class="ttdeci">InletData()=default</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_inlet_data_html_a7fb173d6b9e33786ea604bbb02f9ce02"><div class="ttname"><a href="classamr__wind_1_1_inlet_data.html#a7fb173d6b9e33786ea604bbb02f9ce02">amr_wind::InletData::tinterp</a></div><div class="ttdeci">amrex::Real tinterp() const</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:88</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_inlet_data_html_aa5f6de9fd8e6f7114d3a2038143006f1"><div class="ttname"><a href="classamr__wind_1_1_inlet_data.html#aa5f6de9fd8e6f7114d3a2038143006f1">amr_wind::InletData::interpolate</a></div><div class="ttdeci">void interpolate(amrex::Real)</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.cpp:260</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_inlet_data_html_aac3b6ae185d31db73bc708708f277900"><div class="ttname"><a href="classamr__wind_1_1_inlet_data.html#aac3b6ae185d31db73bc708708f277900">amr_wind::InletData::m_components</a></div><div class="ttdeci">std::unordered_map&lt; int, int &gt; m_components</div><div class="ttdoc">Map of {variableId : component}</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:105</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_inlet_data_html_ab53c927133ec198fb40fcf02b8f0a820"><div class="ttname"><a href="classamr__wind_1_1_inlet_data.html#ab53c927133ec198fb40fcf02b8f0a820">amr_wind::InletData::m_tn</a></div><div class="ttdeci">amrex::Real m_tn</div><div class="ttdoc">Time for plane at n.</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:96</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_inlet_data_html_ab6245c2d02476b7c1980935a7a05de3c"><div class="ttname"><a href="classamr__wind_1_1_inlet_data.html#ab6245c2d02476b7c1980935a7a05de3c">amr_wind::InletData::PlaneVector</a></div><div class="ttdeci">amrex::Vector&lt; amrex::FArrayBox &gt; PlaneVector</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:35</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_inlet_data_html_ad6a621d49801eaa88d74a60609a31115"><div class="ttname"><a href="classamr__wind_1_1_inlet_data.html#ad6a621d49801eaa88d74a60609a31115">amr_wind::InletData::nlevels</a></div><div class="ttdeci">int nlevels(const amrex::Orientation ori) const</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:81</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_inlet_data_html_ae0088a2d3ec4ec4a43c041532ef10f76"><div class="ttname"><a href="classamr__wind_1_1_inlet_data.html#ae0088a2d3ec4ec4a43c041532ef10f76">amr_wind::InletData::define_plane</a></div><div class="ttdeci">void define_plane(amrex::Orientation)</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.cpp:55</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_inlet_data_html_aec5c531b04ae30a1bf0105ccca3479e1"><div class="ttname"><a href="classamr__wind_1_1_inlet_data.html#aec5c531b04ae30a1bf0105ccca3479e1">amr_wind::InletData::m_data_n</a></div><div class="ttdeci">amrex::Vector&lt; std::unique_ptr&lt; PlaneVector &gt; &gt; m_data_n</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:91</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_inlet_data_html_af7dfaa0095a9e94f5d9043c2718e6f12"><div class="ttname"><a href="classamr__wind_1_1_inlet_data.html#af7dfaa0095a9e94f5d9043c2718e6f12">amr_wind::InletData::m_data_np1</a></div><div class="ttdeci">amrex::Vector&lt; std::unique_ptr&lt; PlaneVector &gt; &gt; m_data_np1</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:92</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_sim_time_html"><div class="ttname"><a href="classamr__wind_1_1_sim_time.html">amr_wind::SimTime</a></div><div class="ttdef"><b>Definition</b> SimTime.H:33</div></div>
+<div class="ttc" id="aclassncutils_1_1_n_c_group_html"><div class="ttname"><a href="classncutils_1_1_n_c_group.html">ncutils::NCGroup</a></div><div class="ttdoc">Representation of a NetCDF group.</div><div class="ttdef"><b>Definition</b> nc_interface.H:162</div></div>
+<div class="ttc" id="aio__utils_8_h_html"><div class="ttname"><a href="io__utils_8_h.html">io_utils.H</a></div></div>
+<div class="ttc" id="anamespaceamr__wind_html"><div class="ttname"><a href="namespaceamr__wind.html">amr_wind</a></div><div class="ttdoc">This test case is intended as an evaluation of the momentum advection scheme.</div><div class="ttdef"><b>Definition</b> BCInterface.cpp:10</div></div>
+<div class="ttc" id="anamespaceamr__wind_html_a136f281868b6f61a99eb7b377c2eeea6"><div class="ttname"><a href="namespaceamr__wind.html#a136f281868b6f61a99eb7b377c2eeea6">amr_wind::io_mode</a></div><div class="ttdeci">io_mode</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:18</div></div>
+<div class="ttc" id="anamespaceamr__wind_html_a136f281868b6f61a99eb7b377c2eeea6a5e543256c480ac577d30f76f9120eb74"><div class="ttname"><a href="namespaceamr__wind.html#a136f281868b6f61a99eb7b377c2eeea6a5e543256c480ac577d30f76f9120eb74">amr_wind::io_mode::undefined</a></div><div class="ttdeci">@ undefined</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:18</div></div>
+<div class="ttc" id="anamespaceamr__wind_html_a136f281868b6f61a99eb7b377c2eeea6a78e6221f6393d1356681db398f14ce6d"><div class="ttname"><a href="namespaceamr__wind.html#a136f281868b6f61a99eb7b377c2eeea6a78e6221f6393d1356681db398f14ce6d">amr_wind::io_mode::output</a></div><div class="ttdeci">@ output</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:18</div></div>
+<div class="ttc" id="anamespaceamr__wind_html_a136f281868b6f61a99eb7b377c2eeea6aa43c1b0aa53a0c908810c06ab1ff3967"><div class="ttname"><a href="namespaceamr__wind.html#a136f281868b6f61a99eb7b377c2eeea6aa43c1b0aa53a0c908810c06ab1ff3967">amr_wind::io_mode::input</a></div><div class="ttdeci">@ input</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:18</div></div>
+<div class="ttc" id="anc__interface_8_h_html"><div class="ttname"><a href="nc__interface_8_h.html">nc_interface.H</a></div></div>
+<div class="ttc" id="astructamr__wind_1_1_buffer_data_html"><div class="ttname"><a href="structamr__wind_1_1_buffer_data.html">amr_wind::BufferData</a></div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:21</div></div>
+<div class="ttc" id="astructamr__wind_1_1_buffer_data_html_a21b998cd43f59aaf149b766ad3f0565c"><div class="ttname"><a href="structamr__wind_1_1_buffer_data.html#a21b998cd43f59aaf149b766ad3f0565c">amr_wind::BufferData::data</a></div><div class="ttdeci">amrex::Gpu::ManagedVector&lt; amrex::Real &gt; data</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:22</div></div>
+<div class="ttc" id="astructamr__wind_1_1_buffer_data_html_a63f7779565e8bfc1c0246ddf809454dc"><div class="ttname"><a href="structamr__wind_1_1_buffer_data.html#a63f7779565e8bfc1c0246ddf809454dc">amr_wind::BufferData::start</a></div><div class="ttdeci">amrex::Vector&lt; size_t &gt; start</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:23</div></div>
+<div class="ttc" id="astructamr__wind_1_1_buffer_data_html_adfe6300e7d400b6d65483422b942b8ad"><div class="ttname"><a href="structamr__wind_1_1_buffer_data.html#adfe6300e7d400b6d65483422b942b8ad">amr_wind::BufferData::count</a></div><div class="ttdeci">amrex::Vector&lt; size_t &gt; count</div><div class="ttdef"><b>Definition</b> ABLBoundaryPlane.H:24</div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

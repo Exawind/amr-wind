@@ -1,0 +1,419 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/core/vs/vector.H Source File &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/core/vs/vector.H Source File</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/vector_8_h_source.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="home-runner-work-amr-wind-amr-wind-amr-wind-core-vs-vector-h-source-file">
+<h1>/home/runner/work/amr-wind/amr-wind/amr-wind/core/vs/vector.H Source File<a class="headerlink" href="#home-runner-work-amr-wind-amr-wind-amr-wind-core-vs-vector-h-source-file" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/core/vs/vector.H Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="dir_d85575251dd712327fe3cf057fa568b4.html">amr-wind</a></li><li class="navelem"><a href="dir_212148f97b8bb53ebaebb3bf8a8b5de4.html">amr-wind</a></li><li class="navelem"><a href="dir_d2e4f22398959709992733f1617728ca.html">core</a></li><li class="navelem"><a href="dir_4689d26be183c6838163b00f8b05b4a8.html">vs</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="headertitle"><div class="title">vector.H</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="vector_8_h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef VS_VECTOR_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define VS_VECTOR_H</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;AMReX_Gpu.H&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="vstraits_8_h.html">amr-wind/core/vs/vstraits.H</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceamr__wind_1_1vs.html">amr_wind::vs</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="foldopen" id="foldopen00012" data-start="{" data-end="};">
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html">   12</a></span><span class="keyword">struct </span><a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a29042e5d7e2696fa4d6629bf3b7c4be4">VectorT</a></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>{</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#af127c53176905707df008bcecab2e077">   14</a></span>    amrex::GpuArray&lt;T, 3&gt; <a class="code hl_variable" href="structamr__wind_1_1vs_1_1_vector_t.html#af127c53176905707df008bcecab2e077">vv</a> = {Traits::zero(), Traits::zero(), Traits::zero()};</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#a52eb01a2e9f0c3b7e46e447555e3dcb6">   17</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="structamr__wind_1_1vs_1_1_vector_t.html#a52eb01a2e9f0c3b7e46e447555e3dcb6">ncomp</a> = 3;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#a63de475d9f6a3eb58ce0f22d7baa0f60">   18</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="structamr__wind_1_1vs_1_1_vector_t.html#a63de475d9f6a3eb58ce0f22d7baa0f60">size_type</a> = int;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#a895a8a9b4f147e9253f8c74225f0f63d">   19</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="structamr__wind_1_1vs_1_1_vector_t.html#a895a8a9b4f147e9253f8c74225f0f63d">value_type</a> = T;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#ac304504c48ab3759c644f9e8447d60b9">   20</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="structamr__wind_1_1vs_1_1_vector_t.html#ac304504c48ab3759c644f9e8447d60b9">reference</a> = T&amp;;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#ac0e752bab11cd2c8532403d9d1b53f99">   21</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="structamr__wind_1_1vs_1_1_vector_t.html#ac0e752bab11cd2c8532403d9d1b53f99">iterator</a> = T*;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#a08f7a73db7c6af6f2cd98afb93861c1c">   22</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="structamr__wind_1_1vs_1_1_vector_t.html#a08f7a73db7c6af6f2cd98afb93861c1c">const_iterator</a> = <span class="keyword">const</span> T*;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#a5e5444823c23e33c4db31c3bed7aea49">   23</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="structamr__wind_1_1vs_1_1_vector_t.html#a5e5444823c23e33c4db31c3bed7aea49">Traits</a> = <a class="code hl_struct" href="structamr__wind_1_1vs_1_1_d_traits.html">DTraits&lt;T&gt;</a>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#a853ec75cfd324dab8595de429bc7e7f6">   24</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="structamr__wind_1_1vs_1_1_vector_t.html#a853ec75cfd324dab8595de429bc7e7f6">VType</a> = <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a29042e5d7e2696fa4d6629bf3b7c4be4">VectorT&lt;T&gt;</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#a29042e5d7e2696fa4d6629bf3b7c4be4">   27</a></span>    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a29042e5d7e2696fa4d6629bf3b7c4be4">VectorT</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE</div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="}">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#a07548afc3eb37fa90143037489352fe0">   32</a></span>    <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a07548afc3eb37fa90143037489352fe0">VectorT</a>(<span class="keyword">const</span> T&amp; <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a6ed87a433df1546dd15c6712b7f35dbb">x</a>, <span class="keyword">const</span> T&amp; <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a2e450229e4f3f56747a70338199cbfbe">y</a>, <span class="keyword">const</span> T&amp; <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a6843fd60529f9f9e91c4192bb90b8e56">z</a>)</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        : <a class="code hl_variable" href="structamr__wind_1_1vs_1_1_vector_t.html#af127c53176905707df008bcecab2e077">vv</a>{<a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a6ed87a433df1546dd15c6712b7f35dbb">x</a>, <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a2e450229e4f3f56747a70338199cbfbe">y</a>, <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a6843fd60529f9f9e91c4192bb90b8e56">z</a>}</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    {}</div>
+</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#a819e0f124a6619d01c6d0dca2fd49ed5">   36</a></span>    <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a819e0f124a6619d01c6d0dca2fd49ed5">~VectorT</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#a09dd6e2c78c5b439aa880dce3c3b152d">   37</a></span>    <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a09dd6e2c78c5b439aa880dce3c3b152d">VectorT</a>(<span class="keyword">const</span> <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a29042e5d7e2696fa4d6629bf3b7c4be4">VectorT</a>&amp;) = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#a64d706538d98c97e99c31d8aa7a28aec">   38</a></span>    <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a64d706538d98c97e99c31d8aa7a28aec">VectorT</a>(<a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a29042e5d7e2696fa4d6629bf3b7c4be4">VectorT</a>&amp;&amp;) = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#a2aea4ae3f8ab3613dd29712b940e89b0">   39</a></span>    <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a29042e5d7e2696fa4d6629bf3b7c4be4">VectorT</a>&amp; <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a2aea4ae3f8ab3613dd29712b940e89b0">operator=</a>(<span class="keyword">const</span> <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a29042e5d7e2696fa4d6629bf3b7c4be4">VectorT</a>&amp;) &amp; = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#a328ea6db68de56671d77306ef099e92c">   40</a></span>    <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a29042e5d7e2696fa4d6629bf3b7c4be4">VectorT</a>&amp; <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a328ea6db68de56671d77306ef099e92c">operator=</a>(<span class="keyword">const</span> <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a29042e5d7e2696fa4d6629bf3b7c4be4">VectorT</a>&amp;) &amp;&amp; = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#ad143050a320cc227005210de2d7df352">   41</a></span>    <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a29042e5d7e2696fa4d6629bf3b7c4be4">VectorT</a>&amp; <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#ad143050a320cc227005210de2d7df352">operator=</a>(<a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a29042e5d7e2696fa4d6629bf3b7c4be4">VectorT</a>&amp;&amp;) &amp; = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#a34397d833e00addc90f2f4fa092be5e7">   42</a></span>    <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a29042e5d7e2696fa4d6629bf3b7c4be4">VectorT</a>&amp; <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a34397d833e00addc90f2f4fa092be5e7">operator=</a>(<a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a29042e5d7e2696fa4d6629bf3b7c4be4">VectorT</a>&amp;&amp;) &amp;&amp; = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span></div>
+<div class="foldopen" id="foldopen00045" data-start="{" data-end="}">
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#ace209a4305708240d4987853adcef5df">   45</a></span>    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <span class="keyword">static</span> <span class="keyword">constexpr</span> <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a29042e5d7e2696fa4d6629bf3b7c4be4">VectorT&lt;T&gt;</a> <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#ace209a4305708240d4987853adcef5df">zero</a>()</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    {</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a29042e5d7e2696fa4d6629bf3b7c4be4">VectorT&lt;T&gt;</a>{Traits::zero(), Traits::zero(), Traits::zero()};</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    }</div>
+</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="foldopen" id="foldopen00050" data-start="{" data-end="}">
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#a38851790fa94a0cf9e891bddf9d865f7">   50</a></span>    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <span class="keyword">static</span> <span class="keyword">constexpr</span> <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a29042e5d7e2696fa4d6629bf3b7c4be4">VectorT&lt;T&gt;</a> <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a38851790fa94a0cf9e891bddf9d865f7">one</a>()</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a29042e5d7e2696fa4d6629bf3b7c4be4">VectorT&lt;T&gt;</a>{Traits::one(), Traits::one(), Traits::one()};</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    }</div>
+</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span></div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <span class="keyword">static</span> <span class="keyword">constexpr</span> <a class="code hl_struct" href="structamr__wind_1_1vs_1_1_vector_t.html">VectorT&lt;T&gt;</a></div>
+<div class="foldopen" id="foldopen00060" data-start="{" data-end="}">
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#ae6c8bb574c0a9acf2d2a31ffc5b76d47">   60</a></span>    <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#ae6c8bb574c0a9acf2d2a31ffc5b76d47">ihat</a>(<span class="keyword">const</span> T&amp; <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a6ed87a433df1546dd15c6712b7f35dbb">x</a> = Traits::one())</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a29042e5d7e2696fa4d6629bf3b7c4be4">VectorT&lt;T&gt;</a>{<a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a6ed87a433df1546dd15c6712b7f35dbb">x</a>, Traits::zero(), Traits::zero()};</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    }</div>
+</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <span class="keyword">static</span> <span class="keyword">constexpr</span> <a class="code hl_struct" href="structamr__wind_1_1vs_1_1_vector_t.html">VectorT&lt;T&gt;</a></div>
+<div class="foldopen" id="foldopen00070" data-start="{" data-end="}">
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#a68ec560b9f371f96bd7cb0fccae16c98">   70</a></span>    <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a68ec560b9f371f96bd7cb0fccae16c98">jhat</a>(<span class="keyword">const</span> T&amp; <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a2e450229e4f3f56747a70338199cbfbe">y</a> = Traits::one())</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a29042e5d7e2696fa4d6629bf3b7c4be4">VectorT&lt;T&gt;</a>{Traits::zero(), <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a2e450229e4f3f56747a70338199cbfbe">y</a>, Traits::zero()};</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    }</div>
+</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span></div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <span class="keyword">static</span> <span class="keyword">constexpr</span> <a class="code hl_struct" href="structamr__wind_1_1vs_1_1_vector_t.html">VectorT&lt;T&gt;</a></div>
+<div class="foldopen" id="foldopen00080" data-start="{" data-end="}">
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#ad8b99e7c3190614227cc9b72593fd532">   80</a></span>    <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#ad8b99e7c3190614227cc9b72593fd532">khat</a>(<span class="keyword">const</span> T&amp; <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a6843fd60529f9f9e91c4192bb90b8e56">z</a> = Traits::one())</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    {</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a29042e5d7e2696fa4d6629bf3b7c4be4">VectorT&lt;T&gt;</a>{Traits::zero(), Traits::zero(), <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a6843fd60529f9f9e91c4192bb90b8e56">z</a>};</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    }</div>
+</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span></div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#a715c605a861488d2b4eefd394184a9da">   86</a></span>    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a29042e5d7e2696fa4d6629bf3b7c4be4">VectorT&lt;T&gt;</a>&amp; <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a715c605a861488d2b4eefd394184a9da">normalize</a>();</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span></div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#ac8217e4c626e2920fc4c48406edcf6ec">   89</a></span>    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a29042e5d7e2696fa4d6629bf3b7c4be4">VectorT&lt;T&gt;</a> <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#ac8217e4c626e2920fc4c48406edcf6ec">sqrt</a>(<span class="keyword">const</span> <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a29042e5d7e2696fa4d6629bf3b7c4be4">VectorT</a>&amp;);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span></div>
+<div class="foldopen" id="foldopen00092" data-start="{" data-end="}">
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#a58c276c753621d734e7afd6c2ebcf307">   92</a></span>    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a29042e5d7e2696fa4d6629bf3b7c4be4">VectorT&lt;T&gt;</a> <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a58c276c753621d734e7afd6c2ebcf307">unit</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a29042e5d7e2696fa4d6629bf3b7c4be4">VectorT&lt;T&gt;</a>(*this).<a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a715c605a861488d2b4eefd394184a9da">normalize</a>();</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    }</div>
+</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#a6ed87a433df1546dd15c6712b7f35dbb">   97</a></span>    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T&amp; <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a6ed87a433df1546dd15c6712b7f35dbb">x</a>() &amp; { <span class="keywordflow">return</span> <a class="code hl_variable" href="structamr__wind_1_1vs_1_1_vector_t.html#af127c53176905707df008bcecab2e077">vv</a>[0]; }</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#a2e450229e4f3f56747a70338199cbfbe">   98</a></span>    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T&amp; <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a2e450229e4f3f56747a70338199cbfbe">y</a>() &amp; { <span class="keywordflow">return</span> <a class="code hl_variable" href="structamr__wind_1_1vs_1_1_vector_t.html#af127c53176905707df008bcecab2e077">vv</a>[1]; }</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#a6843fd60529f9f9e91c4192bb90b8e56">   99</a></span>    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T&amp; <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a6843fd60529f9f9e91c4192bb90b8e56">z</a>() &amp; { <span class="keywordflow">return</span> <a class="code hl_variable" href="structamr__wind_1_1vs_1_1_vector_t.html#af127c53176905707df008bcecab2e077">vv</a>[2]; }</div>
+<div class="foldopen" id="foldopen00100" data-start="{" data-end="}">
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#a46ead539d413e6bfd0d7587ec059636e">  100</a></span>    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <span class="keyword">const</span> T&amp; <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a46ead539d413e6bfd0d7587ec059636e">x</a>() const&amp;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    {</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="structamr__wind_1_1vs_1_1_vector_t.html#af127c53176905707df008bcecab2e077">vv</a>[0];</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    }</div>
+</div>
+<div class="foldopen" id="foldopen00104" data-start="{" data-end="}">
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#af087438902dce05eebddec68b714f3f5">  104</a></span>    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <span class="keyword">const</span> T&amp; <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#af087438902dce05eebddec68b714f3f5">y</a>() const&amp;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    {</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="structamr__wind_1_1vs_1_1_vector_t.html#af127c53176905707df008bcecab2e077">vv</a>[1];</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    }</div>
+</div>
+<div class="foldopen" id="foldopen00108" data-start="{" data-end="}">
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#ac88fa2122dab60b5ea7f44936d01a27b">  108</a></span>    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <span class="keyword">const</span> T&amp; <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#ac88fa2122dab60b5ea7f44936d01a27b">z</a>() const&amp;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    {</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="structamr__wind_1_1vs_1_1_vector_t.html#af127c53176905707df008bcecab2e077">vv</a>[2];</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    }</div>
+</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#adf57555045ec87e6debea6c3baf856f1">  113</a></span>    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a29042e5d7e2696fa4d6629bf3b7c4be4">VectorT&lt;T&gt;</a> <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#adf57555045ec87e6debea6c3baf856f1">operator-</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#a3acdb641d2a1042d53c1b809f0b820ce">  115</a></span>    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a29042e5d7e2696fa4d6629bf3b7c4be4">VectorT&lt;T&gt;</a> <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a3acdb641d2a1042d53c1b809f0b820ce">operator*=</a>(T val);</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a29042e5d7e2696fa4d6629bf3b7c4be4">VectorT&lt;T&gt;</a></div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#a8528f92be9506c4d192843cd25e5cdd8">  118</a></span>    <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a8528f92be9506c4d192843cd25e5cdd8">operator*=</a>(<span class="keyword">const</span> <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a29042e5d7e2696fa4d6629bf3b7c4be4">VectorT&lt;T&gt;</a>&amp; valvec);</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#a65e0ea8a662c1e151695e2762fd3be4c">  120</a></span>    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a29042e5d7e2696fa4d6629bf3b7c4be4">VectorT&lt;T&gt;</a> <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a65e0ea8a662c1e151695e2762fd3be4c">operator/=</a>(T val);</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
+<div class="foldopen" id="foldopen00122" data-start="{" data-end="}">
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#af63814eb869975314761facbd43db37a">  122</a></span>    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T&amp; <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#af63814eb869975314761facbd43db37a">operator[]</a>(<a class="code hl_typedef" href="structamr__wind_1_1vs_1_1_vector_t.html#a63de475d9f6a3eb58ce0f22d7baa0f60">size_type</a> pos) &amp;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    {</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="structamr__wind_1_1vs_1_1_vector_t.html#af127c53176905707df008bcecab2e077">vv</a>[pos];</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    }</div>
+</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <span class="keyword">const</span> T&amp;</div>
+<div class="foldopen" id="foldopen00127" data-start="{" data-end="}">
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#ab3d36e497cdee5d74091e91b2b61c662">  127</a></span>    <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#ab3d36e497cdee5d74091e91b2b61c662">operator[]</a>(<a class="code hl_typedef" href="structamr__wind_1_1vs_1_1_vector_t.html#a63de475d9f6a3eb58ce0f22d7baa0f60">size_type</a> pos) <span class="keyword">const</span>&amp;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    {</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="structamr__wind_1_1vs_1_1_vector_t.html#af127c53176905707df008bcecab2e077">vv</a>[pos];</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    }</div>
+</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span> </div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#abb51f987ef03644bee4b351d6bb3ce73">  132</a></span>    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T* <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#abb51f987ef03644bee4b351d6bb3ce73">data</a>() { <span class="keywordflow">return</span> <a class="code hl_variable" href="structamr__wind_1_1vs_1_1_vector_t.html#af127c53176905707df008bcecab2e077">vv</a>.data(); }</div>
+<div class="foldopen" id="foldopen00133" data-start="{" data-end="}">
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#adccf82294df040135a43074b3aa20687">  133</a></span>    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE <span class="keyword">const</span> T* <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#adccf82294df040135a43074b3aa20687">data</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="structamr__wind_1_1vs_1_1_vector_t.html#af127c53176905707df008bcecab2e077">vv</a>.data();</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    }</div>
+</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#a847d76c6275d9d99684e7ee89c9dfa8b">  138</a></span>    <a class="code hl_typedef" href="structamr__wind_1_1vs_1_1_vector_t.html#ac0e752bab11cd2c8532403d9d1b53f99">iterator</a> <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a847d76c6275d9d99684e7ee89c9dfa8b">begin</a>() { <span class="keywordflow">return</span> <a class="code hl_variable" href="structamr__wind_1_1vs_1_1_vector_t.html#af127c53176905707df008bcecab2e077">vv</a>.begin(); }</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#afa9dd5de0b317b2a58552cc65bce10a0">  139</a></span>    <a class="code hl_typedef" href="structamr__wind_1_1vs_1_1_vector_t.html#ac0e752bab11cd2c8532403d9d1b53f99">iterator</a> <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#afa9dd5de0b317b2a58552cc65bce10a0">end</a>() { <span class="keywordflow">return</span> <a class="code hl_variable" href="structamr__wind_1_1vs_1_1_vector_t.html#af127c53176905707df008bcecab2e077">vv</a>.end(); }</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#a3ff65bdd4d8ac238c5fe498b0af827f0">  140</a></span>    [[nodiscard]] <a class="code hl_typedef" href="structamr__wind_1_1vs_1_1_vector_t.html#a08f7a73db7c6af6f2cd98afb93861c1c">const_iterator</a> <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a3ff65bdd4d8ac238c5fe498b0af827f0">cbegin</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="structamr__wind_1_1vs_1_1_vector_t.html#af127c53176905707df008bcecab2e077">vv</a>.cbegin(); }</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#a40c983dce9f0c7794443d4eef5e42966">  141</a></span>    [[nodiscard]] <a class="code hl_typedef" href="structamr__wind_1_1vs_1_1_vector_t.html#a08f7a73db7c6af6f2cd98afb93861c1c">const_iterator</a> <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a40c983dce9f0c7794443d4eef5e42966">cend</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="structamr__wind_1_1vs_1_1_vector_t.html#af127c53176905707df008bcecab2e077">vv</a>.cend(); }</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno"><a class="line" href="structamr__wind_1_1vs_1_1_vector_t.html#a405ccb548c6559cfc622c6689d2fdb7c">  142</a></span>    [[nodiscard]] <a class="code hl_typedef" href="structamr__wind_1_1vs_1_1_vector_t.html#a63de475d9f6a3eb58ce0f22d7baa0f60">size_type</a> <a class="code hl_function" href="structamr__wind_1_1vs_1_1_vector_t.html#a405ccb548c6559cfc622c6689d2fdb7c">size</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="structamr__wind_1_1vs_1_1_vector_t.html#a52eb01a2e9f0c3b7e46e447555e3dcb6">ncomp</a>; }</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>};</div>
+</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span> </div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno"><a class="line" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">  145</a></span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">Vector</a> = <a class="code hl_struct" href="structamr__wind_1_1vs_1_1_vector_t.html">VectorT&lt;amrex::Real&gt;</a>;</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span> </div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>} <span class="comment">// namespace amr_wind::vs</span></div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span> </div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span><span class="preprocessor">#include &quot;<a class="code" href="vector_i_8_h.html">amr-wind/core/vs/vectorI.H</a>&quot;</span></div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span> </div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span><span class="preprocessor">#endif </span><span class="comment">/* VS_VECTOR_H */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="anamespaceamr__wind_1_1vs_html"><div class="ttname"><a href="namespaceamr__wind_1_1vs.html">amr_wind::vs</a></div><div class="ttdef"><b>Definition</b> tensor.H:8</div></div>
+<div class="ttc" id="anamespaceamr__wind_1_1vs_html_a9c7552f03579943dc17ba67341db8aa4"><div class="ttname"><a href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">amr_wind::vs::Vector</a></div><div class="ttdeci">VectorT&lt; amrex::Real &gt; Vector</div><div class="ttdef"><b>Definition</b> vector.H:145</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_d_traits_html"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_d_traits.html">amr_wind::vs::DTraits</a></div><div class="ttdef"><b>Definition</b> vstraits.H:10</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html">amr_wind::vs::VectorT</a></div><div class="ttdef"><b>Definition</b> vector.H:13</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_a07548afc3eb37fa90143037489352fe0"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#a07548afc3eb37fa90143037489352fe0">amr_wind::vs::VectorT::VectorT</a></div><div class="ttdeci">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT(const T &amp;x, const T &amp;y, const T &amp;z)</div><div class="ttdef"><b>Definition</b> vector.H:32</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_a08f7a73db7c6af6f2cd98afb93861c1c"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#a08f7a73db7c6af6f2cd98afb93861c1c">amr_wind::vs::VectorT::const_iterator</a></div><div class="ttdeci">const T * const_iterator</div><div class="ttdef"><b>Definition</b> vector.H:22</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_a09dd6e2c78c5b439aa880dce3c3b152d"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#a09dd6e2c78c5b439aa880dce3c3b152d">amr_wind::vs::VectorT::VectorT</a></div><div class="ttdeci">VectorT(const VectorT &amp;)=default</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_a29042e5d7e2696fa4d6629bf3b7c4be4"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#a29042e5d7e2696fa4d6629bf3b7c4be4">amr_wind::vs::VectorT::VectorT</a></div><div class="ttdeci">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT()=default</div><div class="ttdoc">Construct a default vector, all components set to zero.</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_a2aea4ae3f8ab3613dd29712b940e89b0"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#a2aea4ae3f8ab3613dd29712b940e89b0">amr_wind::vs::VectorT::operator=</a></div><div class="ttdeci">VectorT &amp; operator=(const VectorT &amp;) &amp;=default</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_a2e450229e4f3f56747a70338199cbfbe"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#a2e450229e4f3f56747a70338199cbfbe">amr_wind::vs::VectorT&lt; amrex::Real &gt;::y</a></div><div class="ttdeci">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real &amp; y() &amp;</div><div class="ttdef"><b>Definition</b> vector.H:98</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_a328ea6db68de56671d77306ef099e92c"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#a328ea6db68de56671d77306ef099e92c">amr_wind::vs::VectorT::operator=</a></div><div class="ttdeci">VectorT &amp; operator=(const VectorT &amp;) &amp;&amp;=delete</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_a34397d833e00addc90f2f4fa092be5e7"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#a34397d833e00addc90f2f4fa092be5e7">amr_wind::vs::VectorT::operator=</a></div><div class="ttdeci">VectorT &amp; operator=(VectorT &amp;&amp;) &amp;&amp;=delete</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_a38851790fa94a0cf9e891bddf9d865f7"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#a38851790fa94a0cf9e891bddf9d865f7">amr_wind::vs::VectorT::one</a></div><div class="ttdeci">AMREX_GPU_HOST_DEVICE static AMREX_FORCE_INLINE constexpr VectorT&lt; T &gt; one()</div><div class="ttdef"><b>Definition</b> vector.H:50</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_a3acdb641d2a1042d53c1b809f0b820ce"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#a3acdb641d2a1042d53c1b809f0b820ce">amr_wind::vs::VectorT::operator*=</a></div><div class="ttdeci">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT&lt; T &gt; operator*=(T val)</div><div class="ttdef"><b>Definition</b> vectorI.H:19</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_a3ff65bdd4d8ac238c5fe498b0af827f0"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#a3ff65bdd4d8ac238c5fe498b0af827f0">amr_wind::vs::VectorT::cbegin</a></div><div class="ttdeci">const_iterator cbegin() const</div><div class="ttdef"><b>Definition</b> vector.H:140</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_a405ccb548c6559cfc622c6689d2fdb7c"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#a405ccb548c6559cfc622c6689d2fdb7c">amr_wind::vs::VectorT::size</a></div><div class="ttdeci">size_type size() const</div><div class="ttdef"><b>Definition</b> vector.H:142</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_a40c983dce9f0c7794443d4eef5e42966"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#a40c983dce9f0c7794443d4eef5e42966">amr_wind::vs::VectorT::cend</a></div><div class="ttdeci">const_iterator cend() const</div><div class="ttdef"><b>Definition</b> vector.H:141</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_a46ead539d413e6bfd0d7587ec059636e"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#a46ead539d413e6bfd0d7587ec059636e">amr_wind::vs::VectorT::x</a></div><div class="ttdeci">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T &amp; x() const &amp;</div><div class="ttdef"><b>Definition</b> vector.H:100</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_a52eb01a2e9f0c3b7e46e447555e3dcb6"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#a52eb01a2e9f0c3b7e46e447555e3dcb6">amr_wind::vs::VectorT&lt; amrex::Real &gt;::ncomp</a></div><div class="ttdeci">static constexpr int ncomp</div><div class="ttdef"><b>Definition</b> vector.H:17</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_a58c276c753621d734e7afd6c2ebcf307"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#a58c276c753621d734e7afd6c2ebcf307">amr_wind::vs::VectorT::unit</a></div><div class="ttdeci">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT&lt; T &gt; unit() const</div><div class="ttdoc">Return the unit vector parallel to this vector.</div><div class="ttdef"><b>Definition</b> vector.H:92</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_a5e5444823c23e33c4db31c3bed7aea49"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#a5e5444823c23e33c4db31c3bed7aea49">amr_wind::vs::VectorT::Traits</a></div><div class="ttdeci">DTraits&lt; T &gt; Traits</div><div class="ttdef"><b>Definition</b> vector.H:23</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_a63de475d9f6a3eb58ce0f22d7baa0f60"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#a63de475d9f6a3eb58ce0f22d7baa0f60">amr_wind::vs::VectorT::size_type</a></div><div class="ttdeci">int size_type</div><div class="ttdef"><b>Definition</b> vector.H:18</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_a64d706538d98c97e99c31d8aa7a28aec"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#a64d706538d98c97e99c31d8aa7a28aec">amr_wind::vs::VectorT::VectorT</a></div><div class="ttdeci">VectorT(VectorT &amp;&amp;)=default</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_a65e0ea8a662c1e151695e2762fd3be4c"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#a65e0ea8a662c1e151695e2762fd3be4c">amr_wind::vs::VectorT::operator/=</a></div><div class="ttdeci">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT&lt; T &gt; operator/=(T val)</div><div class="ttdef"><b>Definition</b> vectorI.H:39</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_a6843fd60529f9f9e91c4192bb90b8e56"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#a6843fd60529f9f9e91c4192bb90b8e56">amr_wind::vs::VectorT&lt; amrex::Real &gt;::z</a></div><div class="ttdeci">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real &amp; z() &amp;</div><div class="ttdef"><b>Definition</b> vector.H:99</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_a68ec560b9f371f96bd7cb0fccae16c98"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#a68ec560b9f371f96bd7cb0fccae16c98">amr_wind::vs::VectorT::jhat</a></div><div class="ttdeci">AMREX_GPU_HOST_DEVICE static AMREX_FORCE_INLINE constexpr VectorT&lt; T &gt; jhat(const T &amp;y=Traits::one())</div><div class="ttdef"><b>Definition</b> vector.H:70</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_a6ed87a433df1546dd15c6712b7f35dbb"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#a6ed87a433df1546dd15c6712b7f35dbb">amr_wind::vs::VectorT&lt; amrex::Real &gt;::x</a></div><div class="ttdeci">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real &amp; x() &amp;</div><div class="ttdef"><b>Definition</b> vector.H:97</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_a715c605a861488d2b4eefd394184a9da"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#a715c605a861488d2b4eefd394184a9da">amr_wind::vs::VectorT::normalize</a></div><div class="ttdeci">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT&lt; T &gt; &amp; normalize()</div><div class="ttdoc">Normalize the vector to unit vector.</div><div class="ttdef"><b>Definition</b> vectorI.H:126</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_a819e0f124a6619d01c6d0dca2fd49ed5"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#a819e0f124a6619d01c6d0dca2fd49ed5">amr_wind::vs::VectorT::~VectorT</a></div><div class="ttdeci">~VectorT()=default</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_a847d76c6275d9d99684e7ee89c9dfa8b"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#a847d76c6275d9d99684e7ee89c9dfa8b">amr_wind::vs::VectorT::begin</a></div><div class="ttdeci">iterator begin()</div><div class="ttdef"><b>Definition</b> vector.H:138</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_a8528f92be9506c4d192843cd25e5cdd8"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#a8528f92be9506c4d192843cd25e5cdd8">amr_wind::vs::VectorT::operator*=</a></div><div class="ttdeci">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT&lt; T &gt; operator*=(const VectorT&lt; T &gt; &amp;valvec)</div><div class="ttdef"><b>Definition</b> vectorI.H:29</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_a853ec75cfd324dab8595de429bc7e7f6"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#a853ec75cfd324dab8595de429bc7e7f6">amr_wind::vs::VectorT::VType</a></div><div class="ttdeci">VectorT&lt; T &gt; VType</div><div class="ttdef"><b>Definition</b> vector.H:24</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_a895a8a9b4f147e9253f8c74225f0f63d"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#a895a8a9b4f147e9253f8c74225f0f63d">amr_wind::vs::VectorT::value_type</a></div><div class="ttdeci">T value_type</div><div class="ttdef"><b>Definition</b> vector.H:19</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_ab3d36e497cdee5d74091e91b2b61c662"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#ab3d36e497cdee5d74091e91b2b61c662">amr_wind::vs::VectorT::operator[]</a></div><div class="ttdeci">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T &amp; operator[](size_type pos) const &amp;</div><div class="ttdef"><b>Definition</b> vector.H:127</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_abb51f987ef03644bee4b351d6bb3ce73"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#abb51f987ef03644bee4b351d6bb3ce73">amr_wind::vs::VectorT::data</a></div><div class="ttdeci">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T * data()</div><div class="ttdef"><b>Definition</b> vector.H:132</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_ac0e752bab11cd2c8532403d9d1b53f99"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#ac0e752bab11cd2c8532403d9d1b53f99">amr_wind::vs::VectorT::iterator</a></div><div class="ttdeci">T * iterator</div><div class="ttdef"><b>Definition</b> vector.H:21</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_ac304504c48ab3759c644f9e8447d60b9"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#ac304504c48ab3759c644f9e8447d60b9">amr_wind::vs::VectorT::reference</a></div><div class="ttdeci">T &amp; reference</div><div class="ttdef"><b>Definition</b> vector.H:20</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_ac8217e4c626e2920fc4c48406edcf6ec"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#ac8217e4c626e2920fc4c48406edcf6ec">amr_wind::vs::VectorT::sqrt</a></div><div class="ttdeci">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT&lt; T &gt; sqrt(const VectorT &amp;)</div><div class="ttdoc">Sqrt of each component.</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_ac88fa2122dab60b5ea7f44936d01a27b"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#ac88fa2122dab60b5ea7f44936d01a27b">amr_wind::vs::VectorT::z</a></div><div class="ttdeci">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T &amp; z() const &amp;</div><div class="ttdef"><b>Definition</b> vector.H:108</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_ace209a4305708240d4987853adcef5df"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#ace209a4305708240d4987853adcef5df">amr_wind::vs::VectorT::zero</a></div><div class="ttdeci">AMREX_GPU_HOST_DEVICE static AMREX_FORCE_INLINE constexpr VectorT&lt; T &gt; zero()</div><div class="ttdoc">Zero vector.</div><div class="ttdef"><b>Definition</b> vector.H:45</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_ad143050a320cc227005210de2d7df352"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#ad143050a320cc227005210de2d7df352">amr_wind::vs::VectorT::operator=</a></div><div class="ttdeci">VectorT &amp; operator=(VectorT &amp;&amp;) &amp;=default</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_ad8b99e7c3190614227cc9b72593fd532"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#ad8b99e7c3190614227cc9b72593fd532">amr_wind::vs::VectorT::khat</a></div><div class="ttdeci">AMREX_GPU_HOST_DEVICE static AMREX_FORCE_INLINE constexpr VectorT&lt; T &gt; khat(const T &amp;z=Traits::one())</div><div class="ttdef"><b>Definition</b> vector.H:80</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_adccf82294df040135a43074b3aa20687"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#adccf82294df040135a43074b3aa20687">amr_wind::vs::VectorT::data</a></div><div class="ttdeci">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T * data() const</div><div class="ttdef"><b>Definition</b> vector.H:133</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_adf57555045ec87e6debea6c3baf856f1"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#adf57555045ec87e6debea6c3baf856f1">amr_wind::vs::VectorT::operator-</a></div><div class="ttdeci">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT&lt; T &gt; operator-() const</div><div class="ttdef"><b>Definition</b> vectorI.H:12</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_ae6c8bb574c0a9acf2d2a31ffc5b76d47"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#ae6c8bb574c0a9acf2d2a31ffc5b76d47">amr_wind::vs::VectorT::ihat</a></div><div class="ttdeci">AMREX_GPU_HOST_DEVICE static AMREX_FORCE_INLINE constexpr VectorT&lt; T &gt; ihat(const T &amp;x=Traits::one())</div><div class="ttdef"><b>Definition</b> vector.H:60</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_af087438902dce05eebddec68b714f3f5"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#af087438902dce05eebddec68b714f3f5">amr_wind::vs::VectorT::y</a></div><div class="ttdeci">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T &amp; y() const &amp;</div><div class="ttdef"><b>Definition</b> vector.H:104</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_af127c53176905707df008bcecab2e077"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#af127c53176905707df008bcecab2e077">amr_wind::vs::VectorT&lt; amrex::Real &gt;::vv</a></div><div class="ttdeci">amrex::GpuArray&lt; amrex::Real, 3 &gt; vv</div><div class="ttdef"><b>Definition</b> vector.H:14</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_af63814eb869975314761facbd43db37a"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#af63814eb869975314761facbd43db37a">amr_wind::vs::VectorT::operator[]</a></div><div class="ttdeci">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T &amp; operator[](size_type pos) &amp;</div><div class="ttdef"><b>Definition</b> vector.H:122</div></div>
+<div class="ttc" id="astructamr__wind_1_1vs_1_1_vector_t_html_afa9dd5de0b317b2a58552cc65bce10a0"><div class="ttname"><a href="structamr__wind_1_1vs_1_1_vector_t.html#afa9dd5de0b317b2a58552cc65bce10a0">amr_wind::vs::VectorT::end</a></div><div class="ttdeci">iterator end()</div><div class="ttdef"><b>Definition</b> vector.H:139</div></div>
+<div class="ttc" id="avector_i_8_h_html"><div class="ttname"><a href="vector_i_8_h.html">vectorI.H</a></div></div>
+<div class="ttc" id="avstraits_8_h_html"><div class="ttname"><a href="vstraits_8_h.html">vstraits.H</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

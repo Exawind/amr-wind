@@ -1,0 +1,14 @@
+.. meta::5e78b9990969be0b7f2c278ebc856e0eb6ca98288c5fc15a1b77a12b121f073b697aa01a5a84b0183d290b64257f25c34e605cf2057b3346aa8d7a97f5ca6be2
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::synth_turb::LinearShearProfile Class Reference
+
+LinearShearProfile Class Reference
+==================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1synth__turb_1_1_linear_shear_profile.html

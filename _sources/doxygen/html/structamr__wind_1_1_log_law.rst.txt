@@ -1,0 +1,14 @@
+.. meta::08645bb0c8e932aa407320e6f8c97190fd42d00ff09f04ecc1ef27691f92954c3eebfc757f663cd16fcca022ee6b858a3199c0fb3d214c2303f7fd5b3f150a71
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::LogLaw Struct Reference
+
+LogLaw Struct Reference
+=======================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1_log_law.html

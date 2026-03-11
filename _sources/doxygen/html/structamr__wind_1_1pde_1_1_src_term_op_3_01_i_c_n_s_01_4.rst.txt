@@ -1,0 +1,14 @@
+.. meta::2bf07a8e66b2b6862564d16cbb102657ce9ce429e4d6740cfc250b35c3405f4f48f510245c544f59a29c89ee297c68b63170f55a774319c91b2e24cdc964f76f
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::SrcTermOp&lt; ICNS &gt; Struct Reference
+
+SrcTermOp&lt; ICNS &gt; Struct Reference
+========================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1pde_1_1_src_term_op_3_01_i_c_n_s_01_4.html

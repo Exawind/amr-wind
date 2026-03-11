@@ -1,0 +1,14 @@
+.. meta::3e81764f68827550f08ad94f2000af7bd84f8094330f97b703473362094d4e3c3ba31b7b0fbf7db846be7443db98027e65215196d0044ed52965b23e1f60174c
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/actuator/turbine/external -&gt; core Relation
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/wind\_energy/actuator/turbine/external -&gt; core Relation
+=======================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: dir_000018_000010.html

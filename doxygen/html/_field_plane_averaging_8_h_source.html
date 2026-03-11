@@ -1,0 +1,438 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/FieldPlaneAveraging.H Source File &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/FieldPlaneAveraging.H Source File</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/_field_plane_averaging_8_h_source.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="home-runner-work-amr-wind-amr-wind-amr-wind-utilities-fieldplaneaveraging-h-source-file">
+<h1>/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/FieldPlaneAveraging.H Source File<a class="headerlink" href="#home-runner-work-amr-wind-amr-wind-amr-wind-utilities-fieldplaneaveraging-h-source-file" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/FieldPlaneAveraging.H Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="dir_d85575251dd712327fe3cf057fa568b4.html">amr-wind</a></li><li class="navelem"><a href="dir_212148f97b8bb53ebaebb3bf8a8b5de4.html">amr-wind</a></li><li class="navelem"><a href="dir_e9168f3bfea397a173489332f8554c97.html">utilities</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="headertitle"><div class="title">FieldPlaneAveraging.H</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="_field_plane_averaging_8_h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef FIELDPLANEAVERAGING_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define FIELDPLANEAVERAGING_H</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="_direction_selector_8_h.html">amr-wind/utilities/DirectionSelector.H</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="_c_f_d_sim_8_h.html">amr-wind/CFDSim.H</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="_field_8_h.html">amr-wind/core/Field.H</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="_sim_time_8_h.html">amr-wind/core/SimTime.H</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceamr__wind.html">amr_wind</a> {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> FType&gt;</div>
+<div class="foldopen" id="foldopen00029" data-start="{" data-end="};">
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html">   29</a></span><span class="keyword">class </span><a class="code hl_function" href="classamr__wind_1_1_f_plane_averaging.html#afba2add2e96ba12d9fddfd604d7899f4">FPlaneAveraging</a></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>{</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#afba2add2e96ba12d9fddfd604d7899f4">   39</a></span>    <a class="code hl_function" href="classamr__wind_1_1_f_plane_averaging.html#afba2add2e96ba12d9fddfd604d7899f4">FPlaneAveraging</a>(</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keyword">const</span> FType&amp; field_in,</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_sim_time.html">amr_wind::SimTime</a>&amp; time,</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        <span class="keywordtype">int</span> axis_in,</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="keywordtype">bool</span> compute_deriv = <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#a8383dcd7af3b6145e3ebe5c88fb4ef9a">   45</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classamr__wind_1_1_f_plane_averaging.html#a8383dcd7af3b6145e3ebe5c88fb4ef9a">~FPlaneAveraging</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#a1461f26bf9b00d44d1b67ac5814ae07f">   47</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_f_plane_averaging.html#a1461f26bf9b00d44d1b67ac5814ae07f">operator()</a>();</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    [[nodiscard]] amrex::Real</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#a5aea945a0e8b72f8ba6540fdff66486c">   51</a></span>    <a class="code hl_function" href="classamr__wind_1_1_f_plane_averaging.html#a5aea945a0e8b72f8ba6540fdff66486c">line_average_interpolated</a>(amrex::Real x, <span class="keywordtype">int</span> comp) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#a1a66d5b069263875e5c3edbac74b85ab">   53</a></span>    [[nodiscard]] amrex::Real <a class="code hl_function" href="classamr__wind_1_1_f_plane_averaging.html#a1a66d5b069263875e5c3edbac74b85ab">line_average_cell</a>(<span class="keywordtype">int</span> ind, <span class="keywordtype">int</span> comp) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span></div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    [[nodiscard]] amrex::Real</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#ad1021f75686c3ddf248aba46e02f25fe">   58</a></span>    <a class="code hl_function" href="classamr__wind_1_1_f_plane_averaging.html#ad1021f75686c3ddf248aba46e02f25fe">line_derivative_interpolated</a>(amrex::Real x, <span class="keywordtype">int</span> comp) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    [[nodiscard]] amrex::Real</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#a1474a4d78aa5f98f76ca30fe8b04d573">   62</a></span>    <a class="code hl_function" href="classamr__wind_1_1_f_plane_averaging.html#a1474a4d78aa5f98f76ca30fe8b04d573">line_derivative_of_average_cell</a>(<span class="keywordtype">int</span> ind, <span class="keywordtype">int</span> comp) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#af3f52e04e67889e8c36d66cc77ee7454">   64</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_f_plane_averaging.html#af3f52e04e67889e8c36d66cc77ee7454">output_line_average_ascii</a>(</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <span class="keyword">const</span> std::string&amp; filename, <span class="keywordtype">int</span> step, amrex::Real time);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#a3120d5686f982e759992bf9f4e754005">   66</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_f_plane_averaging.html#a3120d5686f982e759992bf9f4e754005">output_line_average_ascii</a>(<span class="keywordtype">int</span> step, amrex::Real time);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#af99cf97b265b8b09795f10bb1dfde3fb">   69</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_f_plane_averaging.html#af99cf97b265b8b09795f10bb1dfde3fb">set_precision</a>(<span class="keywordtype">int</span> p) { <a class="code hl_variable" href="classamr__wind_1_1_f_plane_averaging.html#a6792f45a99d0a0177ba83809eebfcbec">m_precision</a> = p; };</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#a3157f62cebbc114f6488a79ed12b86b9">   71</a></span>    [[nodiscard]] amrex::Real <a class="code hl_function" href="classamr__wind_1_1_f_plane_averaging.html#a3157f62cebbc114f6488a79ed12b86b9">dx</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_f_plane_averaging.html#ad5280ea3615b2aeaf54363da91f05d1a">m_dx</a>; };</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#a0733f57659b2e04cfbd9c033109cd3bc">   72</a></span>    [[nodiscard]] amrex::Real <a class="code hl_function" href="classamr__wind_1_1_f_plane_averaging.html#a0733f57659b2e04cfbd9c033109cd3bc">xlo</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_f_plane_averaging.html#a44d2174e086863c5148fd39335adcaee">m_xlo</a>; };</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#adbf91f435f5a20093f26b832a1712bc5">   74</a></span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classamr__wind_1_1_f_plane_averaging.html#adbf91f435f5a20093f26b832a1712bc5">axis</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_f_plane_averaging.html#ac3d4509b61bc9132d3c0a7e4d9a008af">m_axis</a>; };</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#af864ec9572d451d94803ff91bce71ab6">   75</a></span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classamr__wind_1_1_f_plane_averaging.html#af864ec9572d451d94803ff91bce71ab6">level</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_f_plane_averaging.html#af1d74c4c70dc6ac145d9cfd2a751d7a7">m_level</a>; };</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#a6e03cbb3992d416c933bd2f1952592e1">   76</a></span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classamr__wind_1_1_f_plane_averaging.html#a6e03cbb3992d416c933bd2f1952592e1">ncomp</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_f_plane_averaging.html#a11cc2290a863c446f778f611a586810a">m_ncomp</a>; };</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#a657fd345ee63b34d48a303c90af6fae0">   77</a></span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classamr__wind_1_1_f_plane_averaging.html#a657fd345ee63b34d48a303c90af6fae0">ncell_plane</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_f_plane_averaging.html#aa5baefc249c170ae5f95fe60132d37f5">m_ncell_plane</a>; };</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#a2319341102e1af12e48b3280fb9d21e0">   78</a></span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classamr__wind_1_1_f_plane_averaging.html#a2319341102e1af12e48b3280fb9d21e0">ncell_line</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_f_plane_averaging.html#a64faf2451253bcd4c310d172812492dd">m_ncell_line</a>; };</div>
+<div class="foldopen" id="foldopen00079" data-start="{" data-end="}">
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#a8dc05c173f09516f73b903d8e4197237">   79</a></span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classamr__wind_1_1_f_plane_averaging.html#a8dc05c173f09516f73b903d8e4197237">last_updated_index</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_f_plane_averaging.html#a3c3e03ce06cb4ef477f7abdf262ea149">m_last_updated_index</a>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    };</div>
+</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="foldopen" id="foldopen00084" data-start="{" data-end="}">
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#a5c99214d7e32bb01b63562ab807bb914">   84</a></span>    [[nodiscard]] <span class="keyword">const</span> amrex::Vector&lt;amrex::Real&gt;&amp; <a class="code hl_function" href="classamr__wind_1_1_f_plane_averaging.html#a5c99214d7e32bb01b63562ab807bb914">line_average</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_f_plane_averaging.html#adc48dbdb2c1b90ed31747f2662e8a42a">m_line_average</a>;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    };</div>
+</div>
+<div class="foldopen" id="foldopen00088" data-start="{" data-end="}">
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#af01c51cd5009bf97da3af99985ba7bd1">   88</a></span>    [[nodiscard]] <span class="keyword">const</span> amrex::Vector&lt;amrex::Real&gt;&amp; <a class="code hl_function" href="classamr__wind_1_1_f_plane_averaging.html#af01c51cd5009bf97da3af99985ba7bd1">line_deriv</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_f_plane_averaging.html#a4c279b2ccc90457b0f982c876283bfc1">m_line_deriv</a>;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    };</div>
+</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#a9688661d036476eb68f744842080eb9d">   92</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_f_plane_averaging.html#a9688661d036476eb68f744842080eb9d">line_average</a>(<span class="keywordtype">int</span> comp, amrex::Vector&lt;amrex::Real&gt;&amp; l_vec);</div>
+<div class="foldopen" id="foldopen00093" data-start="{" data-end="}">
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#a5f58d3fabdab73b7ff27754afed80939">   93</a></span>    [[nodiscard]] <span class="keyword">const</span> amrex::Vector&lt;amrex::Real&gt;&amp; <a class="code hl_function" href="classamr__wind_1_1_f_plane_averaging.html#a5f58d3fabdab73b7ff27754afed80939">line_centroids</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_f_plane_averaging.html#a8b61cc6ce1f2963d6d05f2f40ea7372d">m_line_xcentroid</a>;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    };</div>
+</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#a7aa14958346d6e97f563d9cf183d5809">   98</a></span>    [[nodiscard]] <span class="keyword">const</span> FType&amp; <a class="code hl_function" href="classamr__wind_1_1_f_plane_averaging.html#a7aa14958346d6e97f563d9cf183d5809">field</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_f_plane_averaging.html#a5d2fce756d43f1b7beb22d8ed97ba7a0">m_field</a>; };</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span><span class="keyword">protected</span>:</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#a11cc2290a863c446f778f611a586810a">  101</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classamr__wind_1_1_f_plane_averaging.html#a11cc2290a863c446f778f611a586810a">m_ncomp</a>; </div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    amrex::Vector&lt;amrex::Real&gt;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#adc48dbdb2c1b90ed31747f2662e8a42a">  104</a></span>        <a class="code hl_variable" href="classamr__wind_1_1_f_plane_averaging.html#adc48dbdb2c1b90ed31747f2662e8a42a">m_line_average</a>; </div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#a4c279b2ccc90457b0f982c876283bfc1">  107</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1_f_plane_averaging.html#a4c279b2ccc90457b0f982c876283bfc1">m_line_deriv</a>;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#a8b61cc6ce1f2963d6d05f2f40ea7372d">  109</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1_f_plane_averaging.html#a8b61cc6ce1f2963d6d05f2f40ea7372d">m_line_xcentroid</a>; </div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#ad5280ea3615b2aeaf54363da91f05d1a">  112</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_f_plane_averaging.html#ad5280ea3615b2aeaf54363da91f05d1a">m_dx</a>;  </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#a44d2174e086863c5148fd39335adcaee">  113</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_f_plane_averaging.html#a44d2174e086863c5148fd39335adcaee">m_xlo</a>; </div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#aa5baefc249c170ae5f95fe60132d37f5">  115</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classamr__wind_1_1_f_plane_averaging.html#aa5baefc249c170ae5f95fe60132d37f5">m_ncell_plane</a>; </div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#a64faf2451253bcd4c310d172812492dd">  116</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classamr__wind_1_1_f_plane_averaging.html#a64faf2451253bcd4c310d172812492dd">m_ncell_line</a>;  </div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#a6792f45a99d0a0177ba83809eebfcbec">  118</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classamr__wind_1_1_f_plane_averaging.html#a6792f45a99d0a0177ba83809eebfcbec">m_precision</a> = 4; </div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#af1d74c4c70dc6ac145d9cfd2a751d7a7">  119</a></span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="classamr__wind_1_1_f_plane_averaging.html#af1d74c4c70dc6ac145d9cfd2a751d7a7">m_level</a> =</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        0; </div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#a3c3e03ce06cb4ef477f7abdf262ea149">  121</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classamr__wind_1_1_f_plane_averaging.html#a3c3e03ce06cb4ef477f7abdf262ea149">m_last_updated_index</a> = -1; </div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#a5d2fce756d43f1b7beb22d8ed97ba7a0">  124</a></span>    <span class="keyword">const</span> FType&amp; <a class="code hl_variable" href="classamr__wind_1_1_f_plane_averaging.html#a5d2fce756d43f1b7beb22d8ed97ba7a0">m_field</a>;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#ae160fc57950425e983f844ebc5b1a03c">  125</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_sim_time.html">SimTime</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1_f_plane_averaging.html#ae160fc57950425e983f844ebc5b1a03c">m_time</a>;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#ac3d4509b61bc9132d3c0a7e4d9a008af">  126</a></span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="classamr__wind_1_1_f_plane_averaging.html#ac3d4509b61bc9132d3c0a7e4d9a008af">m_axis</a>;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#a8c4a4ca4d55db7af04d1b48dcb175168">  127</a></span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> <a class="code hl_variable" href="classamr__wind_1_1_f_plane_averaging.html#a8c4a4ca4d55db7af04d1b48dcb175168">m_comp_deriv</a>;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span><span class="keyword">public</span>: <span class="comment">// public for GPU</span></div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> IndexSelector&gt;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keywordtype">void</span></div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#ada58a929ebed7feb9c9bbd1f33c05520">  133</a></span>    <a class="code hl_function" href="classamr__wind_1_1_f_plane_averaging.html#ada58a929ebed7feb9c9bbd1f33c05520">compute_averages</a>(<span class="keyword">const</span> IndexSelector&amp; idxOp, <span class="keyword">const</span> amrex::MultiFab&amp; mfab);</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span></div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_f_plane_averaging.html#a1b84349a4889c3e3928c336c6385bd47">  136</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_f_plane_averaging.html#a1b84349a4889c3e3928c336c6385bd47">compute_line_derivatives</a>();</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>};</div>
+</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span> </div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno"><a class="line" href="namespaceamr__wind.html#a786ec0c89796180da3204a4f86c4624e">  139</a></span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceamr__wind.html#a786ec0c89796180da3204a4f86c4624e">FieldPlaneAveraging</a> = <a class="code hl_class" href="classamr__wind_1_1_f_plane_averaging.html">FPlaneAveraging&lt;Field&gt;</a>;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno"><a class="line" href="namespaceamr__wind.html#ae1c4a5e28539695a22e6d548c71e3995">  140</a></span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceamr__wind.html#ae1c4a5e28539695a22e6d548c71e3995">ScratchFieldPlaneAveraging</a> = <a class="code hl_class" href="classamr__wind_1_1_f_plane_averaging.html">FPlaneAveraging&lt;ScratchField&gt;</a>;</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span></div>
+<div class="foldopen" id="foldopen00145" data-start="{" data-end="};">
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_vel_plane_averaging.html">  145</a></span><span class="keyword">class </span><a class="code hl_function" href="classamr__wind_1_1_vel_plane_averaging.html#a11c7c54a1b1616bd8f04a6956bd57cc4">VelPlaneAveraging</a> : <span class="keyword">public</span> <a class="code hl_typedef" href="namespaceamr__wind.html#a786ec0c89796180da3204a4f86c4624e">FieldPlaneAveraging</a></div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>{</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    <a class="code hl_function" href="classamr__wind_1_1_vel_plane_averaging.html#a11c7c54a1b1616bd8f04a6956bd57cc4">VelPlaneAveraging</a>(<a class="code hl_class" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; sim, <span class="keywordtype">int</span> axis_in);</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span> </div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_vel_plane_averaging.html#ad0e81d3dbaba7467a58a34bad17356e6">  150</a></span>    <a class="code hl_function" href="classamr__wind_1_1_vel_plane_averaging.html#ad0e81d3dbaba7467a58a34bad17356e6">~VelPlaneAveraging</a>() <span class="keyword">override</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span> </div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_vel_plane_averaging.html#a8c300a79d7c5e1dac2e94d404b3c3fc9">operator()</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span> </div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    amrex::Vector&lt;amrex::Real&gt;</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_vel_plane_averaging.html#a021bfff0e620620db3d06db531288a7c">  156</a></span>        <a class="code hl_variable" href="classamr__wind_1_1_vel_plane_averaging.html#a021bfff0e620620db3d06db531288a7c">m_line_hvelmag_average</a>; </div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_vel_plane_averaging.html#a413bcac62a7a89129444af8dea5d8f93">  159</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1_vel_plane_averaging.html#a413bcac62a7a89129444af8dea5d8f93">m_line_hvelmag_deriv</a>;</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span> </div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span><span class="keyword">public</span>: <span class="comment">// public for GPU</span></div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> IndexSelector&gt;</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_vel_plane_averaging.html#a7c9751c7b8e7999fa4f134dfca431ecd">compute_hvelmag_averages</a>(</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>        <span class="keyword">const</span> IndexSelector&amp; idx_op,</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>        <span class="keywordtype">int</span> h1_idx,</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>        <span class="keywordtype">int</span> h2_idx,</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>        <span class="keyword">const</span> amrex::MultiFab&amp; mfab);</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span></div>
+<div class="foldopen" id="foldopen00171" data-start="{" data-end="}">
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_vel_plane_averaging.html#aaf244b0c45dd290acefafc81d6859255">  171</a></span>    <span class="keyword">const</span> amrex::Vector&lt;amrex::Real&gt;&amp; <a class="code hl_function" href="classamr__wind_1_1_vel_plane_averaging.html#aaf244b0c45dd290acefafc81d6859255">line_hvelmag_average</a>()</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    {</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_vel_plane_averaging.html#a021bfff0e620620db3d06db531288a7c">m_line_hvelmag_average</a>;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    };</div>
+</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span></div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    [[nodiscard]] amrex::Real</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    <a class="code hl_function" href="classamr__wind_1_1_vel_plane_averaging.html#ad8196858e1ab5d9a3d37733c725a0244">line_hvelmag_average_interpolated</a>(amrex::Real x) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    [[nodiscard]] amrex::Real <a class="code hl_function" href="classamr__wind_1_1_vel_plane_averaging.html#a4af84a51db30a6bc55b44e0cf5fb9c13">line_hvelmag_average_cell</a>(<span class="keywordtype">int</span> ind) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span></div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_vel_plane_averaging.html#abe68ac92a179d73af83535103588fbf6">compute_line_hvelmag_derivatives</a>();</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    [[nodiscard]] amrex::Real</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_vel_plane_averaging.html#ad434306afb6df422041fe8468bb9116d">  189</a></span>    <a class="code hl_function" href="classamr__wind_1_1_vel_plane_averaging.html#ad434306afb6df422041fe8468bb9116d">line_hvelmag_derivative_interpolated</a>(amrex::Real x) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    [[nodiscard]] amrex::Real</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    <a class="code hl_function" href="classamr__wind_1_1_vel_plane_averaging.html#ad53b7a4ebb625433558f8b84ae3df450">line_hvelmag_derivative_of_average_cell</a>(<span class="keywordtype">int</span> ind) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span> </div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_vel_plane_averaging.html#a2eb6f51f571bdaa6ee9e98c350aa6511">output_line_average_ascii</a>(</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        <span class="keyword">const</span> std::string&amp; filename, <span class="keywordtype">int</span> step, amrex::Real time);</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_vel_plane_averaging.html#a2eb6f51f571bdaa6ee9e98c350aa6511">output_line_average_ascii</a>(<span class="keywordtype">int</span> step, amrex::Real time);</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>};</div>
+</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span> </div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>} <span class="comment">// namespace amr_wind</span></div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span> </div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span><span class="preprocessor">#endif </span><span class="comment">/* FieldPlaneAveraging_H */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="a_c_f_d_sim_8_h_html"><div class="ttname"><a href="_c_f_d_sim_8_h.html">CFDSim.H</a></div></div>
+<div class="ttc" id="a_direction_selector_8_h_html"><div class="ttname"><a href="_direction_selector_8_h.html">DirectionSelector.H</a></div></div>
+<div class="ttc" id="a_field_8_h_html"><div class="ttname"><a href="_field_8_h.html">Field.H</a></div></div>
+<div class="ttc" id="a_sim_time_8_h_html"><div class="ttname"><a href="_sim_time_8_h.html">SimTime.H</a></div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html">amr_wind::CFDSim</a></div><div class="ttdef"><b>Definition</b> CFDSim.H:54</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html">amr_wind::FPlaneAveraging</a></div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.H:30</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_a0733f57659b2e04cfbd9c033109cd3bc"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#a0733f57659b2e04cfbd9c033109cd3bc">amr_wind::FPlaneAveraging::xlo</a></div><div class="ttdeci">amrex::Real xlo() const</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.H:72</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_a11cc2290a863c446f778f611a586810a"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#a11cc2290a863c446f778f611a586810a">amr_wind::FPlaneAveraging&lt; Field &gt;::m_ncomp</a></div><div class="ttdeci">int m_ncomp</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.H:101</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_a1461f26bf9b00d44d1b67ac5814ae07f"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#a1461f26bf9b00d44d1b67ac5814ae07f">amr_wind::FPlaneAveraging::operator()</a></div><div class="ttdeci">virtual void operator()()</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.cpp:230</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_a1474a4d78aa5f98f76ca30fe8b04d573"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#a1474a4d78aa5f98f76ca30fe8b04d573">amr_wind::FPlaneAveraging::line_derivative_of_average_cell</a></div><div class="ttdeci">amrex::Real line_derivative_of_average_cell(int ind, int comp) const</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.cpp:174</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_a1a66d5b069263875e5c3edbac74b85ab"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#a1a66d5b069263875e5c3edbac74b85ab">amr_wind::FPlaneAveraging::line_average_cell</a></div><div class="ttdeci">amrex::Real line_average_cell(int ind, int comp) const</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.cpp:150</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_a1b84349a4889c3e3928c336c6385bd47"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#a1b84349a4889c3e3928c336c6385bd47">amr_wind::FPlaneAveraging::compute_line_derivatives</a></div><div class="ttdeci">void compute_line_derivatives()</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.cpp:161</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_a2319341102e1af12e48b3280fb9d21e0"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#a2319341102e1af12e48b3280fb9d21e0">amr_wind::FPlaneAveraging::ncell_line</a></div><div class="ttdeci">int ncell_line() const</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.H:78</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_a3120d5686f982e759992bf9f4e754005"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#a3120d5686f982e759992bf9f4e754005">amr_wind::FPlaneAveraging::output_line_average_ascii</a></div><div class="ttdeci">void output_line_average_ascii(int step, amrex::Real time)</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.cpp:100</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_a3157f62cebbc114f6488a79ed12b86b9"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#a3157f62cebbc114f6488a79ed12b86b9">amr_wind::FPlaneAveraging::dx</a></div><div class="ttdeci">amrex::Real dx() const</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.H:71</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_a3c3e03ce06cb4ef477f7abdf262ea149"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#a3c3e03ce06cb4ef477f7abdf262ea149">amr_wind::FPlaneAveraging&lt; Field &gt;::m_last_updated_index</a></div><div class="ttdeci">int m_last_updated_index</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.H:121</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_a44d2174e086863c5148fd39335adcaee"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#a44d2174e086863c5148fd39335adcaee">amr_wind::FPlaneAveraging&lt; Field &gt;::m_xlo</a></div><div class="ttdeci">amrex::Real m_xlo</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.H:113</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_a4c279b2ccc90457b0f982c876283bfc1"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#a4c279b2ccc90457b0f982c876283bfc1">amr_wind::FPlaneAveraging&lt; Field &gt;::m_line_deriv</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_line_deriv</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.H:107</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_a5aea945a0e8b72f8ba6540fdff66486c"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#a5aea945a0e8b72f8ba6540fdff66486c">amr_wind::FPlaneAveraging::line_average_interpolated</a></div><div class="ttdeci">amrex::Real line_average_interpolated(amrex::Real x, int comp) const</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.cpp:109</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_a5c99214d7e32bb01b63562ab807bb914"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#a5c99214d7e32bb01b63562ab807bb914">amr_wind::FPlaneAveraging::line_average</a></div><div class="ttdeci">const amrex::Vector&lt; amrex::Real &gt; &amp; line_average() const</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.H:84</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_a5d2fce756d43f1b7beb22d8ed97ba7a0"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#a5d2fce756d43f1b7beb22d8ed97ba7a0">amr_wind::FPlaneAveraging&lt; Field &gt;::m_field</a></div><div class="ttdeci">const Field &amp; m_field</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.H:124</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_a5f58d3fabdab73b7ff27754afed80939"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#a5f58d3fabdab73b7ff27754afed80939">amr_wind::FPlaneAveraging::line_centroids</a></div><div class="ttdeci">const amrex::Vector&lt; amrex::Real &gt; &amp; line_centroids() const</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.H:93</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_a64faf2451253bcd4c310d172812492dd"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#a64faf2451253bcd4c310d172812492dd">amr_wind::FPlaneAveraging&lt; Field &gt;::m_ncell_line</a></div><div class="ttdeci">int m_ncell_line</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.H:116</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_a657fd345ee63b34d48a303c90af6fae0"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#a657fd345ee63b34d48a303c90af6fae0">amr_wind::FPlaneAveraging::ncell_plane</a></div><div class="ttdeci">int ncell_plane() const</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.H:77</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_a6792f45a99d0a0177ba83809eebfcbec"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#a6792f45a99d0a0177ba83809eebfcbec">amr_wind::FPlaneAveraging&lt; Field &gt;::m_precision</a></div><div class="ttdeci">int m_precision</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.H:118</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_a6e03cbb3992d416c933bd2f1952592e1"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#a6e03cbb3992d416c933bd2f1952592e1">amr_wind::FPlaneAveraging::ncomp</a></div><div class="ttdeci">int ncomp() const</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.H:76</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_a7aa14958346d6e97f563d9cf183d5809"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#a7aa14958346d6e97f563d9cf183d5809">amr_wind::FPlaneAveraging::field</a></div><div class="ttdeci">const FType &amp; field() const</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.H:98</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_a8383dcd7af3b6145e3ebe5c88fb4ef9a"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#a8383dcd7af3b6145e3ebe5c88fb4ef9a">amr_wind::FPlaneAveraging::~FPlaneAveraging</a></div><div class="ttdeci">virtual ~FPlaneAveraging()=default</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_a8b61cc6ce1f2963d6d05f2f40ea7372d"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#a8b61cc6ce1f2963d6d05f2f40ea7372d">amr_wind::FPlaneAveraging&lt; Field &gt;::m_line_xcentroid</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_line_xcentroid</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.H:109</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_a8c4a4ca4d55db7af04d1b48dcb175168"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#a8c4a4ca4d55db7af04d1b48dcb175168">amr_wind::FPlaneAveraging&lt; Field &gt;::m_comp_deriv</a></div><div class="ttdeci">const bool m_comp_deriv</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.H:127</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_a8dc05c173f09516f73b903d8e4197237"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#a8dc05c173f09516f73b903d8e4197237">amr_wind::FPlaneAveraging::last_updated_index</a></div><div class="ttdeci">int last_updated_index() const</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.H:79</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_a9688661d036476eb68f744842080eb9d"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#a9688661d036476eb68f744842080eb9d">amr_wind::FPlaneAveraging::line_average</a></div><div class="ttdeci">void line_average(int comp, amrex::Vector&lt; amrex::Real &gt; &amp;l_vec)</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.cpp:137</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_aa5baefc249c170ae5f95fe60132d37f5"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#aa5baefc249c170ae5f95fe60132d37f5">amr_wind::FPlaneAveraging&lt; Field &gt;::m_ncell_plane</a></div><div class="ttdeci">int m_ncell_plane</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.H:115</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_ac3d4509b61bc9132d3c0a7e4d9a008af"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#ac3d4509b61bc9132d3c0a7e4d9a008af">amr_wind::FPlaneAveraging&lt; Field &gt;::m_axis</a></div><div class="ttdeci">const int m_axis</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.H:126</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_ad1021f75686c3ddf248aba46e02f25fe"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#ad1021f75686c3ddf248aba46e02f25fe">amr_wind::FPlaneAveraging::line_derivative_interpolated</a></div><div class="ttdeci">amrex::Real line_derivative_interpolated(amrex::Real x, int comp) const</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.cpp:202</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_ad5280ea3615b2aeaf54363da91f05d1a"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#ad5280ea3615b2aeaf54363da91f05d1a">amr_wind::FPlaneAveraging&lt; Field &gt;::m_dx</a></div><div class="ttdeci">amrex::Real m_dx</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.H:112</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_ada58a929ebed7feb9c9bbd1f33c05520"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#ada58a929ebed7feb9c9bbd1f33c05520">amr_wind::FPlaneAveraging::compute_averages</a></div><div class="ttdeci">void compute_averages(const IndexSelector &amp;idxOp, const amrex::MultiFab &amp;mfab)</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.cpp:260</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_adbf91f435f5a20093f26b832a1712bc5"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#adbf91f435f5a20093f26b832a1712bc5">amr_wind::FPlaneAveraging::axis</a></div><div class="ttdeci">int axis() const</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.H:74</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_adc48dbdb2c1b90ed31747f2662e8a42a"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#adc48dbdb2c1b90ed31747f2662e8a42a">amr_wind::FPlaneAveraging&lt; Field &gt;::m_line_average</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_line_average</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.H:104</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_ae160fc57950425e983f844ebc5b1a03c"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#ae160fc57950425e983f844ebc5b1a03c">amr_wind::FPlaneAveraging&lt; Field &gt;::m_time</a></div><div class="ttdeci">const SimTime &amp; m_time</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.H:125</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_af01c51cd5009bf97da3af99985ba7bd1"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#af01c51cd5009bf97da3af99985ba7bd1">amr_wind::FPlaneAveraging::line_deriv</a></div><div class="ttdeci">const amrex::Vector&lt; amrex::Real &gt; &amp; line_deriv() const</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.H:88</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_af1d74c4c70dc6ac145d9cfd2a751d7a7"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#af1d74c4c70dc6ac145d9cfd2a751d7a7">amr_wind::FPlaneAveraging&lt; Field &gt;::m_level</a></div><div class="ttdeci">const int m_level</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.H:119</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_af3f52e04e67889e8c36d66cc77ee7454"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#af3f52e04e67889e8c36d66cc77ee7454">amr_wind::FPlaneAveraging::output_line_average_ascii</a></div><div class="ttdeci">void output_line_average_ascii(const std::string &amp;filename, int step, amrex::Real time)</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.cpp:57</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_af864ec9572d451d94803ff91bce71ab6"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#af864ec9572d451d94803ff91bce71ab6">amr_wind::FPlaneAveraging::level</a></div><div class="ttdeci">int level() const</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.H:75</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_af99cf97b265b8b09795f10bb1dfde3fb"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#af99cf97b265b8b09795f10bb1dfde3fb">amr_wind::FPlaneAveraging::set_precision</a></div><div class="ttdeci">void set_precision(int p)</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.H:69</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_f_plane_averaging_html_afba2add2e96ba12d9fddfd604d7899f4"><div class="ttname"><a href="classamr__wind_1_1_f_plane_averaging.html#afba2add2e96ba12d9fddfd604d7899f4">amr_wind::FPlaneAveraging::FPlaneAveraging</a></div><div class="ttdeci">FPlaneAveraging(const FType &amp;field_in, const amr_wind::SimTime &amp;time, int axis_in, bool compute_deriv=false)</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.cpp:11</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_sim_time_html"><div class="ttname"><a href="classamr__wind_1_1_sim_time.html">amr_wind::SimTime</a></div><div class="ttdef"><b>Definition</b> SimTime.H:33</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_vel_plane_averaging_html_a021bfff0e620620db3d06db531288a7c"><div class="ttname"><a href="classamr__wind_1_1_vel_plane_averaging.html#a021bfff0e620620db3d06db531288a7c">amr_wind::VelPlaneAveraging::m_line_hvelmag_average</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_line_hvelmag_average</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.H:156</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_vel_plane_averaging_html_a11c7c54a1b1616bd8f04a6956bd57cc4"><div class="ttname"><a href="classamr__wind_1_1_vel_plane_averaging.html#a11c7c54a1b1616bd8f04a6956bd57cc4">amr_wind::VelPlaneAveraging::VelPlaneAveraging</a></div><div class="ttdeci">VelPlaneAveraging(CFDSim &amp;sim, int axis_in)</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.cpp:325</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_vel_plane_averaging_html_a2eb6f51f571bdaa6ee9e98c350aa6511"><div class="ttname"><a href="classamr__wind_1_1_vel_plane_averaging.html#a2eb6f51f571bdaa6ee9e98c350aa6511">amr_wind::VelPlaneAveraging::output_line_average_ascii</a></div><div class="ttdeci">void output_line_average_ascii(const std::string &amp;filename, int step, amrex::Real time)</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.cpp:496</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_vel_plane_averaging_html_a413bcac62a7a89129444af8dea5d8f93"><div class="ttname"><a href="classamr__wind_1_1_vel_plane_averaging.html#a413bcac62a7a89129444af8dea5d8f93">amr_wind::VelPlaneAveraging::m_line_hvelmag_deriv</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_line_hvelmag_deriv</div><div class="ttdoc">line storage for the derivative of average horizontal velocity magnitude</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.H:159</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_vel_plane_averaging_html_a4af84a51db30a6bc55b44e0cf5fb9c13"><div class="ttname"><a href="classamr__wind_1_1_vel_plane_averaging.html#a4af84a51db30a6bc55b44e0cf5fb9c13">amr_wind::VelPlaneAveraging::line_hvelmag_average_cell</a></div><div class="ttdeci">amrex::Real line_hvelmag_average_cell(int ind) const</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.cpp:487</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_vel_plane_averaging_html_a7c9751c7b8e7999fa4f134dfca431ecd"><div class="ttname"><a href="classamr__wind_1_1_vel_plane_averaging.html#a7c9751c7b8e7999fa4f134dfca431ecd">amr_wind::VelPlaneAveraging::compute_hvelmag_averages</a></div><div class="ttdeci">void compute_hvelmag_averages(const IndexSelector &amp;idx_op, int h1_idx, int h2_idx, const amrex::MultiFab &amp;mfab)</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.cpp:366</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_vel_plane_averaging_html_a8c300a79d7c5e1dac2e94d404b3c3fc9"><div class="ttname"><a href="classamr__wind_1_1_vel_plane_averaging.html#a8c300a79d7c5e1dac2e94d404b3c3fc9">amr_wind::VelPlaneAveraging::operator()</a></div><div class="ttdeci">void operator()() override</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.cpp:336</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_vel_plane_averaging_html_aaf244b0c45dd290acefafc81d6859255"><div class="ttname"><a href="classamr__wind_1_1_vel_plane_averaging.html#aaf244b0c45dd290acefafc81d6859255">amr_wind::VelPlaneAveraging::line_hvelmag_average</a></div><div class="ttdeci">const amrex::Vector&lt; amrex::Real &gt; &amp; line_hvelmag_average()</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.H:171</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_vel_plane_averaging_html_abe68ac92a179d73af83535103588fbf6"><div class="ttname"><a href="classamr__wind_1_1_vel_plane_averaging.html#abe68ac92a179d73af83535103588fbf6">amr_wind::VelPlaneAveraging::compute_line_hvelmag_derivatives</a></div><div class="ttdeci">void compute_line_hvelmag_derivatives()</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.cpp:427</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_vel_plane_averaging_html_ad0e81d3dbaba7467a58a34bad17356e6"><div class="ttname"><a href="classamr__wind_1_1_vel_plane_averaging.html#ad0e81d3dbaba7467a58a34bad17356e6">amr_wind::VelPlaneAveraging::~VelPlaneAveraging</a></div><div class="ttdeci">~VelPlaneAveraging() override=default</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_vel_plane_averaging_html_ad434306afb6df422041fe8468bb9116d"><div class="ttname"><a href="classamr__wind_1_1_vel_plane_averaging.html#ad434306afb6df422041fe8468bb9116d">amr_wind::VelPlaneAveraging::line_hvelmag_derivative_interpolated</a></div><div class="ttdeci">amrex::Real line_hvelmag_derivative_interpolated(amrex::Real x) const</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_vel_plane_averaging_html_ad53b7a4ebb625433558f8b84ae3df450"><div class="ttname"><a href="classamr__wind_1_1_vel_plane_averaging.html#ad53b7a4ebb625433558f8b84ae3df450">amr_wind::VelPlaneAveraging::line_hvelmag_derivative_of_average_cell</a></div><div class="ttdeci">amrex::Real line_hvelmag_derivative_of_average_cell(int ind) const</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.cpp:436</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_vel_plane_averaging_html_ad8196858e1ab5d9a3d37733c725a0244"><div class="ttname"><a href="classamr__wind_1_1_vel_plane_averaging.html#ad8196858e1ab5d9a3d37733c725a0244">amr_wind::VelPlaneAveraging::line_hvelmag_average_interpolated</a></div><div class="ttdeci">amrex::Real line_hvelmag_average_interpolated(amrex::Real x) const</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.cpp:462</div></div>
+<div class="ttc" id="anamespaceamr__wind_html"><div class="ttname"><a href="namespaceamr__wind.html">amr_wind</a></div><div class="ttdoc">This test case is intended as an evaluation of the momentum advection scheme.</div><div class="ttdef"><b>Definition</b> BCInterface.cpp:10</div></div>
+<div class="ttc" id="anamespaceamr__wind_html_a786ec0c89796180da3204a4f86c4624e"><div class="ttname"><a href="namespaceamr__wind.html#a786ec0c89796180da3204a4f86c4624e">amr_wind::FieldPlaneAveraging</a></div><div class="ttdeci">FPlaneAveraging&lt; Field &gt; FieldPlaneAveraging</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.H:139</div></div>
+<div class="ttc" id="anamespaceamr__wind_html_ae1c4a5e28539695a22e6d548c71e3995"><div class="ttname"><a href="namespaceamr__wind.html#ae1c4a5e28539695a22e6d548c71e3995">amr_wind::ScratchFieldPlaneAveraging</a></div><div class="ttdeci">FPlaneAveraging&lt; ScratchField &gt; ScratchFieldPlaneAveraging</div><div class="ttdef"><b>Definition</b> FieldPlaneAveraging.H:140</div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

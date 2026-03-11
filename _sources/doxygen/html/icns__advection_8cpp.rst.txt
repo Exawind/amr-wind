@@ -1,0 +1,14 @@
+.. meta::c82ff3ec5b110ca68ba8f7105d1f0934c1b3304534ceeb30be41e02728ac96979563d5798f447abfb646bc6d6744a0475e9aee291d8272c682c96ef702224ed1
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/icns/icns_advection.cpp File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/equation\_systems/icns/icns\_advection.cpp File Reference
+======================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: icns__advection_8cpp.html

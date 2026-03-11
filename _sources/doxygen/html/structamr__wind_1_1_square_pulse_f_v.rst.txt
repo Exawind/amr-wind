@@ -1,0 +1,14 @@
+.. meta::0bf0c56c4605318e6fe12d05e674b13265b59d0661f603330b68f50bd8a47dcf6c30d3928858cb4e57e2ccdf71516fedd80bb4676a265b7a9683ffdb45b18eee
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::SquarePulseFV Struct Reference
+
+SquarePulseFV Struct Reference
+==============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1_square_pulse_f_v.html

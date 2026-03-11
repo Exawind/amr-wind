@@ -1,0 +1,1032 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::sampling::SamplerBase Class Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::sampling::SamplerBase Class Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/classamr__wind_1_1sampling_1_1_sampler_base.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="samplerbase-class-reference">
+<h1>SamplerBase Class Reference<a class="headerlink" href="#samplerbase-class-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::sampling::SamplerBase Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="namespaceamr__wind_1_1sampling.html">sampling</a></li><li class="navelem"><a href="classamr__wind_1_1sampling_1_1_sampler_base.html">SamplerBase</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pub-static-attribs">Static Public Attributes</a> &#124;
+<a href="classamr__wind_1_1sampling_1_1_sampler_base-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::sampling::SamplerBase Class Reference<span class="mlabels"><span class="mlabel abstract">abstract</span></span><div class="ingroups"><a class="el" href="group__utilities.html">Utilities</a> &raquo; <a class="el" href="group__sampling.html">Data-sampling utilities</a></div></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_sampler_base_8_h_source.html">SamplerBase.H</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for amr_wind::sampling::SamplerBase:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1sampling_1_1_sampler_base__inherit__graph.svg" width="311" height="251"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for amr_wind::sampling::SamplerBase:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1sampling_1_1_sampler_base__coll__graph.svg" width="311" height="251"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a86529beec920606835b6c0d2339489d9" id="r_a86529beec920606835b6c0d2339489d9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a86529beec920606835b6c0d2339489d9">~SamplerBase</a> () override=default</td></tr>
+<tr class="memitem:a2f8a4d99d9724f2268bf5cc55579a81b" id="r_a2f8a4d99d9724f2268bf5cc55579a81b"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2f8a4d99d9724f2268bf5cc55579a81b">label</a> () const =0</td></tr>
+<tr class="memdesc:a2f8a4d99d9724f2268bf5cc55579a81b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Name used to refer to this sampler (e.g., myline1)  <br /></td></tr>
+<tr class="memitem:ae4dd6248f6c304ca2c228adf2d2ac9b4" id="r_ae4dd6248f6c304ca2c228adf2d2ac9b4"><td class="memItemLeft" align="right" valign="top">virtual std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae4dd6248f6c304ca2c228adf2d2ac9b4">label</a> ()=0</td></tr>
+<tr class="memitem:a48d0dff35f192e271b513579fd4f6f6d" id="r_a48d0dff35f192e271b513579fd4f6f6d"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a48d0dff35f192e271b513579fd4f6f6d">sampletype</a> () const =0</td></tr>
+<tr class="memdesc:a48d0dff35f192e271b513579fd4f6f6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class name of this sampler (e.g., <a class="el" href="classamr__wind_1_1sampling_1_1_line_sampler.html">LineSampler</a>)  <br /></td></tr>
+<tr class="memitem:a456b86e71b6a7fdd10532bd42c0bd07b" id="r_a456b86e71b6a7fdd10532bd42c0bd07b"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a456b86e71b6a7fdd10532bd42c0bd07b">id</a> () const =0</td></tr>
+<tr class="memdesc:a456b86e71b6a7fdd10532bd42c0bd07b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unique numeric identifier used to track particles belonging to this instance.  <br /></td></tr>
+<tr class="memitem:a19164717831b81a51654a2917f3e6497" id="r_a19164717831b81a51654a2917f3e6497"><td class="memItemLeft" align="right" valign="top">virtual int &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a19164717831b81a51654a2917f3e6497">id</a> ()=0</td></tr>
+<tr class="memitem:a47f096ce5d2beb34e844e986325ef705" id="r_a47f096ce5d2beb34e844e986325ef705"><td class="memItemLeft" align="right" valign="top">virtual long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a47f096ce5d2beb34e844e986325ef705">num_points</a> () const =0</td></tr>
+<tr class="memdesc:a47f096ce5d2beb34e844e986325ef705"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total number of probes that belong to this sampling instance.  <br /></td></tr>
+<tr class="memitem:adb26f109e0b0901b35ff63dc1e8bf58b" id="r_adb26f109e0b0901b35ff63dc1e8bf58b"><td class="memItemLeft" align="right" valign="top">virtual long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adb26f109e0b0901b35ff63dc1e8bf58b">num_output_points</a> () const =0</td></tr>
+<tr class="memdesc:adb26f109e0b0901b35ff63dc1e8bf58b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total number of probes to be output Note: Same as <a class="el" href="#a47f096ce5d2beb34e844e986325ef705" title="Total number of probes that belong to this sampling instance.">num_points()</a> for sampling without data reduction.  <br /></td></tr>
+<tr class="memitem:a0cd0033e82b04347eb1dc0c6b11c88b9" id="r_a0cd0033e82b04347eb1dc0c6b11c88b9"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0cd0033e82b04347eb1dc0c6b11c88b9">initialize</a> (const std::string &amp;key)=0</td></tr>
+<tr class="memdesc:a0cd0033e82b04347eb1dc0c6b11c88b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read inputs and perform initialization actions.  <br /></td></tr>
+<tr class="memitem:ad77523bcd1ee36cfc9207980c16f5c5a" id="r_ad77523bcd1ee36cfc9207980c16f5c5a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad77523bcd1ee36cfc9207980c16f5c5a">sampling_locations</a> (<a class="el" href="structamr__wind_1_1sampling_1_1_sample_loc_type.html">SampleLocType</a> &amp;) const =0</td></tr>
+<tr class="memdesc:ad77523bcd1ee36cfc9207980c16f5c5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Populate the vector with coordinates of the sampling locations.  <br /></td></tr>
+<tr class="memitem:a3a6440d9b9bde32ff8648f9ec61549c5" id="r_a3a6440d9b9bde32ff8648f9ec61549c5"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3a6440d9b9bde32ff8648f9ec61549c5">sampling_locations</a> (<a class="el" href="structamr__wind_1_1sampling_1_1_sample_loc_type.html">SampleLocType</a> &amp;, const amrex::Box &amp;) const =0</td></tr>
+<tr class="memdesc:a3a6440d9b9bde32ff8648f9ec61549c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Populate the vector with coordinates of the sampling locations inside a box.  <br /></td></tr>
+<tr class="memitem:a87c147fd61b3948fd7b0248c60aa5ef2" id="r_a87c147fd61b3948fd7b0248c60aa5ef2"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a87c147fd61b3948fd7b0248c60aa5ef2">check_bounds</a> ()=0</td></tr>
+<tr class="memdesc:a87c147fd61b3948fd7b0248c60aa5ef2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check and fix the bounds of the sampler so the probes are in the domain.  <br /></td></tr>
+<tr class="memitem:a79e77185cf99397072ad12231be56552" id="r_a79e77185cf99397072ad12231be56552"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a79e77185cf99397072ad12231be56552">output_locations</a> (<a class="el" href="structamr__wind_1_1sampling_1_1_sample_loc_type.html">SampleLocType</a> &amp;) const =0</td></tr>
+<tr class="memdesc:a79e77185cf99397072ad12231be56552"><td class="mdescLeft">&#160;</td><td class="mdescRight">Populate the vector with coordinates of the output locations.  <br /></td></tr>
+<tr class="memitem:aef32aace778bc2e3e0c52bd001e8b7b2" id="r_aef32aace778bc2e3e0c52bd001e8b7b2"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aef32aace778bc2e3e0c52bd001e8b7b2">update_sampling_locations</a> ()</td></tr>
+<tr class="memdesc:aef32aace778bc2e3e0c52bd001e8b7b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the sampling locations.  <br /></td></tr>
+<tr class="memitem:ae75c38633eaa53202d8545a615d43f5c" id="r_ae75c38633eaa53202d8545a615d43f5c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae75c38633eaa53202d8545a615d43f5c">post_sample_actions</a> ()</td></tr>
+<tr class="memdesc:ae75c38633eaa53202d8545a615d43f5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run actions after sample (useful in interpolated subsampling)  <br /></td></tr>
+<tr class="memitem:ab83e87e28961b4b777b1f9cf18f3539c" id="r_ab83e87e28961b4b777b1f9cf18f3539c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab83e87e28961b4b777b1f9cf18f3539c">post_regrid_actions</a> ()</td></tr>
+<tr class="memdesc:ab83e87e28961b4b777b1f9cf18f3539c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run actions after regrid (important when using field-based quantities)  <br /></td></tr>
+<tr class="memitem:aa84818d6dd800652a4beee3a96085388" id="r_aa84818d6dd800652a4beee3a96085388"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa84818d6dd800652a4beee3a96085388">output_netcdf_field</a> (const std::vector&lt; amrex::Real &gt; &amp;, <a class="el" href="classncutils_1_1_n_c_group.html">ncutils::NCGroup</a> &amp;, const size_t)</td></tr>
+<tr class="memdesc:aa84818d6dd800652a4beee3a96085388"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run specific output for the sampler.  <br /></td></tr>
+<tr class="memitem:a2ab1ac1f2fe9b90776daa85fdd68b7da" id="r_a2ab1ac1f2fe9b90776daa85fdd68b7da"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2ab1ac1f2fe9b90776daa85fdd68b7da">do_data_modification</a> ()</td></tr>
+<tr class="memdesc:a2ab1ac1f2fe9b90776daa85fdd68b7da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run data modification for specific sampler?  <br /></td></tr>
+<tr class="memitem:a85f1fdc5a185e2e55bab89dedb241c3b" id="r_a85f1fdc5a185e2e55bab89dedb241c3b"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a85f1fdc5a185e2e55bab89dedb241c3b">do_convert_velocity_los</a> ()</td></tr>
+<tr class="memitem:a459d27c361d4e3dae245c90fe62b06c4" id="r_a459d27c361d4e3dae245c90fe62b06c4"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a459d27c361d4e3dae245c90fe62b06c4">do_subsampling_interp</a> ()</td></tr>
+<tr class="memitem:aaa1e1a02a04829089fdfcc29a698cdaf" id="r_aaa1e1a02a04829089fdfcc29a698cdaf"><td class="memItemLeft" align="right" valign="top">virtual std::vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaa1e1a02a04829089fdfcc29a698cdaf">modify_sample_data</a> (const std::vector&lt; amrex::Real &gt; &amp;sampledata, const std::string &amp;)</td></tr>
+<tr class="memdesc:aaa1e1a02a04829089fdfcc29a698cdaf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sample buffer modification instructions.  <br /></td></tr>
+<tr class="memitem:ad85189c55b5f3ab47f2bf655cbbd56f5" id="r_ad85189c55b5f3ab47f2bf655cbbd56f5"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad85189c55b5f3ab47f2bf655cbbd56f5">calc_lineofsight_velocity</a> (const std::vector&lt; std::vector&lt; amrex::Real &gt; &gt; &amp;, const int)</td></tr>
+<tr class="memitem:a94c83df484cc5f36c69dbc659b1bf636" id="r_a94c83df484cc5f36c69dbc659b1bf636"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a94c83df484cc5f36c69dbc659b1bf636">define_netcdf_metadata</a> (const <a class="el" href="classncutils_1_1_n_c_group.html">ncutils::NCGroup</a> &amp;) const</td></tr>
+<tr class="memdesc:a94c83df484cc5f36c69dbc659b1bf636"><td class="mdescLeft">&#160;</td><td class="mdescRight">Populate metadata in the NetCDF file.  <br /></td></tr>
+<tr class="memitem:aaa90fb40203bef97b573c9c1f9c062a2" id="r_aaa90fb40203bef97b573c9c1f9c062a2"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaa90fb40203bef97b573c9c1f9c062a2">populate_netcdf_metadata</a> (const <a class="el" href="classncutils_1_1_n_c_group.html">ncutils::NCGroup</a> &amp;) const</td></tr>
+<tr class="memitem:a61925d2c47a01ad7a099db2e845b387c" id="r_a61925d2c47a01ad7a099db2e845b387c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a61925d2c47a01ad7a099db2e845b387c">output_netcdf_data</a> (const <a class="el" href="classncutils_1_1_n_c_group.html">ncutils::NCGroup</a> &amp;, const size_t) const</td></tr>
+<tr class="inherit_header pub_methods_structamr__wind_1_1_factory"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_structamr__wind_1_1_factory')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="structamr__wind_1_1_factory.html">amr_wind::Factory&lt; SamplerBase, CFDSim &amp; &gt;</a></td></tr>
+<tr class="memitem:aa6fca890ed3550c62d0f65b8d3bc07ad inherit pub_methods_structamr__wind_1_1_factory" id="r_aa6fca890ed3550c62d0f65b8d3bc07ad"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1_factory.html#aa6fca890ed3550c62d0f65b8d3bc07ad">~Factory</a> ()=default</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a2273778f721d9ac9e8963045ec0bd655" id="r_a2273778f721d9ac9e8963045ec0bd655"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2273778f721d9ac9e8963045ec0bd655">base_identifier</a> ()</td></tr>
+<tr class="inherit_header pub_static_methods_structamr__wind_1_1_factory"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_static_methods_structamr__wind_1_1_factory')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Static Public Member Functions inherited from <a class="el" href="structamr__wind_1_1_factory.html">amr_wind::Factory&lt; SamplerBase, CFDSim &amp; &gt;</a></td></tr>
+<tr class="memitem:a12435a8cce5e3b4e95324d3b638ca6a2 inherit pub_static_methods_structamr__wind_1_1_factory" id="r_a12435a8cce5e3b4e95324d3b638ca6a2"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; SamplerBase &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1_factory.html#a12435a8cce5e3b4e95324d3b638ca6a2">create</a> (const std::string &amp;key, Args... args)</td></tr>
+<tr class="memitem:a8d98edcc6f1e14d11dc8626d75498548 inherit pub_static_methods_structamr__wind_1_1_factory" id="r_a8d98edcc6f1e14d11dc8626d75498548"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1_factory.html#a8d98edcc6f1e14d11dc8626d75498548">print</a> (std::ostream &amp;os)</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-attribs" class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+Static Public Attributes</h2></td></tr>
+<tr class="memitem:a59e79a5c1940cd4b39e857c84c5534f4" id="r_a59e79a5c1940cd4b39e857c84c5534f4"><td class="memItemLeft" align="right" valign="top">static constexpr amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a59e79a5c1940cd4b39e857c84c5534f4">bounds_tol</a> = <a class="el" href="namespaceamr__wind_1_1constants.html#a0aee8a942fdb663d4cb5d169e94d9817">constants::TIGHT_TOL</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pub_attribs_structamr__wind_1_1_factory"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_attribs_structamr__wind_1_1_factory')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Attributes inherited from <a class="el" href="structamr__wind_1_1_factory.html">amr_wind::Factory&lt; SamplerBase, CFDSim &amp; &gt;</a></td></tr>
+<tr class="memitem:a691df3b8a05db92b3de7712f18cfe8b8 inherit pub_attribs_structamr__wind_1_1_factory" id="r_a691df3b8a05db92b3de7712f18cfe8b8"><td class="memItemLeft" align="right" valign="top">friend&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1_factory.html#a691df3b8a05db92b3de7712f18cfe8b8">Base</a></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Abstract representation of data probes to sample flow data</p>
+<p>This class defines the interface by which the positions of the data-probes are defined and access from the <a class="el" href="classamr__wind_1_1sampling_1_1_sampling.html">Sampling</a> class. All data probe definitions must be sub-classes of this base class. </p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a86529beec920606835b6c0d2339489d9" name="a86529beec920606835b6c0d2339489d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86529beec920606835b6c0d2339489d9">&#9670;&#160;</a></span>~SamplerBase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::sampling::SamplerBase::~SamplerBase </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a2273778f721d9ac9e8963045ec0bd655" name="a2273778f721d9ac9e8963045ec0bd655"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2273778f721d9ac9e8963045ec0bd655">&#9670;&#160;</a></span>base_identifier()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::sampling::SamplerBase::base_identifier </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad85189c55b5f3ab47f2bf655cbbd56f5" name="ad85189c55b5f3ab47f2bf655cbbd56f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad85189c55b5f3ab47f2bf655cbbd56f5">&#9670;&#160;</a></span>calc_lineofsight_velocity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void amr_wind::sampling::SamplerBase::calc_lineofsight_velocity </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; std::vector&lt; amrex::Real &gt; &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a87c147fd61b3948fd7b0248c60aa5ef2" name="a87c147fd61b3948fd7b0248c60aa5ef2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87c147fd61b3948fd7b0248c60aa5ef2">&#9670;&#160;</a></span>check_bounds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void amr_wind::sampling::SamplerBase::check_bounds </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel pure-virtual">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Check and fix the bounds of the sampler so the probes are in the domain. </p>
+
+</div>
+</div>
+<a id="a94c83df484cc5f36c69dbc659b1bf636" name="a94c83df484cc5f36c69dbc659b1bf636"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94c83df484cc5f36c69dbc659b1bf636">&#9670;&#160;</a></span>define_netcdf_metadata()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void amr_wind::sampling::SamplerBase::define_netcdf_metadata </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classncutils_1_1_n_c_group.html">ncutils::NCGroup</a> &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Populate metadata in the NetCDF file. </p>
+
+</div>
+</div>
+<a id="a85f1fdc5a185e2e55bab89dedb241c3b" name="a85f1fdc5a185e2e55bab89dedb241c3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85f1fdc5a185e2e55bab89dedb241c3b">&#9670;&#160;</a></span>do_convert_velocity_los()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool amr_wind::sampling::SamplerBase::do_convert_velocity_los </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2ab1ac1f2fe9b90776daa85fdd68b7da" name="a2ab1ac1f2fe9b90776daa85fdd68b7da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ab1ac1f2fe9b90776daa85fdd68b7da">&#9670;&#160;</a></span>do_data_modification()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool amr_wind::sampling::SamplerBase::do_data_modification </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Run data modification for specific sampler? </p>
+
+</div>
+</div>
+<a id="a459d27c361d4e3dae245c90fe62b06c4" name="a459d27c361d4e3dae245c90fe62b06c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a459d27c361d4e3dae245c90fe62b06c4">&#9670;&#160;</a></span>do_subsampling_interp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool amr_wind::sampling::SamplerBase::do_subsampling_interp </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a456b86e71b6a7fdd10532bd42c0bd07b" name="a456b86e71b6a7fdd10532bd42c0bd07b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a456b86e71b6a7fdd10532bd42c0bd07b">&#9670;&#160;</a></span>id() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int amr_wind::sampling::SamplerBase::id </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span><span class="mlabel pure-virtual">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Unique numeric identifier used to track particles belonging to this instance. </p>
+
+</div>
+</div>
+<a id="a19164717831b81a51654a2917f3e6497" name="a19164717831b81a51654a2917f3e6497"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19164717831b81a51654a2917f3e6497">&#9670;&#160;</a></span>id() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int &amp; amr_wind::sampling::SamplerBase::id </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel pure-virtual">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0cd0033e82b04347eb1dc0c6b11c88b9" name="a0cd0033e82b04347eb1dc0c6b11c88b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0cd0033e82b04347eb1dc0c6b11c88b9">&#9670;&#160;</a></span>initialize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void amr_wind::sampling::SamplerBase::initialize </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>key</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel pure-virtual">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Read inputs and perform initialization actions. </p>
+
+</div>
+</div>
+<a id="a2f8a4d99d9724f2268bf5cc55579a81b" name="a2f8a4d99d9724f2268bf5cc55579a81b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f8a4d99d9724f2268bf5cc55579a81b">&#9670;&#160;</a></span>label() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string amr_wind::sampling::SamplerBase::label </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span><span class="mlabel pure-virtual">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Name used to refer to this sampler (e.g., myline1) </p>
+
+</div>
+</div>
+<a id="ae4dd6248f6c304ca2c228adf2d2ac9b4" name="ae4dd6248f6c304ca2c228adf2d2ac9b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4dd6248f6c304ca2c228adf2d2ac9b4">&#9670;&#160;</a></span>label() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string &amp; amr_wind::sampling::SamplerBase::label </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel pure-virtual">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aaa1e1a02a04829089fdfcc29a698cdaf" name="aaa1e1a02a04829089fdfcc29a698cdaf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa1e1a02a04829089fdfcc29a698cdaf">&#9670;&#160;</a></span>modify_sample_data()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::vector&lt; amrex::Real &gt; amr_wind::sampling::SamplerBase::modify_sample_data </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; amrex::Real &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>sampledata</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sample buffer modification instructions. </p>
+
+</div>
+</div>
+<a id="adb26f109e0b0901b35ff63dc1e8bf58b" name="adb26f109e0b0901b35ff63dc1e8bf58b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb26f109e0b0901b35ff63dc1e8bf58b">&#9670;&#160;</a></span>num_output_points()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual long amr_wind::sampling::SamplerBase::num_output_points </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span><span class="mlabel pure-virtual">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Total number of probes to be output Note: Same as <a class="el" href="#a47f096ce5d2beb34e844e986325ef705" title="Total number of probes that belong to this sampling instance.">num_points()</a> for sampling without data reduction. </p>
+
+</div>
+</div>
+<a id="a47f096ce5d2beb34e844e986325ef705" name="a47f096ce5d2beb34e844e986325ef705"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47f096ce5d2beb34e844e986325ef705">&#9670;&#160;</a></span>num_points()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual long amr_wind::sampling::SamplerBase::num_points </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span><span class="mlabel pure-virtual">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Total number of probes that belong to this sampling instance. </p>
+
+</div>
+</div>
+<a id="a79e77185cf99397072ad12231be56552" name="a79e77185cf99397072ad12231be56552"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79e77185cf99397072ad12231be56552">&#9670;&#160;</a></span>output_locations()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void amr_wind::sampling::SamplerBase::output_locations </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structamr__wind_1_1sampling_1_1_sample_loc_type.html">SampleLocType</a> &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel pure-virtual">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Populate the vector with coordinates of the output locations. </p>
+
+</div>
+</div>
+<a id="a61925d2c47a01ad7a099db2e845b387c" name="a61925d2c47a01ad7a099db2e845b387c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61925d2c47a01ad7a099db2e845b387c">&#9670;&#160;</a></span>output_netcdf_data()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void amr_wind::sampling::SamplerBase::output_netcdf_data </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classncutils_1_1_n_c_group.html">ncutils::NCGroup</a> &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;) const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa84818d6dd800652a4beee3a96085388" name="aa84818d6dd800652a4beee3a96085388"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa84818d6dd800652a4beee3a96085388">&#9670;&#160;</a></span>output_netcdf_field()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool amr_wind::sampling::SamplerBase::output_netcdf_field </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; amrex::Real &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classncutils_1_1_n_c_group.html">ncutils::NCGroup</a> &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Run specific output for the sampler. </p>
+
+</div>
+</div>
+<a id="aaa90fb40203bef97b573c9c1f9c062a2" name="aaa90fb40203bef97b573c9c1f9c062a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa90fb40203bef97b573c9c1f9c062a2">&#9670;&#160;</a></span>populate_netcdf_metadata()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void amr_wind::sampling::SamplerBase::populate_netcdf_metadata </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classncutils_1_1_n_c_group.html">ncutils::NCGroup</a> &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab83e87e28961b4b777b1f9cf18f3539c" name="ab83e87e28961b4b777b1f9cf18f3539c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab83e87e28961b4b777b1f9cf18f3539c">&#9670;&#160;</a></span>post_regrid_actions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void amr_wind::sampling::SamplerBase::post_regrid_actions </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Run actions after regrid (important when using field-based quantities) </p>
+
+</div>
+</div>
+<a id="ae75c38633eaa53202d8545a615d43f5c" name="ae75c38633eaa53202d8545a615d43f5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae75c38633eaa53202d8545a615d43f5c">&#9670;&#160;</a></span>post_sample_actions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void amr_wind::sampling::SamplerBase::post_sample_actions </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Run actions after sample (useful in interpolated subsampling) </p>
+
+</div>
+</div>
+<a id="a48d0dff35f192e271b513579fd4f6f6d" name="a48d0dff35f192e271b513579fd4f6f6d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48d0dff35f192e271b513579fd4f6f6d">&#9670;&#160;</a></span>sampletype()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string amr_wind::sampling::SamplerBase::sampletype </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span><span class="mlabel pure-virtual">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Class name of this sampler (e.g., <a class="el" href="classamr__wind_1_1sampling_1_1_line_sampler.html">LineSampler</a>) </p>
+
+</div>
+</div>
+<a id="ad77523bcd1ee36cfc9207980c16f5c5a" name="ad77523bcd1ee36cfc9207980c16f5c5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad77523bcd1ee36cfc9207980c16f5c5a">&#9670;&#160;</a></span>sampling_locations() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void amr_wind::sampling::SamplerBase::sampling_locations </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structamr__wind_1_1sampling_1_1_sample_loc_type.html">SampleLocType</a> &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel pure-virtual">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Populate the vector with coordinates of the sampling locations. </p>
+
+</div>
+</div>
+<a id="a3a6440d9b9bde32ff8648f9ec61549c5" name="a3a6440d9b9bde32ff8648f9ec61549c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a6440d9b9bde32ff8648f9ec61549c5">&#9670;&#160;</a></span>sampling_locations() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void amr_wind::sampling::SamplerBase::sampling_locations </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structamr__wind_1_1sampling_1_1_sample_loc_type.html">SampleLocType</a> &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Box &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;) const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel pure-virtual">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Populate the vector with coordinates of the sampling locations inside a box. </p>
+
+</div>
+</div>
+<a id="aef32aace778bc2e3e0c52bd001e8b7b2" name="aef32aace778bc2e3e0c52bd001e8b7b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef32aace778bc2e3e0c52bd001e8b7b2">&#9670;&#160;</a></span>update_sampling_locations()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool amr_wind::sampling::SamplerBase::update_sampling_locations </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Update the sampling locations. </p>
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a59e79a5c1940cd4b39e857c84c5534f4" name="a59e79a5c1940cd4b39e857c84c5534f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59e79a5c1940cd4b39e857c84c5534f4">&#9670;&#160;</a></span>bounds_tol</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::sampling::SamplerBase::bounds_tol = <a class="el" href="namespaceamr__wind_1_1constants.html#a0aee8a942fdb663d4cb5d169e94d9817">constants::TIGHT_TOL</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/<a class="el" href="_sampler_base_8_h_source.html">SamplerBase.H</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

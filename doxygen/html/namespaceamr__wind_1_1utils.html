@@ -1,0 +1,966 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::utils Namespace Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::utils Namespace Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/namespaceamr__wind_1_1utils.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="utils-namespace-reference">
+<h1>utils Namespace Reference<a class="headerlink" href="#utils-namespace-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::utils Namespace Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="namespaceamr__wind_1_1utils.html">utils</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#func-members">Functions</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::utils Namespace Reference</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:MultiParser" id="r_MultiParser"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classamr__wind_1_1utils_1_1_multi_parser.html">MultiParser</a></td></tr>
+<tr class="memitem:Slice" id="r_Slice"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structamr__wind_1_1utils_1_1_slice.html">Slice</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a139c6940041cf69dd4d294d8db919cfc" id="r_a139c6940041cf69dd4d294d8db919cfc"><td class="memTemplParams" colspan="2">template&lt;typename T&gt; </td></tr>
+<tr class="memitem:a139c6940041cf69dd4d294d8db919cfc template"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structamr__wind_1_1utils_1_1_slice.html">Slice</a>&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a139c6940041cf69dd4d294d8db919cfc">slice</a> (std::vector&lt; T &gt; &amp;vec, const size_t start, const size_t count)</td></tr>
+<tr class="memitem:a9ec773daca5fdf1eb9d6b41567f301bf" id="r_a9ec773daca5fdf1eb9d6b41567f301bf"><td class="memTemplParams" colspan="2">template&lt;typename T&gt; </td></tr>
+<tr class="memitem:a9ec773daca5fdf1eb9d6b41567f301bf template"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structamr__wind_1_1utils_1_1_slice.html">Slice</a>&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9ec773daca5fdf1eb9d6b41567f301bf">slice</a> (std::vector&lt; T &gt; &amp;vec, const size_t start)</td></tr>
+<tr class="memitem:a23643777017eb48bb536ea58e091a140" id="r_a23643777017eb48bb536ea58e091a140"><td class="memTemplParams" colspan="2">template&lt;typename T&gt; </td></tr>
+<tr class="memitem:a23643777017eb48bb536ea58e091a140 template"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structamr__wind_1_1utils_1_1_slice.html">Slice</a>&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a23643777017eb48bb536ea58e091a140">slice</a> (amrex::Vector&lt; T &gt; &amp;vec, const size_t start, const size_t count)</td></tr>
+<tr class="memitem:ab1fa55b9c04b29e51b634476e463dca1" id="r_ab1fa55b9c04b29e51b634476e463dca1"><td class="memTemplParams" colspan="2">template&lt;typename T&gt; </td></tr>
+<tr class="memitem:ab1fa55b9c04b29e51b634476e463dca1 template"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structamr__wind_1_1utils_1_1_slice.html">Slice</a>&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab1fa55b9c04b29e51b634476e463dca1">slice</a> (amrex::Vector&lt; T &gt; &amp;vec, const size_t start)</td></tr>
+<tr class="memitem:a8073f0185bfc7b6b8508215a381bdac0" id="r_a8073f0185bfc7b6b8508215a381bdac0"><td class="memTemplParams" colspan="2">template&lt;typename T&gt; </td></tr>
+<tr class="memitem:a8073f0185bfc7b6b8508215a381bdac0 template"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structamr__wind_1_1utils_1_1_slice.html">Slice</a>&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8073f0185bfc7b6b8508215a381bdac0">slice</a> (amrex::Gpu::DeviceVector&lt; T &gt; &amp;vec, const size_t start, const size_t count)</td></tr>
+<tr class="memitem:a0bad77527bc76219ffdbe9f01a52066d" id="r_a0bad77527bc76219ffdbe9f01a52066d"><td class="memTemplParams" colspan="2">template&lt;typename T&gt; </td></tr>
+<tr class="memitem:a0bad77527bc76219ffdbe9f01a52066d template"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structamr__wind_1_1utils_1_1_slice.html">Slice</a>&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0bad77527bc76219ffdbe9f01a52066d">slice</a> (amrex::Gpu::DeviceVector&lt; T &gt; &amp;vec, const size_t start)</td></tr>
+<tr class="memitem:ab34425b6e44fee3d4921b0781c1965c0" id="r_ab34425b6e44fee3d4921b0781c1965c0"><td class="memItemLeft" align="right" valign="top">std::pair&lt; bool, bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab34425b6e44fee3d4921b0781c1965c0">has_extdir</a> (amrex::BCRec const *bcrec, int ncomp, int dir)</td></tr>
+<tr class="memdesc:ab34425b6e44fee3d4921b0781c1965c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a pair of bools, value is true if at least one boundary has an ext_dir specified.  <br /></td></tr>
+<tr class="memitem:a8d199132950cc64edbd00ad817000dd2" id="r_a8d199132950cc64edbd00ad817000dd2"><td class="memItemLeft" align="right" valign="top">std::pair&lt; bool, bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8d199132950cc64edbd00ad817000dd2">has_extdir_or_ho</a> (amrex::BCRec const *bcrec, int ncomp, int dir)</td></tr>
+<tr class="memitem:adf401a4293ae138ed1e9d24ce4e06955" id="r_adf401a4293ae138ed1e9d24ce4e06955"><td class="memItemLeft" align="right" valign="top">amrex::Box&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adf401a4293ae138ed1e9d24ce4e06955">realbox_to_box</a> (const amrex::RealBox &amp;rbx, const amrex::Geometry &amp;geom)</td></tr>
+<tr class="memitem:ac28952fb35ab01f253439319879a11dc" id="r_ac28952fb35ab01f253439319879a11dc"><td class="memItemLeft" align="right" valign="top">AMREX_FORCE_INLINE int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac28952fb35ab01f253439319879a11dc">closest_index</a> (const amrex::Vector&lt; amrex::Real &gt; &amp;vec, const amrex::Real value, const amrex::Real tol=0.0_rt)</td></tr>
+<tr class="memdesc:ac28952fb35ab01f253439319879a11dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return closest index (from lower) of value in vector.  <br /></td></tr>
+<tr class="memitem:abba6c4654fa78ca0cd821f4a8e2fdb72" id="r_abba6c4654fa78ca0cd821f4a8e2fdb72"><td class="memTemplParams" colspan="2">template&lt;typename T = amrex::GpuArray&lt;int, 2&gt;&gt; </td></tr>
+<tr class="memitem:abba6c4654fa78ca0cd821f4a8e2fdb72 template"><td class="memItemLeft" align="right" valign="top">AMREX_FORCE_INLINE T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abba6c4654fa78ca0cd821f4a8e2fdb72">perpendicular_idx</a> (const int normal)</td></tr>
+<tr class="memdesc:abba6c4654fa78ca0cd821f4a8e2fdb72"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return indices perpendicular to normal.  <br /></td></tr>
+<tr class="memitem:a87c92e7226a5f20d90ebfbab19ca91d2" id="r_a87c92e7226a5f20d90ebfbab19ca91d2"><td class="memItemLeft" align="right" valign="top">AMREX_INLINE amrex::Box&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a87c92e7226a5f20d90ebfbab19ca91d2">face_aware_boundary_box_intersection</a> (amrex::IntVect &amp;shift_to_cc, amrex::Box grown_interior_box, const amrex::Box &amp;domain_boundary_box, const amrex::Orientation &amp;ori)</td></tr>
+<tr class="memitem:aba0a6578536a5dc391c4a3d8caf44c80" id="r_aba0a6578536a5dc391c4a3d8caf44c80"><td class="memItemLeft" align="right" valign="top">AMREX_INLINE amrex::Box&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aba0a6578536a5dc391c4a3d8caf44c80">face_aware_boundary_box_intersection</a> (amrex::Box grown_interior_box, const amrex::Box &amp;domain_boundary_box, const amrex::Orientation &amp;ori)</td></tr>
+<tr class="memitem:a3c86cd22c23191f85989c8a482d97f34" id="r_a3c86cd22c23191f85989c8a482d97f34"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3c86cd22c23191f85989c8a482d97f34">contains</a> (const amrex::Box &amp;box, const amrex::RealVect &amp;pos, const amrex::GpuArray&lt; amrex::Real, AMREX_SPACEDIM &gt; &amp;prob_lo, const amrex::GpuArray&lt; amrex::Real, AMREX_SPACEDIM &gt; &amp;dxinv)</td></tr>
+<tr class="memdesc:a3c86cd22c23191f85989c8a482d97f34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if a point is inside a box.  <br /></td></tr>
+<tr class="memitem:a644ae83d8e9966b6d23228585440a7d3" id="r_a644ae83d8e9966b6d23228585440a7d3"><td class="memTemplParams" colspan="2">template&lt;typename Function&gt; </td></tr>
+<tr class="memitem:a644ae83d8e9966b6d23228585440a7d3 template"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a644ae83d8e9966b6d23228585440a7d3">trapz</a> (const amrex::Real xa, const amrex::Real xb, const int n, const Function &amp;f)</td></tr>
+<tr class="memitem:a1c28676d41ffc309a17fec8d89e9d085" id="r_a1c28676d41ffc309a17fec8d89e9d085"><td class="memTemplParams" colspan="2">template&lt;typename T&gt; </td></tr>
+<tr class="memitem:a1c28676d41ffc309a17fec8d89e9d085 template"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1c28676d41ffc309a17fec8d89e9d085">dot_prod</a> (const T *x, const T *y)</td></tr>
+<tr class="memitem:aaa6e1221874bc831c808a26aa5618130" id="r_aaa6e1221874bc831c808a26aa5618130"><td class="memTemplParams" colspan="2">template&lt;typename T&gt; </td></tr>
+<tr class="memitem:aaa6e1221874bc831c808a26aa5618130 template"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaa6e1221874bc831c808a26aa5618130">vec_mag</a> (const T *x)</td></tr>
+<tr class="memitem:a1bb95c6a2a94153935ca6ed63c7f3e56" id="r_a1bb95c6a2a94153935ca6ed63c7f3e56"><td class="memTemplParams" colspan="2">template&lt;typename T&gt; </td></tr>
+<tr class="memitem:a1bb95c6a2a94153935ca6ed63c7f3e56 template"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1bb95c6a2a94153935ca6ed63c7f3e56">vec_normalize</a> (T *x)</td></tr>
+<tr class="memitem:a46a0864d8a31479f5c3fcc9854f8fbd8" id="r_a46a0864d8a31479f5c3fcc9854f8fbd8"><td class="memTemplParams" colspan="2">template&lt;typename T&gt; </td></tr>
+<tr class="memitem:a46a0864d8a31479f5c3fcc9854f8fbd8 template"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a46a0864d8a31479f5c3fcc9854f8fbd8">dot_prod</a> (const T *x, const T *y, const int ndim)</td></tr>
+<tr class="memitem:aa50085ebceea4b8121a65fa9bf71753b" id="r_aa50085ebceea4b8121a65fa9bf71753b"><td class="memTemplParams" colspan="2">template&lt;typename T&gt; </td></tr>
+<tr class="memitem:aa50085ebceea4b8121a65fa9bf71753b template"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa50085ebceea4b8121a65fa9bf71753b">cross_prod</a> (const T *a, const T *b, T *c)</td></tr>
+<tr class="memitem:ac06fd7643ff858b999dfde3f30e4bb61" id="r_ac06fd7643ff858b999dfde3f30e4bb61"><td class="memTemplParams" colspan="2">template&lt;typename T&gt; </td></tr>
+<tr class="memitem:ac06fd7643ff858b999dfde3f30e4bb61 template"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_DEVICE AMREX_FORCE_INLINE void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac06fd7643ff858b999dfde3f30e4bb61">transform_vec</a> (const amrex::Array2D&lt; T, 0, AMREX_SPACEDIM, 0, AMREX_SPACEDIM &gt; &amp;tmat, const T *x, T *y)</td></tr>
+<tr class="memitem:adfe909384ae5aea36fd3745638afb2af" id="r_adfe909384ae5aea36fd3745638afb2af"><td class="memTemplParams" colspan="2">template&lt;typename T&gt; </td></tr>
+<tr class="memitem:adfe909384ae5aea36fd3745638afb2af template"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_DEVICE AMREX_FORCE_INLINE void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adfe909384ae5aea36fd3745638afb2af">inv_transform_vec</a> (const amrex::Array2D&lt; T, 0, AMREX_SPACEDIM, 0, AMREX_SPACEDIM &gt; &amp;tmat, const T *x, T *y)</td></tr>
+<tr class="memitem:a5157dd6482418271f733c3b2e3a70f7b" id="r_a5157dd6482418271f733c3b2e3a70f7b"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE constexpr amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5157dd6482418271f733c3b2e3a70f7b">two_pi</a> ()</td></tr>
+<tr class="memdesc:a5157dd6482418271f733c3b2e3a70f7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return \(2 \pi\).  <br /></td></tr>
+<tr class="memitem:a51588f9896992619e60500724ac5cd2d" id="r_a51588f9896992619e60500724ac5cd2d"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE constexpr amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a51588f9896992619e60500724ac5cd2d">half_pi</a> ()</td></tr>
+<tr class="memdesc:a51588f9896992619e60500724ac5cd2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return \(\pi / 2\).  <br /></td></tr>
+<tr class="memitem:afffcaa6939f03c21da7473531ab92bb7" id="r_afffcaa6939f03c21da7473531ab92bb7"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afffcaa6939f03c21da7473531ab92bb7">radians</a> (const amrex::Real deg_val)</td></tr>
+<tr class="memdesc:afffcaa6939f03c21da7473531ab92bb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert from degrees to radians.  <br /></td></tr>
+<tr class="memitem:a5326c74139e50868c1b06b5e2a455915" id="r_a5326c74139e50868c1b06b5e2a455915"><td class="memItemLeft" align="right" valign="top">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5326c74139e50868c1b06b5e2a455915">degrees</a> (const amrex::Real rad_val)</td></tr>
+<tr class="memdesc:a5326c74139e50868c1b06b5e2a455915"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert from radians to degrees.  <br /></td></tr>
+</table>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
+<a id="ac28952fb35ab01f253439319879a11dc" name="ac28952fb35ab01f253439319879a11dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac28952fb35ab01f253439319879a11dc">&#9670;&#160;</a></span>closest_index()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_FORCE_INLINE int amr_wind::utils::closest_index </td>
+          <td>(</td>
+          <td class="paramtype">const amrex::Vector&lt; amrex::Real &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>vec</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>value</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>tol</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0.0_rt</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return closest index (from lower) of value in vector. </p>
+
+</div>
+</div>
+<a id="a3c86cd22c23191f85989c8a482d97f34" name="a3c86cd22c23191f85989c8a482d97f34"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c86cd22c23191f85989c8a482d97f34">&#9670;&#160;</a></span>contains()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool amr_wind::utils::contains </td>
+          <td>(</td>
+          <td class="paramtype">const amrex::Box &amp;</td>          <td class="paramname"><span class="paramname"><em>box</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::RealVect &amp;</td>          <td class="paramname"><span class="paramname"><em>pos</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::GpuArray&lt; amrex::Real, AMREX_SPACEDIM &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>prob_lo</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::GpuArray&lt; amrex::Real, AMREX_SPACEDIM &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>dxinv</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Check if a point is inside a box. </p>
+
+</div>
+</div>
+<a id="aa50085ebceea4b8121a65fa9bf71753b" name="aa50085ebceea4b8121a65fa9bf71753b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa50085ebceea4b8121a65fa9bf71753b">&#9670;&#160;</a></span>cross_prod()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void amr_wind::utils::cross_prod </td>
+          <td>(</td>
+          <td class="paramtype">const T *</td>          <td class="paramname"><span class="paramname"><em>a</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const T *</td>          <td class="paramname"><span class="paramname"><em>b</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">T *</td>          <td class="paramname"><span class="paramname"><em>c</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Compute the cross product of two vectors <span class="tt">a</span>, <span class="tt">b</span> and update <span class="tt">c</span> </p>
+
+</div>
+</div>
+<a id="a5326c74139e50868c1b06b5e2a455915" name="a5326c74139e50868c1b06b5e2a455915"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5326c74139e50868c1b06b5e2a455915">&#9670;&#160;</a></span>degrees()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real amr_wind::utils::degrees </td>
+          <td>(</td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>rad_val</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convert from radians to degrees. </p>
+
+</div>
+</div>
+<a id="a1c28676d41ffc309a17fec8d89e9d085" name="a1c28676d41ffc309a17fec8d89e9d085"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c28676d41ffc309a17fec8d89e9d085">&#9670;&#160;</a></span>dot_prod() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T amr_wind::utils::dot_prod </td>
+          <td>(</td>
+          <td class="paramtype">const T *</td>          <td class="paramname"><span class="paramname"><em>x</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const T *</td>          <td class="paramname"><span class="paramname"><em>y</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Compute the dot product of two vectors </p>
+
+</div>
+</div>
+<a id="a46a0864d8a31479f5c3fcc9854f8fbd8" name="a46a0864d8a31479f5c3fcc9854f8fbd8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46a0864d8a31479f5c3fcc9854f8fbd8">&#9670;&#160;</a></span>dot_prod() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T amr_wind::utils::dot_prod </td>
+          <td>(</td>
+          <td class="paramtype">const T *</td>          <td class="paramname"><span class="paramname"><em>x</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const T *</td>          <td class="paramname"><span class="paramname"><em>y</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>ndim</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aba0a6578536a5dc391c4a3d8caf44c80" name="aba0a6578536a5dc391c4a3d8caf44c80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba0a6578536a5dc391c4a3d8caf44c80">&#9670;&#160;</a></span>face_aware_boundary_box_intersection() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_INLINE amrex::Box amr_wind::utils::face_aware_boundary_box_intersection </td>
+          <td>(</td>
+          <td class="paramtype">amrex::Box</td>          <td class="paramname"><span class="paramname"><em>grown_interior_box</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Box &amp;</td>          <td class="paramname"><span class="paramname"><em>domain_boundary_box</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Orientation &amp;</td>          <td class="paramname"><span class="paramname"><em>ori</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a87c92e7226a5f20d90ebfbab19ca91d2" name="a87c92e7226a5f20d90ebfbab19ca91d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87c92e7226a5f20d90ebfbab19ca91d2">&#9670;&#160;</a></span>face_aware_boundary_box_intersection() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_INLINE amrex::Box amr_wind::utils::face_aware_boundary_box_intersection </td>
+          <td>(</td>
+          <td class="paramtype">amrex::IntVect &amp;</td>          <td class="paramname"><span class="paramname"><em>shift_to_cc</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Box</td>          <td class="paramname"><span class="paramname"><em>grown_interior_box</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Box &amp;</td>          <td class="paramname"><span class="paramname"><em>domain_boundary_box</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Orientation &amp;</td>          <td class="paramname"><span class="paramname"><em>ori</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Get the intersection with a boundary box while considering if on face or cell. Intended for auxiliary boundary fill calls.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">shift_to_cc</td><td>output index vector to shift from output box to a cell-centered representation. </td></tr>
+    <tr><td class="paramname">grown_interior_box</td><td>box grown from domain interior to overlap with boundary </td></tr>
+    <tr><td class="paramname">domain_boundary_box</td><td>box representing domain boundary containing data </td></tr>
+    <tr><td class="paramname">ori</td><td>orientation of current boundary condition being evaluated </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The Box instance representing the intersection of the two inputs with shifts added to consider the location of the field associated with the grown_interior_box </dd></dl>
+
+</div>
+</div>
+<a id="a51588f9896992619e60500724ac5cd2d" name="a51588f9896992619e60500724ac5cd2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51588f9896992619e60500724ac5cd2d">&#9670;&#160;</a></span>half_pi()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE constexpr amrex::Real amr_wind::utils::half_pi </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return \(\pi / 2\). </p>
+
+</div>
+</div>
+<a id="ab34425b6e44fee3d4921b0781c1965c0" name="ab34425b6e44fee3d4921b0781c1965c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab34425b6e44fee3d4921b0781c1965c0">&#9670;&#160;</a></span>has_extdir()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::pair&lt; bool, bool &gt; amr_wind::utils::has_extdir </td>
+          <td>(</td>
+          <td class="paramtype">amrex::BCRec const *</td>          <td class="paramname"><span class="paramname"><em>bcrec</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>ncomp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>dir</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return a pair of bools, value is true if at least one boundary has an ext_dir specified. </p>
+
+</div>
+</div>
+<a id="a8d199132950cc64edbd00ad817000dd2" name="a8d199132950cc64edbd00ad817000dd2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d199132950cc64edbd00ad817000dd2">&#9670;&#160;</a></span>has_extdir_or_ho()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::pair&lt; bool, bool &gt; amr_wind::utils::has_extdir_or_ho </td>
+          <td>(</td>
+          <td class="paramtype">amrex::BCRec const *</td>          <td class="paramname"><span class="paramname"><em>bcrec</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>ncomp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>dir</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adfe909384ae5aea36fd3745638afb2af" name="adfe909384ae5aea36fd3745638afb2af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adfe909384ae5aea36fd3745638afb2af">&#9670;&#160;</a></span>inv_transform_vec()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_DEVICE AMREX_FORCE_INLINE void amr_wind::utils::inv_transform_vec </td>
+          <td>(</td>
+          <td class="paramtype">const amrex::Array2D&lt; T, 0, AMREX_SPACEDIM, 0, AMREX_SPACEDIM &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>tmat</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const T *</td>          <td class="paramname"><span class="paramname"><em>x</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">T *</td>          <td class="paramname"><span class="paramname"><em>y</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Compute the transformation <span class="tt">{y} = {x}^T [A]</span> </p>
+
+</div>
+</div>
+<a id="abba6c4654fa78ca0cd821f4a8e2fdb72" name="abba6c4654fa78ca0cd821f4a8e2fdb72"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abba6c4654fa78ca0cd821f4a8e2fdb72">&#9670;&#160;</a></span>perpendicular_idx()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T = amrex::GpuArray&lt;int, 2&gt;&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_FORCE_INLINE T amr_wind::utils::perpendicular_idx </td>
+          <td>(</td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>normal</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return indices perpendicular to normal. </p>
+
+</div>
+</div>
+<a id="afffcaa6939f03c21da7473531ab92bb7" name="afffcaa6939f03c21da7473531ab92bb7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afffcaa6939f03c21da7473531ab92bb7">&#9670;&#160;</a></span>radians()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real amr_wind::utils::radians </td>
+          <td>(</td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>deg_val</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convert from degrees to radians. </p>
+
+</div>
+</div>
+<a id="adf401a4293ae138ed1e9d24ce4e06955" name="adf401a4293ae138ed1e9d24ce4e06955"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf401a4293ae138ed1e9d24ce4e06955">&#9670;&#160;</a></span>realbox_to_box()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Box amr_wind::utils::realbox_to_box </td>
+          <td>(</td>
+          <td class="paramtype">const amrex::RealBox &amp;</td>          <td class="paramname"><span class="paramname"><em>rbx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Geometry &amp;</td>          <td class="paramname"><span class="paramname"><em>geom</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Convert a bounding box into amrex::Box index space at a given level</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">rbx</td><td>Bounding box as defined in global domain coordinates </td></tr>
+    <tr><td class="paramname">geom</td><td>AMReX geometry information for a given level </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The Box instance that defines the index space equivalent to bounding box </dd></dl>
+
+</div>
+</div>
+<a id="a0bad77527bc76219ffdbe9f01a52066d" name="a0bad77527bc76219ffdbe9f01a52066d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0bad77527bc76219ffdbe9f01a52066d">&#9670;&#160;</a></span>slice() <span class="overload">[1/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structamr__wind_1_1utils_1_1_slice.html">Slice</a>&lt; T &gt; amr_wind::utils::slice </td>
+          <td>(</td>
+          <td class="paramtype">amrex::Gpu::DeviceVector&lt; T &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>vec</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t</td>          <td class="paramname"><span class="paramname"><em>start</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8073f0185bfc7b6b8508215a381bdac0" name="a8073f0185bfc7b6b8508215a381bdac0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8073f0185bfc7b6b8508215a381bdac0">&#9670;&#160;</a></span>slice() <span class="overload">[2/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structamr__wind_1_1utils_1_1_slice.html">Slice</a>&lt; T &gt; amr_wind::utils::slice </td>
+          <td>(</td>
+          <td class="paramtype">amrex::Gpu::DeviceVector&lt; T &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>vec</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t</td>          <td class="paramname"><span class="paramname"><em>start</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t</td>          <td class="paramname"><span class="paramname"><em>count</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab1fa55b9c04b29e51b634476e463dca1" name="ab1fa55b9c04b29e51b634476e463dca1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1fa55b9c04b29e51b634476e463dca1">&#9670;&#160;</a></span>slice() <span class="overload">[3/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structamr__wind_1_1utils_1_1_slice.html">Slice</a>&lt; T &gt; amr_wind::utils::slice </td>
+          <td>(</td>
+          <td class="paramtype">amrex::Vector&lt; T &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>vec</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t</td>          <td class="paramname"><span class="paramname"><em>start</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a23643777017eb48bb536ea58e091a140" name="a23643777017eb48bb536ea58e091a140"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23643777017eb48bb536ea58e091a140">&#9670;&#160;</a></span>slice() <span class="overload">[4/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structamr__wind_1_1utils_1_1_slice.html">Slice</a>&lt; T &gt; amr_wind::utils::slice </td>
+          <td>(</td>
+          <td class="paramtype">amrex::Vector&lt; T &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>vec</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t</td>          <td class="paramname"><span class="paramname"><em>start</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t</td>          <td class="paramname"><span class="paramname"><em>count</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9ec773daca5fdf1eb9d6b41567f301bf" name="a9ec773daca5fdf1eb9d6b41567f301bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ec773daca5fdf1eb9d6b41567f301bf">&#9670;&#160;</a></span>slice() <span class="overload">[5/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structamr__wind_1_1utils_1_1_slice.html">Slice</a>&lt; T &gt; amr_wind::utils::slice </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; T &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>vec</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t</td>          <td class="paramname"><span class="paramname"><em>start</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a139c6940041cf69dd4d294d8db919cfc" name="a139c6940041cf69dd4d294d8db919cfc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a139c6940041cf69dd4d294d8db919cfc">&#9670;&#160;</a></span>slice() <span class="overload">[6/6]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structamr__wind_1_1utils_1_1_slice.html">Slice</a>&lt; T &gt; amr_wind::utils::slice </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; T &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>vec</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t</td>          <td class="paramname"><span class="paramname"><em>start</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t</td>          <td class="paramname"><span class="paramname"><em>count</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac06fd7643ff858b999dfde3f30e4bb61" name="ac06fd7643ff858b999dfde3f30e4bb61"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac06fd7643ff858b999dfde3f30e4bb61">&#9670;&#160;</a></span>transform_vec()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_DEVICE AMREX_FORCE_INLINE void amr_wind::utils::transform_vec </td>
+          <td>(</td>
+          <td class="paramtype">const amrex::Array2D&lt; T, 0, AMREX_SPACEDIM, 0, AMREX_SPACEDIM &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>tmat</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const T *</td>          <td class="paramname"><span class="paramname"><em>x</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">T *</td>          <td class="paramname"><span class="paramname"><em>y</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Compute the transformation <span class="tt">{y} = [A] {x}</span> </p>
+
+</div>
+</div>
+<a id="a644ae83d8e9966b6d23228585440a7d3" name="a644ae83d8e9966b6d23228585440a7d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a644ae83d8e9966b6d23228585440a7d3">&#9670;&#160;</a></span>trapz()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Function&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real amr_wind::utils::trapz </td>
+          <td>(</td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>xa</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Real</td>          <td class="paramname"><span class="paramname"><em>xb</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>n</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Function &amp;</td>          <td class="paramname"><span class="paramname"><em>f</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Trapezoid integration</p>
+<p>Prefer exact evaluation of the integral over using this function </p>
+
+</div>
+</div>
+<a id="a5157dd6482418271f733c3b2e3a70f7b" name="a5157dd6482418271f733c3b2e3a70f7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5157dd6482418271f733c3b2e3a70f7b">&#9670;&#160;</a></span>two_pi()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE constexpr amrex::Real amr_wind::utils::two_pi </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return \(2 \pi\). </p>
+
+</div>
+</div>
+<a id="aaa6e1221874bc831c808a26aa5618130" name="aaa6e1221874bc831c808a26aa5618130"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa6e1221874bc831c808a26aa5618130">&#9670;&#160;</a></span>vec_mag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T amr_wind::utils::vec_mag </td>
+          <td>(</td>
+          <td class="paramtype">const T *</td>          <td class="paramname"><span class="paramname"><em>x</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Return the magnitude of a 3-D vector </p>
+
+</div>
+</div>
+<a id="a1bb95c6a2a94153935ca6ed63c7f3e56" name="a1bb95c6a2a94153935ca6ed63c7f3e56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1bb95c6a2a94153935ca6ed63c7f3e56">&#9670;&#160;</a></span>vec_normalize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void amr_wind::utils::vec_normalize </td>
+          <td>(</td>
+          <td class="paramtype">T *</td>          <td class="paramname"><span class="paramname"><em>x</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Convert a given vector to a unit vector </p>
+
+</div>
+</div>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

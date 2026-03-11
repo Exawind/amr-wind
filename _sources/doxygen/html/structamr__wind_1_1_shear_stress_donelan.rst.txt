@@ -1,0 +1,14 @@
+.. meta::d02a5479016b49c022fdc1734ebbc09afcabb8eead4918ffa8d73f170a8ab1515dbbcb96efb5b3cbf20d2848999a9ada932f1d5d21cf3263ddd4b8ae2e8d97bf
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::ShearStressDonelan Struct Reference
+
+ShearStressDonelan Struct Reference
+===================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1_shear_stress_donelan.html

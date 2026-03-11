@@ -1,0 +1,997 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::pde::icns::ABLForcing Class Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::pde::icns::ABLForcing Class Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/classamr__wind_1_1pde_1_1icns_1_1_a_b_l_forcing.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ablforcing-class-reference">
+<h1>ABLForcing Class Reference<a class="headerlink" href="#ablforcing-class-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::pde::icns::ABLForcing Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="namespaceamr__wind_1_1pde.html">pde</a></li><li class="navelem"><a href="namespaceamr__wind_1_1pde_1_1icns.html">icns</a></li><li class="navelem"><a href="classamr__wind_1_1pde_1_1icns_1_1_a_b_l_forcing.html">ABLForcing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
+<a href="classamr__wind_1_1pde_1_1icns_1_1_a_b_l_forcing-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::pde::icns::ABLForcing Class Reference<div class="ingroups"><a class="el" href="group__eqsys.html">Equation Systems</a> &raquo; <a class="el" href="group__icns.html">Incompressible Navier-Stokes</a> &raquo; <a class="el" href="group__icns__src.html">ICNS Source terms</a> &#124; <a class="el" href="group__physics.html">Physics models</a> &raquo; <a class="el" href="group__wind.html">Wind energy modeling</a> &raquo; <a class="el" href="group__we__abl.html">ABL</a></div></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_a_b_l_forcing_8_h_source.html">ABLForcing.H</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for amr_wind::pde::icns::ABLForcing:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1pde_1_1icns_1_1_a_b_l_forcing__inherit__graph.svg" width="199" height="154"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for amr_wind::pde::icns::ABLForcing:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1pde_1_1icns_1_1_a_b_l_forcing__coll__graph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a39d64204c8044d51ede4adbca82bf8d8" id="r_a39d64204c8044d51ede4adbca82bf8d8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a39d64204c8044d51ede4adbca82bf8d8">ABLForcing</a> (const <a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;sim)</td></tr>
+<tr class="memitem:a99262999733f97041f760a3c48e25f0d" id="r_a99262999733f97041f760a3c48e25f0d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a99262999733f97041f760a3c48e25f0d">~ABLForcing</a> () override</td></tr>
+<tr class="memitem:ad13eaf5d9c108b0139e292df525c15d5" id="r_ad13eaf5d9c108b0139e292df525c15d5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad13eaf5d9c108b0139e292df525c15d5">operator()</a> (int lev, const amrex::MFIter &amp;mfi, const amrex::Box &amp;bx, <a class="el" href="group__fields.html#ga5251ec6b376231128a9647f3028dbac0">FieldState</a> fstate, const amrex::Array4&lt; amrex::Real &gt; &amp;src_term) const override</td></tr>
+<tr class="memitem:a13f72eebccd3c96aa0ac5f9a794cb6fc" id="r_a13f72eebccd3c96aa0ac5f9a794cb6fc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a13f72eebccd3c96aa0ac5f9a794cb6fc">set_target_velocities</a> (amrex::Real ux, amrex::Real uy)</td></tr>
+<tr class="memitem:a5d0572f7cb21f43153dd50dd245b425e" id="r_a5d0572f7cb21f43153dd50dd245b425e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5d0572f7cb21f43153dd50dd245b425e">set_mean_velocities</a> (amrex::Real ux, amrex::Real uy)</td></tr>
+<tr class="memitem:a852aff4472e78dbce6dec95694a77e0c" id="r_a852aff4472e78dbce6dec95694a77e0c"><td class="memItemLeft" align="right" valign="top">amrex::RealArray&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a852aff4472e78dbce6dec95694a77e0c">abl_forcing</a> () const</td></tr>
+<tr class="memitem:af13eb53b88c711a57dc3633222984627" id="r_af13eb53b88c711a57dc3633222984627"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af13eb53b88c711a57dc3633222984627">forcing_height</a> () const</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:abc48974621631d67e8f805277530c190" id="r_abc48974621631d67e8f805277530c190"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abc48974621631d67e8f805277530c190">identifier</a> ()</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:ab21d9304bba12fcc6107bf1385d1ec17" id="r_ab21d9304bba12fcc6107bf1385d1ec17"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_sim_time.html">SimTime</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab21d9304bba12fcc6107bf1385d1ec17">m_time</a></td></tr>
+<tr class="memitem:ab3a7c21354c4ce11994da1bb6dd7f8fa" id="r_ab3a7c21354c4ce11994da1bb6dd7f8fa"><td class="memItemLeft" align="right" valign="top">const amrex::AmrCore &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab3a7c21354c4ce11994da1bb6dd7f8fa">m_mesh</a></td></tr>
+<tr class="memitem:a52e0f2c7918b6c9b2e759e121b47f488" id="r_a52e0f2c7918b6c9b2e759e121b47f488"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a52e0f2c7918b6c9b2e759e121b47f488">m_use_phase_ramp</a> {false}</td></tr>
+<tr class="memdesc:a52e0f2c7918b6c9b2e759e121b47f488"><td class="mdescLeft">&#160;</td><td class="mdescRight">Activated when water is present in domain.  <br /></td></tr>
+<tr class="memitem:a57eecd59dcd7ac29cebd2c4ec6da9f04" id="r_a57eecd59dcd7ac29cebd2c4ec6da9f04"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a57eecd59dcd7ac29cebd2c4ec6da9f04">m_n_band</a> {2}</td></tr>
+<tr class="memdesc:a57eecd59dcd7ac29cebd2c4ec6da9f04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of cells in band to prevent forcing near liquid.  <br /></td></tr>
+<tr class="memitem:ad4e6225c525a2270b1c461dcb290c573" id="r_ad4e6225c525a2270b1c461dcb290c573"><td class="memItemLeft" align="right" valign="top">amrex::RealArray&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad4e6225c525a2270b1c461dcb290c573">m_abl_forcing</a> {0.0_rt}</td></tr>
+<tr class="memdesc:ad4e6225c525a2270b1c461dcb290c573"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classamr__wind_1_1_a_b_l.html">ABL</a> forcing terms.  <br /></td></tr>
+<tr class="memitem:ad3aefb56662d917202e3abad594fec67" id="r_ad3aefb56662d917202e3abad594fec67"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad3aefb56662d917202e3abad594fec67">m_vel_timetable</a></td></tr>
+<tr class="memdesc:ad3aefb56662d917202e3abad594fec67"><td class="mdescLeft">&#160;</td><td class="mdescRight">File name for velocity forcing time table.  <br /></td></tr>
+<tr class="memitem:a56e04b4733ca6c6e6b42933aa2b8fe66" id="r_a56e04b4733ca6c6e6b42933aa2b8fe66"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a56e04b4733ca6c6e6b42933aa2b8fe66">m_write_force_timetable</a> {false}</td></tr>
+<tr class="memdesc:a56e04b4733ca6c6e6b42933aa2b8fe66"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bool for writing forcing time table.  <br /></td></tr>
+<tr class="memitem:add404f3ab09f697093b40812c30770ee" id="r_add404f3ab09f697093b40812c30770ee"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#add404f3ab09f697093b40812c30770ee">m_force_timetable</a></td></tr>
+<tr class="memdesc:add404f3ab09f697093b40812c30770ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">File name for forcing time table output.  <br /></td></tr>
+<tr class="memitem:abd646b3a949cc3c339edf89efa547d3e" id="r_abd646b3a949cc3c339edf89efa547d3e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abd646b3a949cc3c339edf89efa547d3e">m_force_outfreq</a> {1}</td></tr>
+<tr class="memdesc:abd646b3a949cc3c339edf89efa547d3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Output frequency for forces.  <br /></td></tr>
+<tr class="memitem:a81e8df38474ebf8853a7056c167b7326" id="r_a81e8df38474ebf8853a7056c167b7326"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a81e8df38474ebf8853a7056c167b7326">m_force_outstart</a> {0.0_rt}</td></tr>
+<tr class="memdesc:a81e8df38474ebf8853a7056c167b7326"><td class="mdescLeft">&#160;</td><td class="mdescRight">Output start time for force.  <br /></td></tr>
+<tr class="memitem:a18f57cbd80c84ee11c27a5edb8d3f444" id="r_a18f57cbd80c84ee11c27a5edb8d3f444"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a18f57cbd80c84ee11c27a5edb8d3f444">m_time_table</a></td></tr>
+<tr class="memdesc:a18f57cbd80c84ee11c27a5edb8d3f444"><td class="mdescLeft">&#160;</td><td class="mdescRight">Velocity forcing time table.  <br /></td></tr>
+<tr class="memitem:a6d2b365292b28ae9548cac2dfe231e43" id="r_a6d2b365292b28ae9548cac2dfe231e43"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6d2b365292b28ae9548cac2dfe231e43">m_speed_table</a></td></tr>
+<tr class="memdesc:a6d2b365292b28ae9548cac2dfe231e43"><td class="mdescLeft">&#160;</td><td class="mdescRight">Velocity forcing speed table.  <br /></td></tr>
+<tr class="memitem:a8e264967041f88714641529539557a89" id="r_a8e264967041f88714641529539557a89"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8e264967041f88714641529539557a89">m_direction_table</a></td></tr>
+<tr class="memdesc:a8e264967041f88714641529539557a89"><td class="mdescLeft">&#160;</td><td class="mdescRight">Velocity forcing direction table.  <br /></td></tr>
+<tr class="memitem:ae7f8f1adc1df31cfc42040f3f7f0c4b4" id="r_ae7f8f1adc1df31cfc42040f3f7f0c4b4"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae7f8f1adc1df31cfc42040f3f7f0c4b4">m_target_vel</a> {0.0_rt, 0.0_rt, 0.0_rt}</td></tr>
+<tr class="memdesc:ae7f8f1adc1df31cfc42040f3f7f0c4b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Target velocity.  <br /></td></tr>
+<tr class="memitem:a339f29194d7a88b9247133d430e87c10" id="r_a339f29194d7a88b9247133d430e87c10"><td class="memItemLeft" align="right" valign="top">amrex::RealArray&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a339f29194d7a88b9247133d430e87c10">m_mean_vel</a> {0.0_rt}</td></tr>
+<tr class="memdesc:a339f29194d7a88b9247133d430e87c10"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current mean vel.  <br /></td></tr>
+<tr class="memitem:a820472120004e9cf5d2c2f9c2b6edd91" id="r_a820472120004e9cf5d2c2f9c2b6edd91"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a820472120004e9cf5d2c2f9c2b6edd91">m_forcing_height</a></td></tr>
+<tr class="memdesc:a820472120004e9cf5d2c2f9c2b6edd91"><td class="mdescLeft">&#160;</td><td class="mdescRight">Height at which the velocities are forcing.  <br /></td></tr>
+<tr class="memitem:a14a85412ddde225245c1c1b4f0c2ce5b" id="r_a14a85412ddde225245c1c1b4f0c2ce5b"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a14a85412ddde225245c1c1b4f0c2ce5b">m_forcing_mphase0</a></td></tr>
+<tr class="memdesc:a14a85412ddde225245c1c1b4f0c2ce5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Height from water interface where force is off.  <br /></td></tr>
+<tr class="memitem:a23f9fccba62590be32b85be02c61d939" id="r_a23f9fccba62590be32b85be02c61d939"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a23f9fccba62590be32b85be02c61d939">m_forcing_mphase1</a></td></tr>
+<tr class="memdesc:a23f9fccba62590be32b85be02c61d939"><td class="mdescLeft">&#160;</td><td class="mdescRight">Height from water interface over which force is ramped.  <br /></td></tr>
+<tr class="memitem:ad21d81523b84ebc414fac43675230dd7" id="r_ad21d81523b84ebc414fac43675230dd7"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad21d81523b84ebc414fac43675230dd7">m_water_level</a></td></tr>
+<tr class="memdesc:ad21d81523b84ebc414fac43675230dd7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Local storage of interface location.  <br /></td></tr>
+<tr class="memitem:a310c702a42c1a60ed768a9e30bdcc963" id="r_a310c702a42c1a60ed768a9e30bdcc963"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_field.html">Field</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a310c702a42c1a60ed768a9e30bdcc963">m_vof</a></td></tr>
+<tr class="memdesc:a310c702a42c1a60ed768a9e30bdcc963"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structamr__wind_1_1pde_1_1_v_o_f.html">VOF</a> field, to avoid forcing on liquid above force-off height.  <br /></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Forcing term to drive the <a class="el" href="classamr__wind_1_1_a_b_l.html">ABL</a> profile to a desired state</p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classamr__wind_1_1_a_b_l.html">ABL</a> </dd></dl>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a39d64204c8044d51ede4adbca82bf8d8" name="a39d64204c8044d51ede4adbca82bf8d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39d64204c8044d51ede4adbca82bf8d8">&#9670;&#160;</a></span>ABLForcing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::pde::icns::ABLForcing::ABLForcing </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>sim</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel explicit">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a99262999733f97041f760a3c48e25f0d" name="a99262999733f97041f760a3c48e25f0d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99262999733f97041f760a3c48e25f0d">&#9670;&#160;</a></span>~ABLForcing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::pde::icns::ABLForcing::~ABLForcing </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a852aff4472e78dbce6dec95694a77e0c" name="a852aff4472e78dbce6dec95694a77e0c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a852aff4472e78dbce6dec95694a77e0c">&#9670;&#160;</a></span>abl_forcing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::RealArray amr_wind::pde::icns::ABLForcing::abl_forcing </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af13eb53b88c711a57dc3633222984627" name="af13eb53b88c711a57dc3633222984627"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af13eb53b88c711a57dc3633222984627">&#9670;&#160;</a></span>forcing_height()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::pde::icns::ABLForcing::forcing_height </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abc48974621631d67e8f805277530c190" name="abc48974621631d67e8f805277530c190"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc48974621631d67e8f805277530c190">&#9670;&#160;</a></span>identifier()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::pde::icns::ABLForcing::identifier </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad13eaf5d9c108b0139e292df525c15d5" name="ad13eaf5d9c108b0139e292df525c15d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad13eaf5d9c108b0139e292df525c15d5">&#9670;&#160;</a></span>operator()()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::pde::icns::ABLForcing::operator() </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>lev</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::MFIter &amp;</td>          <td class="paramname"><span class="paramname"><em>mfi</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Box &amp;</td>          <td class="paramname"><span class="paramname"><em>bx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__fields.html#ga5251ec6b376231128a9647f3028dbac0">FieldState</a></td>          <td class="paramname"><span class="paramname"><em>fstate</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Array4&lt; amrex::Real &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>src_term</em></span>&#160;) const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5d0572f7cb21f43153dd50dd245b425e" name="a5d0572f7cb21f43153dd50dd245b425e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d0572f7cb21f43153dd50dd245b425e">&#9670;&#160;</a></span>set_mean_velocities()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::pde::icns::ABLForcing::set_mean_velocities </td>
+          <td>(</td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>ux</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>uy</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a13f72eebccd3c96aa0ac5f9a794cb6fc" name="a13f72eebccd3c96aa0ac5f9a794cb6fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13f72eebccd3c96aa0ac5f9a794cb6fc">&#9670;&#160;</a></span>set_target_velocities()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::pde::icns::ABLForcing::set_target_velocities </td>
+          <td>(</td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>ux</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>uy</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="ad4e6225c525a2270b1c461dcb290c573" name="ad4e6225c525a2270b1c461dcb290c573"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4e6225c525a2270b1c461dcb290c573">&#9670;&#160;</a></span>m_abl_forcing</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::RealArray amr_wind::pde::icns::ABLForcing::m_abl_forcing {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classamr__wind_1_1_a_b_l.html">ABL</a> forcing terms. </p>
+
+</div>
+</div>
+<a id="a8e264967041f88714641529539557a89" name="a8e264967041f88714641529539557a89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e264967041f88714641529539557a89">&#9670;&#160;</a></span>m_direction_table</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Real&gt; amr_wind::pde::icns::ABLForcing::m_direction_table</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Velocity forcing direction table. </p>
+
+</div>
+</div>
+<a id="abd646b3a949cc3c339edf89efa547d3e" name="abd646b3a949cc3c339edf89efa547d3e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd646b3a949cc3c339edf89efa547d3e">&#9670;&#160;</a></span>m_force_outfreq</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::pde::icns::ABLForcing::m_force_outfreq {1}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Output frequency for forces. </p>
+
+</div>
+</div>
+<a id="a81e8df38474ebf8853a7056c167b7326" name="a81e8df38474ebf8853a7056c167b7326"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81e8df38474ebf8853a7056c167b7326">&#9670;&#160;</a></span>m_force_outstart</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::pde::icns::ABLForcing::m_force_outstart {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Output start time for force. </p>
+
+</div>
+</div>
+<a id="add404f3ab09f697093b40812c30770ee" name="add404f3ab09f697093b40812c30770ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add404f3ab09f697093b40812c30770ee">&#9670;&#160;</a></span>m_force_timetable</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::pde::icns::ABLForcing::m_force_timetable</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>File name for forcing time table output. </p>
+
+</div>
+</div>
+<a id="a820472120004e9cf5d2c2f9c2b6edd91" name="a820472120004e9cf5d2c2f9c2b6edd91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a820472120004e9cf5d2c2f9c2b6edd91">&#9670;&#160;</a></span>m_forcing_height</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::pde::icns::ABLForcing::m_forcing_height</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Height at which the velocities are forcing. </p>
+
+</div>
+</div>
+<a id="a14a85412ddde225245c1c1b4f0c2ce5b" name="a14a85412ddde225245c1c1b4f0c2ce5b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14a85412ddde225245c1c1b4f0c2ce5b">&#9670;&#160;</a></span>m_forcing_mphase0</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::pde::icns::ABLForcing::m_forcing_mphase0</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Height from water interface where force is off. </p>
+
+</div>
+</div>
+<a id="a23f9fccba62590be32b85be02c61d939" name="a23f9fccba62590be32b85be02c61d939"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23f9fccba62590be32b85be02c61d939">&#9670;&#160;</a></span>m_forcing_mphase1</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::pde::icns::ABLForcing::m_forcing_mphase1</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Height from water interface over which force is ramped. </p>
+
+</div>
+</div>
+<a id="a339f29194d7a88b9247133d430e87c10" name="a339f29194d7a88b9247133d430e87c10"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a339f29194d7a88b9247133d430e87c10">&#9670;&#160;</a></span>m_mean_vel</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::RealArray amr_wind::pde::icns::ABLForcing::m_mean_vel {0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current mean vel. </p>
+
+</div>
+</div>
+<a id="ab3a7c21354c4ce11994da1bb6dd7f8fa" name="ab3a7c21354c4ce11994da1bb6dd7f8fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3a7c21354c4ce11994da1bb6dd7f8fa">&#9670;&#160;</a></span>m_mesh</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const amrex::AmrCore&amp; amr_wind::pde::icns::ABLForcing::m_mesh</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a57eecd59dcd7ac29cebd2c4ec6da9f04" name="a57eecd59dcd7ac29cebd2c4ec6da9f04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57eecd59dcd7ac29cebd2c4ec6da9f04">&#9670;&#160;</a></span>m_n_band</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::pde::icns::ABLForcing::m_n_band {2}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of cells in band to prevent forcing near liquid. </p>
+
+</div>
+</div>
+<a id="a6d2b365292b28ae9548cac2dfe231e43" name="a6d2b365292b28ae9548cac2dfe231e43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d2b365292b28ae9548cac2dfe231e43">&#9670;&#160;</a></span>m_speed_table</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Real&gt; amr_wind::pde::icns::ABLForcing::m_speed_table</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Velocity forcing speed table. </p>
+
+</div>
+</div>
+<a id="ae7f8f1adc1df31cfc42040f3f7f0c4b4" name="ae7f8f1adc1df31cfc42040f3f7f0c4b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7f8f1adc1df31cfc42040f3f7f0c4b4">&#9670;&#160;</a></span>m_target_vel</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Real&gt; amr_wind::pde::icns::ABLForcing::m_target_vel {0.0_rt, 0.0_rt, 0.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Target velocity. </p>
+
+</div>
+</div>
+<a id="ab21d9304bba12fcc6107bf1385d1ec17" name="ab21d9304bba12fcc6107bf1385d1ec17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab21d9304bba12fcc6107bf1385d1ec17">&#9670;&#160;</a></span>m_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_sim_time.html">SimTime</a>&amp; amr_wind::pde::icns::ABLForcing::m_time</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a18f57cbd80c84ee11c27a5edb8d3f444" name="a18f57cbd80c84ee11c27a5edb8d3f444"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18f57cbd80c84ee11c27a5edb8d3f444">&#9670;&#160;</a></span>m_time_table</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Real&gt; amr_wind::pde::icns::ABLForcing::m_time_table</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Velocity forcing time table. </p>
+
+</div>
+</div>
+<a id="a52e0f2c7918b6c9b2e759e121b47f488" name="a52e0f2c7918b6c9b2e759e121b47f488"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52e0f2c7918b6c9b2e759e121b47f488">&#9670;&#160;</a></span>m_use_phase_ramp</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::pde::icns::ABLForcing::m_use_phase_ramp {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Activated when water is present in domain. </p>
+
+</div>
+</div>
+<a id="ad3aefb56662d917202e3abad594fec67" name="ad3aefb56662d917202e3abad594fec67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3aefb56662d917202e3abad594fec67">&#9670;&#160;</a></span>m_vel_timetable</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::pde::icns::ABLForcing::m_vel_timetable</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>File name for velocity forcing time table. </p>
+
+</div>
+</div>
+<a id="a310c702a42c1a60ed768a9e30bdcc963" name="a310c702a42c1a60ed768a9e30bdcc963"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a310c702a42c1a60ed768a9e30bdcc963">&#9670;&#160;</a></span>m_vof</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_field.html">Field</a>* amr_wind::pde::icns::ABLForcing::m_vof</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="structamr__wind_1_1pde_1_1_v_o_f.html">VOF</a> field, to avoid forcing on liquid above force-off height. </p>
+
+</div>
+</div>
+<a id="ad21d81523b84ebc414fac43675230dd7" name="ad21d81523b84ebc414fac43675230dd7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad21d81523b84ebc414fac43675230dd7">&#9670;&#160;</a></span>m_water_level</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::pde::icns::ABLForcing::m_water_level</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Local storage of interface location. </p>
+
+</div>
+</div>
+<a id="a56e04b4733ca6c6e6b42933aa2b8fe66" name="a56e04b4733ca6c6e6b42933aa2b8fe66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56e04b4733ca6c6e6b42933aa2b8fe66">&#9670;&#160;</a></span>m_write_force_timetable</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::pde::icns::ABLForcing::m_write_force_timetable {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Bool for writing forcing time table. </p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/icns/source_terms/<a class="el" href="_a_b_l_forcing_8_h_source.html">ABLForcing.H</a></li>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/icns/source_terms/<a class="el" href="_a_b_l_forcing_8cpp.html">ABLForcing.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

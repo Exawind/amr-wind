@@ -1,0 +1,414 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/DTUSpinnerSampler.H Source File &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/DTUSpinnerSampler.H Source File</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/_d_t_u_spinner_sampler_8_h_source.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="home-runner-work-amr-wind-amr-wind-amr-wind-utilities-sampling-dtuspinnersampler-h-source-file">
+<h1>/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/DTUSpinnerSampler.H Source File<a class="headerlink" href="#home-runner-work-amr-wind-amr-wind-amr-wind-utilities-sampling-dtuspinnersampler-h-source-file" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/utilities/sampling/DTUSpinnerSampler.H Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="dir_d85575251dd712327fe3cf057fa568b4.html">amr-wind</a></li><li class="navelem"><a href="dir_212148f97b8bb53ebaebb3bf8a8b5de4.html">amr-wind</a></li><li class="navelem"><a href="dir_e9168f3bfea397a173489332f8554c97.html">utilities</a></li><li class="navelem"><a href="dir_75d00a63057b46a9c7c9a2874a64aec1.html">sampling</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="headertitle"><div class="title">DTUSpinnerSampler.H</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="_d_t_u_spinner_sampler_8_h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef DTUSPINNERSAMPLER_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define DTUSPINNERSAMPLER_H</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="_sampling_utils_8_h.html">amr-wind/utilities/sampling/SamplingUtils.H</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="_lidar_sampler_8_h.html">amr-wind/utilities/sampling/LidarSampler.H</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="vector__space_8_h.html">amr-wind/core/vs/vector_space.H</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;AMReX_REAL.H&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">using namespace </span>amrex::literals;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceamr__wind_1_1sampling.html">amr_wind::sampling</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="foldopen" id="foldopen00013" data-start="{" data-end="};">
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structamr__wind_1_1sampling_1_1_prism_parameters.html">   13</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structamr__wind_1_1sampling_1_1_prism_parameters.html">PrismParameters</a></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>{</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structamr__wind_1_1sampling_1_1_prism_parameters.html#ad388b3a12f142fb06f1dfed1d1bda515">   15</a></span>    amrex::Real <a class="code hl_variable" href="structamr__wind_1_1sampling_1_1_prism_parameters.html#ad388b3a12f142fb06f1dfed1d1bda515">theta0</a>{90.0_rt};</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structamr__wind_1_1sampling_1_1_prism_parameters.html#a943d47d0f2b12f0f38cdf8f6019cf745">   16</a></span>    amrex::Real <a class="code hl_variable" href="structamr__wind_1_1sampling_1_1_prism_parameters.html#a943d47d0f2b12f0f38cdf8f6019cf745">rot</a>{3.5_rt};</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structamr__wind_1_1sampling_1_1_prism_parameters.html#ad63769a54abae789e80ae99024629b6c">   17</a></span>    amrex::Real <a class="code hl_variable" href="structamr__wind_1_1sampling_1_1_prism_parameters.html#ad63769a54abae789e80ae99024629b6c">azimuth</a>{15.2_rt};</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>};</div>
+</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span></div>
+<div class="foldopen" id="foldopen00029" data-start="{" data-end="};">
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html">   29</a></span><span class="keyword">class </span><a class="code hl_function" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#ab7ac0a5ebbb28cfba6148b2e24fa1639">DTUSpinnerSampler</a> : <span class="keyword">public</span> <a class="code hl_function" href="classamr__wind_1_1sampling_1_1_lidar_sampler.html#af4ddc6cd90fb725eb3fb9a0bf624d754">LidarSampler</a></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>{</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="comment">// cppcheck-suppress duplInheritedMember</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#ab9a56ef4f27f49ab541e00f922612246">   33</a></span>    <span class="keyword">static</span> std::string <a class="code hl_function" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#ab9a56ef4f27f49ab541e00f922612246">identifier</a>() { <span class="keywordflow">return</span> <span class="stringliteral">&quot;DTUSpinnerSampler&quot;</span>; }</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#ab7ac0a5ebbb28cfba6148b2e24fa1639">DTUSpinnerSampler</a>(<span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; <span class="comment">/*sim*/</span>);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a9ba3e9004d2af24220c270f7ec42cfbe">initialize</a>(<span class="keyword">const</span> std::string&amp; key) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span></div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a090bb6c4ece8543ba2b578ab59769897">sampling_locations</a>(<a class="code hl_struct" href="structamr__wind_1_1sampling_1_1_sample_loc_type.html">SampleLocType</a>&amp; <span class="comment">/*sample_locs*/</span>) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a090bb6c4ece8543ba2b578ab59769897">sampling_locations</a>(</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <a class="code hl_struct" href="structamr__wind_1_1sampling_1_1_sample_loc_type.html">SampleLocType</a>&amp; <span class="comment">/*sample_locs*/</span>,</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keyword">const</span> amrex::Box&amp; <span class="comment">/*box*/</span>) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keyword">static</span> <a class="code hl_typedef" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> <a class="code hl_function" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a654abb9b45ac65539f7421cd45fa42d4">generate_lidar_pattern</a>(</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <a class="code hl_struct" href="structamr__wind_1_1sampling_1_1_prism_parameters.html">PrismParameters</a> InnerPrism,</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <a class="code hl_struct" href="structamr__wind_1_1sampling_1_1_prism_parameters.html">PrismParameters</a> OuterPrism,</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        amrex::Real time);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keyword">static</span> <a class="code hl_typedef" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> <a class="code hl_function" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a26e4f870998cc9f8e6624a0187fad79c">adjust_lidar_pattern</a>(</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <a class="code hl_typedef" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> beamPt,</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        amrex::Real yaw,</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        amrex::Real pitch,</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        amrex::Real roll);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span><span class="preprocessor">#ifdef AMR_WIND_USE_OPENFAST</span></div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordtype">void</span> bcast_turbine(</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        amrex::Array&lt;amrex::Real, 18&gt;&amp; <span class="comment">/*turbine_pack*/</span>, <span class="keywordtype">int</span> <span class="comment">/*root_proc*/</span>);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordtype">void</span> get_turbine_data(<span class="keyword">const</span> std::string&amp; turbine_label);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#aac044c2a1dad7e47633c7530513436db">update_sampling_locations</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a0bf90a7213d45746a2787ffa4e54a026">   79</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a0bf90a7213d45746a2787ffa4e54a026">post_sample_actions</a>()<span class="keyword"> override </span>{};</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="foldopen" id="foldopen00081" data-start="{" data-end="}">
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#acfc31c252b33cf03dd79277b0a42bc30">   81</a></span>    [[nodiscard]] <span class="keywordtype">long</span> <a class="code hl_function" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#acfc31c252b33cf03dd79277b0a42bc30">num_points</a>()<span class="keyword"> const override</span></div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        <span class="keywordflow">return</span> (<a class="code hl_variable" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a8618e0dd6446f551a0484080e36f1a37">m_beam_points</a> * <a class="code hl_variable" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a3e5e4a049f8894a90d36ba587240fc75">m_ntotal</a>);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    }</div>
+</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="foldopen" id="foldopen00086" data-start="{" data-end="}">
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#aa64015d8f9094e4cd9055921d805e612">   86</a></span>    [[nodiscard]] <span class="keywordtype">long</span> <a class="code hl_function" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#aa64015d8f9094e4cd9055921d805e612">num_output_points</a>()<span class="keyword"> const override</span></div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        <span class="keywordflow">return</span> (<a class="code hl_variable" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a8618e0dd6446f551a0484080e36f1a37">m_beam_points</a> * <a class="code hl_variable" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a3e5e4a049f8894a90d36ba587240fc75">m_ntotal</a>);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    }</div>
+</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span></div>
+<div class="foldopen" id="foldopen00092" data-start="{" data-end="}">
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#afff1fca140950106a848b340f5131f91">   92</a></span>    [[nodiscard]] std::string <a class="code hl_function" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#afff1fca140950106a848b340f5131f91">sampletype</a>()<span class="keyword"> const override</span></div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#ab9a56ef4f27f49ab541e00f922612246">identifier</a>();</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    }</div>
+</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordtype">void</span></div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <a class="code hl_function" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a16c57af54890b48fffb67824790a634c">define_netcdf_metadata</a>(<span class="keyword">const</span> <a class="code hl_class" href="classncutils_1_1_n_c_group.html">ncutils::NCGroup</a>&amp; <span class="comment">/*unused*/</span>) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keywordtype">void</span></div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <a class="code hl_function" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#ac03b9c77baedb4c48beead518178680f">populate_netcdf_metadata</a>(<span class="keyword">const</span> <a class="code hl_class" href="classncutils_1_1_n_c_group.html">ncutils::NCGroup</a>&amp; <span class="comment">/*unused*/</span>) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#ac10319f35cb32b1a9cfba85030147861">output_netcdf_data</a>(</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        <span class="keyword">const</span> <a class="code hl_class" href="classncutils_1_1_n_c_group.html">ncutils::NCGroup</a>&amp; <span class="comment">/*unused*/</span>, <span class="keywordtype">size_t</span> <span class="comment">/*unused*/</span>) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="comment">// Number of subsamples in this timestep</span></div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno"><a class="line" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#aec542d4508dd30100672a9889607802b">  106</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#aec542d4508dd30100672a9889607802b">m_ns</a>{1};</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="comment">// Max number of subsamples in all timesteps</span></div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno"><a class="line" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a3e5e4a049f8894a90d36ba587240fc75">  109</a></span>    <span class="keywordtype">long</span> <a class="code hl_variable" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a3e5e4a049f8894a90d36ba587240fc75">m_ntotal</a>{1};</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno"><a class="line" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a2078a95ea0c2853a9ea0dead3d960884">  111</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a2078a95ea0c2853a9ea0dead3d960884">m_update_count</a>{0};</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno"><a class="line" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a45195bda8241bf901367a233b28b8803">  112</a></span>    <span class="keyword">const</span> amrex::Real <a class="code hl_variable" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a45195bda8241bf901367a233b28b8803">m_radtodeg</a>{180.0_rt / std::numbers::pi_v&lt;amrex::Real&gt;};</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno"><a class="line" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a6385f29c55f64dc2c5e8931b8b766b4e">  113</a></span>    <span class="keyword">const</span> amrex::Real <a class="code hl_variable" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a6385f29c55f64dc2c5e8931b8b766b4e">m_pi</a>{std::numbers::pi_v&lt;amrex::Real&gt;};</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno"><a class="line" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a490ce7c64a69660f36dec721d0a01182">  114</a></span>    <span class="keyword">const</span> amrex::Real <a class="code hl_variable" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a490ce7c64a69660f36dec721d0a01182">m_twopi</a>{2.0_rt * std::numbers::pi_v&lt;amrex::Real&gt;};</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno"><a class="line" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a28b64bae22988627b1d8c2f9ff4f584e">  115</a></span>    <span class="keyword">const</span> amrex::Real <a class="code hl_variable" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a28b64bae22988627b1d8c2f9ff4f584e">m_threepi</a>{3.0_rt * std::numbers::pi_v&lt;amrex::Real&gt;};</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno"><a class="line" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#acced2172a668f8c6552aed002d91456f">  116</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#acced2172a668f8c6552aed002d91456f">m_time_sampling</a>{0.0_rt};</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno"><a class="line" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a9c797ba9e470526389d470f094422c2b">  117</a></span>    <a class="code hl_struct" href="structamr__wind_1_1sampling_1_1_prism_parameters.html">PrismParameters</a> <a class="code hl_variable" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a9c797ba9e470526389d470f094422c2b">m_InnerPrism</a>;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno"><a class="line" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#af28731ad8931cf1d974df4172a3bd090">  118</a></span>    <a class="code hl_struct" href="structamr__wind_1_1sampling_1_1_prism_parameters.html">PrismParameters</a> <a class="code hl_variable" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#af28731ad8931cf1d974df4172a3bd090">m_OuterPrism</a>;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno"><a class="line" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#af121e1ed2d3d22905f0b52c545a71d3c">  119</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#af121e1ed2d3d22905f0b52c545a71d3c">m_lidar_center</a>{0.0_rt, 0.0_rt, 0.0_rt};</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno"><a class="line" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a3f8b1b96c4b32db484dade9b79ec6e2e">  120</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a3f8b1b96c4b32db484dade9b79ec6e2e">m_scan_time</a>{2.0_rt};</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno"><a class="line" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a14237bbb4f1e092d77427441e717a5f4">  121</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a14237bbb4f1e092d77427441e717a5f4">m_num_samples</a>{984.0_rt};</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno"><a class="line" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a580b653156cebfc064e7d585da74a677">  122</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a580b653156cebfc064e7d585da74a677">m_beam_length</a>{270.0_rt};</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno"><a class="line" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a8618e0dd6446f551a0484080e36f1a37">  123</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a8618e0dd6446f551a0484080e36f1a37">m_beam_points</a>{432};</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno"><a class="line" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#aec706504575c2d774f4357006b8ede94">  124</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#aec706504575c2d774f4357006b8ede94">m_fixed_yaw</a>{0.0_rt};</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno"><a class="line" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#aa9c6e90df764b6fee5556f75bd7be8ae">  125</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#aa9c6e90df764b6fee5556f75bd7be8ae">m_fixed_roll</a>{0.0_rt};</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno"><a class="line" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a4dffa20c301d19364b36ae8ba00fe0f5">  126</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a4dffa20c301d19364b36ae8ba00fe0f5">m_fixed_tilt</a>{0.0_rt};</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno"><a class="line" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#abefb1c23c5d127bb9ce76058523f1910">  127</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#abefb1c23c5d127bb9ce76058523f1910">m_hub_yaw</a>{0.0_rt};</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno"><a class="line" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a7d61d0c95f1b51eaf01ac738f30ba2cf">  128</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a7d61d0c95f1b51eaf01ac738f30ba2cf">m_hub_roll</a>{0.0_rt};</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno"><a class="line" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#af3f66609493bc15e7ee7055dba089c9d">  129</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#af3f66609493bc15e7ee7055dba089c9d">m_hub_tilt</a>{0.0_rt};</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno"><a class="line" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a415272a8b602dfff148d9c6096b7e4f9">  130</a></span>    std::string <a class="code hl_variable" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a415272a8b602dfff148d9c6096b7e4f9">m_spinner_mode</a>{<span class="stringliteral">&quot;fixed&quot;</span>};</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno"><a class="line" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#aeef2c224271dc1edf1f4a27f66d895fe">  131</a></span>    std::string <a class="code hl_variable" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#aeef2c224271dc1edf1f4a27f66d895fe">m_turbine_label</a>;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno"><a class="line" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a2bb5cf15a4f57a06ef9a89231aee0586">  132</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a2bb5cf15a4f57a06ef9a89231aee0586">m_hub_debug</a>{<span class="keyword">false</span>};</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno"><a class="line" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#ac4dcaabfe6194476cdb90ee3b8183ac6">  133</a></span>    <a class="code hl_typedef" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> <a class="code hl_variable" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#ac4dcaabfe6194476cdb90ee3b8183ac6">m_hub_location</a>{0, 0, 0};</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno"><a class="line" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a7588de354ff0a560e68ba868b5e4a04d">  134</a></span>    <a class="code hl_typedef" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> <a class="code hl_variable" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a7588de354ff0a560e68ba868b5e4a04d">m_hub_location_init</a>{0, 0, 0};</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span> </div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span><span class="preprocessor">#ifdef AMR_WIND_USE_OPENFAST</span></div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    amrex::Array&lt;float, 3&gt; m_turbine_base_pos = {0, 0, 0};</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    amrex::Array&lt;float, 3&gt; m_current_hub_abs_pos = {0, 0, 0};</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    amrex::Array&lt;float, 3&gt; m_current_hub_rot_vel = {0, 0, 0};</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    amrex::Array&lt;amrex::Real, 9&gt; m_current_hub_orient = {0, 0, 0, 0, 0,</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>                                                         0, 0, 0, 0};</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span> </div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span> </div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno"><a class="line" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#ae6160709fb025684f32a48bd3e378e28">  146</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#ae6160709fb025684f32a48bd3e378e28">m_last_hub_yaw</a>{0.0_rt};</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno"><a class="line" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a4f6b5d00158aa5037c7c18d9ff54b572">  147</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a4f6b5d00158aa5037c7c18d9ff54b572">m_last_hub_roll</a>{0.0_rt};</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno"><a class="line" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#aed806c18a7a41523b0d0c9a54f54d2bd">  148</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#aed806c18a7a41523b0d0c9a54f54d2bd">m_last_hub_tilt</a>{0.0_rt};</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno"><a class="line" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#ae02db562bdb48a21ab2e0c6eeb29b9e4">  149</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#ae02db562bdb48a21ab2e0c6eeb29b9e4">m_last_lidar_center</a>{0.0_rt, 0.0_rt, 0.0_rt};</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno"><a class="line" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#ae54c711f0dd8035f56cf02cf2a77387b">  150</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#ae54c711f0dd8035f56cf02cf2a77387b">m_step_lidar_center</a>{0.0_rt, 0.0_rt, 0.0_rt};</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span> </div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno"><a class="line" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#aeb58281e48d317688846d5b45f026269">  152</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#aeb58281e48d317688846d5b45f026269">m_fill_val</a>{-99999.99_rt};</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>};</div>
+</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span> </div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>} <span class="comment">// namespace amr_wind::sampling</span></div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span> </div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span><span class="preprocessor">#endif </span><span class="comment">/* DTUSPINNERSAMPLER_H */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="a_lidar_sampler_8_h_html"><div class="ttname"><a href="_lidar_sampler_8_h.html">LidarSampler.H</a></div></div>
+<div class="ttc" id="a_sampling_utils_8_h_html"><div class="ttname"><a href="_sampling_utils_8_h.html">SamplingUtils.H</a></div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html">amr_wind::CFDSim</a></div><div class="ttdef"><b>Definition</b> CFDSim.H:54</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_a090bb6c4ece8543ba2b578ab59769897"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a090bb6c4ece8543ba2b578ab59769897">amr_wind::sampling::DTUSpinnerSampler::sampling_locations</a></div><div class="ttdeci">void sampling_locations(SampleLocType &amp;) const override</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.cpp:139</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_a0bf90a7213d45746a2787ffa4e54a026"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a0bf90a7213d45746a2787ffa4e54a026">amr_wind::sampling::DTUSpinnerSampler::post_sample_actions</a></div><div class="ttdeci">void post_sample_actions() override</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:79</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_a14237bbb4f1e092d77427441e717a5f4"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a14237bbb4f1e092d77427441e717a5f4">amr_wind::sampling::DTUSpinnerSampler::m_num_samples</a></div><div class="ttdeci">amrex::Real m_num_samples</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:121</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_a16c57af54890b48fffb67824790a634c"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a16c57af54890b48fffb67824790a634c">amr_wind::sampling::DTUSpinnerSampler::define_netcdf_metadata</a></div><div class="ttdeci">void define_netcdf_metadata(const ncutils::NCGroup &amp;) const override</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.cpp:475</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_a2078a95ea0c2853a9ea0dead3d960884"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a2078a95ea0c2853a9ea0dead3d960884">amr_wind::sampling::DTUSpinnerSampler::m_update_count</a></div><div class="ttdeci">int m_update_count</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:111</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_a26e4f870998cc9f8e6624a0187fad79c"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a26e4f870998cc9f8e6624a0187fad79c">amr_wind::sampling::DTUSpinnerSampler::adjust_lidar_pattern</a></div><div class="ttdeci">static vs::Vector adjust_lidar_pattern(vs::Vector beamPt, amrex::Real yaw, amrex::Real pitch, amrex::Real roll)</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.cpp:106</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_a28b64bae22988627b1d8c2f9ff4f584e"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a28b64bae22988627b1d8c2f9ff4f584e">amr_wind::sampling::DTUSpinnerSampler::m_threepi</a></div><div class="ttdeci">const amrex::Real m_threepi</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:115</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_a2bb5cf15a4f57a06ef9a89231aee0586"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a2bb5cf15a4f57a06ef9a89231aee0586">amr_wind::sampling::DTUSpinnerSampler::m_hub_debug</a></div><div class="ttdeci">bool m_hub_debug</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:132</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_a3e5e4a049f8894a90d36ba587240fc75"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a3e5e4a049f8894a90d36ba587240fc75">amr_wind::sampling::DTUSpinnerSampler::m_ntotal</a></div><div class="ttdeci">long m_ntotal</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:109</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_a3f8b1b96c4b32db484dade9b79ec6e2e"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a3f8b1b96c4b32db484dade9b79ec6e2e">amr_wind::sampling::DTUSpinnerSampler::m_scan_time</a></div><div class="ttdeci">amrex::Real m_scan_time</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:120</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_a415272a8b602dfff148d9c6096b7e4f9"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a415272a8b602dfff148d9c6096b7e4f9">amr_wind::sampling::DTUSpinnerSampler::m_spinner_mode</a></div><div class="ttdeci">std::string m_spinner_mode</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:130</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_a45195bda8241bf901367a233b28b8803"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a45195bda8241bf901367a233b28b8803">amr_wind::sampling::DTUSpinnerSampler::m_radtodeg</a></div><div class="ttdeci">const amrex::Real m_radtodeg</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:112</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_a490ce7c64a69660f36dec721d0a01182"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a490ce7c64a69660f36dec721d0a01182">amr_wind::sampling::DTUSpinnerSampler::m_twopi</a></div><div class="ttdeci">const amrex::Real m_twopi</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:114</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_a4dffa20c301d19364b36ae8ba00fe0f5"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a4dffa20c301d19364b36ae8ba00fe0f5">amr_wind::sampling::DTUSpinnerSampler::m_fixed_tilt</a></div><div class="ttdeci">amrex::Real m_fixed_tilt</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:126</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_a4f6b5d00158aa5037c7c18d9ff54b572"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a4f6b5d00158aa5037c7c18d9ff54b572">amr_wind::sampling::DTUSpinnerSampler::m_last_hub_roll</a></div><div class="ttdeci">amrex::Real m_last_hub_roll</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:147</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_a580b653156cebfc064e7d585da74a677"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a580b653156cebfc064e7d585da74a677">amr_wind::sampling::DTUSpinnerSampler::m_beam_length</a></div><div class="ttdeci">amrex::Real m_beam_length</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:122</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_a6385f29c55f64dc2c5e8931b8b766b4e"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a6385f29c55f64dc2c5e8931b8b766b4e">amr_wind::sampling::DTUSpinnerSampler::m_pi</a></div><div class="ttdeci">const amrex::Real m_pi</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:113</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_a654abb9b45ac65539f7421cd45fa42d4"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a654abb9b45ac65539f7421cd45fa42d4">amr_wind::sampling::DTUSpinnerSampler::generate_lidar_pattern</a></div><div class="ttdeci">static vs::Vector generate_lidar_pattern(PrismParameters InnerPrism, PrismParameters OuterPrism, amrex::Real time)</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.cpp:115</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_a7588de354ff0a560e68ba868b5e4a04d"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a7588de354ff0a560e68ba868b5e4a04d">amr_wind::sampling::DTUSpinnerSampler::m_hub_location_init</a></div><div class="ttdeci">vs::Vector m_hub_location_init</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:134</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_a7d61d0c95f1b51eaf01ac738f30ba2cf"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a7d61d0c95f1b51eaf01ac738f30ba2cf">amr_wind::sampling::DTUSpinnerSampler::m_hub_roll</a></div><div class="ttdeci">amrex::Real m_hub_roll</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:128</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_a8618e0dd6446f551a0484080e36f1a37"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a8618e0dd6446f551a0484080e36f1a37">amr_wind::sampling::DTUSpinnerSampler::m_beam_points</a></div><div class="ttdeci">int m_beam_points</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:123</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_a9ba3e9004d2af24220c270f7ec42cfbe"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a9ba3e9004d2af24220c270f7ec42cfbe">amr_wind::sampling::DTUSpinnerSampler::initialize</a></div><div class="ttdeci">void initialize(const std::string &amp;key) override</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.cpp:23</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_a9c797ba9e470526389d470f094422c2b"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#a9c797ba9e470526389d470f094422c2b">amr_wind::sampling::DTUSpinnerSampler::m_InnerPrism</a></div><div class="ttdeci">PrismParameters m_InnerPrism</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:117</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_aa64015d8f9094e4cd9055921d805e612"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#aa64015d8f9094e4cd9055921d805e612">amr_wind::sampling::DTUSpinnerSampler::num_output_points</a></div><div class="ttdeci">long num_output_points() const override</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:86</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_aa9c6e90df764b6fee5556f75bd7be8ae"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#aa9c6e90df764b6fee5556f75bd7be8ae">amr_wind::sampling::DTUSpinnerSampler::m_fixed_roll</a></div><div class="ttdeci">amrex::Real m_fixed_roll</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:125</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_aac044c2a1dad7e47633c7530513436db"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#aac044c2a1dad7e47633c7530513436db">amr_wind::sampling::DTUSpinnerSampler::update_sampling_locations</a></div><div class="ttdeci">bool update_sampling_locations() override</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.cpp:284</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_ab7ac0a5ebbb28cfba6148b2e24fa1639"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#ab7ac0a5ebbb28cfba6148b2e24fa1639">amr_wind::sampling::DTUSpinnerSampler::DTUSpinnerSampler</a></div><div class="ttdeci">DTUSpinnerSampler(const CFDSim &amp;)</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.cpp:21</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_ab9a56ef4f27f49ab541e00f922612246"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#ab9a56ef4f27f49ab541e00f922612246">amr_wind::sampling::DTUSpinnerSampler::identifier</a></div><div class="ttdeci">static std::string identifier()</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:33</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_abefb1c23c5d127bb9ce76058523f1910"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#abefb1c23c5d127bb9ce76058523f1910">amr_wind::sampling::DTUSpinnerSampler::m_hub_yaw</a></div><div class="ttdeci">amrex::Real m_hub_yaw</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:127</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_ac03b9c77baedb4c48beead518178680f"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#ac03b9c77baedb4c48beead518178680f">amr_wind::sampling::DTUSpinnerSampler::populate_netcdf_metadata</a></div><div class="ttdeci">void populate_netcdf_metadata(const ncutils::NCGroup &amp;) const override</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.cpp:535</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_ac10319f35cb32b1a9cfba85030147861"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#ac10319f35cb32b1a9cfba85030147861">amr_wind::sampling::DTUSpinnerSampler::output_netcdf_data</a></div><div class="ttdeci">void output_netcdf_data(const ncutils::NCGroup &amp;, size_t) const override</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.cpp:539</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_ac4dcaabfe6194476cdb90ee3b8183ac6"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#ac4dcaabfe6194476cdb90ee3b8183ac6">amr_wind::sampling::DTUSpinnerSampler::m_hub_location</a></div><div class="ttdeci">vs::Vector m_hub_location</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:133</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_acced2172a668f8c6552aed002d91456f"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#acced2172a668f8c6552aed002d91456f">amr_wind::sampling::DTUSpinnerSampler::m_time_sampling</a></div><div class="ttdeci">amrex::Real m_time_sampling</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:116</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_acfc31c252b33cf03dd79277b0a42bc30"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#acfc31c252b33cf03dd79277b0a42bc30">amr_wind::sampling::DTUSpinnerSampler::num_points</a></div><div class="ttdeci">long num_points() const override</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:81</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_ae02db562bdb48a21ab2e0c6eeb29b9e4"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#ae02db562bdb48a21ab2e0c6eeb29b9e4">amr_wind::sampling::DTUSpinnerSampler::m_last_lidar_center</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_last_lidar_center</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:149</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_ae54c711f0dd8035f56cf02cf2a77387b"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#ae54c711f0dd8035f56cf02cf2a77387b">amr_wind::sampling::DTUSpinnerSampler::m_step_lidar_center</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_step_lidar_center</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:150</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_ae6160709fb025684f32a48bd3e378e28"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#ae6160709fb025684f32a48bd3e378e28">amr_wind::sampling::DTUSpinnerSampler::m_last_hub_yaw</a></div><div class="ttdeci">amrex::Real m_last_hub_yaw</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:146</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_aeb58281e48d317688846d5b45f026269"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#aeb58281e48d317688846d5b45f026269">amr_wind::sampling::DTUSpinnerSampler::m_fill_val</a></div><div class="ttdeci">amrex::Real m_fill_val</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:152</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_aec542d4508dd30100672a9889607802b"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#aec542d4508dd30100672a9889607802b">amr_wind::sampling::DTUSpinnerSampler::m_ns</a></div><div class="ttdeci">int m_ns</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:106</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_aec706504575c2d774f4357006b8ede94"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#aec706504575c2d774f4357006b8ede94">amr_wind::sampling::DTUSpinnerSampler::m_fixed_yaw</a></div><div class="ttdeci">amrex::Real m_fixed_yaw</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:124</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_aed806c18a7a41523b0d0c9a54f54d2bd"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#aed806c18a7a41523b0d0c9a54f54d2bd">amr_wind::sampling::DTUSpinnerSampler::m_last_hub_tilt</a></div><div class="ttdeci">amrex::Real m_last_hub_tilt</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:148</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_aeef2c224271dc1edf1f4a27f66d895fe"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#aeef2c224271dc1edf1f4a27f66d895fe">amr_wind::sampling::DTUSpinnerSampler::m_turbine_label</a></div><div class="ttdeci">std::string m_turbine_label</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:131</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_af121e1ed2d3d22905f0b52c545a71d3c"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#af121e1ed2d3d22905f0b52c545a71d3c">amr_wind::sampling::DTUSpinnerSampler::m_lidar_center</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_lidar_center</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:119</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_af28731ad8931cf1d974df4172a3bd090"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#af28731ad8931cf1d974df4172a3bd090">amr_wind::sampling::DTUSpinnerSampler::m_OuterPrism</a></div><div class="ttdeci">PrismParameters m_OuterPrism</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:118</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_af3f66609493bc15e7ee7055dba089c9d"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#af3f66609493bc15e7ee7055dba089c9d">amr_wind::sampling::DTUSpinnerSampler::m_hub_tilt</a></div><div class="ttdeci">amrex::Real m_hub_tilt</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:129</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler_html_afff1fca140950106a848b340f5131f91"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html#afff1fca140950106a848b340f5131f91">amr_wind::sampling::DTUSpinnerSampler::sampletype</a></div><div class="ttdeci">std::string sampletype() const override</div><div class="ttdoc">Type of this sampling object.</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:92</div></div>
+<div class="ttc" id="aclassamr__wind_1_1sampling_1_1_lidar_sampler_html_af4ddc6cd90fb725eb3fb9a0bf624d754"><div class="ttname"><a href="classamr__wind_1_1sampling_1_1_lidar_sampler.html#af4ddc6cd90fb725eb3fb9a0bf624d754">amr_wind::sampling::LidarSampler::LidarSampler</a></div><div class="ttdeci">LidarSampler(const CFDSim &amp;)</div><div class="ttdef"><b>Definition</b> LidarSampler.cpp:13</div></div>
+<div class="ttc" id="aclassncutils_1_1_n_c_group_html"><div class="ttname"><a href="classncutils_1_1_n_c_group.html">ncutils::NCGroup</a></div><div class="ttdoc">Representation of a NetCDF group.</div><div class="ttdef"><b>Definition</b> nc_interface.H:162</div></div>
+<div class="ttc" id="anamespaceamr__wind_1_1sampling_html"><div class="ttname"><a href="namespaceamr__wind_1_1sampling.html">amr_wind::sampling</a></div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.cpp:19</div></div>
+<div class="ttc" id="anamespaceamr__wind_1_1vs_html_a9c7552f03579943dc17ba67341db8aa4"><div class="ttname"><a href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">amr_wind::vs::Vector</a></div><div class="ttdeci">VectorT&lt; amrex::Real &gt; Vector</div><div class="ttdef"><b>Definition</b> vector.H:145</div></div>
+<div class="ttc" id="astructamr__wind_1_1sampling_1_1_prism_parameters_html"><div class="ttname"><a href="structamr__wind_1_1sampling_1_1_prism_parameters.html">amr_wind::sampling::PrismParameters</a></div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:14</div></div>
+<div class="ttc" id="astructamr__wind_1_1sampling_1_1_prism_parameters_html_a943d47d0f2b12f0f38cdf8f6019cf745"><div class="ttname"><a href="structamr__wind_1_1sampling_1_1_prism_parameters.html#a943d47d0f2b12f0f38cdf8f6019cf745">amr_wind::sampling::PrismParameters::rot</a></div><div class="ttdeci">amrex::Real rot</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:16</div></div>
+<div class="ttc" id="astructamr__wind_1_1sampling_1_1_prism_parameters_html_ad388b3a12f142fb06f1dfed1d1bda515"><div class="ttname"><a href="structamr__wind_1_1sampling_1_1_prism_parameters.html#ad388b3a12f142fb06f1dfed1d1bda515">amr_wind::sampling::PrismParameters::theta0</a></div><div class="ttdeci">amrex::Real theta0</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:15</div></div>
+<div class="ttc" id="astructamr__wind_1_1sampling_1_1_prism_parameters_html_ad63769a54abae789e80ae99024629b6c"><div class="ttname"><a href="structamr__wind_1_1sampling_1_1_prism_parameters.html#ad63769a54abae789e80ae99024629b6c">amr_wind::sampling::PrismParameters::azimuth</a></div><div class="ttdeci">amrex::Real azimuth</div><div class="ttdef"><b>Definition</b> DTUSpinnerSampler.H:17</div></div>
+<div class="ttc" id="astructamr__wind_1_1sampling_1_1_sample_loc_type_html"><div class="ttname"><a href="structamr__wind_1_1sampling_1_1_sample_loc_type.html">amr_wind::sampling::SampleLocType</a></div><div class="ttdef"><b>Definition</b> SamplerBase.H:19</div></div>
+<div class="ttc" id="avector__space_8_h_html"><div class="ttname"><a href="vector__space_8_h.html">vector_space.H</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

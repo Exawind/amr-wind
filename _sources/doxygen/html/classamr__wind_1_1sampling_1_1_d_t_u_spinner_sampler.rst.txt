@@ -1,0 +1,14 @@
+.. meta::35eb67cc61abae85b814161acfdb689c0fb2f6acc1705f5b07817b635fcff711e5f9873d248ab52d235466156dd2c217ce364d87ef85b96fd9ce976ba14252bd
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::sampling::DTUSpinnerSampler Class Reference
+
+DTUSpinnerSampler Class Reference
+=================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1sampling_1_1_d_t_u_spinner_sampler.html

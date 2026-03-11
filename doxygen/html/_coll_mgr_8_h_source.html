@@ -1,0 +1,314 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/core/CollMgr.H Source File &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/core/CollMgr.H Source File</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/_coll_mgr_8_h_source.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="home-runner-work-amr-wind-amr-wind-amr-wind-core-collmgr-h-source-file">
+<h1>/home/runner/work/amr-wind/amr-wind/amr-wind/core/CollMgr.H Source File<a class="headerlink" href="#home-runner-work-amr-wind-amr-wind-amr-wind-core-collmgr-h-source-file" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/core/CollMgr.H Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="dir_d85575251dd712327fe3cf057fa568b4.html">amr-wind</a></li><li class="navelem"><a href="dir_212148f97b8bb53ebaebb3bf8a8b5de4.html">amr-wind</a></li><li class="navelem"><a href="dir_d2e4f22398959709992733f1617728ca.html">core</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="headertitle"><div class="title">CollMgr.H</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="_coll_mgr_8_h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef COLLMGR_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define COLLMGR_H</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;AMReX_Vector.H&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceamr__wind.html">amr_wind</a> {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Collection, <span class="keyword">typename</span> Type, <span class="keywordtype">bool</span> allow_duplicates = false&gt;</div>
+<div class="foldopen" id="foldopen00021" data-start="{" data-end="};">
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_coll_mgr.html">   21</a></span><span class="keyword">class </span><a class="code hl_function" href="classamr__wind_1_1_coll_mgr.html#a226bb428c86542589db1ae58587b09b5">CollMgr</a></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>{</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_coll_mgr.html#a54ee65988a7653c55653024d05256656">   24</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classamr__wind_1_1_coll_mgr.html#a54ee65988a7653c55653024d05256656">TypePtr</a> = std::unique_ptr&lt;Type&gt;;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_coll_mgr.html#a42023c48d3e1fac30a08f8a49d63a96b">   25</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classamr__wind_1_1_coll_mgr.html#a42023c48d3e1fac30a08f8a49d63a96b">TypeVector</a> = amrex::Vector&lt;TypePtr&gt;;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_coll_mgr.html#a226bb428c86542589db1ae58587b09b5">   28</a></span>    <a class="code hl_function" href="classamr__wind_1_1_coll_mgr.html#a226bb428c86542589db1ae58587b09b5">CollMgr</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_coll_mgr.html#a02c0990d23b6c9696e1a76f84d1e43e0">   31</a></span>    <a class="code hl_function" href="classamr__wind_1_1_coll_mgr.html#a02c0990d23b6c9696e1a76f84d1e43e0">~CollMgr</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_coll_mgr.html#a8def747e4546eb6e6b9651f8d356eabd">   33</a></span>    <a class="code hl_function" href="classamr__wind_1_1_coll_mgr.html#a8def747e4546eb6e6b9651f8d356eabd">CollMgr</a>(<span class="keyword">const</span> <a class="code hl_function" href="classamr__wind_1_1_coll_mgr.html#a226bb428c86542589db1ae58587b09b5">CollMgr</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_coll_mgr.html#a6556a779d0a1cdf2abce54f5033d172c">   34</a></span>    <a class="code hl_function" href="classamr__wind_1_1_coll_mgr.html#a226bb428c86542589db1ae58587b09b5">CollMgr</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_coll_mgr.html#a6556a779d0a1cdf2abce54f5033d172c">operator=</a>(<span class="keyword">const</span> <a class="code hl_function" href="classamr__wind_1_1_coll_mgr.html#a226bb428c86542589db1ae58587b09b5">CollMgr</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">template</span> &lt;<span class="keyword">class</span>... Args&gt;</div>
+<div class="foldopen" id="foldopen00040" data-start="{" data-end="}">
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_coll_mgr.html#ac95f6acf65dd083fa174e49fa3df3842">   40</a></span>    Type&amp; <a class="code hl_function" href="classamr__wind_1_1_coll_mgr.html#ac95f6acf65dd083fa174e49fa3df3842">create</a>(<span class="keyword">const</span> std::string&amp; key, Args&amp;&amp;... args)</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        <span class="keywordflow">if</span> (!allow_duplicates &amp;&amp; <a class="code hl_function" href="classamr__wind_1_1_coll_mgr.html#a4b4859091190f9d5d43d5bb0503c48d9">contains</a>(key)) {</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="classamr__wind_1_1_coll_mgr.html#a273fffe84660244b049a6e41fb13f064">operator()</a>(key);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        }</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <a class="code hl_variable" href="classamr__wind_1_1_coll_mgr.html#aad3c43e5811650178fb9642b581a4411">m_obj_vec</a>.emplace_back(Type::create(key, std::forward&lt;Args&gt;(args)...));</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <a class="code hl_variable" href="classamr__wind_1_1_coll_mgr.html#ae802148b969b54ee9ddb59baeeb29b6c">m_obj_map</a>[key] = <a class="code hl_variable" href="classamr__wind_1_1_coll_mgr.html#aad3c43e5811650178fb9642b581a4411">m_obj_vec</a>.size() - 1;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="keywordflow">return</span> *<a class="code hl_variable" href="classamr__wind_1_1_coll_mgr.html#aad3c43e5811650178fb9642b581a4411">m_obj_vec</a>.back();</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    }</div>
+</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_coll_mgr.html#a0aae77ab6589bba31382a4e7c3b7746d">   53</a></span>    <a class="code hl_typedef" href="classamr__wind_1_1_coll_mgr.html#a42023c48d3e1fac30a08f8a49d63a96b">TypeVector</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_coll_mgr.html#a0aae77ab6589bba31382a4e7c3b7746d">objects</a>() { <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_coll_mgr.html#aad3c43e5811650178fb9642b581a4411">m_obj_vec</a>; }</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_coll_mgr.html#ab27ae8fd21400e12fb08af75296d3a0a">   54</a></span>    [[nodiscard]] <span class="keyword">const</span> <a class="code hl_typedef" href="classamr__wind_1_1_coll_mgr.html#a42023c48d3e1fac30a08f8a49d63a96b">TypeVector</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_coll_mgr.html#ab27ae8fd21400e12fb08af75296d3a0a">objects</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_coll_mgr.html#aad3c43e5811650178fb9642b581a4411">m_obj_vec</a>; }</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span></div>
+<div class="foldopen" id="foldopen00057" data-start="{" data-end="}">
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_coll_mgr.html#a4b4859091190f9d5d43d5bb0503c48d9">   57</a></span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classamr__wind_1_1_coll_mgr.html#a4b4859091190f9d5d43d5bb0503c48d9">contains</a>(<span class="keyword">const</span> std::string&amp; key)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        <span class="keyword">auto</span> it = <a class="code hl_variable" href="classamr__wind_1_1_coll_mgr.html#ae802148b969b54ee9ddb59baeeb29b6c">m_obj_map</a>.find(key);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <span class="keywordflow">return</span> (it != <a class="code hl_variable" href="classamr__wind_1_1_coll_mgr.html#ae802148b969b54ee9ddb59baeeb29b6c">m_obj_map</a>.end());</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    }</div>
+</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span></div>
+<div class="foldopen" id="foldopen00064" data-start="{" data-end="}">
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_coll_mgr.html#a273fffe84660244b049a6e41fb13f064">   64</a></span>    Type&amp; <a class="code hl_function" href="classamr__wind_1_1_coll_mgr.html#a273fffe84660244b049a6e41fb13f064">operator()</a>(<span class="keyword">const</span> std::string&amp; key)</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    {</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <span class="keywordflow">return</span> *<a class="code hl_variable" href="classamr__wind_1_1_coll_mgr.html#aad3c43e5811650178fb9642b581a4411">m_obj_vec</a>[<a class="code hl_variable" href="classamr__wind_1_1_coll_mgr.html#ae802148b969b54ee9ddb59baeeb29b6c">m_obj_map</a>.at(key)];</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    }</div>
+</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="foldopen" id="foldopen00069" data-start="{" data-end="}">
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_coll_mgr.html#adbace71d3eec4561be60b3f6cb0d8f46">   69</a></span>    <span class="keyword">const</span> Type&amp; <a class="code hl_function" href="classamr__wind_1_1_coll_mgr.html#adbace71d3eec4561be60b3f6cb0d8f46">operator()</a>(<span class="keyword">const</span> std::string&amp; key)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="keywordflow">return</span> *<a class="code hl_variable" href="classamr__wind_1_1_coll_mgr.html#aad3c43e5811650178fb9642b581a4411">m_obj_vec</a>[<a class="code hl_variable" href="classamr__wind_1_1_coll_mgr.html#ae802148b969b54ee9ddb59baeeb29b6c">m_obj_map</a>.at(key)];</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    }</div>
+</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span></div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="foldopen" id="foldopen00076" data-start="{" data-end="}">
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_coll_mgr.html#a80cfbed2f03cdc66b42f485569766f35">   76</a></span>    T&amp; <a class="code hl_function" href="classamr__wind_1_1_coll_mgr.html#a80cfbed2f03cdc66b42f485569766f35">operator()</a>(<span class="keyword">const</span> std::string&amp; key)</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    {</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        <span class="keywordflow">return</span> <span class="keyword">dynamic_cast&lt;</span>T&amp;<span class="keyword">&gt;</span>(<a class="code hl_function" href="classamr__wind_1_1_coll_mgr.html#a273fffe84660244b049a6e41fb13f064">operator()</a>(key));</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    }</div>
+</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span><span class="keyword">protected</span>:</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_coll_mgr.html#aad3c43e5811650178fb9642b581a4411">   83</a></span>    <a class="code hl_typedef" href="classamr__wind_1_1_coll_mgr.html#a42023c48d3e1fac30a08f8a49d63a96b">TypeVector</a> <a class="code hl_variable" href="classamr__wind_1_1_coll_mgr.html#aad3c43e5811650178fb9642b581a4411">m_obj_vec</a>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span></div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_coll_mgr.html#ae802148b969b54ee9ddb59baeeb29b6c">   86</a></span>    std::unordered_map&lt;std::string, int&gt; <a class="code hl_variable" href="classamr__wind_1_1_coll_mgr.html#ae802148b969b54ee9ddb59baeeb29b6c">m_obj_map</a>;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_coll_mgr.html#a559dc692cdb4b65d3de50959b9fd0de4">   87</a></span>    <span class="keyword">friend</span> <a class="code hl_variable" href="classamr__wind_1_1_coll_mgr.html#a559dc692cdb4b65d3de50959b9fd0de4">Collection</a>;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>};</div>
+</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>} <span class="comment">// namespace amr_wind</span></div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span><span class="preprocessor">#endif </span><span class="comment">/* COLLMGR_H */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="aclassamr__wind_1_1_coll_mgr_html_a02c0990d23b6c9696e1a76f84d1e43e0"><div class="ttname"><a href="classamr__wind_1_1_coll_mgr.html#a02c0990d23b6c9696e1a76f84d1e43e0">amr_wind::CollMgr::~CollMgr</a></div><div class="ttdeci">~CollMgr()=default</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_coll_mgr_html_a0aae77ab6589bba31382a4e7c3b7746d"><div class="ttname"><a href="classamr__wind_1_1_coll_mgr.html#a0aae77ab6589bba31382a4e7c3b7746d">amr_wind::CollMgr::objects</a></div><div class="ttdeci">TypeVector &amp; objects()</div><div class="ttdoc">Return a vector of the registered objects.</div><div class="ttdef"><b>Definition</b> CollMgr.H:53</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_coll_mgr_html_a226bb428c86542589db1ae58587b09b5"><div class="ttname"><a href="classamr__wind_1_1_coll_mgr.html#a226bb428c86542589db1ae58587b09b5">amr_wind::CollMgr::CollMgr</a></div><div class="ttdeci">CollMgr()=default</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_coll_mgr_html_a273fffe84660244b049a6e41fb13f064"><div class="ttname"><a href="classamr__wind_1_1_coll_mgr.html#a273fffe84660244b049a6e41fb13f064">amr_wind::CollMgr::operator()</a></div><div class="ttdeci">Type &amp; operator()(const std::string &amp;key)</div><div class="ttdoc">Return the object corresponding to a lookup key.</div><div class="ttdef"><b>Definition</b> CollMgr.H:64</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_coll_mgr_html_a42023c48d3e1fac30a08f8a49d63a96b"><div class="ttname"><a href="classamr__wind_1_1_coll_mgr.html#a42023c48d3e1fac30a08f8a49d63a96b">amr_wind::CollMgr::TypeVector</a></div><div class="ttdeci">amrex::Vector&lt; TypePtr &gt; TypeVector</div><div class="ttdef"><b>Definition</b> CollMgr.H:25</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_coll_mgr_html_a4b4859091190f9d5d43d5bb0503c48d9"><div class="ttname"><a href="classamr__wind_1_1_coll_mgr.html#a4b4859091190f9d5d43d5bb0503c48d9">amr_wind::CollMgr::contains</a></div><div class="ttdeci">bool contains(const std::string &amp;key) const</div><div class="ttdoc">Query if an object exists using the lookup key.</div><div class="ttdef"><b>Definition</b> CollMgr.H:57</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_coll_mgr_html_a54ee65988a7653c55653024d05256656"><div class="ttname"><a href="classamr__wind_1_1_coll_mgr.html#a54ee65988a7653c55653024d05256656">amr_wind::CollMgr::TypePtr</a></div><div class="ttdeci">std::unique_ptr&lt; Type &gt; TypePtr</div><div class="ttdef"><b>Definition</b> CollMgr.H:24</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_coll_mgr_html_a559dc692cdb4b65d3de50959b9fd0de4"><div class="ttname"><a href="classamr__wind_1_1_coll_mgr.html#a559dc692cdb4b65d3de50959b9fd0de4">amr_wind::CollMgr::Collection</a></div><div class="ttdeci">friend Collection</div><div class="ttdef"><b>Definition</b> CollMgr.H:87</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_coll_mgr_html_a6556a779d0a1cdf2abce54f5033d172c"><div class="ttname"><a href="classamr__wind_1_1_coll_mgr.html#a6556a779d0a1cdf2abce54f5033d172c">amr_wind::CollMgr::operator=</a></div><div class="ttdeci">CollMgr &amp; operator=(const CollMgr &amp;)=delete</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_coll_mgr_html_a80cfbed2f03cdc66b42f485569766f35"><div class="ttname"><a href="classamr__wind_1_1_coll_mgr.html#a80cfbed2f03cdc66b42f485569766f35">amr_wind::CollMgr::operator()</a></div><div class="ttdeci">T &amp; operator()(const std::string &amp;key)</div><div class="ttdoc">Return object for a lookup key cast into its exact class definition.</div><div class="ttdef"><b>Definition</b> CollMgr.H:76</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_coll_mgr_html_a8def747e4546eb6e6b9651f8d356eabd"><div class="ttname"><a href="classamr__wind_1_1_coll_mgr.html#a8def747e4546eb6e6b9651f8d356eabd">amr_wind::CollMgr::CollMgr</a></div><div class="ttdeci">CollMgr(const CollMgr &amp;)=delete</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_coll_mgr_html_aad3c43e5811650178fb9642b581a4411"><div class="ttname"><a href="classamr__wind_1_1_coll_mgr.html#aad3c43e5811650178fb9642b581a4411">amr_wind::CollMgr::m_obj_vec</a></div><div class="ttdeci">TypeVector m_obj_vec</div><div class="ttdoc">Collection of objects registered so far.</div><div class="ttdef"><b>Definition</b> CollMgr.H:83</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_coll_mgr_html_ab27ae8fd21400e12fb08af75296d3a0a"><div class="ttname"><a href="classamr__wind_1_1_coll_mgr.html#ab27ae8fd21400e12fb08af75296d3a0a">amr_wind::CollMgr::objects</a></div><div class="ttdeci">const TypeVector &amp; objects() const</div><div class="ttdef"><b>Definition</b> CollMgr.H:54</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_coll_mgr_html_ac95f6acf65dd083fa174e49fa3df3842"><div class="ttname"><a href="classamr__wind_1_1_coll_mgr.html#ac95f6acf65dd083fa174e49fa3df3842">amr_wind::CollMgr::create</a></div><div class="ttdeci">Type &amp; create(const std::string &amp;key, Args &amp;&amp;... args)</div><div class="ttdef"><b>Definition</b> CollMgr.H:40</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_coll_mgr_html_adbace71d3eec4561be60b3f6cb0d8f46"><div class="ttname"><a href="classamr__wind_1_1_coll_mgr.html#adbace71d3eec4561be60b3f6cb0d8f46">amr_wind::CollMgr::operator()</a></div><div class="ttdeci">const Type &amp; operator()(const std::string &amp;key) const</div><div class="ttdef"><b>Definition</b> CollMgr.H:69</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_coll_mgr_html_ae802148b969b54ee9ddb59baeeb29b6c"><div class="ttname"><a href="classamr__wind_1_1_coll_mgr.html#ae802148b969b54ee9ddb59baeeb29b6c">amr_wind::CollMgr::m_obj_map</a></div><div class="ttdeci">std::unordered_map&lt; std::string, int &gt; m_obj_map</div><div class="ttdoc">Key word based lookup.</div><div class="ttdef"><b>Definition</b> CollMgr.H:86</div></div>
+<div class="ttc" id="anamespaceamr__wind_html"><div class="ttname"><a href="namespaceamr__wind.html">amr_wind</a></div><div class="ttdoc">This test case is intended as an evaluation of the momentum advection scheme.</div><div class="ttdef"><b>Definition</b> BCInterface.cpp:10</div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

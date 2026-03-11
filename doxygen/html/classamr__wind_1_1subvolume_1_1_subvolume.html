@@ -1,0 +1,759 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::subvolume::Subvolume Class Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::subvolume::Subvolume Class Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/classamr__wind_1_1subvolume_1_1_subvolume.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="subvolume-class-reference">
+<h1>Subvolume Class Reference<a class="headerlink" href="#subvolume-class-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::subvolume::Subvolume Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="namespaceamr__wind_1_1subvolume.html">subvolume</a></li><li class="navelem"><a href="classamr__wind_1_1subvolume_1_1_subvolume.html">Subvolume</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
+<a href="classamr__wind_1_1subvolume_1_1_subvolume-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::subvolume::Subvolume Class Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_subvolume_8_h_source.html">Subvolume.H</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for amr_wind::subvolume::Subvolume:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1subvolume_1_1_subvolume__inherit__graph.svg" width="207" height="168"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for amr_wind::subvolume::Subvolume:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1subvolume_1_1_subvolume__coll__graph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a553bf7a819eefab36f6e3152ca63fe55" id="r_a553bf7a819eefab36f6e3152ca63fe55"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a553bf7a819eefab36f6e3152ca63fe55">Subvolume</a> (<a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;, std::string)</td></tr>
+<tr class="memitem:a73cc05d5419b6fa03ab7880c57e9ddc3" id="r_a73cc05d5419b6fa03ab7880c57e9ddc3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a73cc05d5419b6fa03ab7880c57e9ddc3">~Subvolume</a> () override</td></tr>
+<tr class="memitem:aa81d2c81f41ad8849d162a5f1dd34476" id="r_aa81d2c81f41ad8849d162a5f1dd34476"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa81d2c81f41ad8849d162a5f1dd34476">pre_init_actions</a> () override</td></tr>
+<tr class="memdesc:aa81d2c81f41ad8849d162a5f1dd34476"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform actions before mesh is created.  <br /></td></tr>
+<tr class="memitem:acc1104f9441f4c0298b51f3076712d25" id="r_acc1104f9441f4c0298b51f3076712d25"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acc1104f9441f4c0298b51f3076712d25">initialize</a> () override</td></tr>
+<tr class="memdesc:acc1104f9441f4c0298b51f3076712d25"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read user inputs for chunks, output timing.  <br /></td></tr>
+<tr class="memitem:a884d98153d8235f0107cbeda0a6f751f" id="r_a884d98153d8235f0107cbeda0a6f751f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a884d98153d8235f0107cbeda0a6f751f">post_regrid_actions</a> () override</td></tr>
+<tr class="memdesc:a884d98153d8235f0107cbeda0a6f751f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Do any work that needs to happen after regrid.  <br /></td></tr>
+<tr class="memitem:af7116ffb876f2db7457f30bc25ea6691" id="r_af7116ffb876f2db7457f30bc25ea6691"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af7116ffb876f2db7457f30bc25ea6691">output_actions</a> () override</td></tr>
+<tr class="memdesc:af7116ffb876f2db7457f30bc25ea6691"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get chunks and output to disk.  <br /></td></tr>
+<tr class="memitem:ad8139a2b5851cad27b4419968593a3bb" id="r_ad8139a2b5851cad27b4419968593a3bb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad8139a2b5851cad27b4419968593a3bb">post_advance_work</a> () override</td></tr>
+<tr class="memdesc:ad8139a2b5851cad27b4419968593a3bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Actions to do at end of every time step.  <br /></td></tr>
+<tr class="memitem:a53c8ef309a31a7adffb3e6dc3fa65d5a" id="r_a53c8ef309a31a7adffb3e6dc3fa65d5a"><td class="memItemLeft" align="right" valign="top">const amrex::Vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a53c8ef309a31a7adffb3e6dc3fa65d5a">var_names</a> () const</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:ad6286ccc675355217a2f71710791a9bf" id="r_ad6286ccc675355217a2f71710791a9bf"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad6286ccc675355217a2f71710791a9bf">identifier</a> ()</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:af93f647af2b54524856285e8ba968e5e" id="r_af93f647af2b54524856285e8ba968e5e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af93f647af2b54524856285e8ba968e5e">m_sim</a></td></tr>
+<tr class="memitem:a7b09f4629189556f3b6a15bffd089fbb" id="r_a7b09f4629189556f3b6a15bffd089fbb"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1subvolume_1_1_subvolume_base.html">SubvolumeBase</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7b09f4629189556f3b6a15bffd089fbb">m_subvolumes</a></td></tr>
+<tr class="memitem:a6a31ccf562348d5b59d4f9c85b41ad42" id="r_a6a31ccf562348d5b59d4f9c85b41ad42"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6a31ccf562348d5b59d4f9c85b41ad42">m_var_names</a></td></tr>
+<tr class="memdesc:a6a31ccf562348d5b59d4f9c85b41ad42"><td class="mdescLeft">&#160;</td><td class="mdescRight">List of variable names for output.  <br /></td></tr>
+<tr class="memitem:a2949a01392d5edd01a9a42c7a6ed13af" id="r_a2949a01392d5edd01a9a42c7a6ed13af"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; <a class="el" href="classamr__wind_1_1_field.html">Field</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2949a01392d5edd01a9a42c7a6ed13af">m_fields</a></td></tr>
+<tr class="memdesc:a2949a01392d5edd01a9a42c7a6ed13af"><td class="mdescLeft">&#160;</td><td class="mdescRight">List of fields to be sampled for this collection of probes.  <br /></td></tr>
+<tr class="memitem:ab2094349f7a03ad3918fb1c261b45c7f" id="r_ab2094349f7a03ad3918fb1c261b45c7f"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; <a class="el" href="classamr__wind_1_1_int_field.html">IntField</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab2094349f7a03ad3918fb1c261b45c7f">m_int_fields</a></td></tr>
+<tr class="memdesc:ab2094349f7a03ad3918fb1c261b45c7f"><td class="mdescLeft">&#160;</td><td class="mdescRight">List of IntFields to be sampled for this collection of probes.  <br /></td></tr>
+<tr class="memitem:a05b29f563e5f91b0a0a29ce17f49697d" id="r_a05b29f563e5f91b0a0a29ce17f49697d"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classamr__wind_1_1_derived_qty_mgr.html">DerivedQtyMgr</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a05b29f563e5f91b0a0a29ce17f49697d">m_derived_mgr</a></td></tr>
+<tr class="memdesc:a05b29f563e5f91b0a0a29ce17f49697d"><td class="mdescLeft">&#160;</td><td class="mdescRight">List of derived fields to be sampled for this collection of probes.  <br /></td></tr>
+<tr class="memitem:aa330c2da4ed560864bdc294c6a3b5b60" id="r_aa330c2da4ed560864bdc294c6a3b5b60"><td class="memItemLeft" align="right" valign="top">const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa330c2da4ed560864bdc294c6a3b5b60">m_label</a></td></tr>
+<tr class="memitem:a8a45c7f8a809c25e9f88719edc5b1dce" id="r_a8a45c7f8a809c25e9f88719edc5b1dce"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8a45c7f8a809c25e9f88719edc5b1dce">m_label_out</a></td></tr>
+<tr class="memitem:af9744e1a8fe560e3caf768d458a81f17" id="r_af9744e1a8fe560e3caf768d458a81f17"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af9744e1a8fe560e3caf768d458a81f17">m_ncomp</a> {0}</td></tr>
+<tr class="memitem:a9a17d9c551941d97dc036513ad3a1f6b" id="r_a9a17d9c551941d97dc036513ad3a1f6b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9a17d9c551941d97dc036513ad3a1f6b">m_nicomp</a> {0}</td></tr>
+<tr class="memitem:a70bb3c312adca1e680aa512c2327fc90" id="r_a70bb3c312adca1e680aa512c2327fc90"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a70bb3c312adca1e680aa512c2327fc90">m_ndcomp</a> {0}</td></tr>
+</table>
+<a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a553bf7a819eefab36f6e3152ca63fe55" name="a553bf7a819eefab36f6e3152ca63fe55"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a553bf7a819eefab36f6e3152ca63fe55">&#9670;&#160;</a></span>Subvolume()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::subvolume::Subvolume::Subvolume </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>sim</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>label</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a73cc05d5419b6fa03ab7880c57e9ddc3" name="a73cc05d5419b6fa03ab7880c57e9ddc3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a73cc05d5419b6fa03ab7880c57e9ddc3">&#9670;&#160;</a></span>~Subvolume()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::subvolume::Subvolume::~Subvolume </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="ad6286ccc675355217a2f71710791a9bf" name="ad6286ccc675355217a2f71710791a9bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6286ccc675355217a2f71710791a9bf">&#9670;&#160;</a></span>identifier()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::subvolume::Subvolume::identifier </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acc1104f9441f4c0298b51f3076712d25" name="acc1104f9441f4c0298b51f3076712d25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc1104f9441f4c0298b51f3076712d25">&#9670;&#160;</a></span>initialize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::subvolume::Subvolume::initialize </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Read user inputs for chunks, output timing. </p>
+
+</div>
+</div>
+<a id="af7116ffb876f2db7457f30bc25ea6691" name="af7116ffb876f2db7457f30bc25ea6691"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7116ffb876f2db7457f30bc25ea6691">&#9670;&#160;</a></span>output_actions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::subvolume::Subvolume::output_actions </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get chunks and output to disk. </p>
+
+</div>
+</div>
+<a id="ad8139a2b5851cad27b4419968593a3bb" name="ad8139a2b5851cad27b4419968593a3bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8139a2b5851cad27b4419968593a3bb">&#9670;&#160;</a></span>post_advance_work()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::subvolume::Subvolume::post_advance_work </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Actions to do at end of every time step. </p>
+
+</div>
+</div>
+<a id="a884d98153d8235f0107cbeda0a6f751f" name="a884d98153d8235f0107cbeda0a6f751f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a884d98153d8235f0107cbeda0a6f751f">&#9670;&#160;</a></span>post_regrid_actions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::subvolume::Subvolume::post_regrid_actions </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Do any work that needs to happen after regrid. </p>
+
+</div>
+</div>
+<a id="aa81d2c81f41ad8849d162a5f1dd34476" name="aa81d2c81f41ad8849d162a5f1dd34476"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa81d2c81f41ad8849d162a5f1dd34476">&#9670;&#160;</a></span>pre_init_actions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::subvolume::Subvolume::pre_init_actions </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Perform actions before mesh is created. </p>
+
+</div>
+</div>
+<a id="a53c8ef309a31a7adffb3e6dc3fa65d5a" name="a53c8ef309a31a7adffb3e6dc3fa65d5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53c8ef309a31a7adffb3e6dc3fa65d5a">&#9670;&#160;</a></span>var_names()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const amrex::Vector&lt; std::string &gt; &amp; amr_wind::subvolume::Subvolume::var_names </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a05b29f563e5f91b0a0a29ce17f49697d" name="a05b29f563e5f91b0a0a29ce17f49697d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05b29f563e5f91b0a0a29ce17f49697d">&#9670;&#160;</a></span>m_derived_mgr</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classamr__wind_1_1_derived_qty_mgr.html">DerivedQtyMgr</a>&gt; amr_wind::subvolume::Subvolume::m_derived_mgr</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>List of derived fields to be sampled for this collection of probes. </p>
+
+</div>
+</div>
+<a id="a2949a01392d5edd01a9a42c7a6ed13af" name="a2949a01392d5edd01a9a42c7a6ed13af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2949a01392d5edd01a9a42c7a6ed13af">&#9670;&#160;</a></span>m_fields</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;<a class="el" href="classamr__wind_1_1_field.html">Field</a>*&gt; amr_wind::subvolume::Subvolume::m_fields</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>List of fields to be sampled for this collection of probes. </p>
+
+</div>
+</div>
+<a id="ab2094349f7a03ad3918fb1c261b45c7f" name="ab2094349f7a03ad3918fb1c261b45c7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab2094349f7a03ad3918fb1c261b45c7f">&#9670;&#160;</a></span>m_int_fields</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;<a class="el" href="classamr__wind_1_1_int_field.html">IntField</a>*&gt; amr_wind::subvolume::Subvolume::m_int_fields</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>List of IntFields to be sampled for this collection of probes. </p>
+
+</div>
+</div>
+<a id="aa330c2da4ed560864bdc294c6a3b5b60" name="aa330c2da4ed560864bdc294c6a3b5b60"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa330c2da4ed560864bdc294c6a3b5b60">&#9670;&#160;</a></span>m_label</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string amr_wind::subvolume::Subvolume::m_label</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Name of this subvolume object.</p>
+<p>The label is used to read user inputs from file and is also used for naming files directories. </p>
+
+</div>
+</div>
+<a id="a8a45c7f8a809c25e9f88719edc5b1dce" name="a8a45c7f8a809c25e9f88719edc5b1dce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a45c7f8a809c25e9f88719edc5b1dce">&#9670;&#160;</a></span>m_label_out</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::subvolume::Subvolume::m_label_out</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Name of this subvolume object when writing outputs.</p>
+<p>This label can be specified to manually override the true label of this subvolume instance. Intended for unified top-level naming of different subvolume instances, but it is up to the user to ensure that the bottom-level names are distinct when this is used. </p>
+
+</div>
+</div>
+<a id="af9744e1a8fe560e3caf768d458a81f17" name="af9744e1a8fe560e3caf768d458a81f17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9744e1a8fe560e3caf768d458a81f17">&#9670;&#160;</a></span>m_ncomp</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::subvolume::Subvolume::m_ncomp {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a70bb3c312adca1e680aa512c2327fc90" name="a70bb3c312adca1e680aa512c2327fc90"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70bb3c312adca1e680aa512c2327fc90">&#9670;&#160;</a></span>m_ndcomp</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::subvolume::Subvolume::m_ndcomp {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9a17d9c551941d97dc036513ad3a1f6b" name="a9a17d9c551941d97dc036513ad3a1f6b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a17d9c551941d97dc036513ad3a1f6b">&#9670;&#160;</a></span>m_nicomp</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::subvolume::Subvolume::m_nicomp {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af93f647af2b54524856285e8ba968e5e" name="af93f647af2b54524856285e8ba968e5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af93f647af2b54524856285e8ba968e5e">&#9670;&#160;</a></span>m_sim</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; amr_wind::subvolume::Subvolume::m_sim</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7b09f4629189556f3b6a15bffd089fbb" name="a7b09f4629189556f3b6a15bffd089fbb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b09f4629189556f3b6a15bffd089fbb">&#9670;&#160;</a></span>m_subvolumes</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;std::unique_ptr&lt;<a class="el" href="classamr__wind_1_1subvolume_1_1_subvolume_base.html">SubvolumeBase</a>&gt; &gt; amr_wind::subvolume::Subvolume::m_subvolumes</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6a31ccf562348d5b59d4f9c85b41ad42" name="a6a31ccf562348d5b59d4f9c85b41ad42"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a31ccf562348d5b59d4f9c85b41ad42">&#9670;&#160;</a></span>m_var_names</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;std::string&gt; amr_wind::subvolume::Subvolume::m_var_names</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>List of variable names for output. </p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/subvolume/<a class="el" href="_subvolume_8_h_source.html">Subvolume.H</a></li>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/subvolume/<a class="el" href="_subvolume_8cpp.html">Subvolume.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

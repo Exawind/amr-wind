@@ -1,0 +1,334 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/tke/source_terms/KransAxell.H Source File &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/tke/source_terms/KransAxell.H Source File</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/_krans_axell_8_h_source.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="home-runner-work-amr-wind-amr-wind-amr-wind-equation-systems-tke-source-terms-kransaxell-h-source-file">
+<h1>/home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/tke/source_terms/KransAxell.H Source File<a class="headerlink" href="#home-runner-work-amr-wind-amr-wind-amr-wind-equation-systems-tke-source-terms-kransaxell-h-source-file" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/tke/source_terms/KransAxell.H Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="dir_d85575251dd712327fe3cf057fa568b4.html">amr-wind</a></li><li class="navelem"><a href="dir_212148f97b8bb53ebaebb3bf8a8b5de4.html">amr-wind</a></li><li class="navelem"><a href="dir_25ba3af7252fba93a50e7ef611ff43dd.html">equation_systems</a></li><li class="navelem"><a href="dir_0f40cd49204690f812aa76519ccf29dc.html">tke</a></li><li class="navelem"><a href="dir_35dc38a80f47b603ee40a4842a94cdef.html">source_terms</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="headertitle"><div class="title">KransAxell.H</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="_krans_axell_8_h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef KRANSAXELL_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define KRANSAXELL_H</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="_transport_model_8_h.html">amr-wind/transport_models/TransportModel.H</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="_t_k_e_source_8_h.html">amr-wind/equation_systems/tke/TKESource.H</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="constants_8_h.html">amr-wind/utilities/constants.H</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;AMReX_REAL.H&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">using namespace </span>amrex::literals;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceamr__wind_1_1pde_1_1tke.html">amr_wind::pde::tke</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span></div>
+<div class="foldopen" id="foldopen00019" data-start="{" data-end="};">
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html">   19</a></span><span class="keyword">class </span><a class="code hl_function" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#aa495fa8e1384c5e963950d43c664a5ea">KransAxell</a> : <span class="keyword">public</span> TKESource::Register&lt;KransAxell&gt;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>{</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a935ab62a819d3593294899268986b7f0">   22</a></span>    <span class="keyword">static</span> std::string <a class="code hl_function" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a935ab62a819d3593294899268986b7f0">identifier</a>() { <span class="keywordflow">return</span> <span class="stringliteral">&quot;KransAxell&quot;</span>; }</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#aa495fa8e1384c5e963950d43c664a5ea">KransAxell</a>(<span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; <span class="comment">/*sim*/</span>);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#abde438af89f3c45835921b1231982360">   26</a></span>    <a class="code hl_function" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#abde438af89f3c45835921b1231982360">~KransAxell</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a27010da157791a03feb5ca183cb6ca80">operator()</a>(</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keywordtype">int</span> lev,</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <span class="keyword">const</span> amrex::MFIter&amp; mfi,</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keyword">const</span> amrex::Box&amp; bx,</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <a class="code hl_enumeration" href="group__fields.html#ga5251ec6b376231128a9647f3028dbac0">FieldState</a> fstate,</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keyword">const</span> amrex::Array4&lt;amrex::Real&gt;&amp; src_term) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a229b5d05585309ce2cc4a259a1b74f29">   36</a></span>    <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a229b5d05585309ce2cc4a259a1b74f29">m_turb_lscale</a>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#aede94800f0ff0bde3cbb03ca6e47b624">   37</a></span>    <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#aede94800f0ff0bde3cbb03ca6e47b624">m_shear_prod</a>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a7c2b8355396c8a69629b79c4489661de">   38</a></span>    <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a7c2b8355396c8a69629b79c4489661de">m_buoy_prod</a>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#ae8fabe9fd2ea369988d6f7556ab3f6c8">   39</a></span>    <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#ae8fabe9fd2ea369988d6f7556ab3f6c8">m_dissip</a>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#ac83935113cf79de82a9da3a5b7a59acb">   40</a></span>    <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#ac83935113cf79de82a9da3a5b7a59acb">m_tke</a>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#aab608506dd57ef230cfa83489da61670">   41</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#aab608506dd57ef230cfa83489da61670">m_Cmu</a>{0.556_rt};</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a37730ef7b7f49d7a1d1a713e202b3770">   42</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a37730ef7b7f49d7a1d1a713e202b3770">m_heat_flux</a>{0.0_rt};</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#af91ad95abb7ac3a8cf8f240e6357b862">   43</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#af91ad95abb7ac3a8cf8f240e6357b862">m_z0</a>{0.1_rt};</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#ae4c4ff8fb4bba287747d543c53fec59b">   44</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#ae4c4ff8fb4bba287747d543c53fec59b">m_kappa</a>{0.41_rt};</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a7a76e3d35b557ffd907a37480750d3b3">   45</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a7a76e3d35b557ffd907a37480750d3b3">m_meso_start</a>{600.0_rt};</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a8fae478254372607818abe1e8c036681">   46</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a8fae478254372607818abe1e8c036681">m_gravity</a>{0.0_rt, 0.0_rt, -9.81_rt};</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a085fc181a5bdd570e51845e4ebc5c725">   47</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_sim_time.html">SimTime</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a085fc181a5bdd570e51845e4ebc5c725">m_time</a>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a51df77b6ad99ac872f06c2d1b43d41fd">   48</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a51df77b6ad99ac872f06c2d1b43d41fd">m_sim</a>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a254c64f38e2b7e38a0ab53d336ebfc7b">   49</a></span>    <span class="keyword">const</span> amrex::AmrCore&amp; <a class="code hl_variable" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a254c64f38e2b7e38a0ab53d336ebfc7b">m_mesh</a>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a05d7e29ef02fd045e3897bde8e54dfa2">   50</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a05d7e29ef02fd045e3897bde8e54dfa2">m_velocity</a>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a9f72b86b7a07e7dffb1bc485b351e2f4">   51</a></span>    std::string <a class="code hl_variable" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a9f72b86b7a07e7dffb1bc485b351e2f4">m_1d_rans</a>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a8b4df89b0dc33460a3b7a7d127e3b35e">   52</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a8b4df89b0dc33460a3b7a7d127e3b35e">m_wind_heights</a>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a46b60c583ad97472cb206af6856114fd">   53</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a46b60c583ad97472cb206af6856114fd">m_tke_values</a>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a40751013dce625587792b1fe2dce2b15">   54</a></span>    amrex::Gpu::DeviceVector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a40751013dce625587792b1fe2dce2b15">m_wind_heights_d</a>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#ae8b50f6cc3b22eb738e30e5a800978f6">   55</a></span>    amrex::Gpu::DeviceVector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#ae8b50f6cc3b22eb738e30e5a800978f6">m_tke_values_d</a>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a7161533d16d39f5675a3f94a134b880f">   57</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1transport_1_1_transport_model.html">transport::TransportModel</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a7161533d16d39f5675a3f94a134b880f">m_transport</a>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span></div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#aa5384c697839a8d5d5523dab59629e8b">   60</a></span>    std::unique_ptr&lt;ScratchField&gt; <a class="code hl_variable" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#aa5384c697839a8d5d5523dab59629e8b">m_ref_theta</a>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a5ecae2982937bd6131c9119a08ba102d">   61</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a5ecae2982937bd6131c9119a08ba102d">m_horizontal_sponge</a>{<span class="keyword">false</span>};</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#ac67c064d7cab85e750316a4ce1fc029d">   62</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#ac67c064d7cab85e750316a4ce1fc029d">m_sponge_strength</a>{1.0_rt};</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a46824ca1f6fbf7a6fbe03ae152676f9d">   63</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a46824ca1f6fbf7a6fbe03ae152676f9d">m_sponge_distance_west</a>{-1000.0_rt};</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#ad164db5f8ba509331d4cbae1a097ce34">   64</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#ad164db5f8ba509331d4cbae1a097ce34">m_sponge_distance_east</a>{1000.0_rt};</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#aa21a5b929a64866e47509445b11272b7">   65</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#aa21a5b929a64866e47509445b11272b7">m_sponge_distance_south</a>{-1000.0_rt};</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#afd254f0690cd639d99d6d7c3fb01c90c">   66</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#afd254f0690cd639d99d6d7c3fb01c90c">m_sponge_distance_north</a>{1000.0_rt};</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a6fdce1b0c70b1d33ef2504d08a8d7d8b">   67</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a6fdce1b0c70b1d33ef2504d08a8d7d8b">m_sponge_west</a>{0};</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#ab1a51bce183f5db6c7579c05ebd22926">   68</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#ab1a51bce183f5db6c7579c05ebd22926">m_sponge_east</a>{1};</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a087c61101d63ee843b2f9a746370aedb">   69</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a087c61101d63ee843b2f9a746370aedb">m_sponge_south</a>{0};</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a9ce5a819c775fe5ccbbc6120d92f7f01">   70</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a9ce5a819c775fe5ccbbc6120d92f7f01">m_sponge_north</a>{1};</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a68338405e042968f3b57378b1318ed5d">   71</a></span>    std::string <a class="code hl_variable" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a68338405e042968f3b57378b1318ed5d">m_wall_het_model</a>{<span class="stringliteral">&quot;none&quot;</span>};</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a880df2623840bd15c3d9ce270e2f0579">   72</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a880df2623840bd15c3d9ce270e2f0579">m_monin_obukhov_length</a>{<a class="code hl_variable" href="namespaceamr__wind_1_1constants.html#abec95c34da71524c85927f9874a6368a">constants::LARGE_NUM</a>};</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a8681a89913670ee94570a84910aacf5f">   73</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a8681a89913670ee94570a84910aacf5f">m_gamma_m</a>{5.0_rt};</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a12fbea6fae69db591602286b4b15f279">   74</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a12fbea6fae69db591602286b4b15f279">m_beta_m</a>{16.0_rt};</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>};</div>
+</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>} <span class="comment">// namespace amr_wind::pde::tke</span></div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span><span class="preprocessor">#endif </span><span class="comment">/* KRANSAXELL_H */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="a_t_k_e_source_8_h_html"><div class="ttname"><a href="_t_k_e_source_8_h.html">TKESource.H</a></div></div>
+<div class="ttc" id="a_transport_model_8_h_html"><div class="ttname"><a href="_transport_model_8_h.html">TransportModel.H</a></div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html">amr_wind::CFDSim</a></div><div class="ttdef"><b>Definition</b> CFDSim.H:54</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_html"><div class="ttname"><a href="classamr__wind_1_1_field.html">amr_wind::Field</a></div><div class="ttdef"><b>Definition</b> Field.H:112</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_sim_time_html"><div class="ttname"><a href="classamr__wind_1_1_sim_time.html">amr_wind::SimTime</a></div><div class="ttdef"><b>Definition</b> SimTime.H:33</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_a05d7e29ef02fd045e3897bde8e54dfa2"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a05d7e29ef02fd045e3897bde8e54dfa2">amr_wind::pde::tke::KransAxell::m_velocity</a></div><div class="ttdeci">const Field &amp; m_velocity</div><div class="ttdef"><b>Definition</b> KransAxell.H:50</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_a085fc181a5bdd570e51845e4ebc5c725"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a085fc181a5bdd570e51845e4ebc5c725">amr_wind::pde::tke::KransAxell::m_time</a></div><div class="ttdeci">const SimTime &amp; m_time</div><div class="ttdef"><b>Definition</b> KransAxell.H:47</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_a087c61101d63ee843b2f9a746370aedb"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a087c61101d63ee843b2f9a746370aedb">amr_wind::pde::tke::KransAxell::m_sponge_south</a></div><div class="ttdeci">int m_sponge_south</div><div class="ttdef"><b>Definition</b> KransAxell.H:69</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_a12fbea6fae69db591602286b4b15f279"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a12fbea6fae69db591602286b4b15f279">amr_wind::pde::tke::KransAxell::m_beta_m</a></div><div class="ttdeci">amrex::Real m_beta_m</div><div class="ttdef"><b>Definition</b> KransAxell.H:74</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_a229b5d05585309ce2cc4a259a1b74f29"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a229b5d05585309ce2cc4a259a1b74f29">amr_wind::pde::tke::KransAxell::m_turb_lscale</a></div><div class="ttdeci">Field &amp; m_turb_lscale</div><div class="ttdef"><b>Definition</b> KransAxell.H:36</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_a254c64f38e2b7e38a0ab53d336ebfc7b"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a254c64f38e2b7e38a0ab53d336ebfc7b">amr_wind::pde::tke::KransAxell::m_mesh</a></div><div class="ttdeci">const amrex::AmrCore &amp; m_mesh</div><div class="ttdef"><b>Definition</b> KransAxell.H:49</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_a27010da157791a03feb5ca183cb6ca80"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a27010da157791a03feb5ca183cb6ca80">amr_wind::pde::tke::KransAxell::operator()</a></div><div class="ttdeci">void operator()(int lev, const amrex::MFIter &amp;mfi, const amrex::Box &amp;bx, FieldState fstate, const amrex::Array4&lt; amrex::Real &gt; &amp;src_term) const override</div><div class="ttdef"><b>Definition</b> KransAxell.cpp:81</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_a37730ef7b7f49d7a1d1a713e202b3770"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a37730ef7b7f49d7a1d1a713e202b3770">amr_wind::pde::tke::KransAxell::m_heat_flux</a></div><div class="ttdeci">amrex::Real m_heat_flux</div><div class="ttdef"><b>Definition</b> KransAxell.H:42</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_a40751013dce625587792b1fe2dce2b15"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a40751013dce625587792b1fe2dce2b15">amr_wind::pde::tke::KransAxell::m_wind_heights_d</a></div><div class="ttdeci">amrex::Gpu::DeviceVector&lt; amrex::Real &gt; m_wind_heights_d</div><div class="ttdef"><b>Definition</b> KransAxell.H:54</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_a46824ca1f6fbf7a6fbe03ae152676f9d"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a46824ca1f6fbf7a6fbe03ae152676f9d">amr_wind::pde::tke::KransAxell::m_sponge_distance_west</a></div><div class="ttdeci">amrex::Real m_sponge_distance_west</div><div class="ttdef"><b>Definition</b> KransAxell.H:63</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_a46b60c583ad97472cb206af6856114fd"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a46b60c583ad97472cb206af6856114fd">amr_wind::pde::tke::KransAxell::m_tke_values</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_tke_values</div><div class="ttdef"><b>Definition</b> KransAxell.H:53</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_a51df77b6ad99ac872f06c2d1b43d41fd"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a51df77b6ad99ac872f06c2d1b43d41fd">amr_wind::pde::tke::KransAxell::m_sim</a></div><div class="ttdeci">const CFDSim &amp; m_sim</div><div class="ttdef"><b>Definition</b> KransAxell.H:48</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_a5ecae2982937bd6131c9119a08ba102d"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a5ecae2982937bd6131c9119a08ba102d">amr_wind::pde::tke::KransAxell::m_horizontal_sponge</a></div><div class="ttdeci">bool m_horizontal_sponge</div><div class="ttdef"><b>Definition</b> KransAxell.H:61</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_a68338405e042968f3b57378b1318ed5d"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a68338405e042968f3b57378b1318ed5d">amr_wind::pde::tke::KransAxell::m_wall_het_model</a></div><div class="ttdeci">std::string m_wall_het_model</div><div class="ttdef"><b>Definition</b> KransAxell.H:71</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_a6fdce1b0c70b1d33ef2504d08a8d7d8b"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a6fdce1b0c70b1d33ef2504d08a8d7d8b">amr_wind::pde::tke::KransAxell::m_sponge_west</a></div><div class="ttdeci">int m_sponge_west</div><div class="ttdef"><b>Definition</b> KransAxell.H:67</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_a7161533d16d39f5675a3f94a134b880f"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a7161533d16d39f5675a3f94a134b880f">amr_wind::pde::tke::KransAxell::m_transport</a></div><div class="ttdeci">const transport::TransportModel &amp; m_transport</div><div class="ttdoc">Transport model.</div><div class="ttdef"><b>Definition</b> KransAxell.H:57</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_a7a76e3d35b557ffd907a37480750d3b3"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a7a76e3d35b557ffd907a37480750d3b3">amr_wind::pde::tke::KransAxell::m_meso_start</a></div><div class="ttdeci">amrex::Real m_meso_start</div><div class="ttdef"><b>Definition</b> KransAxell.H:45</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_a7c2b8355396c8a69629b79c4489661de"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a7c2b8355396c8a69629b79c4489661de">amr_wind::pde::tke::KransAxell::m_buoy_prod</a></div><div class="ttdeci">Field &amp; m_buoy_prod</div><div class="ttdef"><b>Definition</b> KransAxell.H:38</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_a8681a89913670ee94570a84910aacf5f"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a8681a89913670ee94570a84910aacf5f">amr_wind::pde::tke::KransAxell::m_gamma_m</a></div><div class="ttdeci">amrex::Real m_gamma_m</div><div class="ttdef"><b>Definition</b> KransAxell.H:73</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_a880df2623840bd15c3d9ce270e2f0579"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a880df2623840bd15c3d9ce270e2f0579">amr_wind::pde::tke::KransAxell::m_monin_obukhov_length</a></div><div class="ttdeci">amrex::Real m_monin_obukhov_length</div><div class="ttdef"><b>Definition</b> KransAxell.H:72</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_a8b4df89b0dc33460a3b7a7d127e3b35e"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a8b4df89b0dc33460a3b7a7d127e3b35e">amr_wind::pde::tke::KransAxell::m_wind_heights</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_wind_heights</div><div class="ttdef"><b>Definition</b> KransAxell.H:52</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_a8fae478254372607818abe1e8c036681"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a8fae478254372607818abe1e8c036681">amr_wind::pde::tke::KransAxell::m_gravity</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_gravity</div><div class="ttdef"><b>Definition</b> KransAxell.H:46</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_a935ab62a819d3593294899268986b7f0"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a935ab62a819d3593294899268986b7f0">amr_wind::pde::tke::KransAxell::identifier</a></div><div class="ttdeci">static std::string identifier()</div><div class="ttdef"><b>Definition</b> KransAxell.H:22</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_a9ce5a819c775fe5ccbbc6120d92f7f01"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a9ce5a819c775fe5ccbbc6120d92f7f01">amr_wind::pde::tke::KransAxell::m_sponge_north</a></div><div class="ttdeci">int m_sponge_north</div><div class="ttdef"><b>Definition</b> KransAxell.H:70</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_a9f72b86b7a07e7dffb1bc485b351e2f4"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#a9f72b86b7a07e7dffb1bc485b351e2f4">amr_wind::pde::tke::KransAxell::m_1d_rans</a></div><div class="ttdeci">std::string m_1d_rans</div><div class="ttdef"><b>Definition</b> KransAxell.H:51</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_aa21a5b929a64866e47509445b11272b7"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#aa21a5b929a64866e47509445b11272b7">amr_wind::pde::tke::KransAxell::m_sponge_distance_south</a></div><div class="ttdeci">amrex::Real m_sponge_distance_south</div><div class="ttdef"><b>Definition</b> KransAxell.H:65</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_aa495fa8e1384c5e963950d43c664a5ea"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#aa495fa8e1384c5e963950d43c664a5ea">amr_wind::pde::tke::KransAxell::KransAxell</a></div><div class="ttdeci">KransAxell(const CFDSim &amp;)</div><div class="ttdef"><b>Definition</b> KransAxell.cpp:14</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_aa5384c697839a8d5d5523dab59629e8b"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#aa5384c697839a8d5d5523dab59629e8b">amr_wind::pde::tke::KransAxell::m_ref_theta</a></div><div class="ttdeci">std::unique_ptr&lt; ScratchField &gt; m_ref_theta</div><div class="ttdoc">Reference temperature.</div><div class="ttdef"><b>Definition</b> KransAxell.H:60</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_aab608506dd57ef230cfa83489da61670"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#aab608506dd57ef230cfa83489da61670">amr_wind::pde::tke::KransAxell::m_Cmu</a></div><div class="ttdeci">amrex::Real m_Cmu</div><div class="ttdef"><b>Definition</b> KransAxell.H:41</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_ab1a51bce183f5db6c7579c05ebd22926"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#ab1a51bce183f5db6c7579c05ebd22926">amr_wind::pde::tke::KransAxell::m_sponge_east</a></div><div class="ttdeci">int m_sponge_east</div><div class="ttdef"><b>Definition</b> KransAxell.H:68</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_abde438af89f3c45835921b1231982360"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#abde438af89f3c45835921b1231982360">amr_wind::pde::tke::KransAxell::~KransAxell</a></div><div class="ttdeci">~KransAxell() override</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_ac67c064d7cab85e750316a4ce1fc029d"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#ac67c064d7cab85e750316a4ce1fc029d">amr_wind::pde::tke::KransAxell::m_sponge_strength</a></div><div class="ttdeci">amrex::Real m_sponge_strength</div><div class="ttdef"><b>Definition</b> KransAxell.H:62</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_ac83935113cf79de82a9da3a5b7a59acb"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#ac83935113cf79de82a9da3a5b7a59acb">amr_wind::pde::tke::KransAxell::m_tke</a></div><div class="ttdeci">Field &amp; m_tke</div><div class="ttdef"><b>Definition</b> KransAxell.H:40</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_ad164db5f8ba509331d4cbae1a097ce34"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#ad164db5f8ba509331d4cbae1a097ce34">amr_wind::pde::tke::KransAxell::m_sponge_distance_east</a></div><div class="ttdeci">amrex::Real m_sponge_distance_east</div><div class="ttdef"><b>Definition</b> KransAxell.H:64</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_ae4c4ff8fb4bba287747d543c53fec59b"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#ae4c4ff8fb4bba287747d543c53fec59b">amr_wind::pde::tke::KransAxell::m_kappa</a></div><div class="ttdeci">amrex::Real m_kappa</div><div class="ttdef"><b>Definition</b> KransAxell.H:44</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_ae8b50f6cc3b22eb738e30e5a800978f6"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#ae8b50f6cc3b22eb738e30e5a800978f6">amr_wind::pde::tke::KransAxell::m_tke_values_d</a></div><div class="ttdeci">amrex::Gpu::DeviceVector&lt; amrex::Real &gt; m_tke_values_d</div><div class="ttdef"><b>Definition</b> KransAxell.H:55</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_ae8fabe9fd2ea369988d6f7556ab3f6c8"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#ae8fabe9fd2ea369988d6f7556ab3f6c8">amr_wind::pde::tke::KransAxell::m_dissip</a></div><div class="ttdeci">Field &amp; m_dissip</div><div class="ttdef"><b>Definition</b> KransAxell.H:39</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_aede94800f0ff0bde3cbb03ca6e47b624"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#aede94800f0ff0bde3cbb03ca6e47b624">amr_wind::pde::tke::KransAxell::m_shear_prod</a></div><div class="ttdeci">Field &amp; m_shear_prod</div><div class="ttdef"><b>Definition</b> KransAxell.H:37</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_af91ad95abb7ac3a8cf8f240e6357b862"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#af91ad95abb7ac3a8cf8f240e6357b862">amr_wind::pde::tke::KransAxell::m_z0</a></div><div class="ttdeci">amrex::Real m_z0</div><div class="ttdef"><b>Definition</b> KransAxell.H:43</div></div>
+<div class="ttc" id="aclassamr__wind_1_1pde_1_1tke_1_1_krans_axell_html_afd254f0690cd639d99d6d7c3fb01c90c"><div class="ttname"><a href="classamr__wind_1_1pde_1_1tke_1_1_krans_axell.html#afd254f0690cd639d99d6d7c3fb01c90c">amr_wind::pde::tke::KransAxell::m_sponge_distance_north</a></div><div class="ttdeci">amrex::Real m_sponge_distance_north</div><div class="ttdef"><b>Definition</b> KransAxell.H:66</div></div>
+<div class="ttc" id="aclassamr__wind_1_1transport_1_1_transport_model_html"><div class="ttname"><a href="classamr__wind_1_1transport_1_1_transport_model.html">amr_wind::transport::TransportModel</a></div><div class="ttdef"><b>Definition</b> TransportModel.H:32</div></div>
+<div class="ttc" id="aconstants_8_h_html"><div class="ttname"><a href="constants_8_h.html">constants.H</a></div></div>
+<div class="ttc" id="agroup__fields_html_ga5251ec6b376231128a9647f3028dbac0"><div class="ttname"><a href="group__fields.html#ga5251ec6b376231128a9647f3028dbac0">amr_wind::FieldState</a></div><div class="ttdeci">FieldState</div><div class="ttdef"><b>Definition</b> FieldDescTypes.H:16</div></div>
+<div class="ttc" id="anamespaceamr__wind_1_1constants_html_abec95c34da71524c85927f9874a6368a"><div class="ttname"><a href="namespaceamr__wind_1_1constants.html#abec95c34da71524c85927f9874a6368a">amr_wind::constants::LARGE_NUM</a></div><div class="ttdeci">static constexpr amrex::Real LARGE_NUM</div><div class="ttdoc">A large positive number.</div><div class="ttdef"><b>Definition</b> constants.H:29</div></div>
+<div class="ttc" id="anamespaceamr__wind_1_1pde_1_1tke_html"><div class="ttname"><a href="namespaceamr__wind_1_1pde_1_1tke.html">amr_wind::pde::tke</a></div><div class="ttdef"><b>Definition</b> SDRSrc.cpp:10</div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

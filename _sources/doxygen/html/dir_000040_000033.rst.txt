@@ -1,0 +1,14 @@
+.. meta::e771d67ffa5f148ea4f91dcff28767f0cf9728cf026cd2b97f17714898540983236d9b7876397298e45f7e3a037fa10153f7b72a2a8cef9948bfbdc116fc260b
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/icns/source_terms -&gt; physics Relation
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/equation\_systems/icns/source\_terms -&gt; physics Relation
+========================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: dir_000040_000033.html

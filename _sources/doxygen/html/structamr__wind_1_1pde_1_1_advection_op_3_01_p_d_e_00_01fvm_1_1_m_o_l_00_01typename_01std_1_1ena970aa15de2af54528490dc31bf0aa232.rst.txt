@@ -1,0 +1,14 @@
+.. meta::0fd081c59ef3f8b31a811dad25a538c6d4349f351d653c6174b31ca5a513bc5f6b069079e918c20c1f7ee25cc8ab9c73304b1627de8dab7fcc766a4f3ca7e5dd
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::AdvectionOp&lt; PDE, fvm::MOL, typename std::enable_if_t&lt; std::is_base_of_v&lt; ScalarTransport, PDE &gt; &gt; &gt; Struct Template Reference
+
+is\_base\_of\_v&lt; ScalarTransport, PDE &gt; &gt; &gt; Struct Template Reference
+=================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1pde_1_1_advection_op_3_01_p_d_e_00_01fvm_1_1_m_o_l_00_01typename_01std_1_1ena970aa15de2af54528490dc31bf0aa232.html

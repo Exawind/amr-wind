@@ -1,0 +1,14 @@
+.. meta::3d65d638ab3baca21cfbb5b9c5e2cd3b97d3de7e1f88bc690dbdf122e3bf86cef4dd8b432253fe395e09170d3055aee9aab34ba49e70bfada4fb99a278c9e3cc
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::CollMgr&lt; Collection, Type, allow_duplicates &gt; Class Template Reference
+
+CollMgr&lt; Collection, Type, allow\_duplicates &gt; Class Template Reference
+=============================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_coll_mgr.html

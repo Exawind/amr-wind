@@ -1,0 +1,14 @@
+.. meta::23baf1c06713837697001ac5e22b5d090553718687a8dc7e1d2d2657edb6854ed8b2b590b3bb1f3934ef8aa5f6c56459eca4d78b62f37cc9568e632f18471d48
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/immersed_boundary/bluff_body/Sphere.H Source File
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/immersed\_boundary/bluff\_body/Sphere.H Source File
+================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _sphere_8_h_source.html

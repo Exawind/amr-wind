@@ -1,0 +1,754 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::subvolume::RectangularSubvolume Class Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::subvolume::RectangularSubvolume Class Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/classamr__wind_1_1subvolume_1_1_rectangular_subvolume.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="rectangularsubvolume-class-reference">
+<h1>RectangularSubvolume Class Reference<a class="headerlink" href="#rectangularsubvolume-class-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::subvolume::RectangularSubvolume Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="namespaceamr__wind_1_1subvolume.html">subvolume</a></li><li class="navelem"><a href="classamr__wind_1_1subvolume_1_1_rectangular_subvolume.html">RectangularSubvolume</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a> &#124;
+<a href="classamr__wind_1_1subvolume_1_1_rectangular_subvolume-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::subvolume::RectangularSubvolume Class Reference<div class="ingroups"><a class="el" href="group__utilities.html">Utilities</a> &raquo; <a class="el" href="group__subvolume.html">Mesh data subvolume utilities</a></div></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_rectangular_subvolume_8_h_source.html">RectangularSubvolume.H</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for amr_wind::subvolume::RectangularSubvolume:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1subvolume_1_1_rectangular_subvolume__inherit__graph.svg" width="214" height="139"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for amr_wind::subvolume::RectangularSubvolume:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1subvolume_1_1_rectangular_subvolume__coll__graph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a04798f994b6f0df3831bb2849d677fda" id="r_a04798f994b6f0df3831bb2849d677fda"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a04798f994b6f0df3831bb2849d677fda">RectangularSubvolume</a> (const <a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;)</td></tr>
+<tr class="memitem:ada32b42f91a2219c3d67a9d2e8952eca" id="r_ada32b42f91a2219c3d67a9d2e8952eca"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ada32b42f91a2219c3d67a9d2e8952eca">~RectangularSubvolume</a> () override</td></tr>
+<tr class="memitem:acbf0894d0fa34cb79d094f840ac91db1" id="r_acbf0894d0fa34cb79d094f840ac91db1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acbf0894d0fa34cb79d094f840ac91db1">initialize</a> (const std::string &amp;key) override</td></tr>
+<tr class="memitem:a555630f535dc0290ffeac807da1a742a" id="r_a555630f535dc0290ffeac807da1a742a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a555630f535dc0290ffeac807da1a742a">evaluate_inputs</a> () override</td></tr>
+<tr class="memdesc:a555630f535dc0290ffeac807da1a742a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if inputs have a valid correspondence in the mesh and save quantities for output steps.  <br /></td></tr>
+<tr class="memitem:a16181ef769948190f48070829a9c6b14" id="r_a16181ef769948190f48070829a9c6b14"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a16181ef769948190f48070829a9c6b14">label</a> () const override</td></tr>
+<tr class="memdesc:a16181ef769948190f48070829a9c6b14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Name of this subvolume object.  <br /></td></tr>
+<tr class="memitem:a37e2e2c830448ee800c94891fcad73e9" id="r_a37e2e2c830448ee800c94891fcad73e9"><td class="memItemLeft" align="right" valign="top">std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a37e2e2c830448ee800c94891fcad73e9">label</a> () override</td></tr>
+<tr class="memitem:a9ec2216a819e027c0f36046945121ff0" id="r_a9ec2216a819e027c0f36046945121ff0"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9ec2216a819e027c0f36046945121ff0">subvolumetype</a> () const override</td></tr>
+<tr class="memdesc:a9ec2216a819e027c0f36046945121ff0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of this subvolume object.  <br /></td></tr>
+<tr class="memitem:a24e2d7e1217815e464e890edb9d6b680" id="r_a24e2d7e1217815e464e890edb9d6b680"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a24e2d7e1217815e464e890edb9d6b680">lev</a> () const override</td></tr>
+<tr class="memitem:abb5d9c2687ae64b52d1471eb8fd3520b" id="r_abb5d9c2687ae64b52d1471eb8fd3520b"><td class="memItemLeft" align="right" valign="top">amrex::BoxArray&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abb5d9c2687ae64b52d1471eb8fd3520b">box_array</a> () const override</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a3c1e81f6339075b8310a945e94e5e922" id="r_a3c1e81f6339075b8310a945e94e5e922"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3c1e81f6339075b8310a945e94e5e922">identifier</a> ()</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:a169b7adb3e8cd206747d9cf14627a2f5" id="r_a169b7adb3e8cd206747d9cf14627a2f5"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a169b7adb3e8cd206747d9cf14627a2f5">m_sim</a></td></tr>
+<tr class="memitem:a461b2ae1a9def2f006cacdcdbd4c150e" id="r_a461b2ae1a9def2f006cacdcdbd4c150e"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a461b2ae1a9def2f006cacdcdbd4c150e">m_origin</a></td></tr>
+<tr class="memitem:ac8da9b5a9939d1f4670bfd66a101bb57" id="r_ac8da9b5a9939d1f4670bfd66a101bb57"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac8da9b5a9939d1f4670bfd66a101bb57">m_npts_vec</a></td></tr>
+<tr class="memitem:a9210dbf9599b60322c9f27e649246674" id="r_a9210dbf9599b60322c9f27e649246674"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9210dbf9599b60322c9f27e649246674">m_dx_vec</a></td></tr>
+<tr class="memitem:ab42f40a30a5b08df0809f306f3dbd9f0" id="r_ab42f40a30a5b08df0809f306f3dbd9f0"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab42f40a30a5b08df0809f306f3dbd9f0">m_chunk_size_vec</a></td></tr>
+<tr class="memitem:a1256aa7f7c7387124f2cdfb5bd09d872" id="r_a1256aa7f7c7387124f2cdfb5bd09d872"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1256aa7f7c7387124f2cdfb5bd09d872">m_lev_for_sub</a> {0}</td></tr>
+<tr class="memitem:ae9aa0d402dada02143787a35b7841b19" id="r_ae9aa0d402dada02143787a35b7841b19"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae9aa0d402dada02143787a35b7841b19">m_verbose</a> {0}</td></tr>
+<tr class="memitem:a82e86ffd078922346ead228ec6e8601d" id="r_a82e86ffd078922346ead228ec6e8601d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a82e86ffd078922346ead228ec6e8601d">m_chunk_size_present</a></td></tr>
+<tr class="memitem:a17d716331050cb5dacdbc6193891ac74" id="r_a17d716331050cb5dacdbc6193891ac74"><td class="memItemLeft" align="right" valign="top">amrex::BoxArray&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a17d716331050cb5dacdbc6193891ac74">m_ba</a></td></tr>
+<tr class="memitem:a2d3646f3bb75fbdfe2e4a730fbfa6f32" id="r_a2d3646f3bb75fbdfe2e4a730fbfa6f32"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2d3646f3bb75fbdfe2e4a730fbfa6f32">m_label</a></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Get subvolume defined by 3D rectangle</p>
+<p>Defines volume region with origin, number of points in each direction, and target mesh resolution in each direction. Also has an optional parameter regarding the data organization, which is the chunk size. </p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a04798f994b6f0df3831bb2849d677fda" name="a04798f994b6f0df3831bb2849d677fda"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04798f994b6f0df3831bb2849d677fda">&#9670;&#160;</a></span>RectangularSubvolume()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::subvolume::RectangularSubvolume::RectangularSubvolume </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>sim</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel explicit">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ada32b42f91a2219c3d67a9d2e8952eca" name="ada32b42f91a2219c3d67a9d2e8952eca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada32b42f91a2219c3d67a9d2e8952eca">&#9670;&#160;</a></span>~RectangularSubvolume()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::subvolume::RectangularSubvolume::~RectangularSubvolume </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="abb5d9c2687ae64b52d1471eb8fd3520b" name="abb5d9c2687ae64b52d1471eb8fd3520b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb5d9c2687ae64b52d1471eb8fd3520b">&#9670;&#160;</a></span>box_array()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::BoxArray amr_wind::subvolume::RectangularSubvolume::box_array </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a555630f535dc0290ffeac807da1a742a" name="a555630f535dc0290ffeac807da1a742a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a555630f535dc0290ffeac807da1a742a">&#9670;&#160;</a></span>evaluate_inputs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::subvolume::RectangularSubvolume::evaluate_inputs </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Check if inputs have a valid correspondence in the mesh and save quantities for output steps. </p>
+
+</div>
+</div>
+<a id="a3c1e81f6339075b8310a945e94e5e922" name="a3c1e81f6339075b8310a945e94e5e922"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c1e81f6339075b8310a945e94e5e922">&#9670;&#160;</a></span>identifier()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::subvolume::RectangularSubvolume::identifier </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acbf0894d0fa34cb79d094f840ac91db1" name="acbf0894d0fa34cb79d094f840ac91db1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acbf0894d0fa34cb79d094f840ac91db1">&#9670;&#160;</a></span>initialize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::subvolume::RectangularSubvolume::initialize </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>key</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Read user inputs and initialize the subvolume object</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>Prefix used to parse inputs from file </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a16181ef769948190f48070829a9c6b14" name="a16181ef769948190f48070829a9c6b14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16181ef769948190f48070829a9c6b14">&#9670;&#160;</a></span>label() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::subvolume::RectangularSubvolume::label </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Name of this subvolume object. </p>
+
+</div>
+</div>
+<a id="a37e2e2c830448ee800c94891fcad73e9" name="a37e2e2c830448ee800c94891fcad73e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37e2e2c830448ee800c94891fcad73e9">&#9670;&#160;</a></span>label() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string &amp; amr_wind::subvolume::RectangularSubvolume::label </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a24e2d7e1217815e464e890edb9d6b680" name="a24e2d7e1217815e464e890edb9d6b680"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24e2d7e1217815e464e890edb9d6b680">&#9670;&#160;</a></span>lev()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::subvolume::RectangularSubvolume::lev </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9ec2216a819e027c0f36046945121ff0" name="a9ec2216a819e027c0f36046945121ff0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ec2216a819e027c0f36046945121ff0">&#9670;&#160;</a></span>subvolumetype()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::subvolume::RectangularSubvolume::subvolumetype </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Type of this subvolume object. </p>
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a17d716331050cb5dacdbc6193891ac74" name="a17d716331050cb5dacdbc6193891ac74"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17d716331050cb5dacdbc6193891ac74">&#9670;&#160;</a></span>m_ba</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::BoxArray amr_wind::subvolume::RectangularSubvolume::m_ba</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a82e86ffd078922346ead228ec6e8601d" name="a82e86ffd078922346ead228ec6e8601d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82e86ffd078922346ead228ec6e8601d">&#9670;&#160;</a></span>m_chunk_size_present</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::subvolume::RectangularSubvolume::m_chunk_size_present</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab42f40a30a5b08df0809f306f3dbd9f0" name="ab42f40a30a5b08df0809f306f3dbd9f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab42f40a30a5b08df0809f306f3dbd9f0">&#9670;&#160;</a></span>m_chunk_size_vec</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;int&gt; amr_wind::subvolume::RectangularSubvolume::m_chunk_size_vec</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9210dbf9599b60322c9f27e649246674" name="a9210dbf9599b60322c9f27e649246674"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9210dbf9599b60322c9f27e649246674">&#9670;&#160;</a></span>m_dx_vec</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Real&gt; amr_wind::subvolume::RectangularSubvolume::m_dx_vec</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2d3646f3bb75fbdfe2e4a730fbfa6f32" name="a2d3646f3bb75fbdfe2e4a730fbfa6f32"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d3646f3bb75fbdfe2e4a730fbfa6f32">&#9670;&#160;</a></span>m_label</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::subvolume::RectangularSubvolume::m_label</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1256aa7f7c7387124f2cdfb5bd09d872" name="a1256aa7f7c7387124f2cdfb5bd09d872"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1256aa7f7c7387124f2cdfb5bd09d872">&#9670;&#160;</a></span>m_lev_for_sub</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::subvolume::RectangularSubvolume::m_lev_for_sub {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac8da9b5a9939d1f4670bfd66a101bb57" name="ac8da9b5a9939d1f4670bfd66a101bb57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8da9b5a9939d1f4670bfd66a101bb57">&#9670;&#160;</a></span>m_npts_vec</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;int&gt; amr_wind::subvolume::RectangularSubvolume::m_npts_vec</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a461b2ae1a9def2f006cacdcdbd4c150e" name="a461b2ae1a9def2f006cacdcdbd4c150e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a461b2ae1a9def2f006cacdcdbd4c150e">&#9670;&#160;</a></span>m_origin</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Real&gt; amr_wind::subvolume::RectangularSubvolume::m_origin</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a169b7adb3e8cd206747d9cf14627a2f5" name="a169b7adb3e8cd206747d9cf14627a2f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a169b7adb3e8cd206747d9cf14627a2f5">&#9670;&#160;</a></span>m_sim</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; amr_wind::subvolume::RectangularSubvolume::m_sim</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae9aa0d402dada02143787a35b7841b19" name="ae9aa0d402dada02143787a35b7841b19"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9aa0d402dada02143787a35b7841b19">&#9670;&#160;</a></span>m_verbose</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int amr_wind::subvolume::RectangularSubvolume::m_verbose {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/subvolume/<a class="el" href="_rectangular_subvolume_8_h_source.html">RectangularSubvolume.H</a></li>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/utilities/subvolume/<a class="el" href="_rectangular_subvolume_8cpp.html">RectangularSubvolume.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

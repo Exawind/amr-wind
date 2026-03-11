@@ -1,0 +1,14 @@
+.. meta::2aafeb3f6a1ec4c9b9334d2cd47a70548845f647b1a0763397e88b68d67ce5699cf1d500d4c8a01471faf0fecc480adc9a6908ab9b55ee464d0828b26e3c9b6b
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::turbulence::TurbModelBase&lt; Transport &gt; Class Template Reference
+
+TurbModelBase&lt; Transport &gt; Class Template Reference
+=========================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1turbulence_1_1_turb_model_base.html

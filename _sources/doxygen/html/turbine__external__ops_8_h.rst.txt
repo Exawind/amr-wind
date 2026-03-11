@@ -1,0 +1,14 @@
+.. meta::e1e75bc1b57776ef24a56fcf1fcfaeb47a233c140ad87547ca08c4aa8337d360939b0f1c2616de66a48a3374309caf9718d9296cd5cd9362e5d4660151f4caae
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/actuator/turbine/external/turbine_external_ops.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/wind\_energy/actuator/turbine/external/turbine\_external\_ops.H File Reference
+===========================================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: turbine__external__ops_8_h.html

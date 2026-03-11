@@ -1,0 +1,31 @@
+<map id="amr_wind::actuator::TurbineBaseData" name="amr_wind::actuator::TurbineBaseData">
+<area shape="rect" id="Node000001" title=" " alt="" coords="1447,152,1595,192"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="1155,57,1241,82"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1256,80,1336,101,1424,128,1477,150,1475,154,1422,133,1334,106,1254,85"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="750,49,889,89"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="902,67,1154,67,1154,72,902,72"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="1091,197,1305,237"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="1319,202,1422,188,1446,184,1447,189,1423,193,1320,207"/>
+<area shape="rect" id="Node000005" href="$structamr__wind_1_1actuator_1_1_component_view.html" title=" " alt="" coords="745,151,893,191"/>
+<area shape="poly" id="edge16_Node000001_Node000005" title=" " alt="" coords="907,165,917,165,1170,162,1423,165,1447,166,1446,171,1423,171,1170,168,917,171,907,171"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="907,186,918,188,1091,207,1090,213,917,193,906,192"/>
+<area shape="rect" id="Node000006" href="$structamr__wind_1_1utils_1_1_slice.html" title=" " alt="" coords="429,140,617,180"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="630,166,641,167,745,169,745,174,641,172,630,171"/>
+<area shape="rect" id="Node000007" href="$structamr__wind_1_1utils_1_1_slice.html" title=" " alt="" coords="5,147,204,173"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="218,157,429,157,429,163,218,163"/>
+<area shape="rect" id="Node000008" href="$structamr__wind_1_1utils_1_1_slice.html" title=" " alt="" coords="428,204,617,244"/>
+<area shape="poly" id="edge8_Node000008_Node000007" title=" " alt="" coords="170,173,228,185,428,212,427,218,228,191,169,178"/>
+<area shape="rect" id="Node000009" href="$structamr__wind_1_1utils_1_1_slice.html" title=" " alt="" coords="442,37,603,77"/>
+<area shape="poly" id="edge10_Node000009_Node000007" title=" " alt="" coords="170,141,441,74,442,80,171,147"/>
+<area shape="poly" id="edge7_Node000005_Node000008" title=" " alt="" coords="630,212,721,197,757,188,758,193,722,203,631,217"/>
+<area shape="poly" id="edge9_Node000005_Node000009" title=" " alt="" coords="594,31,626,26,659,25,692,31,723,44,735,57,739,71,741,85,748,100,770,126,794,149,791,153,766,130,743,103,736,86,733,72,730,60,720,49,691,36,659,31,626,32,595,37"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="755,306,884,331"/>
+<area shape="poly" id="edge11_Node000004_Node000010" title=" " alt="" coords="884,300,1066,253,1130,235,1131,240,1067,259,885,305"/>
+<area shape="rect" id="Node000012" title=" " alt="" coords="1113,319,1283,359"/>
+<area shape="poly" id="edge15_Node000012_Node000010" title=" " alt="" coords="891,331,918,335,1018,340,1112,340,1112,345,1018,345,917,340,891,336"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="503,306,542,331"/>
+<area shape="poly" id="edge12_Node000010_Node000011" title=" " alt="" coords="556,316,755,316,755,321,556,321"/>
+<area shape="poly" id="edge13_Node000001_Node000012" title=" " alt="" coords="1256,311,1335,274,1421,230,1488,190,1490,194,1424,234,1338,278,1258,316"/>
+<area shape="rect" id="Node000013" href="$structamr__wind_1_1actuator_1_1_f_l_l_c_data.html" title=" " alt="" coords="745,372,893,412"/>
+<area shape="poly" id="edge14_Node000012_Node000013" title=" " alt="" coords="907,385,985,379,1066,368,1123,356,1124,361,1067,373,985,384,908,390"/>
+</map>

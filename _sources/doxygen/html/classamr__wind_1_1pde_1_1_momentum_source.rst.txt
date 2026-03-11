@@ -1,0 +1,14 @@
+.. meta::194f29fb453285156947d8b8d877f9e690106494a4a3c81a781b95d64fb42150886f1d773d7814a961351f8843a6cbafe125a652fa8d3bdd23d7cf9326e980e8
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::pde::MomentumSource Class Reference
+
+MomentumSource Class Reference
+==============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1pde_1_1_momentum_source.html

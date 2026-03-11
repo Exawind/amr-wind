@@ -1,0 +1,14 @@
+.. meta::99df27e2002210dec7af8efc460245462304bebfda8b3e00dbc2402f989c4b8682f52cfea1a0e2c147b659c82f0eff3b23a7f311659676247a790371de340067
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::BoussinesqBubbleFieldInit Class Reference
+
+BoussinesqBubbleFieldInit Class Reference
+=========================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_boussinesq_bubble_field_init.html

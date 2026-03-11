@@ -1,0 +1,654 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::diagnostics Namespace Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::diagnostics Namespace Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/namespaceamr__wind_1_1diagnostics.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="diagnostics-namespace-reference">
+<h1>diagnostics Namespace Reference<a class="headerlink" href="#diagnostics-namespace-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::diagnostics Namespace Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="namespaceamr__wind_1_1diagnostics.html">diagnostics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#func-members">Functions</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::diagnostics Namespace Reference</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a42e22dcefbccf81b19d009622fdce79f" id="r_a42e22dcefbccf81b19d009622fdce79f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a42e22dcefbccf81b19d009622fdce79f">make_mask_addend</a> (amrex::MultiFab &amp;mfab, const amrex::MultiFab &amp;mfab_mask, amrex::Real mask_val, amrex::Real set_val)</td></tr>
+<tr class="memitem:a570306734f5e352ebfbe6e25ecd6f0cb" id="r_a570306734f5e352ebfbe6e25ecd6f0cb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a570306734f5e352ebfbe6e25ecd6f0cb">get_field_extrema</a> (amrex::Real &amp;field_max_val, amrex::Real &amp;field_min_val, const <a class="el" href="classamr__wind_1_1_field.html">amr_wind::Field</a> &amp;field, int comp, int ncomp, int nghost)</td></tr>
+<tr class="memitem:acb0278d5783c265860ea4afbda504550" id="r_acb0278d5783c265860ea4afbda504550"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acb0278d5783c265860ea4afbda504550">get_field_extrema</a> (amrex::Real &amp;field_max_val, amrex::Real &amp;field_min_val, const <a class="el" href="classamr__wind_1_1_field.html">amr_wind::Field</a> &amp;field, const <a class="el" href="classamr__wind_1_1_field.html">amr_wind::Field</a> &amp;field_mask, amrex::Real mask_val, int comp, int ncomp, int nghost)</td></tr>
+<tr class="memitem:aceac35066c1001196831a4941a40e16f" id="r_aceac35066c1001196831a4941a40e16f"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aceac35066c1001196831a4941a40e16f">get_vel_max</a> (const amrex::MultiFab &amp;vel, const amrex::iMultiFab &amp;level_mask, int vdir, amrex::Real factor)</td></tr>
+<tr class="memitem:a55d232c5a43f26c400f98f0b832561ec" id="r_a55d232c5a43f26c400f98f0b832561ec"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a55d232c5a43f26c400f98f0b832561ec">get_vel_max</a> (const amrex::MultiFab &amp;vel, const amrex::iMultiFab &amp;level_mask, int vdir)</td></tr>
+<tr class="memitem:a2fe6953303606e736834aec356b31b8b" id="r_a2fe6953303606e736834aec356b31b8b"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2fe6953303606e736834aec356b31b8b">get_vel_min</a> (const amrex::MultiFab &amp;vel, const amrex::iMultiFab &amp;level_mask, int vdir)</td></tr>
+<tr class="memitem:a6044a658c196add5ffca837900e861fb" id="r_a6044a658c196add5ffca837900e861fb"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6044a658c196add5ffca837900e861fb">get_vel_loc</a> (const amrex::MultiFab &amp;vel, const amrex::iMultiFab &amp;level_mask, int vdir, int ldir, amrex::Real vel_max, amrex::GpuArray&lt; amrex::Real, AMREX_SPACEDIM &gt; problo, amrex::GpuArray&lt; amrex::Real, AMREX_SPACEDIM &gt; dx)</td></tr>
+<tr class="memitem:ae24d42ab2e0846bd6304e713836cf05a" id="r_ae24d42ab2e0846bd6304e713836cf05a"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae24d42ab2e0846bd6304e713836cf05a">get_macvel_max</a> (const amrex::MultiFab &amp;vel, const amrex::iMultiFab &amp;level_mask, int vdir, amrex::Real factor)</td></tr>
+<tr class="memitem:a0a589e1e47c9c36e63572c3573875bd4" id="r_a0a589e1e47c9c36e63572c3573875bd4"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0a589e1e47c9c36e63572c3573875bd4">get_macvel_max</a> (const amrex::MultiFab &amp;vel, const amrex::iMultiFab &amp;level_mask, int vdir)</td></tr>
+<tr class="memitem:a1513f2c25290c299260f4567b3d18752" id="r_a1513f2c25290c299260f4567b3d18752"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1513f2c25290c299260f4567b3d18752">get_macvel_min</a> (const amrex::MultiFab &amp;vel, const amrex::iMultiFab &amp;level_mask, int vdir)</td></tr>
+<tr class="memitem:aa27b4865dd02a6cb51ac18bdb6b6e724" id="r_aa27b4865dd02a6cb51ac18bdb6b6e724"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa27b4865dd02a6cb51ac18bdb6b6e724">get_macvel_loc</a> (const amrex::MultiFab &amp;macvel, const amrex::iMultiFab &amp;level_mask, int vdir, int ldir, amrex::Real vel_max, amrex::GpuArray&lt; amrex::Real, AMREX_SPACEDIM &gt; problo, amrex::GpuArray&lt; amrex::Real, AMREX_SPACEDIM &gt; dx)</td></tr>
+<tr class="memitem:aa33a2f95878fa3605e485d95a96b861b" id="r_aa33a2f95878fa3605e485d95a96b861b"><td class="memItemLeft" align="right" valign="top">amrex::Array&lt; amrex::Real, 24 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa33a2f95878fa3605e485d95a96b861b">PrintMaxVelLocations</a> (const <a class="el" href="classamr__wind_1_1_field_repo.html">amr_wind::FieldRepo</a> &amp;repo, const std::string &amp;header)</td></tr>
+<tr class="memitem:a700a35c1b5eae55e7d672bee2e8f1a68" id="r_a700a35c1b5eae55e7d672bee2e8f1a68"><td class="memItemLeft" align="right" valign="top">amrex::Array&lt; amrex::Real, 24 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a700a35c1b5eae55e7d672bee2e8f1a68">PrintMaxMACVelLocations</a> (const <a class="el" href="classamr__wind_1_1_field_repo.html">amr_wind::FieldRepo</a> &amp;repo, const std::string &amp;header)</td></tr>
+</table>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
+<a id="acb0278d5783c265860ea4afbda504550" name="acb0278d5783c265860ea4afbda504550"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb0278d5783c265860ea4afbda504550">&#9670;&#160;</a></span>get_field_extrema() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool amr_wind::diagnostics::get_field_extrema </td>
+          <td>(</td>
+          <td class="paramtype">amrex::Real &amp;</td>          <td class="paramname"><span class="paramname"><em>field_max_val</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real &amp;</td>          <td class="paramname"><span class="paramname"><em>field_min_val</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_field.html">amr_wind::Field</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>field</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_field.html">amr_wind::Field</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>field_mask</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>mask_val</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>comp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>ncomp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>nghost</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a570306734f5e352ebfbe6e25ecd6f0cb" name="a570306734f5e352ebfbe6e25ecd6f0cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a570306734f5e352ebfbe6e25ecd6f0cb">&#9670;&#160;</a></span>get_field_extrema() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::diagnostics::get_field_extrema </td>
+          <td>(</td>
+          <td class="paramtype">amrex::Real &amp;</td>          <td class="paramname"><span class="paramname"><em>field_max_val</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real &amp;</td>          <td class="paramname"><span class="paramname"><em>field_min_val</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_field.html">amr_wind::Field</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>field</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>comp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>ncomp</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>nghost</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa27b4865dd02a6cb51ac18bdb6b6e724" name="aa27b4865dd02a6cb51ac18bdb6b6e724"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa27b4865dd02a6cb51ac18bdb6b6e724">&#9670;&#160;</a></span>get_macvel_loc()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::diagnostics::get_macvel_loc </td>
+          <td>(</td>
+          <td class="paramtype">const amrex::MultiFab &amp;</td>          <td class="paramname"><span class="paramname"><em>macvel</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::iMultiFab &amp;</td>          <td class="paramname"><span class="paramname"><em>level_mask</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>vdir</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>ldir</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>vel_max</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::GpuArray&lt; amrex::Real, AMREX_SPACEDIM &gt;</td>          <td class="paramname"><span class="paramname"><em>problo</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::GpuArray&lt; amrex::Real, AMREX_SPACEDIM &gt;</td>          <td class="paramname"><span class="paramname"><em>dx</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0a589e1e47c9c36e63572c3573875bd4" name="a0a589e1e47c9c36e63572c3573875bd4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a589e1e47c9c36e63572c3573875bd4">&#9670;&#160;</a></span>get_macvel_max() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::diagnostics::get_macvel_max </td>
+          <td>(</td>
+          <td class="paramtype">const amrex::MultiFab &amp;</td>          <td class="paramname"><span class="paramname"><em>vel</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::iMultiFab &amp;</td>          <td class="paramname"><span class="paramname"><em>level_mask</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>vdir</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae24d42ab2e0846bd6304e713836cf05a" name="ae24d42ab2e0846bd6304e713836cf05a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae24d42ab2e0846bd6304e713836cf05a">&#9670;&#160;</a></span>get_macvel_max() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::diagnostics::get_macvel_max </td>
+          <td>(</td>
+          <td class="paramtype">const amrex::MultiFab &amp;</td>          <td class="paramname"><span class="paramname"><em>vel</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::iMultiFab &amp;</td>          <td class="paramname"><span class="paramname"><em>level_mask</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>vdir</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>factor</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1513f2c25290c299260f4567b3d18752" name="a1513f2c25290c299260f4567b3d18752"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1513f2c25290c299260f4567b3d18752">&#9670;&#160;</a></span>get_macvel_min()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::diagnostics::get_macvel_min </td>
+          <td>(</td>
+          <td class="paramtype">const amrex::MultiFab &amp;</td>          <td class="paramname"><span class="paramname"><em>vel</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::iMultiFab &amp;</td>          <td class="paramname"><span class="paramname"><em>level_mask</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>vdir</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6044a658c196add5ffca837900e861fb" name="a6044a658c196add5ffca837900e861fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6044a658c196add5ffca837900e861fb">&#9670;&#160;</a></span>get_vel_loc()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::diagnostics::get_vel_loc </td>
+          <td>(</td>
+          <td class="paramtype">const amrex::MultiFab &amp;</td>          <td class="paramname"><span class="paramname"><em>vel</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::iMultiFab &amp;</td>          <td class="paramname"><span class="paramname"><em>level_mask</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>vdir</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>ldir</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>vel_max</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::GpuArray&lt; amrex::Real, AMREX_SPACEDIM &gt;</td>          <td class="paramname"><span class="paramname"><em>problo</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::GpuArray&lt; amrex::Real, AMREX_SPACEDIM &gt;</td>          <td class="paramname"><span class="paramname"><em>dx</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a55d232c5a43f26c400f98f0b832561ec" name="a55d232c5a43f26c400f98f0b832561ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55d232c5a43f26c400f98f0b832561ec">&#9670;&#160;</a></span>get_vel_max() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::diagnostics::get_vel_max </td>
+          <td>(</td>
+          <td class="paramtype">const amrex::MultiFab &amp;</td>          <td class="paramname"><span class="paramname"><em>vel</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::iMultiFab &amp;</td>          <td class="paramname"><span class="paramname"><em>level_mask</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>vdir</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aceac35066c1001196831a4941a40e16f" name="aceac35066c1001196831a4941a40e16f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aceac35066c1001196831a4941a40e16f">&#9670;&#160;</a></span>get_vel_max() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::diagnostics::get_vel_max </td>
+          <td>(</td>
+          <td class="paramtype">const amrex::MultiFab &amp;</td>          <td class="paramname"><span class="paramname"><em>vel</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::iMultiFab &amp;</td>          <td class="paramname"><span class="paramname"><em>level_mask</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>vdir</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>factor</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2fe6953303606e736834aec356b31b8b" name="a2fe6953303606e736834aec356b31b8b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2fe6953303606e736834aec356b31b8b">&#9670;&#160;</a></span>get_vel_min()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::diagnostics::get_vel_min </td>
+          <td>(</td>
+          <td class="paramtype">const amrex::MultiFab &amp;</td>          <td class="paramname"><span class="paramname"><em>vel</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::iMultiFab &amp;</td>          <td class="paramname"><span class="paramname"><em>level_mask</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>vdir</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a42e22dcefbccf81b19d009622fdce79f" name="a42e22dcefbccf81b19d009622fdce79f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42e22dcefbccf81b19d009622fdce79f">&#9670;&#160;</a></span>make_mask_addend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::diagnostics::make_mask_addend </td>
+          <td>(</td>
+          <td class="paramtype">amrex::MultiFab &amp;</td>          <td class="paramname"><span class="paramname"><em>mfab</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::MultiFab &amp;</td>          <td class="paramname"><span class="paramname"><em>mfab_mask</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>mask_val</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>set_val</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a700a35c1b5eae55e7d672bee2e8f1a68" name="a700a35c1b5eae55e7d672bee2e8f1a68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a700a35c1b5eae55e7d672bee2e8f1a68">&#9670;&#160;</a></span>PrintMaxMACVelLocations()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Array&lt; amrex::Real, 24 &gt; amr_wind::diagnostics::PrintMaxMACVelLocations </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_field_repo.html">amr_wind::FieldRepo</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>repo</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>header</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa33a2f95878fa3605e485d95a96b861b" name="aa33a2f95878fa3605e485d95a96b861b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa33a2f95878fa3605e485d95a96b861b">&#9670;&#160;</a></span>PrintMaxVelLocations()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Array&lt; amrex::Real, 24 &gt; amr_wind::diagnostics::PrintMaxVelLocations </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_field_repo.html">amr_wind::FieldRepo</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>repo</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>header</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

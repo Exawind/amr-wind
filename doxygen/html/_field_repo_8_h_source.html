@@ -1,0 +1,577 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/core/FieldRepo.H Source File &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/core/FieldRepo.H Source File</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/_field_repo_8_h_source.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="home-runner-work-amr-wind-amr-wind-amr-wind-core-fieldrepo-h-source-file">
+<h1>/home/runner/work/amr-wind/amr-wind/amr-wind/core/FieldRepo.H Source File<a class="headerlink" href="#home-runner-work-amr-wind-amr-wind-amr-wind-core-fieldrepo-h-source-file" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/core/FieldRepo.H Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="dir_d85575251dd712327fe3cf057fa568b4.html">amr-wind</a></li><li class="navelem"><a href="dir_212148f97b8bb53ebaebb3bf8a8b5de4.html">amr-wind</a></li><li class="navelem"><a href="dir_d2e4f22398959709992733f1617728ca.html">core</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="headertitle"><div class="title">FieldRepo.H</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="_field_repo_8_h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef FIELDREPO_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define FIELDREPO_H</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="_field_desc_types_8_h.html">amr-wind/core/FieldDescTypes.H</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="_field_utils_8_h.html">amr-wind/core/FieldUtils.H</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="_field_8_h.html">amr-wind/core/Field.H</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="_int_field_8_h.html">amr-wind/core/IntField.H</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="_scratch_field_8_h.html">amr-wind/core/ScratchField.H</a>&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="_int_scratch_field_8_h.html">amr-wind/core/IntScratchField.H</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;AMReX_AmrCore.H&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;AMReX_MultiFab.H&quot;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &quot;AMReX_iMultiFab.H&quot;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceamr__wind.html">amr_wind</a> {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span></div>
+<div class="foldopen" id="foldopen00035" data-start="{" data-end="};">
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_level_data_holder.html">   35</a></span><span class="keyword">struct </span><a class="code hl_function" href="structamr__wind_1_1_level_data_holder.html#aa44b6c5023f636a1b31016b76aa58844">LevelDataHolder</a></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>{</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <a class="code hl_function" href="structamr__wind_1_1_level_data_holder.html#aa44b6c5023f636a1b31016b76aa58844">LevelDataHolder</a>();</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_level_data_holder.html#ae36ad57294d8d401a09385cc08bdfe3f">   40</a></span>    amrex::Vector&lt;amrex::MultiFab&gt; <a class="code hl_variable" href="structamr__wind_1_1_level_data_holder.html#ae36ad57294d8d401a09385cc08bdfe3f">m_mfabs</a>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_level_data_holder.html#aa0b3146c394e8effa93c84d030e44a95">   42</a></span>    std::unique_ptr&lt;amrex::FabFactory&lt;amrex::FArrayBox&gt;&gt; <a class="code hl_variable" href="structamr__wind_1_1_level_data_holder.html#aa0b3146c394e8effa93c84d030e44a95">m_factory</a>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_level_data_holder.html#a1b7a75fa36625f158ba65d4445124f68">   45</a></span>    amrex::Vector&lt;amrex::iMultiFab&gt; <a class="code hl_variable" href="structamr__wind_1_1_level_data_holder.html#a1b7a75fa36625f158ba65d4445124f68">m_int_fabs</a>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structamr__wind_1_1_level_data_holder.html#aec0a307b59b1461dcd2c8934b7a71101">   46</a></span>    std::unique_ptr&lt;amrex::FabFactory&lt;amrex::IArrayBox&gt;&gt; <a class="code hl_variable" href="structamr__wind_1_1_level_data_holder.html#aec0a307b59b1461dcd2c8934b7a71101">m_int_fact</a>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>};</div>
+</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span></div>
+<div class="foldopen" id="foldopen00085" data-start="{" data-end="};">
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_field_repo.html">   85</a></span><span class="keyword">class </span><a class="code hl_function" href="classamr__wind_1_1_field_repo.html#a50092b4a6c226447ec09c587bd7d280d">FieldRepo</a></div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>{</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_field_repo.html#aaec47a26a3c11c1debd3ed922b69cbd2">   88</a></span>    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code hl_friend" href="classamr__wind_1_1_field_repo.html#aaec47a26a3c11c1debd3ed922b69cbd2">Field</a>;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_field_repo.html#ae5ba94b163a0e8d7b2719c7f3103a651">   89</a></span>    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code hl_friend" href="classamr__wind_1_1_field_repo.html#ae5ba94b163a0e8d7b2719c7f3103a651">IntField</a>;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="foldopen" id="foldopen00091" data-start="{" data-end="}">
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_field_repo.html#a50092b4a6c226447ec09c587bd7d280d">   91</a></span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#a50092b4a6c226447ec09c587bd7d280d">FieldRepo</a>(<span class="keyword">const</span> amrex::AmrCore&amp; <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#ae8c15fbffc4349aa8919d84ed157ef2c">mesh</a>)</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        : <a class="code hl_variable" href="classamr__wind_1_1_field_repo.html#a1a2fe397c6939923cb4c9600cf07931f">m_mesh</a>(<a class="code hl_function" href="classamr__wind_1_1_field_repo.html#ae8c15fbffc4349aa8919d84ed157ef2c">mesh</a>), <a class="code hl_variable" href="classamr__wind_1_1_field_repo.html#a5be22728d89b80234619aa5acd7cdec9">m_leveldata</a>(<a class="code hl_function" href="classamr__wind_1_1_field_repo.html#ae8c15fbffc4349aa8919d84ed157ef2c">mesh</a>.maxLevel() + 1)</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    {}</div>
+</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_field_repo.html#a8f8d645fd3b2fe14d7d701d58ef3fe2a">   95</a></span>    <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#a8f8d645fd3b2fe14d7d701d58ef3fe2a">FieldRepo</a>(<span class="keyword">const</span> <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#a50092b4a6c226447ec09c587bd7d280d">FieldRepo</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_field_repo.html#a4564a129cf83f0a68fd245166b797f7d">   96</a></span>    <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#a50092b4a6c226447ec09c587bd7d280d">FieldRepo</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#a4564a129cf83f0a68fd245166b797f7d">operator=</a>(<span class="keyword">const</span> <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#a50092b4a6c226447ec09c587bd7d280d">FieldRepo</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_field_repo.html#a13ca93f0e2989dabf57cf1f0d7f7f7bf">   97</a></span>    <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#a13ca93f0e2989dabf57cf1f0d7f7f7bf">~FieldRepo</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span></div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#a5f4a299c1da8670f55b7a3f76af48758">make_new_level_from_scratch</a>(</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        <span class="keywordtype">int</span> lev,</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        amrex::Real time,</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        <span class="keyword">const</span> amrex::BoxArray&amp; ba,</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        <span class="keyword">const</span> amrex::DistributionMapping&amp; dm);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span></div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#ac240904cb09281407c86061db8e9007c">make_new_level_from_coarse</a>(</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        <span class="keywordtype">int</span> lev,</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        amrex::Real time,</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        <span class="keyword">const</span> amrex::BoxArray&amp; ba,</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        <span class="keyword">const</span> amrex::DistributionMapping&amp; dm);</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span></div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#aecf0bf9c5170f11b7fd216ae1e46235a">remake_level</a>(</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>        <span class="keywordtype">int</span> lev,</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        amrex::Real time,</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>        <span class="keyword">const</span> amrex::BoxArray&amp; ba,</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>        <span class="keyword">const</span> amrex::DistributionMapping&amp; dm);</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span></div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#a01b87f65eb6d7ce098aac888ba9e0b99">clear_level</a>(<span class="keywordtype">int</span> lev);</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span></div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <a class="code hl_friend" href="classamr__wind_1_1_field_repo.html#aaec47a26a3c11c1debd3ed922b69cbd2">Field</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#ab32deb69eae7b3f9e048f3a8fe3f8ed7">declare_field</a>(</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>        <span class="keyword">const</span> std::string&amp; name,</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>        <span class="keywordtype">int</span> ncomp = 1,</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>        <span class="keywordtype">int</span> ngrow = 0,</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>        <span class="keywordtype">int</span> nstates = 1,</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>        <a class="code hl_enumeration" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a> floc = <a class="code hl_enumvalue" href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aadeaa44e5e872be992b4109cf1fbfe41e">FieldLoc::CELL</a>);</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span></div>
+<div class="foldopen" id="foldopen00152" data-start="{" data-end="}">
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_field_repo.html#ae83967e90e7c9a3ac8bd77c9fe490678">  152</a></span>    <a class="code hl_friend" href="classamr__wind_1_1_field_repo.html#aaec47a26a3c11c1debd3ed922b69cbd2">Field</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#ae83967e90e7c9a3ac8bd77c9fe490678">declare_cc_field</a>(</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>        <span class="keyword">const</span> std::string&amp; name,</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> ncomp = 1,</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> ngrow = 0,</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> nstates = 1)</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    {</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#ab32deb69eae7b3f9e048f3a8fe3f8ed7">declare_field</a>(name, ncomp, ngrow, nstates, <a class="code hl_enumvalue" href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aadeaa44e5e872be992b4109cf1fbfe41e">FieldLoc::CELL</a>);</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    }</div>
+</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span></div>
+<div class="foldopen" id="foldopen00167" data-start="{" data-end="}">
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_field_repo.html#a77ed3696c63cbad6c87b6a1483df01eb">  167</a></span>    <a class="code hl_friend" href="classamr__wind_1_1_field_repo.html#aaec47a26a3c11c1debd3ed922b69cbd2">Field</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#a77ed3696c63cbad6c87b6a1483df01eb">declare_nd_field</a>(</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>        <span class="keyword">const</span> std::string&amp; name,</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> ncomp = 1,</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> ngrow = 0,</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> nstates = 1)</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    {</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#ab32deb69eae7b3f9e048f3a8fe3f8ed7">declare_field</a>(name, ncomp, ngrow, nstates, <a class="code hl_enumvalue" href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aa0cc25b606fe928a0c9a58f7f209c4495">FieldLoc::NODE</a>);</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    }</div>
+</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span></div>
+<div class="foldopen" id="foldopen00182" data-start="{" data-end="}">
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_field_repo.html#a095653d368ee8cebe2e8154183ceff26">  182</a></span>    <a class="code hl_friend" href="classamr__wind_1_1_field_repo.html#aaec47a26a3c11c1debd3ed922b69cbd2">Field</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#a095653d368ee8cebe2e8154183ceff26">declare_xf_field</a>(</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>        <span class="keyword">const</span> std::string&amp; name,</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> ncomp = 1,</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> ngrow = 0,</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> nstates = 1)</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    {</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#ab32deb69eae7b3f9e048f3a8fe3f8ed7">declare_field</a>(name, ncomp, ngrow, nstates, <a class="code hl_enumvalue" href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aa51c3bc3d73817cc48bd1a42aa76cd48b">FieldLoc::XFACE</a>);</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    }</div>
+</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span></div>
+<div class="foldopen" id="foldopen00197" data-start="{" data-end="}">
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_field_repo.html#a9449c56cdd62bf570610ccd8d4b8c62c">  197</a></span>    <a class="code hl_friend" href="classamr__wind_1_1_field_repo.html#aaec47a26a3c11c1debd3ed922b69cbd2">Field</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#a9449c56cdd62bf570610ccd8d4b8c62c">declare_yf_field</a>(</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>        <span class="keyword">const</span> std::string&amp; name,</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> ncomp = 1,</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> ngrow = 0,</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> nstates = 1)</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>    {</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#ab32deb69eae7b3f9e048f3a8fe3f8ed7">declare_field</a>(name, ncomp, ngrow, nstates, <a class="code hl_enumvalue" href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aaed363f72ca243318ee54c948cab94805">FieldLoc::YFACE</a>);</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    }</div>
+</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span></div>
+<div class="foldopen" id="foldopen00212" data-start="{" data-end="}">
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_field_repo.html#a8a6539dd2a946872fa96193a5a6ec4a3">  212</a></span>    <a class="code hl_friend" href="classamr__wind_1_1_field_repo.html#aaec47a26a3c11c1debd3ed922b69cbd2">Field</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#a8a6539dd2a946872fa96193a5a6ec4a3">declare_zf_field</a>(</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>        <span class="keyword">const</span> std::string&amp; name,</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> ncomp = 1,</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> ngrow = 0,</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> nstates = 1)</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>    {</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#ab32deb69eae7b3f9e048f3a8fe3f8ed7">declare_field</a>(name, ncomp, ngrow, nstates, <a class="code hl_enumvalue" href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aa37f44a8aa4feca119902d6930c4c849f">FieldLoc::ZFACE</a>);</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>    }</div>
+</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span></div>
+<div class="foldopen" id="foldopen00225" data-start="{" data-end="}">
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_field_repo.html#a802253e1c94acc55ce431e93b53112a8">  225</a></span>    amrex::Vector&lt;Field*&gt; <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#a802253e1c94acc55ce431e93b53112a8">declare_face_normal_field</a>(</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>        <span class="keyword">const</span> amrex::Vector&lt;std::string&gt;&amp; names,</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> ncomp = 1,</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> ngrow = 0,</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> nstates = 1)</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>    {</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>        AMREX_ASSERT(names.size() == AMREX_SPACEDIM);</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>        <span class="keywordflow">return</span> {</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>            &amp;<a class="code hl_function" href="classamr__wind_1_1_field_repo.html#ab32deb69eae7b3f9e048f3a8fe3f8ed7">declare_field</a>(names[0], ncomp, ngrow, nstates, <a class="code hl_enumvalue" href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aa51c3bc3d73817cc48bd1a42aa76cd48b">FieldLoc::XFACE</a>),</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>            &amp;<a class="code hl_function" href="classamr__wind_1_1_field_repo.html#ab32deb69eae7b3f9e048f3a8fe3f8ed7">declare_field</a>(names[1], ncomp, ngrow, nstates, <a class="code hl_enumvalue" href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aaed363f72ca243318ee54c948cab94805">FieldLoc::YFACE</a>),</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>            &amp;<a class="code hl_function" href="classamr__wind_1_1_field_repo.html#ab32deb69eae7b3f9e048f3a8fe3f8ed7">declare_field</a>(names[2], ncomp, ngrow, nstates, <a class="code hl_enumvalue" href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aa37f44a8aa4feca119902d6930c4c849f">FieldLoc::ZFACE</a>),</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>        };</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>    }</div>
+</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span></div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>    <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#ac6473f5fa392cdfe08c5fb11d5676940">get_field</a>(</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>        <span class="keyword">const</span> std::string&amp; name, <a class="code hl_enumeration" href="group__fields.html#ga5251ec6b376231128a9647f3028dbac0">FieldState</a> fstate = <a class="code hl_enumvalue" href="group__fields.html#gga5251ec6b376231128a9647f3028dbac0a03c2e7e41ffc181a4e84080b4710e81e">FieldState::New</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span></div>
+<div class="foldopen" id="foldopen00246" data-start="{" data-end="}">
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_field_repo.html#a229435f22567851793883c61b40b8406">  246</a></span>    <a class="code hl_friend" href="classamr__wind_1_1_field_repo.html#aaec47a26a3c11c1debd3ed922b69cbd2">Field</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#a229435f22567851793883c61b40b8406">get_field</a>(<span class="keyword">const</span> <span class="keywordtype">int</span> field_id)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>        <span class="keywordflow">return</span> *<a class="code hl_variable" href="classamr__wind_1_1_field_repo.html#a4fcb6497fe20552def4023e7124f26b9">m_field_vec</a>.at(field_id);</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>    }</div>
+</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span></div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>    <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#abf6df2e2d26eb9a04a5c6c4fda84e11b">get_mesh_mapping_field</a>(<a class="code hl_enumeration" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a> floc) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span></div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>    <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#a8b595a52147362c56888921ce0f42a0c">get_mesh_mapping_det_j</a>(<a class="code hl_enumeration" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a> floc) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span></div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#a98a03968e8782601fe9a0707624381de">field_exists</a>(</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>        <span class="keyword">const</span> std::string&amp; name, <a class="code hl_enumeration" href="group__fields.html#ga5251ec6b376231128a9647f3028dbac0">FieldState</a> fstate = <a class="code hl_enumvalue" href="group__fields.html#gga5251ec6b376231128a9647f3028dbac0a03c2e7e41ffc181a4e84080b4710e81e">FieldState::New</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span></div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>    <a class="code hl_class" href="classamr__wind_1_1_int_field.html">IntField</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#a3771665ca4306b4034e5d0fc8c4b260b">declare_int_field</a>(</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>        <span class="keyword">const</span> std::string&amp; name,</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>        <span class="keywordtype">int</span> ncomp = 1,</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>        <span class="keywordtype">int</span> ngrow = 0,</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>        <span class="keywordtype">int</span> nstates = 1,</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>        <a class="code hl_enumeration" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a> floc = <a class="code hl_enumvalue" href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aadeaa44e5e872be992b4109cf1fbfe41e">FieldLoc::CELL</a>);</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span></div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>    <a class="code hl_class" href="classamr__wind_1_1_int_field.html">IntField</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#a539f5c1eb69afde2e2dfd0f177d0ddbf">get_int_field</a>(</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>        <span class="keyword">const</span> std::string&amp; name, <a class="code hl_enumeration" href="group__fields.html#ga5251ec6b376231128a9647f3028dbac0">FieldState</a> fstate = <a class="code hl_enumvalue" href="group__fields.html#gga5251ec6b376231128a9647f3028dbac0a03c2e7e41ffc181a4e84080b4710e81e">FieldState::New</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span></div>
+<div class="foldopen" id="foldopen00288" data-start="{" data-end="}">
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_field_repo.html#a08b2f9d1a414ecbf126951f59ff0bb0f">  288</a></span>    <a class="code hl_friend" href="classamr__wind_1_1_field_repo.html#ae5ba94b163a0e8d7b2719c7f3103a651">IntField</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#a08b2f9d1a414ecbf126951f59ff0bb0f">get_int_field</a>(<span class="keyword">const</span> <span class="keywordtype">int</span> field_id)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>        <span class="keywordflow">return</span> *<a class="code hl_variable" href="classamr__wind_1_1_field_repo.html#a3ac5648a93cd10f1d64381d96037bd21">m_int_field_vec</a>.at(field_id);</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>    }</div>
+</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span></div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#a40b1a9a2f67c66ead0f687c4ef0ff5a4">int_field_exists</a>(</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>        <span class="keyword">const</span> std::string&amp; name, <a class="code hl_enumeration" href="group__fields.html#ga5251ec6b376231128a9647f3028dbac0">FieldState</a> fstate = <a class="code hl_enumvalue" href="group__fields.html#gga5251ec6b376231128a9647f3028dbac0a03c2e7e41ffc181a4e84080b4710e81e">FieldState::New</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span></div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>    std::unique_ptr&lt;ScratchField&gt; <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#acfad499585f6bbdab7e4f1c1d12ed742">create_scratch_field</a>(</div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>        <span class="keyword">const</span> std::string&amp; name,</div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>        <span class="keywordtype">int</span> ncomp = 1,</div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>        <span class="keywordtype">int</span> nghost = 0,</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>        <a class="code hl_enumeration" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a> floc = <a class="code hl_enumvalue" href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aadeaa44e5e872be992b4109cf1fbfe41e">FieldLoc::CELL</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span></div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>    std::unique_ptr&lt;ScratchField&gt; <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#acfad499585f6bbdab7e4f1c1d12ed742">create_scratch_field</a>(</div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>        <span class="keywordtype">int</span> ncomp = 1, <span class="keywordtype">int</span> nghost = 0, <a class="code hl_enumeration" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a> floc = <a class="code hl_enumvalue" href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aadeaa44e5e872be992b4109cf1fbfe41e">FieldLoc::CELL</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span> </div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>    std::unique_ptr&lt;ScratchField&gt; <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#a08bf020c72eb90a6349cc7a5f6133835">create_scratch_field_on_host</a>(</div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>        <span class="keyword">const</span> std::string&amp; name,</div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>        <span class="keywordtype">int</span> ncomp = 1,</div>
+<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>        <span class="keywordtype">int</span> nghost = 0,</div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>        <a class="code hl_enumeration" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a> floc = <a class="code hl_enumvalue" href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aadeaa44e5e872be992b4109cf1fbfe41e">FieldLoc::CELL</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span> </div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>    std::unique_ptr&lt;ScratchField&gt; <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#a08bf020c72eb90a6349cc7a5f6133835">create_scratch_field_on_host</a>(</div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>        <span class="keywordtype">int</span> ncomp = 1, <span class="keywordtype">int</span> nghost = 0, <a class="code hl_enumeration" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a> floc = <a class="code hl_enumvalue" href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aadeaa44e5e872be992b4109cf1fbfe41e">FieldLoc::CELL</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span> </div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>    std::unique_ptr&lt;IntScratchField&gt; <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#a984cc3b2d1da7af9c2015266a72a5e4a">create_int_scratch_field_on_host</a>(</div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>        <span class="keyword">const</span> std::string&amp; name,</div>
+<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>        <span class="keywordtype">int</span> ncomp = 1,</div>
+<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>        <span class="keywordtype">int</span> nghost = 0,</div>
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>        <a class="code hl_enumeration" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a> floc = <a class="code hl_enumvalue" href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aadeaa44e5e872be992b4109cf1fbfe41e">FieldLoc::CELL</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span> </div>
+<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>    std::unique_ptr&lt;IntScratchField&gt; <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#a984cc3b2d1da7af9c2015266a72a5e4a">create_int_scratch_field_on_host</a>(</div>
+<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>        <span class="keywordtype">int</span> ncomp = 1, <span class="keywordtype">int</span> nghost = 0, <a class="code hl_enumeration" href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">FieldLoc</a> floc = <a class="code hl_enumvalue" href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aadeaa44e5e872be992b4109cf1fbfe41e">FieldLoc::CELL</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span></div>
+<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#a5a644339969ae5041ab4f4a6e8a67b78">advance_states</a>();</div>
+<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span></div>
+<div class="line"><a id="l00348" name="l00348"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_field_repo.html#ae8c15fbffc4349aa8919d84ed157ef2c">  348</a></span>    <span class="keyword">const</span> amrex::AmrCore&amp; <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#ae8c15fbffc4349aa8919d84ed157ef2c">mesh</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_field_repo.html#a1a2fe397c6939923cb4c9600cf07931f">m_mesh</a>; }</div>
+<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span></div>
+<div class="line"><a id="l00351" name="l00351"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_field_repo.html#abda9f9ce1b9e66391a4e865f91dddb7b">  351</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#abda9f9ce1b9e66391a4e865f91dddb7b">num_active_levels</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_field_repo.html#a1a2fe397c6939923cb4c9600cf07931f">m_mesh</a>.finestLevel() + 1; }</div>
+<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span></div>
+<div class="line"><a id="l00354" name="l00354"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_field_repo.html#aa56115715010f7e9f6d97759b2ad62c5">  354</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#aa56115715010f7e9f6d97759b2ad62c5">num_fields</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="classamr__wind_1_1_field_repo.html#a4fcb6497fe20552def4023e7124f26b9">m_field_vec</a>.size()); }</div>
+<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span></div>
+<div class="foldopen" id="foldopen00357" data-start="{" data-end="}">
+<div class="line"><a id="l00357" name="l00357"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_field_repo.html#acdfde6309c440228333b0ef8b0f5aa3b">  357</a></span>    <span class="keyword">const</span> amrex::Vector&lt;std::unique_ptr&lt;Field&gt;&gt;&amp; <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#acdfde6309c440228333b0ef8b0f5aa3b">fields</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_field_repo.html#a4fcb6497fe20552def4023e7124f26b9">m_field_vec</a>;</div>
+<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span>    }</div>
+</div>
+<div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span></div>
+<div class="foldopen" id="foldopen00363" data-start="{" data-end="}">
+<div class="line"><a id="l00363" name="l00363"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_field_repo.html#a3a04ce725f5b155b8a237d30461da3ab">  363</a></span>    <span class="keyword">const</span> amrex::FabFactory&lt;amrex::FArrayBox&gt;&amp; <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#a3a04ce725f5b155b8a237d30461da3ab">factory</a>(<span class="keywordtype">int</span> lev)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span>        <span class="keywordflow">return</span> *<a class="code hl_variable" href="classamr__wind_1_1_field_repo.html#a5be22728d89b80234619aa5acd7cdec9">m_leveldata</a>[lev]-&gt;m_factory;</div>
+<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span>    }</div>
+</div>
+<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span> </div>
+<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span><span class="keyword">protected</span>:</div>
+<div class="foldopen" id="foldopen00374" data-start="{" data-end="}">
+<div class="line"><a id="l00374" name="l00374"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_field_repo.html#a184d7b074ddb07c9d3694ff9bd65efea">  374</a></span>    amrex::MultiFab&amp; <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#a184d7b074ddb07c9d3694ff9bd65efea">get_multifab</a>(<span class="keyword">const</span> <span class="keywordtype">unsigned</span> fid, <span class="keyword">const</span> <span class="keywordtype">int</span> lev)</div>
+<div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span>    {</div>
+<div class="line"><a id="l00376" name="l00376"></a><span class="lineno">  376</span>        BL_ASSERT(lev &lt;= <a class="code hl_variable" href="classamr__wind_1_1_field_repo.html#a1a2fe397c6939923cb4c9600cf07931f">m_mesh</a>.finestLevel());</div>
+<div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_field_repo.html#a5be22728d89b80234619aa5acd7cdec9">m_leveldata</a>[lev]-&gt;m_mfabs[fid];</div>
+<div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span>    }</div>
+</div>
+<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span></div>
+<div class="foldopen" id="foldopen00385" data-start="{" data-end="}">
+<div class="line"><a id="l00385" name="l00385"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_field_repo.html#a3b4cf1d03de2ffb2d3f8f70e2dd6908b">  385</a></span>    amrex::iMultiFab&amp; <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#a3b4cf1d03de2ffb2d3f8f70e2dd6908b">get_int_fab</a>(<span class="keyword">const</span> <span class="keywordtype">unsigned</span> fid, <span class="keyword">const</span> <span class="keywordtype">int</span> lev)</div>
+<div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span>    {</div>
+<div class="line"><a id="l00387" name="l00387"></a><span class="lineno">  387</span>        BL_ASSERT(lev &lt;= <a class="code hl_variable" href="classamr__wind_1_1_field_repo.html#a1a2fe397c6939923cb4c9600cf07931f">m_mesh</a>.finestLevel());</div>
+<div class="line"><a id="l00388" name="l00388"></a><span class="lineno">  388</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_field_repo.html#a5be22728d89b80234619aa5acd7cdec9">m_leveldata</a>[lev]-&gt;m_int_fabs[fid];</div>
+<div class="line"><a id="l00389" name="l00389"></a><span class="lineno">  389</span>    }</div>
+</div>
+<div class="line"><a id="l00390" name="l00390"></a><span class="lineno">  390</span></div>
+<div class="line"><a id="l00392" name="l00392"></a><span class="lineno">  392</span>    <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#a3e79c6725ebf7d039dc3707282b6e137">create_state</a>(<a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; field, <a class="code hl_enumeration" href="group__fields.html#ga5251ec6b376231128a9647f3028dbac0">FieldState</a> fstate);</div>
+<div class="line"><a id="l00393" name="l00393"></a><span class="lineno">  393</span></div>
+<div class="line"><a id="l00395" name="l00395"></a><span class="lineno">  395</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#aa16d5e00de4896e2819bf4e3f87cc1a8">allocate_field_data</a>(</div>
+<div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span>        <span class="keywordtype">int</span> lev,</div>
+<div class="line"><a id="l00397" name="l00397"></a><span class="lineno">  397</span>        <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; field,</div>
+<div class="line"><a id="l00398" name="l00398"></a><span class="lineno">  398</span>        <a class="code hl_struct" href="structamr__wind_1_1_level_data_holder.html">LevelDataHolder</a>&amp; level_data,</div>
+<div class="line"><a id="l00399" name="l00399"></a><span class="lineno">  399</span>        <span class="keyword">const</span> amrex::FabFactory&lt;amrex::FArrayBox&gt;&amp; <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#a3a04ce725f5b155b8a237d30461da3ab">factory</a>);</div>
+<div class="line"><a id="l00400" name="l00400"></a><span class="lineno">  400</span></div>
+<div class="line"><a id="l00402" name="l00402"></a><span class="lineno">  402</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#aa16d5e00de4896e2819bf4e3f87cc1a8">allocate_field_data</a>(<a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; field);</div>
+<div class="line"><a id="l00403" name="l00403"></a><span class="lineno">  403</span></div>
+<div class="line"><a id="l00405" name="l00405"></a><span class="lineno">  405</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#aa16d5e00de4896e2819bf4e3f87cc1a8">allocate_field_data</a>(</div>
+<div class="line"><a id="l00406" name="l00406"></a><span class="lineno">  406</span>        <span class="keyword">const</span> amrex::BoxArray&amp; ba,</div>
+<div class="line"><a id="l00407" name="l00407"></a><span class="lineno">  407</span>        <span class="keyword">const</span> amrex::DistributionMapping&amp; dm,</div>
+<div class="line"><a id="l00408" name="l00408"></a><span class="lineno">  408</span>        <a class="code hl_struct" href="structamr__wind_1_1_level_data_holder.html">LevelDataHolder</a>&amp; level_data,</div>
+<div class="line"><a id="l00409" name="l00409"></a><span class="lineno">  409</span>        <span class="keyword">const</span> amrex::FabFactory&lt;amrex::FArrayBox&gt;&amp; <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#a3a04ce725f5b155b8a237d30461da3ab">factory</a>);</div>
+<div class="line"><a id="l00410" name="l00410"></a><span class="lineno">  410</span> </div>
+<div class="line"><a id="l00411" name="l00411"></a><span class="lineno">  411</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#aa16d5e00de4896e2819bf4e3f87cc1a8">allocate_field_data</a>(</div>
+<div class="line"><a id="l00412" name="l00412"></a><span class="lineno">  412</span>        <span class="keywordtype">int</span> lev, <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_int_field.html">IntField</a>&amp; field, <a class="code hl_struct" href="structamr__wind_1_1_level_data_holder.html">LevelDataHolder</a>&amp; level_data);</div>
+<div class="line"><a id="l00413" name="l00413"></a><span class="lineno">  413</span> </div>
+<div class="line"><a id="l00414" name="l00414"></a><span class="lineno">  414</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#aa16d5e00de4896e2819bf4e3f87cc1a8">allocate_field_data</a>(<span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_int_field.html">IntField</a>&amp; field);</div>
+<div class="line"><a id="l00415" name="l00415"></a><span class="lineno">  415</span> </div>
+<div class="line"><a id="l00416" name="l00416"></a><span class="lineno">  416</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#aa16d5e00de4896e2819bf4e3f87cc1a8">allocate_field_data</a>(</div>
+<div class="line"><a id="l00417" name="l00417"></a><span class="lineno">  417</span>        <span class="keyword">const</span> amrex::BoxArray&amp; ba,</div>
+<div class="line"><a id="l00418" name="l00418"></a><span class="lineno">  418</span>        <span class="keyword">const</span> amrex::DistributionMapping&amp; dm,</div>
+<div class="line"><a id="l00419" name="l00419"></a><span class="lineno">  419</span>        <a class="code hl_struct" href="structamr__wind_1_1_level_data_holder.html">LevelDataHolder</a>&amp; level_data,</div>
+<div class="line"><a id="l00420" name="l00420"></a><span class="lineno">  420</span>        <span class="keyword">const</span> amrex::FabFactory&lt;amrex::IArrayBox&gt;&amp; <a class="code hl_function" href="classamr__wind_1_1_field_repo.html#a3a04ce725f5b155b8a237d30461da3ab">factory</a>);</div>
+<div class="line"><a id="l00421" name="l00421"></a><span class="lineno">  421</span></div>
+<div class="line"><a id="l00423" name="l00423"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_field_repo.html#a1a2fe397c6939923cb4c9600cf07931f">  423</a></span>    <span class="keyword">const</span> amrex::AmrCore&amp; <a class="code hl_variable" href="classamr__wind_1_1_field_repo.html#a1a2fe397c6939923cb4c9600cf07931f">m_mesh</a>;</div>
+<div class="line"><a id="l00424" name="l00424"></a><span class="lineno">  424</span></div>
+<div class="line"><a id="l00427" name="l00427"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_field_repo.html#a5be22728d89b80234619aa5acd7cdec9">  427</a></span>    amrex::Vector&lt;std::unique_ptr&lt;LevelDataHolder&gt;&gt; <a class="code hl_variable" href="classamr__wind_1_1_field_repo.html#a5be22728d89b80234619aa5acd7cdec9">m_leveldata</a>;</div>
+<div class="line"><a id="l00428" name="l00428"></a><span class="lineno">  428</span></div>
+<div class="line"><a id="l00430" name="l00430"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_field_repo.html#a4fcb6497fe20552def4023e7124f26b9">  430</a></span>    <span class="keyword">mutable</span> amrex::Vector&lt;std::unique_ptr&lt;Field&gt;&gt; <a class="code hl_variable" href="classamr__wind_1_1_field_repo.html#a4fcb6497fe20552def4023e7124f26b9">m_field_vec</a>;</div>
+<div class="line"><a id="l00431" name="l00431"></a><span class="lineno">  431</span></div>
+<div class="line"><a id="l00433" name="l00433"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_field_repo.html#a3ac5648a93cd10f1d64381d96037bd21">  433</a></span>    <span class="keyword">mutable</span> amrex::Vector&lt;std::unique_ptr&lt;IntField&gt;&gt; <a class="code hl_variable" href="classamr__wind_1_1_field_repo.html#a3ac5648a93cd10f1d64381d96037bd21">m_int_field_vec</a>;</div>
+<div class="line"><a id="l00434" name="l00434"></a><span class="lineno">  434</span></div>
+<div class="line"><a id="l00436" name="l00436"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_field_repo.html#a900a3102668fa61051ee08370b5e25fa">  436</a></span>    std::unordered_map&lt;std::string, size_t&gt; <a class="code hl_variable" href="classamr__wind_1_1_field_repo.html#a900a3102668fa61051ee08370b5e25fa">m_fid_map</a>;</div>
+<div class="line"><a id="l00437" name="l00437"></a><span class="lineno">  437</span></div>
+<div class="line"><a id="l00439" name="l00439"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_field_repo.html#a233f9a7842763fd9523589c7f34693bb">  439</a></span>    std::unordered_map&lt;std::string, size_t&gt; <a class="code hl_variable" href="classamr__wind_1_1_field_repo.html#a233f9a7842763fd9523589c7f34693bb">m_int_fid_map</a>;</div>
+<div class="line"><a id="l00440" name="l00440"></a><span class="lineno">  440</span></div>
+<div class="line"><a id="l00442" name="l00442"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_field_repo.html#a24731ca76ea3e4b1da972b13f349a0ac">  442</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="classamr__wind_1_1_field_repo.html#a24731ca76ea3e4b1da972b13f349a0ac">m_is_initialized</a>{<span class="keyword">false</span>};</div>
+<div class="line"><a id="l00443" name="l00443"></a><span class="lineno">  443</span>};</div>
+</div>
+<div class="line"><a id="l00444" name="l00444"></a><span class="lineno">  444</span> </div>
+<div class="line"><a id="l00445" name="l00445"></a><span class="lineno">  445</span>} <span class="comment">// namespace amr_wind</span></div>
+<div class="line"><a id="l00446" name="l00446"></a><span class="lineno">  446</span> </div>
+<div class="line"><a id="l00447" name="l00447"></a><span class="lineno">  447</span><span class="preprocessor">#endif </span><span class="comment">/* FIELDREPO_H */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="a_field_8_h_html"><div class="ttname"><a href="_field_8_h.html">Field.H</a></div></div>
+<div class="ttc" id="a_field_desc_types_8_h_html"><div class="ttname"><a href="_field_desc_types_8_h.html">FieldDescTypes.H</a></div></div>
+<div class="ttc" id="a_field_utils_8_h_html"><div class="ttname"><a href="_field_utils_8_h.html">FieldUtils.H</a></div></div>
+<div class="ttc" id="a_int_field_8_h_html"><div class="ttname"><a href="_int_field_8_h.html">IntField.H</a></div></div>
+<div class="ttc" id="a_int_scratch_field_8_h_html"><div class="ttname"><a href="_int_scratch_field_8_h.html">IntScratchField.H</a></div></div>
+<div class="ttc" id="a_scratch_field_8_h_html"><div class="ttname"><a href="_scratch_field_8_h.html">ScratchField.H</a></div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_html"><div class="ttname"><a href="classamr__wind_1_1_field.html">amr_wind::Field</a></div><div class="ttdef"><b>Definition</b> Field.H:112</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_a01b87f65eb6d7ce098aac888ba9e0b99"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#a01b87f65eb6d7ce098aac888ba9e0b99">amr_wind::FieldRepo::clear_level</a></div><div class="ttdeci">void clear_level(int lev)</div><div class="ttdoc">Remove a level during regrid.</div><div class="ttdef"><b>Definition</b> FieldRepo.cpp:80</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_a08b2f9d1a414ecbf126951f59ff0bb0f"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#a08b2f9d1a414ecbf126951f59ff0bb0f">amr_wind::FieldRepo::get_int_field</a></div><div class="ttdeci">IntField &amp; get_int_field(const int field_id) const</div><div class="ttdef"><b>Definition</b> FieldRepo.H:288</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_a08bf020c72eb90a6349cc7a5f6133835"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#a08bf020c72eb90a6349cc7a5f6133835">amr_wind::FieldRepo::create_scratch_field_on_host</a></div><div class="ttdeci">std::unique_ptr&lt; ScratchField &gt; create_scratch_field_on_host(const std::string &amp;name, int ncomp=1, int nghost=0, FieldLoc floc=FieldLoc::CELL) const</div><div class="ttdef"><b>Definition</b> FieldRepo.cpp:337</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_a095653d368ee8cebe2e8154183ceff26"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#a095653d368ee8cebe2e8154183ceff26">amr_wind::FieldRepo::declare_xf_field</a></div><div class="ttdeci">Field &amp; declare_xf_field(const std::string &amp;name, const int ncomp=1, const int ngrow=0, const int nstates=1)</div><div class="ttdef"><b>Definition</b> FieldRepo.H:182</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_a13ca93f0e2989dabf57cf1f0d7f7f7bf"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#a13ca93f0e2989dabf57cf1f0d7f7f7bf">amr_wind::FieldRepo::~FieldRepo</a></div><div class="ttdeci">~FieldRepo()=default</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_a184d7b074ddb07c9d3694ff9bd65efea"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#a184d7b074ddb07c9d3694ff9bd65efea">amr_wind::FieldRepo::get_multifab</a></div><div class="ttdeci">amrex::MultiFab &amp; get_multifab(const unsigned fid, const int lev)</div><div class="ttdef"><b>Definition</b> FieldRepo.H:374</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_a1a2fe397c6939923cb4c9600cf07931f"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#a1a2fe397c6939923cb4c9600cf07931f">amr_wind::FieldRepo::m_mesh</a></div><div class="ttdeci">const amrex::AmrCore &amp; m_mesh</div><div class="ttdoc">Reference to the mesh instance.</div><div class="ttdef"><b>Definition</b> FieldRepo.H:423</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_a229435f22567851793883c61b40b8406"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#a229435f22567851793883c61b40b8406">amr_wind::FieldRepo::get_field</a></div><div class="ttdeci">Field &amp; get_field(const int field_id) const</div><div class="ttdef"><b>Definition</b> FieldRepo.H:246</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_a233f9a7842763fd9523589c7f34693bb"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#a233f9a7842763fd9523589c7f34693bb">amr_wind::FieldRepo::m_int_fid_map</a></div><div class="ttdeci">std::unordered_map&lt; std::string, size_t &gt; m_int_fid_map</div><div class="ttdoc">Map of integer field name to unique integer ID for lookups.</div><div class="ttdef"><b>Definition</b> FieldRepo.H:439</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_a24731ca76ea3e4b1da972b13f349a0ac"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#a24731ca76ea3e4b1da972b13f349a0ac">amr_wind::FieldRepo::m_is_initialized</a></div><div class="ttdeci">bool m_is_initialized</div><div class="ttdoc">Flag indicating if mesh is available to allocate field data.</div><div class="ttdef"><b>Definition</b> FieldRepo.H:442</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_a3771665ca4306b4034e5d0fc8c4b260b"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#a3771665ca4306b4034e5d0fc8c4b260b">amr_wind::FieldRepo::declare_int_field</a></div><div class="ttdeci">IntField &amp; declare_int_field(const std::string &amp;name, int ncomp=1, int ngrow=0, int nstates=1, FieldLoc floc=FieldLoc::CELL)</div><div class="ttdef"><b>Definition</b> FieldRepo.cpp:226</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_a3a04ce725f5b155b8a237d30461da3ab"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#a3a04ce725f5b155b8a237d30461da3ab">amr_wind::FieldRepo::factory</a></div><div class="ttdeci">const amrex::FabFactory&lt; amrex::FArrayBox &gt; &amp; factory(int lev) const</div><div class="ttdoc">Return factory instance at a given level.</div><div class="ttdef"><b>Definition</b> FieldRepo.H:363</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_a3ac5648a93cd10f1d64381d96037bd21"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#a3ac5648a93cd10f1d64381d96037bd21">amr_wind::FieldRepo::m_int_field_vec</a></div><div class="ttdeci">amrex::Vector&lt; std::unique_ptr&lt; IntField &gt; &gt; m_int_field_vec</div><div class="ttdoc">Reference to integer field instances identified by unique integer.</div><div class="ttdef"><b>Definition</b> FieldRepo.H:433</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_a3b4cf1d03de2ffb2d3f8f70e2dd6908b"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#a3b4cf1d03de2ffb2d3f8f70e2dd6908b">amr_wind::FieldRepo::get_int_fab</a></div><div class="ttdeci">amrex::iMultiFab &amp; get_int_fab(const unsigned fid, const int lev)</div><div class="ttdef"><b>Definition</b> FieldRepo.H:385</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_a3e79c6725ebf7d039dc3707282b6e137"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#a3e79c6725ebf7d039dc3707282b6e137">amr_wind::FieldRepo::create_state</a></div><div class="ttdeci">Field &amp; create_state(Field &amp;field, FieldState fstate)</div><div class="ttdoc">Create a new state for a field.</div><div class="ttdef"><b>Definition</b> FieldRepo.cpp:499</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_a40b1a9a2f67c66ead0f687c4ef0ff5a4"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#a40b1a9a2f67c66ead0f687c4ef0ff5a4">amr_wind::FieldRepo::int_field_exists</a></div><div class="ttdeci">bool int_field_exists(const std::string &amp;name, FieldState fstate=FieldState::New) const</div><div class="ttdoc">Query if an integer field exists.</div><div class="ttdef"><b>Definition</b> FieldRepo.cpp:296</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_a4564a129cf83f0a68fd245166b797f7d"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#a4564a129cf83f0a68fd245166b797f7d">amr_wind::FieldRepo::operator=</a></div><div class="ttdeci">FieldRepo &amp; operator=(const FieldRepo &amp;)=delete</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_a4fcb6497fe20552def4023e7124f26b9"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#a4fcb6497fe20552def4023e7124f26b9">amr_wind::FieldRepo::m_field_vec</a></div><div class="ttdeci">amrex::Vector&lt; std::unique_ptr&lt; Field &gt; &gt; m_field_vec</div><div class="ttdoc">References to field instances identified by unique integer.</div><div class="ttdef"><b>Definition</b> FieldRepo.H:430</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_a50092b4a6c226447ec09c587bd7d280d"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#a50092b4a6c226447ec09c587bd7d280d">amr_wind::FieldRepo::FieldRepo</a></div><div class="ttdeci">FieldRepo(const amrex::AmrCore &amp;mesh)</div><div class="ttdef"><b>Definition</b> FieldRepo.H:91</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_a539f5c1eb69afde2e2dfd0f177d0ddbf"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#a539f5c1eb69afde2e2dfd0f177d0ddbf">amr_wind::FieldRepo::get_int_field</a></div><div class="ttdeci">IntField &amp; get_int_field(const std::string &amp;name, FieldState fstate=FieldState::New) const</div><div class="ttdoc">Return a reference to an integer field.</div><div class="ttdef"><b>Definition</b> FieldRepo.cpp:279</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_a5a644339969ae5041ab4f4a6e8a67b78"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#a5a644339969ae5041ab4f4a6e8a67b78">amr_wind::FieldRepo::advance_states</a></div><div class="ttdeci">void advance_states()</div><div class="ttdoc">Advance all fields with more than one timestate to the new timestep.</div><div class="ttdef"><b>Definition</b> FieldRepo.cpp:404</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_a5be22728d89b80234619aa5acd7cdec9"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#a5be22728d89b80234619aa5acd7cdec9">amr_wind::FieldRepo::m_leveldata</a></div><div class="ttdeci">amrex::Vector&lt; std::unique_ptr&lt; LevelDataHolder &gt; &gt; m_leveldata</div><div class="ttdoc">Array (size: nlevels) of data holder that contains another array of MultiFabs for all fields at that ...</div><div class="ttdef"><b>Definition</b> FieldRepo.H:427</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_a5f4a299c1da8670f55b7a3f76af48758"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#a5f4a299c1da8670f55b7a3f76af48758">amr_wind::FieldRepo::make_new_level_from_scratch</a></div><div class="ttdeci">void make_new_level_from_scratch(int lev, amrex::Real time, const amrex::BoxArray &amp;ba, const amrex::DistributionMapping &amp;dm)</div><div class="ttdoc">Perform field data management tasks when amrex::AmrCore::MakeNewLevelFromScratch is called.</div><div class="ttdef"><b>Definition</b> FieldRepo.cpp:15</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_a77ed3696c63cbad6c87b6a1483df01eb"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#a77ed3696c63cbad6c87b6a1483df01eb">amr_wind::FieldRepo::declare_nd_field</a></div><div class="ttdeci">Field &amp; declare_nd_field(const std::string &amp;name, const int ncomp=1, const int ngrow=0, const int nstates=1)</div><div class="ttdef"><b>Definition</b> FieldRepo.H:167</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_a802253e1c94acc55ce431e93b53112a8"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#a802253e1c94acc55ce431e93b53112a8">amr_wind::FieldRepo::declare_face_normal_field</a></div><div class="ttdeci">amrex::Vector&lt; Field * &gt; declare_face_normal_field(const amrex::Vector&lt; std::string &gt; &amp;names, const int ncomp=1, const int ngrow=0, const int nstates=1)</div><div class="ttdef"><b>Definition</b> FieldRepo.H:225</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_a8a6539dd2a946872fa96193a5a6ec4a3"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#a8a6539dd2a946872fa96193a5a6ec4a3">amr_wind::FieldRepo::declare_zf_field</a></div><div class="ttdeci">Field &amp; declare_zf_field(const std::string &amp;name, const int ncomp=1, const int ngrow=0, const int nstates=1)</div><div class="ttdef"><b>Definition</b> FieldRepo.H:212</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_a8b595a52147362c56888921ce0f42a0c"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#a8b595a52147362c56888921ce0f42a0c">amr_wind::FieldRepo::get_mesh_mapping_det_j</a></div><div class="ttdeci">Field &amp; get_mesh_mapping_det_j(FieldLoc floc) const</div><div class="ttdef"><b>Definition</b> FieldRepo.cpp:193</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_a8f8d645fd3b2fe14d7d701d58ef3fe2a"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#a8f8d645fd3b2fe14d7d701d58ef3fe2a">amr_wind::FieldRepo::FieldRepo</a></div><div class="ttdeci">FieldRepo(const FieldRepo &amp;)=delete</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_a900a3102668fa61051ee08370b5e25fa"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#a900a3102668fa61051ee08370b5e25fa">amr_wind::FieldRepo::m_fid_map</a></div><div class="ttdeci">std::unordered_map&lt; std::string, size_t &gt; m_fid_map</div><div class="ttdoc">Map of field name to unique integer ID for lookups.</div><div class="ttdef"><b>Definition</b> FieldRepo.H:436</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_a9449c56cdd62bf570610ccd8d4b8c62c"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#a9449c56cdd62bf570610ccd8d4b8c62c">amr_wind::FieldRepo::declare_yf_field</a></div><div class="ttdeci">Field &amp; declare_yf_field(const std::string &amp;name, const int ncomp=1, const int ngrow=0, const int nstates=1)</div><div class="ttdef"><b>Definition</b> FieldRepo.H:197</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_a984cc3b2d1da7af9c2015266a72a5e4a"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#a984cc3b2d1da7af9c2015266a72a5e4a">amr_wind::FieldRepo::create_int_scratch_field_on_host</a></div><div class="ttdeci">std::unique_ptr&lt; IntScratchField &gt; create_int_scratch_field_on_host(const std::string &amp;name, int ncomp=1, int nghost=0, FieldLoc floc=FieldLoc::CELL) const</div><div class="ttdef"><b>Definition</b> FieldRepo.cpp:371</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_a98a03968e8782601fe9a0707624381de"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#a98a03968e8782601fe9a0707624381de">amr_wind::FieldRepo::field_exists</a></div><div class="ttdeci">bool field_exists(const std::string &amp;name, FieldState fstate=FieldState::New) const</div><div class="ttdoc">Query if field uniquely identified by name and time state exists in repository.</div><div class="ttdef"><b>Definition</b> FieldRepo.cpp:218</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_aa16d5e00de4896e2819bf4e3f87cc1a8"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#aa16d5e00de4896e2819bf4e3f87cc1a8">amr_wind::FieldRepo::allocate_field_data</a></div><div class="ttdeci">void allocate_field_data(int lev, const Field &amp;field, LevelDataHolder &amp;level_data, const amrex::FabFactory&lt; amrex::FArrayBox &gt; &amp;factory)</div><div class="ttdoc">Allocate field data for a single level outside of regrid.</div><div class="ttdef"><b>Definition</b> FieldRepo.cpp:434</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_aa56115715010f7e9f6d97759b2ad62c5"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#aa56115715010f7e9f6d97759b2ad62c5">amr_wind::FieldRepo::num_fields</a></div><div class="ttdeci">int num_fields() const</div><div class="ttdoc">Number of fields registered in the database.</div><div class="ttdef"><b>Definition</b> FieldRepo.H:354</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_aaec47a26a3c11c1debd3ed922b69cbd2"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#aaec47a26a3c11c1debd3ed922b69cbd2">amr_wind::FieldRepo::Field</a></div><div class="ttdeci">friend class Field</div><div class="ttdef"><b>Definition</b> FieldRepo.H:88</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_ab32deb69eae7b3f9e048f3a8fe3f8ed7"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#ab32deb69eae7b3f9e048f3a8fe3f8ed7">amr_wind::FieldRepo::declare_field</a></div><div class="ttdeci">Field &amp; declare_field(const std::string &amp;name, int ncomp=1, int ngrow=0, int nstates=1, FieldLoc floc=FieldLoc::CELL)</div><div class="ttdef"><b>Definition</b> FieldRepo.cpp:86</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_abda9f9ce1b9e66391a4e865f91dddb7b"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#abda9f9ce1b9e66391a4e865f91dddb7b">amr_wind::FieldRepo::num_active_levels</a></div><div class="ttdeci">int num_active_levels() const</div><div class="ttdoc">Total number of levels currently active in the AMR mesh.</div><div class="ttdef"><b>Definition</b> FieldRepo.H:351</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_abf6df2e2d26eb9a04a5c6c4fda84e11b"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#abf6df2e2d26eb9a04a5c6c4fda84e11b">amr_wind::FieldRepo::get_mesh_mapping_field</a></div><div class="ttdeci">Field &amp; get_mesh_mapping_field(FieldLoc floc) const</div><div class="ttdef"><b>Definition</b> FieldRepo.cpp:168</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_ac240904cb09281407c86061db8e9007c"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#ac240904cb09281407c86061db8e9007c">amr_wind::FieldRepo::make_new_level_from_coarse</a></div><div class="ttdeci">void make_new_level_from_coarse(int lev, amrex::Real time, const amrex::BoxArray &amp;ba, const amrex::DistributionMapping &amp;dm)</div><div class="ttdef"><b>Definition</b> FieldRepo.cpp:32</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_ac6473f5fa392cdfe08c5fb11d5676940"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#ac6473f5fa392cdfe08c5fb11d5676940">amr_wind::FieldRepo::get_field</a></div><div class="ttdeci">Field &amp; get_field(const std::string &amp;name, FieldState fstate=FieldState::New) const</div><div class="ttdef"><b>Definition</b> FieldRepo.cpp:152</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_acdfde6309c440228333b0ef8b0f5aa3b"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#acdfde6309c440228333b0ef8b0f5aa3b">amr_wind::FieldRepo::fields</a></div><div class="ttdeci">const amrex::Vector&lt; std::unique_ptr&lt; Field &gt; &gt; &amp; fields() const</div><div class="ttdoc">Return list of fields registered (for unit-test purposes only)</div><div class="ttdef"><b>Definition</b> FieldRepo.H:357</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_acfad499585f6bbdab7e4f1c1d12ed742"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#acfad499585f6bbdab7e4f1c1d12ed742">amr_wind::FieldRepo::create_scratch_field</a></div><div class="ttdeci">std::unique_ptr&lt; ScratchField &gt; create_scratch_field(const std::string &amp;name, int ncomp=1, int nghost=0, FieldLoc floc=FieldLoc::CELL) const</div><div class="ttdef"><b>Definition</b> FieldRepo.cpp:305</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_ae5ba94b163a0e8d7b2719c7f3103a651"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#ae5ba94b163a0e8d7b2719c7f3103a651">amr_wind::FieldRepo::IntField</a></div><div class="ttdeci">friend class IntField</div><div class="ttdef"><b>Definition</b> FieldRepo.H:89</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_ae83967e90e7c9a3ac8bd77c9fe490678"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#ae83967e90e7c9a3ac8bd77c9fe490678">amr_wind::FieldRepo::declare_cc_field</a></div><div class="ttdeci">Field &amp; declare_cc_field(const std::string &amp;name, const int ncomp=1, const int ngrow=0, const int nstates=1)</div><div class="ttdef"><b>Definition</b> FieldRepo.H:152</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_ae8c15fbffc4349aa8919d84ed157ef2c"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#ae8c15fbffc4349aa8919d84ed157ef2c">amr_wind::FieldRepo::mesh</a></div><div class="ttdeci">const amrex::AmrCore &amp; mesh() const</div><div class="ttdoc">Return a reference to the underlying AMR mesh instance.</div><div class="ttdef"><b>Definition</b> FieldRepo.H:348</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html_aecf0bf9c5170f11b7fd216ae1e46235a"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html#aecf0bf9c5170f11b7fd216ae1e46235a">amr_wind::FieldRepo::remake_level</a></div><div class="ttdeci">void remake_level(int lev, amrex::Real time, const amrex::BoxArray &amp;ba, const amrex::DistributionMapping &amp;dm)</div><div class="ttdef"><b>Definition</b> FieldRepo.cpp:56</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_int_field_html"><div class="ttname"><a href="classamr__wind_1_1_int_field.html">amr_wind::IntField</a></div><div class="ttdef"><b>Definition</b> IntField.H:20</div></div>
+<div class="ttc" id="agroup__fields_html_ga5251ec6b376231128a9647f3028dbac0"><div class="ttname"><a href="group__fields.html#ga5251ec6b376231128a9647f3028dbac0">amr_wind::FieldState</a></div><div class="ttdeci">FieldState</div><div class="ttdef"><b>Definition</b> FieldDescTypes.H:16</div></div>
+<div class="ttc" id="agroup__fields_html_ga6a14d615156c54b17899c02bc1f70c0a"><div class="ttname"><a href="group__fields.html#ga6a14d615156c54b17899c02bc1f70c0a">amr_wind::FieldLoc</a></div><div class="ttdeci">FieldLoc</div><div class="ttdef"><b>Definition</b> FieldDescTypes.H:29</div></div>
+<div class="ttc" id="agroup__fields_html_gga5251ec6b376231128a9647f3028dbac0a03c2e7e41ffc181a4e84080b4710e81e"><div class="ttname"><a href="group__fields.html#gga5251ec6b376231128a9647f3028dbac0a03c2e7e41ffc181a4e84080b4710e81e">amr_wind::FieldState::New</a></div><div class="ttdeci">@ New</div><div class="ttdoc">Same as FieldState::NP1.</div><div class="ttdef"><b>Definition</b> FieldDescTypes.H:22</div></div>
+<div class="ttc" id="agroup__fields_html_gga6a14d615156c54b17899c02bc1f70c0aa0cc25b606fe928a0c9a58f7f209c4495"><div class="ttname"><a href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aa0cc25b606fe928a0c9a58f7f209c4495">amr_wind::FieldLoc::NODE</a></div><div class="ttdeci">@ NODE</div><div class="ttdoc">Node-centered (e.g., for pressure)</div><div class="ttdef"><b>Definition</b> FieldDescTypes.H:31</div></div>
+<div class="ttc" id="agroup__fields_html_gga6a14d615156c54b17899c02bc1f70c0aa37f44a8aa4feca119902d6930c4c849f"><div class="ttname"><a href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aa37f44a8aa4feca119902d6930c4c849f">amr_wind::FieldLoc::ZFACE</a></div><div class="ttdeci">@ ZFACE</div><div class="ttdoc">Face-centered in z-direction.</div><div class="ttdef"><b>Definition</b> FieldDescTypes.H:34</div></div>
+<div class="ttc" id="agroup__fields_html_gga6a14d615156c54b17899c02bc1f70c0aa51c3bc3d73817cc48bd1a42aa76cd48b"><div class="ttname"><a href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aa51c3bc3d73817cc48bd1a42aa76cd48b">amr_wind::FieldLoc::XFACE</a></div><div class="ttdeci">@ XFACE</div><div class="ttdoc">Face-centered in x-direction (e.g., face normal velocity)</div><div class="ttdef"><b>Definition</b> FieldDescTypes.H:32</div></div>
+<div class="ttc" id="agroup__fields_html_gga6a14d615156c54b17899c02bc1f70c0aadeaa44e5e872be992b4109cf1fbfe41e"><div class="ttname"><a href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aadeaa44e5e872be992b4109cf1fbfe41e">amr_wind::FieldLoc::CELL</a></div><div class="ttdeci">@ CELL</div><div class="ttdoc">Cell-centered (default)</div><div class="ttdef"><b>Definition</b> FieldDescTypes.H:30</div></div>
+<div class="ttc" id="agroup__fields_html_gga6a14d615156c54b17899c02bc1f70c0aaed363f72ca243318ee54c948cab94805"><div class="ttname"><a href="group__fields.html#gga6a14d615156c54b17899c02bc1f70c0aaed363f72ca243318ee54c948cab94805">amr_wind::FieldLoc::YFACE</a></div><div class="ttdeci">@ YFACE</div><div class="ttdoc">Face-centered in y-direction.</div><div class="ttdef"><b>Definition</b> FieldDescTypes.H:33</div></div>
+<div class="ttc" id="anamespaceamr__wind_html"><div class="ttname"><a href="namespaceamr__wind.html">amr_wind</a></div><div class="ttdoc">This test case is intended as an evaluation of the momentum advection scheme.</div><div class="ttdef"><b>Definition</b> BCInterface.cpp:10</div></div>
+<div class="ttc" id="astructamr__wind_1_1_level_data_holder_html"><div class="ttname"><a href="structamr__wind_1_1_level_data_holder.html">amr_wind::LevelDataHolder</a></div><div class="ttdef"><b>Definition</b> FieldRepo.H:36</div></div>
+<div class="ttc" id="astructamr__wind_1_1_level_data_holder_html_a1b7a75fa36625f158ba65d4445124f68"><div class="ttname"><a href="structamr__wind_1_1_level_data_holder.html#a1b7a75fa36625f158ba65d4445124f68">amr_wind::LevelDataHolder::m_int_fabs</a></div><div class="ttdeci">amrex::Vector&lt; amrex::iMultiFab &gt; m_int_fabs</div><div class="ttdoc">int fabs for all known fields at this level</div><div class="ttdef"><b>Definition</b> FieldRepo.H:45</div></div>
+<div class="ttc" id="astructamr__wind_1_1_level_data_holder_html_aa0b3146c394e8effa93c84d030e44a95"><div class="ttname"><a href="structamr__wind_1_1_level_data_holder.html#aa0b3146c394e8effa93c84d030e44a95">amr_wind::LevelDataHolder::m_factory</a></div><div class="ttdeci">std::unique_ptr&lt; amrex::FabFactory&lt; amrex::FArrayBox &gt; &gt; m_factory</div><div class="ttdoc">Factory for creating new FABs.</div><div class="ttdef"><b>Definition</b> FieldRepo.H:42</div></div>
+<div class="ttc" id="astructamr__wind_1_1_level_data_holder_html_aa44b6c5023f636a1b31016b76aa58844"><div class="ttname"><a href="structamr__wind_1_1_level_data_holder.html#aa44b6c5023f636a1b31016b76aa58844">amr_wind::LevelDataHolder::LevelDataHolder</a></div><div class="ttdeci">LevelDataHolder()</div><div class="ttdef"><b>Definition</b> FieldRepo.cpp:10</div></div>
+<div class="ttc" id="astructamr__wind_1_1_level_data_holder_html_ae36ad57294d8d401a09385cc08bdfe3f"><div class="ttname"><a href="structamr__wind_1_1_level_data_holder.html#ae36ad57294d8d401a09385cc08bdfe3f">amr_wind::LevelDataHolder::m_mfabs</a></div><div class="ttdeci">amrex::Vector&lt; amrex::MultiFab &gt; m_mfabs</div><div class="ttdoc">real multifabs for all the known fields at this level</div><div class="ttdef"><b>Definition</b> FieldRepo.H:40</div></div>
+<div class="ttc" id="astructamr__wind_1_1_level_data_holder_html_aec0a307b59b1461dcd2c8934b7a71101"><div class="ttname"><a href="structamr__wind_1_1_level_data_holder.html#aec0a307b59b1461dcd2c8934b7a71101">amr_wind::LevelDataHolder::m_int_fact</a></div><div class="ttdeci">std::unique_ptr&lt; amrex::FabFactory&lt; amrex::IArrayBox &gt; &gt; m_int_fact</div><div class="ttdef"><b>Definition</b> FieldRepo.H:46</div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

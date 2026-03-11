@@ -1,0 +1,388 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/ABLFieldInit.H Source File &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/ABLFieldInit.H Source File</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/_a_b_l_field_init_8_h_source.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="home-runner-work-amr-wind-amr-wind-amr-wind-wind-energy-ablfieldinit-h-source-file">
+<h1>/home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/ABLFieldInit.H Source File<a class="headerlink" href="#home-runner-work-amr-wind-amr-wind-amr-wind-wind-energy-ablfieldinit-h-source-file" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/wind_energy/ABLFieldInit.H Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="dir_d85575251dd712327fe3cf057fa568b4.html">amr-wind</a></li><li class="navelem"><a href="dir_212148f97b8bb53ebaebb3bf8a8b5de4.html">amr-wind</a></li><li class="navelem"><a href="dir_b33158d99c61436f71711cd504567082.html">wind_energy</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="headertitle"><div class="title">ABLFieldInit.H</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="_a_b_l_field_init_8_h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef ABLFIELDINIT_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define ABLFIELDINIT_H</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="_field_8_h.html">amr-wind/core/Field.H</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;AMReX_Array.H&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;AMReX_Array4.H&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;AMReX_Box.H&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;AMReX_Geometry.H&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;AMReX_REAL.H&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;AMReX_Vector.H&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;AMReX_Gpu.H&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">using namespace </span>amrex::literals;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceamr__wind.html">amr_wind</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span></div>
+<div class="foldopen" id="foldopen00020" data-start="{" data-end="};">
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html">   20</a></span><span class="keyword">class </span><a class="code hl_function" href="classamr__wind_1_1_a_b_l_field_init.html#af410ba08dbae769d3a2717df8db9d7a1">ABLFieldInit</a></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>{</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keyword">static_assert</span>(AMREX_SPACEDIM == 3, <span class="stringliteral">&quot;ABL requires 3 dimensional mesh&quot;</span>);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <a class="code hl_function" href="classamr__wind_1_1_a_b_l_field_init.html#af410ba08dbae769d3a2717df8db9d7a1">ABLFieldInit</a>();</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_field_init.html#a3f5c74d3f9b990de19c89ea8ee325346">initialize_from_inputfile</a>(); <span class="comment">// default</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_field_init.html#a8644129e1e0c8afa686eb9d7783d8eb4">initialize_from_netcdf</a>();    <span class="comment">// general wind/temperature profiles</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_field_init.html#a35f0019e0d4b5df1844d38d6713069b1">operator()</a>(</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keyword">const</span> amrex::Box&amp; vbx,</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keyword">const</span> amrex::Geometry&amp; geom,</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keyword">const</span> amrex::Array4&lt;amrex::Real&gt;&amp; velocity,</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <span class="keyword">const</span> amrex::Array4&lt;amrex::Real&gt;&amp; density,</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <span class="keyword">const</span> amrex::Array4&lt;amrex::Real&gt;&amp; temperature) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_field_init.html#aa80d90b8ab830470a87f32c155a75fa2">perturb_temperature</a>(</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="keywordtype">int</span> lev, <span class="keyword">const</span> amrex::Geometry&amp; geom, <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>&amp; temperature) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span></div>
+<div class="foldopen" id="foldopen00046" data-start="{" data-end="}">
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#a36f448bb5940d2e6808fb6f1d8740377">   46</a></span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_field_init.html#a36f448bb5940d2e6808fb6f1d8740377">add_temperature_perturbations</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#a08a27e0a1eb47c6250ce1e490e3032b2">m_perturb_theta</a>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    }</div>
+</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_a_b_l_field_init.html#ad2f6b729ebd8eb9298b197c91ac1c945">init_tke</a>(<span class="keyword">const</span> amrex::Geometry&amp; geom, amrex::MultiFab&amp; tke) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#a604a57d7d3b5bcf9c0bf6d1e9f2f2f5f">   56</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#a604a57d7d3b5bcf9c0bf6d1e9f2f2f5f">m_vel</a>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span></div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#aed66330cbe2fdf4db768191b5cd0b117">   59</a></span>    std::string <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#aed66330cbe2fdf4db768191b5cd0b117">m_vel_timetable</a>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span></div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#a900b499856576c1d99fc5a69fe0966fb">   62</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#a900b499856576c1d99fc5a69fe0966fb">m_vel_speed</a>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span></div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#a60152e1794881309cfb6ebb0077a84c3">   65</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#a60152e1794881309cfb6ebb0077a84c3">m_vel_dir</a>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span></div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#adaf7550a16c990c4bbb939f9b59d4b33">   70</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#adaf7550a16c990c4bbb939f9b59d4b33">m_theta_heights</a>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#a4ddb1db74c672a5890884ea74dc755f8">   71</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#a4ddb1db74c672a5890884ea74dc755f8">m_theta_values</a>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span></div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#a907b3a7fd0964badf9d61ba35a44f7dd">   75</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#a907b3a7fd0964badf9d61ba35a44f7dd">m_initial_wind_profile</a>{<span class="keyword">false</span>};</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#acd533376886360261724a443935d09bb">   76</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#acd533376886360261724a443935d09bb">m_terrain_aligned_profile</a>{<span class="keyword">false</span>};</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#a4c81d5a2d23e7dd469f780576867049c">   77</a></span>    std::string <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#a4c81d5a2d23e7dd469f780576867049c">m_terrain_file</a>{<span class="stringliteral">&quot;terrain.amrwind&quot;</span>};</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#a62e4cca36b3562b500ecb8886ca9f8d8">   78</a></span>    amrex::Gpu::DeviceVector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#a62e4cca36b3562b500ecb8886ca9f8d8">m_xterrain</a>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#a25811dee8ee9f9c43333e9d966582f05">   79</a></span>    amrex::Gpu::DeviceVector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#a25811dee8ee9f9c43333e9d966582f05">m_yterrain</a>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#ad1f821c165b3c28b628006df7ca91fe4">   80</a></span>    amrex::Gpu::DeviceVector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#ad1f821c165b3c28b628006df7ca91fe4">m_zterrain</a>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#a1a68495eb8be87e1239fd115c8169ecb">   82</a></span>    std::string <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#a1a68495eb8be87e1239fd115c8169ecb">m_1d_rans</a>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#adc04d198a702abdef24182a91612874e">   83</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#adc04d198a702abdef24182a91612874e">m_wind_heights</a>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#ad72487cdf47eca55351a079ec4b3db4d">   84</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#ad72487cdf47eca55351a079ec4b3db4d">m_u_values</a>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#a42473186cebf3165fd2e6c74f921fbe4">   85</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#a42473186cebf3165fd2e6c74f921fbe4">m_v_values</a>;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#a5041d3e010392ef8040795145866e634">   86</a></span>    amrex::Vector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#a5041d3e010392ef8040795145866e634">m_tke_values</a>;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="comment">// Device copies of the above arrays</span></div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#a6677a11069b6d37737d55a196ce453e7">   90</a></span>    amrex::Gpu::DeviceVector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#a6677a11069b6d37737d55a196ce453e7">m_thht_d</a>;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#a0abf4489aa37d2c68e91bd551b5a5ced">   91</a></span>    amrex::Gpu::DeviceVector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#a0abf4489aa37d2c68e91bd551b5a5ced">m_thvv_d</a>;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#a572961f682857b1a0ddb1e6585984e57">   93</a></span>    amrex::Gpu::DeviceVector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#a572961f682857b1a0ddb1e6585984e57">m_windht_d</a>;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#acc6b27482122f61753c0618282e69659">   94</a></span>    amrex::Gpu::DeviceVector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#acc6b27482122f61753c0618282e69659">m_prof_u_d</a>;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#a1bf8462dd29a525c2e3e5c608ca6b085">   95</a></span>    amrex::Gpu::DeviceVector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#a1bf8462dd29a525c2e3e5c608ca6b085">m_prof_v_d</a>;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#a174e498d567800b63aca92d3b2f1d4c3">   96</a></span>    amrex::Gpu::DeviceVector&lt;amrex::Real&gt; <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#a174e498d567800b63aca92d3b2f1d4c3">m_prof_tke_d</a>;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#a38aa075d22cf5bfde9183e0436465476">   98</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#a38aa075d22cf5bfde9183e0436465476">m_rho</a>;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span></div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#a3fe27efd019c7816a3a8e8f4b4a276aa">  101</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#a3fe27efd019c7816a3a8e8f4b4a276aa">m_deltaU</a>{1.0_rt};</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span></div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#a62a72f1a4c3abcbd27e3781d7948042a">  104</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#a62a72f1a4c3abcbd27e3781d7948042a">m_deltaV</a>{1.0_rt};</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span></div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#a59f68396ed975e8b3965d3a1b97e85da">  107</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#a59f68396ed975e8b3965d3a1b97e85da">m_Uperiods</a>{4.0_rt};</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span></div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#a355c72726cab41358d4d9e687f77976f">  110</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#a355c72726cab41358d4d9e687f77976f">m_Vperiods</a>{4.0_rt};</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span></div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#afcd568f5795e1225c85700070864daf9">  113</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#afcd568f5795e1225c85700070864daf9">m_ref_height</a>{50.0_rt};</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span></div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#ab251c5cdd1d638495d98364feea080ca">  116</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#ab251c5cdd1d638495d98364feea080ca">m_delta_t</a>{0.8_rt};</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span></div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#aa2347329f97907f944023baacd5e6742">  119</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#aa2347329f97907f944023baacd5e6742">m_theta_gauss_mean</a>{0.0_rt};</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span></div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#a5b0cb499b8f98ce52ed7094d94250394">  122</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#a5b0cb499b8f98ce52ed7094d94250394">m_theta_gauss_var</a>{1.0_rt};</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span></div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#a52c56cfdde1c1ae9a608301f752d17b9">  125</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#a52c56cfdde1c1ae9a608301f752d17b9">m_theta_cutoff_height</a>{1.0e16_rt};</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span></div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#a470250ec29f5b6b257858bf3b794505a">  128</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#a470250ec29f5b6b257858bf3b794505a">m_tke_init</a>{0.1_rt};</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span></div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#a4201d62ce5af682723f02f6f48bd16eb">  131</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#a4201d62ce5af682723f02f6f48bd16eb">m_tke_init_factor</a>{0.4_rt};</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span></div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#a06d27e37b6673b365e75e14ce42c37aa">  134</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#a06d27e37b6673b365e75e14ce42c37aa">m_tke_cutoff_height</a>{250.0_rt};</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span></div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#a7f64d6080b42e744183eff79846c4e82">  137</a></span>    amrex::RealArray <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#a7f64d6080b42e744183eff79846c4e82">m_top_vel</a>{20.0_rt};</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span></div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#a186a6d334ef92e09ab63ddf0c03638b6">  140</a></span>    amrex::RealArray <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#a186a6d334ef92e09ab63ddf0c03638b6">m_bottom_vel</a>{4.0_rt};</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span></div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#ac6108c72ba644c2dd31e31766c813a00">  143</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#ac6108c72ba644c2dd31e31766c813a00">m_linear_profile</a>{<span class="keyword">false</span>};</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span></div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#aca91ea70d5d74388b3f36be4c2ffc4c1">  146</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#aca91ea70d5d74388b3f36be4c2ffc4c1">m_perturb_vel</a>{<span class="keyword">true</span>};</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span></div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#a08a27e0a1eb47c6250ce1e490e3032b2">  149</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#a08a27e0a1eb47c6250ce1e490e3032b2">m_perturb_theta</a>{<span class="keyword">false</span>};</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span></div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#ae7110ce445deb02cbb84673abd30984c">  152</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#ae7110ce445deb02cbb84673abd30984c">m_tke_init_profile</a>{<span class="keyword">false</span>};</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span></div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_a_b_l_field_init.html#a4c92e0b9016f669a7b3e8128a26541bd">  155</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="classamr__wind_1_1_a_b_l_field_init.html#a4c92e0b9016f669a7b3e8128a26541bd">m_init_uvtheta_profile</a>{<span class="keyword">false</span>};</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>};</div>
+</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span> </div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>} <span class="comment">// namespace amr_wind</span></div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span> </div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span><span class="preprocessor">#endif </span><span class="comment">/* ABLFIELDINIT_H */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="a_field_8_h_html"><div class="ttname"><a href="_field_8_h.html">Field.H</a></div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_a06d27e37b6673b365e75e14ce42c37aa"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#a06d27e37b6673b365e75e14ce42c37aa">amr_wind::ABLFieldInit::m_tke_cutoff_height</a></div><div class="ttdeci">amrex::Real m_tke_cutoff_height</div><div class="ttdoc">Cutoff height for init tke profile.</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:134</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_a08a27e0a1eb47c6250ce1e490e3032b2"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#a08a27e0a1eb47c6250ce1e490e3032b2">amr_wind::ABLFieldInit::m_perturb_theta</a></div><div class="ttdeci">bool m_perturb_theta</div><div class="ttdoc">Perturb temperature field with random fluctuations.</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:149</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_a0abf4489aa37d2c68e91bd551b5a5ced"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#a0abf4489aa37d2c68e91bd551b5a5ced">amr_wind::ABLFieldInit::m_thvv_d</a></div><div class="ttdeci">amrex::Gpu::DeviceVector&lt; amrex::Real &gt; m_thvv_d</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:91</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_a174e498d567800b63aca92d3b2f1d4c3"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#a174e498d567800b63aca92d3b2f1d4c3">amr_wind::ABLFieldInit::m_prof_tke_d</a></div><div class="ttdeci">amrex::Gpu::DeviceVector&lt; amrex::Real &gt; m_prof_tke_d</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:96</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_a186a6d334ef92e09ab63ddf0c03638b6"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#a186a6d334ef92e09ab63ddf0c03638b6">amr_wind::ABLFieldInit::m_bottom_vel</a></div><div class="ttdeci">amrex::RealArray m_bottom_vel</div><div class="ttdoc">Bottom velocity.</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:140</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_a1a68495eb8be87e1239fd115c8169ecb"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#a1a68495eb8be87e1239fd115c8169ecb">amr_wind::ABLFieldInit::m_1d_rans</a></div><div class="ttdeci">std::string m_1d_rans</div><div class="ttdoc">File name for 1-D data file.</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:82</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_a1bf8462dd29a525c2e3e5c608ca6b085"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#a1bf8462dd29a525c2e3e5c608ca6b085">amr_wind::ABLFieldInit::m_prof_v_d</a></div><div class="ttdeci">amrex::Gpu::DeviceVector&lt; amrex::Real &gt; m_prof_v_d</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:95</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_a25811dee8ee9f9c43333e9d966582f05"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#a25811dee8ee9f9c43333e9d966582f05">amr_wind::ABLFieldInit::m_yterrain</a></div><div class="ttdeci">amrex::Gpu::DeviceVector&lt; amrex::Real &gt; m_yterrain</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:79</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_a355c72726cab41358d4d9e687f77976f"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#a355c72726cab41358d4d9e687f77976f">amr_wind::ABLFieldInit::m_Vperiods</a></div><div class="ttdeci">amrex::Real m_Vperiods</div><div class="ttdoc">Number of sinusoidal waves in y-direction.</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:110</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_a35f0019e0d4b5df1844d38d6713069b1"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#a35f0019e0d4b5df1844d38d6713069b1">amr_wind::ABLFieldInit::operator()</a></div><div class="ttdeci">void operator()(const amrex::Box &amp;vbx, const amrex::Geometry &amp;geom, const amrex::Array4&lt; amrex::Real &gt; &amp;velocity, const amrex::Array4&lt; amrex::Real &gt; &amp;density, const amrex::Array4&lt; amrex::Real &gt; &amp;temperature) const</div><div class="ttdef"><b>Definition</b> ABLFieldInit.cpp:212</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_a36f448bb5940d2e6808fb6f1d8740377"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#a36f448bb5940d2e6808fb6f1d8740377">amr_wind::ABLFieldInit::add_temperature_perturbations</a></div><div class="ttdeci">bool add_temperature_perturbations() const</div><div class="ttdoc">Flag indicating whether temperature field needs perturbations.</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:46</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_a38aa075d22cf5bfde9183e0436465476"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#a38aa075d22cf5bfde9183e0436465476">amr_wind::ABLFieldInit::m_rho</a></div><div class="ttdeci">amrex::Real m_rho</div><div class="ttdoc">Initial density field.</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:98</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_a3f5c74d3f9b990de19c89ea8ee325346"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#a3f5c74d3f9b990de19c89ea8ee325346">amr_wind::ABLFieldInit::initialize_from_inputfile</a></div><div class="ttdeci">void initialize_from_inputfile()</div><div class="ttdef"><b>Definition</b> ABLFieldInit.cpp:28</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_a3fe27efd019c7816a3a8e8f4b4a276aa"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#a3fe27efd019c7816a3a8e8f4b4a276aa">amr_wind::ABLFieldInit::m_deltaU</a></div><div class="ttdeci">amrex::Real m_deltaU</div><div class="ttdoc">Amplitude of fluctuations in x-direction.</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:101</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_a4201d62ce5af682723f02f6f48bd16eb"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#a4201d62ce5af682723f02f6f48bd16eb">amr_wind::ABLFieldInit::m_tke_init_factor</a></div><div class="ttdeci">amrex::Real m_tke_init_factor</div><div class="ttdoc">Multiplicative factor for init tke profile.</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:131</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_a42473186cebf3165fd2e6c74f921fbe4"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#a42473186cebf3165fd2e6c74f921fbe4">amr_wind::ABLFieldInit::m_v_values</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_v_values</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:85</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_a470250ec29f5b6b257858bf3b794505a"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#a470250ec29f5b6b257858bf3b794505a">amr_wind::ABLFieldInit::m_tke_init</a></div><div class="ttdeci">amrex::Real m_tke_init</div><div class="ttdoc">Initial value for tke field.</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:128</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_a4c81d5a2d23e7dd469f780576867049c"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#a4c81d5a2d23e7dd469f780576867049c">amr_wind::ABLFieldInit::m_terrain_file</a></div><div class="ttdeci">std::string m_terrain_file</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:77</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_a4c92e0b9016f669a7b3e8128a26541bd"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#a4c92e0b9016f669a7b3e8128a26541bd">amr_wind::ABLFieldInit::m_init_uvtheta_profile</a></div><div class="ttdeci">bool m_init_uvtheta_profile</div><div class="ttdoc">Profiles of u, v, and theta are read in from a NetCDF File.</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:155</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_a4ddb1db74c672a5890884ea74dc755f8"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#a4ddb1db74c672a5890884ea74dc755f8">amr_wind::ABLFieldInit::m_theta_values</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_theta_values</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:71</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_a5041d3e010392ef8040795145866e634"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#a5041d3e010392ef8040795145866e634">amr_wind::ABLFieldInit::m_tke_values</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_tke_values</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:86</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_a52c56cfdde1c1ae9a608301f752d17b9"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#a52c56cfdde1c1ae9a608301f752d17b9">amr_wind::ABLFieldInit::m_theta_cutoff_height</a></div><div class="ttdeci">amrex::Real m_theta_cutoff_height</div><div class="ttdoc">Cutoff height for temperature fluctuations.</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:125</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_a572961f682857b1a0ddb1e6585984e57"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#a572961f682857b1a0ddb1e6585984e57">amr_wind::ABLFieldInit::m_windht_d</a></div><div class="ttdeci">amrex::Gpu::DeviceVector&lt; amrex::Real &gt; m_windht_d</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:93</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_a59f68396ed975e8b3965d3a1b97e85da"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#a59f68396ed975e8b3965d3a1b97e85da">amr_wind::ABLFieldInit::m_Uperiods</a></div><div class="ttdeci">amrex::Real m_Uperiods</div><div class="ttdoc">Number of sinusoidal waves in x-direction.</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:107</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_a5b0cb499b8f98ce52ed7094d94250394"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#a5b0cb499b8f98ce52ed7094d94250394">amr_wind::ABLFieldInit::m_theta_gauss_var</a></div><div class="ttdeci">amrex::Real m_theta_gauss_var</div><div class="ttdoc">Variance for Gaussian number generator.</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:122</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_a60152e1794881309cfb6ebb0077a84c3"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#a60152e1794881309cfb6ebb0077a84c3">amr_wind::ABLFieldInit::m_vel_dir</a></div><div class="ttdeci">amrex::Real m_vel_dir</div><div class="ttdoc">Initial wind direction (rad)</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:65</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_a604a57d7d3b5bcf9c0bf6d1e9f2f2f5f"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#a604a57d7d3b5bcf9c0bf6d1e9f2f2f5f">amr_wind::ABLFieldInit::m_vel</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_vel</div><div class="ttdoc">Initial velocity components.</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:56</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_a62a72f1a4c3abcbd27e3781d7948042a"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#a62a72f1a4c3abcbd27e3781d7948042a">amr_wind::ABLFieldInit::m_deltaV</a></div><div class="ttdeci">amrex::Real m_deltaV</div><div class="ttdoc">Amplitude of fluctuations in y-direction.</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:104</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_a62e4cca36b3562b500ecb8886ca9f8d8"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#a62e4cca36b3562b500ecb8886ca9f8d8">amr_wind::ABLFieldInit::m_xterrain</a></div><div class="ttdeci">amrex::Gpu::DeviceVector&lt; amrex::Real &gt; m_xterrain</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:78</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_a6677a11069b6d37737d55a196ce453e7"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#a6677a11069b6d37737d55a196ce453e7">amr_wind::ABLFieldInit::m_thht_d</a></div><div class="ttdeci">amrex::Gpu::DeviceVector&lt; amrex::Real &gt; m_thht_d</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:90</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_a7f64d6080b42e744183eff79846c4e82"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#a7f64d6080b42e744183eff79846c4e82">amr_wind::ABLFieldInit::m_top_vel</a></div><div class="ttdeci">amrex::RealArray m_top_vel</div><div class="ttdoc">Top velocity.</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:137</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_a8644129e1e0c8afa686eb9d7783d8eb4"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#a8644129e1e0c8afa686eb9d7783d8eb4">amr_wind::ABLFieldInit::initialize_from_netcdf</a></div><div class="ttdeci">void initialize_from_netcdf()</div><div class="ttdef"><b>Definition</b> ABLFieldInit.cpp:163</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_a900b499856576c1d99fc5a69fe0966fb"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#a900b499856576c1d99fc5a69fe0966fb">amr_wind::ABLFieldInit::m_vel_speed</a></div><div class="ttdeci">amrex::Real m_vel_speed</div><div class="ttdoc">Initial wind speed.</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:62</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_a907b3a7fd0964badf9d61ba35a44f7dd"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#a907b3a7fd0964badf9d61ba35a44f7dd">amr_wind::ABLFieldInit::m_initial_wind_profile</a></div><div class="ttdeci">bool m_initial_wind_profile</div><div class="ttdoc">Adding option for wind heights similar to temperature heights Speed-up RANS calculation using 1-D pro...</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:75</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_aa2347329f97907f944023baacd5e6742"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#aa2347329f97907f944023baacd5e6742">amr_wind::ABLFieldInit::m_theta_gauss_mean</a></div><div class="ttdeci">amrex::Real m_theta_gauss_mean</div><div class="ttdoc">Mean for Gaussian number generator.</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:119</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_aa80d90b8ab830470a87f32c155a75fa2"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#aa80d90b8ab830470a87f32c155a75fa2">amr_wind::ABLFieldInit::perturb_temperature</a></div><div class="ttdeci">void perturb_temperature(int lev, const amrex::Geometry &amp;geom, Field &amp;temperature) const</div><div class="ttdef"><b>Definition</b> ABLFieldInit.cpp:369</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_ab251c5cdd1d638495d98364feea080ca"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#ab251c5cdd1d638495d98364feea080ca">amr_wind::ABLFieldInit::m_delta_t</a></div><div class="ttdeci">amrex::Real m_delta_t</div><div class="ttdoc">Amplitude of temperature perturbations.</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:116</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_ac6108c72ba644c2dd31e31766c813a00"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#ac6108c72ba644c2dd31e31766c813a00">amr_wind::ABLFieldInit::m_linear_profile</a></div><div class="ttdeci">bool m_linear_profile</div><div class="ttdoc">Initial linear velocity profile boolean.</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:143</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_aca91ea70d5d74388b3f36be4c2ffc4c1"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#aca91ea70d5d74388b3f36be4c2ffc4c1">amr_wind::ABLFieldInit::m_perturb_vel</a></div><div class="ttdeci">bool m_perturb_vel</div><div class="ttdoc">Perturb initial velocity field with sinusoidal fluctuations.</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:146</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_acc6b27482122f61753c0618282e69659"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#acc6b27482122f61753c0618282e69659">amr_wind::ABLFieldInit::m_prof_u_d</a></div><div class="ttdeci">amrex::Gpu::DeviceVector&lt; amrex::Real &gt; m_prof_u_d</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:94</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_acd533376886360261724a443935d09bb"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#acd533376886360261724a443935d09bb">amr_wind::ABLFieldInit::m_terrain_aligned_profile</a></div><div class="ttdeci">bool m_terrain_aligned_profile</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:76</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_ad1f821c165b3c28b628006df7ca91fe4"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#ad1f821c165b3c28b628006df7ca91fe4">amr_wind::ABLFieldInit::m_zterrain</a></div><div class="ttdeci">amrex::Gpu::DeviceVector&lt; amrex::Real &gt; m_zterrain</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:80</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_ad2f6b729ebd8eb9298b197c91ac1c945"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#ad2f6b729ebd8eb9298b197c91ac1c945">amr_wind::ABLFieldInit::init_tke</a></div><div class="ttdeci">void init_tke(const amrex::Geometry &amp;geom, amrex::MultiFab &amp;tke) const</div><div class="ttdoc">Initialize TKE field.</div><div class="ttdef"><b>Definition</b> ABLFieldInit.cpp:406</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_ad72487cdf47eca55351a079ec4b3db4d"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#ad72487cdf47eca55351a079ec4b3db4d">amr_wind::ABLFieldInit::m_u_values</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_u_values</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:84</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_adaf7550a16c990c4bbb939f9b59d4b33"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#adaf7550a16c990c4bbb939f9b59d4b33">amr_wind::ABLFieldInit::m_theta_heights</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_theta_heights</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:70</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_adc04d198a702abdef24182a91612874e"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#adc04d198a702abdef24182a91612874e">amr_wind::ABLFieldInit::m_wind_heights</a></div><div class="ttdeci">amrex::Vector&lt; amrex::Real &gt; m_wind_heights</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:83</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_ae7110ce445deb02cbb84673abd30984c"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#ae7110ce445deb02cbb84673abd30984c">amr_wind::ABLFieldInit::m_tke_init_profile</a></div><div class="ttdeci">bool m_tke_init_profile</div><div class="ttdoc">Initialize tke profile non-constant.</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:152</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_aed66330cbe2fdf4db768191b5cd0b117"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#aed66330cbe2fdf4db768191b5cd0b117">amr_wind::ABLFieldInit::m_vel_timetable</a></div><div class="ttdeci">std::string m_vel_timetable</div><div class="ttdoc">File name for velocity forcing time table.</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:59</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_af410ba08dbae769d3a2717df8db9d7a1"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#af410ba08dbae769d3a2717df8db9d7a1">amr_wind::ABLFieldInit::ABLFieldInit</a></div><div class="ttdeci">ABLFieldInit()</div><div class="ttdef"><b>Definition</b> ABLFieldInit.cpp:18</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_a_b_l_field_init_html_afcd568f5795e1225c85700070864daf9"><div class="ttname"><a href="classamr__wind_1_1_a_b_l_field_init.html#afcd568f5795e1225c85700070864daf9">amr_wind::ABLFieldInit::m_ref_height</a></div><div class="ttdeci">amrex::Real m_ref_height</div><div class="ttdoc">Reference height for velocity perturbations.</div><div class="ttdef"><b>Definition</b> ABLFieldInit.H:113</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_html"><div class="ttname"><a href="classamr__wind_1_1_field.html">amr_wind::Field</a></div><div class="ttdef"><b>Definition</b> Field.H:112</div></div>
+<div class="ttc" id="anamespaceamr__wind_html"><div class="ttname"><a href="namespaceamr__wind.html">amr_wind</a></div><div class="ttdoc">This test case is intended as an evaluation of the momentum advection scheme.</div><div class="ttdef"><b>Definition</b> BCInterface.cpp:10</div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

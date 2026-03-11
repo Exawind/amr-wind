@@ -1,0 +1,565 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::sampling::sampling_utils Namespace Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::sampling::sampling_utils Namespace Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/namespaceamr__wind_1_1sampling_1_1sampling__utils.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="sampling-utils-namespace-reference">
+<h1>sampling_utils Namespace Reference<a class="headerlink" href="#sampling-utils-namespace-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::sampling::sampling_utils Namespace Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="namespaceamr__wind_1_1sampling.html">sampling</a></li><li class="navelem"><a href="namespaceamr__wind_1_1sampling_1_1sampling__utils.html">sampling_utils</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#enum-members">Enumerations</a> &#124;
+<a href="#func-members">Functions</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::sampling::sampling_utils Namespace Reference</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-enum-members" class="groupheader"><a id="enum-members" name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:a26afb342d000973d6bc6dd7f2e636eaf" id="r_a26afb342d000973d6bc6dd7f2e636eaf"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a26afb342d000973d6bc6dd7f2e636eaf">NormalRule</a> : std::uint8_t { <a class="el" href="#a26afb342d000973d6bc6dd7f2e636eafae2f33497edb409cb56f1a629a45885a8">SIGMA1</a>
+, <a class="el" href="#a26afb342d000973d6bc6dd7f2e636eafa5d84cb93256c8877622a9c9df30ce1a3">SIGMA2</a>
+, <a class="el" href="#a26afb342d000973d6bc6dd7f2e636eafa7f0c8d0b3cc00d507904f71c3dcf7631">SIGMA3</a>
+, <a class="el" href="#a26afb342d000973d6bc6dd7f2e636eafaa5677d26a42e16ca701ebb0e0f20219c">HALFPOWER</a>
+ }</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a471475fcb6ade107e17fea9a7cc9cced" id="r_a471475fcb6ade107e17fea9a7cc9cced"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a471475fcb6ade107e17fea9a7cc9cced">reflect</a> (<a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> line, <a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> vec)</td></tr>
+<tr class="memitem:a5cc3f0df5ce519607a2e8a89bb0c0dfe" id="r_a5cc3f0df5ce519607a2e8a89bb0c0dfe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5cc3f0df5ce519607a2e8a89bb0c0dfe">rotate_euler_vec</a> (<a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> axis, amrex::Real angle, <a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> vec)</td></tr>
+<tr class="memitem:a810e11a64997ac247b2342b9fac26af2" id="r_a810e11a64997ac247b2342b9fac26af2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a810e11a64997ac247b2342b9fac26af2">rotate_euler_vector</a> (<a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> &amp;axis, amrex::Real &amp;angle, <a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> &amp;vec)</td></tr>
+<tr class="memitem:a041cfa7345587ed8c8a57286766fff84" id="r_a041cfa7345587ed8c8a57286766fff84"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a041cfa7345587ed8c8a57286766fff84">rotation</a> (const <a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> &amp;angles, const <a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> &amp;data)</td></tr>
+<tr class="memitem:a8b9be6eeed6695c9bb4056e7b84ab426" id="r_a8b9be6eeed6695c9bb4056e7b84ab426"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8b9be6eeed6695c9bb4056e7b84ab426">canon_rotator</a> (const <a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> &amp;angles, const <a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> &amp;data)</td></tr>
+<tr class="memitem:a6df5685c4e2a1747a6897213d2ca2319" id="r_a6df5685c4e2a1747a6897213d2ca2319"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceamr__wind_1_1vs.html#add4ffb20497b62d4b485d7c483dcd80f">vs::Tensor</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6df5685c4e2a1747a6897213d2ca2319">unit_projection_matrix</a> (const <a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> &amp;a)</td></tr>
+<tr class="memitem:a1f711d48c128cc578c82c4f62caa9bb5" id="r_a1f711d48c128cc578c82c4f62caa9bb5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceamr__wind_1_1vs.html#add4ffb20497b62d4b485d7c483dcd80f">vs::Tensor</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1f711d48c128cc578c82c4f62caa9bb5">rotation_matrix</a> (<a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> dst, <a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> src)</td></tr>
+<tr class="memitem:ad8d4ef2441e1237091d3443d5b87a902" id="r_ad8d4ef2441e1237091d3443d5b87a902"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceamr__wind_1_1vs.html#add4ffb20497b62d4b485d7c483dcd80f">vs::Tensor</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad8d4ef2441e1237091d3443d5b87a902">skew_cross</a> (<a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> a, <a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> b)</td></tr>
+<tr class="memitem:a9785a08f497e819b7e078c7144943107" id="r_a9785a08f497e819b7e078c7144943107"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceamr__wind_1_1vs.html#add4ffb20497b62d4b485d7c483dcd80f">vs::Tensor</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9785a08f497e819b7e078c7144943107">scale</a> (<a class="el" href="namespaceamr__wind_1_1vs.html#add4ffb20497b62d4b485d7c483dcd80f">vs::Tensor</a> v, amrex::Real a)</td></tr>
+<tr class="memitem:aef6a70fc0fbfa67a254fb0c11b62d12d" id="r_aef6a70fc0fbfa67a254fb0c11b62d12d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aef6a70fc0fbfa67a254fb0c11b62d12d">spherical_cap_quadrature</a> (amrex::Real gammav, int ntheta, std::vector&lt; amrex::Real &gt; abscissae1D, std::vector&lt; amrex::Real &gt; weights1D, std::vector&lt; <a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> &gt; &amp;rays, std::vector&lt; amrex::Real &gt; &amp;weights)</td></tr>
+<tr class="memitem:ae0b5a1c0da406122462737b3c80e8e49" id="r_ae0b5a1c0da406122462737b3c80e8e49"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae0b5a1c0da406122462737b3c80e8e49">spherical_cap_truncated_normal</a> (amrex::Real gammav, int ntheta, <a class="el" href="#a26afb342d000973d6bc6dd7f2e636eaf">NormalRule</a> rule, std::vector&lt; <a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> &gt; &amp;rays, std::vector&lt; amrex::Real &gt; &amp;weights)</td></tr>
+<tr class="memitem:aa02847dc9843185a34f0b8745e757e9d" id="r_aa02847dc9843185a34f0b8745e757e9d"><td class="memItemLeft" align="right" valign="top">std::pair&lt; std::vector&lt; amrex::Real &gt;, std::vector&lt; amrex::Real &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa02847dc9843185a34f0b8745e757e9d">truncated_normal_rule</a> (<a class="el" href="#a26afb342d000973d6bc6dd7f2e636eaf">NormalRule</a> rule)</td></tr>
+</table>
+<a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Enumeration Type Documentation</h2>
+<a id="a26afb342d000973d6bc6dd7f2e636eaf" name="a26afb342d000973d6bc6dd7f2e636eaf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26afb342d000973d6bc6dd7f2e636eaf">&#9670;&#160;</a></span>NormalRule</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="#a26afb342d000973d6bc6dd7f2e636eaf">amr_wind::sampling::sampling_utils::NormalRule</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel strong">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Utility functions available to advanced sampling techniques</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>Name of the PDE </td></tr>
+    <tr><td class="paramname">terms</td><td>List of identifiers for the source terms to be added </td></tr>
+  </table>
+  </dd>
+</dl>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a26afb342d000973d6bc6dd7f2e636eafae2f33497edb409cb56f1a629a45885a8" name="a26afb342d000973d6bc6dd7f2e636eafae2f33497edb409cb56f1a629a45885a8"></a>SIGMA1&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a26afb342d000973d6bc6dd7f2e636eafa5d84cb93256c8877622a9c9df30ce1a3" name="a26afb342d000973d6bc6dd7f2e636eafa5d84cb93256c8877622a9c9df30ce1a3"></a>SIGMA2&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a26afb342d000973d6bc6dd7f2e636eafa7f0c8d0b3cc00d507904f71c3dcf7631" name="a26afb342d000973d6bc6dd7f2e636eafa7f0c8d0b3cc00d507904f71c3dcf7631"></a>SIGMA3&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a26afb342d000973d6bc6dd7f2e636eafaa5677d26a42e16ca701ebb0e0f20219c" name="a26afb342d000973d6bc6dd7f2e636eafaa5677d26a42e16ca701ebb0e0f20219c"></a>HALFPOWER&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
+<a id="a8b9be6eeed6695c9bb4056e7b84ab426" name="a8b9be6eeed6695c9bb4056e7b84ab426"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b9be6eeed6695c9bb4056e7b84ab426">&#9670;&#160;</a></span>canon_rotator()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> amr_wind::sampling::sampling_utils::canon_rotator </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>angles</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a471475fcb6ade107e17fea9a7cc9cced" name="a471475fcb6ade107e17fea9a7cc9cced"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a471475fcb6ade107e17fea9a7cc9cced">&#9670;&#160;</a></span>reflect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> amr_wind::sampling::sampling_utils::reflect </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a></td>          <td class="paramname"><span class="paramname"><em>line</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a></td>          <td class="paramname"><span class="paramname"><em>vec</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5cc3f0df5ce519607a2e8a89bb0c0dfe" name="a5cc3f0df5ce519607a2e8a89bb0c0dfe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5cc3f0df5ce519607a2e8a89bb0c0dfe">&#9670;&#160;</a></span>rotate_euler_vec()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> amr_wind::sampling::sampling_utils::rotate_euler_vec </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a></td>          <td class="paramname"><span class="paramname"><em>axis</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>angle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a></td>          <td class="paramname"><span class="paramname"><em>vec</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a810e11a64997ac247b2342b9fac26af2" name="a810e11a64997ac247b2342b9fac26af2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a810e11a64997ac247b2342b9fac26af2">&#9670;&#160;</a></span>rotate_euler_vector()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> amr_wind::sampling::sampling_utils::rotate_euler_vector </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>axis</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real &amp;</td>          <td class="paramname"><span class="paramname"><em>angle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>vec</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a041cfa7345587ed8c8a57286766fff84" name="a041cfa7345587ed8c8a57286766fff84"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a041cfa7345587ed8c8a57286766fff84">&#9670;&#160;</a></span>rotation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> amr_wind::sampling::sampling_utils::rotation </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>angles</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1f711d48c128cc578c82c4f62caa9bb5" name="a1f711d48c128cc578c82c4f62caa9bb5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f711d48c128cc578c82c4f62caa9bb5">&#9670;&#160;</a></span>rotation_matrix()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceamr__wind_1_1vs.html#add4ffb20497b62d4b485d7c483dcd80f">vs::Tensor</a> amr_wind::sampling::sampling_utils::rotation_matrix </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a></td>          <td class="paramname"><span class="paramname"><em>dst</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a></td>          <td class="paramname"><span class="paramname"><em>src</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9785a08f497e819b7e078c7144943107" name="a9785a08f497e819b7e078c7144943107"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9785a08f497e819b7e078c7144943107">&#9670;&#160;</a></span>scale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceamr__wind_1_1vs.html#add4ffb20497b62d4b485d7c483dcd80f">vs::Tensor</a> amr_wind::sampling::sampling_utils::scale </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceamr__wind_1_1vs.html#add4ffb20497b62d4b485d7c483dcd80f">vs::Tensor</a></td>          <td class="paramname"><span class="paramname"><em>v</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>a</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad8d4ef2441e1237091d3443d5b87a902" name="ad8d4ef2441e1237091d3443d5b87a902"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8d4ef2441e1237091d3443d5b87a902">&#9670;&#160;</a></span>skew_cross()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceamr__wind_1_1vs.html#add4ffb20497b62d4b485d7c483dcd80f">vs::Tensor</a> amr_wind::sampling::sampling_utils::skew_cross </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a></td>          <td class="paramname"><span class="paramname"><em>a</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a></td>          <td class="paramname"><span class="paramname"><em>b</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aef6a70fc0fbfa67a254fb0c11b62d12d" name="aef6a70fc0fbfa67a254fb0c11b62d12d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef6a70fc0fbfa67a254fb0c11b62d12d">&#9670;&#160;</a></span>spherical_cap_quadrature()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::sampling::sampling_utils::spherical_cap_quadrature </td>
+          <td>(</td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>gammav</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>ntheta</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; amrex::Real &gt;</td>          <td class="paramname"><span class="paramname"><em>abscissae1D</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; amrex::Real &gt;</td>          <td class="paramname"><span class="paramname"><em>weights1D</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>rays</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; amrex::Real &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>weights</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae0b5a1c0da406122462737b3c80e8e49" name="ae0b5a1c0da406122462737b3c80e8e49"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0b5a1c0da406122462737b3c80e8e49">&#9670;&#160;</a></span>spherical_cap_truncated_normal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::sampling::sampling_utils::spherical_cap_truncated_normal </td>
+          <td>(</td>
+          <td class="paramtype">amrex::Real</td>          <td class="paramname"><span class="paramname"><em>gammav</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>ntheta</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#a26afb342d000973d6bc6dd7f2e636eaf">NormalRule</a></td>          <td class="paramname"><span class="paramname"><em>rule</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>rays</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; amrex::Real &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>weights</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa02847dc9843185a34f0b8745e757e9d" name="aa02847dc9843185a34f0b8745e757e9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa02847dc9843185a34f0b8745e757e9d">&#9670;&#160;</a></span>truncated_normal_rule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::pair&lt; std::vector&lt; amrex::Real &gt;, std::vector&lt; amrex::Real &gt; &gt; amr_wind::sampling::sampling_utils::truncated_normal_rule </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a26afb342d000973d6bc6dd7f2e636eaf">NormalRule</a></td>          <td class="paramname"><span class="paramname"><em>rule</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6df5685c4e2a1747a6897213d2ca2319" name="a6df5685c4e2a1747a6897213d2ca2319"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6df5685c4e2a1747a6897213d2ca2319">&#9670;&#160;</a></span>unit_projection_matrix()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceamr__wind_1_1vs.html#add4ffb20497b62d4b485d7c483dcd80f">vs::Tensor</a> amr_wind::sampling::sampling_utils::unit_projection_matrix </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceamr__wind_1_1vs.html#a9c7552f03579943dc17ba67341db8aa4">vs::Vector</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>a</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

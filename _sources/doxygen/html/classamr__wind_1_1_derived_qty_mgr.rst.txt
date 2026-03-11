@@ -1,0 +1,14 @@
+.. meta::fe8c221f18383e4cea2a1752189b060b5f671dae489ed97fe4404debf3cb247eaab5b960139dbc746ef771fd91bb629fae8420dd1cbc16fa225cbf719739fe3f
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::DerivedQtyMgr Class Reference
+
+DerivedQtyMgr Class Reference
+=============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classamr__wind_1_1_derived_qty_mgr.html

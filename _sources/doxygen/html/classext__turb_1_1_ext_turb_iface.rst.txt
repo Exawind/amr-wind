@@ -1,0 +1,14 @@
+.. meta::7fd4a26389e7a0695634766071486a9af83f8ae99e0c5a7b66c42d96150f76865c38bf524fbe637d4bc94e1c3dec6f9fa41cd7bcbab2866435e37004de7f5ec0
+
+:orphan:
+
+.. title:: AMR-Wind API: ext_turb::ExtTurbIface&lt; SolverTurbine, SolverData &gt; Class Template Reference
+
+ExtTurbIface&lt; SolverTurbine, SolverData &gt; Class Template Reference
+========================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: classext__turb_1_1_ext_turb_iface.html

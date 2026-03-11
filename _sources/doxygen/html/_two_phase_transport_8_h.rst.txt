@@ -1,0 +1,14 @@
+.. meta::e231ce6450cb40eed92a1f6981d2b27c82c6afc32423b02c3adeac6bf0dfe5306f6e89a195bbc560178c15a0f7e504e6a6438ef12e29d8a7a4d9f6591a832903
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/transport_models/TwoPhaseTransport.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/transport\_models/TwoPhaseTransport.H File Reference
+=================================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _two_phase_transport_8_h.html

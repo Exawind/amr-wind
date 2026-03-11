@@ -1,0 +1,14 @@
+.. meta::97a8e07727efd802a97acf6b7d72baa85ea90f66fce8d50441b43074f3ed1d3d44c653fb8bc487baa046802e5a7be7580cbf71587ef73473aede95c86a96d084
+
+:orphan:
+
+.. title:: AMR-Wind API: amr_wind::tioga_iface::AmrDualArray&lt; T &gt; Struct Template Reference
+
+AmrDualArray&lt; T &gt; Struct Template Reference
+=================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: structamr__wind_1_1tioga__iface_1_1_amr_dual_array.html

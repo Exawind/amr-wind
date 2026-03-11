@@ -1,0 +1,14 @@
+.. meta::13d7932015606495e5f0b8a7d415b168c96e494ab8d9c96d3d42ba706d5dc6d71c71a433cb0f72a8c19b85622a6e6aff191dd4e5835c7737d7d9fb9f7661b504
+
+:orphan:
+
+.. title:: AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/udfs/PowerLawProfile.H File Reference
+
+/home/runner/work/amr-wind/amr-wind/amr-wind/physics/udfs/PowerLawProfile.H File Reference
+==========================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _power_law_profile_8_h.html

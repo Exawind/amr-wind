@@ -1,0 +1,713 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: amr_wind::pde::temperature::DragTempForcing Class Reference &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: amr_wind::pde::temperature::DragTempForcing Class Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/classamr__wind_1_1pde_1_1temperature_1_1_drag_temp_forcing.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dragtempforcing-class-reference">
+<h1>DragTempForcing Class Reference<a class="headerlink" href="#dragtempforcing-class-reference" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: amr_wind::pde::temperature::DragTempForcing Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="namespaceamr__wind.html">amr_wind</a></li><li class="navelem"><a href="namespaceamr__wind_1_1pde.html">pde</a></li><li class="navelem"><a href="namespaceamr__wind_1_1pde_1_1temperature.html">temperature</a></li><li class="navelem"><a href="classamr__wind_1_1pde_1_1temperature_1_1_drag_temp_forcing.html">DragTempForcing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
+<a href="classamr__wind_1_1pde_1_1temperature_1_1_drag_temp_forcing-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">amr_wind::pde::temperature::DragTempForcing Class Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="_drag_temp_forcing_8_h_source.html">DragTempForcing.H</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for amr_wind::pde::temperature::DragTempForcing:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1pde_1_1temperature_1_1_drag_temp_forcing__inherit__graph.svg" width="219" height="154"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for amr_wind::pde::temperature::DragTempForcing:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" loading="lazy" frameborder="0" src="classamr__wind_1_1pde_1_1temperature_1_1_drag_temp_forcing__coll__graph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:af9456473f67f4b2073da600847fb690f" id="r_af9456473f67f4b2073da600847fb690f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af9456473f67f4b2073da600847fb690f">DragTempForcing</a> (const <a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;sim)</td></tr>
+<tr class="memitem:a1fa2f6c107a3ff4fbbf3853e24b83e0c" id="r_a1fa2f6c107a3ff4fbbf3853e24b83e0c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1fa2f6c107a3ff4fbbf3853e24b83e0c">~DragTempForcing</a> () override</td></tr>
+<tr class="memitem:a2c3ead489d02a915f08d5af10d18bf99" id="r_a2c3ead489d02a915f08d5af10d18bf99"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2c3ead489d02a915f08d5af10d18bf99">operator()</a> (int lev, const amrex::MFIter &amp;mfi, const amrex::Box &amp;bx, <a class="el" href="group__fields.html#ga5251ec6b376231128a9647f3028dbac0">FieldState</a>, const amrex::Array4&lt; amrex::Real &gt; &amp;src_term) const override</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:aff81f6251cf66bb536291bba7a10f73d" id="r_aff81f6251cf66bb536291bba7a10f73d"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aff81f6251cf66bb536291bba7a10f73d">identifier</a> ()</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a29890d4c4e108594058befe7d7184ad3" id="r_a29890d4c4e108594058befe7d7184ad3"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_sim_time.html">SimTime</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a29890d4c4e108594058befe7d7184ad3">m_time</a></td></tr>
+<tr class="memitem:a2fb53356f4c9ad682a7a987913e88c64" id="r_a2fb53356f4c9ad682a7a987913e88c64"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2fb53356f4c9ad682a7a987913e88c64">m_sim</a></td></tr>
+<tr class="memitem:a46066d057c209a177c7fa5b2dce232a3" id="r_a46066d057c209a177c7fa5b2dce232a3"><td class="memItemLeft" align="right" valign="top">const amrex::AmrCore &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a46066d057c209a177c7fa5b2dce232a3">m_mesh</a></td></tr>
+<tr class="memitem:ad30a2cefc3ecec8667fc0c58dad0e94a" id="r_ad30a2cefc3ecec8667fc0c58dad0e94a"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad30a2cefc3ecec8667fc0c58dad0e94a">m_velocity</a></td></tr>
+<tr class="memitem:a194feb95fb9c8804fa68547598bf5a1a" id="r_a194feb95fb9c8804fa68547598bf5a1a"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classamr__wind_1_1_field.html">Field</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a194feb95fb9c8804fa68547598bf5a1a">m_temperature</a></td></tr>
+<tr class="memitem:a635443f170e8e0f0ef94c04c7b99a510" id="r_a635443f170e8e0f0ef94c04c7b99a510"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a635443f170e8e0f0ef94c04c7b99a510">m_drag_coefficient</a> {1.0_rt}</td></tr>
+<tr class="memitem:ae5fb0d57257417889c9d43ae0fc26fe2" id="r_ae5fb0d57257417889c9d43ae0fc26fe2"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae5fb0d57257417889c9d43ae0fc26fe2">m_wall_het_model</a> {&quot;none&quot;}</td></tr>
+<tr class="memitem:a5eb255fa151571fb37fb221ed33e1ac7" id="r_a5eb255fa151571fb37fb221ed33e1ac7"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5eb255fa151571fb37fb221ed33e1ac7">m_monin_obukhov_length</a> {<a class="el" href="namespaceamr__wind_1_1constants.html#abec95c34da71524c85927f9874a6368a">constants::LARGE_NUM</a>}</td></tr>
+<tr class="memitem:a57b0a0ce616dce1a4d463baa8d2e2462" id="r_a57b0a0ce616dce1a4d463baa8d2e2462"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a57b0a0ce616dce1a4d463baa8d2e2462">m_kappa</a> {0.41_rt}</td></tr>
+<tr class="memitem:a77813b6cd9f954d5a2b28efdeaeb5002" id="r_a77813b6cd9f954d5a2b28efdeaeb5002"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a77813b6cd9f954d5a2b28efdeaeb5002">m_gamma_m</a> {5.0_rt}</td></tr>
+<tr class="memitem:a6eee7129e4a449edd203d7ac6961572b" id="r_a6eee7129e4a449edd203d7ac6961572b"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6eee7129e4a449edd203d7ac6961572b">m_beta_m</a> {16.0_rt}</td></tr>
+<tr class="memitem:a42c91c4097bb2452052017b35da8957b" id="r_a42c91c4097bb2452052017b35da8957b"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a42c91c4097bb2452052017b35da8957b">m_gamma_h</a> {5.0_rt}</td></tr>
+<tr class="memitem:a162e7257f23c379b555ba1a3b1cfcf62" id="r_a162e7257f23c379b555ba1a3b1cfcf62"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a162e7257f23c379b555ba1a3b1cfcf62">m_beta_h</a> {16.0_rt}</td></tr>
+<tr class="memitem:a6f7116375f3a27c0d4c76c7929e1ef7a" id="r_a6f7116375f3a27c0d4c76c7929e1ef7a"><td class="memItemLeft" align="right" valign="top">amrex::Real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6f7116375f3a27c0d4c76c7929e1ef7a">m_soil_temperature</a> {300}</td></tr>
+<tr class="memitem:a94c736a454c76b33d75296c8b8ef0c54" id="r_a94c736a454c76b33d75296c8b8ef0c54"><td class="memItemLeft" align="right" valign="top">amrex::Vector&lt; amrex::Real &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a94c736a454c76b33d75296c8b8ef0c54">m_gravity</a> {0.0_rt, 0.0_rt, -9.81_rt}</td></tr>
+</table>
+<a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="af9456473f67f4b2073da600847fb690f" name="af9456473f67f4b2073da600847fb690f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9456473f67f4b2073da600847fb690f">&#9670;&#160;</a></span>DragTempForcing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::pde::temperature::DragTempForcing::DragTempForcing </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>sim</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel explicit">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1fa2f6c107a3ff4fbbf3853e24b83e0c" name="a1fa2f6c107a3ff4fbbf3853e24b83e0c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1fa2f6c107a3ff4fbbf3853e24b83e0c">&#9670;&#160;</a></span>~DragTempForcing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amr_wind::pde::temperature::DragTempForcing::~DragTempForcing </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="aff81f6251cf66bb536291bba7a10f73d" name="aff81f6251cf66bb536291bba7a10f73d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff81f6251cf66bb536291bba7a10f73d">&#9670;&#160;</a></span>identifier()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::pde::temperature::DragTempForcing::identifier </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2c3ead489d02a915f08d5af10d18bf99" name="a2c3ead489d02a915f08d5af10d18bf99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c3ead489d02a915f08d5af10d18bf99">&#9670;&#160;</a></span>operator()()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void amr_wind::pde::temperature::DragTempForcing::operator() </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>lev</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::MFIter &amp;</td>          <td class="paramname"><span class="paramname"><em>mfi</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Box &amp;</td>          <td class="paramname"><span class="paramname"><em>bx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__fields.html#ga5251ec6b376231128a9647f3028dbac0">FieldState</a></td>          <td class="paramname"><span class="paramname"><em>fstate</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const amrex::Array4&lt; amrex::Real &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>src_term</em></span>&#160;) const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a162e7257f23c379b555ba1a3b1cfcf62" name="a162e7257f23c379b555ba1a3b1cfcf62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a162e7257f23c379b555ba1a3b1cfcf62">&#9670;&#160;</a></span>m_beta_h</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::pde::temperature::DragTempForcing::m_beta_h {16.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6eee7129e4a449edd203d7ac6961572b" name="a6eee7129e4a449edd203d7ac6961572b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6eee7129e4a449edd203d7ac6961572b">&#9670;&#160;</a></span>m_beta_m</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::pde::temperature::DragTempForcing::m_beta_m {16.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a635443f170e8e0f0ef94c04c7b99a510" name="a635443f170e8e0f0ef94c04c7b99a510"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a635443f170e8e0f0ef94c04c7b99a510">&#9670;&#160;</a></span>m_drag_coefficient</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::pde::temperature::DragTempForcing::m_drag_coefficient {1.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a42c91c4097bb2452052017b35da8957b" name="a42c91c4097bb2452052017b35da8957b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42c91c4097bb2452052017b35da8957b">&#9670;&#160;</a></span>m_gamma_h</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::pde::temperature::DragTempForcing::m_gamma_h {5.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a77813b6cd9f954d5a2b28efdeaeb5002" name="a77813b6cd9f954d5a2b28efdeaeb5002"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77813b6cd9f954d5a2b28efdeaeb5002">&#9670;&#160;</a></span>m_gamma_m</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::pde::temperature::DragTempForcing::m_gamma_m {5.0_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a94c736a454c76b33d75296c8b8ef0c54" name="a94c736a454c76b33d75296c8b8ef0c54"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94c736a454c76b33d75296c8b8ef0c54">&#9670;&#160;</a></span>m_gravity</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Vector&lt;amrex::Real&gt; amr_wind::pde::temperature::DragTempForcing::m_gravity {0.0_rt, 0.0_rt, -9.81_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a57b0a0ce616dce1a4d463baa8d2e2462" name="a57b0a0ce616dce1a4d463baa8d2e2462"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57b0a0ce616dce1a4d463baa8d2e2462">&#9670;&#160;</a></span>m_kappa</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::pde::temperature::DragTempForcing::m_kappa {0.41_rt}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a46066d057c209a177c7fa5b2dce232a3" name="a46066d057c209a177c7fa5b2dce232a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46066d057c209a177c7fa5b2dce232a3">&#9670;&#160;</a></span>m_mesh</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const amrex::AmrCore&amp; amr_wind::pde::temperature::DragTempForcing::m_mesh</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5eb255fa151571fb37fb221ed33e1ac7" name="a5eb255fa151571fb37fb221ed33e1ac7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5eb255fa151571fb37fb221ed33e1ac7">&#9670;&#160;</a></span>m_monin_obukhov_length</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::pde::temperature::DragTempForcing::m_monin_obukhov_length {<a class="el" href="namespaceamr__wind_1_1constants.html#abec95c34da71524c85927f9874a6368a">constants::LARGE_NUM</a>}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2fb53356f4c9ad682a7a987913e88c64" name="a2fb53356f4c9ad682a7a987913e88c64"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2fb53356f4c9ad682a7a987913e88c64">&#9670;&#160;</a></span>m_sim</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; amr_wind::pde::temperature::DragTempForcing::m_sim</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6f7116375f3a27c0d4c76c7929e1ef7a" name="a6f7116375f3a27c0d4c76c7929e1ef7a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f7116375f3a27c0d4c76c7929e1ef7a">&#9670;&#160;</a></span>m_soil_temperature</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">amrex::Real amr_wind::pde::temperature::DragTempForcing::m_soil_temperature {300}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a194feb95fb9c8804fa68547598bf5a1a" name="a194feb95fb9c8804fa68547598bf5a1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a194feb95fb9c8804fa68547598bf5a1a">&#9670;&#160;</a></span>m_temperature</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_field.html">Field</a>&amp; amr_wind::pde::temperature::DragTempForcing::m_temperature</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a29890d4c4e108594058befe7d7184ad3" name="a29890d4c4e108594058befe7d7184ad3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29890d4c4e108594058befe7d7184ad3">&#9670;&#160;</a></span>m_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_sim_time.html">SimTime</a>&amp; amr_wind::pde::temperature::DragTempForcing::m_time</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad30a2cefc3ecec8667fc0c58dad0e94a" name="ad30a2cefc3ecec8667fc0c58dad0e94a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad30a2cefc3ecec8667fc0c58dad0e94a">&#9670;&#160;</a></span>m_velocity</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classamr__wind_1_1_field.html">Field</a>&amp; amr_wind::pde::temperature::DragTempForcing::m_velocity</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae5fb0d57257417889c9d43ae0fc26fe2" name="ae5fb0d57257417889c9d43ae0fc26fe2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5fb0d57257417889c9d43ae0fc26fe2">&#9670;&#160;</a></span>m_wall_het_model</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string amr_wind::pde::temperature::DragTempForcing::m_wall_het_model {&quot;none&quot;}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/temperature/source_terms/<a class="el" href="_drag_temp_forcing_8_h_source.html">DragTempForcing.H</a></li>
+<li>/home/runner/work/amr-wind/amr-wind/amr-wind/equation_systems/temperature/source_terms/<a class="el" href="_drag_temp_forcing_8cpp.html">DragTempForcing.cpp</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

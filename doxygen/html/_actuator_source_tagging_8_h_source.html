@@ -1,0 +1,284 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/ActuatorSourceTagging.H Source File &mdash; AMR-Wind 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            AMR-Wind
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../walkthrough/index.html">Walkthrough</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/user.html">User Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer/index.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">How to Cite AMR-Wind</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibrefs.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">AMR-Wind</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/ActuatorSourceTagging.H Source File</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/doxygen/html/_actuator_source_tagging_8_h_source.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="home-runner-work-amr-wind-amr-wind-amr-wind-physics-actuatorsourcetagging-h-source-file">
+<h1>/home/runner/work/amr-wind/amr-wind/amr-wind/physics/ActuatorSourceTagging.H Source File<a class="headerlink" href="#home-runner-work-amr-wind-amr-wind-amr-wind-physics-actuatorsourcetagging-h-source-file" title="Link to this heading"></a></h1>
+<div class="doxygen-content docutils container">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.14.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AMR-Wind API: /home/runner/work/amr-wind/amr-wind/amr-wind/physics/ActuatorSourceTagging.H Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">AMR-Wind API<span id="projectnumber">&#160;v0.1.0</span>
+   </div>
+   <div id="projectbrief">CFD solver for wind plant simulations</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.14.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',false);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a href="dir_d85575251dd712327fe3cf057fa568b4.html">amr-wind</a></li><li class="navelem"><a href="dir_212148f97b8bb53ebaebb3bf8a8b5de4.html">amr-wind</a></li><li class="navelem"><a href="dir_f00f788038d28a6de62e2305131ce6f9.html">physics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="headertitle"><div class="title">ActuatorSourceTagging.H</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="_actuator_source_tagging_8_h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef ACTUATORSOURCETAGGING_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define ACTUATORSOURCETAGGING_H</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="_physics_8_h.html">amr-wind/core/Physics.H</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="_field_8_h.html">amr-wind/core/Field.H</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="_int_field_8_h.html">amr-wind/core/IntField.H</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;AMReX_REAL.H&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">using namespace </span>amrex::literals;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceamr__wind.html">amr_wind</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span></div>
+<div class="foldopen" id="foldopen00016" data-start="{" data-end="};">
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_actuator_source_tagging.html">   16</a></span><span class="keyword">class </span><a class="code hl_function" href="classamr__wind_1_1_actuator_source_tagging.html#adffe9a3ff7510d1858727282b3a21679">ActuatorSourceTagging</a> : <span class="keyword">public</span> Physics::Register&lt;ActuatorSourceTagging&gt;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>{</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_actuator_source_tagging.html#ac451576259372c4792fec5413c865aa2">   19</a></span>    <span class="keyword">static</span> std::string <a class="code hl_function" href="classamr__wind_1_1_actuator_source_tagging.html#ac451576259372c4792fec5413c865aa2">identifier</a>() { <span class="keywordflow">return</span> <span class="stringliteral">&quot;ActuatorSourceTagging&quot;</span>; }</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classamr__wind_1_1_actuator_source_tagging.html#adffe9a3ff7510d1858727282b3a21679">ActuatorSourceTagging</a>(<a class="code hl_class" href="classamr__wind_1_1_c_f_d_sim.html">CFDSim</a>&amp; sim);</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_actuator_source_tagging.html#a7187f0c1a49442928d4f55bb5219e181">   23</a></span>    <a class="code hl_function" href="classamr__wind_1_1_actuator_source_tagging.html#a7187f0c1a49442928d4f55bb5219e181">~ActuatorSourceTagging</a>() <span class="keyword">override</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_actuator_source_tagging.html#a9e144a5fce8295bf1fd217ee43beface">initialize_fields</a>(<span class="keywordtype">int</span> level, <span class="keyword">const</span> amrex::Geometry&amp; geom) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_actuator_source_tagging.html#a621863abb2e4fd6f50cd51496ee37c4f">post_init_actions</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_actuator_source_tagging.html#a5b4017739c012ee2aecc589f0c63aa67">   29</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_actuator_source_tagging.html#a5b4017739c012ee2aecc589f0c63aa67">post_regrid_actions</a>()<span class="keyword"> override </span>{}</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_actuator_source_tagging.html#afc1bb30e5dd88d2cea320dcfd04b2c08">   31</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_actuator_source_tagging.html#afc1bb30e5dd88d2cea320dcfd04b2c08">pre_advance_work</a>()<span class="keyword"> override </span>{}</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classamr__wind_1_1_actuator_source_tagging.html#a7b4a53ca0daf56426be5448ec2e2fdf4">post_advance_work</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_actuator_source_tagging.html#acef0dc16f0a82a42ce3b7733f4085ac1">   36</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classamr__wind_1_1_field_repo.html">FieldRepo</a>&amp; <a class="code hl_variable" href="classamr__wind_1_1_actuator_source_tagging.html#acef0dc16f0a82a42ce3b7733f4085ac1">m_repo</a>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_actuator_source_tagging.html#a36d5d83f41f36e6678c7de840675dafc">   37</a></span>    <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>* <a class="code hl_variable" href="classamr__wind_1_1_actuator_source_tagging.html#a36d5d83f41f36e6678c7de840675dafc">m_act_src</a>{<span class="keyword">nullptr</span>};</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_actuator_source_tagging.html#a8d64664cef8f67df3d3b84aa9b3c4092">   38</a></span>    <a class="code hl_class" href="classamr__wind_1_1_int_field.html">IntField</a>* <a class="code hl_variable" href="classamr__wind_1_1_actuator_source_tagging.html#a8d64664cef8f67df3d3b84aa9b3c4092">m_iblank</a>{<span class="keyword">nullptr</span>};</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_actuator_source_tagging.html#a6199735d9c26caa8a5eef975a515f0a5">   39</a></span>    <a class="code hl_class" href="classamr__wind_1_1_field.html">Field</a>* <a class="code hl_variable" href="classamr__wind_1_1_actuator_source_tagging.html#a6199735d9c26caa8a5eef975a515f0a5">m_tracer</a>{<span class="keyword">nullptr</span>};</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_actuator_source_tagging.html#a74b2c5a2ee810d4258283e8b5be5513d">   40</a></span>    amrex::Real <a class="code hl_variable" href="classamr__wind_1_1_actuator_source_tagging.html#a74b2c5a2ee810d4258283e8b5be5513d">m_src_threshold</a>{0.1_rt};</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_actuator_source_tagging.html#afbc8ac3eed947fdf32c24a9fe3e6b62e">   41</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="classamr__wind_1_1_actuator_source_tagging.html#afbc8ac3eed947fdf32c24a9fe3e6b62e">m_tag_hole</a>{<span class="keyword">false</span>};</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_actuator_source_tagging.html#a1087d7519810ccf907506151b51f424b">   42</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="classamr__wind_1_1_actuator_source_tagging.html#a1087d7519810ccf907506151b51f424b">m_tag_fringe</a>{<span class="keyword">true</span>};</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_actuator_source_tagging.html#ae3ee4a88824b400f13d519f6b0a6a945">   43</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="classamr__wind_1_1_actuator_source_tagging.html#ae3ee4a88824b400f13d519f6b0a6a945">m_has_act_src</a>{<span class="keyword">false</span>};</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classamr__wind_1_1_actuator_source_tagging.html#a807bfd12c6dc44b3315a984bc0acdac0">   44</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="classamr__wind_1_1_actuator_source_tagging.html#a807bfd12c6dc44b3315a984bc0acdac0">m_has_iblank</a>{<span class="keyword">false</span>};</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>};</div>
+</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>} <span class="comment">// namespace amr_wind</span></div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span><span class="preprocessor">#endif </span><span class="comment">/* ACTUATORSOURCETAGGING_H */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="a_field_8_h_html"><div class="ttname"><a href="_field_8_h.html">Field.H</a></div></div>
+<div class="ttc" id="a_int_field_8_h_html"><div class="ttname"><a href="_int_field_8_h.html">IntField.H</a></div></div>
+<div class="ttc" id="a_physics_8_h_html"><div class="ttname"><a href="_physics_8_h.html">Physics.H</a></div></div>
+<div class="ttc" id="aclassamr__wind_1_1_actuator_source_tagging_html_a1087d7519810ccf907506151b51f424b"><div class="ttname"><a href="classamr__wind_1_1_actuator_source_tagging.html#a1087d7519810ccf907506151b51f424b">amr_wind::ActuatorSourceTagging::m_tag_fringe</a></div><div class="ttdeci">bool m_tag_fringe</div><div class="ttdef"><b>Definition</b> ActuatorSourceTagging.H:42</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_actuator_source_tagging_html_a36d5d83f41f36e6678c7de840675dafc"><div class="ttname"><a href="classamr__wind_1_1_actuator_source_tagging.html#a36d5d83f41f36e6678c7de840675dafc">amr_wind::ActuatorSourceTagging::m_act_src</a></div><div class="ttdeci">Field * m_act_src</div><div class="ttdef"><b>Definition</b> ActuatorSourceTagging.H:37</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_actuator_source_tagging_html_a5b4017739c012ee2aecc589f0c63aa67"><div class="ttname"><a href="classamr__wind_1_1_actuator_source_tagging.html#a5b4017739c012ee2aecc589f0c63aa67">amr_wind::ActuatorSourceTagging::post_regrid_actions</a></div><div class="ttdeci">void post_regrid_actions() override</div><div class="ttdef"><b>Definition</b> ActuatorSourceTagging.H:29</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_actuator_source_tagging_html_a6199735d9c26caa8a5eef975a515f0a5"><div class="ttname"><a href="classamr__wind_1_1_actuator_source_tagging.html#a6199735d9c26caa8a5eef975a515f0a5">amr_wind::ActuatorSourceTagging::m_tracer</a></div><div class="ttdeci">Field * m_tracer</div><div class="ttdef"><b>Definition</b> ActuatorSourceTagging.H:39</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_actuator_source_tagging_html_a621863abb2e4fd6f50cd51496ee37c4f"><div class="ttname"><a href="classamr__wind_1_1_actuator_source_tagging.html#a621863abb2e4fd6f50cd51496ee37c4f">amr_wind::ActuatorSourceTagging::post_init_actions</a></div><div class="ttdeci">void post_init_actions() override</div><div class="ttdef"><b>Definition</b> ActuatorSourceTagging.cpp:25</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_actuator_source_tagging_html_a7187f0c1a49442928d4f55bb5219e181"><div class="ttname"><a href="classamr__wind_1_1_actuator_source_tagging.html#a7187f0c1a49442928d4f55bb5219e181">amr_wind::ActuatorSourceTagging::~ActuatorSourceTagging</a></div><div class="ttdeci">~ActuatorSourceTagging() override=default</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_actuator_source_tagging_html_a74b2c5a2ee810d4258283e8b5be5513d"><div class="ttname"><a href="classamr__wind_1_1_actuator_source_tagging.html#a74b2c5a2ee810d4258283e8b5be5513d">amr_wind::ActuatorSourceTagging::m_src_threshold</a></div><div class="ttdeci">amrex::Real m_src_threshold</div><div class="ttdef"><b>Definition</b> ActuatorSourceTagging.H:40</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_actuator_source_tagging_html_a7b4a53ca0daf56426be5448ec2e2fdf4"><div class="ttname"><a href="classamr__wind_1_1_actuator_source_tagging.html#a7b4a53ca0daf56426be5448ec2e2fdf4">amr_wind::ActuatorSourceTagging::post_advance_work</a></div><div class="ttdeci">void post_advance_work() override</div><div class="ttdef"><b>Definition</b> ActuatorSourceTagging.cpp:41</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_actuator_source_tagging_html_a807bfd12c6dc44b3315a984bc0acdac0"><div class="ttname"><a href="classamr__wind_1_1_actuator_source_tagging.html#a807bfd12c6dc44b3315a984bc0acdac0">amr_wind::ActuatorSourceTagging::m_has_iblank</a></div><div class="ttdeci">bool m_has_iblank</div><div class="ttdef"><b>Definition</b> ActuatorSourceTagging.H:44</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_actuator_source_tagging_html_a8d64664cef8f67df3d3b84aa9b3c4092"><div class="ttname"><a href="classamr__wind_1_1_actuator_source_tagging.html#a8d64664cef8f67df3d3b84aa9b3c4092">amr_wind::ActuatorSourceTagging::m_iblank</a></div><div class="ttdeci">IntField * m_iblank</div><div class="ttdef"><b>Definition</b> ActuatorSourceTagging.H:38</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_actuator_source_tagging_html_a9e144a5fce8295bf1fd217ee43beface"><div class="ttname"><a href="classamr__wind_1_1_actuator_source_tagging.html#a9e144a5fce8295bf1fd217ee43beface">amr_wind::ActuatorSourceTagging::initialize_fields</a></div><div class="ttdeci">void initialize_fields(int level, const amrex::Geometry &amp;geom) override</div><div class="ttdef"><b>Definition</b> ActuatorSourceTagging.cpp:19</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_actuator_source_tagging_html_ac451576259372c4792fec5413c865aa2"><div class="ttname"><a href="classamr__wind_1_1_actuator_source_tagging.html#ac451576259372c4792fec5413c865aa2">amr_wind::ActuatorSourceTagging::identifier</a></div><div class="ttdeci">static std::string identifier()</div><div class="ttdef"><b>Definition</b> ActuatorSourceTagging.H:19</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_actuator_source_tagging_html_acef0dc16f0a82a42ce3b7733f4085ac1"><div class="ttname"><a href="classamr__wind_1_1_actuator_source_tagging.html#acef0dc16f0a82a42ce3b7733f4085ac1">amr_wind::ActuatorSourceTagging::m_repo</a></div><div class="ttdeci">const FieldRepo &amp; m_repo</div><div class="ttdef"><b>Definition</b> ActuatorSourceTagging.H:36</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_actuator_source_tagging_html_adffe9a3ff7510d1858727282b3a21679"><div class="ttname"><a href="classamr__wind_1_1_actuator_source_tagging.html#adffe9a3ff7510d1858727282b3a21679">amr_wind::ActuatorSourceTagging::ActuatorSourceTagging</a></div><div class="ttdeci">ActuatorSourceTagging(CFDSim &amp;sim)</div><div class="ttdef"><b>Definition</b> ActuatorSourceTagging.cpp:10</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_actuator_source_tagging_html_ae3ee4a88824b400f13d519f6b0a6a945"><div class="ttname"><a href="classamr__wind_1_1_actuator_source_tagging.html#ae3ee4a88824b400f13d519f6b0a6a945">amr_wind::ActuatorSourceTagging::m_has_act_src</a></div><div class="ttdeci">bool m_has_act_src</div><div class="ttdef"><b>Definition</b> ActuatorSourceTagging.H:43</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_actuator_source_tagging_html_afbc8ac3eed947fdf32c24a9fe3e6b62e"><div class="ttname"><a href="classamr__wind_1_1_actuator_source_tagging.html#afbc8ac3eed947fdf32c24a9fe3e6b62e">amr_wind::ActuatorSourceTagging::m_tag_hole</a></div><div class="ttdeci">bool m_tag_hole</div><div class="ttdef"><b>Definition</b> ActuatorSourceTagging.H:41</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_actuator_source_tagging_html_afc1bb30e5dd88d2cea320dcfd04b2c08"><div class="ttname"><a href="classamr__wind_1_1_actuator_source_tagging.html#afc1bb30e5dd88d2cea320dcfd04b2c08">amr_wind::ActuatorSourceTagging::pre_advance_work</a></div><div class="ttdeci">void pre_advance_work() override</div><div class="ttdef"><b>Definition</b> ActuatorSourceTagging.H:31</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_c_f_d_sim_html"><div class="ttname"><a href="classamr__wind_1_1_c_f_d_sim.html">amr_wind::CFDSim</a></div><div class="ttdef"><b>Definition</b> CFDSim.H:54</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_html"><div class="ttname"><a href="classamr__wind_1_1_field.html">amr_wind::Field</a></div><div class="ttdef"><b>Definition</b> Field.H:112</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_field_repo_html"><div class="ttname"><a href="classamr__wind_1_1_field_repo.html">amr_wind::FieldRepo</a></div><div class="ttdef"><b>Definition</b> FieldRepo.H:86</div></div>
+<div class="ttc" id="aclassamr__wind_1_1_int_field_html"><div class="ttname"><a href="classamr__wind_1_1_int_field.html">amr_wind::IntField</a></div><div class="ttdef"><b>Definition</b> IntField.H:20</div></div>
+<div class="ttc" id="anamespaceamr__wind_html"><div class="ttname"><a href="namespaceamr__wind.html">amr_wind</a></div><div class="ttdoc">This test case is intended as an evaluation of the momentum advection scheme.</div><div class="ttdef"><b>Definition</b> BCInterface.cpp:10</div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
