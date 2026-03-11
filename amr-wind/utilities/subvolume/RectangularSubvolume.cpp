@@ -61,9 +61,8 @@ void RectangularSubvolume::evaluate_inputs()
     }
 
     // **************************************************************
-    // Now that we know which level we're at, we can figure out which (i,j,k)
-    // the origin corresponds to Note we use 1.0001 as a fudge factor since the
-    // division of two reals --> integer will do a floor
+    // Now that we know which level we're at, we can figure out which
+    // (i,j,k) the origin corresponds to
     // **************************************************************
     int i0 = static_cast<int>(std::lround(
         (m_origin[0] - geom[m_lev_for_sub].ProbLo(0)) /
