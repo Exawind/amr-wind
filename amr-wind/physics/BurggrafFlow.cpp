@@ -17,8 +17,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
 UExact::operator()(const amrex::Real x, const amrex::Real y) const
 {
     return 8.0_rt *
-           (std::pow(x, 4) - 2.0_rt * std::pow(x, 3.0_rt) +
-            std::pow(x, 2)) *
+           (std::pow(x, 4) - 2.0_rt * std::pow(x, 3.0_rt) + std::pow(x, 2)) *
            (4.0_rt * std::pow(y, 3.0_rt) - 2.0_rt * y);
 }
 
@@ -85,8 +84,7 @@ void BurggrafFlow::initialize_fields(int level, const amrex::Geometry& geom)
                                   (2.0_rt * std::pow(x, 3.0_rt)) +
                                   std::pow(x, 2);
             const amrex::Real f1 = (4.0_rt * std::pow(x, 3.0_rt)) -
-                                   (6.0_rt * std::pow(x, 2)) +
-                                   (2.0_rt * x);
+                                   (6.0_rt * std::pow(x, 2)) + (2.0_rt * x);
             const amrex::Real f3 = (24.0_rt * x) - 12.0_rt;
             const amrex::Real g = std::pow(y, 4) - std::pow(y, 2);
             const amrex::Real g1 =
@@ -96,11 +94,10 @@ void BurggrafFlow::initialize_fields(int level, const amrex::Geometry& geom)
             const amrex::Real F = (std::pow(x, 5.0_rt) / 5.0_rt) -
                                   (std::pow(x, 4) / 2.0_rt) +
                                   (std::pow(x, 3.0_rt) / 3.0_rt);
-            const amrex::Real F1 = (-4.0_rt * std::pow(x, 6.0_rt)) +
-                                   (12.0_rt * std::pow(x, 5.0_rt)) -
-                                   (14.0_rt * std::pow(x, 4)) +
-                                   (8.0_rt * std::pow(x, 3.0_rt)) -
-                                   (2.0_rt * std::pow(x, 2));
+            const amrex::Real F1 =
+                (-4.0_rt * std::pow(x, 6.0_rt)) +
+                (12.0_rt * std::pow(x, 5.0_rt)) - (14.0_rt * std::pow(x, 4)) +
+                (8.0_rt * std::pow(x, 3.0_rt)) - (2.0_rt * std::pow(x, 2));
             const amrex::Real F2 = f * f / 2.0_rt;
             const amrex::Real G1 = (-24.0_rt * std::pow(y, 5.0_rt)) +
                                    (8.0_rt * std::pow(y, 3.0_rt)) -

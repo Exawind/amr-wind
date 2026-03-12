@@ -101,8 +101,7 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
             const amrex::Real r_2D =
                 std::sqrt(std::pow(y - yc, 2) + std::pow(z - zc, 2));
             const amrex::Real sd_r = -std::sqrt(
-                std::pow(r_2D - reduced_radius, 2) +
-                std::pow(sd_x, 2));
+                std::pow(r_2D - reduced_radius, 2) + std::pow(sd_x, 2));
 
             const bool in_slot_x_ymin =
                 y - yc > radius - depth && std::abs(x - xc) < hwidth;

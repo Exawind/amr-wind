@@ -229,9 +229,9 @@ void viscosity_to_uniform_space(
 
         amrex::ParallelFor(
             b[0], [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
-                mu_arrs[nbx](i, j, k) =
-                    mu_arrs[nbx](i, j, k) * detJ_arrs[nbx](i, j, k) /
-                    std::pow(fac_arrs[nbx](i, j, k, 0), 2);
+                mu_arrs[nbx](i, j, k) = mu_arrs[nbx](i, j, k) *
+                                        detJ_arrs[nbx](i, j, k) /
+                                        std::pow(fac_arrs[nbx](i, j, k, 0), 2);
             });
     }
     // beta accounted for mesh mapping (y-face) = J/fac^2 * mu
@@ -242,9 +242,9 @@ void viscosity_to_uniform_space(
 
         amrex::ParallelFor(
             b[1], [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
-                mu_arrs[nbx](i, j, k) =
-                    mu_arrs[nbx](i, j, k) * detJ_arrs[nbx](i, j, k) /
-                    std::pow(fac_arrs[nbx](i, j, k, 1), 2);
+                mu_arrs[nbx](i, j, k) = mu_arrs[nbx](i, j, k) *
+                                        detJ_arrs[nbx](i, j, k) /
+                                        std::pow(fac_arrs[nbx](i, j, k, 1), 2);
             });
     }
     // beta accounted for mesh mapping (z-face) = J/fac^2 * mu
@@ -255,9 +255,9 @@ void viscosity_to_uniform_space(
 
         amrex::ParallelFor(
             b[2], [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
-                mu_arrs[nbx](i, j, k) =
-                    mu_arrs[nbx](i, j, k) * detJ_arrs[nbx](i, j, k) /
-                    std::pow(fac_arrs[nbx](i, j, k, 2), 2);
+                mu_arrs[nbx](i, j, k) = mu_arrs[nbx](i, j, k) *
+                                        detJ_arrs[nbx](i, j, k) /
+                                        std::pow(fac_arrs[nbx](i, j, k, 2), 2);
             });
     }
     amrex::Gpu::streamSynchronize();

@@ -185,8 +185,7 @@ void KLAxell<Transport>::update_turbulent_viscosity(
                              : Rt;
                     const amrex::Real Cmu_Rt =
                         (Cmu + 0.108_rt * Rt) /
-                        (1.0_rt + 0.308_rt * Rt +
-                         0.00837_rt * std::pow(Rt, 2));
+                        (1.0_rt + 0.308_rt * Rt + 0.00837_rt * std::pow(Rt, 2));
                     mu_arrs[nbx](i, j, k) = rho_arrs[nbx](i, j, k) * Cmu_Rt *
                                             tlscale_arrs[nbx](i, j, k) *
                                             std::sqrt(tke_arrs[nbx](i, j, k)) *
@@ -261,8 +260,7 @@ void KLAxell<Transport>::update_turbulent_viscosity(
                              : Rt;
                     const amrex::Real Cmu_Rt =
                         (Cmu + 0.108_rt * Rt) /
-                        (1.0_rt + 0.308_rt * Rt +
-                         0.00837_rt * std::pow(Rt, 2));
+                        (1.0_rt + 0.308_rt * Rt + 0.00837_rt * std::pow(Rt, 2));
                     mu_arrs[nbx](i, j, k) = rho_arrs[nbx](i, j, k) * Cmu_Rt *
                                             tlscale_arrs[nbx](i, j, k) *
                                             std::sqrt(tke_arrs[nbx](i, j, k));
@@ -318,9 +316,8 @@ void KLAxell<Transport>::update_alphaeff(Field& alphaeff)
                 amrex::Real epsilon = std::pow(Cmu, 3.0_rt) *
                                       std::pow(tke_arrs[nbx](i, j, k), 1.5_rt) /
                                       tlscale_arrs[nbx](i, j, k);
-                amrex::Real Rt =
-                    std::pow(tke_arrs[nbx](i, j, k) / epsilon, 2) *
-                    stratification;
+                amrex::Real Rt = std::pow(tke_arrs[nbx](i, j, k) / epsilon, 2) *
+                                 stratification;
                 Rt = (Rt > Rtc) ? Rt
                                 : amrex::max<amrex::Real>(
                                       Rt, Rt - (std::pow(Rt - Rtc, 2) /

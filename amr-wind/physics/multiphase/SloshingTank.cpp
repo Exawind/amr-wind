@@ -60,10 +60,10 @@ void SloshingTank::initialize_fields(int level, const amrex::Geometry& geom)
             const amrex::Real z = problo[2] + ((k + 0.5_rt) * dx[2]);
             const amrex::Real z0 =
                 water_level +
-                (Amp * std::exp(
-                           -kappa *
-                           (std::pow(x - problo[0] - (0.5_rt * Lx), 2) +
-                            std::pow(y - problo[1] - (0.5_rt * Ly), 2))));
+                (Amp *
+                 std::exp(
+                     -kappa * (std::pow(x - problo[0] - (0.5_rt * Lx), 2) +
+                               std::pow(y - problo[1] - (0.5_rt * Ly), 2))));
             phi_arrs[nbx](i, j, k) = z0 - z;
         });
 
@@ -77,11 +77,10 @@ void SloshingTank::initialize_fields(int level, const amrex::Geometry& geom)
                 const amrex::Real z = problo[2] + (k * dx[2]);
                 const amrex::Real z0 =
                     water_level +
-                    (Amp *
-                     std::exp(
-                         -kappa *
-                         (std::pow(x - problo[0] - (0.5_rt * Lx), 2) +
-                          std::pow(y - problo[1] - (0.5_rt * Ly), 2))));
+                    (Amp * std::exp(
+                               -kappa *
+                               (std::pow(x - problo[0] - (0.5_rt * Lx), 2) +
+                                std::pow(y - problo[1] - (0.5_rt * Ly), 2))));
                 // Integrated (top-down in z) phase heights to pressure node
                 amrex::Real ih_g = amrex::max<amrex::Real>(
                     0.0_rt,

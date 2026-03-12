@@ -218,8 +218,8 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
                   std::pow(x, 3.0_rt) * dx;
 
             a5 += std::pow(ddata.tip_correction[ip], 2) *
-                  std::pow(ddata.root_correction[ip], 2) *
-                  std::pow(x, 3.0_rt) * dx;
+                  std::pow(ddata.root_correction[ip], 2) * std::pow(x, 3.0_rt) *
+                  dx;
         }
 
         // step 2: determine the circulation (q0) from a1, a2 and Ct

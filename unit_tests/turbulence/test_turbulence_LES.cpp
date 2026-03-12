@@ -212,9 +212,9 @@ TEST_F(TurbLESTest, test_smag_setup_calc)
     auto max_val = utils::field_max(muturb);
     const amrex::Real tol =
         std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
-    const amrex::Real smag_answer =
-        rho0 * std::pow(Cs, 2) *
-        std::pow(std::cbrt(m_dx * m_dy * m_dz), 2) * srate;
+    const amrex::Real smag_answer = rho0 * std::pow(Cs, 2) *
+                                    std::pow(std::cbrt(m_dx * m_dy * m_dz), 2) *
+                                    srate;
     EXPECT_NEAR(min_val, smag_answer, tol);
     EXPECT_NEAR(max_val, smag_answer, tol);
 
