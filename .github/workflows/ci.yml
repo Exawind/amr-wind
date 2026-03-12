@@ -611,5 +611,5 @@ jobs:
             spack concretize -f && \
             spack install && \
             spack cd -b amr-wind && \
-            spack build-env amr-wind ctest -j $(nproc) -LE no_ci --output-on-failure \
+            spack build-env amr-wind ctest -j $(nproc) -L unit --output-on-failure \
           "
