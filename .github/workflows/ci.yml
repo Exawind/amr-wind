@@ -48,7 +48,7 @@ jobs:
             ctest_args: -LE no_ci
             ccache_size: 100M
           - build_type: Debug
-            ctest_args: -L unit
+            ctest_args: -L no_ci
             ccache_size: 250M
         exclude:
           - os: macos-latest
@@ -611,5 +611,5 @@ jobs:
             spack concretize -f && \
             spack install && \
             spack cd -b amr-wind && \
-            spack build-env amr-wind ctest -j $(nproc) -L unit --output-on-failure \
+            spack build-env amr-wind ctest -j $(nproc) -L no_ci --output-on-failure \
           "
