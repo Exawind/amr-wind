@@ -180,10 +180,10 @@ TEST_F(TurbRANSTest, test_1eqKrans_setup_calc)
                                 std::pow(tke_val, 1.5_rt) /
                                 (tlscale_val + 1.0e-3_rt);
     const amrex::Real stratification = 0.0_rt;
-    const amrex::Real Rt = std::pow(tke_val / epsilon, 2.0_rt) * stratification;
+    const amrex::Real Rt = std::pow(tke_val / epsilon, 2) * stratification;
     const amrex::Real Cmu_Rt =
         (0.556_rt + 0.108_rt * Rt) /
-        (1.0_rt + 0.308_rt * Rt + 0.00837_rt * std::pow(Rt, 2.0_rt));
+        (1.0_rt + 0.308_rt * Rt + 0.00837_rt * std::pow(Rt, 2));
     const amrex::Real tol = 0.12_rt;
     const amrex::Real nut_max =
         rho0 * Cmu_Rt * tlscale_val * std::sqrt(tke_val);

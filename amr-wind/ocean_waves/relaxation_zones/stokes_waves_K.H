@@ -56,7 +56,7 @@ AMREX_FORCE_INLINE amrex::Real stokes_wave_length(
         const amrex::Real C2 =
             C0 * (2.0_rt + 7.0_rt * S * S) / (4.0_rt * C * C);
         const amrex::Real numterm_C4 =
-            (4.0_rt + (32.0_rt * S) - (116.0_rt * std::pow(S, 2.0_rt)) -
+            (4.0_rt + (32.0_rt * S) - (116.0_rt * std::pow(S, 2)) -
              (400.0_rt * std::pow(S, 3.0_rt)) -
              (71.0_rt * std::pow(S, 4.0_rt)) +
              (146.0_rt * std::pow(S, 5.0_rt)));
@@ -64,22 +64,22 @@ AMREX_FORCE_INLINE amrex::Real stokes_wave_length(
             C0 * numterm_C4 / (32.0_rt * std::pow(C, 5.0_rt));
         // Calculate pure derivates
         const amrex::Real dSdk = -2.0_rt * d * std::sinh(2.0_rt * k * d) /
-                                 std::pow(std::cosh(2.0_rt * k * d), 2.0_rt);
+                                 std::pow(std::cosh(2.0_rt * k * d), 2);
         const amrex::Real dCdk = -dSdk;
         const amrex::Real dC0dk =
-            d / (2.0_rt * C0 * std::pow(std::cosh(k * d), 2.0_rt));
+            d / (2.0_rt * C0 * std::pow(std::cosh(k * d), 2));
         // Calculate derivatives with products
         const amrex::Real dC2dk =
-            (4.0_rt * std::pow(C, 2.0_rt) *
-                 (dC0dk * (2.0_rt + 7.0_rt * std::pow(S, 2.0_rt)) +
+            (4.0_rt * std::pow(C, 2) *
+                 (dC0dk * (2.0_rt + 7.0_rt * std::pow(S, 2)) +
                   C0 * 14.0_rt * S * dSdk) -
-             C0 * (2.0_rt + 7.0_rt * std::pow(S, 2.0_rt)) * 8.0_rt * C * dCdk) /
+             C0 * (2.0_rt + 7.0_rt * std::pow(S, 2)) * 8.0_rt * C * dCdk) /
             (16.0_rt * std::pow(C, 4.0_rt));
         const amrex::Real dC4dk =
             (32.0_rt * std::pow(C, 5.0_rt) *
                  (dC0dk * numterm_C4 +
                   C0 * (32.0_rt * dSdk - 232.0_rt * S * dSdk -
-                        1200.0_rt * std::pow(S, 2.0_rt) * dSdk -
+                        1200.0_rt * std::pow(S, 2) * dSdk -
                         284.0_rt * std::pow(S, 3.0_rt) * dSdk +
                         730.0_rt * std::pow(S, 4.0_rt))) -
              C0 * numterm_C4 * 160.0_rt * std::pow(C, 4.0_rt) * dCdk) /
@@ -87,17 +87,17 @@ AMREX_FORCE_INLINE amrex::Real stokes_wave_length(
 
         // Calculate derivative for loop convergence
         amrex::Real dfdk =
-            (g * std::pow(C0, 2.0_rt)) + (g * k * 2.0_rt * C0 * dC0dk);
+            (g * std::pow(C0, 2)) + (g * k * 2.0_rt * C0 * dC0dk);
         // Add additional terms depending on order
         if (order >= 2) {
-            dfdk += (g * (2.0_rt * C0 * std::pow(eps, 2.0_rt) * C2 +
-                          std::pow(eps, 4.0_rt) * std::pow(C2, 2.0_rt))) +
+            dfdk += (g * (2.0_rt * C0 * std::pow(eps, 2) * C2 +
+                          std::pow(eps, 4.0_rt) * std::pow(C2, 2))) +
                     (g * k *
-                     (2.0_rt * dC0dk * std::pow(eps, 2.0_rt) * C2 +
+                     (2.0_rt * dC0dk * std::pow(eps, 2) * C2 +
                       2.0_rt * C0 *
                           (2.0_rt * eps * depsdk * C2 +
-                           std::pow(eps, 2.0_rt) * dC2dk) +
-                      4.0_rt * std::pow(eps, 3.0_rt) * std::pow(C2, 2.0_rt) *
+                           std::pow(eps, 2) * dC2dk) +
+                      4.0_rt * std::pow(eps, 3.0_rt) * std::pow(C2, 2) *
                           depsdk +
                       std::pow(eps, 4.0_rt) * 2.0_rt * C2 * dC2dk));
         }
@@ -105,31 +105,31 @@ AMREX_FORCE_INLINE amrex::Real stokes_wave_length(
             dfdk +=
                 (g * (2.0_rt * std::pow(eps, 4.0_rt) * C0 * C4 +
                       2.0_rt * std::pow(eps, 6.0_rt) * C2 * C4 +
-                      std::pow(eps, 8.0_rt) * std::pow(C4, 2.0_rt))) +
+                      std::pow(eps, 8.0_rt) * std::pow(C4, 2))) +
                 (g * k *
                  (8.0_rt * std::pow(eps, 3.0_rt) * depsdk * C0 * C4 +
                   2.0_rt * std::pow(eps, 4.0_rt) * (C0 * dC4dk + C4 * dC0dk) +
                   12.0_rt * std::pow(eps, 5.0_rt) * depsdk * C2 * C4 +
                   2.0_rt * std::pow(eps, 6.0_rt) * (C2 * dC4dk + C4 * dC2dk) +
                   8.0_rt * std::pow(eps, 7.0_rt) * depsdk *
-                      std::pow(C4, 2.0_rt) +
+                      std::pow(C4, 2) +
                   std::pow(eps, 8.0_rt) * 2.0_rt * C4 * dC4dk));
         }
         k = k - (f / dfdk);
 
         iter += 1;
-        f = g * k * std::pow(C0, 2.0_rt);
+        f = g * k * std::pow(C0, 2);
         // Add additional terms depending on order
         if (order >= 2) {
             f += g * k *
-                 (2.0_rt * C0 * std::pow(eps, 2.0_rt) * C2 +
-                  std::pow(eps, 4.0_rt) * std::pow(C2, 2.0_rt));
+                 (2.0_rt * C0 * std::pow(eps, 2) * C2 +
+                  std::pow(eps, 4.0_rt) * std::pow(C2, 2));
         }
         if (order >= 4) {
             f += g * k *
                  (2.0_rt * std::pow(eps, 4.0_rt) * C0 * C4 +
                   2.0_rt * std::pow(eps, 6.0_rt) * C2 * C4 +
-                  std::pow(eps, 8.0_rt) * std::pow(C4, 2.0_rt));
+                  std::pow(eps, 8.0_rt) * std::pow(C4, 2));
         }
         // Subtract omega^2 to measure convergence
         f -= omega * omega;
@@ -189,22 +189,22 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_coefficients(
     c0 = std::sqrt(Th);
     a11 = 1.0_rt / std::sinh(kd); // Hyperbolic cosecant
     // Second order coefficients
-    a22 = 3.0_rt * std::pow(S, 2.0_rt) / (2.0_rt * std::pow(C, 2.0_rt));
+    a22 = 3.0_rt * std::pow(S, 2) / (2.0_rt * std::pow(C, 2));
     b22 = CTh * (1.0_rt + 2.0_rt * S) / (2.0_rt * C);
-    c2 = std::sqrt(Th) * (2.0_rt + 7.0_rt * std::pow(S, 2.0_rt)) /
-         (4.0_rt * std::pow(C, 2.0_rt));
+    c2 = std::sqrt(Th) * (2.0_rt + 7.0_rt * std::pow(S, 2)) /
+         (4.0_rt * std::pow(C, 2));
     if (stokes_order == 2) {
         return;
     }
 
     // Third order coefficients
-    a31 = (-4.0_rt - 20.0_rt * S + 10.0_rt * std::pow(S, 2.0_rt) -
+    a31 = (-4.0_rt - 20.0_rt * S + 10.0_rt * std::pow(S, 2) -
            13.0_rt * std::pow(S, 3.0_rt)) /
           (8.0_rt * Sh * std::pow(C, 3.0_rt));
-    a33 = (-2.0_rt * std::pow(S, 2.0_rt) + 11.0_rt * std::pow(S, 3.0_rt)) /
+    a33 = (-2.0_rt * std::pow(S, 2) + 11.0_rt * std::pow(S, 3.0_rt)) /
           (8.0_rt * Sh * std::pow(C, 3.0_rt));
     b31 = -3.0_rt *
-          (1.0_rt + 3.0_rt * S + 3.0_rt * std::pow(S, 2.0_rt) +
+          (1.0_rt + 3.0_rt * S + 3.0_rt * std::pow(S, 2) +
            2.0_rt * std::pow(S, 3.0_rt)) /
           (8.0_rt * std::pow(C, 3.0_rt));
     if (stokes_order == 3) {
@@ -212,7 +212,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_coefficients(
     }
 
     // Fourth order coefficients
-    a42 = (12.0_rt * S - 14.0_rt * std::pow(S, 2.0_rt) -
+    a42 = (12.0_rt * S - 14.0_rt * std::pow(S, 2) -
            264.0_rt * std::pow(S, 3.0_rt) - 45.0_rt * std::pow(S, 4.0_rt) -
            13.0_rt * std::pow(S, 5.0_rt)) /
           (24.0_rt * std::pow(C, 5.0_rt));
@@ -220,17 +220,17 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_coefficients(
            291.0_rt * std::pow(S, 5.0_rt) + 278.0_rt * std::pow(S, 6.0_rt)) /
           (48.0_rt * (3.0_rt + 2.0_rt * S) * std::pow(C, 5.0_rt));
     b42 = CTh *
-          (6.0_rt - 26.0_rt * S - 182.0_rt * std::pow(S, 2.0_rt) -
+          (6.0_rt - 26.0_rt * S - 182.0_rt * std::pow(S, 2) -
            204.0_rt * std::pow(S, 3.0_rt) - 25.0_rt * std::pow(S, 4.0_rt) +
            26.0_rt * std::pow(S, 5.0_rt)) /
           (6.0_rt * (3.0_rt + 2.0_rt * S) * std::pow(C, 4.0_rt));
     b44 = CTh *
-          (24.0_rt + 92.0_rt * S + 122.0_rt * std::pow(S, 2.0_rt) +
+          (24.0_rt + 92.0_rt * S + 122.0_rt * std::pow(S, 2) +
            66.0_rt * std::pow(S, 3.0_rt) + 67.0_rt * std::pow(S, 4.0_rt) +
            34.0_rt * std::pow(S, 5.0_rt)) /
           (24.0_rt * (3.0_rt + 2.0_rt * S) * std::pow(C, 4.0_rt));
     c4 = std::sqrt(Th) *
-         (4.0_rt + 32.0_rt * S - 116.0_rt * std::pow(S, 2.0_rt) -
+         (4.0_rt + 32.0_rt * S - 116.0_rt * std::pow(S, 2) -
           400.0_rt * std::pow(S, 3.0_rt) - 71.0_rt * std::pow(S, 4.0_rt) +
           146.0_rt * std::pow(S, 5.0_rt)) /
          (32.0_rt * std::pow(C, 5.0_rt));
@@ -239,13 +239,13 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_coefficients(
     }
 
     // Fifth order coefficients
-    a51 = (-1184.0_rt + 32.0_rt * S + 13232.0_rt * std::pow(S, 2.0_rt) +
+    a51 = (-1184.0_rt + 32.0_rt * S + 13232.0_rt * std::pow(S, 2) +
            21712.0_rt * std::pow(S, 3.0_rt) + 20940.0_rt * std::pow(S, 4.0_rt) +
            12554.0_rt * std::pow(S, 5.0_rt) - 500.0_rt * std::pow(S, 6.0_rt) -
            3341.0_rt * std::pow(S, 7.0_rt) - 670.0_rt * std::pow(S, 8.0_rt)) /
           (64.0_rt * Sh * (3.0_rt + 2.0_rt * S) * (4.0_rt + S) *
            std::pow(C, 6.0_rt));
-    a53 = (4.0_rt * S + 105.0_rt * std::pow(S, 2.0_rt) +
+    a53 = (4.0_rt * S + 105.0_rt * std::pow(S, 2) +
            198.0_rt * std::pow(S, 3.0_rt) - 1376.0_rt * std::pow(S, 4.0_rt) -
            1302.0_rt * std::pow(S, 5.0_rt) - 117.0_rt * std::pow(S, 6.0_rt) +
            58.0_rt * std::pow(S, 7.0_rt)) /
@@ -257,14 +257,14 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_coefficients(
            std::pow(C, 6.0_rt));
     b53 =
         9.0_rt *
-        (132.0_rt + 17.0_rt * S - 2216.0_rt * std::pow(S, 2.0_rt) -
+        (132.0_rt + 17.0_rt * S - 2216.0_rt * std::pow(S, 2) -
          5897.0_rt * std::pow(S, 3.0_rt) - 6292.0_rt * std::pow(S, 4.0_rt) -
          2687.0_rt * std::pow(S, 5.0_rt) + 194.0_rt * std::pow(S, 6.0_rt) +
          467.0_rt * std::pow(S, 7.0_rt) + 82.0_rt * std::pow(S, 8.0_rt)) /
         (128.0_rt * (3.0_rt + 2.0_rt * S) * (4.0_rt + S) * std::pow(C, 6.0_rt));
     b55 =
         5.0_rt *
-        (300.0_rt + 1579.0_rt * S + 3176.0_rt * std::pow(S, 2.0_rt) +
+        (300.0_rt + 1579.0_rt * S + 3176.0_rt * std::pow(S, 2) +
          2949.0_rt * std::pow(S, 3.0_rt) + 1188.0_rt * std::pow(S, 4.0_rt) +
          675.0_rt * std::pow(S, 5.0_rt) + 1326.0_rt * std::pow(S, 6.0_rt) +
          827.0_rt * std::pow(S, 7.0_rt) + 130.0_rt * std::pow(S, 8.0_rt)) /
@@ -312,14 +312,14 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_waves(
 
     const amrex::Real eps = wavenumber * wave_height / 2.0_rt; // Steepness (ka)
     const amrex::Real c =
-        (c0 + std::pow(eps, 2.0_rt) * c2 + std::pow(eps, 4.0_rt) * c4) *
+        (c0 + std::pow(eps, 2) * c2 + std::pow(eps, 4.0_rt) * c4) *
         std::sqrt(g / wavenumber);
 
     const amrex::Real omega = c * wavenumber;
     const amrex::Real phase = (wavenumber * x) - (omega * time) - phase_offset;
 
     eta = ((eps * std::cos(phase) // first order term
-            + std::pow(eps, 2.0_rt) * b22 *
+            + std::pow(eps, 2) * b22 *
                   std::cos(2.0_rt * phase) // second order term
             + std::pow(eps, 3.0_rt) * b31 *
                   (std::cos(phase) - std::cos(3.0_rt * phase)) +

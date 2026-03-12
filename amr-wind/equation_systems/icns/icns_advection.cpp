@@ -411,7 +411,7 @@ void MacProjOp::mac_proj_to_uniform_space(
                     detJ_arrs[nbx](i, j, k) / fac_arrs[nbx](i, j, k, 0);
                 rho_arrs[nbx](i, j, k) =
                     ovst_fac * detJ_arrs[nbx](i, j, k) /
-                    std::pow(fac_arrs[nbx](i, j, k, 0), 2.0_rt) /
+                    std::pow(fac_arrs[nbx](i, j, k, 0), 2) /
                     rho_arrs[nbx](i, j, k);
             });
     }
@@ -429,7 +429,7 @@ void MacProjOp::mac_proj_to_uniform_space(
                     detJ_arrs[nbx](i, j, k) / fac_arrs[nbx](i, j, k, 1);
                 rho_arrs[nbx](i, j, k) =
                     ovst_fac * detJ_arrs[nbx](i, j, k) /
-                    std::pow(fac_arrs[nbx](i, j, k, 1), 2.0_rt) /
+                    std::pow(fac_arrs[nbx](i, j, k, 1), 2) /
                     rho_arrs[nbx](i, j, k);
             });
     }
@@ -447,7 +447,7 @@ void MacProjOp::mac_proj_to_uniform_space(
                     detJ_arrs[nbx](i, j, k) / fac_arrs[nbx](i, j, k, 2);
                 rho_arrs[nbx](i, j, k) =
                     ovst_fac * detJ_arrs[nbx](i, j, k) /
-                    std::pow(fac_arrs[nbx](i, j, k, 2), 2.0_rt) /
+                    std::pow(fac_arrs[nbx](i, j, k, 2), 2) /
                     rho_arrs[nbx](i, j, k);
             });
     }

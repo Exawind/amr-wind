@@ -164,7 +164,7 @@ TEST_F(ABLMeshTest, abl_local_wall_model)
     const amrex::Real dz = sim().mesh().Geom(0).CellSizeArray()[2];
     const amrex::Real zref = 0.5_rt * dz;
     const amrex::Real utau = kappa * vval / (std::log(zref / z0));
-    const amrex::Real tau_wall = std::pow(utau, 2.0_rt);
+    const amrex::Real tau_wall = std::pow(utau, 2);
     const amrex::Real vexpct = vval + (dt * (0.0_rt - tau_wall) / dz);
     EXPECT_NEAR(vexpct, vbase, tol);
 }
@@ -265,7 +265,7 @@ TEST_F(ABLMeshTest, abl_donelan_wall_model)
 
     // Calculate expected velocity after one step
     const amrex::Real dz = sim().mesh().Geom(0).CellSizeArray()[2];
-    const amrex::Real tau_wall = 0.0024_rt * std::pow(vval, 2.0_rt);
+    const amrex::Real tau_wall = 0.0024_rt * std::pow(vval, 2);
     const amrex::Real vexpct = vval + (dt * (0.0_rt - tau_wall) / dz);
     EXPECT_NEAR(vexpct, vbase, tol);
 }

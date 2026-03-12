@@ -60,7 +60,7 @@ void initialize_levelset(
             lvs_arr(i, j, k) =
                 (1.9_rt * dx) +
                 (0.1_rt * dx *
-                 std::pow(static_cast<amrex::Real>(j) - 0.3_rt, 2.0_rt));
+                 std::pow(static_cast<amrex::Real>(j) - 0.3_rt, 2));
         } else if (s == 2) {
             // Cosine profile
             lvs_arr(i, j, k) =

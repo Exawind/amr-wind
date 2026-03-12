@@ -116,16 +116,16 @@ TEST_F(WaveTheoriesTest, StokesWavesFreeSurfaceProfile)
                     (std::exp(4.0_rt * wavenumber * water_depth) + 1.0_rt);
     amrex::Real C = 1.0_rt - S;
     amrex::Real C0 = std::sqrt(std::tanh(wavenumber * water_depth));
-    amrex::Real C2 = C0 * (2.0_rt + 7.0_rt * std::pow(S, 2.0_rt)) /
-                     (4.0_rt * std::pow(C, 2.0_rt));
+    amrex::Real C2 = C0 * (2.0_rt + 7.0_rt * std::pow(S, 2)) /
+                     (4.0_rt * std::pow(C, 2));
     amrex::Real C4 =
         C0 *
-        (4.0_rt + 32.0_rt * S - 116.0_rt * std::pow(S, 2.0_rt) -
+        (4.0_rt + 32.0_rt * S - 116.0_rt * std::pow(S, 2) -
          400.0_rt * std::pow(S, 3.0_rt) - 71.0_rt * std::pow(S, 4.0_rt) +
          146.0_rt * std::pow(S, 5.0_rt)) /
         (32.0_rt * std::pow(C, 5.0_rt));
     amrex::Real wave_speed =
-        (C0 + std::pow(eps, 2.0_rt) * C2 + std::pow(eps, 4.0_rt) * C4) *
+        (C0 + std::pow(eps, 2) * C2 + std::pow(eps, 4.0_rt) * C4) *
         std::sqrt(g / wavenumber);
 
     amrex::Real omega = wave_speed * wavenumber;
@@ -134,7 +134,7 @@ TEST_F(WaveTheoriesTest, StokesWavesFreeSurfaceProfile)
     // Check against Eq. (14) from Fenton 1985
     amrex::Real eta_theory =
         ((eps * std::cos(phase) +
-          std::pow(eps, 2.0_rt) * B22 * std::cos(2.0_rt * phase) +
+          std::pow(eps, 2) * B22 * std::cos(2.0_rt * phase) +
           std::pow(eps, 3.0_rt) * B31 *
               (std::cos(phase) - std::cos(3.0_rt * phase)) +
           std::pow(eps, 4.0_rt) * (B42 * std::cos(2.0_rt * phase) +
@@ -186,7 +186,7 @@ TEST_F(WaveTheoriesTest, StokesWavesFreeSurfaceProfile)
     C2 = 0.5_rt;
     C4 = 0.125_rt;
     wave_speed =
-        (C0 + std::pow(eps, 2.0_rt) * C2 + std::pow(eps, 4.0_rt) * C4) *
+        (C0 + std::pow(eps, 2) * C2 + std::pow(eps, 4.0_rt) * C4) *
         std::sqrt(g / wavenumber);
 
     omega = wave_speed * wavenumber;
@@ -194,7 +194,7 @@ TEST_F(WaveTheoriesTest, StokesWavesFreeSurfaceProfile)
 
     // Matches Eq. (18) from Fenton 1985
     eta_theory = ((eps * std::cos(phase) +
-                   std::pow(eps, 2.0_rt) * B22 * std::cos(2.0_rt * phase) +
+                   std::pow(eps, 2) * B22 * std::cos(2.0_rt * phase) +
                    std::pow(eps, 3.0_rt) * B31 *
                        (std::cos(phase) - std::cos(3.0_rt * phase)) +
                    std::pow(eps, 4.0_rt) * (B42 * std::cos(2.0_rt * phase) +
@@ -258,16 +258,16 @@ TEST_F(WaveTheoriesTest, StokesWavesVelocityComponents)
         (std::exp(4.0_rt * wavenumber * water_depth) + 1.0_rt);
     const amrex::Real C = 1.0_rt - S;
     const amrex::Real C0 = std::sqrt(std::tanh(wavenumber * water_depth));
-    const amrex::Real C2 = C0 * (2.0_rt + 7.0_rt * std::pow(S, 2.0_rt)) /
-                           (4.0_rt * std::pow(C, 2.0_rt));
+    const amrex::Real C2 = C0 * (2.0_rt + 7.0_rt * std::pow(S, 2)) /
+                           (4.0_rt * std::pow(C, 2));
     const amrex::Real C4 =
         C0 *
-        (4.0_rt + 32.0_rt * S - 116.0_rt * std::pow(S, 2.0_rt) -
+        (4.0_rt + 32.0_rt * S - 116.0_rt * std::pow(S, 2) -
          400.0_rt * std::pow(S, 3.0_rt) - 71.0_rt * std::pow(S, 4.0_rt) +
          146.0_rt * std::pow(S, 5.0_rt)) /
         (32.0_rt * std::pow(C, 5.0_rt));
     const amrex::Real wave_speed =
-        (C0 + std::pow(eps, 2.0_rt) * C2 + std::pow(eps, 4.0_rt) * C4) *
+        (C0 + std::pow(eps, 2) * C2 + std::pow(eps, 4.0_rt) * C4) *
         std::sqrt(g / wavenumber);
 
     const amrex::Real omega = wave_speed * wavenumber;
@@ -367,12 +367,12 @@ TEST_F(WaveTheoriesTest, StokesWaveLength)
     amrex::Real C2 = C0 * (2.0_rt + 7.0_rt * S * S) / (4.0_rt * C * C);
     const amrex::Real C4 =
         C0 *
-        (4.0_rt + 32.0_rt * S - 116.0_rt * std::pow(S, 2.0_rt) -
+        (4.0_rt + 32.0_rt * S - 116.0_rt * std::pow(S, 2) -
          400.0_rt * std::pow(S, 3.0_rt) - 71.0_rt * std::pow(S, 4.0_rt) +
          146.0_rt * std::pow(S, 5.0_rt)) /
         (32.0_rt * std::pow(C, 5.0_rt));
     const amrex::Real LHS1 =
-        C0 + (std::pow(eps, 2.0_rt) * C2) + (std::pow(eps, 4.0_rt) * C4);
+        C0 + (std::pow(eps, 2) * C2) + (std::pow(eps, 4.0_rt) * C4);
     EXPECT_NEAR(
         LHS1, RHS1, std::numeric_limits<amrex::Real>::epsilon() * 1.0e8_rt);
 
@@ -396,7 +396,7 @@ TEST_F(WaveTheoriesTest, StokesWaveLength)
 
     C0 = std::sqrt(std::tanh(k * water_depth));
     C2 = C0 * (2.0_rt + 7.0_rt * S * S) / (4.0_rt * C * C);
-    const amrex::Real LHS2 = C0 + (std::pow(eps, 2.0_rt) * C2);
+    const amrex::Real LHS2 = C0 + (std::pow(eps, 2) * C2);
     EXPECT_NEAR(
         LHS2, RHS2, std::numeric_limits<amrex::Real>::epsilon() * 1.0e8_rt);
 }

@@ -206,19 +206,19 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
             const amrex::Real x =
                 amrex::max<amrex::Real>((ip + 0.5_rt) * dx, machine_eps);
 
-            a1 += std::pow(ddata.tip_correction[ip], 2.0_rt) *
-                  std::pow(ddata.root_correction[ip], 2.0_rt) / x * dx;
+            a1 += std::pow(ddata.tip_correction[ip], 2) *
+                  std::pow(ddata.root_correction[ip], 2) / x * dx;
 
             a2 += ddata.tip_correction[ip] * ddata.root_correction[ip] * x * dx;
 
-            a3 += std::pow(ddata.tip_correction[ip], 2.0_rt) *
-                  std::pow(ddata.root_correction[ip], 2.0_rt) * x * dx;
+            a3 += std::pow(ddata.tip_correction[ip], 2) *
+                  std::pow(ddata.root_correction[ip], 2) * x * dx;
 
             a4 += ddata.tip_correction[ip] * ddata.root_correction[ip] *
                   std::pow(x, 3.0_rt) * dx;
 
-            a5 += std::pow(ddata.tip_correction[ip], 2.0_rt) *
-                  std::pow(ddata.root_correction[ip], 2.0_rt) *
+            a5 += std::pow(ddata.tip_correction[ip], 2) *
+                  std::pow(ddata.root_correction[ip], 2) *
                   std::pow(x, 3.0_rt) * dx;
         }
 
@@ -229,7 +229,7 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
         // q0 = --------------------------------------------------------------
         //                            a1
 
-        const amrex::Real term1 = std::pow((a2 * lambda) + (a3 * S0), 2.0_rt);
+        const amrex::Real term1 = std::pow((a2 * lambda) + (a3 * S0), 2);
         const amrex::Real term2 =
             a1 * (0.5_rt * Ct - 2.0_rt * a4 * lambda * S0 - a5 * S0 * S0);
         const amrex::Real term3 = (a2 * lambda) + (a3 * S0);
@@ -309,7 +309,7 @@ struct ComputeForceOp<Joukowsky, ActSrcDisk>
         // equation 20
         const amrex::Real eq_20_denominator = amrex::max<amrex::Real>(
             0.5_rt * std::numbers::pi_v<amrex::Real> * ddata.density *
-                std::pow(ddata.radius(), 2.0_rt) * std::pow(U_ref, 3.0_rt),
+                std::pow(ddata.radius(), 2) * std::pow(U_ref, 3.0_rt),
             machine_eps);
 
         ddata.current_power =

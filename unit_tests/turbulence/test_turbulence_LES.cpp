@@ -213,8 +213,8 @@ TEST_F(TurbLESTest, test_smag_setup_calc)
     const amrex::Real tol =
         std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
     const amrex::Real smag_answer =
-        rho0 * std::pow(Cs, 2.0_rt) *
-        std::pow(std::cbrt(m_dx * m_dy * m_dz), 2.0_rt) * srate;
+        rho0 * std::pow(Cs, 2) *
+        std::pow(std::cbrt(m_dx * m_dy * m_dz), 2) * srate;
     EXPECT_NEAR(min_val, smag_answer, tol);
     EXPECT_NEAR(max_val, smag_answer, tol);
 
@@ -573,8 +573,8 @@ TEST_F(TurbLESTest, test_kosovic_setup_calc)
     const amrex::Real tol =
         std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
     const amrex::Real kosovic_answer =
-        rho0 * std::pow(kosovic_Cs, 2.0_rt) *
-        std::pow(std::cbrt(m_dx * m_dy * m_dz), 2.0_rt) * srate;
+        rho0 * std::pow(kosovic_Cs, 2) *
+        std::pow(std::cbrt(m_dx * m_dy * m_dz), 2) * srate;
     EXPECT_NEAR(min_val, kosovic_answer, tol);
     EXPECT_NEAR(max_val, kosovic_answer, tol);
 
