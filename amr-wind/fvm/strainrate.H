@@ -79,10 +79,10 @@ struct StrainRate
                   cm1 * phi(i, j, k - 1, 2)) *
                  idx[2];
 
-            strphi(i, j, k) = std::sqrt(
+            strphi(i, j, k) = static_cast<amrex::Real>(std::sqrt(
                 (2.0_rt * std::pow(ux, 2)) + (2.0_rt * std::pow(vy, 2)) +
                 (2.0_rt * std::pow(wz, 2)) + std::pow(uy + vx, 2) +
-                std::pow(vz + wy, 2) + std::pow(wx + uz, 2));
+                std::pow(vz + wy, 2) + std::pow(wx + uz, 2)));
         });
     }
 
