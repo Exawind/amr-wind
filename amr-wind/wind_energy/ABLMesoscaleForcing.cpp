@@ -159,8 +159,8 @@ void ABLMesoscaleForcing::indirect_forcing_init()
             for (int iht = 0; iht < m_nht; iht++) {
                 zTz(irow, icol) =
                     zTz(irow, icol) +
-                    (m_W[iht] * amr_wind::utils::pow(
-                                    m_zht[iht] * m_scaleFact, (icol + irow)));
+                    (m_W[iht] *
+                     utils::pow(m_zht[iht] * m_scaleFact, (icol + irow)));
             }
             // amrex::Print()<< "Z^T W Z ["<<irow<<","<<icol<<"] : " <<
             // zTz(irow,icol) << std::endl;

@@ -32,9 +32,9 @@ struct BurggrafLid
             const auto* problo = geom.ProbLo();
             const auto* dx = geom.CellSize();
             const auto x = problo[idir] + ((iv[idir] + 0.5_rt) * dx[idir]);
-            amrex::Real val = 16.0_rt * (amr_wind::utils::pow(x, 4) -
-                                         2.0_rt * amr_wind::utils::pow(x, 3) +
-                                         amr_wind::utils::pow(x, 2));
+            amrex::Real val =
+                16.0_rt * (utils::pow(x, 4) - 2.0_rt * utils::pow(x, 3) +
+                           utils::pow(x, 2));
             amrex::RealArray uvec = {val};
 
             field(iv[0], iv[1], iv[2], dcomp + comp) = uvec[orig_comp + comp];

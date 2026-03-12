@@ -80,12 +80,9 @@ struct StrainRate
                  idx[2];
 
             strphi(i, j, k) = std::sqrt(
-                (2.0_rt * amr_wind::utils::pow(ux, 2)) +
-                (2.0_rt * amr_wind::utils::pow(vy, 2)) +
-                (2.0_rt * amr_wind::utils::pow(wz, 2)) +
-                amr_wind::utils::pow(uy + vx, 2) +
-                amr_wind::utils::pow(vz + wy, 2) +
-                amr_wind::utils::pow(wx + uz, 2));
+                (2.0_rt * utils::pow(ux, 2)) + (2.0_rt * utils::pow(vy, 2)) +
+                (2.0_rt * utils::pow(wz, 2)) + utils::pow(uy + vx, 2) +
+                utils::pow(vz + wy, 2) + utils::pow(wx + uz, 2));
         });
     }
 

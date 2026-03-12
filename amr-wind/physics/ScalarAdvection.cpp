@@ -127,8 +127,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real GaussianWavePacket::operator()(
     if (std::abs(x - x0) < 6.0_rt * x_width) {
         val = amplitude * std::cos(x_wavenumber * x) *
               std::exp(
-                  -amr_wind::utils::pow(x - x0, 2) /
-                  (2.0_rt * amr_wind::utils::pow(x_width, 2)));
+                  -utils::pow(x - x0, 2) / (2.0_rt * utils::pow(x_width, 2)));
     }
     return val;
 }

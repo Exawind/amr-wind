@@ -95,8 +95,8 @@ void VorticityMagRefinement::operator()(
                             idx[2];
 
             const auto vort = sqrt(
-                amr_wind::utils::pow(uy - vx, 2) + amr_wind::utils::pow(vz - wy, 2) +
-                amr_wind::utils::pow(wx - uz, 2));
+                utils::pow(uy - vx, 2) + utils::pow(vz - wy, 2) +
+                utils::pow(wx - uz, 2));
 
             if (vort > vort_val) {
                 tag_arrs[nbx](i, j, k) = amrex::TagBox::SET;

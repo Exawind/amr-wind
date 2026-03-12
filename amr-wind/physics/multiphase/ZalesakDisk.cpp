@@ -98,12 +98,10 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
             // Additional distance if past sphere (distance to corners)
             const amrex::Real reduced_radius =
                 std::sqrt((radius * radius) - (hwidth * hwidth));
-            const amrex::Real r_2D = std::sqrt(
-                amr_wind::utils::pow(y - yc, 2) +
-                amr_wind::utils::pow(z - zc, 2));
+            const amrex::Real r_2D =
+                std::sqrt(utils::pow(y - yc, 2) + utils::pow(z - zc, 2));
             const amrex::Real sd_r = -std::sqrt(
-                amr_wind::utils::pow(r_2D - reduced_radius, 2) +
-                amr_wind::utils::pow(sd_x, 2));
+                utils::pow(r_2D - reduced_radius, 2) + utils::pow(sd_x, 2));
 
             const bool in_slot_x_ymin =
                 y - yc > radius - depth && std::abs(x - xc) < hwidth;

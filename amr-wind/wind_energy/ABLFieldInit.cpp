@@ -458,8 +458,7 @@ void ABLFieldInit::init_tke(
                 if (z < tke_cutoff_height) {
                     tke_arrs[nbx](i, j, k) =
                         tke_init_factor *
-                        amr_wind::utils::pow(
-                            1.0_rt - (z / tke_cutoff_height), 3);
+                        utils::pow(1.0_rt - (z / tke_cutoff_height), 3);
                 } else {
                     tke_arrs[nbx](i, j, k) = tiny;
                 }
