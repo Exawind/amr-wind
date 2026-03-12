@@ -5,7 +5,7 @@
 #include "AMReX_ParmParse.H"
 #include "amr-wind/fvm/gradient.H"
 #include "amr-wind/core/field_ops.H"
-#include "AMReX_REAL.H"
+#include "amr-wind/utilities/math_ops.H"
 
 using namespace amrex::literals;
 
@@ -98,10 +98,12 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
             // Additional distance if past sphere (distance to corners)
             const amrex::Real reduced_radius =
                 std::sqrt((radius * radius) - (hwidth * hwidth));
-            const amrex::Real r_2D =
-                std::sqrt(std::pow(y - yc, 2) + std::pow(z - zc, 2));
+            const amrex::Real r_2D = std::sqrt(
+                amr_wind::utils::pow(y - yc, 2) +
+                amr_wind::utils::pow(z - zc, 2));
             const amrex::Real sd_r = -std::sqrt(
-                std::pow(r_2D - reduced_radius, 2) + std::pow(sd_x, 2));
+                amr_wind::utils::pow(r_2D - reduced_radius, 2) +
+                amr_wind::utils::pow(sd_x, 2));
 
             const bool in_slot_x_ymin =
                 y - yc > radius - depth && std::abs(x - xc) < hwidth;

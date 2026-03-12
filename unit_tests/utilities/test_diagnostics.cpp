@@ -1,6 +1,6 @@
 #include "aw_test_utils/MeshTest.H"
 #include "amr-wind/utilities/diagnostics.H"
-#include "AMReX_REAL.H"
+#include "amr-wind/utilities/math_ops.H"
 
 using namespace amrex::literals;
 
@@ -25,8 +25,8 @@ void init_velocity(amr_wind::Field& velocity)
                 const amrex::Real yc = problo[1] + ((j + 0.5_rt) * dx[1]);
                 const amrex::Real zc = problo[2] + ((k + 0.5_rt) * dx[2]);
 
-                farrs[nbx](i, j, k, 0) = 1.0_rt - std::pow(xc, 2);
-                farrs[nbx](i, j, k, 1) = -1.0_rt + std::pow(zc, 2);
+                farrs[nbx](i, j, k, 0) = 1.0_rt - amr_wind::utils::pow(xc, 2);
+                farrs[nbx](i, j, k, 1) = -1.0_rt + amr_wind::utils::pow(zc, 2);
                 farrs[nbx](i, j, k, 2) = 5.0_rt * std::cos(yc);
 
                 if (lev == 0 && nlevels > 1) {
@@ -63,8 +63,8 @@ void init_mac_velocity(
                 const amrex::Real yc = problo[1] + ((j + 0.5_rt) * dx[1]);
                 const amrex::Real zc = problo[2] + ((k + 0.5_rt) * dx[2]);
 
-                uarrs[nbx](i, j, k) = 1.0_rt - std::pow(x, 2);
-                varrs[nbx](i, j, k) = -1.0_rt + std::pow(zc, 2);
+                uarrs[nbx](i, j, k) = 1.0_rt - amr_wind::utils::pow(x, 2);
+                varrs[nbx](i, j, k) = -1.0_rt + amr_wind::utils::pow(zc, 2);
                 warrs[nbx](i, j, k) = -3.0_rt * std::cos(yc);
 
                 if (lev == 0 && nlevels > 1) {
@@ -177,16 +177,20 @@ TEST_F(DiagnosticsTest, Max_Vel)
         std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt;
     // max(u)
     EXPECT_NEAR(
-        cc_results[0], 1.0_rt - std::pow(0.5_rt * 10.0_rt / 24.0_rt, 2), tol);
+        cc_results[0],
+        1.0_rt - amr_wind::utils::pow(0.5_rt * 10.0_rt / 24.0_rt, 2), tol);
     // min(u)
     EXPECT_NEAR(
-        cc_results[4], 1.0_rt - std::pow(11.5_rt * 10.0_rt / 24.0_rt, 2), tol);
+        cc_results[4],
+        1.0_rt - amr_wind::utils::pow(11.5_rt * 10.0_rt / 24.0_rt, 2), tol);
     // max(v)
     EXPECT_NEAR(
-        cc_results[8], -1.0_rt + std::pow(3.5_rt * 4.0_rt / 8.0_rt, 2), tol);
+        cc_results[8],
+        -1.0_rt + amr_wind::utils::pow(3.5_rt * 4.0_rt / 8.0_rt, 2), tol);
     // min(v)
     EXPECT_NEAR(
-        cc_results[12], -1.0_rt + std::pow(0.5_rt * 4.0_rt / 8.0_rt, 2), tol);
+        cc_results[12],
+        -1.0_rt + amr_wind::utils::pow(0.5_rt * 4.0_rt / 8.0_rt, 2), tol);
     // max(w)
     EXPECT_NEAR(
         cc_results[16], 5.0_rt * std::cos(0.5_rt * 10.0_rt / 24.0_rt), tol);
@@ -218,16 +222,20 @@ TEST_F(DiagnosticsTest, Max_MACvel)
         std::numeric_limits<amrex::Real>::epsilon() * 1.0e6_rt;
     // max(umac)
     EXPECT_NEAR(
-        fc_results[0], 1.0_rt - std::pow(0.0_rt * 10.0_rt / 24.0_rt, 2), tol);
+        fc_results[0],
+        1.0_rt - amr_wind::utils::pow(0.0_rt * 10.0_rt / 24.0_rt, 2), tol);
     // min(umac)
     EXPECT_NEAR(
-        fc_results[4], 1.0_rt - std::pow(12.0_rt * 10.0_rt / 24.0_rt, 2), tol);
+        fc_results[4],
+        1.0_rt - amr_wind::utils::pow(12.0_rt * 10.0_rt / 24.0_rt, 2), tol);
     // max(vmac)
     EXPECT_NEAR(
-        fc_results[8], -1.0_rt + std::pow(3.5_rt * 4.0_rt / 8.0_rt, 2), tol);
+        fc_results[8],
+        -1.0_rt + amr_wind::utils::pow(3.5_rt * 4.0_rt / 8.0_rt, 2), tol);
     // min(vmac)
     EXPECT_NEAR(
-        fc_results[12], -1.0_rt + std::pow(0.5_rt * 4.0_rt / 8.0_rt, 2), tol);
+        fc_results[12],
+        -1.0_rt + amr_wind::utils::pow(0.5_rt * 4.0_rt / 8.0_rt, 2), tol);
     // min(wmac)
     EXPECT_NEAR(
         fc_results[20], -3.0_rt * std::cos(0.5_rt * 10.0_rt / 24.0_rt), tol);
@@ -273,16 +281,20 @@ TEST_F(DiagnosticsTest, Max_Vel_MultiLevel)
         std::numeric_limits<amrex::Real>::epsilon() * 1.0e7_rt;
     // max(u)
     EXPECT_NEAR(
-        cc_results[0], 1.0_rt - std::pow(0.5_rt * 10.0_rt / 48.0_rt, 2), tol);
+        cc_results[0],
+        1.0_rt - amr_wind::utils::pow(0.5_rt * 10.0_rt / 48.0_rt, 2), tol);
     // min(u)
     EXPECT_NEAR(
-        cc_results[4], 1.0_rt - std::pow(23.5_rt * 10.0_rt / 48.0_rt, 2), tol);
+        cc_results[4],
+        1.0_rt - amr_wind::utils::pow(23.5_rt * 10.0_rt / 48.0_rt, 2), tol);
     // max(v)
     EXPECT_NEAR(
-        cc_results[8], -1.0_rt + std::pow(7.5_rt * 4.0_rt / 16.0_rt, 2), tol);
+        cc_results[8],
+        -1.0_rt + amr_wind::utils::pow(7.5_rt * 4.0_rt / 16.0_rt, 2), tol);
     // min(v)
     EXPECT_NEAR(
-        cc_results[12], -1.0_rt + std::pow(0.5_rt * 4.0_rt / 16.0_rt, 2), tol);
+        cc_results[12],
+        -1.0_rt + amr_wind::utils::pow(0.5_rt * 4.0_rt / 16.0_rt, 2), tol);
     // max(w)
     EXPECT_NEAR(
         cc_results[16], 5.0_rt * std::cos(0.5_rt * 10.0_rt / 48.0_rt), tol);
@@ -332,16 +344,20 @@ TEST_F(DiagnosticsTest, Max_MACvel_MultiLevel)
         std::numeric_limits<amrex::Real>::epsilon() * 1.0e7_rt;
     // max(umac)
     EXPECT_NEAR(
-        fc_results[0], 1.0_rt - std::pow(0.0_rt * 10.0_rt / 48.0_rt, 2), tol);
+        fc_results[0],
+        1.0_rt - amr_wind::utils::pow(0.0_rt * 10.0_rt / 48.0_rt, 2), tol);
     // min(umac)
     EXPECT_NEAR(
-        fc_results[4], 1.0_rt - std::pow(24 * 10.0_rt / 48.0_rt, 2), tol);
+        fc_results[4], 1.0_rt - amr_wind::utils::pow(24 * 10.0_rt / 48.0_rt, 2),
+        tol);
     // max(vmac)
     EXPECT_NEAR(
-        fc_results[8], -1.0_rt + std::pow(7.5_rt * 4.0_rt / 16.0_rt, 2), tol);
+        fc_results[8],
+        -1.0_rt + amr_wind::utils::pow(7.5_rt * 4.0_rt / 16.0_rt, 2), tol);
     // min(vmac)
     EXPECT_NEAR(
-        fc_results[12], -1.0_rt + std::pow(0.5_rt * 4.0_rt / 16.0_rt, 2), tol);
+        fc_results[12],
+        -1.0_rt + amr_wind::utils::pow(0.5_rt * 4.0_rt / 16.0_rt, 2), tol);
     // min(wmac)
     EXPECT_NEAR(
         fc_results[20], -3.0_rt * std::cos(0.5_rt * 10.0_rt / 48.0_rt), tol);

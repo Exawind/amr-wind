@@ -3,7 +3,7 @@
 #include "amr-wind/CFDSim.H"
 #include "AMReX_ParmParse.H"
 #include "AMReX_MultiFabUtil.H"
-#include "AMReX_REAL.H"
+#include "amr-wind/utilities/math_ops.H"
 
 using namespace amrex::literals;
 
@@ -126,7 +126,9 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real GaussianWavePacket::operator()(
     amrex::Real val = 0.0_rt;
     if (std::abs(x - x0) < 6.0_rt * x_width) {
         val = amplitude * std::cos(x_wavenumber * x) *
-              std::exp(-std::pow(x - x0, 2) / (2.0_rt * std::pow(x_width, 2)));
+              std::exp(
+                  -amr_wind::utils::pow(x - x0, 2) /
+                  (2.0_rt * amr_wind::utils::pow(x_width, 2)));
     }
     return val;
 }

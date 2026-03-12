@@ -10,7 +10,7 @@
 #include "amr-wind/equation_systems/tke/TKE.H"
 #include "amr-wind/equation_systems/sdr/SDR.H"
 #include "AMReX_ParmParse.H"
-#include "AMReX_REAL.H"
+#include "amr-wind/utilities/math_ops.H"
 
 using namespace amrex::literals;
 
@@ -209,9 +209,9 @@ void KOmegaSSTIDDES<Transport>::update_turbulent_viscosity(
                 const amrex::Real rdl = lam_mu_arrs[nbx](i, j, k) / denom;
                 const amrex::Real rdt = mu_arrs[nbx](i, j, k) / denom;
                 const amrex::Real fl =
-                    std::tanh(std::pow(Cl * Cl * rdl, 10.0_rt));
+                    std::tanh(amr_wind::utils::pow(Cl * Cl * rdl, 10));
                 const amrex::Real ft =
-                    std::tanh(std::pow(Ct * Ct * rdt, 3.0_rt));
+                    std::tanh(amr_wind::utils::pow(Ct * Ct * rdt, 3));
                 const amrex::Real fe1 =
                     (alpha < 0) ? 2.0_rt * std::exp(-9.0_rt * alpha * alpha)
                                 : 2.0_rt * std::exp(-11.09_rt * alpha * alpha);
@@ -222,7 +222,7 @@ void KOmegaSSTIDDES<Transport>::update_turbulent_viscosity(
                 const amrex::Real fb = amrex::min<amrex::Real>(
                     2.0_rt * std::exp(-9.0_rt * alpha_des * alpha_des), 1.0_rt);
                 const amrex::Real fdt =
-                    1.0_rt - std::tanh(std::pow(Cdt1 * rdt, Cdt2));
+                    1.0_rt - std::tanh(amr_wind::utils::pow(Cdt1 * rdt, Cdt2));
                 const amrex::Real fdtilde =
                     amrex::max<amrex::Real>((1.0_rt - fdt), fb);
                 const amrex::Real cdes = (tmp_f1 * (Cdes1 - Cdes2)) + Cdes2;
