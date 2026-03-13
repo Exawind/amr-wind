@@ -301,9 +301,13 @@ TEST_F(MFluxSchemeTest, minmod)
     // Values for checking
     auto ir = (amrex::Real)i;
     amrex::Real dx = sc.repo().mesh().Geom(0).CellSizeArray()[0];
-    amrex::Real slp = (amr_wind::utils::pow(ir, 2) - amr_wind::utils::pow(ir - 1.0_rt, 2)) / dx;
-    amrex::Real val_p = amr_wind::utils::pow(ir, 2) - (slp * 0.5_rt * (dt * adv_vel - dx));
-    amrex::Real val_n = amr_wind::utils::pow(ir, 2) + (slp * 0.5_rt * (dt * adv_vel - dx));
+    amrex::Real slp =
+        (amr_wind::utils::pow(ir, 2) - amr_wind::utils::pow(ir - 1.0_rt, 2)) /
+        dx;
+    amrex::Real val_p =
+        amr_wind::utils::pow(ir, 2) - (slp * 0.5_rt * (dt * adv_vel - dx));
+    amrex::Real val_n =
+        amr_wind::utils::pow(ir, 2) + (slp * 0.5_rt * (dt * adv_vel - dx));
     // Set up field (x)
     init_scalar_increasing(sc, 0);
     // Compute interpolated quantities at each face
@@ -372,7 +376,9 @@ TEST_F(MFluxSchemeTest, minmodbdy)
         // Values for checking
         auto ir = (amrex::Real)i;
         amrex::Real dx = sc.repo().mesh().Geom(0).CellSizeArray()[0];
-        amrex::Real slp = (amr_wind::utils::pow(ir, 2) - amr_wind::utils::pow(ir - 1.0_rt, 2)) / dx;
+        amrex::Real slp = (amr_wind::utils::pow(ir, 2) -
+                           amr_wind::utils::pow(ir - 1.0_rt, 2)) /
+                          dx;
         amrex::Real val_n =
             amr_wind::utils::pow(ir, 2) + (slp * 0.5_rt * (dt * adv_vel - dx));
         // Set up field
@@ -390,7 +396,9 @@ TEST_F(MFluxSchemeTest, minmodbdy)
         // Values for checking
         auto ir = static_cast<amrex::Real>(j);
         amrex::Real dx = sc.repo().mesh().Geom(0).CellSizeArray()[0];
-        amrex::Real slp = (amr_wind::utils::pow(ir + 1.0_rt, 2) - amr_wind::utils::pow(ir, 2)) / dx;
+        amrex::Real slp = (amr_wind::utils::pow(ir + 1.0_rt, 2) -
+                           amr_wind::utils::pow(ir, 2)) /
+                          dx;
         amrex::Real val_p =
             amr_wind::utils::pow(ir, 2) - (slp * 0.5_rt * (dt * adv_vel - dx));
         // Set up field
