@@ -160,7 +160,7 @@ void ABLMesoscaleForcing::indirect_forcing_init()
                 zTz(irow, icol) =
                     zTz(irow, icol) +
                     (m_W[iht] *
-                     utils::pow(m_zht[iht] * m_scaleFact, (icol + irow)));
+                     utils::powi(m_zht[iht] * m_scaleFact, (icol + irow)));
             }
             // amrex::Print()<< "Z^T W Z ["<<irow<<","<<icol<<"] : " <<
             // zTz(irow,icol) << std::endl;

@@ -71,8 +71,8 @@ struct VorticityMag
                  idx[2];
 
             vortmagphi(i, j, k) = std::sqrt(
-                utils::pow(uy - vx, 2) + utils::pow(vz - wy, 2) +
-                utils::pow(wx - uz, 2));
+                utils::powi(uy - vx, 2) + utils::powi(vz - wy, 2) +
+                utils::powi(wx - uz, 2));
         });
     }
 

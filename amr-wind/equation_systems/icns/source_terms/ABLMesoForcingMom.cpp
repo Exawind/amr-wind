@@ -174,9 +174,9 @@ void ABLMesoForcingMom::mean_velocity_heights(
 
             for (int ih = 0; ih < m_nht; ih++) {
                 ezP_U[i] = ezP_U[i] + (error_U[ih] * m_W[i] *
-                                       utils::pow(m_zht[ih] * m_scaleFact, i));
+                                       utils::powi(m_zht[ih] * m_scaleFact, i));
                 ezP_V[i] = ezP_V[i] + (error_V[ih] * m_W[i] *
-                                       utils::pow(m_zht[ih] * m_scaleFact, i));
+                                       utils::powi(m_zht[ih] * m_scaleFact, i));
             }
         }
 
@@ -205,10 +205,10 @@ void ABLMesoForcingMom::mean_velocity_heights(
             for (int j = 0; j < 4; j++) {
                 error_U[ih] =
                     error_U[ih] + (m_poly_coeff_U[j] *
-                                   utils::pow(m_zht[ih] * m_scaleFact, j));
+                                   utils::powi(m_zht[ih] * m_scaleFact, j));
                 error_V[ih] =
                     error_V[ih] + (m_poly_coeff_V[j] *
-                                   utils::pow(m_zht[ih] * m_scaleFact, j));
+                                   utils::powi(m_zht[ih] * m_scaleFact, j));
             }
 
             if (m_debug) {

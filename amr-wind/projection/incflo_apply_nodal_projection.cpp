@@ -291,7 +291,7 @@ void incflo::ApplyProjection(
                     amrex::Real det_j =
                         mesh_mapping ? (detJ_arrs[nbx](i, j, k)) : 1.0_rt;
                     sig_arrs[nbx](i, j, k, n) =
-                        amr_wind::utils::pow(fac_cc, -2) * det_j *
+                        amr_wind::utils::powi(fac_cc, -2) * det_j *
                         scaling_factor / rho_arrs[nbx](i, j, k);
                     if (is_anelastic) {
                         sig_arrs[nbx](i, j, k, n) *= ref_rho_arrs[nbx](i, j, k);

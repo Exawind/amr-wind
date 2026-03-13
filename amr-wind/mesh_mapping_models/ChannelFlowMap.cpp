@@ -21,7 +21,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real eval_fac(
                ? 1.0_rt
                : (beta *
                   (1.0_rt -
-                   utils::pow(
+                   utils::powi(
                        std::tanh(
                            beta * (1.0_rt - 2.0_rt * (x - prob_lo) / len)),
                        2)) /

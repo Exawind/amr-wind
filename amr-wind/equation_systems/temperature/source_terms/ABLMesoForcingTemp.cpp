@@ -165,7 +165,7 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
 
             for (int ih = 0; ih < m_nht; ih++) {
                 ezP_T[i] = ezP_T[i] + (error_T[ih] * m_W[ih] *
-                                       utils::pow(m_zht[ih] * m_scaleFact, i));
+                                       utils::powi(m_zht[ih] * m_scaleFact, i));
             }
         }
 
@@ -188,7 +188,7 @@ amrex::Real ABLMesoForcingTemp::mean_temperature_heights(
             for (int j = 0; j < 4; j++) {
                 error_T[ih] =
                     error_T[ih] + (m_poly_coeff_theta[j] *
-                                   utils::pow(m_zht[ih] * m_scaleFact, j));
+                                   utils::powi(m_zht[ih] * m_scaleFact, j));
             }
 
             if (m_debug) {

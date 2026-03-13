@@ -305,8 +305,8 @@ bool DTUSpinnerSampler::update_sampling_locations()
         m_hub_tilt = std::atan2(
             -m_current_hub_orient[6],
             std::sqrt(
-                utils::pow(m_current_hub_orient[7], 2) +
-                utils::pow(m_current_hub_orient[8], 2)));
+                utils::powi(m_current_hub_orient[7], 2) +
+                utils::powi(m_current_hub_orient[8], 2)));
         m_hub_roll =
             std::atan2(m_current_hub_orient[7], m_current_hub_orient[8]);
         m_hub_yaw =

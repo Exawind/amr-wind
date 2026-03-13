@@ -106,9 +106,9 @@ void initialize_volume_fractions(
         vof_arr(i, j, k) =
             (0.13_rt * (static_cast<amrex::Real>(i) - 1.5_rt)) +
             (0.04_rt *
-             amr_wind::utils::pow(static_cast<amrex::Real>(j) - 1.0_rt, 2)) +
+             amr_wind::utils::powi(static_cast<amrex::Real>(j) - 1.0_rt, 2)) +
             (0.01_rt *
-             amr_wind::utils::pow(static_cast<amrex::Real>(k) - 2.0_rt, 3)) +
+             amr_wind::utils::powi(static_cast<amrex::Real>(k) - 2.0_rt, 3)) +
             0.5_rt;
     });
 }

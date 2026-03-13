@@ -176,15 +176,15 @@ TEST_F(TurbRANSTest, test_1eqKrans_setup_calc)
     // Check values of turbulent viscosity
     const auto max_val = utils::field_max(muturb);
     const amrex::Real Cmu = 0.556_rt;
-    const amrex::Real epsilon = amr_wind::utils::pow(Cmu, 3) *
+    const amrex::Real epsilon = amr_wind::utils::powi(Cmu, 3) *
                                 std::pow(tke_val, 1.5_rt) /
                                 (tlscale_val + 1.0e-3_rt);
     const amrex::Real stratification = 0.0_rt;
     const amrex::Real Rt =
-        amr_wind::utils::pow(tke_val / epsilon, 2) * stratification;
+        amr_wind::utils::powi(tke_val / epsilon, 2) * stratification;
     const amrex::Real Cmu_Rt =
         (0.556_rt + 0.108_rt * Rt) /
-        (1.0_rt + 0.308_rt * Rt + 0.00837_rt * amr_wind::utils::pow(Rt, 2));
+        (1.0_rt + 0.308_rt * Rt + 0.00837_rt * amr_wind::utils::powi(Rt, 2));
     const amrex::Real tol = 0.12_rt;
     const amrex::Real nut_max =
         rho0 * Cmu_Rt * tlscale_val * std::sqrt(tke_val);

@@ -208,8 +208,9 @@ void KOmegaSSTIDDES<Transport>::update_turbulent_viscosity(
                      std::sqrt(0.5_rt * (tmp4 * tmp4 + tmp5 * tmp5)));
                 const amrex::Real rdl = lam_mu_arrs[nbx](i, j, k) / denom;
                 const amrex::Real rdt = mu_arrs[nbx](i, j, k) / denom;
-                const amrex::Real fl = std::tanh(utils::pow(Cl * Cl * rdl, 10));
-                const amrex::Real ft = std::tanh(utils::pow(Ct * Ct * rdt, 3));
+                const amrex::Real fl =
+                    std::tanh(utils::powi(Cl * Cl * rdl, 10));
+                const amrex::Real ft = std::tanh(utils::powi(Ct * Ct * rdt, 3));
                 const amrex::Real fe1 =
                     (alpha < 0) ? 2.0_rt * std::exp(-9.0_rt * alpha * alpha)
                                 : 2.0_rt * std::exp(-11.09_rt * alpha * alpha);

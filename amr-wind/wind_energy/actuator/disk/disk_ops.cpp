@@ -113,8 +113,8 @@ AreaComputer::AreaComputer(
 amrex::Real AreaComputer::area_section(const int iRadius) const
 {
     return m_geometry_factor *
-           (amr_wind::utils::pow(iRadius + 1.0_rt, 2) -
-            amr_wind::utils::pow(static_cast<amrex::Real>(iRadius), 2));
+           (amr_wind::utils::powi(iRadius + 1.0_rt, 2) -
+            amr_wind::utils::powi(static_cast<amrex::Real>(iRadius), 2));
 }
 
 amrex::Real AreaComputer::weight(const int iRadius) const

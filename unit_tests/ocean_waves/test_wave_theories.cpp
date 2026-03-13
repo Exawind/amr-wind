@@ -116,17 +116,17 @@ TEST_F(WaveTheoriesTest, StokesWavesFreeSurfaceProfile)
                     (std::exp(4.0_rt * wavenumber * water_depth) + 1.0_rt);
     amrex::Real C = 1.0_rt - S;
     amrex::Real C0 = std::sqrt(std::tanh(wavenumber * water_depth));
-    amrex::Real C2 = C0 * (2.0_rt + 7.0_rt * amr_wind::utils::pow(S, 2)) /
-                     (4.0_rt * amr_wind::utils::pow(C, 2));
+    amrex::Real C2 = C0 * (2.0_rt + 7.0_rt * amr_wind::utils::powi(S, 2)) /
+                     (4.0_rt * amr_wind::utils::powi(C, 2));
     amrex::Real C4 =
         C0 *
-        (4.0_rt + 32.0_rt * S - 116.0_rt * amr_wind::utils::pow(S, 2) -
-         400.0_rt * amr_wind::utils::pow(S, 3) -
-         71.0_rt * amr_wind::utils::pow(S, 4) +
-         146.0_rt * amr_wind::utils::pow(S, 5)) /
-        (32.0_rt * amr_wind::utils::pow(C, 5));
-    amrex::Real wave_speed = (C0 + amr_wind::utils::pow(eps, 2) * C2 +
-                              amr_wind::utils::pow(eps, 4) * C4) *
+        (4.0_rt + 32.0_rt * S - 116.0_rt * amr_wind::utils::powi(S, 2) -
+         400.0_rt * amr_wind::utils::powi(S, 3) -
+         71.0_rt * amr_wind::utils::powi(S, 4) +
+         146.0_rt * amr_wind::utils::powi(S, 5)) /
+        (32.0_rt * amr_wind::utils::powi(C, 5));
+    amrex::Real wave_speed = (C0 + amr_wind::utils::powi(eps, 2) * C2 +
+                              amr_wind::utils::powi(eps, 4) * C4) *
                              std::sqrt(g / wavenumber);
 
     amrex::Real omega = wave_speed * wavenumber;
@@ -135,12 +135,12 @@ TEST_F(WaveTheoriesTest, StokesWavesFreeSurfaceProfile)
     // Check against Eq. (14) from Fenton 1985
     amrex::Real eta_theory =
         ((eps * std::cos(phase) +
-          amr_wind::utils::pow(eps, 2) * B22 * std::cos(2.0_rt * phase) +
-          amr_wind::utils::pow(eps, 3) * B31 *
+          amr_wind::utils::powi(eps, 2) * B22 * std::cos(2.0_rt * phase) +
+          amr_wind::utils::powi(eps, 3) * B31 *
               (std::cos(phase) - std::cos(3.0_rt * phase)) +
-          amr_wind::utils::pow(eps, 4) * (B42 * std::cos(2.0_rt * phase) +
-                                          B44 * std::cos(4.0_rt * phase)) +
-          amr_wind::utils::pow(eps, 5) *
+          amr_wind::utils::powi(eps, 4) * (B42 * std::cos(2.0_rt * phase) +
+                                           B44 * std::cos(4.0_rt * phase)) +
+          amr_wind::utils::powi(eps, 5) *
               (-(B53 + B55) * std::cos(phase) + B53 * std::cos(3.0_rt * phase) +
                B55 * std::cos(5.0_rt * phase))) /
          wavenumber) +
@@ -186,8 +186,8 @@ TEST_F(WaveTheoriesTest, StokesWavesFreeSurfaceProfile)
     C0 = 1.0_rt;
     C2 = 0.5_rt;
     C4 = 0.125_rt;
-    wave_speed = (C0 + amr_wind::utils::pow(eps, 2) * C2 +
-                  amr_wind::utils::pow(eps, 4) * C4) *
+    wave_speed = (C0 + amr_wind::utils::powi(eps, 2) * C2 +
+                  amr_wind::utils::powi(eps, 4) * C4) *
                  std::sqrt(g / wavenumber);
 
     omega = wave_speed * wavenumber;
@@ -196,12 +196,12 @@ TEST_F(WaveTheoriesTest, StokesWavesFreeSurfaceProfile)
     // Matches Eq. (18) from Fenton 1985
     eta_theory =
         ((eps * std::cos(phase) +
-          amr_wind::utils::pow(eps, 2) * B22 * std::cos(2.0_rt * phase) +
-          amr_wind::utils::pow(eps, 3) * B31 *
+          amr_wind::utils::powi(eps, 2) * B22 * std::cos(2.0_rt * phase) +
+          amr_wind::utils::powi(eps, 3) * B31 *
               (std::cos(phase) - std::cos(3.0_rt * phase)) +
-          amr_wind::utils::pow(eps, 4) * (B42 * std::cos(2.0_rt * phase) +
-                                          B44 * std::cos(4.0_rt * phase)) +
-          amr_wind::utils::pow(eps, 5) *
+          amr_wind::utils::powi(eps, 4) * (B42 * std::cos(2.0_rt * phase) +
+                                           B44 * std::cos(4.0_rt * phase)) +
+          amr_wind::utils::powi(eps, 5) *
               (-(B53 + B55) * std::cos(phase) + B53 * std::cos(3.0_rt * phase) +
                B55 * std::cos(5.0_rt * phase))) /
          wavenumber) +
@@ -260,17 +260,18 @@ TEST_F(WaveTheoriesTest, StokesWavesVelocityComponents)
         (std::exp(4.0_rt * wavenumber * water_depth) + 1.0_rt);
     const amrex::Real C = 1.0_rt - S;
     const amrex::Real C0 = std::sqrt(std::tanh(wavenumber * water_depth));
-    const amrex::Real C2 = C0 * (2.0_rt + 7.0_rt * amr_wind::utils::pow(S, 2)) /
-                           (4.0_rt * amr_wind::utils::pow(C, 2));
+    const amrex::Real C2 = C0 *
+                           (2.0_rt + 7.0_rt * amr_wind::utils::powi(S, 2)) /
+                           (4.0_rt * amr_wind::utils::powi(C, 2));
     const amrex::Real C4 =
         C0 *
-        (4.0_rt + 32.0_rt * S - 116.0_rt * amr_wind::utils::pow(S, 2) -
-         400.0_rt * amr_wind::utils::pow(S, 3) -
-         71.0_rt * amr_wind::utils::pow(S, 4) +
-         146.0_rt * amr_wind::utils::pow(S, 5)) /
-        (32.0_rt * amr_wind::utils::pow(C, 5));
-    const amrex::Real wave_speed = (C0 + amr_wind::utils::pow(eps, 2) * C2 +
-                                    amr_wind::utils::pow(eps, 4) * C4) *
+        (4.0_rt + 32.0_rt * S - 116.0_rt * amr_wind::utils::powi(S, 2) -
+         400.0_rt * amr_wind::utils::powi(S, 3) -
+         71.0_rt * amr_wind::utils::powi(S, 4) +
+         146.0_rt * amr_wind::utils::powi(S, 5)) /
+        (32.0_rt * amr_wind::utils::powi(C, 5));
+    const amrex::Real wave_speed = (C0 + amr_wind::utils::powi(eps, 2) * C2 +
+                                    amr_wind::utils::powi(eps, 4) * C4) *
                                    std::sqrt(g / wavenumber);
 
     const amrex::Real omega = wave_speed * wavenumber;
@@ -280,7 +281,7 @@ TEST_F(WaveTheoriesTest, StokesWavesVelocityComponents)
     // https://www.sciencedirect.com/science/article/pii/S0029801817306066
     // Define coefficients using Eq.(19)
     amrex::Vector<amrex::Real> a(stokes_order);
-    a[0] = A11 + ((eps * eps) * A31) + (amr_wind::utils::pow(eps, 4) * A51);
+    a[0] = A11 + ((eps * eps) * A31) + (amr_wind::utils::powi(eps, 4) * A51);
     a[1] = A22 + ((eps * eps) * A42);
     a[2] = A33 + ((eps * eps) * A53);
     a[3] = A44;
@@ -298,11 +299,11 @@ TEST_F(WaveTheoriesTest, StokesWavesVelocityComponents)
 
     for (int n = 1; n < stokes_order; ++n) {
         horizontal_velocity +=
-            amr_wind::utils::pow(eps, (n + 1)) * (n + 1) * a[n] *
+            amr_wind::utils::powi(eps, (n + 1)) * (n + 1) * a[n] *
             std::cosh((n + 1) * wavenumber * (water_depth + (z - zsl))) *
             std::cos((n + 1) * phase);
         vertical_velocity +=
-            amr_wind::utils::pow(eps, (n + 1)) * (n + 1) * a[n] *
+            amr_wind::utils::powi(eps, (n + 1)) * (n + 1) * a[n] *
             std::sinh((n + 1) * wavenumber * (water_depth + (z - zsl))) *
             std::sin((n + 1) * phase);
     }
@@ -370,13 +371,13 @@ TEST_F(WaveTheoriesTest, StokesWaveLength)
     amrex::Real C2 = C0 * (2.0_rt + 7.0_rt * S * S) / (4.0_rt * C * C);
     const amrex::Real C4 =
         C0 *
-        (4.0_rt + 32.0_rt * S - 116.0_rt * amr_wind::utils::pow(S, 2) -
-         400.0_rt * amr_wind::utils::pow(S, 3) -
-         71.0_rt * amr_wind::utils::pow(S, 4) +
-         146.0_rt * amr_wind::utils::pow(S, 5)) /
-        (32.0_rt * amr_wind::utils::pow(C, 5));
-    const amrex::Real LHS1 = C0 + (amr_wind::utils::pow(eps, 2) * C2) +
-                             (amr_wind::utils::pow(eps, 4) * C4);
+        (4.0_rt + 32.0_rt * S - 116.0_rt * amr_wind::utils::powi(S, 2) -
+         400.0_rt * amr_wind::utils::powi(S, 3) -
+         71.0_rt * amr_wind::utils::powi(S, 4) +
+         146.0_rt * amr_wind::utils::powi(S, 5)) /
+        (32.0_rt * amr_wind::utils::powi(C, 5));
+    const amrex::Real LHS1 = C0 + (amr_wind::utils::powi(eps, 2) * C2) +
+                             (amr_wind::utils::powi(eps, 4) * C4);
     EXPECT_NEAR(
         LHS1, RHS1, std::numeric_limits<amrex::Real>::epsilon() * 1.0e8_rt);
 
@@ -400,7 +401,7 @@ TEST_F(WaveTheoriesTest, StokesWaveLength)
 
     C0 = std::sqrt(std::tanh(k * water_depth));
     C2 = C0 * (2.0_rt + 7.0_rt * S * S) / (4.0_rt * C * C);
-    const amrex::Real LHS2 = C0 + (amr_wind::utils::pow(eps, 2) * C2);
+    const amrex::Real LHS2 = C0 + (amr_wind::utils::powi(eps, 2) * C2);
     EXPECT_NEAR(
         LHS2, RHS2, std::numeric_limits<amrex::Real>::epsilon() * 1.0e8_rt);
 }

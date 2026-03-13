@@ -411,7 +411,7 @@ TEST_F(TurbLESTestBC, test_1eqKsgs_wallmodel_failnofillpatch)
     const amrex::Real vmag_ref = std::sqrt(2.0_rt * uref * uref);
     const amrex::Real utau = kappa * vmag_ref / (std::log(zref / z0));
     const amrex::Real uz_wm =
-        uref / vmag_ref * amr_wind::utils::pow(utau, 2) * m_rho0 / m_mu;
+        uref / vmag_ref * amr_wind::utils::powi(utau, 2) * m_rho0 / m_mu;
 
     // Velocity gradient with wallmodel value included as dirichlet
     const amrex::Real uz_wmdirichlet =

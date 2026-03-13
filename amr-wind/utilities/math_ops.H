@@ -15,14 +15,14 @@ namespace amr_wind::utils {
 
 //! Helper function to do pow() with integer exponents and output amrex::Real
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
-pow(const amrex::Real& x, const int& y)
+powi(const amrex::Real& x, const int& y)
 {
     return static_cast<amrex::Real>(std::pow(x, y));
 }
 
 //! Prevent other argument types from accidentally being used
 template <typename T, typename U>
-amrex::Real pow(T, U) = delete;
+amrex::Real powi(T, U) = delete;
 
 } // namespace amr_wind::utils
 
