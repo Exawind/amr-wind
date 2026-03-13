@@ -20,6 +20,10 @@ pow(const amrex::Real& x, const int& y)
     return static_cast<amrex::Real>(std::pow(x, y));
 }
 
+//! Prevent other argument types from accidentally being used
+template <typename T, typename U>
+amrex::Real pow(T, U) = delete;
+
 } // namespace amr_wind::utils
 
 #endif /* MATH_OPS_H */
