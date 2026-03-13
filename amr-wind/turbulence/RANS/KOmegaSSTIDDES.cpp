@@ -220,7 +220,7 @@ void KOmegaSSTIDDES<Transport>::update_turbulent_viscosity(
                 const amrex::Real fb = amrex::min<amrex::Real>(
                     2.0_rt * std::exp(-9.0_rt * alpha_des * alpha_des), 1.0_rt);
                 const amrex::Real fdt =
-                    1.0_rt - std::tanh(utils::pow(Cdt1 * rdt, Cdt2));
+                    1.0_rt - std::tanh(std::pow(Cdt1 * rdt, Cdt2));
                 const amrex::Real fdtilde =
                     amrex::max<amrex::Real>((1.0_rt - fdt), fb);
                 const amrex::Real cdes = (tmp_f1 * (Cdes1 - Cdes2)) + Cdes2;

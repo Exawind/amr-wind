@@ -121,10 +121,10 @@ TEST_F(WaveTheoriesTest, StokesWavesFreeSurfaceProfile)
     amrex::Real C4 =
         C0 *
         (4.0_rt + 32.0_rt * S - 116.0_rt * amr_wind::utils::pow(S, 2) -
-         400.0_rt * amr_wind::utils::pow(S, 3.0_rt) -
+         400.0_rt * amr_wind::utils::pow(S, 3) -
          71.0_rt * amr_wind::utils::pow(S, 4) +
-         146.0_rt * amr_wind::utils::pow(S, 5.0_rt)) /
-        (32.0_rt * amr_wind::utils::pow(C, 5.0_rt));
+         146.0_rt * amr_wind::utils::pow(S, 5)) /
+        (32.0_rt * amr_wind::utils::pow(C, 5));
     amrex::Real wave_speed = (C0 + amr_wind::utils::pow(eps, 2) * C2 +
                               amr_wind::utils::pow(eps, 4) * C4) *
                              std::sqrt(g / wavenumber);
@@ -298,13 +298,11 @@ TEST_F(WaveTheoriesTest, StokesWavesVelocityComponents)
 
     for (int n = 1; n < stokes_order; ++n) {
         horizontal_velocity +=
-            amr_wind::utils::pow(eps, static_cast<amrex::Real>(n + 1)) *
-            (n + 1) * a[n] *
+            amr_wind::utils::pow(eps, (n + 1)) * (n + 1) * a[n] *
             std::cosh((n + 1) * wavenumber * (water_depth + (z - zsl))) *
             std::cos((n + 1) * phase);
         vertical_velocity +=
-            amr_wind::utils::pow(eps, static_cast<amrex::Real>(n + 1)) *
-            (n + 1) * a[n] *
+            amr_wind::utils::pow(eps, (n + 1)) * (n + 1) * a[n] *
             std::sinh((n + 1) * wavenumber * (water_depth + (z - zsl))) *
             std::sin((n + 1) * phase);
     }

@@ -239,7 +239,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void stokes_coefficients(
            12554.0_rt * utils::pow(S, 5) - 500.0_rt * utils::pow(S, 6) -
            3341.0_rt * utils::pow(S, 7) - 670.0_rt * utils::pow(S, 8)) /
           (64.0_rt * Sh * (3.0_rt + 2.0_rt * S) * (4.0_rt + S) *
-           utils::pow(C, 6.0_rt));
+           utils::pow(C, 6));
     a53 = (4.0_rt * S + 105.0_rt * utils::pow(S, 2) +
            198.0_rt * utils::pow(S, 3) - 1376.0_rt * utils::pow(S, 4) -
            1302.0_rt * utils::pow(S, 5) - 117.0_rt * utils::pow(S, 6) +
