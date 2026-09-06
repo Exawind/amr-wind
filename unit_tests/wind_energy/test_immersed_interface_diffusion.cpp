@@ -5,6 +5,8 @@
 #include "AMReX_ParmParse.H"
 #include "AMReX_REAL.H"
 
+#include <limits>
+
 using namespace amrex::literals;
 
 namespace {
@@ -63,7 +65,8 @@ protected:
 
     using Terrain = kynema_sgf::immersedterrain::ImmersedTerrain;
     std::unique_ptr<Terrain> m_terrain;
-    const amrex::Real m_tol{1.0e-12_rt};
+    const amrex::Real m_tol{
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt};
 };
 
 // dx = dy = dz = 32; plateau cells i = 14..17, solid for k = 0..2,
@@ -100,8 +103,7 @@ TEST_F(ImmersedInterfaceDiffusionTest, no_slip)
     EXPECT_NEAR(utils::field_probe(fx, 0, 14, 10, 1), 2.0_rt, m_tol);
     // Bottom face of the partial cell (15,10,3): centre 112 m, terrain
     // 100 m, so d1 = 12 m and the factor is 32/12
-    EXPECT_NEAR(
-        utils::field_probe(fz, 0, 15, 10, 3), 32.0_rt / 12.0_rt, 1.0e-10_rt);
+    EXPECT_NEAR(utils::field_probe(fz, 0, 15, 10, 3), 32.0_rt / 12.0_rt, m_tol);
     // Face between the partial cell (below threshold) and fluid: untouched
     EXPECT_NEAR(utils::field_probe(fz, 0, 15, 10, 4), 1.0_rt, m_tol);
     // Solid/solid and fluid/fluid faces untouched

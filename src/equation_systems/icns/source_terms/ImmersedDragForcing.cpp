@@ -112,7 +112,7 @@ void ImmersedDragForcing::operator()(
         src_term, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
             const auto& vel = vel_arrs[nbx];
             const auto& frac = frac_arrs[nbx];
-            auto& src = src_arrs[nbx];
+            const auto& src = src_arrs[nbx];
 
             const amrex::Real beta = frac(i, j, k, 0);
             const int cell_mask = mask_arrs[nbx](i, j, k, 0);
@@ -138,10 +138,10 @@ void ImmersedDragForcing::operator()(
                 amrex::max<amrex::Real>(z0_arrs[nbx](i, j, k, 0), min_z0);
             const amrex::Real z_c = prob_lo[2] + ((k + 0.5_rt) * dx[2]);
 
-            WallPatch patches[2 * AMREX_SPACEDIM];
+            amrex::GpuArray<WallPatch, 2 * AMREX_SPACEDIM> patches{};
             const int np = kynema_sgf::immersed_wall::wall_patches(
                 wall_model, i, j, k, beta, frac, surf_arrs[nbx], dx, z_c, z0,
-                solid_threshold, patches);
+                solid_threshold, patches.data());
 
             amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> force{
                 0.0_rt, 0.0_rt, 0.0_rt};

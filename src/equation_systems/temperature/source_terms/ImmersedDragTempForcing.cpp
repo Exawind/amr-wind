@@ -7,6 +7,8 @@
 #include "AMReX_ParmParse.H"
 #include "AMReX_REAL.H"
 
+#include <cstdint>
+
 using namespace amrex::literals;
 using kynema_sgf::immersed_wall::WallModel;
 using kynema_sgf::immersed_wall::WallParams;
@@ -14,7 +16,7 @@ using kynema_sgf::immersed_wall::WallPatch;
 using kynema_sgf::immersedterrain::ImmersedTerrain;
 
 namespace {
-enum class SurfaceCondition : int {
+enum class SurfaceCondition : std::uint8_t {
     obukhov_length = 0,
     surface_temperature,
     heat_flux
@@ -140,7 +142,7 @@ void ImmersedDragTempForcing::operator()(
             const auto& vel = vel_arrs[nbx];
             const auto& temp = temp_arrs[nbx];
             const auto& frac = frac_arrs[nbx];
-            auto& src = src_arrs[nbx];
+            const auto& src = src_arrs[nbx];
 
             const amrex::Real beta = frac(i, j, k, 0);
             const int cell_mask = mask_arrs[nbx](i, j, k, 0);
@@ -163,10 +165,10 @@ void ImmersedDragTempForcing::operator()(
                 amrex::max<amrex::Real>(z0_arrs[nbx](i, j, k, 0), min_z0);
             const amrex::Real z_c = prob_lo[2] + ((k + 0.5_rt) * dx[2]);
 
-            WallPatch patches[2 * AMREX_SPACEDIM];
+            amrex::GpuArray<WallPatch, 2 * AMREX_SPACEDIM> patches{};
             const int np = kynema_sgf::immersed_wall::wall_patches(
                 wall_model, i, j, k, beta, frac, surf_arrs[nbx], dx, z_c, z0,
-                solid_threshold, patches);
+                solid_threshold, patches.data());
 
             amrex::Real force = 0.0_rt;
             amrex::Real weight_sum = 0.0_rt;

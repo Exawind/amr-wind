@@ -7,6 +7,8 @@
 #include "AMReX_ParmParse.H"
 #include "AMReX_REAL.H"
 
+#include <limits>
+
 using namespace amrex::literals;
 
 namespace {
@@ -74,7 +76,7 @@ protected:
         sim().time().delta_t() = m_dt;
     }
 
-    amrex::Real relax_rate(const amrex::Real beta) const
+    [[nodiscard]] amrex::Real relax_rate(const amrex::Real beta) const
     {
         const amrex::Real C = beta * m_drag_coefficient / m_dz;
         return (1.0_rt - std::exp(-C * m_dt)) / m_dt;
@@ -98,7 +100,8 @@ protected:
     const amrex::Real m_drag_coefficient{10.0_rt};
     const amrex::Real m_theta{305.0_rt};
     const amrex::Real m_soil{300.0_rt};
-    const amrex::Real m_tol{1.0e-12_rt};
+    const amrex::Real m_tol{
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt};
 };
 
 TEST_F(ImmersedDragTempForcingTest, laminar_relaxation_only)
@@ -135,19 +138,19 @@ TEST_F(ImmersedDragTempForcingTest, surface_conditions)
     // Neutral prescribed-L: theta* = 0 with the default (huge) Obukhov length,
     // the target equals the reference temperature (uniform), so the wall
     // model adds nothing and only the interior relaxation remains
-    EXPECT_NEAR(run("obukhov_length"), interior, 1.0e-9_rt);
+    EXPECT_NEAR(run("obukhov_length"), interior, m_tol);
 
     // Surface held at 300 K under 305 K air: heat leaves the fluid, the wall
     // model cools the cell beyond the interior relaxation
     const amrex::Real surf_temp = run("surface_temperature");
-    EXPECT_LT(surf_temp, interior - 1.0e-6_rt);
+    EXPECT_LT(surf_temp, interior - m_tol);
 
     // Prescribed downward heat flux (surface cooling) must also cool
     set_string("ImmersedDragTempForcing", "surface_heat_flux", "-0.05");
-    EXPECT_LT(run("heat_flux"), interior - 1.0e-6_rt);
+    EXPECT_LT(run("heat_flux"), interior - m_tol);
     // and a heating flux must warm relative to the interior relaxation
     set_string("ImmersedDragTempForcing", "surface_heat_flux", "0.05");
-    EXPECT_GT(run("heat_flux"), interior + 1.0e-6_rt);
+    EXPECT_GT(run("heat_flux"), interior + m_tol);
 }
 
 TEST_F(ImmersedDragTempForcingTest, side_wall_cell_is_forced)
@@ -164,7 +167,7 @@ TEST_F(ImmersedDragTempForcingTest, side_wall_cell_is_forced)
     forcing(0, kynema_sgf::FieldState::New, src_term(0));
     // Fluid cell beside the plateau wall: only the six-face search reaches it;
     // the wall at 300 K cools 305 K air
-    EXPECT_LT(utils::field_probe(src_term, 0, 13, 10, 1, 0), -1.0e-6_rt);
+    EXPECT_LT(utils::field_probe(src_term, 0, 13, 10, 1, 0), -m_tol);
     EXPECT_NEAR(utils::field_probe(src_term, 0, 5, 5, 8, 0), 0.0_rt, m_tol);
 }
 

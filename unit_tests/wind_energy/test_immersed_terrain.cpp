@@ -4,6 +4,8 @@
 #include "src/physics/ImmersedTerrain.H"
 #include "AMReX_REAL.H"
 
+#include <limits>
+
 using namespace amrex::literals;
 
 namespace {
@@ -64,7 +66,8 @@ protected:
 TEST_F(ImmersedTerrainTest, fraction_mask_and_slopes)
 {
     using Terrain = kynema_sgf::immersedterrain::ImmersedTerrain;
-    constexpr amrex::Real tol = 1.0e-12_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
     write_terrain(m_terrain_fname);
     populate_parameters();
     initialize_mesh();
@@ -119,7 +122,7 @@ TEST_F(ImmersedTerrainTest, fraction_mask_and_slopes)
         0.0_rt, tol);
     EXPECT_NEAR(
         utils::field_probe(surface, 0, 14, 10, 1, Terrain::surf_slope_x),
-        100.0_rt / 32.0_rt, 1.0e-10_rt);
+        100.0_rt / 32.0_rt, tol);
 }
 
 } // namespace kynema_sgf_tests

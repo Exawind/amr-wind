@@ -255,7 +255,8 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
             amrex::ParallelFor(
                 (*rho_eff)(lev), amrex::IntVect(1),
                 [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
-                    const amrex::Real f = 1.0_rt + dt * rate_arrs[nbx](i, j, k);
+                    const amrex::Real f =
+                        1.0_rt + (dt * rate_arrs[nbx](i, j, k));
                     fac_arrs[nbx](i, j, k) = f;
                     reff_arrs[nbx](i, j, k) = rho_arrs[nbx](i, j, k) * f;
                 });

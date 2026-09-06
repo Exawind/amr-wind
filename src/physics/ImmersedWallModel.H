@@ -8,6 +8,7 @@
 #include "AMReX_GpuQualifiers.H"
 #include "AMReX_REAL.H"
 
+#include <cstdint>
 #include <string>
 
 using namespace amrex::literals;
@@ -24,7 +25,11 @@ using namespace amrex::literals;
  */
 namespace kynema_sgf::immersed_wall {
 
-enum class WallModel : int { cell_offset = 0, terrain_height, surface_normal };
+enum class WallModel : std::uint8_t {
+    cell_offset = 0,
+    terrain_height,
+    surface_normal
+};
 
 inline WallModel parse_wall_model(const std::string& name)
 {

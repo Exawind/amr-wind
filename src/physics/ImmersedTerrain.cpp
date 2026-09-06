@@ -210,11 +210,11 @@ void ImmersedTerrain::initialize_fields(int level, const amrex::Geometry& geom)
             // Height and slopes at the cell center; slopes by central
             // differences over one cell width of the interpolated surface
             const amrex::Real terrain_ht = height(x, y);
-            const amrex::Real slope_x = (height(x + 0.5_rt * dx[0], y) -
-                                         height(x - 0.5_rt * dx[0], y)) /
+            const amrex::Real slope_x = (height(x + (0.5_rt * dx[0]), y) -
+                                         height(x - (0.5_rt * dx[0]), y)) /
                                         dx[0];
-            const amrex::Real slope_y = (height(x, y + 0.5_rt * dx[1]) -
-                                         height(x, y - 0.5_rt * dx[1])) /
+            const amrex::Real slope_y = (height(x, y + (0.5_rt * dx[1])) -
+                                         height(x, y - (0.5_rt * dx[1]))) /
                                         dx[1];
             surf_arrs[nbx](i, j, k, surf_height) = terrain_ht;
             surf_arrs[nbx](i, j, k, surf_slope_x) = slope_x;

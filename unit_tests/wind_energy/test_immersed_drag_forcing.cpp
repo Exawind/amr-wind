@@ -7,6 +7,8 @@
 #include "AMReX_ParmParse.H"
 #include "AMReX_REAL.H"
 
+#include <limits>
+
 using namespace amrex::literals;
 
 namespace {
@@ -72,7 +74,7 @@ protected:
         sim().time().delta_t() = m_dt;
     }
 
-    amrex::Real drag_rate(const amrex::Real beta) const
+    [[nodiscard]] amrex::Real drag_rate(const amrex::Real beta) const
     {
         const amrex::Real C = beta * m_drag_coefficient / m_dz;
         return (1.0_rt - std::exp(-C * m_dt)) / m_dt;
@@ -83,7 +85,8 @@ protected:
     const amrex::Real m_dt{0.5_rt};
     const amrex::Real m_dz{32.0_rt};
     const amrex::Real m_drag_coefficient{10.0_rt};
-    const amrex::Real m_tol{1.0e-12_rt};
+    const amrex::Real m_tol{
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt};
 };
 
 TEST_F(ImmersedDragForcingTest, laminar_drag_only)
@@ -131,10 +134,10 @@ TEST_F(ImmersedDragForcingTest, turbulent_wall_model_faces)
     // decelerates both horizontal components beyond the drag alone
     EXPECT_LT(
         utils::field_probe(src_term, 0, 15, 10, 3, 0),
-        -drag_rate(0.125_rt) * 10.0_rt - m_tol);
+        (-drag_rate(0.125_rt) * 10.0_rt) - m_tol);
     EXPECT_LT(
         utils::field_probe(src_term, 0, 15, 10, 3, 1),
-        -drag_rate(0.125_rt) * 5.0_rt - m_tol);
+        (-drag_rate(0.125_rt) * 5.0_rt) - m_tol);
     EXPECT_NEAR(utils::field_probe(src_term, 0, 15, 10, 3, 2), 0.0_rt, m_tol);
     // Fluid cell beside the west wall of the plateau: only the east face is
     // active, so the wall-normal u is untouched and the tangential v is
@@ -175,7 +178,7 @@ TEST_F(ImmersedDragForcingTest, terrain_height_matches_normal_on_flat_top)
     for (int n = 0; n < AMREX_SPACEDIM; ++n) {
         EXPECT_NEAR(
             utils::field_probe(src_term, 0, 15, 10, 3, n), height_method[n],
-            1.0e-10_rt);
+            m_tol);
     }
     // And it differs from the crude 0.5 dz / 1.5 dz offsets
     set_string("ImmersedDragForcing", "wall_model", "cell_offset");
@@ -187,7 +190,7 @@ TEST_F(ImmersedDragForcingTest, terrain_height_matches_normal_on_flat_top)
     EXPECT_GT(
         std::abs(
             utils::field_probe(src_term, 0, 15, 10, 3, 0) - height_method[0]),
-        1.0e-6_rt);
+        m_tol);
 }
 
 } // namespace kynema_sgf_tests
