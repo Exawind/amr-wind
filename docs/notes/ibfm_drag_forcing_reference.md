@@ -229,3 +229,28 @@ overshoots and can blow up. Hence:
   West/south distances are entered as negative numbers by convention.
 - `terrain_damping`: sin^2 Rayleigh layers at the lateral boundaries (above
   `horizontal_abl_height`) and at the domain top, applied to w only, rate 1/`horizontal_tau`.
+
+---
+
+## 5. Convergence check: laminar immersed box (2026-09-05)
+
+Case `test/test_files/terrain_box` (binary TerrainDrag + DragForcing, with
+`use_temporal_drag_limiter = 1` so the explicit drag survives the 16 s cold-start step) versus
+`test/test_files/immersed_terrain_box` (ImmersedTerrain + ImmersedDragForcing). Meshes
+24x24x48, 48x48x96, 96x96x192 on the 1024 m cube, run to t = 90 s, inflow 1 m/s. Metric: mean
+speed inside the box (true box extent x,y in [407, 593], z in [0, 200]).
+
+| Region                     | Method  | dx = 42.7 | dx = 21.3 | dx = 10.7 | fitted order |
+|----------------------------|---------|-----------|-----------|-----------|--------------|
+| cells fully solid          | binary  | 1.20e-1   | 5.56e-2   | 2.05e-2   | 1.28 |
+| cells fully solid          | partial | 1.18e-1   | 5.38e-2   | 2.59e-2   | 1.10 |
+| interior window (430-570)  | binary  | 8.86e-2   | 3.25e-2   | 9.96e-3   | 1.58 |
+| interior window (430-570)  | partial | 9.21e-2   | 3.16e-2   | 1.25e-2   | 1.44 |
+
+Both methods are first order in the approach to zero inside the body; the partial fraction does
+not improve it, as expected: in the laminar pathway the interior residual is pressure leakage through
+the same relaxation term, and the fraction only alters the one-cell layer at the top of the box.
+The gain from the partial fraction is in the surface layer (no staircase), which this metric does not
+see. Without the temporal limiter the old explicit drag overshoots at the first step (C dt ~ 17) and
+the CFL time step collapses to ~0.25 s; the exact-integration form in ImmersedDragForcing holds a
+steady ~8 s step. Plot: scratch `conv/box_convergence.png` (not committed).
