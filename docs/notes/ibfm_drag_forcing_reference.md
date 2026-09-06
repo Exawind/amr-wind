@@ -300,3 +300,26 @@ Reading: the implicit projection removes the dt grad(p)/rho re-injection, cuttin
 5-10x at fixed Cd but leaving the spatial part grad(p)/(rho C) ~ dz. Doubling Cd with each
 refinement (C ~ 1/dz^2) gives second order, which the implicit form allows at no stability cost.
 Regression case: `test/test_files/immersed_terrain_box_implicit`.
+
+### 5.3 Convergence with one AMR level on the surface (2026-09-05)
+
+Same box, base meshes 24/48/96 with `amr.max_level = 1` and `FieldRefinement` on the terrain
+surface band (`terrain_blank` grad_error 0.1 for the binary method, `terrain_mask` grad_error 0.5
+for the new physics; the fine level covers 2.5-6.5 % of the domain). The x axis is the finest
+spacing dx/2. t = 90 s, mean speed in fully solid cells and in the interior window.
+
+| Series                                              | dx_f = 21.3 | dx_f = 10.7 | dx_f = 5.3 | order (solid) | order (interior) |
+|-----------------------------------------------------|-------------|-------------|------------|---------------|------------------|
+| binary, explicit drag (with 1/dt limiter)           | 5.55e-2     | 2.10e-2     | 8.30e-3    | 1.37 | 1.62 |
+| partial fraction, explicit drag                     | 5.40e-2     | 2.66e-2     | 1.06e-2    | 1.18 | 1.51 |
+| partial fraction, implicit projection, Cd = 10      | 9.16e-3     | 4.68e-3     | 2.57e-3    | 0.92 | 1.18 |
+| partial fraction, implicit projection, Cd = 10,20,40| 9.16e-3     | 2.29e-3     | 6.82e-4    | 1.87 | 2.17 |
+
+Consistency check: the AMR results at base 24 (finest 21.3 m) match the uniform 48 results of
+Section 5.2 to within 2 % for every series (e.g. binary 5.55e-2 vs 5.56e-2, implicit 9.16e-3 vs
+9.28e-3), so refining only the surface band reproduces the uniformly fine answer inside the body.
+The orders are the same as on uniform meshes: first order for the explicit methods and for the
+implicit projection at fixed Cd, second order for the implicit projection with Cd ~ 1/dz.
+Regression cases: `test/test_files/immersed_terrain_box_amr` and `immersed_terrain_box_amr_implicit`
+(tagging on `terrain_mask`; the `mask_terrain` derived sampling field is not used because it
+requires the old `terrain_blank` int field). Plot: scratch `conv_amr/box_convergence_amr.png`.
