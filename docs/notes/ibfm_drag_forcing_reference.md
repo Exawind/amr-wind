@@ -253,7 +253,7 @@ the same relaxation term, and the fraction only alters the one-cell layer at the
 The gain from the partial fraction is in the surface layer (no staircase), which this metric does not
 see. Without the temporal limiter the old explicit drag overshoots at the first step (C dt ~ 17) and
 the CFL time step collapses to ~0.25 s; the exact-integration form in ImmersedDragForcing holds a
-steady ~8 s step. Plot: scratch `conv/box_convergence.png` (not committed).
+steady ~8 s step. Plot: `docs/notes/immersed_box_convergence_uniform.png`.
 
 ### 5.1 Why first order, and the implicit projection fix (2026-09-05)
 
@@ -322,4 +322,4 @@ The orders are the same as on uniform meshes: first order for the explicit metho
 implicit projection at fixed Cd, second order for the implicit projection with Cd ~ 1/dz.
 Regression cases: `test/test_files/immersed_terrain_box_amr` and `immersed_terrain_box_amr_implicit`
 (tagging on `terrain_mask`; the `mask_terrain` derived sampling field is not used because it
-requires the old `terrain_blank` int field). Plot: scratch `conv_amr/box_convergence_amr.png`.
+requires the old `terrain_blank` int field). Plot: `docs/notes/immersed_box_convergence_amr.png`.
