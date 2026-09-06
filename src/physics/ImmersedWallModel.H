@@ -16,7 +16,7 @@ using namespace amrex::literals;
  *  terrain source terms (ImmersedDragForcing, ImmersedDragTempForcing).
  *
  *  A surface cell (terrain_mask == 2) receives one or more "wall patches".
- *  Each patch carries the wall distance of the cell centre d1, the distance
+ *  Each patch carries the wall distance of the cell center d1, the distance
  *  d2 of a reference cell whose velocity and temperature are trusted, the cell
  *  width along the wall normal dxn, the unit normal pointing into the fluid,
  *  the reference cell indices and a weight. Both source terms build the same
@@ -112,7 +112,7 @@ struct WallParams
 //! One wall contribution to a surface cell
 struct WallPatch
 {
-    amrex::Real d1{0.0_rt};     //!< wall distance of the cell centre
+    amrex::Real d1{0.0_rt};     //!< wall distance of the cell center
     amrex::Real d2{0.0_rt};     //!< wall distance of the reference cell
     amrex::Real dxn{0.0_rt};    //!< cell width along the wall normal
     amrex::Real weight{0.0_rt}; //!< weight when several patches are active
@@ -122,10 +122,9 @@ struct WallPatch
 
 //! Component of v tangential to the patch normal
 AMREX_GPU_HOST_DEVICE
-    AMREX_FORCE_INLINE amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>
-    tangential(
-        const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& v,
-        const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& nrm)
+AMREX_FORCE_INLINE amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> tangential(
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& v,
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& nrm)
 {
     const amrex::Real vn = (v[0] * nrm[0]) + (v[1] * nrm[1]) + (v[2] * nrm[2]);
     return {v[0] - (vn * nrm[0]), v[1] - (vn * nrm[1]), v[2] - (vn * nrm[2])};
@@ -140,10 +139,10 @@ magnitude(const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& v)
 /** Build the wall patches of a surface cell.
  *
  *  Face based (cell_offset, terrain_height): one patch per face whose
- *  neighbour has a terrain fraction at or above solid_threshold. The
- *  reference cell is the neighbour opposite the wall, d1 = 0.5 dx_f,
+ *  neighbor has a terrain fraction at or above solid_threshold. The
+ *  reference cell is the neighbor opposite the wall, d1 = 0.5 dx_f,
  *  d2 = 1.5 dx_f, except that terrain_height uses z - h on the bottom face.
- *  Patches are weighted by the neighbour fraction.
+ *  Patches are weighted by the neighbor fraction.
  *
  *  Surface normal: a single patch along the terrain normal built from the
  *  slopes, with the reference cell one normal cell-width away (nearest cell,
@@ -241,6 +240,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real friction_velocity(
  *
  *  \param ut_ref tangential reference velocity at d2
  *  \param ut     tangential velocity of the forced cell at d1
+ *  \param p      wall patch (distances, normal, cell width)
+ *  \param z0     roughness length
+ *  \param wp     wall-model constants
  *  \param[out] force forcing on the tangential velocity (Cartesian frame)
  *  \return friction velocity
  */
@@ -272,6 +274,10 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real wall_momentum_forcing(
  *  \param theta      temperature of the forced cell at d1
  *  \param theta_s    surface temperature
  *  \param theta_star temperature scale (positive for a cooling surface)
+ *  \param ustar      friction velocity of the patch
+ *  \param p          wall patch (distances, normal, cell width)
+ *  \param z0         roughness length
+ *  \param wp         wall-model constants
  *  \return forcing on the temperature
  */
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real wall_heat_forcing(

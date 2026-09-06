@@ -29,7 +29,7 @@ namespace kynema_sgf::pde::temperature {
  *     the temperature scale theta* depends on ``surface_condition``:
  *       - ``obukhov_length``      : theta* = theta u*^2 / (kappa g L) with the
  *                                   single ABL Obukhov length (current
- *                                   DragTempForcing behaviour)
+ *                                   DragTempForcing behavior)
  *       - ``surface_temperature`` : theta* = kappa (theta_ref - theta_soil) /
  *                                   phi_h(d2), surface held at soil_temperature
  *       - ``heat_flux``           : theta* = -surface_heat_flux / u*

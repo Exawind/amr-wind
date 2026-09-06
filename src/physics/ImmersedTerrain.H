@@ -33,7 +33,7 @@ namespace kynema_sgf::immersedterrain {
  *    surface band, ``field_error = 0.5`` tags surface and solid cells.
  *
  *  - ``terrain_surface`` (Real, 3 components): terrain height h(x,y) at the
- *    cell centre, and the slopes dh/dx and dh/dy. The slopes are what a
+ *    cell center, and the slopes dh/dx and dh/dy. The slopes are what a
  *    second-order (planar) reconstruction of the surface inside a cell needs;
  *    the current fraction uses only the height and is first order.
  *
@@ -89,7 +89,7 @@ private:
     Field& m_terrain_fraction;
     //! Cell classification: fluid / solid / surface
     IntField& m_terrain_mask;
-    //! Terrain height and slopes at the cell centre
+    //! Terrain height and slopes at the cell center
     Field& m_terrain_surface;
     //! Aerodynamic roughness
     Field& m_terrain_roughness;
@@ -106,7 +106,7 @@ private:
     std::string m_blanking_method{"volume_fraction"};
     //! Smoothing length for ``distance_function`` in units of dz
     amrex::Real m_smoothing_length{1.0_rt};
-    //! Neighbour is treated as solid for the surface search above this
+    //! Neighbor is treated as solid for the surface search above this
     amrex::Real m_solid_threshold{0.5_rt};
 
     //! Apply the immersed drag implicitly through the projections

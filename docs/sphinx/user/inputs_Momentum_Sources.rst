@@ -335,9 +335,9 @@ inside the nodal and MAC projections and this source term contributes only the w
 
    How the wall distance is measured in surface cells.
 
-   - ``cell_offset``: on each of the six cell faces that touches a solid neighbour, the
+   - ``cell_offset``: on each of the six cell faces that touches a solid neighbor, the
      forced cell is at :math:`0.5 \Delta_f` and the reference velocity (taken from the
-     neighbour opposite the wall) at :math:`1.5 \Delta_f` from the wall.
+     neighbor opposite the wall) at :math:`1.5 \Delta_f` from the wall.
    - ``terrain_height``: as ``cell_offset``, except that the bottom face uses the true
      height above the terrain, :math:`z_k - h` and :math:`z_{k+1} - h`.
    - ``surface_normal``: the wall normal is built from the terrain slopes, distances are
@@ -353,7 +353,7 @@ inside the nodal and MAC projections and this source term contributes only the w
    Time scale of the wall-model relaxation. ``wall`` uses
    :math:`\max(\tau_f \Delta t, d_1 / u_*)`, which is independent of the time step once
    the flow-based scale exceeds the floor. ``time_step`` uses :math:`\tau_f \Delta t`,
-   the behaviour of ``DragForcing``.
+   the behavior of ``DragForcing``.
 
 .. input_param:: ImmersedDragForcing.bc_forcing_time_factor
 

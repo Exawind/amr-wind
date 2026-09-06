@@ -31,7 +31,7 @@ Section: Temperature Sources
 
 
 The following arguments are influential when ``ImmersedDragTempForcing`` is included in
-:input_param:`Temperature.source_terms`. This is the temperature counterpart of
+``Temperature.source_terms``. This is the temperature counterpart of
 ``ImmersedDragForcing`` and requires the :ref:`ImmersedTerrain <inputs_immersedterrain>`
 physics. Inside the terrain the temperature relaxes toward the soil temperature at the rate
 :math:`\beta C_d / \Delta z`, integrated exactly over the time step. When
@@ -50,7 +50,7 @@ and minimum roughness are read from :input_param:`ImmersedDragForcing.wall_model
 
    Coefficient :math:`C_d` of the interior relaxation; the rate in a fully solid cell is
    :math:`C_d / \Delta z`. Unlike ``DragTempForcing`` the rate does not depend on the local
-   velocity, following the constant velocity scale of Munoz-Esparza et al. (2020).
+   velocity, following the constant velocity scale of Muñoz-Esparza and coworkers (2020).
 
 .. input_param:: ImmersedDragTempForcing.soil_temperature
 

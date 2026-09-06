@@ -72,7 +72,7 @@ To stop leaked air from homogenising the temperature across the body interface:
 - **No wall model.** The IBFM is a low-Reynolds-number, no-slip approach. Section 4 attributes
   part of the residual wind-speed error to "the fact that the IBFM does not include a wall
   model", and the conclusions state a plan to add a rough-wall model following a canopy
-  formulation (Anderson 2013, Int. J. Numer. Meth. Fluids 71, 1588-1608).
+  formulation (Anderson 2013, International Journal for Numerical Methods in Fluids 71, 1588-1608).
 - No partial-cell treatment was exercised (beta_r taken as 0/1 in the validations).
 - Lateral forcing is by Dirichlet inflow from a precursor plus the cell-perturbation method,
   not by sponge layers.

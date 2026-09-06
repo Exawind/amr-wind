@@ -28,7 +28,7 @@ namespace kynema_sgf::pde::icns {
  *     (1 - beta), in the turbulent pathway only. Three ways of measuring the
  *     wall distance are selectable with ``wall_model``:
  *       - ``cell_offset``    : d1 = 0.5 dx_f, d2 = 1.5 dx_f on each of the
- *                              six faces that touch a solid neighbour
+ *                              six faces that touch a solid neighbor
  *       - ``terrain_height`` : as above, but the bottom face uses the true
  *                              height above the terrain, z - h
  *       - ``surface_normal`` : distance and velocity decomposition along the
@@ -72,7 +72,7 @@ private:
     std::string m_wall_model{"cell_offset"};
     //! Lower bound on roughness length
     amrex::Real m_min_z0{1.0e-4_rt};
-    //! Neighbour fraction at or above which a face is treated as a wall
+    //! Neighbor fraction at or above which a face is treated as a wall
     amrex::Real m_solid_threshold{0.5_rt};
     //! Skip the wall model even with a turbulence model active
     bool m_force_laminar{false};

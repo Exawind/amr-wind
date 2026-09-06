@@ -101,7 +101,7 @@ TEST_F(ImmersedTerrainTest, fraction_mask_and_slopes)
     EXPECT_EQ(utils::field_probe(mask, 0, 15, 10, 4), Terrain::mask_fluid);
 
     // Fluid cell beside the vertical wall of the plateau is a surface cell,
-    // found only by the six-way neighbour search
+    // found only by the six-way neighbor search
     EXPECT_NEAR(utils::field_probe(fraction, 0, 13, 10, 1), 0.0_rt, tol);
     EXPECT_EQ(utils::field_probe(mask, 0, 13, 10, 1), Terrain::mask_surface);
     EXPECT_EQ(utils::field_probe(mask, 0, 18, 10, 1), Terrain::mask_surface);

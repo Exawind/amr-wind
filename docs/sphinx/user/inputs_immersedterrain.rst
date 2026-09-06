@@ -21,8 +21,8 @@ ImmersedTerrain declares the following fields, each with one ghost cell:
   in surface cells. The mask can be used directly with
   ``FieldRefinement``: ``field_error = 1.5`` tags only the surface band and
   ``field_error = 0.5`` tags surface and solid cells.
-- ``terrain_surface`` (Real, 3 components): terrain height at the cell centre
-  and the slopes dh/dx and dh/dy.
+- ``terrain_surface`` (Real, 3 components): terrain height at the cell center
+  and the slopes :math:`\partial h/\partial x` and :math:`\partial h/\partial y`.
 - ``terrain_roughness`` (Real): aerodynamic roughness length.
 
 .. input_param:: ImmersedTerrain.terrain_file
@@ -52,8 +52,8 @@ ImmersedTerrain declares the following fields, each with one ghost cell:
 
    How the terrain fraction of a cell is computed. ``volume_fraction`` uses the
    fraction of the cell column that lies below the terrain height at the cell
-   centre. ``distance_function`` uses a smooth tanh of the signed distance from
-   the cell centre to the surface, with the width set by
+   center. ``distance_function`` uses a smooth hyperbolic tangent of the signed distance from
+   the cell center to the surface, with the width set by
    :input_param:`ImmersedTerrain.smoothing_length`.
 
 .. input_param:: ImmersedTerrain.smoothing_length
@@ -67,7 +67,7 @@ ImmersedTerrain declares the following fields, each with one ghost cell:
 
    **type:** Real, optional, default = 0.5
 
-   A neighbouring cell is treated as a wall when its terrain fraction is at or
+   A neighboring cell is treated as a wall when its terrain fraction is at or
    above this value. Used to classify surface cells and, in
    ``ImmersedDragForcing``, to decide which faces of a surface cell carry the
    wall model.

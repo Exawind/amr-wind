@@ -32,14 +32,14 @@ method for applying a wall function. We propose the use of a forcing function to
 the wall effects.
 
 First, compute the friction velocity from the cell above the terrain-adjacent cell, whose
-centre is :math:`1.5\,\Delta z` above the wall. The velocity of the terrain-adjacent cell itself
+center is :math:`1.5\,\Delta z` above the wall. The velocity of the terrain-adjacent cell itself
 is not used because that is the cell being forced:
 
 .. math::
 
    u_*= |u_h[k+1]| \frac {\kappa}{\log [1.5 \Delta z/z_0] - \psi_m(1.5 \Delta z / L)}
 
-The expected wind speed at cell k, whose centre is :math:`0.5\,\Delta z` above the wall, is
+The expected wind speed at cell k, whose center is :math:`0.5\,\Delta z` above the wall, is
 
 .. math::
 
@@ -108,12 +108,12 @@ mean speed inside the body were 1.3 (binary), 1.1 (partial fraction, explicit dr
 
 **Wall model.** In surface cells, weighted by :math:`1 - \beta` and only when a turbulence model
 is active, a Monin-Obukhov wall model is applied on one or more wall patches. Each patch has a wall
-distance :math:`d_1` of the cell centre, a distance :math:`d_2` of a reference cell whose velocity
+distance :math:`d_1` of the cell center, a distance :math:`d_2` of a reference cell whose velocity
 is trusted, a cell width :math:`\Delta_n` along the wall normal and a unit normal :math:`\hat n`
 pointing into the fluid. Three ways of building the patches are available through
 ``ImmersedDragForcing.wall_model``:
 
-* ``cell_offset``: one patch per face touching a mostly solid neighbour, reference cell opposite
+* ``cell_offset``: one patch per face touching a mostly solid neighbor, reference cell opposite
   the wall, :math:`d_1 = 0.5 \Delta_f`, :math:`d_2 = 1.5 \Delta_f`;
 * ``terrain_height``: as above, but the bottom face uses the true height above the terrain,
   :math:`d_1 = z_k - h`, :math:`d_2 = z_{k+1} - h`;
@@ -135,7 +135,7 @@ tangential velocity is relaxed; the wall-normal component is left to the project
 relaxation rate :math:`C_{bc}` uses the same exact integration as the drag, with time scale
 :math:`\max(\tau_f \Delta t,\, d_1/u_*)` by default, so that the wall model becomes independent of
 the time step once the flow-based scale exceeds the floor. Contributions from several patches are
-averaged with the neighbour fractions as weights.
+averaged with the neighbor fractions as weights.
 
 **Energy equation.** ``ImmersedDragTempForcing`` relaxes the temperature inside the terrain toward
 the soil temperature at the rate :math:`\beta C_d/\Delta z`, without dependence on the local

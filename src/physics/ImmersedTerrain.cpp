@@ -168,7 +168,7 @@ void ImmersedTerrain::initialize_fields(int level, const amrex::Geometry& geom)
     const amrex::Real smooth_len = m_smoothing_length * dx[2];
 
     // Pass 1: surface geometry, roughness and volume fraction, including
-    // ghost cells so that the neighbour search in pass 2 has valid data.
+    // ghost cells so that the neighbor search in pass 2 has valid data.
     amrex::ParallelFor(
         fraction, m_terrain_fraction.num_grow(),
         [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
@@ -183,7 +183,7 @@ void ImmersedTerrain::initialize_fields(int level, const amrex::Geometry& geom)
                     yterrain_ptr + yterrain_size, zterrain_ptr, xq, yq);
             };
 
-            // Height and slopes at the cell centre; slopes by central
+            // Height and slopes at the cell center; slopes by central
             // differences over one cell width of the interpolated surface
             const amrex::Real terrain_ht = height(x, y);
             const amrex::Real slope_x = (height(x + 0.5_rt * dx[0], y) -
@@ -215,7 +215,7 @@ void ImmersedTerrain::initialize_fields(int level, const amrex::Geometry& geom)
                 vol_frac = 1.0_rt;
             }
             // Ghost cells below the domain floor stay fluid so the bottom row
-            // is not flagged as a terrain surface by the neighbour search
+            // is not flagged as a terrain surface by the neighbor search
             frac_arrs[nbx](i, j, k, 0) = (z > prob_lo[2]) ? vol_frac : 0.0_rt;
             if (has_rate) {
                 rate_arrs[nbx](i, j, k, 0) =
@@ -234,7 +234,7 @@ void ImmersedTerrain::initialize_fields(int level, const amrex::Geometry& geom)
     amrex::Gpu::streamSynchronize();
 
     // Pass 2: cell classification. A fluid cell becomes a surface cell if any
-    // of its six face neighbours is mostly solid; this catches the side walls
+    // of its six face neighbors is mostly solid; this catches the side walls
     // of steep terrain and buildings that a vertical-only search misses.
     const amrex::Real solid_threshold = m_solid_threshold;
     amrex::ParallelFor(
