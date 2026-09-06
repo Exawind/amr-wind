@@ -48,6 +48,17 @@ namespace kynema_sgf::immersedterrain {
  *    no velocity inside the terrain. ImmersedDragForcing then skips its
  *    explicit drag term. Without this, the projection re-injects dt grad(p)/rho
  *    inside the body every step and the interior residual is first order in dt.
+ *
+ *  - ``terrain_diffusion_xf/yf/zf`` (Real, face centered), only with
+ *    ``interface_diffusion`` other than ``none``: factor applied to the face
+ *    diffusion coefficients of every equation solved with the shared diffusion
+ *    operator. ``block`` uses min(1 - beta_L, 1 - beta_R), which removes the
+ *    molecular and SGS flux across faces touching the terrain so that the wall
+ *    model alone carries the wall stress (turbulent pathway). ``no_slip``
+ *    scales the coefficient of fluid/solid faces by dx_f / d1 so that the
+ *    discrete flux mu (u - 0)/dx_f equals the flux mu u / d1 to a no-slip wall
+ *    at the true wall position (laminar pathway); d1 = z - h on the bottom
+ *    face, dx_f / 2 elsewhere.
  */
 class ImmersedTerrain : public Physics::Register<ImmersedTerrain>
 {
@@ -115,6 +126,13 @@ private:
     amrex::Real m_drag_coefficient{10.0_rt};
     //! beta * C_d / dz, declared only when m_implicit_projection is true
     Field* m_terrain_drag_rate{nullptr};
+
+    //! ``none``, ``block`` or ``no_slip``
+    std::string m_interface_diffusion{"none"};
+    //! Face factors for the diffusion coefficients, declared only when
+    //! m_interface_diffusion is not ``none``
+    amrex::Array<Field*, AMREX_SPACEDIM> m_diffusion_factor{
+        {nullptr, nullptr, nullptr}};
 };
 
 } // namespace kynema_sgf::immersedterrain

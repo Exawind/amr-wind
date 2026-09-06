@@ -323,3 +323,59 @@ implicit projection at fixed Cd, second order for the implicit projection with C
 Regression cases: `test/test_files/immersed_terrain_box_amr` and `immersed_terrain_box_amr_implicit`
 (tagging on `terrain_mask`; the `mask_terrain` derived sampling field is not used because it
 requires the old `terrain_blank` int field). Plot: `docs/notes/immersed_box_convergence_amr.png`.
+
+## 6. Diffusive flux at the terrain interface (2026-09-06)
+
+The diffusion operator assembles face coefficients with `average_velocity_eta_to_faces` (six call
+sites in `DiffusionOps.H` and `icns_diffusion.H`). At a fluid/solid face it therefore applies the
+flux mu_eff (u_k - 0)/dx_f, since the interior is at rest. This is not a missing flux but a wall
+stress with the wrong length scale: the no-slip flux for a wall at distance d1 is mu u_k/d1 (a
+factor dx_f/d1, i.e. 2 for a wall at the face). With a turbulence model the wall model already
+supplies u*^2, so the SGS flux across the interface counts the stress twice.
+
+Option `ImmersedTerrain.interface_diffusion` (default `none`): ImmersedTerrain declares face fields
+`terrain_diffusion_xf/yf/zf` and `diffusion::apply_immersed_interface` multiplies the face
+coefficients by them at all six sites (so momentum, temperature, TKE and passive scalars are all
+covered):
+
+- `block`: factor min(1 - beta_L, 1 - beta_R); zero on faces touching the terrain. Turbulent
+  pathway: the wall model alone carries stress and heat flux.
+- `no_slip`: on fluid/solid faces (solid = fraction >= solid_threshold) factor dx_f/d1 with
+  d1 = z_k - h on the bottom face (clamped to [0.1, 1] dz) and dx_f/2 elsewhere. Laminar pathway
+  with finite viscosity: the discrete flux equals the no-slip flux at the true wall position.
+
+Regression cases `immersed_terrain_box_viscous` and `immersed_terrain_box_viscous_amr` (nu = 1,
+implicit projection, no_slip). Unit test `test_immersed_interface_diffusion.cpp` checks the factors
+on the plateau: lateral wall 2, bottom face of the partial cell 32/12, blocked faces 0 and 0.875.
+
+### 6.1 Viscous box, nu = 1 m^2/s (2026-09-06)
+
+Laminar box with `transport.viscosity = 1.0` (cell Reynolds number U dx/nu = 5-43), implicit
+projection, Cd = 10, t = 90 s, three interface treatments, uniform 24/48/96 and one AMR level.
+Mean speed in fully solid cells (interior residual) and in the surface cells (first fluid layer,
+`terrain_mask` = 2). No exact reference exists for this flow; the table shows trends only.
+
+| Grid | Metric        | Mode    | coarse   | medium   | fine     | fitted slope |
+|------|---------------|---------|----------|----------|----------|--------------|
+| uni  | solid cells   | none    | 1.64e-2  | 7.89e-3  | 4.11e-3  | 1.00 |
+| uni  | solid cells   | no_slip | 1.66e-2  | 7.99e-3  | 4.31e-3  | 0.97 |
+| uni  | solid cells   | block   | 1.66e-2  | 8.04e-3  | 4.28e-3  | 0.98 |
+| uni  | surface cells | none    | 0.728    | 0.631    | 0.443    | 0.36 |
+| uni  | surface cells | no_slip | 0.720    | 0.587    | 0.361    | 0.50 |
+| uni  | surface cells | block   | 0.737    | 0.693    | 0.589    | 0.16 |
+| amr  | solid cells   | none    | 7.90e-3  | 4.11e-3  | 2.19e-3  | 0.93 |
+| amr  | solid cells   | no_slip | 7.99e-3  | 4.31e-3  | 2.24e-3  | 0.92 |
+| amr  | solid cells   | block   | 8.04e-3  | 4.28e-3  | 2.25e-3  | 0.92 |
+| amr  | surface cells | none    | 0.631    | 0.443    | 0.292    | 0.56 |
+| amr  | surface cells | no_slip | 0.587    | 0.361    | 0.205    | 0.76 |
+| amr  | surface cells | block   | 0.693    | 0.589    | 0.607    | 0.10 |
+
+(uniform dx = 42.7 / 21.3 / 10.7 m; AMR finest dx = 21.3 / 10.7 / 5.3 m)
+
+Reading: the interior residual is unaffected by the interface treatment, as expected. The near-wall
+speed converges toward the resolved no-slip layer fastest with `no_slip` (slope 0.76 on the AMR
+series, heading to the first-order behavior u(d1) ~ tau_w d1/mu of a resolved layer), slower with
+`none` (wall stress too weak by dx/d1), and not at all with `block` (no viscous wall stress, a slip
+wall in the laminar pathway; intended for the turbulent pathway where the wall model supplies the
+stress). AMR at base 24 again matches uniform 48 for every entry. Plot:
+`docs/notes/immersed_box_viscous_interface.png`.

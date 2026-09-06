@@ -86,3 +86,28 @@ ImmersedTerrain declares the following fields, each with one ghost cell:
    velocity residual inside the terrain decreases only linearly with the time
    step. When active, ``ImmersedDragForcing`` skips its explicit drag term and
    applies only the wall model. Declares the field ``terrain_drag_rate``.
+
+.. input_param:: ImmersedTerrain.interface_diffusion
+
+   **type:** String, optional, default = ``none``
+
+   Treatment of the diffusive flux across the terrain interface. Without it the
+   diffusion operator computes a flux :math:`\mu_\mathrm{eff} (u_k - 0)/\Delta_f`
+   at every fluid/solid face, because the interior is at rest, which is a wall stress
+   with the wrong length scale and, with a turbulence model, double counts the stress
+   supplied by the wall model.
+
+   - ``none``: current behavior.
+   - ``block``: the face coefficient is multiplied by :math:`\min(1-\beta_L, 1-\beta_R)`,
+     which removes the molecular and SGS flux across faces touching the terrain so that the
+     wall model alone carries the wall stress and heat flux. Intended for the turbulent pathway.
+   - ``no_slip``: on faces between a fluid cell and a cell with fraction at or above
+     :input_param:`ImmersedTerrain.solid_threshold`, the coefficient is scaled by
+     :math:`\Delta_f / d_1` so that the discrete flux equals :math:`\mu u_k / d_1`, the flux to
+     a no-slip wall at the true position. On the bottom face :math:`d_1 = z_k - h` from the
+     terrain height (clamped to :math:`[0.1, 1] \Delta z`); on other faces the wall is taken at
+     the face, :math:`d_1 = \Delta_f/2`. Intended for laminar flow with a finite viscosity.
+
+   The factors are stored in the face fields ``terrain_diffusion_xf/yf/zf`` and applied
+   to every equation that uses the shared diffusion operator (momentum, temperature, TKE,
+   passive scalars).

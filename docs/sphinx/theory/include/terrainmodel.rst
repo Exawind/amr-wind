@@ -152,6 +152,14 @@ with :math:`\theta_*` obtained from a prescribed Obukhov length
 (:math:`\theta_* = \kappa (\theta_\mathrm{ref} - \theta_s)/\phi_h(d_2)`), or a prescribed surface
 heat flux (:math:`\theta_* = -q_s/u_*`).
 
-Note that the immersed terrain method does nothing to block the diffusive flux across the
-terrain interface; the molecular viscosity should therefore be kept negligible in laminar
-test cases.
+**Diffusive flux at the interface.** The diffusion operator evaluates the viscous flux at a
+fluid/solid face as :math:`\mu_\mathrm{eff}(u_k - 0)/\Delta_f`, since the interior is at rest.
+This is a wall stress with the wrong length scale: the flux to a no-slip wall at distance
+:math:`d_1` is :math:`\mu u_k/d_1`, and with a turbulence model the stress is already supplied
+by the wall model, so the SGS flux across the interface counts it twice. The option
+``ImmersedTerrain.interface_diffusion`` modifies the face coefficients: ``block`` multiplies
+them by :math:`\min(1-\beta_L, 1-\beta_R)`, removing the flux across the interface so the wall
+model alone acts (turbulent pathway); ``no_slip`` multiplies fluid/solid faces by
+:math:`\Delta_f/d_1` with :math:`d_1 = z_k - h` on the bottom face, which reproduces the
+no-slip flux at the true wall position (laminar pathway with finite viscosity). With the
+default ``none`` the molecular viscosity should be kept negligible in laminar test cases.

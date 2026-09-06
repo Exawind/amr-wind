@@ -205,6 +205,24 @@ void fixup_eta_on_domain_faces(
     }
 }
 
+void apply_immersed_interface(
+    amrex::Array<amrex::MultiFab, AMREX_SPACEDIM>& fc,
+    const kynema_sgf::FieldRepo& repo,
+    const int lev)
+{
+    if (!repo.field_exists("terrain_diffusion_xf")) {
+        return;
+    }
+    BL_PROFILE("kynema-sgf::diffusion::apply_immersed_interface");
+    const amrex::Array<std::string, AMREX_SPACEDIM> names{
+        {"terrain_diffusion_xf", "terrain_diffusion_yf",
+         "terrain_diffusion_zf"}};
+    for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
+        amrex::MultiFab::Multiply(
+            fc[dir], repo.get_field(names[dir])(lev), 0, 0, 1, 0);
+    }
+}
+
 void viscosity_to_uniform_space(
     amrex::Array<amrex::MultiFab, AMREX_SPACEDIM>& b,
     const kynema_sgf::FieldRepo& repo,

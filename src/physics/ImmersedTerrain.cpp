@@ -70,6 +70,30 @@ ImmersedTerrain::ImmersedTerrain(CFDSim& sim)
                        << m_drag_coefficient << "\n";
     }
 
+    pp.query("interface_diffusion", m_interface_diffusion);
+    if (m_interface_diffusion != "none" && m_interface_diffusion != "block" &&
+        m_interface_diffusion != "no_slip") {
+        amrex::Abort(
+            identifier() +
+            ".interface_diffusion must be none, block or no_slip, got " +
+            m_interface_diffusion);
+    }
+    if (m_interface_diffusion != "none") {
+        const amrex::Array<FieldLoc, AMREX_SPACEDIM> locs{
+            {FieldLoc::XFACE, FieldLoc::YFACE, FieldLoc::ZFACE}};
+        const amrex::Array<std::string, AMREX_SPACEDIM> names{
+            {"terrain_diffusion_xf", "terrain_diffusion_yf",
+             "terrain_diffusion_zf"}};
+        for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
+            m_diffusion_factor[dir] =
+                &sim.repo().declare_field(names[dir], 1, 0, 1, locs[dir]);
+            m_diffusion_factor[dir]->setVal(1.0_rt);
+        }
+        amrex::Print() << identifier()
+                       << ": diffusion across the terrain interface set to "
+                       << m_interface_diffusion << "\n";
+    }
+
     m_sim.io_manager().register_output_int_var("terrain_mask");
     m_sim.io_manager().register_io_var("terrain_fraction");
     m_sim.io_manager().register_io_var("terrain_surface");
@@ -261,6 +285,52 @@ void ImmersedTerrain::initialize_fields(int level, const amrex::Geometry& geom)
             mask_arrs[nbx](i, j, k, 0) = cell_mask;
         });
     amrex::Gpu::streamSynchronize();
+
+    // Pass 3: face factors for the diffusion coefficients
+    if (m_interface_diffusion != "none") {
+        const bool block = (m_interface_diffusion == "block");
+        for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
+            auto& ff = (*m_diffusion_factor[dir])(level);
+            auto fac_arrs = ff.arrays();
+            amrex::ParallelFor(
+                ff, [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
+                    // Face (i,j,k) in direction dir separates the low cell
+                    // (i,j,k) - e_dir from the high cell (i,j,k)
+                    const int il = i - ((dir == 0) ? 1 : 0);
+                    const int jl = j - ((dir == 1) ? 1 : 0);
+                    const int kl = k - ((dir == 2) ? 1 : 0);
+                    const auto& frac = frac_arrs[nbx];
+                    const amrex::Real beta_lo = frac(il, jl, kl, 0);
+                    const amrex::Real beta_hi = frac(i, j, k, 0);
+                    amrex::Real factor = 1.0_rt;
+                    if (block) {
+                        factor = amrex::min<amrex::Real>(
+                            1.0_rt - beta_lo, 1.0_rt - beta_hi);
+                    } else {
+                        const bool solid_lo = beta_lo >= solid_threshold;
+                        const bool solid_hi = beta_hi >= solid_threshold;
+                        if (solid_lo != solid_hi) {
+                            // Wall at the face unless the terrain height gives
+                            // the true distance below a fluid cell
+                            amrex::Real d1 = 0.5_rt * dx[dir];
+                            if (dir == 2 && solid_lo) {
+                                const amrex::Real z_c =
+                                    prob_lo[2] + ((k + 0.5_rt) * dx[2]);
+                                d1 = z_c -
+                                     surf_arrs[nbx](
+                                         i, j, k, ImmersedTerrain::surf_height);
+                                d1 = amrex::min<amrex::Real>(
+                                    amrex::max<amrex::Real>(d1, 0.1_rt * dx[2]),
+                                    dx[2]);
+                            }
+                            factor = dx[dir] / d1;
+                        }
+                    }
+                    fac_arrs[nbx](i, j, k, 0) = factor;
+                });
+        }
+        amrex::Gpu::streamSynchronize();
+    }
 }
 
 void ImmersedTerrain::post_regrid_actions()

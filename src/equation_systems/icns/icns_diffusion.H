@@ -155,6 +155,7 @@ public:
             // B coeffs
             auto b = diffusion::average_velocity_eta_to_faces(
                 geom[lev], viscosity(lev));
+            diffusion::apply_immersed_interface(b, repo, lev);
             if (m_mesh_mapping) {
                 diffusion::viscosity_to_uniform_space(b, repo, lev);
             }
@@ -205,6 +206,7 @@ public:
             // B coeffs
             auto b = diffusion::average_velocity_eta_to_faces(
                 geom[lev], viscosity(lev));
+            diffusion::apply_immersed_interface(b, repo, lev);
             if (m_mesh_mapping) {
                 diffusion::viscosity_to_uniform_space(b, repo, lev);
             }
@@ -351,6 +353,7 @@ public:
                 // B coeffs
                 auto b = diffusion::average_velocity_eta_to_faces(
                     geom[lev], viscosity(lev));
+                diffusion::apply_immersed_interface(b, repo, lev);
 
                 if (m_mesh_mapping) {
                     diffusion::viscosity_to_uniform_space(b, repo, lev);
@@ -416,6 +419,7 @@ public:
                 // B coeffs
                 auto b = diffusion::average_velocity_eta_to_faces(
                     geom[lev], viscosity(lev));
+                diffusion::apply_immersed_interface(b, repo, lev);
                 if (m_mesh_mapping) {
                     diffusion::viscosity_to_uniform_space(b, repo, lev);
                 }

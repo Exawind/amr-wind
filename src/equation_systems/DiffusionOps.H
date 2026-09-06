@@ -63,6 +63,7 @@ public:
         for (int lev = 0; lev < nlevels; ++lev) {
             auto b = diffusion::average_velocity_eta_to_faces(
                 geom[lev], viscosity(lev));
+            diffusion::apply_immersed_interface(b, m_pdefields.repo, lev);
             if (m_mesh_mapping) {
                 diffusion::viscosity_to_uniform_space(b, m_pdefields.repo, lev);
             }
@@ -83,6 +84,7 @@ public:
         for (int lev = 0; lev < nlevels; ++lev) {
             auto b = diffusion::average_velocity_eta_to_faces(
                 geom[lev], viscosity(lev));
+            diffusion::apply_immersed_interface(b, m_pdefields.repo, lev);
             if (m_mesh_mapping) {
                 diffusion::viscosity_to_uniform_space(b, m_pdefields.repo, lev);
             }

@@ -21,6 +21,14 @@ void fixup_eta_on_domain_faces(
     amrex::Array<amrex::MultiFab, AMREX_SPACEDIM>& fc,
     amrex::MultiFab const& cc);
 
+//! Multiply the face diffusion coefficients by the terrain interface factors
+//! declared by ImmersedTerrain (interface_diffusion = block | no_slip). No-op
+//! when the factor fields do not exist.
+void apply_immersed_interface(
+    amrex::Array<amrex::MultiFab, AMREX_SPACEDIM>& fc,
+    const kynema_sgf::FieldRepo& repo,
+    int lev);
+
 void viscosity_to_uniform_space(
     amrex::Array<amrex::MultiFab, AMREX_SPACEDIM>& b,
     const kynema_sgf::FieldRepo& repo,
