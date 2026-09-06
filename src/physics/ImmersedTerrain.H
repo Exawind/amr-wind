@@ -39,6 +39,15 @@ namespace kynema_sgf::immersedterrain {
  *
  *  - ``terrain_roughness`` (Real, 1 component): aerodynamic roughness z0,
  *    uniform or interpolated from a roughness file.
+ *
+ *  - ``terrain_drag_rate`` (Real, 1 component), only with
+ *    ``implicit_projection = true``: beta * C_d / dz, the immersed drag rate
+ *    of each cell. Its presence makes the nodal and MAC projections treat
+ *    the terrain as a fluid of density rho (1 + rate dt), so that the drag is
+ *    applied implicitly with the pressure and the pressure gradient produces
+ *    no velocity inside the terrain. ImmersedDragForcing then skips its
+ *    explicit drag term. Without this, the projection re-injects dt grad(p)/rho
+ *    inside the body every step and the interior residual is first order in dt.
  */
 class ImmersedTerrain : public Physics::Register<ImmersedTerrain>
 {
@@ -99,6 +108,13 @@ private:
     amrex::Real m_smoothing_length{1.0_rt};
     //! Neighbour is treated as solid for the surface search above this
     amrex::Real m_solid_threshold{0.5_rt};
+
+    //! Apply the immersed drag implicitly through the projections
+    bool m_implicit_projection{false};
+    //! Drag coefficient C_d shared with ImmersedDragForcing
+    amrex::Real m_drag_coefficient{10.0_rt};
+    //! beta * C_d / dz, declared only when m_implicit_projection is true
+    Field* m_terrain_drag_rate{nullptr};
 };
 
 } // namespace kynema_sgf::immersedterrain

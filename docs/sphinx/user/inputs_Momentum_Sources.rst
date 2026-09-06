@@ -319,6 +319,8 @@ in surface cells (``terrain_mask`` = 2), weighted by :math:`1 - \beta`, consisti
 stress divergence :math:`-u_*^2 \hat{e}_t / \Delta_n` and a relaxation of the tangential
 velocity toward the log-law value. Monin-Obukhov corrections use the single Obukhov length
 :input_param:`ABL.monin_obukhov_length` when :input_param:`ABL.wall_het_model` is ``mol``.
+With :input_param:`ImmersedTerrain.implicit_projection` the immersed drag is instead applied
+inside the nodal and MAC projections and this source term contributes only the wall model.
 
 .. input_param:: ImmersedDragForcing.drag_coefficient
 

@@ -54,6 +54,22 @@ ImmersedTerrain::ImmersedTerrain(CFDSim& sim)
             m_blanking_method);
     }
 
+    pp.query("implicit_projection", m_implicit_projection);
+    if (m_implicit_projection) {
+        // Same coefficient the explicit source term would use
+        amrex::ParmParse pp_drag("ImmersedDragForcing");
+        pp_drag.query("drag_coefficient", m_drag_coefficient);
+        m_terrain_drag_rate =
+            &sim.repo().declare_field("terrain_drag_rate", 1, 1, 1);
+        m_terrain_drag_rate->setVal(0.0_rt);
+        m_terrain_drag_rate->set_default_fillpatch_bc(m_sim.time());
+        m_sim.io_manager().register_io_var("terrain_drag_rate");
+        amrex::Print() << identifier()
+                       << ": immersed drag applied implicitly in the "
+                          "projections with C_d = "
+                       << m_drag_coefficient << "\n";
+    }
+
     m_sim.io_manager().register_output_int_var("terrain_mask");
     m_sim.io_manager().register_io_var("terrain_fraction");
     m_sim.io_manager().register_io_var("terrain_surface");
@@ -139,6 +155,10 @@ void ImmersedTerrain::initialize_fields(int level, const amrex::Geometry& geom)
 
     auto frac_arrs = fraction.arrays();
     auto mask_arrs = mask.arrays();
+    const bool has_rate = (m_terrain_drag_rate != nullptr);
+    auto rate_arrs = has_rate ? (*m_terrain_drag_rate)(level).arrays()
+                              : amrex::MultiArray4<amrex::Real>();
+    const amrex::Real drag_rate_solid = m_drag_coefficient / dx[2];
     auto surf_arrs = surface.arrays();
     auto z0_arrs = roughness.arrays();
 
@@ -197,6 +217,10 @@ void ImmersedTerrain::initialize_fields(int level, const amrex::Geometry& geom)
             // Ghost cells below the domain floor stay fluid so the bottom row
             // is not flagged as a terrain surface by the neighbour search
             frac_arrs[nbx](i, j, k, 0) = (z > prob_lo[2]) ? vol_frac : 0.0_rt;
+            if (has_rate) {
+                rate_arrs[nbx](i, j, k, 0) =
+                    frac_arrs[nbx](i, j, k, 0) * drag_rate_solid;
+            }
 
             // Roughness
             if (xrough_size > 0) {

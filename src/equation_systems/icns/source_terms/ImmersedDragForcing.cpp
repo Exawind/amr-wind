@@ -174,7 +174,11 @@ void ImmersedDragForcing::operator()(
     const auto prob_lo = geom.ProbLoArray();
     const amrex::Real dt = m_time.delta_t();
 
-    const amrex::Real drag_rate = m_drag_coefficient / dx[2];
+    // With ImmersedTerrain.implicit_projection the drag is applied inside the
+    // projections through terrain_drag_rate; only the wall model remains here
+    const bool implicit_drag = repo.field_exists("terrain_drag_rate");
+    const amrex::Real drag_rate =
+        implicit_drag ? 0.0_rt : m_drag_coefficient / dx[2];
     const amrex::Real min_z0 = m_min_z0;
     const amrex::Real solid_threshold = m_solid_threshold;
     const bool apply_wall_model = !m_is_laminar;
@@ -206,7 +210,7 @@ void ImmersedDragForcing::operator()(
                 vel(i, j, k, 0), vel(i, j, k, 1), vel(i, j, k, 2)};
 
             // 1. Immersed drag toward zero velocity, exact in time
-            if (beta > 0.0_rt) {
+            if (beta > 0.0_rt && drag_rate > 0.0_rt) {
                 const amrex::Real C_eff =
                     exact_relaxation_rate(beta * drag_rate, dt);
                 for (int n = 0; n < AMREX_SPACEDIM; ++n) {

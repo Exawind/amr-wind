@@ -254,3 +254,49 @@ The gain from the partial fraction is in the surface layer (no staircase), which
 see. Without the temporal limiter the old explicit drag overshoots at the first step (C dt ~ 17) and
 the CFL time step collapses to ~0.25 s; the exact-integration form in ImmersedDragForcing holds a
 steady ~8 s step. Plot: scratch `conv/box_convergence.png` (not committed).
+
+### 5.1 Why first order, and the implicit projection fix (2026-09-05)
+
+Time-step and drag-coefficient sensitivity on the 48x48x96 mesh, t = 90 s, mean speed in fully
+solid cells:
+
+| Case                                   | steps | mean speed in solid |
+|----------------------------------------|-------|---------------------|
+| explicit drag, CFL dt (~9 s), Cd = 10  | 9     | 5.38e-2 |
+| explicit drag, dt = 4.5, Cd = 10       | 20    | 3.20e-2 |
+| explicit drag, dt = 2.25, Cd = 10      | 40    | 1.83e-2 |
+| explicit drag, dt = 4.5, Cd = 100      | 20    | 3.15e-2 |
+| implicit projection, CFL dt, Cd = 10   | 13    | 9.28e-3 |
+| implicit projection, dt = 4.5          | 20    | 7.77e-3 |
+| implicit projection, dt = 2.25         | 40    | 7.76e-3 |
+
+With the explicit drag the residual halves when dt halves and ignores a tenfold larger Cd: the
+drag zeroes the velocity, then the nodal projection re-injects dt grad(p)/rho inside the body,
+because the projection treats the body as fluid. Under CFL dt ~ dx, hence first order in dx.
+
+Fix (`ImmersedTerrain.implicit_projection = true`): the drag is applied implicitly with the
+pressure. u^{n+1} = (u** - dt grad p / rho) / (1 + beta C dt), which makes the projection
+coefficient sigma = dt / (rho (1 + beta C dt)); the MAC projection uses the same factor on faces.
+Implemented in `incflo_apply_nodal_projection.cpp` and `icns_advection.cpp`, keyed on the
+existence of the `terrain_drag_rate` field (= beta Cd / dz) that ImmersedTerrain declares.
+ImmersedDragForcing then skips its explicit drag and keeps the wall model. Result: the interior
+residual is independent of dt and six times smaller at the CFL step. The remaining residual is
+grad(p)/(rho C) with C = Cd/dz, so it still scales with dz unless Cd is increased with
+resolution (C ~ 1/dz^2 for second order), which the implicit form allows at no stability cost.
+
+### 5.2 Convergence with the implicit projection (2026-09-05)
+
+Same box case, meshes 24/48/96, t = 90 s. Mean speed in fully solid cells and in the interior
+window; fitted order over the three levels.
+
+| Series                                              | dx = 42.7 | dx = 21.3 | dx = 10.7 | order (solid) | order (interior) |
+|-----------------------------------------------------|-----------|-----------|-----------|---------------|------------------|
+| binary, explicit drag (with 1/dt limiter)           | 1.20e-1   | 5.56e-2   | 2.05e-2   | 1.28 | 1.58 |
+| partial fraction, explicit drag                     | 1.18e-1   | 5.38e-2   | 2.59e-2   | 1.10 | 1.44 |
+| partial fraction, implicit projection, Cd = 10      | 1.64e-2   | 9.28e-3   | 4.68e-3   | 0.91 | 1.02 |
+| partial fraction, implicit projection, Cd = 10,20,40| 1.64e-2   | 4.12e-3   | 1.15e-3   | 1.92 | 2.03 |
+
+Reading: the implicit projection removes the dt grad(p)/rho re-injection, cutting the residual by
+5-10x at fixed Cd but leaving the spatial part grad(p)/(rho C) ~ dz. Doubling Cd with each
+refinement (C ~ 1/dz^2) gives second order, which the implicit form allows at no stability cost.
+Regression case: `test/test_files/immersed_terrain_box_implicit`.

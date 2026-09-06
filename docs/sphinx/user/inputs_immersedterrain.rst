@@ -71,3 +71,18 @@ ImmersedTerrain declares the following fields, each with one ghost cell:
    above this value. Used to classify surface cells and, in
    ``ImmersedDragForcing``, to decide which faces of a surface cell carry the
    wall model.
+
+.. input_param:: ImmersedTerrain.implicit_projection
+
+   **type:** Boolean, optional, default = false
+
+   Apply the immersed drag implicitly through the nodal and MAC projections
+   instead of as an explicit source term. The terrain then behaves as a fluid of
+   density :math:`\rho (1 + \beta C \Delta t)` in the pressure solve, with
+   :math:`C = C_d / \Delta z` and :math:`C_d` taken from
+   :input_param:`ImmersedDragForcing.drag_coefficient`, so that the pressure
+   gradient produces no velocity inside the terrain. Without it the projection
+   re-injects :math:`\Delta t \nabla p / \rho` inside the body every step and the
+   velocity residual inside the terrain decreases only linearly with the time
+   step. When active, ``ImmersedDragForcing`` skips its explicit drag term and
+   applies only the wall model. Declares the field ``terrain_drag_rate``.
