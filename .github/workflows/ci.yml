@@ -133,7 +133,7 @@ jobs:
         run: ctest ${{matrix.ctest_args}} -VV --output-on-failure
       - name: Reference Checkout
         if: ${{matrix.build_type == 'Release' && github.event_name != 'push'}}
-        run : |
+        run: |
           git remote add reference https://github.com/Kynema/kynema-sgf.git
           git fetch reference main --depth=1
           git checkout reference/main
@@ -155,7 +155,7 @@ jobs:
             ${{github.workspace}}
       - name: Reference Build
         if: ${{matrix.build_type == 'Release' && github.event_name != 'push'}}
-        run : |
+        run: |
           ccache -z
           cmake --build ${{runner.workspace}}/build-ci-${{matrix.build_type}}-${{matrix.openmp_flag}}-reference \
             --parallel ${{env.NPROCS}}
