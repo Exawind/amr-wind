@@ -234,16 +234,20 @@ std::unique_ptr<kynema_sgf::ScratchField> immersed_effective_density(
     BL_PROFILE("kynema-sgf::diffusion::immersed_effective_density");
     const auto& drag_rate = repo.get_field("terrain_drag_rate");
     auto rho_eff = repo.create_scratch_field(1, density.num_grow()[0]);
+    // The drag-rate field carries fewer ghost cells than the density; fill
+    // the ghosts with the plain density and scale only where the rate exists
+    const amrex::IntVect ngrow_rate =
+        amrex::min(density.num_grow(), drag_rate.num_grow());
     const int nlevels = repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
-        const auto& rho_arrs = density(lev).const_arrays();
+        amrex::MultiFab::Copy(
+            (*rho_eff)(lev), density(lev), 0, 0, 1, density.num_grow());
         const auto& rate_arrs = drag_rate(lev).const_arrays();
         const auto& reff_arrs = (*rho_eff)(lev).arrays();
         amrex::ParallelFor(
-            (*rho_eff)(lev), density.num_grow(),
+            (*rho_eff)(lev), ngrow_rate,
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
-                reff_arrs[nbx](i, j, k) =
-                    rho_arrs[nbx](i, j, k) *
+                reff_arrs[nbx](i, j, k) *=
                     (1.0_rt + (dt * rate_arrs[nbx](i, j, k)));
             });
     }
