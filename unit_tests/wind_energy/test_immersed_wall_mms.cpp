@@ -40,6 +40,7 @@ struct Terrain
     amrex::Real amp{200.0_rt};
     amrex::Real xc{512.0_rt};
     amrex::Real sig{200.0_rt};
+    amrex::Real lx{Lx};
 
     [[nodiscard]] AMREX_GPU_HOST_DEVICE amrex::Real h(const amrex::Real x) const
     {
@@ -63,7 +64,7 @@ struct Terrain
     closest_s(const amrex::Real x, const amrex::Real z) const
     {
         amrex::Real a = amrex::max<amrex::Real>(x - 600.0_rt, -200.0_rt);
-        amrex::Real b = amrex::min<amrex::Real>(x + 600.0_rt, Lx + 200.0_rt);
+        amrex::Real b = amrex::min<amrex::Real>(x + 600.0_rt, lx + 200.0_rt);
         auto dist2 = [&](const amrex::Real s) {
             const amrex::Real dz = z - h(s);
             return ((x - s) * (x - s)) + (dz * dz);
@@ -158,6 +159,9 @@ public:
         const auto plo = geom.ProbLoArray();
         const auto vel_arrs = vel(0).arrays();
         const Terrain tt = terrain;
+        const amrex::Real z0_d = z0;
+        const amrex::Real kappa_d = kappa;
+        const amrex::Real ustar_d = ustar_exact;
         amrex::ParallelFor(
             vel(0), amrex::IntVect(1),
             [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
@@ -170,8 +174,8 @@ public:
                 const amrex::Real slope = tt.dh(s);
                 const amrex::Real tn = std::sqrt(1.0_rt + (slope * slope));
                 amrex::Real umag = 0.0_rt;
-                if (z > hs && d > z0) {
-                    umag = ustar_exact / kappa * std::log(d / z0);
+                if (z > hs && d > z0_d) {
+                    umag = ustar_d / kappa_d * std::log(d / z0_d);
                 }
                 vel_arrs[nbx](i, j, k, 0) = umag / tn;
                 vel_arrs[nbx](i, j, k, 1) = 0.0_rt;
@@ -194,6 +198,9 @@ public:
         WallParams wp{};
         wp.kappa = kappa;
         const auto model = cfg.model;
+        const amrex::Real z0_d = z0;
+        const amrex::Real kappa_d = kappa;
+        const amrex::Real ustar_d = ustar_exact;
         const bool actual = cfg.actual_reference;
         const bool center = cfg.center_weight;
 
@@ -223,7 +230,7 @@ public:
                         amrex::GpuArray<WallPatch, 2 * AMREX_SPACEDIM>
                             patches{};
                         const int np = wall_patches(
-                            model, i, j, k, beta, f, s, dx, z_c, z0, thr,
+                            model, i, j, k, beta, f, s, dx, z_c, z0_d, thr,
                             actual, patches.data());
                         amrex::Real eu = 0.0_rt;
                         amrex::Real et = 0.0_rt;
@@ -240,15 +247,14 @@ public:
                             const amrex::Real m_ref =
                                 magnitude(tangential(ur, p.nrm));
                             const amrex::Real us =
-                                friction_velocity(m_ref, p, z0, wp);
+                                friction_velocity(m_ref, p, z0_d, wp);
                             const amrex::Real dd1 =
-                                amrex::max<amrex::Real>(p.d1, z0);
+                                amrex::max<amrex::Real>(p.d1, z0_d);
                             const amrex::Real target =
-                                us / kappa * wp.phi_m(dd1, z0);
-                            eu += p.weight * std::abs(us - ustar_exact) /
-                                  ustar_exact;
-                            et += p.weight * std::abs(target - u_exact) /
-                                  ustar_exact;
+                                us / kappa_d * wp.phi_m(dd1, z0_d);
+                            eu += p.weight * std::abs(us - ustar_d) / ustar_d;
+                            et +=
+                                p.weight * std::abs(target - u_exact) / ustar_d;
                             wsum += p.weight;
                         }
                         if (wsum > 0.0_rt) {
