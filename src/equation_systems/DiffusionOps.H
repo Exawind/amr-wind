@@ -101,6 +101,9 @@ protected:
 
     PDEFields& m_pdefields;
     Field& m_density;
+    //! Time step of the current implicit solve (0 for the explicit applier);
+    //! used to pin immersed-terrain cells with the effective density
+    amrex::Real m_implicit_dt{0.0_rt};
 
     MLMGOptions m_options;
 

@@ -29,6 +29,16 @@ void apply_immersed_interface(
     const kynema_sgf::FieldRepo& repo,
     int lev);
 
+//! Effective density rho (1 + beta C dt) for the implicit diffusion solve
+//! when the immersed terrain drag is applied implicitly (ImmersedTerrain
+//! declares terrain_drag_rate). Pins the body cells during the solve so that
+//! they are not filled from the fluid and then emptied by the projection.
+//! Returns nullptr when the field does not exist.
+std::unique_ptr<kynema_sgf::ScratchField> immersed_effective_density(
+    const kynema_sgf::FieldRepo& repo,
+    const kynema_sgf::Field& density,
+    amrex::Real dt);
+
 void viscosity_to_uniform_space(
     amrex::Array<amrex::MultiFab, AMREX_SPACEDIM>& b,
     const kynema_sgf::FieldRepo& repo,

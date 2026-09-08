@@ -68,6 +68,7 @@ void DiffSolverIface<LinOp>::setup_operator(
     for (int lev = 0; lev < nlevels; ++lev) {
         linop.setLevelBC(lev, &m_pdefields.field(lev));
     }
+    m_implicit_dt = (alpha > 0.0_rt) ? beta : 0.0_rt;
     this->set_acoeffs(linop, fstate);
     set_bcoeffs(linop);
 }
@@ -86,6 +87,11 @@ void DiffSolverIface<LinOp>::set_acoeffs(LinOp& linop, const FieldState fstate)
         m_mesh_mapping ? repo.create_scratch_field(
                              1, m_density.num_grow()[0], FieldLoc::CELL)
                        : nullptr;
+    // Implicit immersed drag: pin the terrain cells during the solve
+    std::unique_ptr<ScratchField> rho_eff =
+        (m_implicit_dt > 0.0_rt) ? diffusion::immersed_effective_density(
+                                       repo, density, m_implicit_dt)
+                                 : nullptr;
 
     for (int lev = 0; lev < nlevels; ++lev) {
         if (m_mesh_mapping) {
@@ -94,6 +100,8 @@ void DiffSolverIface<LinOp>::set_acoeffs(LinOp& linop, const FieldState fstate)
                 (*rho_times_detJ)(lev), density(lev), 0, (*mesh_detJ)(lev), 0,
                 0, 1, m_density.num_grow()[0]);
             linop.setACoeffs(lev, (*rho_times_detJ)(lev));
+        } else if (rho_eff) {
+            linop.setACoeffs(lev, (*rho_eff)(lev));
         } else {
             linop.setACoeffs(lev, density(lev));
         }
