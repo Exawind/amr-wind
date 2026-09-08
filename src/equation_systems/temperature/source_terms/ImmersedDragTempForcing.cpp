@@ -50,11 +50,13 @@ ImmersedDragTempForcing::ImmersedDragTempForcing(const CFDSim& sim)
     // Wall-model geometry and time scale are owned by the momentum source
     amrex::ParmParse pp_mom(icns::ImmersedDragForcing::identifier());
     pp_mom.query("wall_model", m_wall_model);
+    pp_mom.query("reference_distance", m_reference_distance);
     pp_mom.query("bc_forcing_time_scale", m_bc_forcing_time_scale);
     pp_mom.query("bc_forcing_time_factor", m_forcing_time_factor);
     pp_mom.query("minimum_z0", m_min_z0);
     amrex::ParmParse pp_terrain(ImmersedTerrain::identifier());
     pp_terrain.query("solid_threshold", m_solid_threshold);
+    pp_terrain.query("drag_weight", m_drag_weight);
 
     std::string turbulence_model = "Laminar";
     amrex::ParmParse pp_turb("turbulence");
@@ -113,6 +115,8 @@ void ImmersedDragTempForcing::operator()(
     const bool apply_wall_model = !m_is_laminar;
     const WallModel wall_model =
         kynema_sgf::immersed_wall::parse_wall_model(m_wall_model);
+    const int actual_reference = (m_reference_distance == "actual") ? 1 : 0;
+    const int center_weight = (m_drag_weight == "center") ? 1 : 0;
     const SurfaceCondition condition =
         (m_surface_condition == "surface_temperature")
             ? SurfaceCondition::surface_temperature
@@ -145,20 +149,23 @@ void ImmersedDragTempForcing::operator()(
             const auto& src = src_arrs[nbx];
 
             const amrex::Real beta = frac(i, j, k, 0);
+            const amrex::Real w_solid = kynema_sgf::immersed_wall::solid_weight(
+                beta, center_weight != 0, solid_threshold);
             const int cell_mask = mask_arrs[nbx](i, j, k, 0);
             const amrex::Real theta = temp(i, j, k, 0);
 
             // 1. Relaxation toward the soil temperature inside the terrain
-            if (beta > 0.0_rt) {
+            if (w_solid > 0.0_rt) {
                 const amrex::Real C_eff =
                     kynema_sgf::immersed_wall::exact_relaxation_rate(
-                        beta * relax_rate, dt);
+                        w_solid * relax_rate, dt);
                 src(i, j, k, 0) -= C_eff * (theta - theta_soil);
             }
 
             // 2. Heat-flux wall model in surface cells
             if (!apply_wall_model ||
-                cell_mask != ImmersedTerrain::mask_surface || beta >= 1.0_rt) {
+                cell_mask != ImmersedTerrain::mask_surface ||
+                w_solid >= 1.0_rt) {
                 return;
             }
             const amrex::Real z0 =
@@ -168,7 +175,7 @@ void ImmersedDragTempForcing::operator()(
             amrex::GpuArray<WallPatch, 2 * AMREX_SPACEDIM> patches{};
             const int np = kynema_sgf::immersed_wall::wall_patches(
                 wall_model, i, j, k, beta, frac, surf_arrs[nbx], dx, z_c, z0,
-                solid_threshold, patches.data());
+                solid_threshold, actual_reference != 0, patches.data());
 
             amrex::Real force = 0.0_rt;
             amrex::Real weight_sum = 0.0_rt;
@@ -206,7 +213,7 @@ void ImmersedDragTempForcing::operator()(
                 weight_sum += p.weight;
             }
             if (weight_sum > 0.0_rt) {
-                src(i, j, k, 0) += (1.0_rt - beta) * force / weight_sum;
+                src(i, j, k, 0) += (1.0_rt - w_solid) * force / weight_sum;
             }
         });
     amrex::Gpu::streamSynchronize();

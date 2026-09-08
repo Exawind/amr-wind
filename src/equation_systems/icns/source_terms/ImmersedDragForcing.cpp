@@ -25,7 +25,12 @@ ImmersedDragForcing::ImmersedDragForcing(const CFDSim& sim)
     pp.query("bc_forcing_time_factor", m_forcing_time_factor);
     pp.query("bc_forcing_time_scale", m_bc_forcing_time_scale);
     pp.query("wall_model", m_wall_model);
+    pp.query("reference_distance", m_reference_distance);
     pp.query("minimum_z0", m_min_z0);
+    if (m_reference_distance != "nominal" && m_reference_distance != "actual") {
+        amrex::Abort(
+            identifier() + ".reference_distance must be nominal or actual");
+    }
     pp.query("force_laminar", m_force_laminar);
     if (m_bc_forcing_time_scale != "wall" &&
         m_bc_forcing_time_scale != "time_step") {
@@ -43,6 +48,7 @@ ImmersedDragForcing::ImmersedDragForcing(const CFDSim& sim)
     // Same threshold the terrain physics uses to classify surface cells
     amrex::ParmParse pp_terrain(ImmersedTerrain::identifier());
     pp_terrain.query("solid_threshold", m_solid_threshold);
+    pp_terrain.query("drag_weight", m_drag_weight);
 
     std::string turbulence_model = "Laminar";
     amrex::ParmParse pp_turb("turbulence");
@@ -97,6 +103,8 @@ void ImmersedDragForcing::operator()(
     const bool apply_wall_model = !m_is_laminar;
     const WallModel wall_model =
         kynema_sgf::immersed_wall::parse_wall_model(m_wall_model);
+    const bool actual_reference = (m_reference_distance == "actual");
+    const bool center_weight = (m_drag_weight == "center");
 
     WallParams wp{};
     wp.kappa = m_kappa;
@@ -115,15 +123,17 @@ void ImmersedDragForcing::operator()(
             const auto& src = src_arrs[nbx];
 
             const amrex::Real beta = frac(i, j, k, 0);
+            const amrex::Real w_solid = kynema_sgf::immersed_wall::solid_weight(
+                beta, center_weight, solid_threshold);
             const int cell_mask = mask_arrs[nbx](i, j, k, 0);
             const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> u{
                 vel(i, j, k, 0), vel(i, j, k, 1), vel(i, j, k, 2)};
 
             // 1. Immersed drag toward zero velocity, exact in time
-            if (beta > 0.0_rt && drag_rate > 0.0_rt) {
+            if (w_solid > 0.0_rt && drag_rate > 0.0_rt) {
                 const amrex::Real C_eff =
                     kynema_sgf::immersed_wall::exact_relaxation_rate(
-                        beta * drag_rate, dt);
+                        w_solid * drag_rate, dt);
                 for (int n = 0; n < AMREX_SPACEDIM; ++n) {
                     src(i, j, k, n) -= C_eff * u[n];
                 }
@@ -131,7 +141,8 @@ void ImmersedDragForcing::operator()(
 
             // 2. Wall model in surface cells
             if (!apply_wall_model ||
-                cell_mask != ImmersedTerrain::mask_surface || beta >= 1.0_rt) {
+                cell_mask != ImmersedTerrain::mask_surface ||
+                w_solid >= 1.0_rt) {
                 return;
             }
             const amrex::Real z0 =
@@ -141,7 +152,7 @@ void ImmersedDragForcing::operator()(
             amrex::GpuArray<WallPatch, 2 * AMREX_SPACEDIM> patches{};
             const int np = kynema_sgf::immersed_wall::wall_patches(
                 wall_model, i, j, k, beta, frac, surf_arrs[nbx], dx, z_c, z0,
-                solid_threshold, patches.data());
+                solid_threshold, actual_reference, patches.data());
 
             amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> force{
                 0.0_rt, 0.0_rt, 0.0_rt};
@@ -164,7 +175,8 @@ void ImmersedDragForcing::operator()(
             }
             if (weight_sum > 0.0_rt) {
                 for (int n = 0; n < AMREX_SPACEDIM; ++n) {
-                    src(i, j, k, n) += (1.0_rt - beta) * force[n] / weight_sum;
+                    src(i, j, k, n) +=
+                        (1.0_rt - w_solid) * force[n] / weight_sum;
                 }
             }
         });

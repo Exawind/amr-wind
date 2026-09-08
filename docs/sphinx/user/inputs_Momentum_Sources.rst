@@ -346,6 +346,19 @@ inside the nodal and MAC projections and this source term contributes only the w
      normal cell-width away. Side-wall cells with no terrain below fall back to the
      face-based treatment.
 
+.. input_param:: ImmersedDragForcing.reference_distance
+
+   **type:** String, optional, default = ``nominal``
+
+   Distance assigned to the reference velocity in the ``surface_normal`` wall model.
+   ``nominal`` uses :math:`d_2 = d_1 + \Delta_n`; ``actual`` uses the normal distance of
+   the sampled reference cell's own center to the surface, which makes the log law
+   consistent with the sampled velocity on slopes. In the manufactured log-law test the
+   ``actual`` form recovers :math:`u_*` to machine precision on a plane slope and reduces
+   the error on a Gaussian ridge by two orders of magnitude relative to ``nominal``; with
+   ``nominal`` (and with the face-based methods) the slope error does not decrease with
+   the mesh. Also read by ``ImmersedDragTempForcing``.
+
 .. input_param:: ImmersedDragForcing.bc_forcing_time_scale
 
    **type:** String, optional, default = ``wall``

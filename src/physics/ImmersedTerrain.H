@@ -119,6 +119,9 @@ private:
     amrex::Real m_smoothing_length{1.0_rt};
     //! Neighbor is treated as solid for the surface search above this
     amrex::Real m_solid_threshold{0.5_rt};
+    //! ``fraction`` (drag weight beta) or ``center`` (1 when the cell center
+    //! is inside the terrain, else 0); shared with the source terms
+    std::string m_drag_weight{"fraction"};
 
     //! Apply the immersed drag implicitly through the projections
     bool m_implicit_projection{false};

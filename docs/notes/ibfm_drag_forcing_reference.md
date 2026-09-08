@@ -379,3 +379,35 @@ series, heading to the first-order behavior u(d1) ~ tau_w d1/mu of a resolved la
 wall in the laminar pathway; intended for the turbulent pathway where the wall model supplies the
 stress). AMR at base 24 again matches uniform 48 for every entry. Plot:
 `docs/notes/immersed_box_viscous_interface.png`.
+
+## 7. Wall-model consistency: manufactured log-law test (2026-09-08)
+
+`unit_tests/wind_energy/test_immersed_wall_mms.cpp`. An exact neutral log-law velocity,
+tangential to the terrain and a function of the true closest-point distance, is imposed above
+(a) a plane slope of 20 degrees and (b) a Gaussian ridge (A = 200 m, sigma = 200 m, max slope 31
+degrees). The wall-model geometry of `ImmersedWallModel.H` recovers u* and the log-law target
+in every surface cell; the table gives the mean relative error over the surface cells.
+
+| Terrain | Method                            | n = 32   | n = 64   | n = 128  | behaviour |
+|---------|-----------------------------------|----------|----------|----------|-----------|
+| plane   | cell_offset                       | 0.340    | 0.365    | 0.364    | O(1), staircase + slope |
+| plane   | terrain_height                    | 0.331    | 0.356    | 0.355    | O(1), vertical vs normal distance |
+| plane   | surface_normal, nominal d2        | 2.4e-2   | 3.1e-2   | 3.5e-2   | O(1), reference distance inconsistent |
+| plane   | surface_normal, actual d2         | 1.5e-16  | 2.5e-16  | 5.3e-16  | exact |
+| ridge   | cell_offset                       | 0.366    | 0.368    | 0.354    | O(1) |
+| ridge   | terrain_height                    | 0.356    | 0.354    | 0.341    | O(1) |
+| ridge   | surface_normal, nominal d2        | 2.5e-2   | 2.9e-2   | 3.2e-2   | O(1) |
+| ridge   | surface_normal, actual d2         | 6.2e-4   | 3.4e-4   | 2.1e-4   | converges, order 0.77 (32->128) |
+| ridge   | surface_normal, actual d2, center | 7.6e-4   | 4.0e-4   | 2.4e-4   | converges, order 0.83 |
+
+(relative error in u*; target errors follow the same pattern, e.g. plane actual d2 1e-14.)
+
+Reading: the two new options are `ImmersedDragForcing.reference_distance = actual` (d2 from the
+sampled reference cell's own normal distance) and `ImmersedTerrain.drag_weight = center`. With
+`actual` the surface_normal wall model is exact on a plane and converges on a curved surface; the
+remaining per-cell error is the tangent-plane approximation of the distance on a curved surface,
+~ dx / ln(dx/z0), hence an order a little below 1 per cell (second order in the volume average).
+The face-based methods and the nominal normal method carry a slope error that does not decrease
+with the mesh (33-36 % and 2-3 % of u* respectively at 20-31 degrees). The debug dump showed the
+ridge error spread smoothly over all cells (none above 1e-3), i.e. no outliers from the
+nearest-cell reference rounding.

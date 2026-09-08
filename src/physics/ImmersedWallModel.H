@@ -42,6 +42,22 @@ inline WallModel parse_wall_model(const std::string& name)
     return WallModel::cell_offset;
 }
 
+//! Weight of the immersed drag (and complement of the wall-model weight) in a
+//! cell of terrain fraction beta. ``fraction``: beta itself. ``center``: 1 when
+//! the cell center is inside the terrain (beta >= threshold), else 0, so that
+//! mostly fluid partial cells are treated as fluid cells with the wall model
+//! at their true distance and are not damped by the drag.
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real solid_weight(
+    const amrex::Real beta,
+    const bool center_based,
+    const amrex::Real threshold)
+{
+    if (center_based) {
+        return (beta >= threshold) ? 1.0_rt : 0.0_rt;
+    }
+    return beta;
+}
+
 //! Monin-Obukhov stability function for momentum (device copy of
 //! MOData::calc_psi_m, which is host only)
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real psi_m(
@@ -151,8 +167,12 @@ magnitude(const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& v)
  *
  *  Surface normal: a single patch along the terrain normal built from the
  *  slopes, with the reference cell one normal cell-width away (nearest cell,
- *  offset clamped to the one available ghost layer). Cells with no terrain
- *  below (side walls) fall back to the face-based patches.
+ *  offset clamped to the one available ghost layer). With
+ *  ``actual_reference_distance`` the reference distance d2 is the normal
+ *  distance of that cell's own center to the surface, which makes the log
+ *  law consistent with the sampled velocity on slopes; otherwise d2 is the
+ *  nominal d1 + dxn. Cells with no terrain below (side walls) fall back to
+ *  the face-based patches.
  *
  *  \return number of patches written (at most 6)
  */
@@ -168,6 +188,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE int wall_patches(
     const amrex::Real z_c,
     const amrex::Real z0,
     const amrex::Real solid_threshold,
+    const bool actual_reference_distance,
     WallPatch* patches)
 {
     using kynema_sgf::immersedterrain::ImmersedTerrain;
@@ -194,6 +215,17 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE int wall_patches(
         p.ir = i + offset(0);
         p.jr = j + offset(1);
         p.kr = k + offset(2);
+        if (actual_reference_distance) {
+            // Distance of the sampled cell's center to the tangent plane
+            const amrex::Real z_ref = z_c + ((p.kr - k) * dx[2]);
+            const amrex::Real h_ref =
+                surf(p.ir, p.jr, p.kr, ImmersedTerrain::surf_height);
+            const amrex::Real d2_actual = (z_ref - h_ref) * p.nrm[2];
+            const amrex::Real dd1 = amrex::max<amrex::Real>(p.d1, z0);
+            if (d2_actual > 1.01_rt * dd1) {
+                p.d2 = d2_actual;
+            }
+        }
         p.weight = 1.0_rt;
         return 1;
     }

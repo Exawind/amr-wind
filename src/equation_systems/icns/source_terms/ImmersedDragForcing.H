@@ -70,6 +70,11 @@ private:
     std::string m_bc_forcing_time_scale{"wall"};
     //! ``cell_offset``, ``terrain_height`` or ``surface_normal``
     std::string m_wall_model{"cell_offset"};
+    //! ``nominal`` (d2 = d1 + dx_n) or ``actual`` (normal distance of the
+    //! sampled reference cell) for the surface_normal wall model
+    std::string m_reference_distance{"nominal"};
+    //! ``fraction`` or ``center`` drag weight, read from ImmersedTerrain
+    std::string m_drag_weight{"fraction"};
     //! Lower bound on roughness length
     amrex::Real m_min_z0{1.0e-4_rt};
     //! Neighbor fraction at or above which a face is treated as a wall

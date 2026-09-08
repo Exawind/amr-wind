@@ -111,3 +111,19 @@ ImmersedTerrain declares the following fields, each with one ghost cell:
    The factors are stored in the face fields ``terrain_diffusion_xf/yf/zf`` and applied
    to every equation that uses the shared diffusion operator (momentum, temperature, TKE,
    passive scalars).
+
+.. input_param:: ImmersedTerrain.drag_weight
+
+   **type:** String, optional, default = ``fraction``
+
+   Weight of the immersed drag in partially filled cells, also used as the complement of
+   the wall-model weight. ``fraction`` uses the terrain fraction :math:`\beta` (drag
+   :math:`\beta`, wall model :math:`1-\beta`). ``center`` treats a cell whose center is
+   inside the terrain (:math:`\beta \ge` :input_param:`ImmersedTerrain.solid_threshold`)
+   as fully solid and any other partial cell as a fluid cell that receives the full wall
+   model at its true distance and no drag. With the ``terrain_height`` or
+   ``surface_normal`` wall models this is the cut-cell configuration whose wall-model error
+   is first order per cell; with ``fraction`` a mostly fluid partial cell is also damped
+   by the drag, which over-damps the first layer on slopes by a factor independent of
+   the mesh. Applies to the momentum and temperature sources and to the implicit
+   projection rate.

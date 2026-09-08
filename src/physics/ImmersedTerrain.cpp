@@ -1,4 +1,5 @@
 #include "src/physics/ImmersedTerrain.H"
+#include "src/physics/ImmersedWallModel.H"
 #include "src/CFDSim.H"
 #include "AMReX_iMultiFab.H"
 #include "AMReX_MultiFabUtil.H"
@@ -45,6 +46,12 @@ ImmersedTerrain::ImmersedTerrain(CFDSim& sim)
     pp.query("blanking_method", m_blanking_method);
     pp.query("smoothing_length", m_smoothing_length);
     pp.query("solid_threshold", m_solid_threshold);
+    pp.query("drag_weight", m_drag_weight);
+    if (m_drag_weight != "fraction" && m_drag_weight != "center") {
+        amrex::Abort(
+            identifier() + ".drag_weight must be fraction or center, got " +
+            m_drag_weight);
+    }
     if (m_blanking_method != "volume_fraction" &&
         m_blanking_method != "distance_function") {
         amrex::Abort(
@@ -183,6 +190,8 @@ void ImmersedTerrain::initialize_fields(int level, const amrex::Geometry& geom)
     auto rate_arrs = has_rate ? (*m_terrain_drag_rate)(level).arrays()
                               : amrex::MultiArray4<amrex::Real>();
     const amrex::Real drag_rate_solid = m_drag_coefficient / dx[2];
+    const bool center_weight = (m_drag_weight == "center");
+    const amrex::Real weight_threshold = m_solid_threshold;
     auto surf_arrs = surface.arrays();
     auto z0_arrs = roughness.arrays();
 
@@ -243,7 +252,10 @@ void ImmersedTerrain::initialize_fields(int level, const amrex::Geometry& geom)
             frac_arrs[nbx](i, j, k, 0) = (z > prob_lo[2]) ? vol_frac : 0.0_rt;
             if (has_rate) {
                 rate_arrs[nbx](i, j, k, 0) =
-                    frac_arrs[nbx](i, j, k, 0) * drag_rate_solid;
+                    kynema_sgf::immersed_wall::solid_weight(
+                        frac_arrs[nbx](i, j, k, 0), center_weight,
+                        weight_threshold) *
+                    drag_rate_solid;
             }
 
             // Roughness

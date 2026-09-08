@@ -71,6 +71,8 @@ private:
 
     //! Shared with ImmersedDragForcing (read from its input prefix)
     std::string m_wall_model{"cell_offset"};
+    std::string m_reference_distance{"nominal"};
+    std::string m_drag_weight{"fraction"};
     std::string m_bc_forcing_time_scale{"wall"};
     amrex::Real m_forcing_time_factor{5.0_rt};
     amrex::Real m_min_z0{1.0e-4_rt};
