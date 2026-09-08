@@ -152,6 +152,15 @@ with :math:`\theta_*` obtained from a prescribed Obukhov length
 (:math:`\theta_* = \kappa (\theta_\mathrm{ref} - \theta_s)/\phi_h(d_2)`), or a prescribed surface
 heat flux (:math:`\theta_* = -q_s/u_*`).
 
+**Implicit drag in the diffusion solve.** With ``implicit_projection`` the terrain cells must
+also be held at rest inside the implicit diffusion solve: the operator uses the same effective
+density :math:`\rho(1 + \beta C \Delta t)` as the coefficient of the time-derivative term (with the
+right-hand side kept at the plain density), so that momentum diffusing into the terrain is damped
+there rather than accumulated and removed by the projection. Without this the terrain cells float
+to a fraction of the fluid velocity during each solve, the interface flux is reduced, the effective
+wall sits about one cell too low, and the coupled scheme becomes unstable when
+:math:`\nu \Delta t / \Delta z^2` exceeds about 10.
+
 **Diffusive flux at the interface.** The diffusion operator evaluates the viscous flux at a
 fluid/solid face as :math:`\mu_\mathrm{eff}(u_k - 0)/\Delta_f`, since the interior is at rest.
 This is a wall stress with the wrong length scale: the flux to a no-slip wall at distance
@@ -163,3 +172,13 @@ model alone acts (turbulent pathway); ``no_slip`` multiplies fluid/solid faces b
 :math:`\Delta_f/d_1` with :math:`d_1 = z_k - h` on the bottom face, which reproduces the
 no-slip flux at the true wall position (laminar pathway with finite viscosity). With the
 default ``none`` the molecular viscosity should be kept negligible in laminar test cases.
+
+**Laminar channel verification.** For plane Poiseuille flow with an immersed flat bottom wall
+between cell centers and a no-slip top wall, the combination ``implicit_projection``,
+``interface_diffusion = no_slip`` and ``drag_weight = center`` converges to the exact parabolic
+profile at second order (L2 error falling by a factor of four per refinement over three
+successive refinements, independent of the sub-cell wall position), provided the drag coefficient is large
+enough that the residual velocity of the terrain cells, of order :math:`1/(1 + C \Delta t)`, stays
+below the discretization error, or is increased with resolution. The default ``none`` places the
+effective wall at the solid cell center (first order) and ``drag_weight = fraction`` damps partial
+cells whose center lies in the fluid (a mesh-alignment-dependent O(1) error in that cell).

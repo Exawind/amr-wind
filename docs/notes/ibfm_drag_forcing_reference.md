@@ -446,3 +446,71 @@ Reading:
   `drag_weight = center`. The default combination remains the previous behavior.
 - Self-convergence only; a smooth flow with an SGS viscosity is not a boundary layer, so this is a
   consistency test of the coupled options, not a validation. Plot: `docs/notes/immersed_ridge_wall_model.png`.
+
+## 9. Laminar channel verification: second order (2026-09-08)
+
+Plane Poiseuille flow, periodic in x and y, body force F = 0.01, immersed flat bottom wall at
+z = h = 0.2137 (a different sub-cell position on every mesh), no-slip top wall at z = 1, started
+from rest. Pseudo-2D mesh 4 x 1 x nz (dx = dy = dz, blocking_factor 1), fixed dt = 0.005 on all
+meshes, implicit projection, `turbulence.model = Laminar` (no wall model). Four viscosities:
+
+- nu = 1e-15: exact u = F t in the fluid, 0 in the body (t = 20 s)
+- nu = 1e-5: exact developing Stokes layers, u = F t [1 - g(eta_b) - g(eta_t)],
+  g(eta) = (1 + 2 eta^2) erfc(eta) - (2 eta/sqrt(pi)) exp(-eta^2), eta = d/(2 sqrt(nu t)) (t = 20 s)
+- nu = 2.5e-3 and 0.01: exact steady u = F/(2 nu) (z - h)(1 - z) (t = 400 s and 150 s)
+
+Configurations: defaults (`interface_diffusion = none`, `drag_weight = fraction`), `no_slip` +
+`fraction`, `no_slip` + `center` with Cd = 1000, and `no_slip` + `center` with Cd = 1000 nz/16.
+Metric: L2 error of the x,y-averaged u(z) over all cells, normalised by max |u_exact|.
+
+| nu      | configuration                    | 16      | 32      | 64      | 128     | 256     | pairwise orders |
+|---------|----------------------------------|---------|---------|---------|---------|---------|-----------------|
+| 0.01    | none, fraction (defaults)        | 1.26e-2 | 2.77e-2 | 7.27e-3 | 2.90e-3 | 2.15e-3 | -1.1, 1.9, 1.3, 0.4 |
+| 0.01    | no_slip, fraction                | 1.26e-2 | 1.35e-3 | 3.11e-4 | 2.90e-3 | 5.27e-5 | alignment dependent |
+| 0.01    | no_slip, center, Cd = 1000       | 6.72e-3 | 1.35e-3 | 3.01e-4 | 8.90e-5 | 4.23e-5 | 2.3, 2.2, 1.8, 1.1 |
+| 0.01    | no_slip, center, Cd = 1000 nz/16 | 6.72e-3 | 1.34e-3 | 2.85e-4 | 6.95e-5 | 1.97e-5 | 2.3, 2.2, 2.0, 1.8 |
+| 2.5e-3  | none, fraction (defaults)        | 1.26e-2 | 2.77e-2 | 7.24e-3 | 2.95e-3 |         | -1.1, 1.9, 1.3 |
+| 2.5e-3  | no_slip, fraction                | 1.26e-2 | 1.33e-3 | 2.87e-4 | 2.95e-3 |         | alignment dependent |
+| 2.5e-3  | no_slip, center, Cd = 1000       | 6.70e-3 | 1.33e-3 | 2.85e-4 | 7.20e-5 |         | 2.3, 2.2, 2.0 |
+| 2.5e-3  | no_slip, center, Cd = 1000 nz/16 | 6.70e-3 | 1.33e-3 | 2.81e-4 | 6.75e-5 |         | 2.3, 2.2, 2.1 |
+| 1e-5    | no_slip, center (either Cd)      | 1.11e-1 | 1.28e-2 | 1.03e-2 | 3.59e-3 | 8.85e-4 | layer under-resolved below 64; 1.5, 2.0 |
+| 1e-15   | no_slip, center, Cd = 1000       | 1.7e-8  | 4.5e-9  | 1.1e-9  | 3.0e-10 | 1.2e-10 | interior residual only |
+| 1e-15   | defaults                         | 2.5e-1  | 4.8e-9  | 1.3e-9  | 8.8e-2  | 1.2e-10 | O(1) where the partial-cell center is in the fluid |
+
+Fitted orders over all meshes: nu = 0.01: defaults 0.84, no_slip+center Cd fixed 1.85, Cd scaled 2.11;
+nu = 2.5e-3: defaults 0.82, Cd fixed 2.18, Cd scaled 2.21. The two steady viscosities give the same
+normalised errors, as Poiseuille theory requires.
+
+Reading:
+- **Second order** for `implicit_projection` + `interface_diffusion = no_slip` + `drag_weight = center`
+  when the body cells are pinned in both the projection and the implicit diffusion solve (Section 6.2
+  below). The error falls a factor of four per refinement while the sub-cell wall position changes on
+  every mesh, so it is not an alignment coincidence.
+- The **defaults** are first order at best: `none` puts the effective wall at the solid cell center
+  (O(dz) position error); `fraction` damps the partial cell whenever its center lies in the fluid
+  (nz = 16 and 128 here), an O(1) error in that cell that makes the sequence non-monotone.
+- **Pinning residual**: the body velocity during a solve is ~1/(1 + C dt) of the fluid velocity. At
+  fixed Cd and fixed dt this is O(dz), which caps the fixed-Cd series at first order on fine meshes
+  (order 1.1 on the last pair at nu = 0.01); Cd ~ 1/dz keeps it second order (1.8). With a CFL time
+  step the residual is mesh independent (u_max/(0.9 Cd)) and appears as an error floor of ~1e-3 at
+  Cd = 10 (Section 6.2).
+- nu = 1e-5 converges only once the Stokes layer (~0.085 m) is resolved, 1.5-2.0 from 128 to 256.
+
+Two prerequisites found on the way (both fixed on the branch):
+1. The body must be pinned in the implicit **diffusion** solve as well (`immersed_effective_density`
+   in `DiffSolverIface::set_acoeffs`); otherwise the interface flux is ~40 % of nominal, the wall sits
+   ~1.5 cells too low, and the coupled scheme blows up for nu dt/dz^2 > ~10.
+2. Steady-state comparisons need t >> H^2/(pi^2 nu) (150 s is enough at nu = 0.01, not at 2.5e-3),
+   and MLMG needs isotropic cells (dx = dy = dz).
+
+Plots: `docs/notes/immersed_channel_second_order.png` (profiles and convergence, for sharing) and
+`docs/notes/immersed_channel_four_viscosities.png` (all four viscosities). Regression case:
+`test/test_files/immersed_channel_laminar`. Inputs in scratch `channel2d/`.
+
+### 6.2 Note on the pinning residual and time step
+
+With a CFL step dt = 0.9 dz/u_max the residual body velocity fraction 1/(1 + C dt) with C = Cd/dz is
+0.9 Cd/u_max independent of the mesh (about 1e-2 at Cd = 10, u_max = 0.08), and the profile error
+floors at ~1e-3 (3D channel series, scratch `channel/`). With a fixed dt the fraction is
+dz/(Cd dt), first order in dz; with Cd ~ 1/dz it is second order. The implicit treatment makes any
+Cd affordable, so the recommendation is a large Cd (1000) or Cd scaled with resolution.
