@@ -183,6 +183,11 @@ void incflo::ApplyProjection(
     // sigma carries rho_eff = rho (1 + beta C dt).
     const bool implicit_ib = m_repo.field_exists("terrain_drag_rate");
     const bool use_sigma = variable_density || mesh_mapping || implicit_ib;
+    // The implicit drag factor uses the physical time step. During the initial
+    // projection the scaling factor is a dummy value and no step is taken, so
+    // the factor is 1 and the initial condition is only made divergence free.
+    const amrex::Real implicit_dt =
+        m_initial_projection ? 0.0_rt : scaling_factor;
     std::unique_ptr<kynema_sgf::ScratchField> rho_eff;
     if (implicit_ib) {
         const auto& drag_rate = m_repo.get_field("terrain_drag_rate");
@@ -196,7 +201,7 @@ void incflo::ApplyProjection(
                 [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
                     reff_arrs[nbx](i, j, k) =
                         rho_arrs[nbx](i, j, k) *
-                        (1.0_rt + scaling_factor * rate_arrs[nbx](i, j, k));
+                        (1.0_rt + implicit_dt * rate_arrs[nbx](i, j, k));
                 });
         }
         amrex::Gpu::streamSynchronize();
@@ -275,7 +280,7 @@ void incflo::ApplyProjection(
                 velocity(lev), amrex::IntVect(0), AMREX_SPACEDIM,
                 [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int n) {
                     u_arrs[nbx](i, j, k, n) /=
-                        (1.0_rt + scaling_factor * rate_arrs[nbx](i, j, k));
+                        (1.0_rt + implicit_dt * rate_arrs[nbx](i, j, k));
                 });
         }
         amrex::Gpu::streamSynchronize();
