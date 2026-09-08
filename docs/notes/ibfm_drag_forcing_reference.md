@@ -411,3 +411,38 @@ The face-based methods and the nominal normal method carry a slope error that do
 with the mesh (33-36 % and 2-3 % of u* respectively at 20-31 degrees). The debug dump showed the
 ridge error spread smoothly over all cells (none above 1e-3), i.e. no outliers from the
 nearest-cell reference rounding.
+
+## 8. Tier-2 ridge case: wall model active in a smooth flow (2026-09-08)
+
+Periodic Gaussian ridge (h = 50 + 120 exp(-(x-1024)^2/(2 300^2)) m, max slope 13.6 deg), domain
+2048 x 128 x 1024 m, meshes 64/128/256 in x with dz = dx, `turbulence.model = Smagorinsky` (wall
+model active), uniform 8 m/s initial condition, body force 1.7e-4 m/s^2, implicit projection,
+Cd = 10, nu = 1e-5, no perturbations, t = 600 s (a deterministic transient, not an equilibrium;
+the bulk speed changes by < 2 %). Metrics on the surface cells (`terrain_mask` = 2): mean speed and
+the net x-momentum exchange of the wall model with the first fluid layer (positive = the log-law
+relaxation accelerates slow wall cells). Inputs in scratch `ridge/`.
+
+| Config (wall_model, reference_distance, drag_weight) | Metric        | n=64   | n=128  | n=256  | Richardson order |
+|------------------------------------------------------|---------------|--------|--------|--------|------------------|
+| terrain_height, nominal, fraction                    | surface speed | 1.183  | 1.035  | 1.108  | not monotone |
+| surface_normal, nominal, fraction                    | surface speed | 1.287  | 1.005  | 1.081  | not monotone |
+| surface_normal, actual, fraction                     | surface speed | 1.233  | 1.016  | 1.095  | not monotone |
+| surface_normal, actual, center                       | surface speed | 2.469  | 1.570  | 1.346  | 2.0 |
+| terrain_height, nominal, fraction                    | wall forcing  | 0.764  | 0.533  | 0.506  | (3.1, unreliable) |
+| surface_normal, nominal, fraction                    | wall forcing  | 0.875  | 0.600  | 0.520  | 1.8 |
+| surface_normal, actual, fraction                     | wall forcing  | 0.866  | 0.555  | 0.580  | not monotone |
+| surface_normal, actual, center                       | wall forcing  | 1.086  | 0.483  | 0.360  | 2.3 |
+
+Reading:
+- With `drag_weight = fraction` the three wall-model variants give the same near-wall speed to within
+  10 % and the sequence is not monotone in the mesh: the first fluid layer is governed by the
+  implicit drag in the partial cells (factor 1/(1 + beta C dt)), not by the wall model, so the
+  wall-distance refinements cannot show in the coupled solution. This is the over-damping predicted
+  in Section 7 and the reason the wall model appears to accelerate the wall cells (positive forcing).
+- With `drag_weight = center` the partial cells are fluid cells with the wall model at their true
+  distance and no drag; the near-wall speed is about twice as large and all metrics converge
+  monotonically with an apparent order of 2 (surface speed) and 2.3 (wall forcing).
+- Recommendation for sloped terrain: `surface_normal` + `reference_distance = actual` +
+  `drag_weight = center`. The default combination remains the previous behavior.
+- Self-convergence only; a smooth flow with an SGS viscosity is not a boundary layer, so this is a
+  consistency test of the coupled options, not a validation. Plot: `docs/notes/immersed_ridge_wall_model.png`.
