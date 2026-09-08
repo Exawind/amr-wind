@@ -470,11 +470,11 @@ Metric: L2 error of the x,y-averaged u(z) over all cells, normalised by max |u_e
 | 0.01    | no_slip, fraction                | 1.26e-2 | 1.35e-3 | 3.11e-4 | 2.90e-3 | 5.27e-5 | alignment dependent |
 | 0.01    | no_slip, center, Cd = 1000       | 6.72e-3 | 1.35e-3 | 3.01e-4 | 8.90e-5 | 4.23e-5 | 2.3, 2.2, 1.8, 1.1 |
 | 0.01    | no_slip, center, Cd = 1000 nz/16 | 6.72e-3 | 1.34e-3 | 2.85e-4 | 6.95e-5 | 1.97e-5 | 2.3, 2.2, 2.0, 1.8 |
-| 2.5e-3 | original code: TerrainDrag + DragForcing | 1.73e-1 | 4.70e-2 | 3.57e-2 | 5.25e-2 | | 1.9, 0.4, -0.6 |
-| 2.5e-3  | none, fraction (defaults)        | 1.26e-2 | 2.77e-2 | 7.24e-3 | 2.95e-3 |         | -1.1, 1.9, 1.3 |
-| 2.5e-3  | no_slip, fraction                | 1.26e-2 | 1.33e-3 | 2.87e-4 | 2.95e-3 |         | alignment dependent |
-| 2.5e-3  | no_slip, center, Cd = 1000       | 6.70e-3 | 1.33e-3 | 2.85e-4 | 7.20e-5 |         | 2.3, 2.2, 2.0 |
-| 2.5e-3  | no_slip, center, Cd = 1000 nz/16 | 6.70e-3 | 1.33e-3 | 2.81e-4 | 6.75e-5 |         | 2.3, 2.2, 2.1 |
+| 2.5e-3 | original code: TerrainDrag + DragForcing | 1.73e-1 | 4.70e-2 | 3.57e-2 | 5.25e-2 | not run | 1.9, 0.4, -0.6 |
+| 2.5e-3  | none, fraction (defaults)        | 1.26e-2 | 2.77e-2 | 7.24e-3 | 2.95e-3 | 2.12e-3 | -1.1, 1.9, 1.3, 0.5 |
+| 2.5e-3  | no_slip, fraction                | 1.26e-2 | 1.33e-3 | 2.87e-4 | 2.95e-3 | 2.62e-5 | alignment dependent |
+| 2.5e-3  | no_slip, center, Cd = 1000       | 6.70e-3 | 1.33e-3 | 2.85e-4 | 7.20e-5 | 2.38e-5 | 2.3, 2.2, 2.0, 1.6 |
+| 2.5e-3  | no_slip, center, Cd = 1000 nz/16 | 6.70e-3 | 1.33e-3 | 2.81e-4 | 6.75e-5 | 1.85e-5 | 2.3, 2.2, 2.1, 1.9 |
 | 1e-5 | none, fraction (defaults) | 8.61e-2 | 1.55e-2 | 1.22e-2 | 1.03e-2 | 4.68e-3 | 2.5, 0.3, 0.3, 1.1 |
 | 1e-5 | no_slip, fraction | 8.61e-2 | 1.28e-2 | 1.03e-2 | 1.03e-2 | 8.85e-4 | 2.7, 0.3, 0.0, 3.5 |
 | 1e-5 | no_slip, center, Cd = 1000 | 1.11e-1 | 1.28e-2 | 1.03e-2 | 3.59e-3 | 8.85e-4 | 3.1, 0.3, 1.5, 2.0 |
@@ -484,7 +484,7 @@ Metric: L2 error of the x,y-averaged u(z) over all cells, normalised by max |u_e
 | 1e-15 | no_slip, center, Cd = 1000 | 1.65e-8 | 4.5e-9 | 1.1e-9 | 3.0e-10 | 1.2e-10 | fluid exact; interior residual, 1.9, 2.0, 1.9, 1.3 |
 | 1e-15 | no_slip, center, Cd = 1000 nz/16 | 1.65e-8 | 1.1e-9 | 7.2e-11 | 1.0e-10 | 9.7e-11 | fluid exact; residual reaches the projection tolerance floor ~1e-10 |
 
-The nu = 2.5e-3 cases at 256 cells were not run: reaching steady state at that viscosity takes 400 s, i.e. 80,000 fixed steps, about two hours per case on the finest mesh, so that series stops at 128 cells. Fitted orders over all meshes: nu = 0.01: defaults 0.84, no_slip+center Cd fixed 1.85, Cd scaled 2.11;
+Fitted orders over all meshes: nu = 0.01: defaults 0.84, no_slip+center Cd fixed 1.85, Cd scaled 2.11;
 nu = 2.5e-3: defaults 0.82, Cd fixed 2.18, Cd scaled 2.21. The two steady viscosities give the same
 normalised errors, as Poiseuille theory requires.
 
