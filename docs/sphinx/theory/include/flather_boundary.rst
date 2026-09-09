@@ -3,12 +3,15 @@
 Flather open boundary condition
 -------------------------------
 
-The Flather boundary condition is a radiation-type open boundary for free-surface
+The Flather boundary condition :cite:p:`flather:1976` is a radiation-type
+open boundary for free-surface
 flows. It allows surface gravity waves generated inside the domain to leave through
 a lateral boundary while still driving the flow toward an externally specified
 state. Compared to a simple extrapolation (Neumann) outflow, it avoids the spurious
 reflection of long waves back into the domain, and compared to a pure Dirichlet
-inflow, it does not over-constrain the interior solution.
+inflow, it does not over-constrain the interior solution. Comparisons of open
+boundary conditions for regional tidal simulations have found this formulation to
+be among the better performing choices :cite:p:`carter-merrifield:2007`.
 
 Kynema-SGF applies the condition in a depth-integrated form, which makes it
 well suited to the volume-of-fluid representation of the free surface described in
