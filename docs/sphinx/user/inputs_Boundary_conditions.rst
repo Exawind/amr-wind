@@ -156,6 +156,106 @@ The power law profile uses the following input parameters. This one is only for 
 
    The maximum velocity cutoff in the mean power law profile. :math:`u_{\text{max}}` in the equation.
 
+TabulatedProfile
+""""""""""""""""
+
+Reads a vertical profile from a text file and imposes it on inflow boundaries.
+Unlike the profiles above, it applies to any field: velocity, temperature,
+``tke``, and any scalar added later.
+
+.. code-block:: none
+
+   xlo.type                    = mass_inflow
+   xlo.velocity.inflow_type    = TabulatedProfile
+   xlo.temperature.inflow_type = TabulatedProfile
+   xlo.tke.inflow_type         = TabulatedProfile
+   TabulatedProfile.filename   = inflow_profile.txt
+
+File format
+~~~~~~~~~~~
+
+One row per height, whitespace separated, with heights strictly increasing.
+An optional comment line naming the columns may precede the data:
+
+.. code-block:: none
+
+   # z u v T tke
+   0.0      8.0  -1.0  300.0  0.40
+   200.0    9.0   1.0  300.0  0.30
+   1000.0  -3.0   8.0  308.0  0.05
+
+Without such a header the column count decides the layout: four columns are
+``z u v T`` and five are ``z u v T tke``. Any other width must carry a header.
+The assumed names are echoed at startup so the choice is visible in the log.
+
+Each field takes the column named after it, so ``temperature`` reads ``T``
+(``theta`` and ``temperature`` are also accepted) and ``tke`` reads ``tke``.
+Velocity takes ``u``, ``v`` and ``w``; a missing ``w`` column is zero, but a
+missing ``u`` or ``v`` is an error. Outside the tabulated range the nearest
+value is held rather than extrapolated.
+
+.. note::
+   ``ABL.rans_1dprofile_file`` is a different five column format, ``z u v w
+   tke``, holding vertical velocity where this one holds temperature. Pointing
+   both inputs at the same file is refused unless it carries a header saying
+   which it is.
+
+Wind direction and veer
+~~~~~~~~~~~~~~~~~~~~~~~
+
+A profile may be given per face, so that the inflow faces follow the wind. A
+face without one falls back to the constant value set for that face.
+
+.. code-block:: none
+
+   TabulatedProfile.filename  = east_profile.txt   # every inflow face
+   ylo.tabulated_profile_file = south_profile.txt  # except this one
+
+Under directional shear the normal component changes sign partway up the
+column, which makes a single face an inflow at some heights and an outflow at
+others. Use ``mass_inflow_outflow`` on the lateral faces in that case and give
+the profile to all of them, rather than choosing inflow faces from the surface
+wind direction. The outflow part of each face is then filled by extrapolation,
+and the projection is kept solvable by matching outflow to inflow. A profile
+whose normal component reverses within the domain on a plain ``mass_inflow``
+face is refused, since it would drive flow backwards through the boundary.
+
+.. input_param:: TabulatedProfile.filename
+
+   **type:** String, required unless every inflow face names its own file
+
+   The profile file used on every inflow face.
+
+.. input_param:: <face>.tabulated_profile_file
+
+   **type:** String, optional
+
+   Profile file for one face, overriding ``TabulatedProfile.filename``.
+
+.. input_param:: TabulatedProfile.zoffset
+
+   **type:** Real, optional, default = 0.0
+
+   Height of the ground at the boundary. Heights in the file are measured from
+   here rather than from the bottom of the domain, so a profile given above
+   ground can be used where the boundary stands on raised ground. Below this
+   height the lowest tabulated value is held.
+
+.. input_param:: <face>.tabulated_profile_zoffset
+
+   **type:** Real, optional
+
+   Ground height for one face, overriding ``TabulatedProfile.zoffset``.
+
+.. note::
+   Only a uniform lift is supported. Ground that varies along a face would vary
+   the inflow area with it, and the inflow-outflow solvability correction would
+   then rescale the profile that was asked for.
+
+.. note::
+   Heights are measured in the domain coordinate, so this profile does not
+   follow a stretched mesh set up through ``geometry.mesh_mapping``.
+
 Custom boundary conditions
 """"""""""""""""""""""""""
 
