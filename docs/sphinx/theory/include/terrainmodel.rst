@@ -13,7 +13,7 @@ which prescribes only the forcing inside the body; the wall functions, stability
 time integration described below are additions made in this code.
 
 Binary blanking (``TerrainDrag``)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The forcing term in the momentum equation is given by:
 
@@ -60,7 +60,7 @@ from the log law.
    :width: 30%
 
 Partial terrain fraction (``ImmersedTerrain``)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ``ImmersedTerrain`` replaces the binary blanking with the fraction :math:`\beta \in [0,1]` of each
 cell occupied by terrain (the fraction of the cell column below the terrain height, or optionally

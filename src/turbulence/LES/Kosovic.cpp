@@ -280,24 +280,23 @@ void Kosovic<Transport>::update_turbulent_viscosity(
     mu_turb.fillpatch(this->m_sim.time().current_time());
 }
 
-/** Kosovic viscosity with the ImmersedTerrain fields.
- *
- *  Same core model as the TerrainDrag kernel, with the terrain fraction and
- *  the surface cells in place of the binary blanking and the drag cells:
- *
- *  - the SGS viscosity and the non-linear term are multiplied by
- *    (1 - w_solid), with w_solid the drag weight of the cell
- *    (``ImmersedTerrain.drag_weight``);
- *  - in surface cells (mask == 2) the viscosity is replaced by the log-law
- *    value 2 rho u*^2 / |dU_t/dn| averaged over the wall patches of the cell
- *    (six faces or surface normal, as ``ImmersedDragForcing.wall_model``),
- *    weighted by (1 - w_solid). The face viscosity is the arithmetic mean of
- *    the cell and the blanked wall-side cell, so this makes the SGS flux
- *    across the interface equal to the wall stress rho u*^2. The friction
- *    velocity uses the same reference cell, distance and normal as the wall
- *    model, and the tangential speed gradient is taken between the cell and
- *    the wall-side cell mirrored from the reference cell.
- */
+// Kosovic viscosity with the ImmersedTerrain fields.
+//
+//  Same core model as the TerrainDrag kernel, with the terrain fraction and
+//  the surface cells in place of the binary blanking and the drag cells:
+//
+//  - the SGS viscosity and the non-linear term are multiplied by
+//    (1 - w_solid), with w_solid the drag weight of the cell
+//    (``ImmersedTerrain.drag_weight``);
+//  - in surface cells (mask == 2) the viscosity is replaced by the log-law
+//    value 2 rho u*^2 / |dU_t/dn| averaged over the wall patches of the cell
+//    (six faces or surface normal, as ``ImmersedDragForcing.wall_model``),
+//    weighted by (1 - w_solid). The face viscosity is the arithmetic mean of
+//    the cell and the blanked wall-side cell, so this makes the SGS flux
+//    across the interface equal to the wall stress rho u*^2. The friction
+//    velocity uses the same reference cell, distance and normal as the wall
+//    model, and the tangential speed gradient is taken between the cell and
+//    the wall-side cell mirrored from the reference cell.
 template <typename Transport>
 void Kosovic<Transport>::immersed_terrain_viscosity(
     const int lev,

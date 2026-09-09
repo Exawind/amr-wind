@@ -310,14 +310,16 @@ void ABLVelWallFunc::wall_model(
                             // No stress where the effective viscosity is
                             // zero (terrain cells with zero molecular
                             // viscosity), which would otherwise give 0/0
-                            const amrex::Real inv_mu =
-                                (mu > 0.0_rt) ? 1.0_rt / mu : 0.0_rt;
-                            varr(i, j, k - 1, 0) = blankTerrain * ustar *
-                                                   ustar * uu / wspd *
-                                                   den(i, j, k) * inv_mu;
-                            varr(i, j, k - 1, 1) = blankTerrain * ustar *
-                                                   ustar * vv / wspd *
-                                                   den(i, j, k) * inv_mu;
+                            const amrex::Real tau_x = blankTerrain * ustar *
+                                                      ustar * uu / wspd *
+                                                      den(i, j, k);
+                            const amrex::Real tau_y = blankTerrain * ustar *
+                                                      ustar * vv / wspd *
+                                                      den(i, j, k);
+                            varr(i, j, k - 1, 0) =
+                                (mu > 0.0_rt) ? tau_x / mu : 0.0_rt;
+                            varr(i, j, k - 1, 1) =
+                                (mu > 0.0_rt) ? tau_y / mu : 0.0_rt;
                         });
                 } else {
                     amrex::ParallelFor(
@@ -338,14 +340,16 @@ void ABLVelWallFunc::wall_model(
                             // Blank Terrain added to keep the boundary
                             // condition backward compatible while adding
                             // terrain sensitive BC
-                            const amrex::Real inv_mu =
-                                (mu > 0.0_rt) ? 1.0_rt / mu : 0.0_rt;
-                            varr(i, j, k - 1, 0) = blankTerrain *
-                                                   tau.calc_vel_x(uu, wspd) *
-                                                   den(i, j, k) * inv_mu;
-                            varr(i, j, k - 1, 1) = blankTerrain *
-                                                   tau.calc_vel_y(vv, wspd) *
-                                                   den(i, j, k) * inv_mu;
+                            const amrex::Real tau_x = blankTerrain *
+                                                      tau.calc_vel_x(uu, wspd) *
+                                                      den(i, j, k);
+                            const amrex::Real tau_y = blankTerrain *
+                                                      tau.calc_vel_y(vv, wspd) *
+                                                      den(i, j, k);
+                            varr(i, j, k - 1, 0) =
+                                (mu > 0.0_rt) ? tau_x / mu : 0.0_rt;
+                            varr(i, j, k - 1, 1) =
+                                (mu > 0.0_rt) ? tau_y / mu : 0.0_rt;
                         });
                 }
             }
@@ -480,10 +484,10 @@ void ABLTempWallFunc::wall_model(
                             const amrex::Real blankTerrain =
                                 (has_terrain) ? 1 - blank_arr(i, j, k, 0)
                                               : 1.0_rt;
-                            const amrex::Real inv_alpha =
-                                (alphaT > 0.0_rt) ? 1.0_rt / alphaT : 0.0_rt;
-                            tarr(i, j, k - 1) = blankTerrain * den(i, j, k) *
-                                                surf_temp_flux * inv_alpha;
+                            const amrex::Real q_s =
+                                blankTerrain * den(i, j, k) * surf_temp_flux;
+                            tarr(i, j, k - 1) =
+                                (alphaT > 0.0_rt) ? q_s / alphaT : 0.0_rt;
                         });
                 } else {
                     amrex::ParallelFor(
@@ -498,11 +502,11 @@ void ABLTempWallFunc::wall_model(
                             const amrex::Real blankTerrain =
                                 (has_terrain) ? 1 - blank_arr(i, j, k, 0)
                                               : 1.0_rt;
-                            const amrex::Real inv_alpha =
-                                (alphaT > 0.0_rt) ? 1.0_rt / alphaT : 0.0_rt;
-                            tarr(i, j, k - 1) = blankTerrain * den(i, j, k) *
-                                                tau.calc_theta(wspd, theta2) *
-                                                inv_alpha;
+                            const amrex::Real q_s =
+                                blankTerrain * den(i, j, k) *
+                                tau.calc_theta(wspd, theta2);
+                            tarr(i, j, k - 1) =
+                                (alphaT > 0.0_rt) ? q_s / alphaT : 0.0_rt;
                         });
                 }
             }

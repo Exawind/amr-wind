@@ -323,12 +323,11 @@ void KLAxell<Transport>::update_turbulent_viscosity(
     mu_turb.fillpatch(this->m_sim.time().current_time());
 }
 
-/** KLAxell viscosity with the ImmersedTerrain fields: the TerrainDrag kernel
- *  with the height above the terrain taken from ``terrain_surface`` and the
- *  binary blanking replaced by (1 - w_solid), w_solid being the drag weight
- *  of the cell (``ImmersedTerrain.drag_weight``), so that partial cells keep
- *  a fraction of the eddy viscosity.
- */
+// KLAxell viscosity with the ImmersedTerrain fields: the TerrainDrag kernel
+//  with the height above the terrain taken from ``terrain_surface`` and the
+//  binary blanking replaced by (1 - w_solid), w_solid being the drag weight
+//  of the cell (``ImmersedTerrain.drag_weight``), so that partial cells keep
+//  a fraction of the eddy viscosity.
 template <typename Transport>
 void KLAxell<Transport>::immersed_terrain_viscosity(
     const int lev,

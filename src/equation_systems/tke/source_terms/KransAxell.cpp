@@ -366,26 +366,25 @@ void KransAxell::operator()(
     amrex::Gpu::streamSynchronize();
 }
 
-/** Terrain forcing with the ImmersedTerrain fields.
- *
- *  Per cell, with w_solid the drag weight (``ImmersedTerrain.drag_weight``):
- *
- *  - the production and dissipation already in the source are weighted by
- *    (1 - w_solid);
- *  - surface cells (mask == 2) and fluid cells on the bottom domain face are
- *    relaxed toward the log-law TKE (u*^3/C_mu^3 + B)^(2/3), averaged over
- *    the wall patches shared with ImmersedDragForcing (same reference cell,
- *    distance d2 and normal, so the same friction velocity), on the time
- *    scale tau_f dt and weighted by (1 - w_solid);
- *  - cells with w_solid > 0 are damped toward zero at the rate
- *    w_solid C_d / dz, integrated exactly over the step
- *    (C_eff = (1 - exp(-C dt))/dt) in place of the limited explicit
- *    coefficient of the TerrainDrag kernel;
- *  - the mesoscale sponge uses the height above the terrain.
- *
- *  The lateral sponge of the TerrainDrag path is not applied here, in line
- *  with ImmersedTerrain having no damping layers.
- */
+// Terrain forcing with the ImmersedTerrain fields.
+//
+//  Per cell, with w_solid the drag weight (``ImmersedTerrain.drag_weight``):
+//
+//  - the production and dissipation already in the source are weighted by
+//    (1 - w_solid);
+//  - surface cells (mask == 2) and fluid cells on the bottom domain face are
+//    relaxed toward the log-law TKE (u*^3/C_mu^3 + B)^(2/3), averaged over
+//    the wall patches shared with ImmersedDragForcing (same reference cell,
+//    distance d2 and normal, so the same friction velocity), on the time
+//    scale tau_f dt and weighted by (1 - w_solid);
+//  - cells with w_solid > 0 are damped toward zero at the rate
+//    w_solid C_d / dz, integrated exactly over the step
+//    (C_eff = (1 - exp(-C dt))/dt) in place of the limited explicit
+//    coefficient of the TerrainDrag kernel;
+//  - the mesoscale sponge uses the height above the terrain.
+//
+//  The lateral sponge of the TerrainDrag path is not applied here, in line
+//  with ImmersedTerrain having no damping layers.
 void KransAxell::immersed_terrain_forcing(
     const int lev, const FieldState fstate, amrex::MultiFab& src_term) const
 {

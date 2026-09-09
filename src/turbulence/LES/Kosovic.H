@@ -45,8 +45,8 @@ public:
     //! Update the effective thermal diffusivity field
     void update_alphaeff(Field& alphaeff) override;
 
-    //! Turbulent viscosity on one level with the ImmersedTerrain fields
-    //! (``terrain_model = ImmersedTerrain``)
+    //! Turbulent viscosity on one level from the ImmersedTerrain fields,
+    //! used when terrain_model is ImmersedTerrain
     void immersed_terrain_viscosity(
         int lev,
         FieldState fstate,

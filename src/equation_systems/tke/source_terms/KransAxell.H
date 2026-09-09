@@ -37,12 +37,14 @@ public:
     void operator()(
         int lev, FieldState fstate, amrex::MultiFab& src_term) const override;
 
-private:
-    //! Terrain forcing on one level with the ImmersedTerrain fields
-    //! (``KLAxell.terrain_model = ImmersedTerrain``)
+    //! Terrain forcing on one level from the ImmersedTerrain fields, used
+    //! when KLAxell.terrain_model is ImmersedTerrain. Public because it
+    //! launches a device lambda, which CUDA does not allow from a private
+    //! member function.
     void immersed_terrain_forcing(
         int lev, FieldState fstate, amrex::MultiFab& src_term) const;
 
+private:
     Field& m_turb_lscale;
     Field& m_shear_prod;
     Field& m_buoy_prod;
