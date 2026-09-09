@@ -3,6 +3,7 @@
 
 #include "src/equation_systems/vof/vof.H"
 #include "src/physics/multiphase/MultiPhase.H"
+#include "AMReX_ParReduce.H"
 
 namespace kynema_sgf::pde {
 
@@ -70,9 +71,115 @@ struct PostSolveOp<VOF>
     PostSolveOp(CFDSim& sim, PDEFields& fields) : m_sim(sim), m_fields(fields)
     {}
 
+    /** Extrapolate vof laterally into terrain-blanked cells
+     *
+     *  Blanked cells that border unblanked cells in x or y take the average vof
+     *  of those unblanked neighbors. Blanked cells surrounded by blanked cells
+     *  take the average of their laterally neighboring cells that have already
+     *  been assigned, propagating the values inward one layer per sweep.
+     */
+    void extrapolate_vof_into_terrain()
+    {
+        auto& repo = m_sim.repo();
+        const auto& blanking = repo.get_int_field("terrain_blank");
+        auto& vof = m_fields.field;
+        const int nlevels = repo.num_active_levels();
+
+        // Two components used to ping-pong between sweeps so that values
+        // assigned during a sweep are not used as sources within that sweep.
+        // A negative value flags a cell that has not been assigned yet.
+        auto scratch = repo.create_scratch_field(2, 1);
+
+        for (int lev = 0; lev < nlevels; ++lev) {
+            auto& buf = (*scratch)(lev);
+            const auto periodicity = m_sim.mesh().Geom(lev).periodicity();
+            const auto ngrow = buf.nGrowVect();
+            buf.setVal(-1.0_rt);
+
+            const auto blank_arrs = blanking(lev).const_arrays();
+            {
+                const auto buf_arrs = buf.arrays();
+                const auto vof_arrs = vof(lev).const_arrays();
+                amrex::ParallelFor(
+                    buf, amrex::IntVect(0),
+                    [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
+                        if (blank_arrs[nbx](i, j, k) == 0) {
+                            buf_arrs[nbx](i, j, k, 0) = vof_arrs[nbx](i, j, k);
+                        }
+                    });
+                amrex::Gpu::streamSynchronize();
+            }
+            buf.FillBoundary(0, 1, ngrow, periodicity);
+
+            int src = 0;
+            while (true) {
+                const int dst = 1 - src;
+                const auto buf_arrs = buf.arrays();
+                auto nfilled = amrex::ParReduce(
+                    amrex::TypeList<amrex::ReduceOpSum>{},
+                    amrex::TypeList<amrex::Long>{}, buf, amrex::IntVect(0),
+                    [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k)
+                        -> amrex::GpuTuple<amrex::Long> {
+                        const auto& bf = buf_arrs[nbx];
+                        const amrex::Real cur = bf(i, j, k, src);
+                        if (cur >= 0.0_rt) {
+                            bf(i, j, k, dst) = cur;
+                            return {0};
+                        }
+                        amrex::Real sum = 0.0_rt;
+                        int cnt = 0;
+                        for (int dir = 0; dir < 2; ++dir) {
+                            for (int sgn = -1; sgn <= 1; sgn += 2) {
+                                const int ii = i + ((dir == 0) ? sgn : 0);
+                                const int jj = j + ((dir == 1) ? sgn : 0);
+                                const amrex::Real nval = bf(ii, jj, k, src);
+                                if (nval >= 0.0_rt) {
+                                    sum += nval;
+                                    ++cnt;
+                                }
+                            }
+                        }
+                        if (cnt > 0) {
+                            bf(i, j, k, dst) =
+                                sum / static_cast<amrex::Real>(cnt);
+                            return {1};
+                        }
+                        bf(i, j, k, dst) = -1.0_rt;
+                        return {0};
+                    });
+                amrex::ParallelDescriptor::ReduceLongSum(nfilled);
+                buf.FillBoundary(dst, 1, ngrow, periodicity);
+                src = dst;
+                // No cell was assigned during this sweep; nothing left to do
+                if (nfilled == 0) {
+                    break;
+                }
+            }
+
+            const auto buf_arrs = buf.const_arrays();
+            const auto vof_arrs = vof(lev).arrays();
+            amrex::ParallelFor(
+                vof(lev), amrex::IntVect(0),
+                [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
+                    const amrex::Real val = buf_arrs[nbx](i, j, k, src);
+                    if (blank_arrs[nbx](i, j, k) == 1 && val >= 0.0_rt) {
+                        vof_arrs[nbx](i, j, k) = val;
+                    }
+                });
+            amrex::Gpu::streamSynchronize();
+        }
+
+        vof.fillpatch(m_sim.time().new_time());
+    }
+
     void operator()(const amrex::Real /*unused*/)
     {
         m_fields.field.fillpatch(m_sim.time().new_time());
+
+        if (m_sim.repo().int_field_exists("terrain_blank")) {
+            extrapolate_vof_into_terrain();
+        }
+
         auto& multiphase = m_sim.physics_manager().get<MultiPhase>();
         multiphase.set_density_via_vof();
 
