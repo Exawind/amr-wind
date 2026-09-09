@@ -91,7 +91,7 @@ outflow condition in the following cases.
   :input_param:`Flather.max_velocity_scale_factor`, the externally specified
   profile is used instead. This limit is most relevant during startup, when the
   interior and exterior states can differ substantially and an unbounded scaling
-  would produce rapid, unphysical acceleration.
+  would produce rapid, nonphysical acceleration.
 * If the depth-integrated boundary velocity is essentially zero, the scaling based
   on external quantities is undefined, and the interior profile is retained.
 * If the boundary column contains no liquid, the computed wave speed and target
