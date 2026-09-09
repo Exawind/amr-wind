@@ -173,6 +173,17 @@ model alone acts (turbulent pathway); ``no_slip`` multiplies fluid/solid faces b
 no-slip flux at the true wall position (laminar pathway with finite viscosity). With the
 default ``none`` the molecular viscosity should be kept negligible in laminar test cases.
 
+**SGS viscosity at the interface (Kosovic model).** The ``Kosovic`` model carries its own
+interface treatment: the SGS viscosity is zero inside the terrain and, in the first fluid
+cells, replaced by :math:`2 \rho u_*^2 / |\partial U_t/\partial n|`, so that the SGS flux across
+the interface (face viscosity equal to the mean of the cell and the blanked neighbor) equals the
+wall stress :math:`\rho u_*^2` instead of the unrelated value the LES closure would give there.
+With ``Kosovic.terrain_model = ImmersedTerrain`` this is evaluated from the terrain fraction and
+the surface cells: the viscosity and the non-linear term are weighted by :math:`1 - w_\mathrm{solid}`
+and the log-law value is averaged over the wall patches of the surface cell, with the same
+reference cell, distance and normal as the wall model (six faces or surface normal). The
+default ``TerrainDrag`` keeps the binary blanking and the drag-cell treatment above the terrain.
+
 **Laminar channel verification.** For plane Poiseuille flow with an immersed flat bottom wall
 between cell centers and a no-slip top wall, the combination ``implicit_projection``,
 ``interface_diffusion = no_slip`` and ``drag_weight = center`` converges to the exact parabolic

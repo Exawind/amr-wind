@@ -13,6 +13,13 @@ namespace kynema_sgf::turbulence {
 
 /** Kosovic LES Model
  *  \ingroup turb_model
+ *
+ *  With terrain the SGS viscosity is zero inside the terrain and, in the
+ *  first fluid cells, replaced by the value that makes the SGS flux across
+ *  the terrain interface equal to the log-law wall stress rho u*^2 (the face
+ *  viscosity is the arithmetic mean of the cell and the blanked neighbor, so
+ *  the cell value is 2 rho u*^2 / |dU/dn|). ``Kosovic.terrain_model``
+ *  selects the terrain physics this is evaluated from.
  */
 template <typename Transport>
 class Kosovic : public TurbModelBase<Transport>
@@ -37,6 +44,14 @@ public:
 
     //! Update the effective thermal diffusivity field
     void update_alphaeff(Field& alphaeff) override;
+
+    //! Turbulent viscosity on one level with the ImmersedTerrain fields
+    //! (``terrain_model = ImmersedTerrain``)
+    void immersed_terrain_viscosity(
+        int lev,
+        FieldState fstate,
+        const ScratchField& gradT,
+        const ScratchField& ref_theta);
 
     //! Parse turbulence model coefficients
     void parse_model_coeffs() override;
@@ -74,6 +89,20 @@ private:
     amrex::Real m_beta_m{16.0_rt};
     amrex::Real m_surface_roughness_z0{0.1_rt};
     amrex::Vector<amrex::Real> m_gravity{0.0_rt, 0.0_rt, -9.81_rt};
+
+    //! Terrain physics the SGS model couples to: ``TerrainDrag`` (default,
+    //! binary blanking, log-law viscosity in the drag cells above the
+    //! terrain) or ``ImmersedTerrain`` (partial fraction, log-law viscosity
+    //! on the wall patches of the surface cells, six faces or surface
+    //! normal, as in ImmersedDragForcing)
+    std::string m_terrain_model{"TerrainDrag"};
+    //! Wall-model settings shared with ImmersedDragForcing
+    std::string m_ib_wall_model{"cell_offset"};
+    std::string m_ib_reference_distance{"nominal"};
+    amrex::Real m_ib_min_z0{1.0e-4_rt};
+    //! Surface-cell settings shared with ImmersedTerrain
+    amrex::Real m_ib_solid_threshold{0.5_rt};
+    std::string m_ib_drag_weight{"fraction"};
 };
 
 } // namespace kynema_sgf::turbulence

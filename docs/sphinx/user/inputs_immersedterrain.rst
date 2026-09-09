@@ -9,7 +9,9 @@ These parameters are active when ``ImmersedTerrain`` is included in
 stores the fraction of each cell occupied by terrain, so slopes are not
 represented as a staircase. It is used together with the
 ``ImmersedDragForcing`` momentum source (see
-:ref:`inputs_momentum_sources`).
+:ref:`inputs_momentum_sources`). The ``Kosovic`` SGS model can evaluate its
+terrain treatment from these fields with
+:input_param:`Kosovic.terrain_model` set to ``ImmersedTerrain``.
 
 ImmersedTerrain declares the following fields, each with one ghost cell:
 

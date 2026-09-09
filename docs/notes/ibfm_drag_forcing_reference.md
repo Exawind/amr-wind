@@ -230,6 +230,23 @@ overshoots and can blow up. Hence:
 - `terrain_damping`: sin^2 Rayleigh layers at the lateral boundaries (above
   `horizontal_abl_height`) and at the domain top, applied to w only, rate 1/`horizontal_tau`.
 
+### 4.4 Kosovic SGS viscosity at the interface (`Kosovic.cpp`, 2026-09-08 generalization)
+
+The Kosovic model zeroes mu_t inside the terrain (`1 - terrain_blank`) and, in the drag cells,
+replaces it by `2 rho u*^2 / max(dM/dz, 0.01)` with u* from the log law at 1.5 dz. Since the face
+viscosity is the arithmetic mean of the two cells and the neighbour below is blanked, the SGS flux
+across the interface becomes exactly rho u*^2 (the factor 2 cancels the half from the average).
+This removes the mu du/dz flux the LES closure would otherwise put at the IB interface.
+
+`Kosovic.terrain_model = ImmersedTerrain` (default `TerrainDrag`, unchanged code path) does the
+same with the ImmersedTerrain fields in a separate kernel: the viscosity and divNij are weighted
+by `1 - w_solid` (drag weight of the cell), and in surface cells (mask 2) mu_t is the patch-weighted
+average of `2 rho u*^2 / max(dU_t/dn, 0.01)` over the same wall patches as ImmersedDragForcing
+(`wall_model`, `reference_distance`, `minimum_z0`, `solid_threshold`), with the tangential
+speed gradient between the cell and the wall-side cell mirrored from the reference cell.
+Unit test: `unit_tests/wind_energy/test_immersed_kosovic.cpp`; regression case
+`abl_kosovic_neutral_immersed` (NetCDF block, next to `abl_kosovic_neutral_ib`).
+
 ---
 
 ## 5. Convergence check: laminar immersed box (2026-09-05)
