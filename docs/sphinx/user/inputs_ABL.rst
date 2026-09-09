@@ -278,7 +278,10 @@ This section is for setting atmospheric boundary layer parameters.
 
    **type:** String, optional, default = ""
 
-   This input is required when the ABL.initial_wind_profile is set to True. 
+   This input is required when the ABL.initial_wind_profile is set to True.
+   The file has five columns, ``z u v w tke``, one row per height; every
+   reader of the file (initial profile, ``DragForcing`` sponge, ``KransAxell``
+   sponge, ``VelocityFreeAtmosphereForcing``) expects exactly five values per row.
 
 .. input_param:: ABL.minimum_vertical_position 
 

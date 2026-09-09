@@ -17,7 +17,7 @@ time.checkpoint_interval                    = 86400
 #io
 #io.restart_file                             = "chk72000"
 io.output_default_variables                  = false
-io.outputs                                   = velocity temperature tke mu_turb
+io.outputs                                   = velocity temperature tke mu_turb terrain_fraction
 # incflo
 incflo.physics                              = ABL ImmersedTerrain
 incflo.density                              = 1.225
