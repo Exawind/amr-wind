@@ -147,6 +147,7 @@ private:
     void write_ascii(
         int num_samples,
         bool window_full,
+        amrex::Real hold_elapsed,
         int num_converged,
         int worst_vel_point,
         amrex::Real worst_vel_spread,
@@ -209,6 +210,12 @@ private:
 
     //! Fewest samples in the window before convergence may be declared
     int m_min_samples{4};
+
+    //! How long every point must stay within tolerance before the run stops
+    amrex::Real m_hold_time{-1.0_rt};
+
+    //! Time at which all points most recently began passing, or -1 if not
+    amrex::Real m_converged_since{-1.0_rt};
 
     //! Ask the time integrator to stop once every point has converged
     bool m_stop_on_convergence{true};

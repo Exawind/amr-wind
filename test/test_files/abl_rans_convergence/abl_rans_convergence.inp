@@ -89,6 +89,9 @@ convergence.start_time                      = 0.5
 convergence.sample_interval_time            = 0.5
 convergence.window                          = 1.5
 convergence.min_samples                     = 4
+# One sample interval, so the stop still lands inside the few steps a
+# regression test runs. A production run wants the default of two windows.
+convergence.hold_time                       = 0.5
 convergence.velocity_abs_tol                = 1000.0
 convergence.velocity_rel_tol                = 1.0
 convergence.tke_abs_tol                     = 1000.0

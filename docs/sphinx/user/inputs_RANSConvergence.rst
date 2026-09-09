@@ -50,11 +50,28 @@ monitor built on it would report convergence at the first peak, hours before
 the oscillation has actually decayed. A window still contains the swing on
 both sides of a turning point and is not fooled.
 
-Two consequences for choosing inputs:
+A window shrinks the turning-point problem but does not remove it. Near a
+turning point the signal is locally quadratic, so the spread measured over a
+window of width :math:`W` falls to roughly :math:`W/T` of its typical value,
+where :math:`T` is the oscillation period. On a one-hour window with a 17.5
+hour inertial period, that is a dip of more than an order of magnitude: in a
+test case the speed envelope peaked at 0.52 m/s and dipped to 0.022 m/s at a
+turning point, while the flow was still far from steady.
+
+The remedy is :input_param:`convergence.hold_time`. The dip lasts on the order
+of one window, so requiring the criterion to hold continuously for longer than
+that means a turning point cannot stop the run whatever the window and
+tolerance are. The default of two windows is measured against that dip and
+should not be lowered without a reason.
+
+Three consequences for choosing inputs:
 
 * :input_param:`convergence.window` should be a meaningful fraction of the
-  inertial period, typically one to two hours for a mid-latitude or polar
-  case. A much shorter window can fit inside the flat part of a turning point.
+  inertial period, one to two hours for a mid-latitude or polar case. Longer
+  windows make the turning-point dip shallower.
+* :input_param:`convergence.hold_time` guards the dip that the window leaves
+  behind. Leave it at the default unless you have measured the dip in your own
+  configuration.
 * :input_param:`convergence.sample_interval_time` should be generous. Sampling
   every step buys no information, because the solution cannot move
   meaningfully in one timestep.
@@ -207,6 +224,16 @@ Inputs
    Relative tolerance on the turbulent kinetic energy spread, applied to the
    window mean of ``tke`` at that point.
 
+.. input_param:: convergence.hold_time
+
+   **type:** Real, optional, default = twice ``window``
+
+   How long in seconds every point must stay within tolerance continuously
+   before the run is stopped. A single passing check is not enough, because the
+   envelope dips at every turning point of the inertial oscillation. The
+   elapsed hold is reported in the output file, and it resets to zero as soon
+   as any point falls back outside tolerance.
+
 .. input_param:: convergence.min_samples
 
    **type:** Integer, optional, default = 4
@@ -255,10 +282,16 @@ Output
 ``````
 
 A text file named after the label is written to the post-processing directory,
-with one line per check recording the time, how many points have converged,
-the worst point for each quantity together with its spread and the tolerance
-it was compared against, and the estimated time to convergence. The same
-information is printed to the log.
+with one line per check recording the time, how many samples the window holds
+and whether it is full, how many points have converged, the worst point for
+each quantity together with its spread and the tolerance it was compared
+against, how long the criterion has held, and the estimated time to
+convergence. The same information is printed to the log.
+
+Read ``window_full`` before ``num_converged``. While the window is still
+filling it holds only a couple of samples, whose spread is small whatever the
+flow is doing, so early rows routinely show every point converged without
+meaning it.
 
 The worst-offender columns are the ones to read when a run does not converge:
 they distinguish a flow that is genuinely still evolving from a single badly

@@ -67,6 +67,7 @@ void RANSConvergence::initialize()
         pp.query("tke_abs_tol", m_tke_abs_tol);
         pp.query("tke_rel_tol", m_tke_rel_tol);
         pp.query("min_samples", m_min_samples);
+        pp.query("hold_time", m_hold_time);
         pp.query("stop_on_convergence", m_stop_on_convergence);
 
         pp.query("report_eta", m_report_eta);
@@ -98,6 +99,14 @@ void RANSConvergence::initialize()
         amrex::Abort(
             "RANSConvergence: " + m_label +
             ".min_samples must be at least 2 for a spread to be meaningful.");
+    }
+    if (m_hold_time < 0.0_rt) {
+        // Two windows. The envelope has its own dip at each turning point of
+        // the inertial oscillation, of depth set by the ratio of the window to
+        // the oscillation period, and that dip lasts on the order of one
+        // window. Requiring the criterion to hold for longer than the dip
+        // means a turning point cannot stop the run however tight the window.
+        m_hold_time = 2.0_rt * m_window;
     }
     if (m_eta_fit_window <= 0.0_rt) {
         // Default to a fit history several windows long, so that the fit sees
@@ -442,15 +451,20 @@ void RANSConvergence::evaluate_convergence()
 
         // The normalized spreads are what must fall below one, so they are
         // the series the exponential fit extrapolates
+        // Only full windows enter the fit history. While the window is
+        // filling it holds a couple of samples, whose spread is small whatever
+        // the flow is doing, and those points would flatten the fitted decay
         const amrex::Real cur_time = m_times.back();
-        m_eta_times.push_back(cur_time);
-        m_eta_vel_ratio.push_back(worst_vel_ratio);
-        m_eta_tke_ratio.push_back(worst_tke_ratio);
-        while (m_eta_times.size() > 1 &&
-               (cur_time - m_eta_times.front()) > m_eta_fit_window) {
-            m_eta_times.pop_front();
-            m_eta_vel_ratio.pop_front();
-            m_eta_tke_ratio.pop_front();
+        if (window_full) {
+            m_eta_times.push_back(cur_time);
+            m_eta_vel_ratio.push_back(worst_vel_ratio);
+            m_eta_tke_ratio.push_back(worst_tke_ratio);
+            while (m_eta_times.size() > 1 &&
+                   (cur_time - m_eta_times.front()) > m_eta_fit_window) {
+                m_eta_times.pop_front();
+                m_eta_vel_ratio.pop_front();
+                m_eta_tke_ratio.pop_front();
+            }
         }
 
         amrex::Real eta = -1.0_rt;
@@ -519,12 +533,31 @@ void RANSConvergence::evaluate_convergence()
                            << std::setprecision(3) << eta_rsq << ")\n";
         }
 
+        // Passing once is not enough. The envelope dips at every turning
+        // point of the inertial oscillation, so the criterion must hold
+        // continuously for longer than such a dip lasts
+        const bool all_pass = window_full && (num_converged == m_npts);
+        if (all_pass) {
+            if (m_converged_since < 0.0_rt) {
+                m_converged_since = cur_time;
+            }
+        } else {
+            m_converged_since = -1.0_rt;
+        }
+        const amrex::Real hold_elapsed =
+            all_pass ? (cur_time - m_converged_since) : 0.0_rt;
+
+        if (all_pass && hold_elapsed < m_hold_time) {
+            amrex::Print() << "  all points within tolerance, holding for "
+                           << hold_elapsed << " of " << m_hold_time << " s\n";
+        }
+
         write_ascii(
-            nsamples, window_full, num_converged, worst_vel_point,
+            nsamples, window_full, hold_elapsed, num_converged, worst_vel_point,
             worst_vel_spread, worst_vel_tol, worst_tke_point, worst_tke_spread,
             worst_tke_tol, eta);
 
-        if (window_full && num_converged == m_npts) {
+        if (all_pass && hold_elapsed >= m_hold_time) {
             converged_flag = 1;
         }
     }
@@ -536,7 +569,8 @@ void RANSConvergence::evaluate_convergence()
 
     if (m_converged) {
         amrex::Print() << "RANSConvergence: all " << m_npts
-                       << " monitor points are converged\n";
+                       << " monitor points held within tolerance for "
+                       << m_hold_time << " s\n";
         if (m_stop_on_convergence) {
             m_sim.time().request_stop(
                 "RANSConvergence: all monitor points converged");
@@ -565,7 +599,7 @@ void RANSConvergence::prepare_ascii_file()
         // apart
         f << "time samples_in_window window_full num_converged num_points "
              "worst_velocity_point worst_velocity_spread worst_velocity_tol "
-             "worst_tke_point worst_tke_spread worst_tke_tol "
+             "worst_tke_point worst_tke_spread worst_tke_tol hold_elapsed "
              "estimated_time_to_convergence\n";
         f.close();
     }
@@ -574,6 +608,7 @@ void RANSConvergence::prepare_ascii_file()
 void RANSConvergence::write_ascii(
     const int num_samples,
     const bool window_full,
+    const amrex::Real hold_elapsed,
     const int num_converged,
     const int worst_vel_point,
     const amrex::Real worst_vel_spread,
@@ -596,7 +631,8 @@ void RANSConvergence::write_ascii(
       << worst_vel_point << std::setw(m_width) << worst_vel_spread
       << std::setw(m_width) << worst_vel_tol << ' ' << worst_tke_point
       << std::setw(m_width) << worst_tke_spread << std::setw(m_width)
-      << worst_tke_tol << std::setw(m_width) << eta << '\n';
+      << worst_tke_tol << std::setw(m_width) << hold_elapsed
+      << std::setw(m_width) << eta << '\n';
     f.close();
 }
 
