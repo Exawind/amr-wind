@@ -9,6 +9,7 @@
 
 #include <cmath>
 #include <fstream>
+#include <limits>
 #include <iomanip>
 #include <utility>
 
@@ -93,6 +94,23 @@ void RANSConvergence::initialize()
             "RANSConvergence: " + m_label +
             ".window must be larger than the sample interval, otherwise the "
             "window holds a single sample and its spread is always zero.");
+    }
+    // Every convergence test divides the spread by this tolerance, so it has
+    // to be strictly positive. A zero absolute tolerance would divide by zero
+    // once the relative term vanished, which raises under the FPE traps the
+    // tests run with, and it is unsatisfiable in any case: the spread would
+    // have to be exactly zero
+    if (m_vel_abs_tol <= 0.0_rt || m_tke_abs_tol <= 0.0_rt) {
+        amrex::Abort(
+            "RANSConvergence: " + m_label + ".velocity_abs_tol and " + m_label +
+            ".tke_abs_tol must both be greater than zero. They are the floor "
+            "that keeps the test meaningful where the monitored quantity is "
+            "small; a value of zero can never be met.");
+    }
+    if (m_vel_rel_tol < 0.0_rt || m_tke_rel_tol < 0.0_rt) {
+        amrex::Abort(
+            "RANSConvergence: " + m_label + ".velocity_rel_tol and " + m_label +
+            ".tke_rel_tol must not be negative.");
     }
     if (m_min_samples < 2) {
         amrex::Abort(

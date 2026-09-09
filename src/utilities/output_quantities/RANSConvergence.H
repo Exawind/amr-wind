@@ -10,6 +10,9 @@
 #include "src/utilities/PostProcessing.H"
 #include "src/utilities/sampling/SamplerBase.H"
 #include "src/utilities/sampling/SamplingContainer.H"
+#include "AMReX_REAL.H"
+
+using namespace amrex::literals;
 
 namespace kynema_sgf::rans_convergence {
 

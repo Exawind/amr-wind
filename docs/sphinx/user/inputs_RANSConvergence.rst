@@ -104,6 +104,9 @@ unsatisfiable as ``tke`` approaches zero aloft. The combined form behaves as
 an absolute floor where the quantity is small and as a relative test where it
 is large.
 
+Both absolute tolerances must be greater than zero and neither relative
+tolerance may be negative; the monitor refuses to start otherwise.
+
 Start by running with :input_param:`convergence.stop_on_convergence` set to
 false on a case whose convergence you already trust. The monitor then reports
 the spreads at each check without ever stopping the run, which is the cheapest
@@ -202,7 +205,10 @@ Inputs
 
    **type:** Real, optional, default = 0.01
 
-   Absolute tolerance in m/s on the horizontal wind speed spread.
+   Absolute tolerance in m/s on the horizontal wind speed spread. Must be
+   greater than zero: it is the floor that keeps the test meaningful where the
+   speed is small, every check divides a spread by the resulting tolerance, and
+   a value of zero could never be met in any case.
 
 .. input_param:: convergence.velocity_rel_tol
 
@@ -215,7 +221,8 @@ Inputs
 
    **type:** Real, optional, default = 0.001
 
-   Absolute tolerance in m^2/s^2 on the turbulent kinetic energy spread.
+   Absolute tolerance in m^2/s^2 on the turbulent kinetic energy spread. Must
+   be greater than zero, for the same reason as the velocity floor above.
 
 .. input_param:: convergence.tke_rel_tol
 

@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cmath>
 #include <limits>
 #include <vector>
@@ -67,6 +68,24 @@ TEST(RANSConvergence, effective_tolerance_takes_the_larger_term)
     EXPECT_NEAR(
         rc::RANSConvergence::effective_tolerance(-10.0_rt, 0.01_rt, 0.01_rt),
         0.1_rt, close(0.1_rt));
+}
+
+TEST(RANSConvergence, effective_tolerance_stays_positive)
+{
+    // Every convergence test divides a spread by this value, so it must never
+    // return zero for a configuration the monitor accepts. The monitor rejects
+    // a non-positive absolute tolerance at startup, which is what makes this
+    // hold even where the relative term vanishes.
+    EXPECT_GT(
+        rc::RANSConvergence::effective_tolerance(0.0_rt, 1.0e-12_rt, 0.0_rt),
+        0.0_rt);
+    EXPECT_GT(
+        rc::RANSConvergence::effective_tolerance(1.0e30_rt, 1.0e-12_rt, 0.0_rt),
+        0.0_rt);
+    // A negative relative term cannot drag the result below the floor
+    EXPECT_NEAR(
+        rc::RANSConvergence::effective_tolerance(10.0_rt, 0.01_rt, -1.0_rt),
+        0.01_rt, close(0.01_rt));
 }
 
 TEST(RANSConvergence, envelope_fit_recovers_a_known_decay)
