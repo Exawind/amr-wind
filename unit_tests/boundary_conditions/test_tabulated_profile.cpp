@@ -286,4 +286,61 @@ TEST_F(TabulatedProfileTest, non_monotonic_heights_are_rejected)
     EXPECT_THROW(kynema_sgf::udf::TabulatedProfile{vel}, amrex::RuntimeError);
 }
 
+TEST_F(TabulatedProfileTest, reversing_normal_velocity_needs_inflow_outflow)
+{
+    populate_parameters();
+    // u enters through xlo low down and leaves higher up, as it does under veer
+    write_profile(
+        "tp_veer.txt",
+        "# z u v T\n"
+        "0.0   4.0  0.0  300.0\n"
+        "8.0  -4.0  0.0  308.0\n");
+    amrex::ParmParse pp("TabulatedProfile");
+    pp.add("filename", std::string("tp_veer.txt"));
+    initialize_mesh();
+
+    auto& vel = inflow_field("velocity", 3, {m_xlo});
+    EXPECT_THROW(kynema_sgf::udf::TabulatedProfile{vel}, amrex::RuntimeError);
+}
+
+TEST_F(TabulatedProfileTest, reversing_normal_velocity_is_allowed_on_mixed_face)
+{
+    populate_parameters();
+    write_profile(
+        "tp_veer_mio.txt",
+        "# z u v T\n"
+        "0.0   4.0  0.0  300.0\n"
+        "8.0  -4.0  0.0  308.0\n");
+    amrex::ParmParse pp("TabulatedProfile");
+    pp.add("filename", std::string("tp_veer_mio.txt"));
+    initialize_mesh();
+
+    auto& frepo = mesh().field_repo();
+    auto& vel = frepo.declare_field("velocity", 3, 1, 1);
+    vel.setVal(0.0_rt);
+    vel.bc_type()[m_xlo] = BC::mass_inflow_outflow;
+
+    const kynema_sgf::udf::TabulatedProfile profile(vel);
+    const auto err = max_error(
+        vel, mesh().Geom(0), profile, m_xlo, {-1.0_rt, 0.0_rt, 0.0_rt},
+        {4.0_rt, 0.0_rt, 0.0_rt});
+    EXPECT_NEAR(err, 0.0_rt, m_tol);
+}
+
+TEST_F(TabulatedProfileTest, outflow_everywhere_on_an_inflow_face_is_rejected)
+{
+    populate_parameters();
+    write_profile(
+        "tp_backwards.txt",
+        "# z u v T\n"
+        "0.0  -4.0  0.0  300.0\n"
+        "8.0  -4.0  0.0  308.0\n");
+    amrex::ParmParse pp("TabulatedProfile");
+    pp.add("filename", std::string("tp_backwards.txt"));
+    initialize_mesh();
+
+    auto& vel = inflow_field("velocity", 3, {m_xlo});
+    EXPECT_THROW(kynema_sgf::udf::TabulatedProfile{vel}, amrex::RuntimeError);
+}
+
 } // namespace kynema_sgf_tests

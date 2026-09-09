@@ -2,6 +2,7 @@
 #include "src/core/Field.H"
 #include "src/core/FieldRepo.H"
 #include "src/incflo_enums.H"
+#include "src/utilities/constants.H"
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_Print.H"
@@ -202,6 +203,55 @@ wanted_columns(const std::string& field_name, const int ncomp)
     return amrex::Vector<std::string>(ncomp, canonical_name(field_name));
 }
 
+/** Check that a pure inflow face really does have flow entering everywhere
+ *
+ *  A veering profile can reverse the normal component partway up the column,
+ *  which leaves part of a ``mass_inflow`` face acting as an outflow. That is
+ *  what ``mass_inflow_outflow`` is for, so say so rather than injecting flow
+ *  backwards through the boundary.
+ */
+void check_inflow_direction(
+    const amrex::Vector<amrex::Real>& vals,
+    const int offset,
+    const int nz,
+    const int ncomp,
+    const int face,
+    const std::string& fname)
+{
+    const int dir = face % AMREX_SPACEDIM;
+    const bool is_low = (face < AMREX_SPACEDIM);
+
+    // Flow enters through a low face when the normal component is positive
+    const amrex::Real into = is_low ? 1.0_rt : -1.0_rt;
+
+    bool enters = false;
+    bool leaves = false;
+    for (int k = 0; k < nz; ++k) {
+        const auto un = into * vals[(ncomp * (offset + k)) + dir];
+        if (un > constants::TIGHT_TOL) {
+            enters = true;
+        }
+        if (un < -constants::TIGHT_TOL) {
+            leaves = true;
+        }
+    }
+
+    if (leaves && enters) {
+        amrex::Abort(
+            "TabulatedProfile: the normal velocity tabulated in " + fname +
+            " changes sign over the column, so part of the " +
+            face_names[face] + " boundary is an outflow. Set " +
+            face_names[face] +
+            ".type = mass_inflow_outflow rather than mass_inflow.");
+    }
+    if (leaves) {
+        amrex::Abort(
+            "TabulatedProfile: the normal velocity tabulated in " + fname +
+            " is directed out of the domain everywhere on " + face_names[face] +
+            ", which is declared mass_inflow.");
+    }
+}
+
 } // namespace
 
 TabulatedProfile::TabulatedProfile(const Field& fld)
@@ -309,6 +359,10 @@ TabulatedProfile::TabulatedProfile(const Field& fld)
                 vals_all[(ncomp * (offset + k)) + n] =
                     (col < 0) ? 0.0_rt : prof.cols[col][k];
             }
+        }
+
+        if ((bct == BC::mass_inflow) && (fld.name() == "velocity")) {
+            check_inflow_direction(vals_all, offset, nz, ncomp, face, fname);
         }
 
         amrex::Print() << "TabulatedProfile: " << fld.name() << " on "
