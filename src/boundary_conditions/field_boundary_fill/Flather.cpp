@@ -377,6 +377,9 @@ void Flather::set_velocity(
         }
 
         const int idir = ori.coordDir();
+        if (idir == 2) {
+            continue;
+        }
         // Check if orientation aligns with supplied field and choose component
         bool skip_fill = false;
         int fcomp = 0;
