@@ -7,7 +7,6 @@
 #include "AMReX_ParallelDescriptor.H"
 #include "AMReX_REAL.H"
 
-#include <algorithm>
 #include <cmath>
 #include <fstream>
 #include <iomanip>
@@ -309,8 +308,11 @@ EnvelopeFit RANSConvergence::fit_envelope_decay(
 {
     EnvelopeFit fit;
 
+    if (times.size() != spreads.size()) {
+        return fit;
+    }
     const int n = static_cast<int>(times.size());
-    if (n != static_cast<int>(spreads.size()) || n < min_samples || n < 2) {
+    if (n < min_samples || n < 2) {
         return fit;
     }
     if (threshold <= 0.0_rt) {
@@ -318,10 +320,10 @@ EnvelopeFit RANSConvergence::fit_envelope_decay(
     }
     // A zero or negative spread has no logarithm. It also means the envelope
     // has already collapsed, so there is nothing left to extrapolate
-    if (std::any_of(spreads.begin(), spreads.end(), [](amrex::Real s) {
-            return s <= 0.0_rt;
-        })) {
-        return fit;
+    for (const auto spread : spreads) {
+        if (spread <= 0.0_rt) {
+            return fit;
+        }
     }
 
     // Ordinary least squares of ln(s) against t, which is the model
