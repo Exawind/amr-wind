@@ -548,4 +548,132 @@ TEST_F(TabulatedProfileTest, an_offset_conflicts_with_an_unaligned_interior)
     EXPECT_THROW(kynema_sgf::udf::TabulatedProfile{vel}, amrex::RuntimeError);
 }
 
+TEST_F(TabulatedProfileTest, a_trailing_word_is_rejected)
+{
+    populate_parameters();
+    write_profile(
+        "tp_e1.txt",
+        "# z u v T\\n0.0 1.0 2.0 300.0 junk\\n8.0 3.0 4.0 308.0 junk\\n");
+    amrex::ParmParse pp("TabulatedProfile");
+    pp.add("filename", std::string("tp_e1.txt"));
+    initialize_mesh();
+
+    auto& vel = inflow_field("velocity", 3, {m_xlo});
+    EXPECT_THROW(kynema_sgf::udf::TabulatedProfile{vel}, amrex::RuntimeError);
+}
+
+TEST_F(TabulatedProfileTest, a_word_where_a_number_belongs_is_rejected)
+{
+    populate_parameters();
+    write_profile(
+        "tp_e2.txt", "# z u v T\\n0.0 abc 2.0 300.0\\n8.0 3.0 4.0 308.0\\n");
+    amrex::ParmParse pp("TabulatedProfile");
+    pp.add("filename", std::string("tp_e2.txt"));
+    initialize_mesh();
+
+    auto& vel = inflow_field("velocity", 3, {m_xlo});
+    EXPECT_THROW(kynema_sgf::udf::TabulatedProfile{vel}, amrex::RuntimeError);
+}
+
+TEST_F(TabulatedProfileTest, a_nan_in_the_file_is_rejected)
+{
+    populate_parameters();
+    write_profile(
+        "tp_e3.txt", "# z u v T\\n0.0 nan 2.0 300.0\\n8.0 3.0 4.0 308.0\\n");
+    amrex::ParmParse pp("TabulatedProfile");
+    pp.add("filename", std::string("tp_e3.txt"));
+    initialize_mesh();
+
+    auto& vel = inflow_field("velocity", 3, {m_xlo});
+    EXPECT_THROW(kynema_sgf::udf::TabulatedProfile{vel}, amrex::RuntimeError);
+}
+
+TEST_F(TabulatedProfileTest, an_infinity_in_the_file_is_rejected)
+{
+    populate_parameters();
+    write_profile(
+        "tp_e4.txt", "# z u v T\\n0.0 inf 2.0 300.0\\n8.0 3.0 4.0 308.0\\n");
+    amrex::ParmParse pp("TabulatedProfile");
+    pp.add("filename", std::string("tp_e4.txt"));
+    initialize_mesh();
+
+    auto& vel = inflow_field("velocity", 3, {m_xlo});
+    EXPECT_THROW(kynema_sgf::udf::TabulatedProfile{vel}, amrex::RuntimeError);
+}
+
+TEST_F(TabulatedProfileTest, an_unrepresentable_number_is_rejected)
+{
+    populate_parameters();
+    write_profile(
+        "tp_e5.txt", "# z u v T\\n0.0 1e400 2.0 300.0\\n8.0 3.0 4.0 308.0\\n");
+    amrex::ParmParse pp("TabulatedProfile");
+    pp.add("filename", std::string("tp_e5.txt"));
+    initialize_mesh();
+
+    auto& vel = inflow_field("velocity", 3, {m_xlo});
+    EXPECT_THROW(kynema_sgf::udf::TabulatedProfile{vel}, amrex::RuntimeError);
+}
+
+TEST_F(TabulatedProfileTest, rows_of_different_widths_are_rejected)
+{
+    populate_parameters();
+    write_profile(
+        "tp_e6.txt", "# z u v T\\n0.0 1.0 2.0 300.0\\n8.0 3.0 4.0\\n");
+    amrex::ParmParse pp("TabulatedProfile");
+    pp.add("filename", std::string("tp_e6.txt"));
+    initialize_mesh();
+
+    auto& vel = inflow_field("velocity", 3, {m_xlo});
+    EXPECT_THROW(kynema_sgf::udf::TabulatedProfile{vel}, amrex::RuntimeError);
+}
+
+TEST_F(TabulatedProfileTest, a_file_with_no_data_is_rejected)
+{
+    populate_parameters();
+    write_profile("tp_e7.txt", "# z u v T\\n\\n# nothing follows\\n");
+    amrex::ParmParse pp("TabulatedProfile");
+    pp.add("filename", std::string("tp_e7.txt"));
+    initialize_mesh();
+
+    auto& vel = inflow_field("velocity", 3, {m_xlo});
+    EXPECT_THROW(kynema_sgf::udf::TabulatedProfile{vel}, amrex::RuntimeError);
+}
+
+TEST_F(TabulatedProfileTest, a_single_height_is_rejected)
+{
+    populate_parameters();
+    write_profile("tp_e8.txt", "# z u v T\\n0.0 1.0 2.0 300.0\\n");
+    amrex::ParmParse pp("TabulatedProfile");
+    pp.add("filename", std::string("tp_e8.txt"));
+    initialize_mesh();
+
+    auto& vel = inflow_field("velocity", 3, {m_xlo});
+    EXPECT_THROW(kynema_sgf::udf::TabulatedProfile{vel}, amrex::RuntimeError);
+}
+
+TEST_F(TabulatedProfileTest, a_repeated_column_name_is_rejected)
+{
+    populate_parameters();
+    write_profile(
+        "tp_e9.txt", "# z u u T\\n0.0 1.0 2.0 300.0\\n8.0 3.0 4.0 308.0\\n");
+    amrex::ParmParse pp("TabulatedProfile");
+    pp.add("filename", std::string("tp_e9.txt"));
+    initialize_mesh();
+
+    auto& vel = inflow_field("velocity", 3, {m_xlo});
+    EXPECT_THROW(kynema_sgf::udf::TabulatedProfile{vel}, amrex::RuntimeError);
+}
+
+TEST_F(TabulatedProfileTest, a_height_with_no_values_is_rejected)
+{
+    populate_parameters();
+    write_profile("tp_e10.txt", "# z u v T\\n0.0\\n8.0\\n");
+    amrex::ParmParse pp("TabulatedProfile");
+    pp.add("filename", std::string("tp_e10.txt"));
+    initialize_mesh();
+
+    auto& vel = inflow_field("velocity", 3, {m_xlo});
+    EXPECT_THROW(kynema_sgf::udf::TabulatedProfile{vel}, amrex::RuntimeError);
+}
+
 } // namespace kynema_sgf_tests

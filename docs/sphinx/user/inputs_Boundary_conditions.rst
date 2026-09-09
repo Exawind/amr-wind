@@ -246,6 +246,13 @@ Without such a header the column count decides the layout: four columns are
 ``z u v T`` and five are ``z u v T tke``. Any other width must carry a header.
 The assumed names are echoed at startup so the choice is visible in the log.
 
+The file is checked as it is read. A value that is not a number, is not
+finite, or is too large to represent stops the run, naming the line, the column
+and the offending text. So does a line with a different number of columns from
+the rest, a column name repeated in the header, a height that does not increase,
+and a file that holds fewer than two heights. Anything trailing on a line is an
+error rather than something quietly ignored.
+
 Each field takes the column named after it, so ``temperature`` reads ``T``
 (``theta`` and ``temperature`` are also accepted) and ``tke`` reads ``tke``.
 Velocity takes ``u``, ``v`` and ``w``; a missing ``w`` column is zero, but a

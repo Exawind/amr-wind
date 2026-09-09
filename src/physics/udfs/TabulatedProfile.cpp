@@ -10,6 +10,9 @@
 #include "AMReX_REAL.H"
 #include "AMReX_Utility.H"
 
+#include <cerrno>
+#include <cmath>
+#include <cstdlib>
 #include <fstream>
 #include <map>
 #include <sstream>
@@ -88,7 +91,10 @@ assumed_columns(const int ncols, const std::string& fname)
  *  A leading comment line whose first entry is the height is taken as the list
  *  of column names. Any other comment line is skipped.
  */
-bool parse_header(const std::string& line, amrex::Vector<std::string>& colnames)
+bool parse_header(
+    const std::string& line,
+    amrex::Vector<std::string>& colnames,
+    const std::string& fname)
 {
     std::istringstream iss(line.substr(line.find('#') + 1));
     amrex::Vector<std::string> names;
@@ -100,7 +106,62 @@ bool parse_header(const std::string& line, amrex::Vector<std::string>& colnames)
         return false;
     }
     colnames.assign(names.begin() + 1, names.end());
+    for (int i = 0; i < static_cast<int>(colnames.size()); ++i) {
+        for (int j = i + 1; j < static_cast<int>(colnames.size()); ++j) {
+            if (colnames[i] == colnames[j]) {
+                amrex::Abort(
+                    "TabulatedProfile: the header of " + fname + " names '" +
+                    colnames[i] + "' more than once");
+            }
+        }
+    }
     return true;
+}
+
+/** Where a problem was found, for a message the reader can act on
+ */
+std::string at(const std::string& fname, const int lineno, const int col = 0)
+{
+    auto where = fname + " line " + std::to_string(lineno);
+    if (col > 0) {
+        where += ", column " + std::to_string(col);
+    }
+    return where;
+}
+
+/** Read one number, saying exactly what is wrong when it is not one
+ *
+ *  Stream extraction stops at the first character it cannot use, which quietly
+ *  drops the rest of a line and turns a typo into a puzzling complaint about
+ *  the number of columns. Parse the whole token instead.
+ */
+amrex::Real parse_value(
+    const std::string& tok,
+    const std::string& fname,
+    const int lineno,
+    const int col)
+{
+    const char* begin = tok.c_str();
+    char* end = nullptr;
+    errno = 0;
+    const double val = std::strtod(begin, &end);
+
+    if (end != begin + tok.size()) {
+        amrex::Abort(
+            "TabulatedProfile: " + at(fname, lineno, col) + ": '" + tok +
+            "' is not a number");
+    }
+    if (errno == ERANGE) {
+        amrex::Abort(
+            "TabulatedProfile: " + at(fname, lineno, col) + ": '" + tok +
+            "' is too large or too small to represent");
+    }
+    if (!std::isfinite(val)) {
+        amrex::Abort(
+            "TabulatedProfile: " + at(fname, lineno, col) + ": '" + tok +
+            "' is not a finite value");
+    }
+    return static_cast<amrex::Real>(val);
 }
 
 /** Read a whitespace-separated profile file
@@ -114,9 +175,12 @@ ProfileData read_profile_file(const std::string& fname)
 
     ProfileData prof;
     amrex::Vector<amrex::Vector<amrex::Real>> rows;
+    amrex::Vector<int> row_lines;
     std::string line;
+    int lineno = 0;
 
     while (std::getline(infile, line)) {
+        ++lineno;
         const auto first = line.find_first_not_of(" \t\r\n");
         if (first == std::string::npos) {
             continue;
@@ -124,33 +188,51 @@ ProfileData read_profile_file(const std::string& fname)
         if (line[first] == '#') {
             // Only a header ahead of the data names the columns
             if (rows.empty() && !prof.has_header) {
-                prof.has_header = parse_header(line, prof.colnames);
+                prof.has_header = parse_header(line, prof.colnames, fname);
             }
             continue;
         }
 
         std::istringstream iss(line);
-        amrex::Vector<amrex::Real> row;
-        amrex::Real val;
-        while (iss >> val) {
-            row.push_back(val);
+        amrex::Vector<std::string> tokens;
+        std::string tok;
+        while (iss >> tok) {
+            tokens.push_back(tok);
         }
-        if (row.empty()) {
+        if (tokens.empty()) {
             continue;
+        }
+
+        amrex::Vector<amrex::Real> row;
+        row.reserve(tokens.size());
+        for (int c = 0; c < static_cast<int>(tokens.size()); ++c) {
+            row.push_back(parse_value(tokens[c], fname, lineno, c + 1));
+        }
+
+        if (row.size() < 2) {
+            amrex::Abort(
+                "TabulatedProfile: " + at(fname, lineno) +
+                " holds a height and no values");
         }
         if (!rows.empty() && (row.size() != rows[0].size())) {
             amrex::Abort(
-                "TabulatedProfile: rows of " + fname +
-                " do not all have the same number of columns");
+                "TabulatedProfile: " + at(fname, lineno) + " has " +
+                std::to_string(row.size()) + " columns but " +
+                at(fname, row_lines[0]) + " has " +
+                std::to_string(rows[0].size()));
         }
         rows.push_back(row);
+        row_lines.push_back(lineno);
     }
     infile.close();
 
+    if (rows.empty()) {
+        amrex::Abort("TabulatedProfile: " + fname + " holds no profile data");
+    }
     if (rows.size() < 2) {
         amrex::Abort(
             "TabulatedProfile: " + fname +
-            " must tabulate at least two heights");
+            " must tabulate at least two heights, but holds only one");
     }
 
     const int ncols = static_cast<int>(rows[0].size());
@@ -175,9 +257,9 @@ ProfileData read_profile_file(const std::string& fname)
         prof.z[k] = rows[k][0];
         if ((k > 0) && (prof.z[k] <= prof.z[k - 1])) {
             amrex::Abort(
-                "TabulatedProfile: heights in " + fname +
-                " must increase strictly, but row " + std::to_string(k + 1) +
-                " does not");
+                "TabulatedProfile: heights must increase strictly, but " +
+                at(fname, row_lines[k]) + " has " + std::to_string(prof.z[k]) +
+                " after " + std::to_string(prof.z[k - 1]));
         }
         for (int c = 0; c < ncols - 1; ++c) {
             prof.cols[c][k] = rows[k][c + 1];
