@@ -57,7 +57,7 @@ struct ProfileData
  */
 std::string canonical_name(const std::string& name)
 {
-    const auto lname = amrex::toLower(name);
+    auto lname = amrex::toLower(name);
     if ((lname == "t") || (lname == "theta") || (lname == "temp")) {
         return "temperature";
     }
@@ -283,7 +283,8 @@ wanted_columns(const std::string& field_name, const int ncomp)
         names.resize(ncomp);
         return names;
     }
-    return amrex::Vector<std::string>(ncomp, canonical_name(field_name));
+    amrex::Vector<std::string> names(ncomp, canonical_name(field_name));
+    return names;
 }
 
 /** Check that a pure inflow face really does have flow entering everywhere
@@ -452,7 +453,8 @@ TabulatedProfile::TabulatedProfile(const Field& fld)
 
     // Terrain lets the offset be checked against the ground it stands on
     std::string terrain_file;
-    if (!amrex::ParmParse("TerrainDrag").query("terrain_file", terrain_file)) {
+    if (amrex::ParmParse("TerrainDrag").query("terrain_file", terrain_file) ==
+        0) {
         amrex::ParmParse("ImmersedTerrain").query("terrain_file", terrain_file);
     }
     const auto& geom = fld.repo().mesh().Geom(0);
@@ -522,7 +524,7 @@ TabulatedProfile::TabulatedProfile(const Field& fld)
             continue;
         }
 
-        if (cache.find(fname) == cache.end()) {
+        if (!cache.contains(fname)) {
             auto prof = read_profile_file(fname);
 
             if (!prof.has_header) {
