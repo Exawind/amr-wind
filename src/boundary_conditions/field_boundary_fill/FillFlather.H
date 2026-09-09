@@ -37,13 +37,6 @@ public:
         const amrex::Vector<amrex::BCRec>& /* unused */,
         FieldState fstate = FieldState::New) override;
 
-    void fillpatch_from_coarse(
-        int lev,
-        amrex::Real time,
-        amrex::MultiFab& mfab,
-        const amrex::IntVect& nghost,
-        FieldState fstate = FieldState::New) override;
-
     void fillphysbc(
         int lev,
         amrex::Real time,
