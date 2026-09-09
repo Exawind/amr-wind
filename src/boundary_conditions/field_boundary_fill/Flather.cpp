@@ -577,7 +577,7 @@ void Flather::set_velocity(
                     ori.isLow() ? scaled_vel <= 0.0_rt : scaled_vel >= 0.0_rt;
                 const bool inflow_any_liq = !outflow && boundary_vof > tiny;
                 const bool outflow_only_liq =
-                    outflow && interior_vof < 1.0_rt - tiny;
+                    outflow && interior_vof >= 1.0_rt - tiny;
                 if (boundary_h > tiny && (outflow_only_liq || inflow_any_liq ||
                                           (outflow && override_interior))) {
                     arr(iv, fcomp) = scaled_vel;
