@@ -54,3 +54,36 @@ This section is for setting turbulence model parameters
      gradient is taken between the surface cell and the wall-side cell across
      the patch, with the same floor of 0.01 1/s as ``TerrainDrag``.
      Requires ``ImmersedTerrain`` in :input_param:`incflo.physics`.
+
+.. input_param:: KLAxell.terrain_model
+
+   **type:** String, optional, default = ``TerrainDrag``
+
+   Terrain physics the ``KLAxell`` model and its ``KransAxell`` TKE source
+   couple to. With terrain the mixing length uses the height above the
+   terrain, the eddy viscosity and the TKE production are zero inside the
+   terrain, the TKE of the first fluid cells is relaxed toward the log-law
+   value :math:`(u_*^3/C_\mu^3 + B)^{2/3}` and the TKE inside the terrain is
+   damped.
+
+   - ``TerrainDrag``: uses the ``terrain_blank``, ``terrain_drag``,
+     ``terrain_height`` and ``terrainz0`` fields of the
+     :ref:`TerrainDrag <inputs_terraindrag>` physics, with the friction
+     velocity from the cell above at :math:`1.5 \Delta z` and the limited
+     explicit damping coefficient. Inactive when those fields do not exist.
+   - ``ImmersedTerrain``: uses the fields of the
+     :ref:`ImmersedTerrain <inputs_immersedterrain>` physics in separate
+     kernels. Viscosity, production and dissipation are weighted by one minus
+     the drag weight of the cell (:input_param:`ImmersedTerrain.drag_weight`);
+     the log-law TKE target is averaged over the same wall patches as the
+     ``ImmersedDragForcing`` wall model (:input_param:`ImmersedDragForcing.wall_model`,
+     :input_param:`ImmersedDragForcing.reference_distance`,
+     :input_param:`ImmersedDragForcing.minimum_z0`,
+     :input_param:`ImmersedTerrain.solid_threshold`) with the relaxation time
+     :input_param:`ImmersedDragForcing.bc_forcing_time_factor` times the step;
+     the damping inside the terrain uses the rate
+     :math:`w_\mathrm{solid} C_d/\Delta z` with
+     :input_param:`ImmersedDragForcing.drag_coefficient`, integrated exactly
+     over the step. The lateral TKE sponge of the ``TerrainDrag`` path is not
+     applied. Requires ``ImmersedTerrain`` in :input_param:`incflo.physics`.
+

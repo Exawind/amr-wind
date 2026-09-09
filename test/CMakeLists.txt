@@ -338,6 +338,7 @@ if(KYNEMA_SGF_ENABLE_NETCDF)
   add_test_re(abl_sampling_netcdf)
   add_test_re(abl_virtual_lidar)
   add_test_re(abl_wallrans_neutral)
+  add_test_re(abl_wallrans_neutral_immersed)
   add_test_re(nrel_precursor)
 endif()
 

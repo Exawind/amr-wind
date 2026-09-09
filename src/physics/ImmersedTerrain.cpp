@@ -268,6 +268,15 @@ void ImmersedTerrain::initialize_fields(int level, const amrex::Geometry& geom)
             }
         });
     amrex::Gpu::streamSynchronize();
+    // Ghost cells across periodic boundaries take the wrapped values instead
+    // of the clamped interpolation of the terrain file; physical-boundary
+    // ghosts keep the analytic values from pass 1
+    fraction.FillBoundary(geom.periodicity());
+    surface.FillBoundary(geom.periodicity());
+    roughness.FillBoundary(geom.periodicity());
+    if (has_rate) {
+        (*m_terrain_drag_rate)(level).FillBoundary(geom.periodicity());
+    }
 
     // Pass 2: cell classification. A fluid cell becomes a surface cell if any
     // of its six face neighbors is mostly solid; this catches the side walls

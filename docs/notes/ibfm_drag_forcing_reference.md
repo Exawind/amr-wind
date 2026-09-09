@@ -247,6 +247,47 @@ speed gradient between the cell and the wall-side cell mirrored from the referen
 Unit test: `unit_tests/wind_energy/test_immersed_kosovic.cpp`; regression case
 `abl_kosovic_neutral_immersed` (NetCDF block, next to `abl_kosovic_neutral_ib`).
 
+### 4.5 KLAxell / KransAxell terrain treatment (`KLAxell.cpp`, `KransAxell.cpp`, 2026-09-08)
+
+Legacy (TerrainDrag fields): mixing length from z - h (floored at dz/2), mu_t and the TKE source
+multiplied by `1 - terrain_blank`, TKE in drag cells relaxed to `(u*^3/Cmu^3 + B)^(2/3)` with u*
+from the cell above at 1.5 dz on the time scale tau_f dt, TKE inside blanked cells damped with the
+limited coefficient `min(10/(dz |u|), 100/dz) |u|`, mesoscale sponge relative to the terrain, and an
+optional lateral sponge.
+
+`KLAxell.terrain_model = ImmersedTerrain` (default `TerrainDrag`, legacy kernels untouched) runs
+separate kernels: weights `1 - w_solid` (drag weight), log-law TKE target averaged over the shared
+wall patches (bottom-domain fluid cells get a plain bottom patch), damping at `w_solid Cd/dz`
+integrated exactly (`Cd` = `ImmersedDragForcing.drag_coefficient`), no lateral sponge. Unit test
+`unit_tests/wind_energy/test_immersed_klaxell.cpp`; regression case `abl_wallrans_neutral_immersed`
+(Gaussian hill, NetCDF block).
+
+### 4.6 Latent bug found by the hill case, and a ghost-cell audit (2026-09-08)
+
+`ABLWallFunction.cpp` (velocity and temperature `wall_model` BC at zlo) computes the ghost value as
+`blankTerrain * tau * rho / mu_eff`. With terrain covering the floor and `transport.viscosity = 0`,
+both Kosovic and KLAxell set `mu_eff = 0` in those cells, so the BC was `0 * x / 0 = NaN`, and the
+NaN spread through the projection to the whole domain within one step. The old TerrainDrag + KLAxell
+path fails the same way on the same hill (checked: it dies at step 1); the existing regression cases
+never hit it because their terrain files are flat at z = 0. Fix: `inv_mu = mu > 0 ? 1/mu : 0` (and the
+same for the temperature diffusivity), i.e. no wall stress where the effective viscosity vanishes.
+
+Ghost-cell audit of every kernel touched by the PR (all terrain fields carry one ghost cell):
+- `ImmersedTerrain` pass 1 fills fraction/surface/roughness/drag-rate over the grown boxes analytically;
+  pass 2 (mask, six neighbours) and pass 3 (face factors, low cell of each face) read at most one cell
+  away, on valid boxes. Ghosts below the floor are forced to fluid on purpose. Added `FillBoundary`
+  with the geometry periodicity after pass 1 so that periodic seams use the wrapped values instead of
+  the clamped file interpolation.
+- `ImmersedWallModel::wall_patches` reads fraction at +-1, surface at the reference cell (+-1),
+  velocity/temperature at the reference cell (state fields have 2-3 ghosts).
+- `ImmersedDragForcing`, `ImmersedDragTempForcing`, `Kosovic`, `KLAxell`, `KransAxell` kernels run on
+  valid boxes; neighbour reads are the reference cell and its mirror (+-1).
+- Projection: velocity divide and sigma on valid cells only; `rho_eff` built on valid cells for the
+  nodal projection and on one ghost for the MAC face average (`terrain_drag_rate` has one ghost).
+  `immersed_effective_density` scales over min(ngrow) after an earlier out-of-bounds fix.
+- Diffusion: `apply_immersed_interface` multiplies the face coefficients on valid faces only (both
+  MultiFabs have zero ghosts).
+
 ---
 
 ## 5. Convergence check: laminar immersed box (2026-09-05)

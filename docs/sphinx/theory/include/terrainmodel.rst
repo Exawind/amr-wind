@@ -183,6 +183,18 @@ the surface cells: the viscosity and the non-linear term are weighted by :math:`
 and the log-law value is averaged over the wall patches of the surface cell, with the same
 reference cell, distance and normal as the wall model (six faces or surface normal). The
 default ``TerrainDrag`` keeps the binary blanking and the drag-cell treatment above the terrain.
+The ``KLAxell`` RANS model and its ``KransAxell`` TKE source offer the same switch
+(``KLAxell.terrain_model``): the mixing length uses the height above the terrain, viscosity
+and TKE production are weighted by :math:`1 - w_\mathrm{solid}`, the TKE of the surface cells
+is relaxed toward the log-law value :math:`(u_*^3/C_\mu^3 + B)^{2/3}` on the wall patches, and the
+TKE inside the terrain is damped at the drag rate, integrated exactly in time.
+
+**Wall-model boundary condition over terrain.** The ABL ``wall_model`` boundary condition at the
+domain floor converts the wall stress into a velocity gradient by dividing by the effective
+viscosity of the first cell. Where the terrain covers the floor and the molecular viscosity is
+zero, both turbulence models set that viscosity to zero, and the previous code produced 0/0 there
+for any terrain that reaches the bottom of the domain. The stress and heat-flux conditions are now
+set to zero where the effective viscosity vanishes.
 
 **Laminar channel verification.** For plane Poiseuille flow with an immersed flat bottom wall
 between cell centers and a no-slip top wall, the combination ``implicit_projection``,

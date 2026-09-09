@@ -15,6 +15,7 @@ target_sources(${kynema_sgf_unit_test_exe_name} PRIVATE
   test_immersed_interface_diffusion.cpp
   test_immersed_wall_mms.cpp
   test_immersed_kosovic.cpp
+  test_immersed_klaxell.cpp
   test_abl_forest.cpp
   )
 
