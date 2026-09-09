@@ -212,13 +212,13 @@ public:
         Field& field,
         const amrex::AmrCore& mesh,
         const SimTime& time,
-        const BCOpCreator& bc_op,
+        BCOpCreator bc_op,
         FieldInterpolator itype = FieldInterpolator::CellConsLinear,
         FieldInterpolator face_itype = FieldInterpolator::FaceDivFree)
         : m_time(time)
         , m_mesh(mesh)
         , m_field(field)
-        , m_op(bc_op)
+        , m_op(std::move(bc_op))
         , m_mapper(field_impl::get_interpolation_operator(itype))
         , m_face_mapper(field_impl::get_interpolation_operator(face_itype))
     {
