@@ -178,7 +178,7 @@ TEST_F(FlatherBoundaryAverageTest, accumulate_boundary_multilevel)
         EXPECT_NEAR(ylo_uh.host_data(lev)[0], -v0 * m_wlev, tol);
         EXPECT_NEAR(yhi_uh.host_data(lev)[yhi_idx], 0.0_rt, tol);
 
-        const auto dz = (8.0_rt / (m_nx * (lev + 1)));
+        const auto dz = (8.0_rt / (m_nx << lev));
 
         // Liquid only
         flather.accumulate_boundary(
@@ -277,6 +277,120 @@ TEST_F(
 
         EXPECT_NEAR(xlo_uh.host_data(lev)[0], u0_mac * m_wlev, tol);
         EXPECT_NEAR(ylo_uh.host_data(lev)[0], v0_mac * m_wlev, tol);
+    }
+}
+
+class FlatherThreeLevelTest : public MeshTest
+{
+protected:
+    void populate_parameters() override
+    {
+        MeshTest::populate_parameters();
+
+        {
+            amrex::ParmParse pp("geometry");
+            amrex::Vector<amrex::Real> problo{{0.0_rt, 0.0_rt, 0.0_rt}};
+            amrex::Vector<amrex::Real> probhi{{8.0_rt, 8.0_rt, 8.0_rt}};
+            pp.addarr("prob_lo", problo);
+            pp.addarr("prob_hi", probhi);
+            amrex::Vector<int> periodic{{0, 0, 0}};
+            pp.addarr("is_periodic", periodic);
+        }
+        {
+            amrex::ParmParse pp("amr");
+            const amrex::Vector<int> ncell{{m_nx, m_nx, m_nx}};
+            pp.add("max_level", 2);
+            pp.add("max_grid_size", m_nx);
+            pp.add("blocking_factor", 2);
+            pp.addarr("n_cell", ncell);
+        }
+
+        // Two levels of refinement, nested so that the finest level is two
+        // refinement ratios removed from the coarsest
+        std::stringstream ss;
+        ss << "2 // Number of levels" << '\n';
+        ss << "1 // Number of boxes at this level" << '\n';
+        ss << "0 0 2 4 8 6" << '\n';
+        ss << "1 // Number of boxes at this level" << '\n';
+        ss << "0 0 3 2 8 5" << '\n';
+
+        create_mesh_instance<RefineMesh>();
+        std::unique_ptr<kynema_sgf::CartBoxRefinement> box_refine(
+            new kynema_sgf::CartBoxRefinement(sim()));
+        box_refine->read_inputs(mesh(), ss);
+
+        if (mesh<RefineMesh>() != nullptr) {
+            mesh<RefineMesh>()->refine_criteria_vec().push_back(
+                std::move(box_refine));
+        }
+    }
+
+    const int m_nx{32};
+    const amrex::Real m_wlev{4.07_rt};
+};
+
+TEST_F(FlatherThreeLevelTest, accumulate_boundary_index_translation)
+{
+    constexpr amrex::Real u0 = 2.0_rt;
+    constexpr amrex::Real v0 = 3.0_rt;
+    constexpr amrex::Real tol =
+        std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
+
+    populate_parameters();
+    initialize_mesh();
+
+    auto& repo = mesh().field_repo();
+    auto& velocity = repo.declare_field("velocity", 3, 1);
+    repo.declare_face_normal_field({"u_mac", "v_mac", "w_mac"}, 1, 1, 1);
+    auto& vof = repo.declare_field("vof", 1, 1);
+
+    // Negative velocity makes xlo and ylo the outflow boundaries, so the
+    // interior sums are not clipped to zero
+    velocity.setVal(-u0, 0, 1, 1);
+    velocity.setVal(-v0, 1, 1, 1);
+    velocity.setVal(0.0_rt, 2, 1, 1);
+    initialize_vof(vof, mesh().Geom(), m_wlev);
+
+    kynema_sgf::Flather flather(sim());
+
+    const int nlevels = repo.num_active_levels();
+    ASSERT_EQ(nlevels, 3);
+    const int finest = nlevels - 1;
+
+    kynema_sgf::MultiLevelVector xlo_uh;
+    kynema_sgf::MultiLevelVector xlo_h;
+    kynema_sgf::MultiLevelVector ylo_uh;
+    kynema_sgf::MultiLevelVector ylo_h;
+
+    xlo_uh.resize(1, mesh().Geom());
+    xlo_h.resize(1, mesh().Geom());
+    ylo_uh.resize(0, mesh().Geom());
+    ylo_h.resize(0, mesh().Geom());
+
+    // Accumulating on the finest level draws contributions from levels that
+    // are one and two refinement ratios coarser
+    flather.accumulate_boundary(
+        finest, 0, -1, true, xlo_uh, xlo_h, false, kynema_sgf::FieldState::New);
+    flather.accumulate_boundary(
+        finest, 1, -1, true, ylo_uh, ylo_h, false, kynema_sgf::FieldState::New);
+
+    ASSERT_EQ(xlo_h.ncells(finest), m_nx * 4);
+    ASSERT_EQ(ylo_h.ncells(finest), m_nx * 4);
+
+    // Each column is covered by exactly one level, so a coarse index must map
+    // onto a contiguous range of fine indices with no gaps and no overlap.
+    // A gap leaves a column short and an overlap double counts it.
+    for (int n = 0; n < xlo_h.ncells(finest); ++n) {
+        EXPECT_NEAR(xlo_h.host_data(finest)[n], m_wlev, tol)
+            << "xlo liquid height, column " << n;
+        EXPECT_NEAR(xlo_uh.host_data(finest)[n], -u0 * m_wlev, tol)
+            << "xlo depth-integrated velocity, column " << n;
+    }
+    for (int n = 0; n < ylo_h.ncells(finest); ++n) {
+        EXPECT_NEAR(ylo_h.host_data(finest)[n], m_wlev, tol)
+            << "ylo liquid height, column " << n;
+        EXPECT_NEAR(ylo_uh.host_data(finest)[n], -v0 * m_wlev, tol)
+            << "ylo depth-integrated velocity, column " << n;
     }
 }
 

@@ -100,7 +100,12 @@ void Flather::accumulate_boundary(
     // Loop through current level and all below
     for (int lev = current_level; lev >= 0; --lev) {
 
-        const auto rr = m_mesh.refRatio(lev)[1 - idir];
+        // Cumulative refinement ratio, tangent to the boundary, between this
+        // level and the current level
+        int rr = 1;
+        for (int flev = lev; flev < current_level; ++flev) {
+            rr *= m_mesh.refRatio(flev)[1 - idir];
+        }
 
         amrex::iMultiFab level_mask;
         if (lev < current_level) {
@@ -178,11 +183,8 @@ void Flather::accumulate_boundary(
                 // This index is tangent to the boundary
                 const int idx_lev = (idir == 0) ? j : i;
                 // Convert to current level indices
-                const int idx_min =
-                    idx_lev + idx_lev * (rr - 1) * (current_level - lev);
-                const int idx_max =
-                    idx_min +
-                    amrex::max<int>(0, rr * (current_level - lev) - 1);
+                const int idx_min = idx_lev * rr;
+                const int idx_max = idx_min + rr - 1;
 
                 for (int idx = idx_min; idx <= idx_max; ++idx) {
                     const auto liquid_height =
