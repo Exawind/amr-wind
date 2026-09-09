@@ -27,11 +27,11 @@ public:
         FieldState fstate = FieldState::New) override;
 
     void fillpatch_from_coarse(
-        int lev,
-        amrex::Real time,
-        amrex::MultiFab& mfab,
-        const amrex::IntVect& nghost,
-        FieldState fstate = FieldState::New) override
+        int /* lev */,
+        amrex::Real /* time */,
+        amrex::MultiFab& /* mfab */,
+        const amrex::IntVect& /* nghost */,
+        FieldState /* fstate */) override
     {}
 
     void fillpatch_sibling_fields(
