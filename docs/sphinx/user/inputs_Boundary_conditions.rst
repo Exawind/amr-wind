@@ -172,7 +172,7 @@ Unlike the profiles above, it applies to any field: velocity, temperature,
    TabulatedProfile.filename   = inflow_profile.txt
 
 File format
-~~~~~~~~~~~
+^^^^^^^^^^^
 
 One row per height, whitespace separated, with heights strictly increasing.
 An optional comment line naming the columns may precede the data:
@@ -201,7 +201,7 @@ value is held rather than extrapolated.
    which it is.
 
 Wind direction and veer
-~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^
 
 A profile may be given per face, so that the inflow faces follow the wind. A
 face without one falls back to the constant value set for that face.
@@ -247,10 +247,24 @@ face is refused, since it would drive flow backwards through the boundary.
 
    Ground height for one face, overriding ``TabulatedProfile.zoffset``.
 
-.. note::
-   Only a uniform lift is supported. Ground that varies along a face would vary
-   the inflow area with it, and the inflow-outflow solvability correction would
-   then rescale the profile that was asked for.
+.. input_param:: TabulatedProfile.ground_tolerance
+
+   **type:** Real, optional, default = the cell height at level 0
+
+   How far the ground may vary along a face, and how far the offset may sit
+   from it, before the run is refused.
+
+Only a uniform lift is supported. Ground that varies along a face would vary
+the inflow area with it, and the inflow-outflow solvability correction would
+then rescale the profile that was asked for. When a terrain file is given
+through ``TerrainDrag.terrain_file`` the ground along each inflow face is
+checked against the offset, and the run stops if the face is not level or if
+the offset is not the height it stands at.
+
+The interior has to be measured from the same place as the boundary. Setting
+an offset while the interior is initialized from a profile measured from the
+bottom of the domain, that is with ``ABL.initial_wind_profile`` on and
+``ABL.terrain_aligned_profile`` off, is refused for that reason.
 
 .. note::
    Heights are measured in the domain coordinate, so this profile does not

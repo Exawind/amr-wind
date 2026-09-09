@@ -77,6 +77,31 @@ amrex::Real max_error(
     return error;
 }
 
+//! Write a flat grid file whose ground rises linearly across the domain
+void write_terrain(
+    const std::string& fname,
+    const amrex::Real z_at_ylo,
+    const amrex::Real z_at_yhi)
+{
+    std::ofstream outfile(fname);
+    const amrex::Vector<amrex::Real> xs{{0.0_rt, 4.0_rt, 8.0_rt}};
+    const amrex::Vector<amrex::Real> ys{{0.0_rt, 4.0_rt, 8.0_rt}};
+    outfile << "3\n3\n";
+    for (const auto& x : xs) {
+        outfile << x << "\n";
+    }
+    for (const auto& y : ys) {
+        outfile << y << "\n";
+    }
+    // Indexed [i * ny + j], so x varies slowest
+    for (int i = 0; i < 3; ++i) {
+        for (const auto& y : ys) {
+            outfile << z_at_ylo + ((z_at_yhi - z_at_ylo) * y / 8.0_rt) << "\n";
+        }
+    }
+    outfile.close();
+}
+
 } // namespace
 
 class TabulatedProfileTest : public MeshTest
@@ -423,6 +448,104 @@ TEST_F(TabulatedProfileTest, a_reversal_the_domain_never_reaches_is_allowed)
 
     auto& vel = inflow_field("velocity", 3, {m_xlo});
     EXPECT_NO_THROW(kynema_sgf::udf::TabulatedProfile{vel});
+}
+
+TEST_F(TabulatedProfileTest, offset_must_match_the_ground_it_stands_on)
+{
+    populate_parameters();
+    write_profile(
+        "tp_g1.txt",
+        "# z u v T\n"
+        "0.0   4.0  0.0  300.0\n"
+        "8.0   4.0  0.0  308.0\n");
+    write_terrain("tp_terrain_flat.amrwind", 3.0_rt, 3.0_rt);
+    {
+        amrex::ParmParse pp("TabulatedProfile");
+        pp.add("filename", std::string("tp_g1.txt"));
+    }
+    {
+        amrex::ParmParse pp("TerrainDrag");
+        pp.add("terrain_file", std::string("tp_terrain_flat.amrwind"));
+    }
+    initialize_mesh();
+
+    // The ground is at 3 but no offset was given
+    auto& vel = inflow_field("velocity", 3, {m_xlo});
+    EXPECT_THROW(kynema_sgf::udf::TabulatedProfile{vel}, amrex::RuntimeError);
+}
+
+TEST_F(TabulatedProfileTest, offset_matching_the_ground_is_accepted)
+{
+    populate_parameters();
+    write_profile(
+        "tp_g2.txt",
+        "# z u v T\n"
+        "0.0   4.0  0.0  300.0\n"
+        "8.0   4.0  0.0  308.0\n");
+    write_terrain("tp_terrain_flat2.amrwind", 3.0_rt, 3.0_rt);
+    {
+        amrex::ParmParse pp("TabulatedProfile");
+        pp.add("filename", std::string("tp_g2.txt"));
+        pp.add("zoffset", 3.0_rt);
+    }
+    {
+        amrex::ParmParse pp("TerrainDrag");
+        pp.add("terrain_file", std::string("tp_terrain_flat2.amrwind"));
+    }
+    initialize_mesh();
+
+    auto& vel = inflow_field("velocity", 3, {m_xlo});
+    EXPECT_NO_THROW(kynema_sgf::udf::TabulatedProfile{vel});
+}
+
+TEST_F(TabulatedProfileTest, ground_varying_along_the_face_is_rejected)
+{
+    populate_parameters();
+    write_profile(
+        "tp_g3.txt",
+        "# z u v T\n"
+        "0.0   4.0  0.0  300.0\n"
+        "8.0   4.0  0.0  308.0\n");
+    // Rising across the span, so the xlo face does not stand on level ground
+    write_terrain("tp_terrain_slope.amrwind", 0.0_rt, 8.0_rt);
+    {
+        amrex::ParmParse pp("TabulatedProfile");
+        pp.add("filename", std::string("tp_g3.txt"));
+        pp.add("zoffset", 4.0_rt);
+    }
+    {
+        amrex::ParmParse pp("TerrainDrag");
+        pp.add("terrain_file", std::string("tp_terrain_slope.amrwind"));
+    }
+    initialize_mesh();
+
+    auto& vel = inflow_field("velocity", 3, {m_xlo});
+    EXPECT_THROW(kynema_sgf::udf::TabulatedProfile{vel}, amrex::RuntimeError);
+}
+
+TEST_F(TabulatedProfileTest, an_offset_conflicts_with_an_unaligned_interior)
+{
+    populate_parameters();
+    write_profile(
+        "tp_g4.txt",
+        "# z u v T\n"
+        "0.0   4.0  0.0  300.0\n"
+        "8.0   4.0  0.0  308.0\n");
+    {
+        amrex::ParmParse pp("TabulatedProfile");
+        pp.add("filename", std::string("tp_g4.txt"));
+        pp.add("zoffset", 3.0_rt);
+    }
+    {
+        // The interior profile is measured from the bottom of the domain
+        amrex::ParmParse pp("ABL");
+        pp.add("initial_wind_profile", true);
+        pp.add("terrain_aligned_profile", false);
+    }
+    initialize_mesh();
+
+    auto& vel = inflow_field("velocity", 3, {m_xlo});
+    EXPECT_THROW(kynema_sgf::udf::TabulatedProfile{vel}, amrex::RuntimeError);
 }
 
 } // namespace kynema_sgf_tests

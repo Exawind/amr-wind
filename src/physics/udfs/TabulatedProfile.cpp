@@ -3,6 +3,7 @@
 #include "src/core/FieldRepo.H"
 #include "src/incflo_enums.H"
 #include "src/utilities/constants.H"
+#include "src/utilities/io_utils.H"
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_Print.H"
@@ -266,6 +267,76 @@ void check_inflow_direction(
     }
 }
 
+/** Check the ground along a face against the offset the profile was given
+ *
+ *  Only a uniform lift is supported, so the ground along an inflow face has to
+ *  be flat, and the offset has to be the height it sits at. Ground that varies
+ *  along the face would vary the inflow area with it, and the inflow-outflow
+ *  solvability correction would then rescale the profile that was asked for.
+ */
+void check_ground_height(
+    const std::string& terrain_file,
+    const amrex::Geometry& geom,
+    const int face,
+    const amrex::Real zoffset,
+    const amrex::Real tol)
+{
+    const int dir = face % AMREX_SPACEDIM;
+    if (dir == AMREX_SPACEDIM - 1) {
+        return;
+    }
+
+    amrex::Vector<amrex::Real> xterrain;
+    amrex::Vector<amrex::Real> yterrain;
+    amrex::Vector<amrex::Real> zterrain;
+    ioutils::read_flat_grid_file(terrain_file, xterrain, yterrain, zterrain);
+
+    const auto problo = geom.ProbLoArray();
+    const auto probhi = geom.ProbHiArray();
+    const auto dx = geom.CellSizeArray();
+
+    // Sample where the boundary cells sit, along the face and at its own edge
+    const int tdir = (dir == 0) ? 1 : 0;
+    const amrex::Real ncoord =
+        (face < AMREX_SPACEDIM) ? problo[dir] : probhi[dir];
+    const int npts = geom.Domain().length(tdir);
+
+    amrex::Real zmin = constants::LARGE_NUM;
+    amrex::Real zmax = -constants::LARGE_NUM;
+    for (int n = 0; n < npts; ++n) {
+        const auto tcoord = problo[tdir] + ((n + 0.5_rt) * dx[tdir]);
+        const auto xco = (dir == 0) ? ncoord : tcoord;
+        const auto yco = (dir == 0) ? tcoord : ncoord;
+        const auto zg = interp::bilinear(
+            xterrain.data(), xterrain.data() + xterrain.size(), yterrain.data(),
+            yterrain.data() + yterrain.size(), zterrain.data(), xco, yco);
+        zmin = amrex::min(zmin, zg);
+        zmax = amrex::max(zmax, zg);
+    }
+
+    if ((zmax - zmin) > tol) {
+        amrex::Abort(
+            "TabulatedProfile: the ground along " + face_names[face] +
+            " varies between " + std::to_string(zmin) + " and " +
+            std::to_string(zmax) +
+            ", and only a uniform lift is supported. Raise "
+            "TabulatedProfile.ground_tolerance to accept this face, or drive "
+            "it with a boundary plane instead.");
+    }
+
+    const auto zground = 0.5_rt * (zmin + zmax);
+    if (std::abs(zground - zoffset) > tol) {
+        amrex::Abort(
+            "TabulatedProfile: the ground on " + face_names[face] + " is at " +
+            std::to_string(zground) +
+            " but the profile is offset "
+            "by " +
+            std::to_string(zoffset) +
+            ". Set the offset to the ground height so that the profile and the "
+            "interior are measured from the same place.");
+    }
+}
+
 } // namespace
 
 TabulatedProfile::TabulatedProfile(const Field& fld)
@@ -288,6 +359,23 @@ TabulatedProfile::TabulatedProfile(const Field& fld)
     // boundary that sits on uniformly raised ground
     amrex::Real default_zoffset = 0.0_rt;
     pp.query("zoffset", default_zoffset);
+
+    // The interior profile and the boundary have to be measured from the same
+    // place, or the inflow fights the interior at the boundary
+    amrex::ParmParse pp_abl("ABL");
+    bool init_wind_profile = false;
+    bool terrain_aligned = false;
+    pp_abl.query("initial_wind_profile", init_wind_profile);
+    pp_abl.query("terrain_aligned_profile", terrain_aligned);
+
+    // Terrain lets the offset be checked against the ground it stands on
+    std::string terrain_file;
+    if (!amrex::ParmParse("TerrainDrag").query("terrain_file", terrain_file)) {
+        amrex::ParmParse("ImmersedTerrain").query("terrain_file", terrain_file);
+    }
+    const auto& geom = fld.repo().mesh().Geom(0);
+    amrex::Real ground_tol = geom.CellSize(AMREX_SPACEDIM - 1);
+    pp.query("ground_tolerance", ground_tol);
 
     // The existing 1-D RANS profile file puts w in the fourth column where
     // this one puts temperature, so the two cannot be read the same way
@@ -319,6 +407,25 @@ TabulatedProfile::TabulatedProfile(const Field& fld)
         amrex::Real zoffset = default_zoffset;
         pp_face.query("tabulated_profile_zoffset", zoffset);
         m_op.zoffset[face] = zoffset;
+
+        if (init_wind_profile && !terrain_aligned && (zoffset != 0.0_rt)) {
+            amrex::Abort(
+                "TabulatedProfile: the interior is initialized from a profile "
+                "measured from the bottom of the domain, since "
+                "ABL.terrain_aligned_profile is off, but the boundary on " +
+                face_names[face] +
+                " is offset to raised ground. Either align the initial profile "
+                "with the terrain or drop the offset.");
+        }
+        if (!terrain_file.empty()) {
+            std::ifstream terrain_reader(terrain_file, std::ios::in);
+            const bool have_terrain = terrain_reader.good();
+            terrain_reader.close();
+            if (have_terrain) {
+                check_ground_height(
+                    terrain_file, geom, face, zoffset, ground_tol);
+            }
+        }
 
         if (fname.empty()) {
             // Fall back to the constant value given for this face
