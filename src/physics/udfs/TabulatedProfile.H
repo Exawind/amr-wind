@@ -53,6 +53,10 @@ struct TabulatedProfile
         amrex::GpuArray<amrex::Real, nfaces * AMREX_SPACEDIM> constval = {
             0.0_rt};
 
+        //! Ground height at each face, so that a profile tabulated above
+        //! ground can be used on a boundary sitting on raised ground
+        amrex::GpuArray<amrex::Real, nfaces> zoffset = {0.0_rt};
+
         //! Number of components of the field being filled
         int ncomp{1};
 
@@ -81,11 +85,12 @@ struct TabulatedProfile
                 const auto* dx = geom.CellSize();
                 const auto zco =
                     problo[idir] + ((iv[idir] + 0.5_rt) * dx[idir]);
+                const auto zeff = zco - zoffset[face];
 
                 const auto* zbegin = z + offset[face];
                 const auto* zend = zbegin + npts[face];
                 const auto* ybegin = vals + (ncomp * offset[face]);
-                val = interp::linear(zbegin, zend, ybegin, zco, ncomp, fcomp);
+                val = interp::linear(zbegin, zend, ybegin, zeff, ncomp, fcomp);
             }
             field(iv[0], iv[1], iv[2], dcomp + comp) = val;
         }

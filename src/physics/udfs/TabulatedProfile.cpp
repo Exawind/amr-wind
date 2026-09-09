@@ -211,11 +211,14 @@ wanted_columns(const std::string& field_name, const int ncomp)
  *  backwards through the boundary.
  */
 void check_inflow_direction(
+    const amrex::Vector<amrex::Real>& heights,
     const amrex::Vector<amrex::Real>& vals,
     const int offset,
     const int nz,
     const int ncomp,
     const int face,
+    const amrex::Real zlo,
+    const amrex::Real zhi,
     const std::string& fname)
 {
     const int dir = face % AMREX_SPACEDIM;
@@ -224,9 +227,20 @@ void check_inflow_direction(
     // Flow enters through a low face when the normal component is positive
     const amrex::Real into = is_low ? 1.0_rt : -1.0_rt;
 
+    // Only the part of the column the domain actually reaches matters. An
+    // entry influences that range when the span between its neighbours
+    // overlaps it, and the outermost entries reach beyond the table because
+    // the nearest tabulated value is held outside it
     bool enters = false;
     bool leaves = false;
     for (int k = 0; k < nz; ++k) {
+        const auto below =
+            (k == 0) ? -constants::LARGE_NUM : heights[offset + k - 1];
+        const auto above =
+            (k == nz - 1) ? constants::LARGE_NUM : heights[offset + k + 1];
+        if ((above < zlo) || (below > zhi)) {
+            continue;
+        }
         const auto un = into * vals[(ncomp * (offset + k)) + dir];
         if (un > constants::TIGHT_TOL) {
             enters = true;
@@ -269,6 +283,12 @@ TabulatedProfile::TabulatedProfile(const Field& fld)
     std::string default_file;
     pp.query("filename", default_file);
 
+    // Heights in the file are measured from here rather than from the bottom
+    // of the domain, which lets a profile given above ground be used on a
+    // boundary that sits on uniformly raised ground
+    amrex::Real default_zoffset = 0.0_rt;
+    pp.query("zoffset", default_zoffset);
+
     // The existing 1-D RANS profile file puts w in the fourth column where
     // this one puts temperature, so the two cannot be read the same way
     std::string rans_file;
@@ -295,6 +315,10 @@ TabulatedProfile::TabulatedProfile(const Field& fld)
         amrex::ParmParse pp_face(face_names[face]);
         std::string fname = default_file;
         pp_face.query("tabulated_profile_file", fname);
+
+        amrex::Real zoffset = default_zoffset;
+        pp_face.query("tabulated_profile_zoffset", zoffset);
+        m_op.zoffset[face] = zoffset;
 
         if (fname.empty()) {
             // Fall back to the constant value given for this face
@@ -362,12 +386,19 @@ TabulatedProfile::TabulatedProfile(const Field& fld)
         }
 
         if ((bct == BC::mass_inflow) && (fld.name() == "velocity")) {
-            check_inflow_direction(vals_all, offset, nz, ncomp, face, fname);
+            const auto& probdom = fld.repo().mesh().Geom(0).ProbDomain();
+            check_inflow_direction(
+                z_all, vals_all, offset, nz, ncomp, face,
+                probdom.lo(2) - zoffset, probdom.hi(2) - zoffset, fname);
         }
 
         amrex::Print() << "TabulatedProfile: " << fld.name() << " on "
                        << face_names[face] << " from " << fname << " (" << nz
-                       << " levels)\n";
+                       << " levels";
+        if (zoffset != 0.0_rt) {
+            amrex::Print() << ", ground at z = " << zoffset;
+        }
+        amrex::Print() << ")\n";
     }
 
     if (!any_profile) {

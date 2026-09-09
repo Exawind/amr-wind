@@ -35,7 +35,8 @@ amrex::Real max_error(
     const kynema_sgf::udf::TabulatedProfile& profile,
     const amrex::Orientation ori,
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& slope,
-    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& intercept)
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& intercept,
+    const amrex::Real zground = 0.0_rt)
 {
     const int lev = 0;
     const int ncomp = field.num_comp();
@@ -64,7 +65,9 @@ amrex::Real max_error(
             amrex::Loop(bx, [=, &err](int i, int j, int k) {
                 const auto zco = problo[2] + ((k + 0.5_rt) * dx[2]);
                 for (int n = 0; n < ncomp; ++n) {
-                    const auto expected = intercept[n] + (slope[n] * zco);
+                    // Below the ground the lowest tabulated value is held
+                    const auto zex = amrex::max(zco, zground);
+                    const auto expected = intercept[n] + (slope[n] * zex);
                     err = amrex::max(err, std::abs(arr(i, j, k, n) - expected));
                 }
             });
@@ -341,6 +344,85 @@ TEST_F(TabulatedProfileTest, outflow_everywhere_on_an_inflow_face_is_rejected)
 
     auto& vel = inflow_field("velocity", 3, {m_xlo});
     EXPECT_THROW(kynema_sgf::udf::TabulatedProfile{vel}, amrex::RuntimeError);
+}
+
+TEST_F(TabulatedProfileTest, zoffset_lifts_the_profile_to_the_ground)
+{
+    populate_parameters();
+    // Tabulated above ground, on a boundary whose ground sits at z = 2
+    write_profile(
+        "tp_lift.txt",
+        "# z u v T\n"
+        "0.0   0.0  1.0  300.0\n"
+        "8.0  16.0  1.0  308.0\n");
+    {
+        amrex::ParmParse pp("TabulatedProfile");
+        pp.add("filename", std::string("tp_lift.txt"));
+        pp.add("zoffset", 2.0_rt);
+    }
+    initialize_mesh();
+
+    auto& vel = inflow_field("velocity", 3, {m_xlo});
+    const kynema_sgf::udf::TabulatedProfile profile(vel);
+
+    // u = 2(z - 2), so the shift moves the whole profile up by the ground
+    // height; below the ground the lowest tabulated value is held
+    const auto err = max_error(
+        vel, mesh().Geom(0), profile, m_xlo, {2.0_rt, 0.0_rt, 0.0_rt},
+        {-4.0_rt, 1.0_rt, 0.0_rt}, 2.0_rt);
+    EXPECT_NEAR(err, 0.0_rt, m_tol);
+}
+
+TEST_F(TabulatedProfileTest, each_face_can_sit_on_its_own_ground)
+{
+    populate_parameters();
+    write_profile(
+        "tp_ground.txt",
+        "# z u v T\n"
+        "0.0   0.0  1.0  300.0\n"
+        "8.0  16.0  1.0  308.0\n");
+    {
+        amrex::ParmParse pp("TabulatedProfile");
+        pp.add("filename", std::string("tp_ground.txt"));
+        pp.add("zoffset", 2.0_rt);
+    }
+    {
+        amrex::ParmParse pp("ylo");
+        pp.add("tabulated_profile_zoffset", 0.0_rt);
+    }
+    initialize_mesh();
+
+    auto& vel = inflow_field("velocity", 3, {m_xlo, m_ylo});
+    const kynema_sgf::udf::TabulatedProfile profile(vel);
+
+    const auto err_x = max_error(
+        vel, mesh().Geom(0), profile, m_xlo, {2.0_rt, 0.0_rt, 0.0_rt},
+        {-4.0_rt, 1.0_rt, 0.0_rt}, 2.0_rt);
+    EXPECT_NEAR(err_x, 0.0_rt, m_tol);
+
+    // The face that overrides the offset back to zero is unshifted
+    const auto err_y = max_error(
+        vel, mesh().Geom(0), profile, m_ylo, {2.0_rt, 0.0_rt, 0.0_rt},
+        {0.0_rt, 1.0_rt, 0.0_rt});
+    EXPECT_NEAR(err_y, 0.0_rt, m_tol);
+}
+
+TEST_F(TabulatedProfileTest, a_reversal_the_domain_never_reaches_is_allowed)
+{
+    populate_parameters();
+    // u only turns around above z = 40, far above this 8 m tall domain
+    write_profile(
+        "tp_high_reversal.txt",
+        "# z u v T\n"
+        "0.0    4.0  0.0  300.0\n"
+        "40.0   4.0  0.0  340.0\n"
+        "80.0  -4.0  0.0  380.0\n");
+    amrex::ParmParse pp("TabulatedProfile");
+    pp.add("filename", std::string("tp_high_reversal.txt"));
+    initialize_mesh();
+
+    auto& vel = inflow_field("velocity", 3, {m_xlo});
+    EXPECT_NO_THROW(kynema_sgf::udf::TabulatedProfile{vel});
 }
 
 } // namespace kynema_sgf_tests
