@@ -89,11 +89,7 @@ yhi.velocity.inflow_outflow_type            = TabulatedProfile
 yhi.temperature.inflow_outflow_type         = TabulatedProfile
 yhi.tke.inflow_outflow_type                 = TabulatedProfile
 
-# A slip wall rather than the usual wall model. The ABL wall model produces a
-# NaN during the initial projection when the lateral faces are
-# mass_inflow_outflow, which is unrelated to the profile being read here, so
-# this case stays clear of that combination.
-zlo.type                                    = "slip_wall"
+zlo.type                                    = "wall_model"
 zlo.tke_type                                = "fixed_gradient"
 zlo.tke                                     = 0.0
 zhi.type                                    = "slip_wall"
