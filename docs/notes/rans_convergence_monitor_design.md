@@ -290,8 +290,11 @@ So the addition is:
 (`src/core/SimTime.cpp:393` and `:407`) return true only if a plot/checkpoint *interval* was
 configured and the current step is not already on it. A user running with no plot interval —
 entirely reasonable when the whole point is to stop on convergence — would get no output at
-all. A convergence stop needs a forced, unconditional write of both files, independent of those
-predicates.
+all. A convergence stop therefore forces the write instead of consulting those predicates.
+
+The force is skipped when the current step's *regular* output has already written the same file,
+which happens whenever a stop lands on a step that is also an output step. Without that check
+the same plotfile is written twice in a row for no reason.
 
 ---
 
@@ -532,12 +535,25 @@ caught by the `R^2` gate, and a decay with ten percent multiplicative noise stil
 rate to within ten percent. The combined absolute/relative tolerance rule of Section 4 is tested
 the same way.
 
+**The stop itself is unit tested** (`unit_tests/core/test_simtime.cpp`). `request_stop()` makes
+`continue_simulation()` false while the run is still at step 0, far short of both `max_step` and
+`stop_time`, which is the property that matters and the one the regression test cannot show —
+see below.
+
 **The plumbing is covered by a regression test** (`test/test_files/abl_rans_convergence/`),
 which runs KLAxell on a coarse mesh with deliberately loose tolerances and a short window, so
 the monitor reaches its verdict within the handful of steps a regression test runs. It exercises
-sampling at the points, the window and envelope, the stop request, and the forced final output —
-and specifically checks that a plotfile and checkpoint appear even though the test harness sets
-both output intervals to -1.
+sampling at the points, the window and envelope, the hold, the stop request reaching `SimTime`,
+and the forced checkpoint — the run has no checkpoint interval, so `chk00006` exists only
+because the stop forced it.
+
+The regression test is tuned to stop on the *last* step the harness runs rather than earlier,
+which is a constraint of the harness rather than a choice. `setup_test()` copies each test's
+`plt00006` for gold capture, so a test that stops before step 6 leaves nothing to copy and fails
+in the gold-saving CI job with a bare `cp: cannot stat ... plt00006`. That is why the early-stop
+property moved to the unit test above. The timing is deterministic despite riding on a flow
+solution: the tolerances are set far too loose to depend on the flow, so the verdict is fixed by
+the sampling cadence alone.
 
 What is deliberately *not* covered is physical convergence of an actual ABL. Reaching a
 pseudo-steady state takes hours of simulated time, which no test in this suite can afford. The

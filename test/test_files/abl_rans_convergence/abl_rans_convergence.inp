@@ -89,9 +89,14 @@ convergence.start_time                      = 0.5
 convergence.sample_interval_time            = 0.5
 convergence.window                          = 1.5
 convergence.min_samples                     = 4
-# One sample interval, so the stop still lands inside the few steps a
-# regression test runs. A production run wants the default of two windows.
-convergence.hold_time                       = 0.5
+# Tuned so the stop lands on the last step the harness runs. Every add_test_r
+# test has its plt00006 copied for gold capture, so a test that stops earlier
+# than step 6 leaves nothing to copy. The window fills at t = 2.0 (step 4) and
+# the hold completes at t = 3.0 (step 6), which is deterministic here because
+# the tolerances above are far too loose to depend on the flow. That a stop can
+# land strictly before max_step is covered in unit_tests/core/test_simtime.cpp
+# instead. A production run wants the default of two windows.
+convergence.hold_time                       = 1.0
 convergence.velocity_abs_tol                = 1000.0
 convergence.velocity_rel_tol                = 1.0
 convergence.tke_abs_tol                     = 1000.0

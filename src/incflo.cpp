@@ -405,14 +405,19 @@ void incflo::Evolve()
                        << '\n';
     }
 
-    // Output at final time. A requested stop writes both files unconditionally:
-    // the run may have been configured without any output interval, in which
-    // case the checks below would leave nothing behind.
-    const bool force_final_output = m_time.stop_requested();
-    if (force_final_output || m_time.write_last_plot_file()) {
+    // Output at final time. A requested stop has to leave output behind even
+    // when the run was configured with no output interval at all, in which case
+    // the write_last_* checks would write nothing. Skip it only when this
+    // step's regular output has already written the same file.
+    const bool stop_requested = m_time.stop_requested();
+    const bool write_plt = stop_requested ? !m_time.write_plot_file()
+                                          : m_time.write_last_plot_file();
+    const bool write_chk = stop_requested ? !m_time.write_checkpoint()
+                                          : m_time.write_last_checkpoint();
+    if (write_plt) {
         m_sim.io_manager().write_plot_file();
     }
-    if (force_final_output || m_time.write_last_checkpoint()) {
+    if (write_chk) {
         m_sim.io_manager().write_checkpoint_file();
     }
     m_sim.post_manager().final_output();
