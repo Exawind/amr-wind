@@ -13,11 +13,17 @@ inflow, it does not over-constrain the interior solution. Comparisons of open
 boundary conditions for regional tidal simulations have found this formulation to
 be among the better performing choices :cite:p:`carter-merrifield:2007`.
 
-Kynema-SGF applies the condition in a depth-integrated form, which makes it
+Kynema-SGF uses the condition in a depth-integrated form, which makes it
 well suited to the volume-of-fluid representation of the free surface described in
 :ref:`multiphase`. All quantities used by the boundary condition are column
-integrals taken along the vertical direction, so the boundary condition acts on
-the transport of the liquid phase rather than on individual cells in isolation.
+integrals taken along the vertical direction, so the boundary condition considers
+the transport of the liquid phase rather than focusing on individual cells in isolation.
+Though the Flather condition is formulated in two dimensions, it must be applied in the
+three-dimensional domain of Kynema-SGF, which involves scaling the local velocity 
+with depth-integrated quantities, enabling the preservation of the vertical velocity profile.
+This is established practice for regional oceanic models, in which the
+Flather condition is applied to the depth-integrated mode while the vertical
+structure of the flow is treated separately :cite:p:`marchesiello:2001`.
 
 Depth-integrated quantities
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
