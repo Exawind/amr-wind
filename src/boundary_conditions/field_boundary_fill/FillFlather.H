@@ -26,6 +26,14 @@ public:
         const amrex::IntVect& nghost,
         FieldState fstate = FieldState::New) override;
 
+    void fillpatch_from_coarse(
+        int lev,
+        amrex::Real time,
+        amrex::MultiFab& mfab,
+        const amrex::IntVect& nghost,
+        FieldState fstate = FieldState::New) override
+    {}
+
     void fillpatch_sibling_fields(
         int lev,
         amrex::Real time,
