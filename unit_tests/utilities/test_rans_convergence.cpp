@@ -1,4 +1,5 @@
 #include <cmath>
+#include <limits>
 #include <vector>
 
 #include "ks_test_utils/AmrexTest.H"
@@ -38,6 +39,18 @@ uniform_times(const int n, const amrex::Real t0, const amrex::Real dt)
     return times;
 }
 
+//! Absolute tolerance for comparing a value against an exact expectation.
+//!
+//! Scaled to the working precision so that these tests mean the same thing in
+//! single and double precision. The fit takes logarithms and an exponential,
+//! so a few thousand epsilon of relative error is expected rather than a few.
+amrex::Real close(const amrex::Real expected)
+{
+    constexpr amrex::Real factor = 1.0e4_rt;
+    return factor * std::numeric_limits<amrex::Real>::epsilon() *
+           std::max(std::abs(expected), 1.0_rt);
+}
+
 } // namespace
 
 TEST(RANSConvergence, effective_tolerance_takes_the_larger_term)
@@ -45,15 +58,15 @@ TEST(RANSConvergence, effective_tolerance_takes_the_larger_term)
     // Relative term dominates for a large mean
     EXPECT_NEAR(
         rc::RANSConvergence::effective_tolerance(10.0_rt, 0.01_rt, 0.01_rt),
-        0.1_rt, 1.0e-12_rt);
+        0.1_rt, close(0.1_rt));
     // Absolute floor takes over as the mean approaches zero
     EXPECT_NEAR(
         rc::RANSConvergence::effective_tolerance(0.0_rt, 0.01_rt, 0.01_rt),
-        0.01_rt, 1.0e-12_rt);
+        0.01_rt, close(0.01_rt));
     // A negative mean is treated by magnitude
     EXPECT_NEAR(
         rc::RANSConvergence::effective_tolerance(-10.0_rt, 0.01_rt, 0.01_rt),
-        0.1_rt, 1.0e-12_rt);
+        0.1_rt, close(0.1_rt));
 }
 
 TEST(RANSConvergence, envelope_fit_recovers_a_known_decay)
@@ -70,13 +83,13 @@ TEST(RANSConvergence, envelope_fit_recovers_a_known_decay)
         rc::RANSConvergence::fit_envelope_decay(times, vals, 1.0_rt, 5);
 
     ASSERT_TRUE(fit.valid);
-    EXPECT_NEAR(fit.rate, rate, 1.0e-9_rt);
-    EXPECT_NEAR(fit.amplitude, amplitude, 1.0e-8_rt);
-    EXPECT_NEAR(fit.rsq, 1.0_rt, 1.0e-10_rt);
+    EXPECT_NEAR(fit.rate, rate, close(rate));
+    EXPECT_NEAR(fit.amplitude, amplitude, close(amplitude));
+    EXPECT_NEAR(fit.rsq, 1.0_rt, close(1.0_rt));
 
     // A exp(-rate t) = 1 gives t = ln(A)/rate, measured from the last sample
     const amrex::Real expected = (std::log(amplitude) / rate) - times.back();
-    EXPECT_NEAR(fit.time_to_threshold, expected, 1.0e-6_rt);
+    EXPECT_NEAR(fit.time_to_threshold, expected, close(expected));
 }
 
 TEST(RANSConvergence, envelope_fit_rejects_a_growing_envelope)
