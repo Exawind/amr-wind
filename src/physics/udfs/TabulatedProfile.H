@@ -8,6 +8,8 @@
 #include "AMReX_Orientation.H"
 #include "AMReX_REAL.H"
 
+#include <cstddef>
+
 using namespace amrex::literals;
 
 namespace kynema_sgf {
@@ -17,7 +19,6 @@ class Field;
 namespace udf {
 
 /** Inflow profile tabulated as a function of height in a text file
- *  \ingroup udf
  *
  *  Reads a vertical profile from a whitespace-separated text file and imposes
  *  it as a Dirichlet condition on inflow boundaries. The file holds one row per
@@ -89,7 +90,8 @@ struct TabulatedProfile
 
                 const auto* zbegin = z + offset[face];
                 const auto* zend = zbegin + npts[face];
-                const auto* ybegin = vals + (ncomp * offset[face]);
+                const auto* ybegin =
+                    vals + (static_cast<std::ptrdiff_t>(ncomp) * offset[face]);
                 val = interp::linear(zbegin, zend, ybegin, zeff, ncomp, fcomp);
             }
             field(iv[0], iv[1], iv[2], dcomp + comp) = val;
