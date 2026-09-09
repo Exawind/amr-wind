@@ -163,6 +163,9 @@ Reads a vertical profile from a text file and imposes it on inflow boundaries.
 Unlike the profiles above, it applies to any field: velocity, temperature,
 ``tke``, and any scalar added later.
 
+The input key depends on the boundary condition type. A ``mass_inflow`` face
+is named by ``<field>.inflow_type``:
+
 .. code-block:: none
 
    xlo.type                    = mass_inflow
@@ -170,6 +173,28 @@ Unlike the profiles above, it applies to any field: velocity, temperature,
    xlo.temperature.inflow_type = TabulatedProfile
    xlo.tke.inflow_type         = TabulatedProfile
    TabulatedProfile.filename   = inflow_profile.txt
+
+while a ``mass_inflow_outflow`` face is named by
+``<field>.inflow_outflow_type``. This is the form to use for an atmospheric
+boundary layer, where the wind direction decides which part of each face is an
+inflow:
+
+.. code-block:: none
+
+   xlo.type                             = mass_inflow_outflow
+   xlo.density                          = 1.0
+   xlo.velocity.inflow_outflow_type     = TabulatedProfile
+   xlo.temperature.inflow_outflow_type  = TabulatedProfile
+   xlo.tke.inflow_outflow_type          = TabulatedProfile
+   TabulatedProfile.filename            = inflow_profile.txt
+
+.. warning::
+   The two keys are not interchangeable. ``inflow_type`` is read only on a
+   ``mass_inflow`` face and ``inflow_outflow_type`` only on a
+   ``mass_inflow_outflow`` face, so using the wrong one leaves the profile
+   unread and the boundary falls back to the constant value for that face.
+   Note also that ``density`` is not tabulated and is still given as a
+   constant, which a ``mass_inflow_outflow`` face requires.
 
 File format
 ^^^^^^^^^^^
@@ -213,12 +238,23 @@ face without one falls back to the constant value set for that face.
 
 Under directional shear the normal component changes sign partway up the
 column, which makes a single face an inflow at some heights and an outflow at
-others. Use ``mass_inflow_outflow`` on the lateral faces in that case and give
-the profile to all of them, rather than choosing inflow faces from the surface
-wind direction. The outflow part of each face is then filled by extrapolation,
-and the projection is kept solvable by matching outflow to inflow. A profile
-whose normal component reverses within the domain on a plain ``mass_inflow``
-face is refused, since it would drive flow backwards through the boundary.
+others. Use ``mass_inflow_outflow`` on the lateral faces in that case, with the
+``inflow_outflow_type`` key, and give the profile to all four rather than
+choosing inflow faces from the surface wind direction:
+
+.. code-block:: none
+
+   xlo.type = mass_inflow_outflow
+   xhi.type = mass_inflow_outflow
+   ylo.type = mass_inflow_outflow
+   yhi.type = mass_inflow_outflow
+   xlo.velocity.inflow_outflow_type = TabulatedProfile   # and on the other three
+   TabulatedProfile.filename        = veer_profile.txt
+
+The outflow part of each face is then filled by extrapolation, and the
+projection is kept solvable by matching outflow to inflow. A profile whose
+normal component reverses within the domain on a plain ``mass_inflow`` face is
+refused, since it would drive flow backwards through the boundary.
 
 .. input_param:: TabulatedProfile.filename
 
