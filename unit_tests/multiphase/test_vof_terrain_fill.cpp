@@ -83,8 +83,8 @@ TEST_F(VOFTerrainFillTest, uniform_vof_block)
         const auto& vof_arr = vof(lev).array(mfi);
         const auto& blank_arr = blanking(lev).array(mfi);
         amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-            const bool in_terrain = (i >= 2) && (i <= 5) && (j >= 2) &&
-                                    (j <= 5);
+            const bool in_terrain =
+                (i >= 2) && (i <= 5) && (j >= 2) && (j <= 5);
             blank_arr(i, j, k) = in_terrain ? 1 : 0;
             vof_arr(i, j, k) = in_terrain ? 0.0_rt : vof_fluid;
         });
@@ -145,9 +145,9 @@ TEST_F(VOFTerrainFillTest, lateral_average_only)
         const auto& vof_arr = vof(lev).const_array(mfi);
         amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
             // Average of the i = 3 and i = 5 neighbors within the same plane
-            const amrex::Real expected =
-                (i == 4) ? (0.4_rt + (0.01_rt * k))
-                         : ((0.1_rt * i) + (0.01_rt * k));
+            const amrex::Real expected = (i == 4)
+                                             ? (0.4_rt + (0.01_rt * k))
+                                             : ((0.1_rt * i) + (0.01_rt * k));
             err_arr(i, j, k) = std::abs(vof_arr(i, j, k) - expected);
         });
     });
