@@ -11,6 +11,75 @@ using namespace amrex::literals;
 namespace kynema_sgf_tests {
 namespace {
 
+//! 4 x 4 blanked column block within a uniform vof field
+void init_blanked_block(
+    kynema_sgf::Field& vof,
+    kynema_sgf::IntField& blanking,
+    const amrex::Real vof_fluid)
+{
+    run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
+        const auto& bx = mfi.validbox();
+        const auto& vof_arr = vof(lev).array(mfi);
+        const auto& blank_arr = blanking(lev).array(mfi);
+        amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+            const bool in_terrain =
+                (i >= 2) && (i <= 5) && (j >= 2) && (j <= 5);
+            blank_arr(i, j, k) = in_terrain ? 1 : 0;
+            vof_arr(i, j, k) = in_terrain ? 0.0_rt : vof_fluid;
+        });
+    });
+    vof.fillpatch(0.0_rt);
+}
+
+//! Single blanked plane at i = 4, with a vof field that varies in x and z
+void init_blanked_plane(kynema_sgf::Field& vof, kynema_sgf::IntField& blanking)
+{
+    run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
+        const auto& bx = mfi.validbox();
+        const auto& vof_arr = vof(lev).array(mfi);
+        const auto& blank_arr = blanking(lev).array(mfi);
+        amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+            const bool in_terrain = (i == 4);
+            blank_arr(i, j, k) = in_terrain ? 1 : 0;
+            vof_arr(i, j, k) =
+                in_terrain ? 0.0_rt : (0.1_rt * i) + (0.01_rt * k);
+        });
+    });
+    vof.fillpatch(0.0_rt);
+}
+
+void get_error_uniform(
+    kynema_sgf::ScratchField& err_fld,
+    kynema_sgf::Field& vof,
+    const amrex::Real vof_fluid)
+{
+    run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
+        const auto& bx = mfi.validbox();
+        const auto& err_arr = err_fld(lev).array(mfi);
+        const auto& vof_arr = vof(lev).const_array(mfi);
+        amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+            err_arr(i, j, k) = amrex::Math::abs(vof_arr(i, j, k) - vof_fluid);
+        });
+    });
+}
+
+void get_error_blanked_plane(
+    kynema_sgf::ScratchField& err_fld, kynema_sgf::Field& vof)
+{
+    run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
+        const auto& bx = mfi.validbox();
+        const auto& err_arr = err_fld(lev).array(mfi);
+        const auto& vof_arr = vof(lev).const_array(mfi);
+        amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+            // Average of the i = 3 and i = 5 neighbors within the same plane
+            const amrex::Real expected = (i == 4)
+                                             ? (0.4_rt + (0.01_rt * k))
+                                             : ((0.1_rt * i) + (0.01_rt * k));
+            err_arr(i, j, k) = amrex::Math::abs(vof_arr(i, j, k) - expected);
+        });
+    });
+}
+
 class VOFTerrainFillTest : public MeshTest
 {
 protected:
@@ -76,20 +145,9 @@ TEST_F(VOFTerrainFillTest, uniform_vof_block)
     auto& blanking = repo.get_int_field("terrain_blank");
     constexpr amrex::Real vof_fluid = 0.7_rt;
 
-    // 4 x 4 blanked column block: the innermost cells have no unblanked
-    // lateral neighbors and are only reached by successive sweeps
-    run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
-        const auto& bx = mfi.validbox();
-        const auto& vof_arr = vof(lev).array(mfi);
-        const auto& blank_arr = blanking(lev).array(mfi);
-        amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-            const bool in_terrain =
-                (i >= 2) && (i <= 5) && (j >= 2) && (j <= 5);
-            blank_arr(i, j, k) = in_terrain ? 1 : 0;
-            vof_arr(i, j, k) = in_terrain ? 0.0_rt : vof_fluid;
-        });
-    });
-    vof.fillpatch(0.0_rt);
+    // The innermost blanked cells have no unblanked lateral neighbors and are
+    // only reached by successive sweeps
+    init_blanked_block(vof, blanking, vof_fluid);
 
     kynema_sgf::pde::PostSolveOp<kynema_sgf::pde::VOF> post_solve(
         sim(), vof_fields());
@@ -97,14 +155,7 @@ TEST_F(VOFTerrainFillTest, uniform_vof_block)
 
     auto error_ptr = repo.create_scratch_field(1, 0);
     auto& error_fld = *error_ptr;
-    run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
-        const auto& bx = mfi.validbox();
-        const auto& err_arr = error_fld(lev).array(mfi);
-        const auto& vof_arr = vof(lev).const_array(mfi);
-        amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-            err_arr(i, j, k) = std::abs(vof_arr(i, j, k) - vof_fluid);
-        });
-    });
+    get_error_uniform(error_fld, vof, vof_fluid);
 
     EXPECT_NEAR(error_fld(0).max(0), 0.0_rt, tol);
 }
@@ -118,20 +169,7 @@ TEST_F(VOFTerrainFillTest, lateral_average_only)
     auto& vof = repo.get_field("vof");
     auto& blanking = repo.get_int_field("terrain_blank");
 
-    // Single blanked plane at i = 4 spanning all j and k, with a vof field
-    // that varies in both x and z
-    run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
-        const auto& bx = mfi.validbox();
-        const auto& vof_arr = vof(lev).array(mfi);
-        const auto& blank_arr = blanking(lev).array(mfi);
-        amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-            const bool in_terrain = (i == 4);
-            blank_arr(i, j, k) = in_terrain ? 1 : 0;
-            vof_arr(i, j, k) =
-                in_terrain ? 0.0_rt : (0.1_rt * i) + (0.01_rt * k);
-        });
-    });
-    vof.fillpatch(0.0_rt);
+    init_blanked_plane(vof, blanking);
 
     kynema_sgf::pde::PostSolveOp<kynema_sgf::pde::VOF> post_solve(
         sim(), vof_fields());
@@ -139,18 +177,7 @@ TEST_F(VOFTerrainFillTest, lateral_average_only)
 
     auto error_ptr = repo.create_scratch_field(1, 0);
     auto& error_fld = *error_ptr;
-    run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
-        const auto& bx = mfi.validbox();
-        const auto& err_arr = error_fld(lev).array(mfi);
-        const auto& vof_arr = vof(lev).const_array(mfi);
-        amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-            // Average of the i = 3 and i = 5 neighbors within the same plane
-            const amrex::Real expected = (i == 4)
-                                             ? (0.4_rt + (0.01_rt * k))
-                                             : ((0.1_rt * i) + (0.01_rt * k));
-            err_arr(i, j, k) = std::abs(vof_arr(i, j, k) - expected);
-        });
-    });
+    get_error_blanked_plane(error_fld, vof);
 
     EXPECT_NEAR(error_fld(0).max(0), 0.0_rt, tol);
 }
