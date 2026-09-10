@@ -128,12 +128,12 @@ struct PostSolveOp<VOF>
                         }
                         amrex::Real sum = 0.0_rt;
                         int cnt = 0;
-                        for (int dir = 0; dir < 2; ++dir) {
-                            for (int sgn = -1; sgn <= 1; sgn += 2) {
-                                const int ii = i + ((dir == 0) ? sgn : 0);
-                                const int jj = j + ((dir == 1) ? sgn : 0);
+                        for (int ni = -1; ni <= 1; ++ni) {
+                            for (int nj = -1; nj <= 1; ++nj) {
+                                const int ii = i + ni;
+                                const int jj = j + nj;
                                 const amrex::Real nval = bf(ii, jj, k, src);
-                                if (nval >= 0.0_rt) {
+                                if (nval >= 0.0_rt && !(ni == 0 && nj == 0)) {
                                     sum += nval;
                                     ++cnt;
                                 }
