@@ -1,0 +1,39 @@
+<map id="kynema_sgf::EkmanSpiral" name="kynema_sgf::EkmanSpiral">
+<area shape="rect" id="Node000001" title=" " alt="" coords="1705,181,1896,206"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="1432,5,1576,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1590,31,1637,42,1683,62,1720,89,1752,122,1794,179,1790,182,1748,125,1716,93,1680,66,1636,47,1589,36"/>
+<area shape="rect" id="Node000003" href="$classkynema__sgf_1_1_sim_time.html" title=" " alt="" coords="1241,358,1408,383"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="1422,370,1483,366,1550,355,1617,336,1680,307,1714,282,1744,254,1788,204,1792,208,1748,258,1717,287,1683,312,1619,341,1551,360,1484,371,1422,375"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="635,369,784,394"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="798,377,1241,369,1241,375,798,382"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="273,371,402,397"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="416,381,635,379,635,385,416,386"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="55,311,94,337"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="108,332,169,351,273,372,272,377,167,356,106,338"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="261,307,413,347"/>
+<area shape="poly" id="edge12_Node000011_Node000006" title=" " alt="" coords="108,322,261,323,261,329,108,327"/>
+<area shape="rect" id="Node000016" title=" " alt="" coords="437,271,595,297"/>
+<area shape="poly" id="edge20_Node000016_Node000006" title=" " alt="" coords="106,311,168,296,239,287,310,282,437,280,437,285,311,288,239,293,168,301,108,316"/>
+<area shape="rect" id="Node000007" href="$classkynema__sgf_1_1_field_repo.html" title=" " alt="" coords="1038,278,1210,303"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="1224,284,1313,279,1408,269,1492,255,1575,237,1740,203,1741,209,1577,243,1493,261,1408,275,1314,284,1224,290"/>
+<area shape="rect" id="Node000013" href="$classkynema__sgf_1_1_field.html" title=" " alt="" coords="1435,181,1573,206"/>
+<area shape="poly" id="edge14_Node000013_Node000007" title=" " alt="" coords="1207,273,1304,252,1407,225,1470,204,1472,209,1409,231,1305,257,1208,278"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="628,303,791,343"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="804,322,902,321,1006,313,1074,301,1075,306,1007,319,902,326,804,328"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="294,153,381,178"/>
+<area shape="poly" id="edge21_Node000001_Node000009" title=" " alt="" coords="384,145,447,125,528,104,617,87,708,80,1505,80,1547,83,1589,91,1668,118,1735,151,1782,178,1779,183,1732,155,1666,123,1588,96,1547,88,1505,85,708,85,618,92,529,109,449,130,386,151"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="370,183,438,222,481,237,517,244,552,251,596,267,620,282,659,300,657,305,617,286,594,272,551,257,516,249,480,242,436,226,367,188"/>
+<area shape="poly" id="edge15_Node000013_Node000009" title=" " alt="" coords="394,161,437,160,595,160,824,155,1002,145,1089,143,1181,144,1285,151,1408,165,1465,178,1463,183,1408,171,1285,157,1181,150,1089,148,1003,150,824,160,595,165,437,165,395,166"/>
+<area shape="rect" id="Node000015" href="$structkynema__sgf_1_1_field_info.html" title=" " alt="" coords="627,182,791,207"/>
+<area shape="poly" id="edge18_Node000015_Node000009" title=" " alt="" coords="394,176,438,183,536,190,627,193,627,198,536,196,437,188,393,181"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="5,145,144,185"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="158,163,294,163,294,168,158,168"/>
+<area shape="poly" id="edge10_Node000008_Node000011" title=" " alt="" coords="427,328,437,328,595,328,627,326,628,332,595,333,437,333,427,333"/>
+<area shape="rect" id="Node000012" title=" " alt="" coords="55,418,94,443"/>
+<area shape="poly" id="edge11_Node000011_Node000012" title=" " alt="" coords="107,428,170,420,204,410,236,394,244,386,247,378,251,368,260,358,280,345,283,349,263,362,256,371,252,380,248,389,239,398,206,415,171,425,108,433"/>
+<area shape="poly" id="edge13_Node000001_Node000013" title=" " alt="" coords="1587,191,1705,191,1705,196,1587,196"/>
+<area shape="rect" id="Node000014" title=" " alt="" coords="1031,181,1217,221"/>
+<area shape="poly" id="edge16_Node000013_Node000014" title=" " alt="" coords="1231,196,1434,192,1434,197,1231,202"/>
+<area shape="poly" id="edge17_Node000014_Node000015" title=" " alt="" coords="805,194,1030,197,1030,203,805,199"/>
+<area shape="poly" id="edge19_Node000014_Node000016" title=" " alt="" coords="608,269,1030,211,1031,217,609,274"/>
+</map>

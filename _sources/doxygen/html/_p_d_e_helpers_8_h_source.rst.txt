@@ -1,0 +1,14 @@
+.. meta::d4d712577e4a80c9a41c9e0e9d01c5e05663d384805144ce98be943406f8e9b5882ab4b7b9dcbeb8d0db4c4199e19ca1c56d12bf7a364fb110517dad703ef365
+
+:orphan:
+
+.. title:: Kynema-SGF API: /home/runner/work/kynema-sgf/kynema-sgf/src/equation_systems/PDEHelpers.H Source File
+
+/home/runner/work/kynema-sgf/kynema-sgf/src/equation\_systems/PDEHelpers.H Source File
+======================================================================================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: _p_d_e_helpers_8_h_source.html

@@ -1,0 +1,14 @@
+.. meta::d57f18dc8608b0fcdb0cbf33c897c2bd4c7061d1207fd915aefb22c7ff9c5829e9b4af796b02e7643a7cc82b9af5c4b15e7d0cfa429400a33f871b5bc7dcb7ea
+
+:orphan:
+
+.. title:: Kynema-SGF API: kynema_sgf Namespace Reference
+
+kynema\_sgf Namespace Reference
+===============================
+
+.. container:: doxygen-content
+
+   
+   .. raw:: html
+     :file: namespacekynema__sgf.html

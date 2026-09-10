@@ -1,0 +1,40 @@
+<map id="kynema_sgf::FieldFillPatchOps&lt; BCOpCreator &gt;" name="kynema_sgf::FieldFillPatchOps&lt; BCOpCreator &gt;">
+<area shape="rect" id="Node000001" title=" " alt="" coords="1964,135,2157,175"/>
+<area shape="rect" id="Node000002" href="$classkynema__sgf_1_1_field_fill_patch_ops_base.html" title=" " alt="" coords="1677,32,1871,72"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1858,73,1941,102,2016,132,2014,137,1939,106,1856,79"/>
+<area shape="rect" id="Node000003" href="$classkynema__sgf_1_1_sim_time.html" title=" " alt="" coords="1241,249,1408,274"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="1421,248,1658,220,1940,177,1968,172,1969,177,1940,183,1658,225,1422,254"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="635,265,784,290"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="798,272,1241,261,1241,266,798,278"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="273,259,402,285"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="416,270,635,274,635,279,416,276"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="55,203,94,229"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="105,234,135,252,169,265,221,274,272,275,272,280,221,279,167,271,132,257,102,239"/>
+<area shape="rect" id="Node000012" title=" " alt="" coords="261,8,413,48"/>
+<area shape="poly" id="edge13_Node000012_Node000006" title=" " alt="" coords="103,193,260,79,306,46,309,50,263,83,106,197"/>
+<area shape="rect" id="Node000016" title=" " alt="" coords="437,203,595,229"/>
+<area shape="poly" id="edge19_Node000016_Node000006" title=" " alt="" coords="108,213,437,213,437,219,108,219"/>
+<area shape="rect" id="Node000007" href="$classkynema__sgf_1_1_field.html" title=" " alt="" coords="1432,103,1571,129"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="1547,131,1608,152,1678,168,1752,175,1828,176,1964,166,1964,171,1828,181,1752,181,1677,173,1607,157,1545,136"/>
+<area shape="rect" id="Node000017" href="$structkynema__sgf_1_1_b_c_op_creator.html" title=" " alt="" coords="1678,96,1870,136"/>
+<area shape="poly" id="edge21_Node000017_Node000007" title=" " alt="" coords="1584,113,1678,113,1678,119,1584,119"/>
+<area shape="rect" id="Node000008" href="$classkynema__sgf_1_1_field_repo.html" title=" " alt="" coords="1038,41,1210,66"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="1224,58,1314,68,1409,84,1466,101,1465,106,1407,89,1313,73,1223,63"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="628,28,791,68"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="805,47,1038,50,1038,55,805,52"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="294,93,381,118"/>
+<area shape="poly" id="edge14_Node000007_Node000010" title=" " alt="" coords="394,103,1432,113,1432,118,394,109"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="394,94,627,58,628,63,394,99"/>
+<area shape="rect" id="Node000015" href="$structkynema__sgf_1_1_field_info.html" title=" " alt="" coords="627,143,791,169"/>
+<area shape="poly" id="edge17_Node000015_Node000010" title=" " alt="" coords="376,122,406,134,438,144,486,152,536,157,627,158,627,163,535,162,485,157,437,149,404,139,374,127"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="5,85,144,125"/>
+<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="158,103,294,103,294,108,158,108"/>
+<area shape="poly" id="edge11_Node000009_Node000012" title=" " alt="" coords="427,27,595,35,628,37,627,43,595,40,427,33"/>
+<area shape="rect" id="Node000013" title=" " alt="" coords="55,15,94,41"/>
+<area shape="poly" id="edge12_Node000012_Node000013" title=" " alt="" coords="108,25,261,25,261,31,108,31"/>
+<area shape="rect" id="Node000014" title=" " alt="" coords="1031,143,1217,183"/>
+<area shape="poly" id="edge15_Node000007_Node000014" title=" " alt="" coords="1231,161,1318,156,1407,144,1468,126,1469,131,1409,149,1318,161,1232,166"/>
+<area shape="poly" id="edge16_Node000014_Node000015" title=" " alt="" coords="805,155,1030,159,1030,164,805,160"/>
+<area shape="poly" id="edge18_Node000014_Node000016" title=" " alt="" coords="608,211,800,201,1030,174,1031,179,800,207,608,217"/>
+<area shape="poly" id="edge20_Node000001_Node000017" title=" " alt="" coords="1884,128,1964,139,1964,144,1883,133"/>
+</map>
