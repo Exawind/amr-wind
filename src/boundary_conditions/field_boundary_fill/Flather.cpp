@@ -293,6 +293,7 @@ void Flather::compute_internal_z_averages()
     m_xhi_h.copy_host_to_device();
     m_ylo_h.copy_host_to_device();
     m_yhi_h.copy_host_to_device();
+    amrex::Gpu::streamSynchronize();
 }
 
 void Flather::compute_boundary_z_averages(
@@ -344,6 +345,7 @@ void Flather::compute_boundary_z_averages(
     amrex::Gpu::copyAsync(
         amrex::Gpu::hostToDevice, m_yhi_bnd_h.host_data(lev).begin(),
         m_yhi_bnd_h.host_data(lev).end(), m_yhi_bnd_h.device_data(lev).begin());
+    amrex::Gpu::streamSynchronize();
 }
 
 void Flather::set_velocity(
