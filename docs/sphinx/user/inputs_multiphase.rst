@@ -53,14 +53,14 @@ terrain surface.
 The extrapolation is performed after the vof solve and before the density is computed from vof:
 
 - Blanked cells with at least one lateral neighbor (in x or y) that is not blanked take the average
-  vof of those unblanked neighbors.
-- Blanked cells that have no unblanked lateral neighbors take the average of the laterally
+  vof of those non-blanked neighbors.
+- Blanked cells that have no non-blanked lateral neighbors take the average of the laterally
   neighboring blanked cells that have already been assigned a value. This is repeated in sweeps,
   so values propagate one layer deeper into the terrain per sweep until every reachable blanked
   cell has been assigned.
 - Only lateral (x and y) neighbors are used, so each horizontal plane of cells is filled
   independently of the planes above and below it.
-- Blanked cells that are not reachable from any unblanked cell keep their existing vof value.
+- Blanked cells that are not reachable from any non-blanked cell keep their existing vof value.
 
 This step is a no-op when no ``terrain_blank`` field exists, and it does not modify the vof values
-of unblanked cells.
+of non-blanked cells.
