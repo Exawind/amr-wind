@@ -94,6 +94,12 @@ struct PostSolveOp<VOF>
             auto& buf = (*scratch)(lev);
             const auto periodicity = m_sim.mesh().Geom(lev).periodicity();
             const auto ngrow = buf.nGrowVect();
+            const auto domain = m_sim.mesh().Geom(lev).Domain();
+            const auto source_domain = amrex::Box(
+                {domain.smallEnd(0) + 1, domain.smallEnd(1) + 1,
+                 domain.smallEnd(2)},
+                {domain.bigEnd(0) - 1, domain.bigEnd(1) - 1,
+                 domain.bigEnd(2)});
             buf.setVal(-1.0_rt);
 
             const auto blank_arrs = blanking(lev).const_arrays();
@@ -103,7 +109,8 @@ struct PostSolveOp<VOF>
                 amrex::ParallelFor(
                     buf, amrex::IntVect(0),
                     [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
-                        if (blank_arrs[nbx](i, j, k) == 0) {
+                        if (source_domain.contains(i, j, k) &&
+                            blank_arrs[nbx](i, j, k) == 0) {
                             buf_arrs[nbx](i, j, k, 0) = vof_arrs[nbx](i, j, k);
                         }
                     });
@@ -132,6 +139,9 @@ struct PostSolveOp<VOF>
                             for (int nj = -1; nj <= 1; ++nj) {
                                 const int ii = i + ni;
                                 const int jj = j + nj;
+                                if (!source_domain.contains(ii, jj, k)) {
+                                    continue;
+                                }
                                 const amrex::Real nval = bf(ii, jj, k, src);
                                 if (nval >= 0.0_rt && !(ni == 0 && nj == 0)) {
                                     sum += nval;

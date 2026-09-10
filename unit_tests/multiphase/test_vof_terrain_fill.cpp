@@ -70,6 +70,23 @@ void init_diagonal_case(
     vof.fillpatch(0.0_rt);
 }
 
+void init_boundary_source_case(
+    kynema_sgf::Field& vof, kynema_sgf::IntField& blanking)
+{
+    run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
+        const auto& bx = mfi.validbox();
+        const auto& vof_arr = vof(lev).array(mfi);
+        const auto& blank_arr = blanking(lev).array(mfi);
+        amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+            const bool is_target = (i == 1) && (j == 4);
+            const bool is_boundary = (i == 0) || (i == 7);
+            blank_arr(i, j, k) = is_target ? 1 : 0;
+            vof_arr(i, j, k) = is_boundary ? 1.0_rt : 0.2_rt;
+        });
+    });
+    vof.fillpatch(0.0_rt);
+}
+
 void get_error_uniform(
     kynema_sgf::ScratchField& err_fld,
     kynema_sgf::Field& vof,
@@ -121,6 +138,24 @@ void get_error_diagonal_case(
                 (is_center || is_diagonal)
                     ? amrex::Math::abs(vof_arr(i, j, k) - expected)
                     : 0.0_rt;
+        });
+    });
+}
+
+void get_error_boundary_source_case(
+    kynema_sgf::ScratchField& err_fld, kynema_sgf::Field& vof)
+{
+    run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
+        const auto& bx = mfi.validbox();
+        const auto& err_arr = err_fld(lev).array(mfi);
+        const auto& vof_arr = vof(lev).const_array(mfi);
+        amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+            const amrex::Real expected =
+                ((i == 1) && (j == 4)) ? 0.2_rt
+                                       : (((i == 0) || (i == 7)) ? 1.0_rt
+                                                                  : 0.2_rt);
+            err_arr(i, j, k) =
+                amrex::Math::abs(vof_arr(i, j, k) - expected);
         });
     });
 }
@@ -244,6 +279,27 @@ TEST_F(VOFTerrainFillTest, lateral_diagonal_average)
     auto error_ptr = repo.create_scratch_field(1, 0);
     auto& error_fld = *error_ptr;
     get_error_diagonal_case(error_fld, vof);
+
+    EXPECT_NEAR(error_fld(0).max(0), 0.0_rt, tol);
+}
+
+TEST_F(VOFTerrainFillTest, excludes_domain_boundary_sources)
+{
+    setup_sim();
+
+    auto& repo = sim().repo();
+    auto& vof = repo.get_field("vof");
+    auto& blanking = repo.get_int_field("terrain_blank");
+
+    init_boundary_source_case(vof, blanking);
+
+    kynema_sgf::pde::PostSolveOp<kynema_sgf::pde::VOF> post_solve(
+        sim(), vof_fields());
+    post_solve.extrapolate_vof_into_terrain();
+
+    auto error_ptr = repo.create_scratch_field(1, 0);
+    auto& error_fld = *error_ptr;
+    get_error_boundary_source_case(error_fld, vof);
 
     EXPECT_NEAR(error_fld(0).max(0), 0.0_rt, tol);
 }

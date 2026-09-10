@@ -51,9 +51,9 @@ surrounding flow, which would otherwise lead to spurious density gradients and f
 terrain surface.
 
 The extrapolation is performed after the vof solve and before the density is computed from vof:
-
 - Blanked cells with at least one lateral neighbor (in x or y) that is not blanked take the average
-  vof of those non-blanked neighbors.
+  vof of those internal unblanked neighbors. Values on the x or y domain boundary are not used as
+  sources.
 - Blanked cells that have no non-blanked lateral neighbors take the average of the laterally
   neighboring blanked cells that have already been assigned a value. This is repeated in sweeps,
   so values propagate one layer deeper into the terrain per sweep until every reachable blanked
