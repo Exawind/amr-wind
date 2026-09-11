@@ -1,17 +1,27 @@
-"""Plot how the RANSConvergence monitor behaves on a KLAxell ABL run.
+"""Plot how the RANSConvergence monitor behaved on a KLAxell run.
 
-Reads two things written by the run:
+Reads two outputs from a run directory:
 
-  post_processing/<label>00000.txt   the monitor's own diagnostics
-  post_processing/sampling*[0-9].txt raw probe data at the same points
+  post_processing/<monitor label>NNNNN.txt   the monitor's diagnostics file
+  post_processing/<sampler label>NNNNN.txt   ASCII probe samples of velocity
+                                             and tke at the same points
 
-and produces a three-panel figure showing the signal the monitor watches, the
-envelope test it applies, and why a difference between successive samples is
-not a usable substitute for that test.
+and writes a three-panel figure: the horizontal speed at each point, the
+spread-over-tolerance history the monitor tests together with its hold periods
+and exponential fit, and the sample-to-sample change that a simpler criterion
+would have used.
 
-Usage: python3 rans_convergence_plot.py <run_directory> [output.png]
+The probe samples must come from a Sampling post-processor with
+output_format = ascii, a single ProbeSampler reading the same point file as
+the monitor, and fields = velocity tke. ASCII sample files carry a step index
+but no time, so the fixed timestep of the run is required.
+
+Example:
+
+  python3 plot_rans_convergence.py run_dir --dt 5.0 -o convergence.png
 """
 
+import argparse
 import glob
 import os
 import re
@@ -23,43 +33,38 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-# Timestep of the demonstration run, used to turn a step index into a time
-DT = 5.0
-
 
 def read_monitor(path):
     """Read the monitor's diagnostics file into a dict of columns."""
-    data = np.loadtxt(path, skiprows=1)
+    data = np.atleast_2d(np.loadtxt(path, skiprows=1))
     # Rows written while the window is still filling are dropped: a window
     # holding a couple of samples has a small spread whatever the flow is
     # doing, so those rows say nothing about convergence
     data = data[data[:, 2] > 0.5]
     return {
         "time": data[:, 0],
-        "num_samples": data[:, 1],
-        "num_converged": data[:, 3],
-        "num_points": data[:, 4],
         "vel_spread": data[:, 6],
         "vel_tol": data[:, 7],
         "tke_spread": data[:, 9],
         "tke_tol": data[:, 10],
         "hold_elapsed": data[:, 11],
-        "eta": data[:, 12],
     }
 
 
-def read_probes(post_dir):
-    """Read the ascii probe files into times and per-point arrays.
+def read_probes(post_dir, label, dt):
+    """Read the ASCII probe files into times and per-point arrays.
 
     Each row of a probe file is x y z, some particle identifiers, and then the
     sampled fields in the order they were requested: u, v, w, tke. Only the
     trailing four columns are relied on, since the identifier block is an
     implementation detail of the particle container.
     """
-    files = sorted(glob.glob(os.path.join(post_dir, "sampling*[0-9].txt")))
+    pattern = re.compile(re.escape(label) + r"(\d+)\.txt$")
     times, rows = [], []
-    for fname in files:
-        step = int(re.search(r"sampling(\d+)\.txt", fname).group(1))
+    for fname in glob.glob(os.path.join(post_dir, label + "*.txt")):
+        match = pattern.search(os.path.basename(fname))
+        if match is None:
+            continue  # e.g. the _info.txt files
         vals = []
         with open(fname) as fh:
             for line in fh:
@@ -67,28 +72,29 @@ def read_probes(post_dir):
                 if len(parts) < 7:
                     continue  # header lines
                 vals.append([float(p) for p in parts[-4:]])
-        if not vals:
-            continue
-        times.append(step * DT)
-        rows.append(vals)
+        if vals:
+            times.append(int(match.group(1)) * dt)
+            rows.append(vals)
+    if not rows:
+        sys.exit(f"No ASCII probe files named {label}NNNNN.txt in {post_dir}")
 
     order = np.argsort(times)
-    times = np.array(times)[order]
     # Shape: (nsamples, npoints, 4) for u, v, w, tke
-    return times, np.array(rows)[order]
+    return np.array(times)[order], np.array(rows)[order]
 
 
 def fit_decay(times, spreads, threshold=1.0):
-    """Least squares of ln(s) against t, the fit the monitor itself performs."""
+    """Least squares of ln(s) against t, the same fit the monitor performs."""
     mask = spreads > 0.0
     if mask.sum() < 5:
         return None
-    slope, intercept = np.polyfit(times[mask], np.log(spreads[mask]), 1)
+    logs = np.log(spreads[mask])
+    slope, intercept = np.polyfit(times[mask], logs, 1)
     rate, amplitude = -slope, np.exp(intercept)
     if rate <= 0.0:
         return None
-    resid = np.log(spreads[mask]) - (intercept + slope * times[mask])
-    ss_tot = np.sum((np.log(spreads[mask]) - np.mean(np.log(spreads[mask]))) ** 2)
+    resid = logs - (intercept + slope * times[mask])
+    ss_tot = np.sum((logs - np.mean(logs)) ** 2)
     rsq = 1.0 - (np.sum(resid**2) / ss_tot) if ss_tot > 0 else 0.0
     return {
         "rate": rate,
@@ -99,15 +105,34 @@ def fit_decay(times, spreads, threshold=1.0):
 
 
 def main():
-    run_dir = sys.argv[1] if len(sys.argv) > 1 else "."
-    out_png = sys.argv[2] if len(sys.argv) > 2 else "rans_convergence_monitor.png"
-    post_dir = os.path.join(run_dir, "post_processing")
+    parser = argparse.ArgumentParser(
+        description="Plot RANSConvergence diagnostics from a run directory"
+    )
+    parser.add_argument("run_dir", help="directory holding post_processing/")
+    parser.add_argument(
+        "--dt", type=float, required=True, help="fixed timestep of the run [s]"
+    )
+    parser.add_argument(
+        "--monitor-label", default="convergence", help="RANSConvergence label"
+    )
+    parser.add_argument(
+        "--sampler-label", default="sampling", help="Sampling label"
+    )
+    parser.add_argument(
+        "-o", "--output", default="rans_convergence_monitor.png"
+    )
+    args = parser.parse_args()
 
-    monitor_files = glob.glob(os.path.join(post_dir, "convergence*.txt"))
+    post_dir = os.path.join(args.run_dir, "post_processing")
+    monitor_files = sorted(
+        glob.glob(os.path.join(post_dir, args.monitor_label + "[0-9]*.txt"))
+    )
     if not monitor_files:
-        sys.exit("No convergence*.txt found in " + post_dir)
-    mon = read_monitor(sorted(monitor_files)[0])
-    ptimes, pvals = read_probes(post_dir)
+        sys.exit(f"No {args.monitor_label}NNNNN.txt found in {post_dir}")
+    mon = read_monitor(monitor_files[0])
+    if mon["time"].size == 0:
+        sys.exit("The monitor never filled its window; nothing to plot")
+    ptimes, pvals = read_probes(post_dir, args.sampler_label, args.dt)
 
     hours = 3600.0
     speed = np.hypot(pvals[:, :, 0], pvals[:, :, 1])
@@ -125,25 +150,22 @@ def main():
     for i in range(npts):
         ax.plot(ptimes / hours, speed[:, i], lw=1.2, label=f"point {i}")
     ax.set_ylabel("horizontal speed  $\\sqrt{u^2+v^2}$  [m/s]")
-    ax.set_title(
-        "KLAxell ABL approaching pseudo-steady state through a damped "
-        "inertial oscillation",
-        fontsize=11,
-    )
-    ax.legend(fontsize=9, loc="lower right", ncol=npts)
+    ax.set_title("Horizontal speed at the monitor points", fontsize=11)
+    ax.legend(fontsize=9, loc="lower right", ncol=min(npts, 6))
     ax.grid(alpha=0.3)
 
-    # Panel 2: the envelope test, and the extrapolation
+    # Panel 2: the envelope test, the hold, and the extrapolation
     ax = axes[1]
     ax.semilogy(mon["time"] / hours, vel_ratio, lw=1.4, label="speed envelope")
     ax.semilogy(mon["time"] / hours, tke_ratio, lw=1.4, label="tke envelope")
     ax.axhline(
         1.0, color="k", ls="--", lw=1.2, label="tolerance (converged below)"
     )
-
     fit = fit_decay(mon["time"], vel_ratio)
     if fit is not None:
-        tspan = np.linspace(mon["time"][0], max(fit["t_cross"], mon["time"][-1]), 200)
+        tspan = np.linspace(
+            mon["time"][0], max(fit["t_cross"], mon["time"][-1]), 200
+        )
         ax.semilogy(
             tspan / hours,
             fit["amplitude"] * np.exp(-fit["rate"] * tspan),
@@ -155,8 +177,6 @@ def main():
                 f"crossing at {fit['t_cross'] / hours:.1f} h"
             ),
         )
-    # Mark the stretches where every point was within tolerance but the
-    # criterion had not yet held long enough to stop the run
     holding = mon["hold_elapsed"] > 0.0
     if holding.any():
         ax.fill_between(
@@ -167,18 +187,6 @@ def main():
             alpha=0.18,
             label="all points within tolerance, holding",
         )
-
-        # Point at the dip, which is the whole reason the hold exists
-        dip = mon["time"][np.argmax(holding)] / hours
-        ax.annotate(
-            "envelope dips below tolerance\nat a turning point;\n"
-            "rejected by the hold requirement",
-            xy=(dip, 1.0),
-            xytext=(dip - 6.0, 0.42),
-            fontsize=8.5,
-            arrowprops={"arrowstyle": "->", "lw": 1.0, "color": "C2"},
-        )
-
     ax.set_ylabel("spread / tolerance")
     ax.set_title(
         "What the monitor tests: peak-to-trough spread over a trailing window",
@@ -187,7 +195,7 @@ def main():
     ax.legend(fontsize=9, loc="upper right")
     ax.grid(alpha=0.3, which="both")
 
-    # Panel 3: why a successive-sample difference is not a substitute
+    # Panel 3: the sample-to-sample change a simpler criterion would use
     ax = axes[2]
     worst = int(np.argmax(np.ptp(speed, axis=0)))
     naive = np.abs(np.diff(speed[:, worst]))
@@ -206,25 +214,19 @@ def main():
         label="window spread, worst point",
     )
     ax.axhline(
-        mon["vel_tol"][0],
-        color="k",
-        ls="--",
-        lw=1.2,
-        label="speed tolerance",
+        mon["vel_tol"][0], color="k", ls="--", lw=1.2, label="speed tolerance"
     )
     ax.set_ylabel("speed change [m/s]")
     ax.set_xlabel("time [hours]")
     ax.set_title(
-        "Why the window is needed: the sample-to-sample difference collapses "
-        "at every turning point",
-        fontsize=11,
+        "Sample-to-sample change against the window spread", fontsize=11
     )
     ax.legend(fontsize=9, loc="lower left")
     ax.grid(alpha=0.3, which="both")
 
     fig.tight_layout()
-    fig.savefig(out_png, dpi=160)
-    print("wrote", out_png)
+    fig.savefig(args.output, dpi=160)
+    print("wrote", args.output)
 
 
 if __name__ == "__main__":
