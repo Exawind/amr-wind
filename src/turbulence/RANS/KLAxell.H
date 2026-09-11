@@ -12,6 +12,12 @@ namespace kynema_sgf::turbulence {
 
 /** Base class for 1-Equation RANS TKE turbulence model
  *  \ingroup turb_model
+ *
+ *  With terrain the mixing length uses the height above the terrain and the
+ *  eddy viscosity is zero inside the terrain. ``KLAxell.terrain_model``
+ *  selects the terrain physics this is evaluated from (default
+ *  ``TerrainDrag``; ``ImmersedTerrain`` weights the viscosity by one minus
+ *  the drag weight of the cell in a separate kernel).
  */
 template <typename Transport>
 class KLAxell : public TurbModelBase<Transport>
@@ -41,6 +47,14 @@ public:
 
     //! Update the effective thermal diffusivity field
     void update_alphaeff(Field& alphaeff) override;
+
+    //! Turbulent viscosity on one level from the ImmersedTerrain fields,
+    //! used when terrain_model is ImmersedTerrain
+    void immersed_terrain_viscosity(
+        int lev,
+        FieldState fstate,
+        const ScratchField& gradT,
+        const ScratchField& beta_field);
 
     //! Update the effective scalar diffusivity field
     void update_scalar_diff(Field& deff, const std::string& name) override;
@@ -72,6 +86,14 @@ private:
     amrex::Real m_meso_sponge_start{2000};
 
     std::unique_ptr<ScratchField> m_gradT;
+
+    //! Terrain physics the model couples to: ``TerrainDrag`` (default, binary
+    //! blanking) or ``ImmersedTerrain`` (partial fraction). Also read by the
+    //! ``KransAxell`` TKE source.
+    std::string m_terrain_model{"TerrainDrag"};
+    //! Surface-cell settings shared with ImmersedTerrain
+    amrex::Real m_ib_solid_threshold{0.5_rt};
+    std::string m_ib_drag_weight{"fraction"};
 };
 
 } // namespace kynema_sgf::turbulence

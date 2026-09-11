@@ -7,6 +7,8 @@
 #include "src/utilities/linear_interpolation.H"
 #include "src/utilities/constants.H"
 #include "src/utilities/math_ops.H"
+#include "src/physics/ImmersedTerrain.H"
+#include "src/physics/ImmersedWallModel.H"
 
 using namespace amrex::literals;
 namespace kynema_sgf::pde::tke {
@@ -81,6 +83,28 @@ KransAxell::KransAxell(const CFDSim& sim)
     if (m_sponge_north) {
         pp_drag.get("sponge_distance_north", m_sponge_distance_north);
     }
+
+    amrex::ParmParse pp_kl("KLAxell");
+    pp_kl.query("terrain_model", m_terrain_model);
+    if (m_terrain_model == "ImmersedTerrain") {
+        if (!sim.repo().field_exists("terrain_fraction")) {
+            amrex::Abort(
+                "KLAxell.terrain_model = ImmersedTerrain requires the "
+                "ImmersedTerrain physics (terrain_fraction field not found)");
+        }
+        // Same wall-model, drag and surface-cell settings as the momentum
+        // source so that the TKE target uses the same friction velocity
+        amrex::ParmParse pp_ib("ImmersedDragForcing");
+        pp_ib.query("wall_model", m_ib_wall_model);
+        pp_ib.query("reference_distance", m_ib_reference_distance);
+        pp_ib.query("minimum_z0", m_ib_min_z0);
+        pp_ib.query("drag_coefficient", m_ib_drag_coefficient);
+        pp_ib.query("bc_forcing_time_factor", m_forcing_time_factor);
+        amrex::ParmParse pp_terrain(
+            immersedterrain::ImmersedTerrain::identifier());
+        pp_terrain.query("solid_threshold", m_ib_solid_threshold);
+        pp_terrain.query("drag_weight", m_ib_drag_weight);
+    }
 }
 
 KransAxell::~KransAxell() = default;
@@ -104,8 +128,13 @@ void KransAxell::operator()(
     const amrex::Real kappa = m_kappa;
     const amrex::Real time_factor = m_forcing_time_factor;
     const amrex::Real z0 = m_z0;
+    // TerrainDrag fields; the ImmersedTerrain fields are handled in a
+    // separate kernel selected by KLAxell.terrain_model. Either one takes
+    // over the wall and sponge forcing from the main kernel.
+    const bool use_immersed = (m_terrain_model == "ImmersedTerrain");
     const bool has_terrain =
-        this->m_sim.repo().int_field_exists("terrain_blank");
+        !use_immersed && this->m_sim.repo().int_field_exists("terrain_blank");
+    const bool terrain_active = has_terrain || use_immersed;
     const amrex::Real sponge_start = m_meso_start;
     const auto vsize = m_wind_heights_d.size();
     const auto* wind_heights_d = m_wind_heights_d.data();
@@ -173,9 +202,13 @@ void KransAxell::operator()(
             src_arrs[nbx](i, j, k) +=
                 shear_prod_arr(i, j, k) + buoy_prod_arr(i, j, k) -
                 dissip_arr(i, j, k) -
-                ((1.0_rt - static_cast<int>(has_terrain)) *
+                ((1.0_rt - static_cast<int>(terrain_active)) *
                  (sponge_forcing - bcforcing));
         });
+
+    if (use_immersed) {
+        immersed_terrain_forcing(lev, fstate, src_term);
+    }
 
     if (has_terrain) {
         const amrex::Real z0_min = 1.0e-4_rt;
@@ -330,6 +363,169 @@ void KransAxell::operator()(
                 });
         }
     }
+    amrex::Gpu::streamSynchronize();
+}
+
+// Terrain forcing with the ImmersedTerrain fields.
+//
+//  Per cell, with w_solid the drag weight (``ImmersedTerrain.drag_weight``):
+//
+//  - the production and dissipation already in the source are weighted by
+//    (1 - w_solid);
+//  - surface cells (mask == 2) and fluid cells on the bottom domain face are
+//    relaxed toward the log-law TKE (u*^3/C_mu^3 + B)^(2/3), averaged over
+//    the wall patches shared with ImmersedDragForcing (same reference cell,
+//    distance d2 and normal, so the same friction velocity), on the time
+//    scale tau_f dt and weighted by (1 - w_solid);
+//  - cells with w_solid > 0 are damped toward zero at the rate
+//    w_solid C_d / dz, integrated exactly over the step
+//    (C_eff = (1 - exp(-C dt))/dt) in place of the limited explicit
+//    coefficient of the TerrainDrag kernel;
+//  - the mesoscale sponge uses the height above the terrain.
+//
+//  The lateral sponge of the TerrainDrag path is not applied here, in line
+//  with ImmersedTerrain having no damping layers.
+void KransAxell::immersed_terrain_forcing(
+    const int lev, const FieldState fstate, amrex::MultiFab& src_term) const
+{
+    using immersed_wall::WallPatch;
+    using immersedterrain::ImmersedTerrain;
+
+    const auto& geom = m_mesh.Geom(lev);
+    const auto& problo = geom.ProbLoArray();
+    const auto dx = geom.CellSizeArray();
+    const amrex::Real dt = m_time.delta_t();
+    const amrex::Real heat_flux = m_heat_flux;
+    const amrex::Real Cmu = m_Cmu;
+    const amrex::Real time_factor = m_forcing_time_factor;
+    const amrex::Real sponge_start = m_meso_start;
+    const auto vsize = m_wind_heights_d.size();
+    const auto* wind_heights_d = m_wind_heights_d.data();
+    const auto* tke_values_d = m_tke_values_d.data();
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
+        m_gravity[0], m_gravity[1], m_gravity[2]};
+
+    const immersed_wall::WallModel wall_model =
+        immersed_wall::parse_wall_model(m_ib_wall_model);
+    const bool actual_reference = (m_ib_reference_distance == "actual");
+    const bool center_weight = (m_ib_drag_weight == "center");
+    const amrex::Real solid_threshold = m_ib_solid_threshold;
+    const amrex::Real min_z0 = m_ib_min_z0;
+    const amrex::Real drag_rate = m_ib_drag_coefficient / dx[2];
+    immersed_wall::WallParams wp{};
+    wp.kappa = m_kappa;
+    wp.beta_m = m_beta_m;
+    wp.gamma_m = m_gamma_m;
+    wp.inv_mo_length =
+        (m_wall_het_model == "mol") ? 1.0_rt / m_monin_obukhov_length : 0.0_rt;
+
+    auto const& src_arrs = src_term.arrays();
+    auto const& vel_arrs =
+        m_velocity.state(field_impl::dof_state(fstate))(lev).const_arrays();
+    auto const& tke_arrs = m_tke(lev).const_arrays();
+    auto const& ref_theta_arrs = (*m_ref_theta_scratch)(lev).const_arrays();
+    auto const& frac_arrs =
+        m_sim.repo().get_field("terrain_fraction")(lev).const_arrays();
+    auto const& mask_arrs =
+        m_sim.repo().get_int_field("terrain_mask")(lev).const_arrays();
+    auto const& surf_arrs =
+        m_sim.repo().get_field("terrain_surface")(lev).const_arrays();
+    auto const& z0_arrs =
+        m_sim.repo().get_field("terrain_roughness")(lev).const_arrays();
+
+    amrex::ParallelFor(
+        src_term, amrex::IntVect(0), 1,
+        [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k, int) {
+            const auto& vel = vel_arrs[nbx];
+            const auto& tke_arr = tke_arrs[nbx];
+            const auto& frac = frac_arrs[nbx];
+            const auto& surf = surf_arrs[nbx];
+
+            const amrex::Real beta = frac(i, j, k, 0);
+            const amrex::Real w_solid = immersed_wall::solid_weight(
+                beta, center_weight, solid_threshold);
+            const amrex::Real fluid_weight = 1.0_rt - w_solid;
+            const amrex::Real h = surf(i, j, k, ImmersedTerrain::surf_height);
+            const amrex::Real z_c = problo[2] + ((k + 0.5_rt) * dx[2]);
+            const amrex::Real tke = tke_arr(i, j, k);
+
+            // Wall patches: surface cells from the terrain geometry, fluid
+            // cells on the bottom domain face as a plain bottom wall
+            const bool surface_cell =
+                (mask_arrs[nbx](i, j, k, 0) == ImmersedTerrain::mask_surface) &&
+                (w_solid < 1.0_rt);
+            const bool bottom_cell = (k == 0) && (w_solid < 1.0_rt);
+            const amrex::Real z0 =
+                amrex::max<amrex::Real>(z0_arrs[nbx](i, j, k, 0), min_z0);
+            amrex::GpuArray<WallPatch, 2 * AMREX_SPACEDIM> patches{};
+            int np = surface_cell ? immersed_wall::wall_patches(
+                                        wall_model, i, j, k, beta, frac, surf,
+                                        dx, z_c, z0, solid_threshold,
+                                        actual_reference, patches.data())
+                                  : 0;
+            if (np == 0 && bottom_cell) {
+                WallPatch& p = patches[0];
+                p.nrm = {0.0_rt, 0.0_rt, 1.0_rt};
+                p.dxn = dx[2];
+                p.d1 = 0.5_rt * dx[2];
+                p.d2 = 1.5_rt * dx[2];
+                p.ir = i;
+                p.jr = j;
+                p.kr = k + 1;
+                p.weight = 1.0_rt;
+                np = 1;
+            }
+
+            const amrex::Real T0 = ref_theta_arrs[nbx](i, j, k);
+            const amrex::Real hf = std::abs(gravity[2]) / T0 * heat_flux;
+            amrex::Real tke_sum = 0.0_rt;
+            amrex::Real weight_sum = 0.0_rt;
+            for (int ip = 0; ip < np; ++ip) {
+                const WallPatch& p = patches[ip];
+                const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> u_ref{
+                    vel(p.ir, p.jr, p.kr, 0), vel(p.ir, p.jr, p.kr, 1),
+                    vel(p.ir, p.jr, p.kr, 2)};
+                const amrex::Real ustar = immersed_wall::friction_velocity(
+                    immersed_wall::magnitude(
+                        immersed_wall::tangential(u_ref, p.nrm)),
+                    p, z0, wp);
+                const amrex::Real d1 = amrex::max<amrex::Real>(p.d1, z0);
+                const amrex::Real rans_b = amrex::max<amrex::Real>(hf, 0.0_rt) *
+                                           wp.kappa * d1 / utils::powi(Cmu, 3);
+                const amrex::Real tke_exact = std::pow(
+                    (ustar * ustar * ustar / utils::powi(Cmu, 3)) + rans_b,
+                    2.0_rt / 3.0_rt);
+                tke_sum += p.weight * tke_exact;
+                weight_sum += p.weight;
+            }
+            const amrex::Real wall_forcing =
+                (weight_sum > 0.0_rt)
+                    ? fluid_weight * ((tke_sum / weight_sum) - tke) /
+                          (time_factor * dt)
+                    : 0.0_rt;
+
+            // Damping inside the terrain, exact in time
+            const amrex::Real drag_forcing =
+                -immersed_wall::exact_relaxation_rate(w_solid * drag_rate, dt) *
+                tke;
+
+            // Mesoscale sponge above the terrain
+            const amrex::Real z =
+                amrex::max<amrex::Real>(z_c - h, 0.5_rt * dx[2]);
+            amrex::Real ref_tke = tke;
+            if (z > sponge_start) {
+                ref_tke = (vsize > 0)
+                              ? interp::linear(
+                                    wind_heights_d, wind_heights_d + vsize,
+                                    tke_values_d, z)
+                              : tke;
+            }
+            const amrex::Real sponge_forcing = (tke - ref_tke) / dt;
+
+            src_arrs[nbx](i, j, k) = (fluid_weight * src_arrs[nbx](i, j, k)) +
+                                     wall_forcing + drag_forcing -
+                                     sponge_forcing;
+        });
     amrex::Gpu::streamSynchronize();
 }
 

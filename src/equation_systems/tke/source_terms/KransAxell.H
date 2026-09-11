@@ -15,6 +15,15 @@ namespace kynema_sgf::pde::tke {
  * geophysical applications: comparison with data and the k− ε model.
  * Environmental Fluid Mechanics, 1, 71-106.
  *  \ingroup tke_src turb_model we_abl
+ *
+ *  With terrain (``KLAxell.terrain_model``): the source is blanked inside the
+ *  terrain, the TKE is relaxed toward the log-law value
+ *  (u*^3/C_mu^3 + B)^(2/3) in the first fluid cells and damped inside the
+ *  terrain. ``TerrainDrag`` (default) uses the binary blanking and the drag
+ *  cells; ``ImmersedTerrain`` evaluates the same forcing in a separate kernel
+ *  from the terrain fraction and the wall patches of the surface cells shared
+ *  with ImmersedDragForcing, with the interior damping integrated exactly in
+ *  time.
  */
 class KransAxell : public TKESource::Register<KransAxell>
 {
@@ -27,6 +36,13 @@ public:
 
     void operator()(
         int lev, FieldState fstate, amrex::MultiFab& src_term) const override;
+
+    //! Terrain forcing on one level from the ImmersedTerrain fields, used
+    //! when KLAxell.terrain_model is ImmersedTerrain. Public because it
+    //! launches a device lambda, which CUDA does not allow from a private
+    //! member function.
+    void immersed_terrain_forcing(
+        int lev, FieldState fstate, amrex::MultiFab& src_term) const;
 
 private:
     Field& m_turb_lscale;
@@ -70,6 +86,18 @@ private:
     amrex::Real m_monin_obukhov_length{constants::LARGE_NUM};
     amrex::Real m_gamma_m{5.0_rt};
     amrex::Real m_beta_m{16.0_rt};
+
+    //! ``TerrainDrag`` (default) or ``ImmersedTerrain``, read from
+    //! ``KLAxell.terrain_model``
+    std::string m_terrain_model{"TerrainDrag"};
+    //! Wall-model and drag settings shared with ImmersedDragForcing
+    std::string m_ib_wall_model{"cell_offset"};
+    std::string m_ib_reference_distance{"nominal"};
+    amrex::Real m_ib_min_z0{1.0e-4_rt};
+    amrex::Real m_ib_drag_coefficient{10.0_rt};
+    //! Surface-cell settings shared with ImmersedTerrain
+    amrex::Real m_ib_solid_threshold{0.5_rt};
+    std::string m_ib_drag_weight{"fraction"};
 };
 
 } // namespace kynema_sgf::pde::tke

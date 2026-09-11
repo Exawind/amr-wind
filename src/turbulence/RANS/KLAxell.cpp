@@ -7,6 +7,8 @@
 #include "src/equation_systems/tke/TKE.H"
 #include "AMReX_ParmParse.H"
 #include "src/utilities/math_ops.H"
+#include "src/physics/ImmersedTerrain.H"
+#include "src/physics/ImmersedWallModel.H"
 
 using namespace amrex::literals;
 
@@ -40,6 +42,27 @@ KLAxell<Transport>::KLAxell(CFDSim& sim)
     {
         amrex::ParmParse pp("incflo");
         pp.queryarr("gravity", m_gravity);
+    }
+    {
+        amrex::ParmParse pp("KLAxell");
+        pp.query("terrain_model", m_terrain_model);
+        if (m_terrain_model != "TerrainDrag" &&
+            m_terrain_model != "ImmersedTerrain") {
+            amrex::Abort(
+                "KLAxell.terrain_model must be TerrainDrag or ImmersedTerrain");
+        }
+        if (m_terrain_model == "ImmersedTerrain") {
+            if (!sim.repo().field_exists("terrain_fraction")) {
+                amrex::Abort(
+                    "KLAxell.terrain_model = ImmersedTerrain requires the "
+                    "ImmersedTerrain physics (terrain_fraction field not "
+                    "found)");
+            }
+            amrex::ParmParse pp_terrain(
+                immersedterrain::ImmersedTerrain::identifier());
+            pp_terrain.query("solid_threshold", m_ib_solid_threshold);
+            pp_terrain.query("drag_weight", m_ib_drag_weight);
+        }
     }
 
     // TKE source term to be added to PDE
@@ -113,7 +136,12 @@ void KLAxell<Transport>::update_turbulent_viscosity(
     const amrex::Real surf_flux = m_surf_flux;
     const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
     const amrex::Real lengthscale_switch = m_meso_sponge_start;
+    const bool use_immersed = (m_terrain_model == "ImmersedTerrain");
     for (int lev = 0; lev < nlevels; ++lev) {
+        if (use_immersed) {
+            immersed_terrain_viscosity(lev, fstate, gradT, *beta);
+            continue;
+        }
         const auto& geom = geom_vec[lev];
         const auto& problo = repo.mesh().Geom(lev).ProbLoArray();
         const amrex::Real dz = geom.CellSize()[2];
@@ -293,6 +321,122 @@ void KLAxell<Transport>::update_turbulent_viscosity(
     amrex::Gpu::streamSynchronize();
 
     mu_turb.fillpatch(this->m_sim.time().current_time());
+}
+
+// KLAxell viscosity with the ImmersedTerrain fields: the TerrainDrag kernel
+//  with the height above the terrain taken from ``terrain_surface`` and the
+//  binary blanking replaced by (1 - w_solid), w_solid being the drag weight
+//  of the cell (``ImmersedTerrain.drag_weight``), so that partial cells keep
+//  a fraction of the eddy viscosity.
+template <typename Transport>
+void KLAxell<Transport>::immersed_terrain_viscosity(
+    const int lev,
+    const FieldState fstate,
+    const ScratchField& gradT,
+    const ScratchField& beta_field)
+{
+    using immersedterrain::ImmersedTerrain;
+
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
+        m_gravity[0], m_gravity[1], m_gravity[2]};
+    const amrex::Real Cmu = m_Cmu;
+    const amrex::Real Cb_stable = m_Cb_stable;
+    const amrex::Real Cb_unstable = m_Cb_unstable;
+    const amrex::Real Rtc = -1.0_rt;
+    const amrex::Real Rtmin = -3.0_rt;
+    const amrex::Real lambda = 30.0_rt;
+    const amrex::Real kappa = 0.41_rt;
+    const amrex::Real surf_flux = m_surf_flux;
+    const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
+    const amrex::Real lengthscale_switch = m_meso_sponge_start;
+    const bool center_weight = (m_ib_drag_weight == "center");
+    const amrex::Real solid_threshold = m_ib_solid_threshold;
+
+    auto& mu_turb = this->mu_turb();
+    const auto& den = this->m_rho.state(fstate);
+    const auto& repo = mu_turb.repo();
+    const auto& geom = repo.mesh().Geom(lev);
+    const auto& problo = geom.ProbLoArray();
+    const amrex::Real dz = geom.CellSize()[2];
+
+    const auto& mu_arrs = mu_turb(lev).arrays();
+    const auto& rho_arrs = den(lev).const_arrays();
+    const auto& gradT_arrs = gradT(lev).const_arrays();
+    const auto& tlscale_arrs = (this->m_turb_lscale)(lev).arrays();
+    const auto& tke_arrs = (*this->m_tke)(lev).arrays();
+    const auto& buoy_prod_arrs = (this->m_buoy_prod)(lev).arrays();
+    const auto& shear_prod_arrs = (this->m_shear_prod)(lev).arrays();
+    const auto& beta_arrs = beta_field(lev).const_arrays();
+    const auto& frac_arrs =
+        this->m_sim.repo().get_field("terrain_fraction")(lev).const_arrays();
+    const auto& surf_arrs =
+        this->m_sim.repo().get_field("terrain_surface")(lev).const_arrays();
+
+    amrex::ParallelFor(
+        mu_turb(lev), [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) {
+            const amrex::Real w_solid = immersed_wall::solid_weight(
+                frac_arrs[nbx](i, j, k, 0), center_weight, solid_threshold);
+            const amrex::Real fluid_weight = 1.0_rt - w_solid;
+            const amrex::Real h =
+                surf_arrs[nbx](i, j, k, ImmersedTerrain::surf_height);
+            amrex::Real stratification =
+                -((gradT_arrs[nbx](i, j, k, 0) * gravity[0]) +
+                  (gradT_arrs[nbx](i, j, k, 1) * gravity[1]) +
+                  (gradT_arrs[nbx](i, j, k, 2) * gravity[2])) *
+                beta_arrs[nbx](i, j, k);
+            const amrex::Real z = amrex::max<amrex::Real>(
+                problo[2] + ((k + 0.5_rt) * dz) - h, 0.5_rt * dz);
+            const amrex::Real lscale_s =
+                (lambda * kappa * z) / (lambda + (kappa * z));
+            const amrex::Real lscale_b =
+                Cb_stable * std::sqrt(
+                                tke_arrs[nbx](i, j, k) /
+                                amrex::max<amrex::Real>(stratification, tiny));
+            const amrex::Real epsilon =
+                utils::powi(Cmu, 3) * std::pow(tke_arrs[nbx](i, j, k), 1.5_rt) /
+                (tlscale_arrs[nbx](i, j, k) + tiny);
+            amrex::Real Rt = utils::powi(tke_arrs[nbx](i, j, k) / epsilon, 2) *
+                             stratification;
+            Rt = (Rt > Rtc) ? Rt
+                            : amrex::max<amrex::Real>(
+                                  Rt, Rt - (utils::powi(Rt - Rtc, 2) /
+                                            (Rt + Rtmin - (2.0_rt * Rtc))));
+            tlscale_arrs[nbx](i, j, k) =
+                (stratification > 0)
+                    ? std::sqrt(
+                          utils::powi(lscale_s * lscale_b, 2) /
+                          (utils::powi(lscale_s, 2) + utils::powi(lscale_b, 2)))
+                    : lscale_s *
+                          std::sqrt(
+                              1.0_rt - (utils::powi(Cmu, 6) *
+                                        utils::powi(Cb_unstable, -2) * Rt));
+            tlscale_arrs[nbx](i, j, k) =
+                (stratification > 0)
+                    ? amrex::min<amrex::Real>(
+                          tlscale_arrs[nbx](i, j, k),
+                          std::sqrt(
+                              Cmu * tke_arrs[nbx](i, j, k) / stratification))
+                    : tlscale_arrs[nbx](i, j, k);
+            const bool neutral_switch =
+                (std::abs(surf_flux) < 1.0e-5_rt) && (z <= lengthscale_switch);
+            tlscale_arrs[nbx](i, j, k) =
+                neutral_switch ? lscale_s : tlscale_arrs[nbx](i, j, k);
+            Rt = neutral_switch ? 0.0_rt : Rt;
+            const amrex::Real Cmu_Rt =
+                (Cmu + (0.108_rt * Rt)) /
+                (1.0_rt + (0.308_rt * Rt) + (0.00837_rt * utils::powi(Rt, 2)));
+            mu_arrs[nbx](i, j, k) =
+                rho_arrs[nbx](i, j, k) * Cmu_Rt * tlscale_arrs[nbx](i, j, k) *
+                std::sqrt(tke_arrs[nbx](i, j, k)) * fluid_weight;
+            const amrex::Real Cmu_prime_Rt = Cmu / (1.0_rt + (0.277_rt * Rt));
+            const amrex::Real muPrime = rho_arrs[nbx](i, j, k) * Cmu_prime_Rt *
+                                        tlscale_arrs[nbx](i, j, k) *
+                                        std::sqrt(tke_arrs[nbx](i, j, k)) *
+                                        fluid_weight;
+            buoy_prod_arrs[nbx](i, j, k) = -muPrime * stratification;
+            shear_prod_arrs[nbx](i, j, k) *=
+                shear_prod_arrs[nbx](i, j, k) * mu_arrs[nbx](i, j, k);
+        });
 }
 
 template <typename Transport>

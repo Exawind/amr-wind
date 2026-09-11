@@ -45,6 +45,7 @@ objectives:
    walkthrough/index
    user/user
    theory/theory 
+   theory/immersed_terrain_notes
    developer/index
    references
    bibrefs.rst

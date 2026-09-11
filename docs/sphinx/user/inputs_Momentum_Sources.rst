@@ -321,6 +321,86 @@ Section: Momentum Sources
    when the form drag is known to be under-resolved.
 
 
+The following arguments are influential when ``ImmersedDragForcing`` is included in
+:input_param:`ICNS.source_terms`. This source term requires the
+:ref:`ImmersedTerrain <inputs_immersedterrain>` physics and replaces ``DragForcing`` for
+terrain represented with a partial terrain fraction. It applies an immersed drag in every
+cell with a non-zero terrain fraction :math:`\beta`, relaxing the velocity toward zero at
+the rate :math:`C = \beta C_d / \Delta z`, integrated exactly over the time step as
+:math:`C_\mathrm{eff} = (1 - e^{-C \Delta t}) / \Delta t` so that no drag limiter is needed.
+When :input_param:`turbulence.model` is not ``Laminar`` it also applies a log-law wall model
+in surface cells (``terrain_mask`` = 2), weighted by :math:`1 - \beta`, consisting of the wall
+stress divergence :math:`-u_*^2 \hat{e}_t / \Delta_n` and a relaxation of the tangential
+velocity toward the log-law value. Monin-Obukhov corrections use the single Obukhov length
+:input_param:`ABL.monin_obukhov_length` when :input_param:`ABL.wall_het_model` is ``mol``.
+With :input_param:`ImmersedTerrain.implicit_projection` the immersed drag is instead applied
+inside the nodal and MAC projections and this source term contributes only the wall model.
+
+.. input_param:: ImmersedDragForcing.drag_coefficient
+
+   **type:** Real, optional, default = 10.0
+
+   Coefficient :math:`C_d` of the immersed drag; the relaxation rate in a fully solid cell
+   is :math:`C_d / \Delta z`.
+
+.. input_param:: ImmersedDragForcing.wall_model
+
+   **type:** String, optional, default = ``cell_offset``
+
+   How the wall distance is measured in surface cells.
+
+   - ``cell_offset``: on each of the six cell faces that touches a solid neighbor, the
+     forced cell is at :math:`0.5 \Delta_f` and the reference velocity (taken from the
+     neighbor opposite the wall) at :math:`1.5 \Delta_f` from the wall.
+   - ``terrain_height``: as ``cell_offset``, except that the bottom face uses the true
+     height above the terrain, :math:`z_k - h` and :math:`z_{k+1} - h`.
+   - ``surface_normal``: the wall normal is built from the terrain slopes, distances are
+     measured along it, the velocity is split into wall-normal and tangential parts and the
+     stress acts on all three components. The reference velocity is taken from the cell one
+     normal cell-width away. Side-wall cells with no terrain below fall back to the
+     face-based treatment.
+
+.. input_param:: ImmersedDragForcing.reference_distance
+
+   **type:** String, optional, default = ``nominal``
+
+   Distance assigned to the reference velocity in the ``surface_normal`` wall model.
+   ``nominal`` uses :math:`d_2 = d_1 + \Delta_n`; ``actual`` uses the normal distance of
+   the sampled reference cell's own center to the surface, which makes the log law
+   consistent with the sampled velocity on slopes. In the manufactured log-law test the
+   ``actual`` form recovers :math:`u_*` to machine precision on a plane slope and reduces
+   the error on a Gaussian ridge by two orders of magnitude relative to ``nominal``; with
+   ``nominal`` (and with the face-based methods) the slope error does not decrease with
+   the mesh. Also read by ``ImmersedDragTempForcing``.
+
+.. input_param:: ImmersedDragForcing.bc_forcing_time_scale
+
+   **type:** String, optional, default = ``wall``
+
+   Time scale of the wall-model relaxation. ``wall`` uses
+   :math:`\max(\tau_f \Delta t, d_1 / u_*)`, which is independent of the time step once
+   the flow-based scale exceeds the floor. ``time_step`` uses :math:`\tau_f \Delta t`,
+   the behavior of ``DragForcing``.
+
+.. input_param:: ImmersedDragForcing.bc_forcing_time_factor
+
+   **type:** Real, optional, default = 5.0
+
+   The factor :math:`\tau_f` in the relaxation time scale above.
+
+.. input_param:: ImmersedDragForcing.minimum_z0
+
+   **type:** Real, optional, default = 1.0e-4
+
+   Lower bound on the roughness length used in the wall model.
+
+.. input_param:: ImmersedDragForcing.force_laminar
+
+   **type:** Boolean, optional, default = false
+
+   Skip the wall model even when a turbulence model is active, leaving only the immersed
+   drag.
+
 The following arguments are influential when ``GravityForcing`` is included in :input_param:`ICNS.source_terms`.
 
    .. input_param:: ICNS.use_perturb_pressure
