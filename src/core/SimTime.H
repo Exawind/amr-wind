@@ -7,6 +7,7 @@
 #include "AMReX_Vector.H"
 #include <algorithm>
 #include <cmath>
+#include <string>
 
 using namespace amrex::literals;
 
@@ -178,6 +179,30 @@ public:
         m_stop_time = -1.0_rt;
     }
 
+    /** Request that the simulation stop at the end of the current timestep
+     *
+     *  Used by post-processing utilities that detect their own end condition,
+     *  such as a convergence monitor. The stop takes effect the next time
+     *  continue_simulation() is consulted, so the timestep in progress
+     *  finishes normally.
+     *
+     *  \param reason Text reported when the simulation stops
+     */
+    void request_stop(const std::string& reason)
+    {
+        m_stop_requested = true;
+        m_stop_reason = reason;
+    }
+
+    //! Return true if a graceful stop has been requested
+    [[nodiscard]] bool stop_requested() const { return m_stop_requested; }
+
+    //! Text describing why a stop was requested
+    [[nodiscard]] const std::string& stop_reason() const
+    {
+        return m_stop_reason;
+    }
+
     //! Set the wall clock start time (captures current wall time)
     void set_wall_start_time();
 
@@ -190,6 +215,12 @@ public:
     [[nodiscard]] bool output_profiling_info() const;
 
 private:
+    //! A post-processing utility has asked for a graceful stop
+    bool m_stop_requested{false};
+
+    //! Reason recorded alongside the stop request
+    std::string m_stop_reason;
+
     //! Timestep sizes
     amrex::Vector<amrex::Real> m_dt =
         amrex::Vector<amrex::Real>(max_time_states, 0.0_rt);

@@ -29,6 +29,29 @@ void build_simtime_params()
 class SimTimeTest : public AmrexTest
 {};
 
+TEST_F(SimTimeTest, request_stop_ends_the_run_before_max_step)
+{
+    build_simtime_params();
+    kynema_sgf::SimTime time;
+    time.parse_parameters();
+
+    // Nothing has asked to stop, and neither max_step nor stop_time is close
+    EXPECT_FALSE(time.stop_requested());
+    EXPECT_TRUE(time.continue_simulation());
+
+    time.request_stop("monitor converged");
+
+    EXPECT_TRUE(time.stop_requested());
+    EXPECT_EQ(time.stop_reason(), "monitor converged");
+
+    // Still at the first step, well short of the max_step of 10 and the
+    // stop_time of 2.0, so this is the requested stop taking effect and not
+    // one of the existing end conditions
+    EXPECT_EQ(time.time_index(), 0);
+    EXPECT_FALSE(time.continue_simulation());
+    EXPECT_FALSE(time.new_timestep());
+}
+
 TEST_F(SimTimeTest, init)
 {
     build_simtime_params();
