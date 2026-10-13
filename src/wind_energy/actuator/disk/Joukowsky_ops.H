@@ -138,7 +138,7 @@ struct InitDataOp<Joukowsky, ActSrcDisk>
   https://wes.copernicus.org/preprints/wes-2022-108/
  */
 template <>
-struct ComputeLoadsAndUpdateStateOp<Joukowsky, ActSrcDisk>
+struct ComputeLoadsOp<Joukowsky, ActSrcDisk>
 {
     void operator()(Joukowsky::DataType& data)
     {
@@ -347,6 +347,14 @@ struct ComputeLoadsAndUpdateStateOp<Joukowsky, ActSrcDisk>
                 270.0_rt - kynema_sgf::utils::degrees(turbine_angle);
         }
 #endif
+    }
+};
+
+struct AdvanceModelOp<Joukowsky, ActSrcDisk>
+{
+    void operator()(Joukowsky::DataType& /*data*/)
+    { // Actuator disk model does not evolve in space; it only changes positions
+      // due to controller input, which occurs in UpdatePosOp
     }
 };
 
