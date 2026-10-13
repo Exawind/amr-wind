@@ -166,7 +166,6 @@ public:
     void compute_loads() override
     {
         ops::ComputeLoadsOp<ActTrait, SrcTrait>()(m_data);
-        m_src_op.setup_op();
         // communicate loads
     }
 
