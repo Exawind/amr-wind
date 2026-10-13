@@ -278,20 +278,6 @@ void Actuator::update_actuator_data_from_particles()
     }
 }
 
-/** Compute loads and update state for all local actuator components.
- */
-void Actuator::compute_actuator_loads_and_advance_model_and_scatter()
-{
-    BL_PROFILE(
-        "kynema-sgf::actuator::Actuator::compute_actuator_loads_and_update_"
-        "state");
-    for (auto& ac : m_actuators) {
-        if (ac->info().actuator_in_proc) {
-            ac->compute_loads_and_update_state();
-        }
-    }
-}
-
 void Actuator::compute_actuator_loads()
 {
     BL_PROFILE("kynema-sgf::actuator::Actuator::compute_actuator_loads");
@@ -317,6 +303,13 @@ void Actuator::accumulate_actuator_source_terms_for_fluid()
     BL_PROFILE(
         "kynema-sgf::actuator::Actuator::accumulate_actuator_source_terms_for_"
         "fluid");
+
+    for (auto& ac : m_actuators) {
+        if (ac->info().actuator_in_proc) {
+            ac->prepare_source_term_data();
+        }
+    }
+
     m_act_source.setVal(0.0_rt);
     const int nlevels = m_sim.repo().num_active_levels();
 

@@ -59,6 +59,8 @@ public:
 
     virtual void advance_model() = 0;
 
+    virtual void prepare_source_term_data() = 0;
+
     virtual void compute_source_term(
         int lev, const amrex::MFIter& mfi, const amrex::Geometry& geom) = 0;
 
@@ -174,11 +176,7 @@ public:
         // communicate positions
     }
 
-    void compute_loads_and_update_state() override
-    {
-        ops::ComputeLoadsAndUpdateStateOp<ActTrait, SrcTrait>()(m_data);
-        m_src_op.setup_op();
-    }
+    void prepare_source_term_data() override { m_src_op.setup_op(); }
 
     void compute_source_term(
         const int lev,
