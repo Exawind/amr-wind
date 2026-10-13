@@ -269,7 +269,10 @@ void ExtTurbIface<FastTurbine, FastSolverData>::read_velocity_data(
 template <>
 void ExtTurbIface<FastTurbine, FastSolverData>::calc_aero_loads(
     FastTurbine& /*fi*/)
-{}
+{
+    // Nothing for OpenFAST as aerodynamic loads cannot be calculated
+    // separately.
+}
 
 template <>
 void ExtTurbIface<FastTurbine, FastSolverData>::do_turbine_step(FastTurbine& fi)
