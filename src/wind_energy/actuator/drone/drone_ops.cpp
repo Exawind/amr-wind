@@ -290,8 +290,7 @@ void UpdateVelOp<Drone, ActSrcDrone>::operator()(Drone::DataType& data)
     }
 }
 
-void ComputeLoadsAndUpdateStateOp<Drone, ActSrcDrone>::operator()(
-    Drone::DataType& data)
+void ComputeForceOp<Drone, ActSrcDrone>::operator()(Drone::DataType& data)
 {
     auto& meta = data.meta();
     const auto& time = data.sim().time();
@@ -301,8 +300,7 @@ void ComputeLoadsAndUpdateStateOp<Drone, ActSrcDrone>::operator()(
     meta.total_force = vs::Vector::zero();
     meta.total_moment = vs::Vector::zero();
     for (auto& rotor : meta.rotors) {
-        ComputeLoadsAndUpdateStateOp<ActuatorSector, ActSrcSector>()(
-            rotor->data);
+        ComputeForceOp<ActuatorSector, ActSrcSector>()(rotor->data);
         const auto& rotor_meta = rotor->data.meta();
         // Sector forces act on the fluid; report equal-and-opposite vehicle
         // load.

@@ -31,7 +31,7 @@ struct UpdateVelOp<Drone, ActSrcDrone>
 };
 
 template <>
-struct ComputeLoadsAndUpdateStateOp<Drone, ActSrcDrone>
+struct ComputeForceOp<Drone, ActSrcDrone>
 {
     void operator()(Drone::DataType& data);
 };
