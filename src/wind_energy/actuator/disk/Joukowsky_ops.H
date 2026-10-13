@@ -350,6 +350,7 @@ struct ComputeLoadsOp<Joukowsky, ActSrcDisk>
     }
 };
 
+template <>
 struct AdvanceModelOp<Joukowsky, ActSrcDisk>
 {
     void operator()(Joukowsky::DataType& /*data*/)

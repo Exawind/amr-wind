@@ -267,6 +267,11 @@ void ExtTurbIface<FastTurbine, FastSolverData>::read_velocity_data(
 #endif
 
 template <>
+void ExtTurbIface<FastTurbine, FastSolverData>::calc_aero_loads(
+    FastTurbine& /*fi*/)
+{}
+
+template <>
 void ExtTurbIface<FastTurbine, FastSolverData>::do_turbine_step(FastTurbine& fi)
 {
     fast_func(FAST_Step, &fi.tid_local);

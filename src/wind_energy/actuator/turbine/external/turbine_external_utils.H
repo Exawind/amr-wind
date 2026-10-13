@@ -170,7 +170,7 @@ void compute_nacelle_force(datatype& data)
 }
 
 template <typename datatype>
-void ext_step(datatype& data)
+void ext_loads(datatype& data)
 {
     if (!data.info().is_root_proc) {
         return;
@@ -180,16 +180,29 @@ void ext_step(datatype& data)
     auto& tf = data.meta().ext_data;
     if (tf.is_solution0) {
         meta.ext_ptr->init_solution(tf.tid_local);
-    } else {
+    }
+
+    meta.ext_ptr->advance_aero_loads(tf.tid_local);
+    meta.ext_ptr->get_hub_stats(tf.tid_local);
+    compute_nacelle_force<datatype>(data);
+}
+
+template <typename datatype>
+void ext_step(datatype& data)
+{
+    if (!data.info().is_root_proc) {
+        return;
+    }
+
+    auto& meta = data.meta();
+    auto& tf = data.meta().ext_data;
+    if (!tf.is_solution0) {
         meta.ext_ptr->advance_turbine(tf.tid_local);
     }
 
-    meta.ext_ptr->get_hub_stats(tf.tid_local);
-
-    // Populate nacelle force into the OpenFAST data structure so that it
-    // gets broadcasted to all influenced processes in subsequent scattering
-    // of data.
-    compute_nacelle_force<datatype>(data);
+    // Refactoring changed order of this, will modify results
+    /* meta.ext_ptr->get_hub_stats(tf.tid_local);
+       compute_nacelle_force<datatype>(data); */
 }
 
 template <typename datatype>

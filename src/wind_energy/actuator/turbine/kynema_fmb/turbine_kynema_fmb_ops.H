@@ -169,15 +169,26 @@ struct UpdateVelOp<TurbineKynemaFMB, SrcTrait>
 };
 
 template <typename SrcTrait>
-struct ComputeLoadsAndUpdateStateOp<TurbineKynemaFMB, SrcTrait>
+struct ComputeLoadsOp<TurbineKynemaFMB, SrcTrait>
 {
     void operator()(typename TurbineKynemaFMB::DataType& data)
     {
         BL_PROFILE(
-            "kynema-sgf::actuator::ComputeLoadsAndUpdateStateOp<"
+            "kynema-sgf::actuator::ComputeLoadsOp<"
             "TurbineKynemaFMB>");
-        advance_external_turbine_and_update_loads<TurbineKynemaFMB::DataType>(
-            data);
+        update_external_turbine_loads<TurbineKynemaFMB::DataType>(data);
+    }
+};
+
+template <typename SrcTrait>
+struct AdvanceModelOp<TurbineKynemaFMB, SrcTrait>
+{
+    void operator()(typename TurbineKynemaFMB::DataType& data)
+    {
+        BL_PROFILE(
+            "kynema-sgf::actuator::AdvanceModelOp<"
+            "TurbineKynemaFMB>");
+        advance_external_turbine<TurbineKynemaFMB::DataType>(data);
     }
 };
 
