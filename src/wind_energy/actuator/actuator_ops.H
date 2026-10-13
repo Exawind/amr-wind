@@ -53,13 +53,6 @@ struct UpdatePosOp;
 template <typename ActTrait, typename SrcTrait, typename = void>
 struct UpdateVelOp;
 
-/** Compute actuator loads and update any state advanced by the actuator model.
- *
- *  \ingroup actuator
- */
-template <typename ActTrait, typename SrcTrait, typename = void>
-struct ComputeLoadsAndUpdateStateOp;
-
 /** Compute actuator loads and scatter them to the relevant processes.
  *
  *  \ingroup actuator

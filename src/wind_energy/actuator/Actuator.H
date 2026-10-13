@@ -77,8 +77,6 @@ private:
 
     void update_actuator_data_from_particles();
 
-    void compute_actuator_loads_and_advance_model_and_scatter();
-    
     void compute_actuator_loads();
 
     void advance_model();

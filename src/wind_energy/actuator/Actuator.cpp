@@ -114,7 +114,8 @@ void Actuator::post_init_actions()
     setup_particle_container();
     update_positions_and_sample_fields();
     update_actuator_data_from_particles();
-    compute_actuator_loads_and_advance_model_and_scatter();
+    compute_actuator_loads();
+    advance_model();
     accumulate_actuator_source_terms_for_fluid();
     prepare_outputs();
 }
@@ -152,7 +153,8 @@ void Actuator::pre_advance_work()
     m_container->reset_container();
     update_positions_and_sample_fields();
     update_actuator_data_from_particles();
-    compute_actuator_loads_and_advance_model_and_scatter();
+    compute_actuator_loads();
+    advance_model();
     accumulate_actuator_source_terms_for_fluid();
     communicate_turbine_io();
 }
@@ -292,8 +294,7 @@ void Actuator::compute_actuator_loads_and_advance_model_and_scatter()
 
 void Actuator::compute_actuator_loads()
 {
-    BL_PROFILE(
-        "kynema-sgf::actuator::Actuator::compute_actuator_loads");
+    BL_PROFILE("kynema-sgf::actuator::Actuator::compute_actuator_loads");
     for (auto& ac : m_actuators) {
         if (ac->info().actuator_in_proc) {
             ac->compute_loads();
@@ -303,8 +304,7 @@ void Actuator::compute_actuator_loads()
 
 void Actuator::advance_model()
 {
-    BL_PROFILE(
-        "kynema-sgf::actuator::Actuator::advance_model");
+    BL_PROFILE("kynema-sgf::actuator::Actuator::advance_model");
     for (auto& ac : m_actuators) {
         if (ac->info().actuator_in_proc) {
             ac->advance_model();

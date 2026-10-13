@@ -55,8 +55,6 @@ public:
 
     virtual void update_fields(const VecSlice&, const RealSlice&) = 0;
 
-    virtual void compute_loads_and_update_state() = 0;
-
     virtual void compute_loads() = 0;
 
     virtual void advance_model() = 0;
