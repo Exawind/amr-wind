@@ -15,6 +15,8 @@ as initial conditions and discretization options.
    Current implemented physics include FreeStream, SyntheticTurbulence, ABL, Actuator, RayleighTaylor, BoussinesqBubble, TaylorGreenVortex, and ScalarAdvection (which is an example of using a passive scalar advection).
    For multiphase simulations, the MultiPhase physics must be specified, and for forcing wave profiles into the domain, the OceanWaves physics must be specified as well.
    For immersed boundary forcing method TerrainDrag must be specified and the folder should include a terrain file (default name: `terrain.amrwind`, user control is `TerrainDrag.terrain_file`) file.
+   Optional files with the same format as the terrain file can be provided for the surface roughness (default name: `terrain.roughness`, user control is `TerrainDrag.roughness_file`) and for the displacement height of tree canopies (default name: `terrain.displacement`, user control is `TerrainDrag.displacement_file`).
+   When a displacement height :math:`d` is provided, the log law used by the wall model and by `DragForcing`/`DragTempForcing` becomes :math:`u = u_*/\kappa \left[\ln((z-d)/z_0) - \psi_m((z-d)/L)\right]`. This option requires `ABL.wall_het_model = "mol"`; :math:`z-d` is bounded below by :math:`2 z_0` so that :math:`\ln((z-d)/z_0) > 0`, hence the first cell center should lie above :math:`d + 2 z_0` (a warning is printed at initialization otherwise). The interpolated field is available as the output `terrain_displacement`.
    For including forested regions ForestDrag must be specified and the folder should include a forest file (default name: `forest.amrwind`, user control is `ForestDrag.forest_file`) file.
    
 .. input_param:: incflo.density

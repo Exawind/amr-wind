@@ -4,6 +4,9 @@
 #include <cstdint>
 #include "amr-wind/utilities/trig_ops.H"
 #include "AMReX_REAL.H"
+#include "AMReX_GpuQualifiers.H"
+#include "AMReX_Extension.H"
+#include <cmath>
 
 using namespace amrex::literals;
 
@@ -73,11 +76,41 @@ struct MOData
     }
 
     [[nodiscard]] amrex::Real calc_psi_m(amrex::Real zeta) const;
-    static amrex::Real
-    calc_psi_m(amrex::Real zeta, amrex::Real beta_m, amrex::Real gamma_m);
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE static amrex::Real
+    calc_psi_m(amrex::Real zeta, amrex::Real beta_m, amrex::Real gamma_m)
+    {
+        if (zeta > 0) {
+            return -gamma_m * zeta;
+        }
+        const amrex::Real x = std::sqrt(std::sqrt(1.0_rt - (beta_m * zeta)));
+        return (2.0_rt * std::log(0.5_rt * (1.0_rt + x))) +
+               std::log(0.5_rt * (1.0_rt + x * x)) - (2.0_rt * std::atan(x)) +
+               utils::half_pi();
+    }
+    //! Effective height above the displacement plane, z - d, used for
+    //! canopies (e.g., trees) where the log law becomes
+    //! u = (u_star / kappa) [ln((z - d) / z0) - psi_m((z - d) / L)].
+    //! Bounded below by 2 z0 so that ln((z - d) / z0) >= ln(2) > 0 and the
+    //! friction velocity stays positive and finite even when the height lies
+    //! inside the canopy (z - d < 2 z0) or below the displacement plane.
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE static amrex::Real
+    effective_height(amrex::Real z, amrex::Real d, amrex::Real z0)
+    {
+        AMREX_ASSERT(z0 > 0.0_rt);
+        const amrex::Real zlim = 2.0_rt * z0;
+        const amrex::Real zeff = z - d;
+        return (zeff > zlim) ? zeff : zlim;
+    }
     [[nodiscard]] amrex::Real calc_psi_h(amrex::Real zeta) const;
-    static amrex::Real
-    calc_psi_h(amrex::Real zeta, amrex::Real beta_h, amrex::Real gamma_h);
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE static amrex::Real
+    calc_psi_h(amrex::Real zeta, amrex::Real beta_h, amrex::Real gamma_h)
+    {
+        if (zeta > 0) {
+            return -gamma_h * zeta;
+        }
+        const amrex::Real x = std::sqrt(1 - (beta_h * zeta));
+        return 2.0_rt * std::log(0.5_rt * (1 + x));
+    }
     void update_fluxes(int max_iters = 25);
 };
 

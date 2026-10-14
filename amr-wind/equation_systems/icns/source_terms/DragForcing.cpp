@@ -4,6 +4,7 @@
 #include "AMReX_Gpu.H"
 #include "AMReX_Random.H"
 #include "amr-wind/wind_energy/ABL.H"
+#include "amr-wind/wind_energy/MOData.H"
 #include "amr-wind/physics/TerrainDrag.H"
 #include "amr-wind/utilities/linear_interpolation.H"
 #include "amr-wind/utilities/constants.H"
@@ -22,12 +23,13 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real viscous_drag_calculations(
     const amrex::Real uy2r,
     const amrex::Real z0,
     const amrex::Real dz,
+    const amrex::Real z_neighbour,
     const amrex::Real kappa,
     const amrex::Real non_neutral_neighbour)
 {
     const amrex::Real m2 = std::sqrt((ux2r * ux2r) + (uy2r * uy2r));
     const amrex::Real ustar =
-        m2 * kappa / (std::log(1.5_rt * dz / z0) - non_neutral_neighbour);
+        m2 * kappa / (std::log(z_neighbour / z0) - non_neutral_neighbour);
     Dxz +=
         -ustar * ustar * ux1r /
         (amr_wind::constants::EPS + std::sqrt((ux1r * ux1r) + (uy1r * uy1r))) /
@@ -250,16 +252,18 @@ void DragForcing::operator()(
     const amrex::Real z0_min = 1.0e-4_rt;
     const amrex::Real cd_max = 1000.0_rt;
 
-    const amrex::Real non_neutral_neighbour =
-        (m_wall_het_model == "mol")
-            ? MOData::calc_psi_m(
-                  1.5_rt * dx[2] / m_monin_obukhov_length, m_beta_m, m_gamma_m)
-            : 0.0_rt;
-    const amrex::Real non_neutral_cell =
-        (m_wall_het_model == "mol")
-            ? MOData::calc_psi_m(
-                  0.5_rt * dx[2] / m_monin_obukhov_length, m_beta_m, m_gamma_m)
-            : 0.0_rt;
+    const bool is_mol = (m_wall_het_model == "mol");
+    const amrex::Real monin_obukhov_length = m_monin_obukhov_length;
+    const amrex::Real beta_m = m_beta_m;
+    const amrex::Real gamma_m = m_gamma_m;
+    // Displacement height (e.g., tree canopy); log law uses z - d
+    const bool has_displacement =
+        this->m_sim.repo().field_exists("terrain_displacement");
+    const auto& displacement = has_displacement
+                                   ? this->m_sim.repo()
+                                         .get_field("terrain_displacement")(lev)
+                                         .const_array(mfi)
+                                   : amrex::Array4<amrex::Real const>();
     const int nwvals = static_cast<int>(m_wind_heights.size());
     const amrex::Real* windh = m_windht_d.data();
     const amrex::Real* uu = m_prof_u_d.data();
@@ -337,16 +341,30 @@ void DragForcing::operator()(
             const amrex::Real uy2r = vel(i, j, k + 1, 1) - wall_v;
             const amrex::Real z0 =
                 amrex::max<amrex::Real>(terrainz0(i, j, k), z0_min);
+            const amrex::Real disp =
+                has_displacement ? displacement(i, j, k) : 0.0_rt;
+            const amrex::Real z_neighbour =
+                MOData::effective_height(1.5_rt * dx[2], disp, z0);
+            const amrex::Real z_cell =
+                MOData::effective_height(0.5_rt * dx[2], disp, z0);
+            const amrex::Real non_neutral_neighbour =
+                is_mol
+                    ? MOData::calc_psi_m(
+                          z_neighbour / monin_obukhov_length, beta_m, gamma_m)
+                    : 0.0_rt;
+            const amrex::Real non_neutral_cell =
+                is_mol ? MOData::calc_psi_m(
+                             z_cell / monin_obukhov_length, beta_m, gamma_m)
+                       : 0.0_rt;
             const amrex::Real ustar = viscous_drag_calculations(
-                Dxz, Dyz, ux1r, uy1r, ux2r, uy2r, z0, dx[2], kappa,
+                Dxz, Dyz, ux1r, uy1r, ux2r, uy2r, z0, dx[2], z_neighbour, kappa,
                 non_neutral_neighbour);
             if (model_form_drag) {
                 form_drag_calculations(
                     Dxz, Dyz, i, j, k, target_lvs_arr, dx, ux1r, uy1r);
             }
             const amrex::Real uTarget =
-                ustar / kappa *
-                (std::log(0.5_rt * dx[2] / z0) - non_neutral_cell);
+                ustar / kappa * (std::log(z_cell / z0) - non_neutral_cell);
             const amrex::Real uxTarget =
                 uTarget * ux2r /
                 (amr_wind::constants::EPS +

@@ -17,31 +17,9 @@ namespace amr_wind {
  * https://doi.org/10.1142/2975.
  */
 
-amrex::Real MOData::calc_psi_m(
-    const amrex::Real zeta, const amrex::Real beta_m, const amrex::Real gamma_m)
-{
-    if (zeta > 0) {
-        return -gamma_m * zeta;
-    }
-    const amrex::Real x = std::sqrt(std::sqrt(1.0_rt - (beta_m * zeta)));
-    return (2.0_rt * std::log(0.5_rt * (1.0_rt + x))) +
-           std::log(0.5_rt * (1.0_rt + x * x)) - (2.0_rt * std::atan(x)) +
-           utils::half_pi();
-}
-
 amrex::Real MOData::calc_psi_m(amrex::Real zeta) const
 {
     return calc_psi_m(zeta, beta_m, gamma_m);
-}
-
-amrex::Real MOData::calc_psi_h(
-    const amrex::Real zeta, const amrex::Real beta_h, const amrex::Real gamma_h)
-{
-    if (zeta > 0) {
-        return -gamma_h * zeta;
-    }
-    const amrex::Real x = std::sqrt(1 - (beta_h * zeta));
-    return 2.0_rt * std::log(0.5_rt * (1 + x));
 }
 
 amrex::Real MOData::calc_psi_h(amrex::Real zeta) const

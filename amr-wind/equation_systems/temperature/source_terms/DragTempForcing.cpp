@@ -69,21 +69,19 @@ void DragTempForcing::operator()(
     const amrex::Real z0_min = 1.0e-4_rt;
     const amrex::Real monin_obukhov_length = m_monin_obukhov_length;
     const auto& dt = m_time.delta_t();
-    const amrex::Real psi_m =
-        (m_wall_het_model == "mol")
-            ? MOData::calc_psi_m(
-                  1.5_rt * dx[2] / m_monin_obukhov_length, m_beta_m, m_gamma_m)
-            : 0.0_rt;
-    const amrex::Real psi_h_neighbour =
-        (m_wall_het_model == "mol")
-            ? MOData::calc_psi_h(
-                  1.5_rt * dx[2] / m_monin_obukhov_length, m_beta_h, m_gamma_h)
-            : 0.0_rt;
-    const amrex::Real psi_h_cell =
-        (m_wall_het_model == "mol")
-            ? MOData::calc_psi_h(
-                  0.5_rt * dx[2] / m_monin_obukhov_length, m_beta_h, m_gamma_h)
-            : 0.0_rt;
+    const bool is_mol = (m_wall_het_model == "mol");
+    const amrex::Real beta_m = m_beta_m;
+    const amrex::Real gamma_m = m_gamma_m;
+    const amrex::Real beta_h = m_beta_h;
+    const amrex::Real gamma_h = m_gamma_h;
+    // Displacement height (e.g., tree canopy); log law uses z - d
+    const bool has_displacement =
+        this->m_sim.repo().field_exists("terrain_displacement");
+    const auto& displacement = has_displacement
+                                   ? this->m_sim.repo()
+                                         .get_field("terrain_displacement")(lev)
+                                         .const_array(mfi)
+                                   : amrex::Array4<amrex::Real const>();
     const auto tiny = std::numeric_limits<amrex::Real>::epsilon();
     const amrex::Real cd_max = 10.0_rt;
     const amrex::Real T0 = m_soil_temperature;
@@ -91,6 +89,24 @@ void DragTempForcing::operator()(
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
         const amrex::Real z0 =
             amrex::max<amrex::Real>(terrainz0(i, j, k), z0_min);
+        const amrex::Real disp =
+            has_displacement ? displacement(i, j, k) : 0.0_rt;
+        const amrex::Real z_neighbour =
+            MOData::effective_height(1.5_rt * dx[2], disp, z0);
+        const amrex::Real z_cell =
+            MOData::effective_height(0.5_rt * dx[2], disp, z0);
+        const amrex::Real psi_m =
+            is_mol ? MOData::calc_psi_m(
+                         z_neighbour / monin_obukhov_length, beta_m, gamma_m)
+                   : 0.0_rt;
+        const amrex::Real psi_h_neighbour =
+            is_mol ? MOData::calc_psi_h(
+                         z_neighbour / monin_obukhov_length, beta_h, gamma_h)
+                   : 0.0_rt;
+        const amrex::Real psi_h_cell =
+            is_mol ? MOData::calc_psi_h(
+                         z_cell / monin_obukhov_length, beta_h, gamma_h)
+                   : 0.0_rt;
         const amrex::Real ux1 = vel(i, j, k, 0);
         const amrex::Real uy1 = vel(i, j, k, 1);
         const amrex::Real uz1 = vel(i, j, k, 2);
@@ -98,17 +114,17 @@ void DragTempForcing::operator()(
         const amrex::Real theta2 = temperature(i, j, k + 1, 0);
         const amrex::Real wspd = std::sqrt((ux1 * ux1) + (uy1 * uy1));
         const amrex::Real ustar =
-            wspd * kappa / (std::log(1.5_rt * dx[2] / z0) - psi_m);
+            wspd * kappa / (std::log(z_neighbour / z0) - psi_m);
         //! We do not know the actual temperature so use cell above
         const amrex::Real thetastar =
             theta * ustar * ustar /
             (kappa * gravity_mod * monin_obukhov_length);
         const amrex::Real surf_temp =
             theta2 - (thetastar / kappa *
-                      (std::log(1.5_rt * dx[2] / z0) - psi_h_neighbour));
+                      (std::log(z_neighbour / z0) - psi_h_neighbour));
         const amrex::Real tTarget =
             surf_temp +
-            (thetastar / kappa * (std::log(0.5_rt * dx[2] / z0) - psi_h_cell));
+            (thetastar / kappa * (std::log(z_cell / z0) - psi_h_cell));
         const amrex::Real bc_forcing_t =
             -(tTarget - theta) / (time_factor * dt);
         const amrex::Real m =

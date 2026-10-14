@@ -305,6 +305,8 @@ This section is for setting atmospheric boundary layer parameters.
 
    Allows the use of different surface model options for the Monin-Obukhov length. Currently supports two options:
    (i) "none" - original model in the code and (ii) "mol" - Monin-Obukhov length is constant while heat-flux varies 
+   The "mol" option is required when a displacement height file is used with TerrainDrag (`TerrainDrag.displacement_file`),
+   in which case the log law uses :math:`z-d` instead of :math:`z`.
 
 .. input_param:: ABL.monin_obukhov_length
 

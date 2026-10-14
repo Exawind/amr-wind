@@ -239,6 +239,9 @@ void ABLVelWallFunc::wall_model(
     const bool has_terrain = repo.int_field_exists("terrain_blank");
     const auto* m_terrain_blank =
         has_terrain ? &repo.get_int_field("terrain_blank") : nullptr;
+    const bool has_displacement = repo.field_exists("terrain_displacement");
+    const auto* m_terrain_displacement =
+        has_displacement ? &repo.get_field("terrain_displacement") : nullptr;
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = repo.mesh().Geom(lev);
         const auto& domain = geom.Domain();
@@ -264,12 +267,18 @@ void ABLVelWallFunc::wall_model(
             const auto& blank_arr =
                 has_terrain ? (*m_terrain_blank)(lev).const_array(mfi)
                             : amrex::Array4<int>();
+            const auto& disp_arr =
+                has_displacement
+                    ? (*m_terrain_displacement)(lev).const_array(mfi)
+                    : amrex::Array4<amrex::Real const>();
             if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
                 velocity.bc_type()[zlo] == BC::wall_model) {
                 if (m_wall_het_model == "mol") {
                     const amrex::Real z = 0.5_rt * dx[2];
-                    const amrex::Real zeta = z / m_monin_obukhov_length;
-                    const amrex::Real psi_m = mo.calc_psi_m(zeta);
+                    const amrex::Real monin_obukhov_length =
+                        m_monin_obukhov_length;
+                    const amrex::Real beta_m = mo.beta_m;
+                    const amrex::Real gamma_m = mo.gamma_m;
                     const amrex::Real z0 = mo.z0;
                     const amrex::Real kappa = mo.kappa;
                     amrex::ParallelFor(
@@ -280,7 +289,15 @@ void ABLVelWallFunc::wall_model(
                             const amrex::Real vv = vold_arr(i, j, k, 1);
                             const amrex::Real wspd =
                                 std::sqrt((uu * uu) + (vv * vv));
-                            const amrex::Real drag = std::log(z / z0) - psi_m;
+                            // Displacement height: log law uses z - d
+                            const amrex::Real disp =
+                                has_displacement ? disp_arr(i, j, k) : 0.0_rt;
+                            const amrex::Real zeff =
+                                MOData::effective_height(z, disp, z0);
+                            const amrex::Real psi_m = MOData::calc_psi_m(
+                                zeff / monin_obukhov_length, beta_m, gamma_m);
+                            const amrex::Real drag =
+                                std::log(zeff / z0) - psi_m;
                             const amrex::Real ustar = wspd * kappa / drag;
                             // Dirichlet BC
                             varr(i, j, k - 1, 2) = 0.0_rt;
@@ -399,6 +416,9 @@ void ABLTempWallFunc::wall_model(
     const bool has_terrain = repo.int_field_exists("terrain_blank");
     const auto* m_terrain_blank =
         has_terrain ? &repo.get_int_field("terrain_blank") : nullptr;
+    const bool has_displacement = repo.field_exists("terrain_displacement");
+    const auto* m_terrain_displacement =
+        has_displacement ? &repo.get_field("terrain_displacement") : nullptr;
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = repo.mesh().Geom(lev);
         const auto& domain = geom.Domain();
@@ -426,13 +446,17 @@ void ABLTempWallFunc::wall_model(
             const auto& blank_arr =
                 has_terrain ? (*m_terrain_blank)(lev).const_array(mfi)
                             : amrex::Array4<int>();
+            const auto& disp_arr =
+                has_displacement
+                    ? (*m_terrain_displacement)(lev).const_array(mfi)
+                    : amrex::Array4<amrex::Real const>();
 
             if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
                 temperature.bc_type()[zlo] == BC::wall_model) {
                 if (m_wall_het_model == "mol") {
                     const amrex::Real z = 0.5_rt * dx[2];
-                    const amrex::Real zeta = z / m_monin_obukhov_length;
-                    const amrex::Real psi_m = mo.calc_psi_m(zeta);
+                    const amrex::Real beta_m = mo.beta_m;
+                    const amrex::Real gamma_m = mo.gamma_m;
                     const amrex::Real z0 = mo.z0;
                     const amrex::Real kappa = mo.kappa;
                     const amrex::Real gravity_mod = 9.81_rt;
@@ -447,7 +471,15 @@ void ABLTempWallFunc::wall_model(
                             const amrex::Real wspd =
                                 std::sqrt((uu * uu) + (vv * vv));
                             const amrex::Real theta2 = told_arr(i, j, k);
-                            const amrex::Real drag = std::log(z / z0) - psi_m;
+                            // Displacement height: log law uses z - d
+                            const amrex::Real disp =
+                                has_displacement ? disp_arr(i, j, k) : 0.0_rt;
+                            const amrex::Real zeff =
+                                MOData::effective_height(z, disp, z0);
+                            const amrex::Real psi_m = MOData::calc_psi_m(
+                                zeff / monin_obukhov_length, beta_m, gamma_m);
+                            const amrex::Real drag =
+                                std::log(zeff / z0) - psi_m;
                             const amrex::Real ustar = wspd * kappa / drag;
                             const amrex::Real thetastar =
                                 theta2 * ustar * ustar /

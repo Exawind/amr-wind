@@ -1,0 +1,83 @@
+# Gaussian hill with a tree canopy patch represented by a displacement height.
+# terrain.amrwind      : h(x,y) = 100 exp(-((x-1024)^2 + (y-1024)^2)/(2*300^2)) m
+# terrain.roughness    : uniform z0 = 1 m
+# terrain.displacement : d = 10 m in a forest patch x,y in [640, 1408] m with a
+#                        128 m cosine taper, d = 0 elsewhere (covers the hill)
+# Near-wall log law (wall model and DragForcing on terrain):
+#   u = u*/kappa [ln((z - d)/z0) - psi_m((z - d)/L)]
+geometry.prob_lo                            = 0.0 0.0 0.0
+geometry.prob_hi                            = 2048 2048 1024
+geometry.is_periodic                        = 1 1 0
+# Grid
+amr.n_cell                                  = 64 64 32
+amr.max_level                               = 0
+# Simulation control parameters
+time.stop_time                              = 7200
+time.max_step                               = 10
+time.initial_dt                             = 0.1
+time.fixed_dt                               = -1
+time.cfl                                    = 0.5
+time.init_shrink                            = 0.1
+time.regrid_interval                        = -1
+time.plot_interval                          = 1000
+time.checkpoint_interval                    = -1
+io.int_outputs                              = terrain_blank terrain_drag
+# incflo
+incflo.physics                              = ABL TerrainDrag
+incflo.density                              = 1.225
+incflo.gravity                              = 0.  0. -9.81  # Gravitational force (3D)
+incflo.velocity                             = 10.0 0.0 0.0
+incflo.verbose                              = 0
+incflo.initial_iterations                   = 8
+incflo.do_initial_proj                      = true
+incflo.constant_density                     = true
+incflo.use_godunov                          = true
+incflo.godunov_type                         = "weno_z"
+incflo.diffusion_type                       = 2
+# transport equation parameters
+transport.model                             = ConstTransport
+transport.viscosity                         = 1e-5
+transport.laminar_prandtl                   = 0.7
+transport.turbulent_prandtl                 = 0.333
+transport.reference_temperature             = 300.0
+# turbulence equation parameters
+turbulence.model                            = Smagorinsky
+Smagorinsky_coeffs.Cs                       = 0.135
+# Atmospheric boundary layer
+ABL.kappa                                   = 0.41
+ABL.normal_direction                        = 2
+ABL.perturb_velocity                        = true
+ABL.perturb_ref_height                      = 50.0
+ABL.Uperiods                                = 4.0
+ABL.Vperiods                                = 4.0
+ABL.deltaU                                  = 1.0
+ABL.deltaV                                  = 1.0
+ABL.perturb_temperature                     = false
+ABL.temperature_heights                     = 0.0 700.0 800.0 1024.0
+ABL.temperature_values                      = 300.0 300.0 308.0 308.72
+ABL.stats_output_format                     = ascii
+ABL.surface_roughness_z0                    = 1.0
+ABL.wall_shear_stress_type                  = local
+ABL.surface_temp_flux                       = 0.0
+# Displacement height requires the "mol" wall model (neutral here)
+ABL.wall_het_model                          = "mol"
+ABL.monin_obukhov_length                    = 1e30
+# Terrain, roughness and displacement height (same file format: nx, ny, x, y, values)
+TerrainDrag.terrain_file                    = "terrain.amrwind"
+TerrainDrag.roughness_file                  = "terrain.roughness"
+TerrainDrag.displacement_file               = "terrain.displacement"
+transport.thermal_expansion_coefficient    = 0.003333
+CoriolisForcing.east_vector                 = 1.0 0.0 0.0
+CoriolisForcing.north_vector                = 0.0 1.0 0.0
+CoriolisForcing.latitude                    = 45.0
+GeostrophicForcing.geostrophic_wind         = 10.0 0.0 0.0
+# BC
+zhi.type                                    = "slip_wall"
+zhi.temperature_type                        = "fixed_gradient"
+zhi.temperature                             = 0.003
+zlo.type                                    = "wall_model"
+zlo.temperature_type                        = "wall_model"
+# Source
+ICNS.source_terms                           = BoussinesqBuoyancy CoriolisForcing GeostrophicForcing DragForcing
+Temperature.source_terms                    = DragTempForcing
+DragTempForcing.soil_temperature            = 300.0
