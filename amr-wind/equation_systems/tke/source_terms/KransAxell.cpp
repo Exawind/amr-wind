@@ -120,8 +120,12 @@ void KransAxell::operator()(
     const auto* tke_values_d = m_tke_values_d.data();
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
         m_gravity[0], m_gravity[1], m_gravity[2]};
+    const bool is_mol = (m_wall_het_model == "mol");
+    const amrex::Real monin_obukhov_length = m_monin_obukhov_length;
+    const amrex::Real beta_m = m_beta_m;
+    const amrex::Real gamma_m = m_gamma_m;
     amrex::Real psi_m = 0.0_rt;
-    if (m_wall_het_model == "mol") {
+    if (is_mol) {
         psi_m = MOData::calc_psi_m(
             1.5_rt * dx[2] / m_monin_obukhov_length, m_beta_m, m_gamma_m);
     }
@@ -173,6 +177,14 @@ void KransAxell::operator()(
         const auto& drag_arr = (*m_terrain_drag)(lev).const_array(mfi);
         const auto& terrain_height = (*m_terrain_height)(lev).const_array(mfi);
         const auto& terrainz0 = (*m_terrainz0)(lev).const_array(mfi);
+        // Displacement height (e.g., tree canopy); log law uses z - d
+        const bool has_displacement =
+            this->m_sim.repo().field_exists("terrain_displacement");
+        const auto& displacement =
+            has_displacement ? this->m_sim.repo()
+                                   .get_field("terrain_displacement")(lev)
+                                   .const_array(mfi)
+                             : amrex::Array4<amrex::Real const>();
         amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
             const amrex::Real cell_z0 =
                 (drag_arr(i, j, k) *
@@ -182,12 +194,25 @@ void KransAxell::operator()(
             amrex::Real uy = vel(i, j, k + 1, 1);
             amrex::Real z = 0.5_rt * dx[2];
             amrex::Real m = std::sqrt((ux * ux) + (uy * uy));
+            amrex::Real z_neighbour = 3.0_rt * z;
+            amrex::Real z_cell = z;
+            amrex::Real psi_m_cell = psi_m;
+            if (has_displacement) {
+                const amrex::Real disp = displacement(i, j, k);
+                z_neighbour =
+                    MOData::effective_height(z_neighbour, disp, cell_z0);
+                z_cell = MOData::effective_height(z_cell, disp, cell_z0);
+                psi_m_cell = is_mol ? MOData::calc_psi_m(
+                                          z_neighbour / monin_obukhov_length,
+                                          beta_m, gamma_m)
+                                    : 0.0_rt;
+            }
             const amrex::Real ustar =
-                m * kappa / (std::log(3.0_rt * z / cell_z0) - psi_m);
+                m * kappa / (std::log(z_neighbour / cell_z0) - psi_m_cell);
             const amrex::Real T0 = ref_theta_arr(i, j, k);
             const amrex::Real hf = std::abs(gravity[2]) / T0 * heat_flux;
             const amrex::Real rans_b = amrex::max<amrex::Real>(hf, 0.0_rt) *
-                                       kappa * z / utils::powi(Cmu, 3);
+                                       kappa * z_cell / utils::powi(Cmu, 3);
             const amrex::Real tke_exact = std::pow(
                 ustar * ustar * ustar / (Cmu * Cmu * Cmu) + rans_b,
                 2.0_rt / 3.0_rt);

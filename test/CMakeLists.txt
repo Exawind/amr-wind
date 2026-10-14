@@ -287,6 +287,7 @@ add_test_re(abl_specifiedmol_stable)
 add_test_re(abl_specifiedmol_unstable)
 add_test_re(abl_displacement_flat)
 add_test_re(abl_displacement_hill)
+add_test_re(abl_displacement_hill_rans)
 add_test_re(udf_refinement)
 
 if("${AMR_WIND_PRECISION}" STREQUAL "DOUBLE")
