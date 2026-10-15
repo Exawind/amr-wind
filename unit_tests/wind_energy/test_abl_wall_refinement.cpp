@@ -246,9 +246,6 @@ protected:
             if (m_log_law_height > 0.0_rt) {
                 pp.add("log_law_height", m_log_law_height);
             }
-            if (!m_level_means_method.empty()) {
-                pp.add("level_means_method", m_level_means_method);
-            }
         }
 
         std::stringstream ss;
@@ -460,7 +457,6 @@ protected:
     std::string m_refine_box{"0.0 0.0 0.0 60.0 120.0 250.0"};
     bool m_full_coverage{false};
     std::string m_shear_stress_type{"moeng"};
-    std::string m_level_means_method;
     bool m_wall_position_set{false};
     amrex::Real m_wall_position{0.0_rt};
     amrex::Real m_log_law_height{0.0_rt};
@@ -569,16 +565,6 @@ TEST_F(ABLWallRefinementTest, levels_agree_at_partial_coverage_unstable)
 {
     m_shear_stress_type = "moeng";
     check_levels_agree(1.0e-2_rt);
-}
-
-TEST_F(ABLWallRefinementTest, unsupported_level_means_method_aborts)
-{
-    m_level_means_method = "own_cells";
-    populate_parameters();
-    initialize_mesh();
-    sim().pde_manager().register_icns();
-    sim().create_turbulence_model();
-    EXPECT_THROW(sim().init_physics(), amrex::RuntimeError);
 }
 
 TEST_F(ABLWallRefinementTest, donelan_wall_model_keeps_reference_height)

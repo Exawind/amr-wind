@@ -75,14 +75,6 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
     }
     m_wall_pos = m_sim.mesh().Geom(0).ProbLo(m_direction);
     pp.query("wall_position", m_wall_pos);
-    std::string level_means_method{"mo_profile"};
-    pp.query("level_means_method", level_means_method);
-    level_means_method = amrex::toLower(level_means_method);
-    if (level_means_method != "mo_profile") {
-        amrex::Abort(
-            "ABL.level_means_method must be mo_profile, got " +
-            level_means_method);
-    }
 
     if (pp.contains("surface_temp_flux")) {
         pp.query("surface_temp_flux", m_mo.surf_temp_flux);
