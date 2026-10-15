@@ -75,13 +75,13 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
     }
     m_wall_pos = m_sim.mesh().Geom(0).ProbLo(m_direction);
     pp.query("wall_position", m_wall_pos);
-    pp.query("level_means_method", m_level_means_method);
-    m_level_means_method = amrex::toLower(m_level_means_method);
-    if ((m_level_means_method != "mo_profile") &&
-        (m_level_means_method != "none")) {
+    std::string level_means_method{"mo_profile"};
+    pp.query("level_means_method", level_means_method);
+    level_means_method = amrex::toLower(level_means_method);
+    if (level_means_method != "mo_profile") {
         amrex::Abort(
-            "ABL.level_means_method must be mo_profile or none, got " +
-            m_level_means_method);
+            "ABL.level_means_method must be mo_profile, got " +
+            level_means_method);
     }
 
     if (pp.contains("surface_temp_flux")) {
@@ -224,9 +224,6 @@ void ABLWallFunction::update_umean(
 void ABLWallFunction::update_level_means()
 {
     m_mo_lev.clear();
-    if (m_level_means_method == "none") {
-        return;
-    }
 
     const auto& repo = m_sim.repo();
     const int nlevels = repo.num_active_levels();

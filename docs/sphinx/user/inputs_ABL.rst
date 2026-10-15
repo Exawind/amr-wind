@@ -249,7 +249,8 @@ This section is for setting atmospheric boundary layer parameters.
    sit at different heights, so the plane averages at
    :input_param:`ABL.log_law_height` are carried to the first-cell height
    of each level along the Monin-Obukhov profile of the surface layer (see
-   :input_param:`ABL.level_means_method`). The mean surface stress of the
+   :input_param:`ABL.level_means_method`, which only accepts ``mo_profile``).
+   The mean surface stress of the
    "Moeng", "Schumann" and "constant" models is then the same on every
    level, and so is the mean surface heat flux, as long as the plane-mean
    profiles follow the Monin-Obukhov profile. The friction velocity, the
@@ -287,13 +288,6 @@ This section is for setting atmospheric boundary layer parameters.
      those of the reference height on every level; a level where
      :math:`\phi_m` or :math:`\phi_h` is not positive at the first-cell
      height keeps the reference-height averages, with a warning.
-   - "none": every level uses the plane averages at
-     :input_param:`ABL.log_law_height`, as before this input existed. On a
-     refined level the first cell is lower than the averages, and the
-     "Moeng" model then returns :math:`(2 r_m - 1)\,u_*^2` instead of
-     :math:`u_*^2` for the mean stress, with
-     :math:`r_m = \phi_m(z_\ell)/\phi_m(z_{ref}) < 1`; kept for comparison.
-
    Any other value aborts the run. The input is not used by the "Donelan"
    model, with :input_param:`ABL.wall_het_model` set to "mol", or in
    inflow-outflow mode, which do not read the plane averages per level.
