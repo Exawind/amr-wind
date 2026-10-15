@@ -31,18 +31,17 @@ public:
 
     //! Monin-Obukhov data carrying the mean quantities of a given mesh level
     //!
-    //! On a single-level mesh, when only level 0 touches the wall, when
-    //! the bottom boundary is not a wall model, in inflow-outflow mode, or with
-    //! ABL.level_means_method = none, this is the same object as mo(). When a
-    //! finer level touches the wall, every level with wall cells whose first
-    //! cell sits above the roughness height holds the plane averages of the
-    //! reference height carried to its own first-cell height along the
-    //! Monin-Obukhov profile (any other level holds a copy of mo()), so that
-    //! the wall models that combine the local first-cell values with their
-    //! plane averages return the same mean stress and heat flux on every level
-    //! when the plane-mean profiles follow that profile (see
-    //! ABL.level_means_method). The friction velocity, Obukhov length and
-    //! surface heat flux are shared by all levels.
+    //! On a single-level mesh, when only level 0 touches the wall, when the
+    //! bottom boundary is not a wall model, or in inflow-outflow mode, this is
+    //! the same object as mo(). When a finer level touches the wall, every
+    //! level with wall cells whose first cell sits above the roughness height
+    //! holds the plane averages of the reference height carried to its own
+    //! first-cell height along the Monin-Obukhov profile (any other level holds
+    //! a copy of mo()), so that the wall models that combine the local
+    //! first-cell values with their plane averages return the same mean stress
+    //! and heat flux on every level when the plane-mean profiles follow that
+    //! profile. The friction velocity, Obukhov length and surface heat flux
+    //! are shared by all levels.
     //!
     //! \param lev [in] Mesh level
     [[nodiscard]] const MOData& mo(int lev) const
@@ -78,11 +77,6 @@ private:
     //! Monin-Obukhov data per mesh level; empty when mo(lev) is mo() on
     //! every level (see mo(int))
     amrex::Vector<MOData> m_mo_lev;
-
-    //! How the per-level data are obtained: "mo_profile" (reference-height
-    //! plane averages carried along the Monin-Obukhov profile) or "none"
-    //! (every level uses the reference-height plane averages)
-    std::string m_level_means_method{"mo_profile"};
 
     //! Whether the warning about a first cell at or below the roughness
     //! height was printed

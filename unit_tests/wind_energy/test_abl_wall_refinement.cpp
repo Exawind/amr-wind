@@ -246,9 +246,6 @@ protected:
             if (m_log_law_height > 0.0_rt) {
                 pp.add("log_law_height", m_log_law_height);
             }
-            if (!m_level_means_method.empty()) {
-                pp.add("level_means_method", m_level_means_method);
-            }
         }
 
         std::stringstream ss;
@@ -460,7 +457,6 @@ protected:
     std::string m_refine_box{"0.0 0.0 0.0 60.0 120.0 250.0"};
     bool m_full_coverage{false};
     std::string m_shear_stress_type{"moeng"};
-    std::string m_level_means_method;
     bool m_wall_position_set{false};
     amrex::Real m_wall_position{0.0_rt};
     amrex::Real m_log_law_height{0.0_rt};
@@ -471,11 +467,10 @@ protected:
     const amrex::Real m_mu{0.01_rt};
 };
 
-// With the plane averages read at the exact profile values, every level
-// returns u*^2 along the wind and the specified heat flux. With the
-// reference-height means on level 1 (ABL.level_means_method = none, the
-// behaviour before this change) the moeng stress there is (2 r_m - 1) u*^2
-// with r_m = phi_m(3.9 m) / phi_m(11.7 m), about 0.56 u*^2
+// With the plane averages carried along the exact profile, every level returns
+// u*^2 along the wind and the specified heat flux. Without that scaling, the
+// level-1 moeng stress is (2 r_m - 1) u*^2, with
+// r_m = phi_m(3.9 m) / phi_m(11.7 m), about 0.56 u*^2.
 TEST_F(ABLWallRefinementTest, moeng_wall_model_level_consistent)
 {
     m_shear_stress_type = "moeng";
@@ -504,9 +499,9 @@ TEST_F(ABLWallRefinementTest, constant_wall_model_level_consistent)
 
 // In surface-temperature mode every level keeps the specified surface
 // temperature and its mean heat flux is the Monin-Obukhov flux of its own mean
-// temperature at its own height; with the reference-height means the level-1
-// flux is (r_m + r_h - 1) times that for moeng (0.56 here) and r_h times that
-// for schumann and local (0.78), with r_m, r_h the phi_m and phi_h ratios
+// temperature at its own height; without scaling the means the level-1 flux is
+// (r_m + r_h - 1) times that for moeng (0.56 here) and r_h times that for
+// schumann and local (0.78), with r_m, r_h the phi_m and phi_h ratios
 TEST_F(ABLWallRefinementTest, moeng_surface_temperature_mode_level_consistent)
 {
     m_shear_stress_type = "moeng";
@@ -531,9 +526,9 @@ TEST_F(ABLWallRefinementTest, local_surface_temperature_mode_level_consistent)
 
 // Level 1 covering three quarters of the wall, reference height at the
 // level-0 first cell: in neutral conditions the log-law scaling is exact and
-// the two levels return the same stress to roundoff (with the
-// reference-height means the level-1 stress is 0.69 of the level-0 one for
-// moeng and 0.84 for schumann)
+// the two levels return the same stress to roundoff (without scaling the means
+// the level-1 stress is 0.69 of the level-0 one for moeng and 0.84 for
+// schumann)
 TEST_F(ABLWallRefinementTest, levels_agree_at_partial_coverage_neutral)
 {
     m_prof.thetastar = 0.0_rt;
@@ -564,45 +559,12 @@ TEST_F(ABLWallRefinementTest, levels_agree_with_both_levels_scaled)
 // reference height is interpolated from the fine-binned profile (2.5 % low),
 // so the Obukhov length the wall function finds is 7 % off the profile's and
 // the two levels agree to 1 % (stress) and 2 % (heat flux) rather than to
-// roundoff; with the reference-height means the level-1 stress is 0.70 of the
-// level-0 one
+// roundoff; without scaling the means the level-1 stress is 0.70 of the level-0
+// one
 TEST_F(ABLWallRefinementTest, levels_agree_at_partial_coverage_unstable)
 {
     m_shear_stress_type = "moeng";
     check_levels_agree(1.0e-2_rt);
-}
-
-// ABL.level_means_method = none keeps the reference-height data on every
-// level, as before this change; the level-1 stress is then well below the
-// level-0 one
-TEST_F(ABLWallRefinementTest, none_keeps_reference_height_means)
-{
-    m_level_means_method = "none";
-    m_prof.thetastar = 0.0_rt;
-    ASSERT_NO_FATAL_FAILURE(init_wall_fields());
-    const auto& abl = sim().physics_manager().get<kynema_sgf::ABL>();
-    const auto& wall_func = abl.abl_wall_function();
-    EXPECT_EQ(&wall_func.mo(0), &wall_func.mo());
-    EXPECT_EQ(&wall_func.mo(1), &wall_func.mo());
-    amrex::Real tau[2];
-    amrex::Real cross[2];
-    amrex::Real q[2];
-    for (int lev = 0; lev < 2; ++lev) {
-        amrex::Real ncells = 0.0_rt;
-        level_fluxes(lev, tau[lev], cross[lev], q[lev], ncells);
-        ASSERT_GT(ncells, 0.0_rt) << "level " << lev;
-    }
-    EXPECT_LT(tau[1], 0.8_rt * tau[0]);
-}
-
-TEST_F(ABLWallRefinementTest, invalid_level_means_method_aborts)
-{
-    m_level_means_method = "own_cells";
-    populate_parameters();
-    initialize_mesh();
-    sim().pde_manager().register_icns();
-    sim().create_turbulence_model();
-    EXPECT_THROW(sim().init_physics(), amrex::RuntimeError);
 }
 
 TEST_F(ABLWallRefinementTest, donelan_wall_model_keeps_reference_height)
