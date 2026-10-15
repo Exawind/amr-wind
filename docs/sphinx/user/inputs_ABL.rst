@@ -249,11 +249,10 @@ This section is for setting atmospheric boundary layer parameters.
    sit at different heights, so the plane averages at
    :input_param:`ABL.log_law_height` are carried to the first-cell height
    of each level along the Monin-Obukhov profile of the surface layer. The mean
-   surface stress of the "Moeng", "Schumann" and "constant" models is then
-   the same on every
-   level, and so is the mean surface heat flux, as long as the plane-mean
-   profiles follow the Monin-Obukhov profile. The friction velocity, the
-   Obukhov length and the surface heat flux are computed once, from the
+   surface stress of the "Moeng", "Schumann" and "constant" models is then the
+   same on every level, and so is the mean surface heat flux, as long as the
+   plane-mean profiles follow the Monin-Obukhov profile. The friction velocity,
+   the Obukhov length and the surface heat flux are computed once, from the
    plane average at :input_param:`ABL.log_law_height`. The "Donelan" model
    selects its drag coefficient from the mean wind at
    :input_param:`ABL.log_law_height` and keeps that plane average on every
