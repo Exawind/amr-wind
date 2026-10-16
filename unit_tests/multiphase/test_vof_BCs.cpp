@@ -2,6 +2,8 @@
 #include "ks_test_utils/iter_tools.H"
 #include "ks_test_utils/test_utils.H"
 #include "src/equation_systems/vof/vof.H"
+#include "src/equation_systems/vof/SplitAdvection.H"
+#include "src/equation_systems/vof/split_advection.H"
 #include "src/physics/multiphase/MultiPhase.H"
 #include "AMReX_REAL.H"
 
@@ -385,5 +387,153 @@ TEST_F(VOFBCTest, dirichletX) { testing_bc_coorddir(1, 0, tol1); }
 TEST_F(VOFBCTest, slipwallY) { testing_bc_coorddir(2, 1, tol1); }
 TEST_F(VOFBCTest, noslipwallZ) { testing_bc_coorddir(3, 2, tol1); }
 TEST_F(VOFBCTest, pressureX) { testing_bc_coorddir(4, 0, tol1); }
+
+TEST(VOFBoundaryFlux, ignores_unfilled_ghosts)
+{
+    const amrex::Box domain(amrex::IntVect(0), amrex::IntVect(3));
+    const amrex::RealBox physical_box(
+        {0.0_rt, 0.0_rt, 0.0_rt}, {1.0_rt, 1.0_rt, 1.0_rt});
+    const int periodic[AMREX_SPACEDIM] = {0, 0, 0};
+    const amrex::Vector<amrex::Geometry> geom{
+        amrex::Geometry(domain, &physical_box, 0, periodic)};
+    const auto ghost_box = amrex::grow(domain, 2);
+    amrex::FArrayBox vof(ghost_box, 1);
+    amrex::FArrayBox temporary(amrex::grow(domain, 1), 2);
+
+    for (const auto bc :
+         {BC::mass_inflow, BC::mass_inflow_outflow, BC::wave_generation}) {
+        amrex::GpuArray<BC, AMREX_SPACEDIM * 2> bcs;
+        bcs.fill(bc);
+        for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
+            const auto faces = amrex::surroundingNodes(domain, dir);
+            amrex::FArrayBox velocity(ghost_box, 1);
+            amrex::FArrayBox flux(faces, 1);
+            amrex::FArrayBox advalpha(faces, 1);
+            for (const int sign : {-1, 1}) {
+                SCOPED_TRACE(
+                    ::testing::Message() << "bc=" << static_cast<int>(bc)
+                                         << " dir=" << dir << " sign=" << sign);
+                velocity.setVal<amrex::RunOn::Device>(
+                    static_cast<amrex::Real>(sign));
+                amrex::Vector<amrex::Real> reference(faces.numPts());
+                amrex::Vector<amrex::Real> result(faces.numPts());
+                for (const int poison : {0, 1}) {
+                    const auto values = vof.array();
+                    amrex::ParallelFor(
+                        ghost_box, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+                            const int outside = (i < 0 || i > 3) +
+                                                (j < 0 || j > 3) +
+                                                (k < 0 || k > 3);
+                            const bool valid = outside <= 1 && i >= -1 &&
+                                               i <= 4 && j >= -1 && j <= 4 &&
+                                               k >= -1 && k <= 4;
+                            values(i, j, k) =
+                                valid ? 0.35_rt + 0.02_rt * i + 0.04_rt * j +
+                                            0.06_rt * k
+                                      : static_cast<amrex::Real>(poison);
+                        });
+                    temporary.setVal<amrex::RunOn::Device>(0.0_rt);
+                    kynema_sgf::multiphase::split_compute_fluxes(
+                        0, domain, 2 - dir, vof.const_array(),
+                        velocity.const_array(), velocity.const_array(),
+                        velocity.const_array(), advalpha.array(),
+                        advalpha.array(), advalpha.array(), flux.array(),
+                        flux.array(), flux.array(), bcs, temporary.dataPtr(),
+                        geom, 0.05_rt);
+                    auto& output = poison == 0 ? reference : result;
+                    amrex::Gpu::copy(
+                        amrex::Gpu::deviceToHost, flux.dataPtr(),
+                        flux.dataPtr() + faces.numPts(), output.begin());
+                }
+                for (amrex::Long face = 0; face < faces.numPts(); ++face) {
+                    EXPECT_NEAR(reference[face], result[face], tol1)
+                        << "face=" << face;
+                }
+            }
+        }
+    }
+}
+
+TEST(VOFBoundaryFlux, periodic_sweep_uses_mixed_normal)
+{
+    const amrex::Box domain(amrex::IntVect(0), amrex::IntVect(3));
+    const amrex::RealBox physical_box(
+        {0.0_rt, 0.0_rt, 0.0_rt}, {1.0_rt, 1.0_rt, 1.0_rt});
+    const int periodic[AMREX_SPACEDIM] = {1, 1, 1};
+    const amrex::Geometry geom(domain, &physical_box, 0, periodic);
+    const auto ghost_box = amrex::grow(domain, 2);
+    const auto work_box = amrex::grow(domain, 1);
+    amrex::FArrayBox vof(ghost_box, 1);
+    amrex::FArrayBox velocity(ghost_box, 1);
+    amrex::FArrayBox actual(work_box, 2);
+    amrex::FArrayBox expected(work_box, 2);
+    const auto values = vof.array();
+    amrex::ParallelFor(ghost_box, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+        values(i, j, k) = 0.4_rt + 0.01_rt * i * i + 0.02_rt * j + 0.03_rt * k;
+    });
+    for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
+        for (const int sign : {-1, 1}) {
+            SCOPED_TRACE(
+                ::testing::Message() << "dir=" << dir << " sign=" << sign);
+            velocity.setVal<amrex::RunOn::Device>(
+                static_cast<amrex::Real>(sign));
+            actual.setVal<amrex::RunOn::Device>(0.0_rt);
+            expected.setVal<amrex::RunOn::Device>(0.0_rt);
+            const auto actual_left = actual.array(0);
+            const auto actual_right = actual.array(1);
+            kynema_sgf::multiphase::sweep_fluxes(
+                dir, domain, 0.2_rt, velocity.const_array(), vof.const_array(),
+                actual_left, actual_right, geom);
+            const auto expected_left = expected.array(0);
+            const auto expected_right = expected.array(1);
+            const auto fractions = vof.const_array();
+            amrex::ParallelFor(
+                amrex::grow(domain, dir, 1),
+                [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+                    amrex::Real mx, my, mz, alpha;
+                    kynema_sgf::multiphase::fit_plane(
+                        i, j, k, fractions, mx, my, mz, alpha);
+                    kynema_sgf::multiphase::eulerian_implicit(
+                        i, j, k, dir, 0.2_rt, sign, sign, mx, my, mz, alpha,
+                        fractions, expected_left, expected_right);
+                });
+            amrex::Vector<amrex::Real> result(actual.size());
+            amrex::Vector<amrex::Real> reference(expected.size());
+            amrex::Gpu::copy(
+                amrex::Gpu::deviceToHost, actual.dataPtr(),
+                actual.dataPtr() + actual.size(), result.begin());
+            amrex::Gpu::copy(
+                amrex::Gpu::deviceToHost, expected.dataPtr(),
+                expected.dataPtr() + expected.size(), reference.begin());
+            for (amrex::Long index = 0; index < actual.size(); ++index) {
+                EXPECT_NEAR(result[index], reference[index], tol1);
+            }
+        }
+    }
+}
+
+TEST(VOFBoundaryFlux, neumann_plane_preserves_uniform_fraction)
+{
+    const amrex::Box cells(amrex::IntVect(-1), amrex::IntVect(1));
+    amrex::FArrayBox vof(amrex::grow(cells, 1), 1);
+    amrex::FArrayBox reconstructed(cells, 1);
+    vof.setVal<amrex::RunOn::Device>(0.35_rt);
+    const auto fractions = vof.const_array();
+    const auto volumes = reconstructed.array();
+    amrex::ParallelFor(cells, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+        amrex::Real mx, my, mz, alpha;
+        kynema_sgf::multiphase::fit_plane(
+            i, j, k, i, j, k, fractions, mx, my, mz, alpha);
+        volumes(i, j, k) = kynema_sgf::multiphase::cut_volume(
+            mx, my, mz, alpha, 0.0_rt, 1.0_rt);
+    });
+    amrex::Vector<amrex::Real> result(reconstructed.size());
+    amrex::Gpu::copy(
+        amrex::Gpu::deviceToHost, reconstructed.dataPtr(),
+        reconstructed.dataPtr() + reconstructed.size(), result.begin());
+    for (const auto volume : result) {
+        EXPECT_NEAR(volume, 0.35_rt, tol1);
+    }
+}
 
 } // namespace kynema_sgf_tests
