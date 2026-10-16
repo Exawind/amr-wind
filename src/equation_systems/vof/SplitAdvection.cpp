@@ -243,13 +243,20 @@ void multiphase::sweep_fluxes(
             std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
         if (volfrac(i, j, k) > tiny &&
             std::abs(volfrac(i, j, k) - 1.0_rt) > tiny) {
-            const int ibdy =
-                periodic[0] ? 0 : (i <= domlo.x ? -1 : (i >= domhi.x ? 1 : 0));
-            const int jbdy =
-                periodic[1] ? 0 : (j <= domlo.y ? -1 : (j >= domhi.y ? 1 : 0));
-            const int kbdy =
-                periodic[2] ? 0 : (k <= domlo.z ? -1 : (k >= domhi.z ? 1 : 0));
-            if (ibdy != 0 || jbdy != 0 || kbdy != 0) {
+            const bool boundary_ghost =
+                (!periodic[0] && (i < domlo.x || i > domhi.x)) ||
+                (!periodic[1] && (j < domlo.y || j > domhi.y)) ||
+                (!periodic[2] && (k < domlo.z || k > domhi.z));
+            if (boundary_ghost) {
+                const int ibdy =
+                    periodic[0] ? 0
+                                : (i <= domlo.x ? -1 : (i >= domhi.x ? 1 : 0));
+                const int jbdy =
+                    periodic[1] ? 0
+                                : (j <= domlo.y ? -1 : (j >= domhi.y ? 1 : 0));
+                const int kbdy =
+                    periodic[2] ? 0
+                                : (k <= domlo.z ? -1 : (k >= domhi.z ? 1 : 0));
                 multiphase::fit_plane(
                     i, j, k, ibdy, jbdy, kbdy, volfrac, mx, my, mz, alpha);
             } else {
