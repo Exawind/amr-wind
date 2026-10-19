@@ -452,7 +452,7 @@ TEST(VOFBoundaryFlux, inflow_ignores_unfilled_ghosts)
         {0.0_rt, 0.0_rt, 0.0_rt}, {1.0_rt, 1.0_rt, 1.0_rt});
     const amrex::Array<int, AMREX_SPACEDIM> periodic = {0, 0, 0};
     const amrex::Vector<amrex::Geometry> geom{
-        amrex::Geometry(domain, &physical_box, 0, periodic)};
+        amrex::Geometry(domain, &physical_box, 0, &periodic[0])};
     const auto ghost_box = amrex::grow(domain, 2);
     amrex::FArrayBox vof(ghost_box, 1);
     amrex::FArrayBox temporary(amrex::grow(domain, 1), 2);
@@ -519,7 +519,7 @@ TEST(VOFBoundaryFlux, interior_and_periodic_sweeps_use_mixed_normal)
     for (const int is_periodic : {0, 1}) {
         const amrex::Array<int, AMREX_SPACEDIM> periodic = {
             is_periodic, is_periodic, is_periodic};
-        const amrex::Geometry geom(domain, &physical_box, 0, periodic);
+        const amrex::Geometry geom(domain, &physical_box, 0, &periodic[0]);
         for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
             for (const int sign : {-1, 1}) {
                 SCOPED_TRACE(
