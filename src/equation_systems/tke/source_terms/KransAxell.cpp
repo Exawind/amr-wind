@@ -155,7 +155,7 @@ void KransAxell::operator()(
                 const amrex::Real rans_b = amrex::max<amrex::Real>(hf, 0.0_rt) *
                                            kappa * z / utils::powi(Cmu, 3);
                 const amrex::Real tke_exact = std::pow(
-                    ustar * ustar * ustar / (Cmu * Cmu * Cmu) + rans_b,
+                    (ustar * ustar * ustar / (Cmu * Cmu * Cmu)) + rans_b,
                     2.0_rt / 3.0_rt);
                 bcforcing = (tke_exact - tke_arr(i, j, k)) / (time_factor * dt);
             }
@@ -219,7 +219,7 @@ void KransAxell::operator()(
                 const amrex::Real rans_b = amrex::max<amrex::Real>(hf, 0.0_rt) *
                                            kappa * z / utils::powi(Cmu, 3);
                 const amrex::Real tke_exact = std::pow(
-                    ustar * ustar * ustar / (Cmu * Cmu * Cmu) + rans_b,
+                    (ustar * ustar * ustar / (Cmu * Cmu * Cmu)) + rans_b,
                     2.0_rt / 3.0_rt);
                 const amrex::Real terrainforcing =
                     (tke_exact - tke_arr(i, j, k)) / (time_factor * dt);
@@ -232,7 +232,7 @@ void KransAxell::operator()(
                 const amrex::Real uz = vel(i, j, k, 2);
                 m = std::sqrt((ux * ux) + (uy * uy) + (uz * uz));
                 const amrex::Real Cd = amrex::min<amrex::Real>(
-                    10.0_rt / (dx[2] * m + kynema_sgf::constants::EPS),
+                    10.0_rt / ((dx[2] * m) + kynema_sgf::constants::EPS),
                     100.0_rt / dx[2]);
                 const amrex::Real dragforcing = -Cd * m * tke_arr(i, j, k, 0);
                 z = amrex::max<amrex::Real>(
