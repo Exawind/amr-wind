@@ -450,7 +450,7 @@ TEST(VOFBoundaryFlux, inflow_ignores_unfilled_ghosts)
     const amrex::Box domain(amrex::IntVect(0), amrex::IntVect(3));
     const amrex::RealBox physical_box(
         {0.0_rt, 0.0_rt, 0.0_rt}, {1.0_rt, 1.0_rt, 1.0_rt});
-    const int periodic[AMREX_SPACEDIM] = {0, 0, 0};
+    const amrex::Array<int, AMREX_SPACEDIM> periodic = {0, 0, 0};
     const amrex::Vector<amrex::Geometry> geom{
         amrex::Geometry(domain, &physical_box, 0, periodic)};
     const auto ghost_box = amrex::grow(domain, 2);
@@ -517,7 +517,7 @@ TEST(VOFBoundaryFlux, interior_and_periodic_sweeps_use_mixed_normal)
     amrex::FArrayBox expected(work_box, 2);
     initialize_mixed_normal_volume_fractions(ghost_box, vof.array());
     for (const int is_periodic : {0, 1}) {
-        const int periodic[AMREX_SPACEDIM] = {
+        const amrex::Array<int, AMREX_SPACEDIM> periodic = {
             is_periodic, is_periodic, is_periodic};
         const amrex::Geometry geom(domain, &physical_box, 0, periodic);
         for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
