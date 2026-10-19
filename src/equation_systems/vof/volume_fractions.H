@@ -509,7 +509,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool interface_band(
     const int k,
     amrex::Array4<amrex::Real const> const& volfrac,
     const int n_band = 1,
-    const amrex::Real tiny = constants::TIGHT_TOL)
+    const amrex::Real vof_tol = constants::VOF_TOL)
 {
     // n_band must be <= number of vof ghost cells (3)
 
@@ -523,13 +523,13 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool interface_band(
                 amrex::Real VOF = volfrac(i + ii, j + jj, k + kk);
                 VOF_max = amrex::max<amrex::Real>(VOF_max, VOF);
                 VOF_min = amrex::min<amrex::Real>(VOF_min, VOF);
-                if (VOF < 1.0_rt - tiny && VOF > tiny) {
+                if (VOF < 1.0_rt - vof_tol && VOF > vof_tol) {
                     VOF_mid = true;
                 }
             }
         }
     }
-    return (std::abs(VOF_max - VOF_min) > tiny || VOF_mid);
+    return (std::abs(VOF_max - VOF_min) > vof_tol || VOF_mid);
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real levelset_to_vof(
