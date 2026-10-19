@@ -545,8 +545,9 @@ TEST(VOFBoundaryFlux, interior_and_periodic_sweeps_use_mixed_normal)
                 amrex::Gpu::copy(
                     amrex::Gpu::deviceToHost, expected.dataPtr(),
                     expected.dataPtr() + expected.size(), reference.begin());
-                const auto check_box =
-                    is_periodic ? amrex::grow(domain, dir, 1) : domain;
+                const auto check_box = static_cast<bool>(is_periodic)
+                                           ? amrex::grow(domain, dir, 1)
+                                           : domain;
                 amrex::LoopOnCpu(check_box, [&](int i, int j, int k) {
                     const auto cell = work_box.index(amrex::IntVect(i, j, k));
                     for (int component = 0; component < 2; ++component) {
