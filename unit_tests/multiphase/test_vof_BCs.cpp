@@ -31,7 +31,7 @@ void initialize_boundary_volume_fractions(
         const bool valid = outside <= 1 && i >= -1 && i <= 4 && j >= -1 &&
                            j <= 4 && k >= -1 && k <= 4;
         values(i, j, k) =
-            valid ? 0.35_rt + 0.02_rt * i + 0.04_rt * j + 0.06_rt * k
+            valid ? 0.35_rt + (0.02_rt * i) + (0.04_rt * j) + (0.06_rt * k)
                   : static_cast<amrex::Real>(poison);
     });
 }
@@ -40,7 +40,8 @@ void initialize_mixed_normal_volume_fractions(
     const amrex::Box& ghost_box, const amrex::Array4<amrex::Real>& values)
 {
     amrex::ParallelFor(ghost_box, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-        values(i, j, k) = 0.4_rt + 0.01_rt * i * i + 0.02_rt * j + 0.03_rt * k;
+        values(i, j, k) =
+            0.4_rt + (0.01_rt * i * i) + (0.02_rt * j) + (0.03_rt * k);
     });
 }
 
@@ -549,7 +550,8 @@ TEST(VOFBoundaryFlux, interior_and_periodic_sweeps_use_mixed_normal)
                 amrex::LoopOnCpu(check_box, [&](int i, int j, int k) {
                     const auto cell = work_box.index(amrex::IntVect(i, j, k));
                     for (int component = 0; component < 2; ++component) {
-                        const auto index = cell + component * work_box.numPts();
+                        const auto index =
+                            cell + (component * work_box.numPts());
                         EXPECT_NEAR(result[index], reference[index], tol1)
                             << "cell=" << amrex::IntVect(i, j, k)
                             << " component=" << component;
