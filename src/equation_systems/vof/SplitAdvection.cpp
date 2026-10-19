@@ -243,10 +243,14 @@ void multiphase::sweep_fluxes(
             std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
         if (volfrac(i, j, k) > tiny &&
             std::abs(volfrac(i, j, k) - 1.0_rt) > tiny) {
+            const bool in_ext_bdy_x =
+                !periodic[0] && (i < domlo.x || i > domhi.x);
+            const bool in_ext_bdy_y =
+                !periodic[1] && (j < domlo.y || j > domhi.y);
+            const bool in_ext_bdy_z =
+                !periodic[2] && (k < domlo.z || k > domhi.z);
             const bool boundary_ghost =
-                (!periodic[0] && (i < domlo.x || i > domhi.x)) ||
-                (!periodic[1] && (j < domlo.y || j > domhi.y)) ||
-                (!periodic[2] && (k < domlo.z || k > domhi.z));
+                in_ext_bdy_x || in_ext_bdy_y || in_ext_bdy_z;
             if (boundary_ghost) {
                 const int ibdy =
                     periodic[0] ? 0
