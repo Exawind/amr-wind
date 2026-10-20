@@ -1,5 +1,6 @@
 #include "src/equation_systems/vof/SplitAdvection.H"
 #include "src/equation_systems/vof/split_advection.H"
+#include "src/utilities/constants.H"
 #include "AMReX_Geometry.H"
 #include "AMReX_MultiFabUtil.H"
 #include "AMReX_REAL.H"
@@ -239,10 +240,8 @@ void multiphase::sweep_fluxes(
         amrex::Real velL = vel_mac(i, j, k);
         amrex::Real velR = vel_mac(i + ii, j + jj, k + kk);
         amrex::Real mx = 0.0_rt, my = 0.0_rt, mz = 0.0_rt, alpha = 0.0_rt;
-        constexpr amrex::Real tiny =
-            std::numeric_limits<amrex::Real>::epsilon() * 1.0e4_rt;
-        if (volfrac(i, j, k) > tiny &&
-            std::abs(volfrac(i, j, k) - 1.0_rt) > tiny) {
+        if (volfrac(i, j, k) > constants::VOF_TOL &&
+            std::abs(volfrac(i, j, k) - 1.0_rt) > constants::VOF_TOL) {
             const bool in_ext_bdy_x =
                 !periodic[0] && (i < domlo.x || i > domhi.x);
             const bool in_ext_bdy_y =
