@@ -365,7 +365,6 @@ void Flather::set_velocity(
     const auto& domain = geom.growPeriodicDomain(nghost);
 
     const auto fstate = time > 0.0_rt ? FieldState::Old : FieldState::New;
-    const amrex::Real tiny = constants::TIGHT_TOL;
     const amrex::Real vof_tol = constants::VOF_TOL;
     const amrex::Real v_threshold = 1.0e-6_rt;
     const auto grav_z = -m_gravity[2];
@@ -598,11 +597,12 @@ void Flather::set_velocity(
                 const bool inflow_any_liq = !outflow && boundary_vof > vof_tol;
                 const bool outflow_only_liq =
                     outflow && interior_vof >= 1.0_rt - vof_tol;
-                if (boundary_h > tiny && (outflow_only_liq || inflow_any_liq ||
-                                          (outflow && override_interior))) {
+                if (boundary_h > vof_tol &&
+                    (outflow_only_liq || inflow_any_liq ||
+                     (outflow && override_interior))) {
                     arr(iv, fcomp) = scaled_vel;
                 } else if (outflow) {
-                    // edge case 4 (boundary_h <= tiny)
+                    // edge case 4 (boundary_h <= vof_tol)
                     arr(iv, fcomp) = local_vel;
                 }
             });
